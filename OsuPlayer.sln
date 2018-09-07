@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2016
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milkitic.OsuPlayer", "OsuPlayer\Milkitic.OsuPlayer.csproj", "{9F64872B-6E39-419E-85F7-54C910220FD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milkitic.OsuLib", "..\库\OsuLib\Milkitic.OsuLib\Milkitic.OsuLib.csproj", "{C86D348D-A961-456B-9820-0BD9F069A9CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9F64872B-6E39-419E-85F7-54C910220FD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F64872B-6E39-419E-85F7-54C910220FD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F64872B-6E39-419E-85F7-54C910220FD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F64872B-6E39-419E-85F7-54C910220FD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C86D348D-A961-456B-9820-0BD9F069A9CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C86D348D-A961-456B-9820-0BD9F069A9CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C86D348D-A961-456B-9820-0BD9F069A9CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C86D348D-A961-456B-9820-0BD9F069A9CB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9E465C6F-DA70-4513-BFF1-251942568671}
+	EndGlobalSection
+EndGlobal
