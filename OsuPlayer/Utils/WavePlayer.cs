@@ -12,11 +12,13 @@ namespace Milkitic.OsuPlayer.Utils
         public static readonly XAudio2 Device = new XAudio2();
         public static readonly MasteringVoice MasteringVoice = new MasteringVoice(Device);
         private static List<WavePlayer> _cachedPlayers = new List<WavePlayer>();
-
+        private static readonly object LockObj = new object();
         public static void PlayFile(string path, float volume)
         {
-            WavePlayer cachedPlayer =
-                _cachedPlayers.FirstOrDefault(p => p.DicPath == path && p.IsFinished) ?? SaveToCache(path);
+            WavePlayer cachedPlayer;
+            lock (LockObj)
+                cachedPlayer = _cachedPlayers.FirstOrDefault(p => p.DicPath == path && p.IsFinished) ??
+                               SaveToCache(path);
 
             cachedPlayer.Play(volume);
         }
@@ -26,14 +28,17 @@ namespace Milkitic.OsuPlayer.Utils
             try
             {
                 var player = new WavePlayer(path);
-                _cachedPlayers.Add(player);
+                lock (LockObj)
+                    _cachedPlayers.Add(player);
+
                 return player;
             }
             catch (SharpDX.SharpDXException e)
             {
                 Console.WriteLine(e);
                 var player = new WavePlayer(Path.Combine(Domain.DefaultPath, "default.wav")) { DicPath = path };
-                _cachedPlayers.Add(player);
+                lock (LockObj)
+                    _cachedPlayers.Add(player);
                 return player;
             }
             catch (InvalidOperationException e)
@@ -42,16 +47,20 @@ namespace Milkitic.OsuPlayer.Utils
                     throw new NotSupportedException("有不支持的音效。");
                 // todo
                 var player = new WavePlayer(Path.Combine(Domain.DefaultPath, "default.wav")) { DicPath = path };
-                _cachedPlayers.Add(player);
+                lock (LockObj)
+                    _cachedPlayers.Add(player);
                 return player;
             }
         }
 
-        public static void DisposeAll()
+        public static void ClearCache()
         {
-            foreach (var item in _cachedPlayers)
-                item.Dispose();
-            _cachedPlayers = new List<WavePlayer>();
+            lock (LockObj)
+            {
+                foreach (var item in _cachedPlayers)
+                    item.Dispose();
+                _cachedPlayers = new List<WavePlayer>();
+            }
         }
 
         public bool IsFinished { get; set; }

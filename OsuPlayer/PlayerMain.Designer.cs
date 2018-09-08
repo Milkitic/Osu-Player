@@ -31,13 +31,13 @@
             this.btnLoadSingle = new System.Windows.Forms.Button();
             this.btnControlPlayPause = new System.Windows.Forms.Button();
             this.btnControlStop = new System.Windows.Forms.Button();
-            this.tbControlSkip = new System.Windows.Forms.TextBox();
-            this.btnControlSkip = new System.Windows.Forms.Button();
+            this.tkProgress = new System.Windows.Forms.TrackBar();
+            ((System.ComponentModel.ISupportInitialize)(this.tkProgress)).BeginInit();
             this.SuspendLayout();
             // 
             // btnLoadSingle
             // 
-            this.btnLoadSingle.Location = new System.Drawing.Point(88, 58);
+            this.btnLoadSingle.Location = new System.Drawing.Point(280, 63);
             this.btnLoadSingle.Name = "btnLoadSingle";
             this.btnLoadSingle.Size = new System.Drawing.Size(108, 23);
             this.btnLoadSingle.TabIndex = 0;
@@ -47,45 +47,39 @@
             // 
             // btnControlPlayPause
             // 
-            this.btnControlPlayPause.Location = new System.Drawing.Point(97, 145);
+            this.btnControlPlayPause.Location = new System.Drawing.Point(12, 63);
             this.btnControlPlayPause.Name = "btnControlPlayPause";
             this.btnControlPlayPause.Size = new System.Drawing.Size(75, 23);
             this.btnControlPlayPause.TabIndex = 1;
             this.btnControlPlayPause.Text = "Play";
             this.btnControlPlayPause.UseVisualStyleBackColor = true;
+            this.btnControlPlayPause.Click += new System.EventHandler(this.BtnControlPlayPause_Click);
             // 
             // btnControlStop
             // 
-            this.btnControlStop.Location = new System.Drawing.Point(178, 145);
+            this.btnControlStop.Location = new System.Drawing.Point(95, 63);
             this.btnControlStop.Name = "btnControlStop";
             this.btnControlStop.Size = new System.Drawing.Size(75, 23);
             this.btnControlStop.TabIndex = 2;
             this.btnControlStop.Text = "Stop";
             this.btnControlStop.UseVisualStyleBackColor = true;
+            this.btnControlStop.Click += new System.EventHandler(this.BtnControlStop_Click);
             // 
-            // tbControlSkip
+            // tkProgress
             // 
-            this.tbControlSkip.Location = new System.Drawing.Point(95, 251);
-            this.tbControlSkip.Name = "tbControlSkip";
-            this.tbControlSkip.Size = new System.Drawing.Size(100, 21);
-            this.tbControlSkip.TabIndex = 3;
-            // 
-            // btnControlSkip
-            // 
-            this.btnControlSkip.Location = new System.Drawing.Point(201, 249);
-            this.btnControlSkip.Name = "btnControlSkip";
-            this.btnControlSkip.Size = new System.Drawing.Size(75, 23);
-            this.btnControlSkip.TabIndex = 4;
-            this.btnControlSkip.Text = "Skip to";
-            this.btnControlSkip.UseVisualStyleBackColor = true;
+            this.tkProgress.Location = new System.Drawing.Point(12, 12);
+            this.tkProgress.Name = "tkProgress";
+            this.tkProgress.Size = new System.Drawing.Size(376, 45);
+            this.tkProgress.TabIndex = 5;
+            this.tkProgress.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TkProgress_MouseDown);
+            this.tkProgress.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TkProgress_MouseUp);
             // 
             // PlayerMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.btnControlSkip);
-            this.Controls.Add(this.tbControlSkip);
+            this.ClientSize = new System.Drawing.Size(400, 401);
+            this.Controls.Add(this.tkProgress);
             this.Controls.Add(this.btnControlStop);
             this.Controls.Add(this.btnControlPlayPause);
             this.Controls.Add(this.btnLoadSingle);
@@ -93,6 +87,7 @@
             this.Text = "PlayerMain";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.tkProgress)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -103,8 +98,7 @@
         private System.Windows.Forms.Button btnLoadSingle;
         private System.Windows.Forms.Button btnControlPlayPause;
         private System.Windows.Forms.Button btnControlStop;
-        private System.Windows.Forms.TextBox tbControlSkip;
-        private System.Windows.Forms.Button btnControlSkip;
+        private System.Windows.Forms.TrackBar tkProgress;
     }
 }
 
