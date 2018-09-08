@@ -36,10 +36,11 @@ namespace Milkitic.OsuPlayer.Utils
         // Play Control
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private int _controlOffset;
-        private Task _playingTask;
+        private Task _playingTask, _offsetTask;
 
         private readonly Stopwatch _sw = new Stopwatch();
         private OsuFile _osufile;
+        private int _generalOffset = 85;
 
         public HitsoundPlayer(string filePath)
         {
@@ -51,58 +52,56 @@ namespace Milkitic.OsuPlayer.Utils
                 throw new DirectoryNotFoundException("获取" + fileInfo.Name + "所在目录失败了？");
 
             List<HitsoundElement> hitsoundList = FillHitsoundList(filePath, dirInfo);
-
             _hitsoundList = hitsoundList.OrderBy(t => t.Offset).ToList(); // Sorted before enqueue.
             Requeue();
-
             List<string> allPaths = hitsoundList.Select(t => t.FilePaths).SelectMany(sbx2 => sbx2).Distinct().ToList();
             foreach (var path in allPaths)
                 WavePlayer.SaveToCache(path); // Cache each file once before play.
 
-            _musicPlayer = new MusicPlayer(Path.Combine(dirInfo.FullName, _osufile.General.AudioFilename));
-            Duration = (int)Math.Ceiling(_hitsoundList.Max(k => k.Offset));
+            FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, _osufile.General.AudioFilename));
+            _musicPlayer = new MusicPlayer(musicInfo.FullName);
+            Duration = (int)Math.Ceiling(Math.Max(_hitsoundList.Max(k => k.Offset), _musicPlayer.Duration));
         }
 
         public void Play()
         {
             StartTask();
-            _playingTask = new Task(() =>
-            {
-                _sw.Restart();
-                while (_hsQueue.Count > 0)
-                {
-                    if (_cts.Token.IsCancellationRequested)
-                    {
-                        _sw.Stop();
-                        return;
-                    }
-
-                    // Loop
-                    while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= PlayTime)
-                    {
-                        if (!_hsQueue.TryDequeue(out var hs))
-                            continue;
-
-                        foreach (var path in hs.FilePaths)
-                            Task.Run(() => WavePlayer.PlayFile(path, hs.Volume));
-                    }
-
-                    Thread.Sleep(1);
-                }
-
-                PlayTime = 0;
-                Requeue();
-                PlayStatus = PlayStatusEnum.Stopped;
-            });
+            _musicPlayer.Play();
+            DynamicOffset();
+            _playingTask = new Task(PlayHitsound);
             _playingTask.Start();
             PlayStatus = PlayStatusEnum.Playing;
+        }
+
+        private void PlayHitsound()
+        {
+            _sw.Restart();
+            while (_hsQueue.Count > 0 || _musicPlayer.PlayStatus != PlayStatusEnum.Stopped)
+            {
+                if (_cts.Token.IsCancellationRequested)
+                {
+                    _sw.Stop();
+                    return;
+                }
+
+                // Loop
+                while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= PlayTime)
+                {
+                    if (!_hsQueue.TryDequeue(out var hs)) continue;
+
+                    foreach (var path in hs.FilePaths) Task.Run(() => WavePlayer.PlayFile(path, hs.Volume));
+                }
+
+                Thread.Sleep(1);
+            }
+
+            InnerStop(true);
         }
 
         public void Replay()
         {
             Stop();
             Play();
-            _musicPlayer.Replay();
         }
 
         public void Pause()
@@ -115,30 +114,115 @@ namespace Milkitic.OsuPlayer.Utils
 
         public void Stop()
         {
-            CancelTask();
+            InnerStop();
+        }
+
+        public void SetTime(int ms, bool play = true)
+        {
+            Pause();
+            PlayTime = ms;
+            Requeue(ms);
+            if (play)
+            {
+                _musicPlayer.SetTime(ms);
+                Play();
+            }
+            else
+                _musicPlayer.SetTime(ms, false);
+
+        }
+
+        private void DynamicOffset()
+        {
+            if (_offsetTask == null || _offsetTask.IsCanceled || _offsetTask.IsCompleted)
+                _offsetTask = Task.Run(() =>
+                {
+                    Thread.Sleep(10);
+                    int? preMs = null;
+                    while (!_cts.IsCancellationRequested && _musicPlayer.PlayStatus == PlayStatusEnum.Playing)
+                    {
+                        int playerMs = _musicPlayer.PlayTime;
+                        if (playerMs != preMs)
+                        {
+                            preMs = playerMs;
+                            var d = playerMs - (_sw.ElapsedMilliseconds + _controlOffset);
+                            var r = _generalOffset - d;
+                            if (Math.Abs(r) > 5)
+                            {
+                                Console.WriteLine($@"music: {_musicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
+                                _controlOffset -= (int)(r / 2f);
+                            }
+                        }
+
+                        Thread.Sleep(10);
+                    }
+                }, _cts.Token);
+        }
+
+        private void InnerStop(bool innerCall = false)
+        {
+            CancelTask(innerCall);
             PlayTime = 0;
             PlayStatus = PlayStatusEnum.Stopped;
             Requeue();
             _musicPlayer.Stop();
         }
 
-        public void SetTime(int ms, bool play = true)
+        private void Requeue(long skippedMs = 0)
         {
-            CancelTask();
-            PlayTime = ms;
-            Requeue(ms);
-            _musicPlayer.SetTime(ms);
-            _musicPlayer.Pause();
-            if (play)
+            _hsQueue = new ConcurrentQueue<HitsoundElement>();
+            foreach (var i in _hitsoundList)
             {
-                Play();
-                _musicPlayer.Play();
+                if (i.Offset < skippedMs)
+                    continue;
+                _hsQueue.Enqueue(i);
             }
         }
 
+        private void StartTask()
+        {
+            _cts = new CancellationTokenSource();
+        }
+
+        private void CancelTask(bool innerCall = false)
+        {
+            _cts.Cancel();
+            if (!innerCall) Task.WaitAll(_playingTask);
+            Task.WaitAll(_offsetTask);
+            Console.WriteLine(@"Task canceled.");
+        }
+
+        public void Dispose()
+        {
+            Stop();
+            Task.WaitAll(_playingTask);
+            _playingTask?.Dispose();
+            _musicPlayer?.Dispose();
+            _cts?.Dispose();
+            WavePlayer.ClearCache();
+            GC.Collect();
+        }
+
+        #region Load
+
         private List<HitsoundElement> FillHitsoundList(string filePath, DirectoryInfo dirInfo)
         {
-            _osufile = new OsuFile(filePath);
+            try
+            {
+                _osufile = new OsuFile(filePath);
+            }
+            catch (NotSupportedException)
+            {
+                throw;
+            }
+            catch (FormatException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("载入时发生未知错误。", e);
+            }
             List<RawHitObject> hitObjects = _osufile.HitObjects.HitObjectList;
             List<HitsoundElement> hitsoundList = new List<HitsoundElement>();
 
@@ -213,39 +297,6 @@ namespace Milkitic.OsuPlayer.Utils
             }
         }
 
-        private void Requeue(long skippedMs = 0)
-        {
-            _hsQueue = new ConcurrentQueue<HitsoundElement>();
-            foreach (var i in _hitsoundList)
-            {
-                if (i.Offset < skippedMs)
-                    continue;
-                _hsQueue.Enqueue(i);
-            }
-        }
-
-        private void StartTask()
-        {
-            _cts = new CancellationTokenSource();
-        }
-
-        private void CancelTask()
-        {
-            _cts.Cancel();
-            Task.WaitAny(_playingTask);
-            Console.WriteLine(@"stopped");
-        }
-
-        public void Dispose()
-        {
-            Stop();
-            Task.WaitAll(_playingTask);
-            _playingTask?.Dispose();
-            _cts?.Dispose();
-            WavePlayer.ClearCache();
-            GC.Collect();//why
-        }
-
-
+        #endregion Load
     }
 }

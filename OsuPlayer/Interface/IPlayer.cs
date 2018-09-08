@@ -1,5 +1,4 @@
 ﻿using Milkitic.OsuPlayer.Models;
-using SharpDX.MediaFoundation;
 using System;
 using System.Collections.Generic;
 using System.Linq;

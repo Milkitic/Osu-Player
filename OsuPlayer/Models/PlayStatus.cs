@@ -8,6 +8,6 @@ namespace Milkitic.OsuPlayer.Models
 {
     public enum PlayStatusEnum
     {
-        Ready, Playing, Paused, Stopped
+        NotInitialized, Ready, Playing, Paused, Stopped
     }
 }

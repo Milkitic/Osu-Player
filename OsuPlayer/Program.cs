@@ -1,4 +1,10 @@
-﻿using System;
+﻿using Milkitic.OsuPlayer.Models;
+using Milkitic.OsuPlayer.Utils;
+using NAudio.Wave;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Milkitic.OsuPlayer
@@ -14,6 +20,11 @@ namespace Milkitic.OsuPlayer
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new PlayerMain());
+        }
+
+        private static void OnPlaybackStopped(object sender, StoppedEventArgs e)
+        {
+
         }
     }
 }

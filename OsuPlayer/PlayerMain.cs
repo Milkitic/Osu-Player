@@ -11,11 +11,11 @@ namespace Milkitic.OsuPlayer
     public partial class PlayerMain : Form
     {
         private HitsoundPlayer _hitsoundPlayer;
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private CancellationTokenSource _cts = new CancellationTokenSource();
         private Task _statusTask;
-        private PlayStatusEnum tmpStatus = PlayStatusEnum.Stopped;
-
+        private PlayStatusEnum _tmpStatus = PlayStatusEnum.Stopped;
         private bool _scrollLock;
+        private object _playerLock = new object();
 
         public PlayerMain()
         {
@@ -24,69 +24,14 @@ namespace Milkitic.OsuPlayer
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            _statusTask = new Task(() =>
-            {
-                while (true)
-                {
-                    if (_cts.IsCancellationRequested)
-                        return;
-                    if (_hitsoundPlayer != null)
-                    {
-                        BeginInvoke(new Action(() =>
-                        {
-                            btnControlPlayPause.Enabled = true;
-                            btnControlStop.Enabled = true;
-                        }));
-                        if (tmpStatus != _hitsoundPlayer.PlayStatus)
-                        {
-                            switch (_hitsoundPlayer.PlayStatus)
-                            {
-                                case PlayStatusEnum.Playing:
-                                    BeginInvoke(new Action(() => { btnControlPlayPause.Text = @"Pause"; }));
-                                    break;
-                                case PlayStatusEnum.Stopped:
-                                case PlayStatusEnum.Paused:
-                                    BeginInvoke(new Action(() =>
-                                    {
-                                        btnControlPlayPause.Text = @"Play";
-                                        tkProgress.Value = Math.Min(_hitsoundPlayer.PlayTime, tkProgress.Maximum);
-                                    }));
-                                    break;
-                            }
-
-                            tmpStatus = _hitsoundPlayer.PlayStatus;
-                        }
-
-                        if (tmpStatus == PlayStatusEnum.Playing && !_scrollLock)
-                        {
-                            BeginInvoke(new Action(() =>
-                            {
-                                tkProgress.Maximum = _hitsoundPlayer.Duration;
-                                tkProgress.Value = Math.Min(_hitsoundPlayer.PlayTime, tkProgress.Maximum);
-                            }));
-                        }
-                    }
-                    else
-                    {
-                        BeginInvoke(new Action(() =>
-                        {
-                            btnControlPlayPause.Enabled = false;
-                            btnControlStop.Enabled = false;
-                        }));
-                    }
-
-                    Thread.Sleep(50);
-                }
-            }, _cts.Token);
-
-            _statusTask.Start();
+            RunSurfaceUpdate();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            ClearHitsoundPlayer();
             _cts.Cancel();
             Task.WaitAll(_statusTask);
+            ClearHitsoundPlayer();
             WavePlayer.Device?.Dispose();
             WavePlayer.MasteringVoice?.Dispose();
         }
@@ -95,9 +40,32 @@ namespace Milkitic.OsuPlayer
         {
             string path = LoadFile();
             if (path == null) return;
+            if (!File.Exists(path))
+            {
+                MessageBox.Show(@"你选择了一个不存在的文件。");
+                return;
+            }
+
             ClearHitsoundPlayer();
-            _hitsoundPlayer = new HitsoundPlayer(path);
-            _hitsoundPlayer.Play();
+            try
+            {
+                _hitsoundPlayer = new HitsoundPlayer(path);
+                _cts = new CancellationTokenSource();
+                //RunSurfaceUpdate();
+                _hitsoundPlayer.Play();
+            }
+            catch (NotSupportedException ex)
+            {
+                MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (FormatException ex)
+            {
+                MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, @"发生未处理的异常问题：" + ex.ToString(), Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void BtnControlPlayPause_Click(object sender, EventArgs e)
@@ -122,7 +90,7 @@ namespace Milkitic.OsuPlayer
 
         private void BtnControlStop_Click(object sender, EventArgs e)
         {
-            _hitsoundPlayer.Stop();
+            _hitsoundPlayer?.Stop();
         }
 
         private void TkProgress_MouseUp(object sender, MouseEventArgs e)
@@ -158,11 +126,78 @@ namespace Milkitic.OsuPlayer
             };
             return openFileDialog.ShowDialog() != DialogResult.OK ? null : openFileDialog.FileName;
         }
+
         private void ClearHitsoundPlayer()
         {
             _hitsoundPlayer?.Stop();
             _hitsoundPlayer?.Dispose();
             _hitsoundPlayer = null;
+
+        }
+
+        private void RunSurfaceUpdate()
+        {
+            _statusTask = Task.Run(new Action(UpdateSurface), _cts.Token);
+        }
+
+        private void UpdateSurface()
+        {
+            while (true)
+            {
+                if (_cts.IsCancellationRequested) return;
+
+                if (_hitsoundPlayer != null)
+                {
+                    BeginInvoke(new Action(() =>
+                    {
+                        btnControlPlayPause.Enabled = true;
+                        btnControlStop.Enabled = true;
+                        tkProgress.Enabled = true;
+                    }));
+                    if (_tmpStatus != _hitsoundPlayer.PlayStatus)
+                    {
+                        switch (_hitsoundPlayer.PlayStatus)
+                        {
+                            case PlayStatusEnum.Playing:
+                                BeginInvoke(new Action(() => { btnControlPlayPause.Text = @"Pause"; }));
+                                break;
+                            case PlayStatusEnum.Stopped:
+                            case PlayStatusEnum.Paused:
+                                var ok = Math.Min(_hitsoundPlayer.PlayTime, tkProgress.Maximum);
+                                BeginInvoke(new Action(() =>
+                                {
+                                    btnControlPlayPause.Text = @"Play";
+                                    tkProgress.Value = ok < 0 ? 0 : ok;
+                                }));
+                                break;
+                        }
+
+                        _tmpStatus = _hitsoundPlayer.PlayStatus;
+                    }
+
+                    if (_tmpStatus == PlayStatusEnum.Playing && !_scrollLock)
+                    {
+                        var ok = Math.Min(_hitsoundPlayer.PlayTime, tkProgress.Maximum);
+                        BeginInvoke(new Action(() =>
+                        {
+                            if (_hitsoundPlayer == null) return;
+                            tkProgress.Maximum = _hitsoundPlayer.Duration;
+                            tkProgress.Value = ok < 0 ? 0 : (ok > tkProgress.Maximum ? tkProgress.Maximum : ok);
+                        }));
+                    }
+                }
+                else
+                {
+                    BeginInvoke(new Action(() =>
+                    {
+                        btnControlPlayPause.Enabled = false;
+                        btnControlStop.Enabled = false;
+                        tkProgress.Enabled = false;
+                    }));
+                }
+
+                Thread.Sleep(50);
+            }
         }
     }
 }

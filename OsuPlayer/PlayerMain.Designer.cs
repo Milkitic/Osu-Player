@@ -78,11 +78,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(400, 401);
+            this.ClientSize = new System.Drawing.Size(400, 101);
             this.Controls.Add(this.tkProgress);
             this.Controls.Add(this.btnControlStop);
             this.Controls.Add(this.btnControlPlayPause);
             this.Controls.Add(this.btnLoadSingle);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "PlayerMain";
             this.Text = "PlayerMain";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
