@@ -98,7 +98,7 @@ namespace Milkitic.OsuPlayer.Utils
             try
             {
                 _sourceVoice.SubmitSourceBuffer(_buffer, _stream.DecodedPacketsInfo);
-                _sourceVoice.SetVolume(volume * 0.95f);
+                _sourceVoice.SetVolume(volume * Core.Config.Volume.Main * Core.Config.Volume.Hitsound);
                 _sourceVoice.Start();
             }
             catch (Exception)

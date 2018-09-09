@@ -39,8 +39,7 @@ namespace Milkitic.OsuPlayer.Utils
         private Task _playingTask, _offsetTask;
 
         private readonly Stopwatch _sw = new Stopwatch();
-        private OsuFile _osufile;
-        private int _generalOffset = 85;
+        public OsuFile Osufile { get; private set; }
 
         public HitsoundPlayer(string filePath)
         {
@@ -58,7 +57,7 @@ namespace Milkitic.OsuPlayer.Utils
             foreach (var path in allPaths)
                 WavePlayer.SaveToCache(path); // Cache each file once before play.
 
-            FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, _osufile.General.AudioFilename));
+            FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, Osufile.General.AudioFilename));
             _musicPlayer = new MusicPlayer(musicInfo.FullName);
             Duration = (int)Math.Ceiling(Math.Max(_hitsoundList.Max(k => k.Offset), _musicPlayer.Duration));
         }
@@ -146,7 +145,7 @@ namespace Milkitic.OsuPlayer.Utils
                         {
                             preMs = playerMs;
                             var d = playerMs - (_sw.ElapsedMilliseconds + _controlOffset);
-                            var r = _generalOffset - d;
+                            var r = Core.Config.Offset - d;
                             if (Math.Abs(r) > 5)
                             {
                                 Console.WriteLine($@"music: {_musicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
@@ -209,7 +208,7 @@ namespace Milkitic.OsuPlayer.Utils
         {
             try
             {
-                _osufile = new OsuFile(filePath);
+                Osufile = new OsuFile(filePath);
             }
             catch (NotSupportedException)
             {
@@ -223,7 +222,7 @@ namespace Milkitic.OsuPlayer.Utils
             {
                 throw new Exception("载入时发生未知错误。", e);
             }
-            List<RawHitObject> hitObjects = _osufile.HitObjects.HitObjectList;
+            List<RawHitObject> hitObjects = Osufile.HitObjects.HitObjectList;
             List<HitsoundElement> hitsoundList = new List<HitsoundElement>();
 
             var mapFiles = dirInfo.GetFiles("*.wav").Select(p => p.Name).ToArray();
@@ -235,10 +234,10 @@ namespace Milkitic.OsuPlayer.Utils
                     foreach (var item in obj.SliderInfo.Edges)
                     {
                         //var currentTiming = file.TimingPoints.GetRedLine(item.Offset);
-                        var currentLine = _osufile.TimingPoints.GetLine(item.Offset);
+                        var currentLine = Osufile.TimingPoints.GetLine(item.Offset);
                         var element = new HitsoundElement
                         {
-                            GameMode = _osufile.General.Mode,
+                            GameMode = Osufile.General.Mode,
                             Offset = item.Offset,
                             Volume = (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f,
                             Hitsound = item.EdgeHitsound,
@@ -256,12 +255,12 @@ namespace Milkitic.OsuPlayer.Utils
                 else
                 {
                     //var currentTiming = file.TimingPoints.GetRedLine(obj.Offset);
-                    var currentLine = _osufile.TimingPoints.GetLine(obj.Offset);
+                    var currentLine = Osufile.TimingPoints.GetLine(obj.Offset);
                     var offset = obj.Offset; //todo: spinner & hold
 
                     var element = new HitsoundElement
                     {
-                        GameMode = _osufile.General.Mode,
+                        GameMode = Osufile.General.Mode,
                         Offset = offset,
                         Volume = (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f,
                         Hitsound = obj.Hitsound,
@@ -298,5 +297,7 @@ namespace Milkitic.OsuPlayer.Utils
         }
 
         #endregion Load
+
+
     }
 }

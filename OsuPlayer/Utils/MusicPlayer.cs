@@ -1,6 +1,5 @@
 ﻿using Milkitic.OsuPlayer.Interface;
 using Milkitic.OsuPlayer.Models;
-using NAudio.Vorbis;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -16,43 +15,26 @@ namespace Milkitic.OsuPlayer.Utils
     public class MusicPlayer : IPlayer, IDisposable
     {
         public PlayStatusEnum PlayStatus { get; private set; }
-        public int Duration
-        {
-            get
-            {
-                if (_audioFile != null) return (int)_audioFile.TotalTime.TotalMilliseconds;
-                if (_oggFile != null) return (int)_oggFile.TotalTime.TotalMilliseconds;
-                throw new Exception();
-            }
-        }
-
+        public int Duration => (int)_audioFile.TotalTime.TotalMilliseconds;
         public int PlayTime { get; private set; }
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private WaveOutEvent _device;
-        private AudioFileReader _audioFile;
-        private VorbisWaveReader _oggFile;
+        private MyAudioFileReader _audioFile;
 
         public MusicPlayer(string filePath)
         {
             FileInfo fi = new FileInfo(filePath);
             if (!fi.Exists)
-                throw new FileNotFoundException("Can not locate file.", fi.FullName);
-            _device = new WaveOutEvent { DesiredLatency = 100 };
+                throw new FileNotFoundException("找不到音乐文件…", fi.FullName);
+            _device = new WaveOutEvent { DesiredLatency = 80 };
             _device.PlaybackStopped += (sender, args) =>
             {
                 PlayStatus = PlayStatusEnum.Stopped;
             };
-            try
-            {
-                _audioFile = new AudioFileReader(filePath);
-                _device.Init(_audioFile);
-            }
-            catch
-            {
-                _oggFile = new VorbisWaveReader(filePath);
-                _device.Init(_oggFile);
-            }
+
+            _audioFile = new MyAudioFileReader(filePath);
+            _device.Init(_audioFile);
 
             PlayStatus = PlayStatusEnum.Ready;
 
@@ -60,10 +42,10 @@ namespace Milkitic.OsuPlayer.Utils
             {
                 while (!_cts.IsCancellationRequested)
                 {
-                    if (PlayStatus != PlayStatusEnum.NotInitialized)
+                    if (PlayStatus != PlayStatusEnum.NotInitialized && _audioFile != null)
                     {
-                        if (_audioFile != null) PlayTime = (int)_audioFile?.CurrentTime.TotalMilliseconds;
-                        if (_oggFile != null) PlayTime = (int)_oggFile?.CurrentTime.TotalMilliseconds;
+                        _audioFile.Volume = Core.Config.Volume.Main * Core.Config.Volume.Music;
+                        PlayTime = (int)_audioFile?.CurrentTime.TotalMilliseconds;
                     }
                     Thread.Sleep(1);
                 }
@@ -91,10 +73,7 @@ namespace Milkitic.OsuPlayer.Utils
         public void SetTime(int ms, bool play = true)
         {
             var span = new TimeSpan(0, 0, 0, 0, ms);
-            if (_audioFile != null)
-                _audioFile.CurrentTime = span >= _audioFile.TotalTime ? _audioFile.TotalTime - new TimeSpan(0, 0, 0, 0, 1) : span;
-            else if (_oggFile != null)
-                _oggFile.CurrentTime = span > _oggFile.TotalTime ? _oggFile.TotalTime - new TimeSpan(0, 0, 0, 0, 1) : span;
+            _audioFile.CurrentTime = span >= _audioFile.TotalTime ? _audioFile.TotalTime - new TimeSpan(0, 0, 0, 0, 1) : span;
             PlayStatus = PlayStatusEnum.Playing;
             if (!play) Pause();
         }
@@ -112,8 +91,6 @@ namespace Milkitic.OsuPlayer.Utils
             _device = null;
             _audioFile?.Dispose();
             _audioFile = null;
-            _oggFile?.Dispose();
-            _oggFile = null;
             _cts?.Dispose();
         }
     }
