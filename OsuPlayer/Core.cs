@@ -1,24 +1,34 @@
 ﻿using Milkitic.OsuPlayer.Models;
 using Milkitic.OsuPlayer.Utils;
+using Milkitic.OsuPlayer.Winforms;
 using NAudio.Wave;
 using Newtonsoft.Json;
+using osu.Shared.Serialization;
+using osu_database_reader.BinaryFiles;
+using osu_database_reader.Components.Beatmaps;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Milkitic.OsuPlayer.Winforms;
 
 namespace Milkitic.OsuPlayer
 {
     static class Core
     {
         public static Config Config { get; set; }
+        public static OsuDb BeatmapDb { get; set; }
+        public static List<BeatmapEntry> Beatmaps => BeatmapDb.Beatmaps;
 
         [STAThread]
         static void Main()
         {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
             var file = Domain.ConfigFile;
             if (!File.Exists(file))
             {
@@ -43,11 +53,56 @@ namespace Milkitic.OsuPlayer
                 }
             }
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            LoadDb();
+
             Application.Run(new RenderForm());
 
             SaveConfig(file);
+        }
+
+        private static void LoadDb()
+        {
+            string dbPath = Config.DbPath;
+            if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath))
+            {
+                var osuProcess = Process.GetProcesses().Where(x => x.ProcessName == "osu!").ToArray();
+                if (osuProcess.Length == 1)
+                {
+                    var di = new FileInfo(osuProcess[0].MainModule.FileName).Directory;
+                    if (di != null && di.Exists)
+                        dbPath = Path.Combine(di.FullName, "osu!.db");
+                }
+
+                if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath))
+                {
+                    string chosedPath;
+                    OpenFileDialog fbd = new OpenFileDialog
+                    {
+                        Title = @"请选择osu所在目录内的""osu!.db""",
+                        Filter = @"Beatmap Database|osu!.db"
+                    };
+                    if (fbd.ShowDialog() == DialogResult.OK)
+                        chosedPath = fbd.FileName;
+                    else
+                    {
+                        MessageBox.Show(@"你尚未初始化osu!db，因此部分功能将不可用。", typeof(Core).Name, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if (!File.Exists(chosedPath))
+                    {
+                        MessageBox.Show(@"指定文件不存在。", typeof(Core).Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    dbPath = chosedPath;
+                }
+            }
+
+            if (dbPath == null) return;
+            Config.DbPath = dbPath;
+            BeatmapDb = new OsuDb();
+            BeatmapDb.ReadFromStream(new SerializationReader(new FileStream(dbPath, FileMode.Open)));
         }
 
         private static void SaveConfig(string file)

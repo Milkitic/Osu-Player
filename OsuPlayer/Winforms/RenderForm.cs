@@ -1,8 +1,13 @@
 ﻿using Milkitic.OsuPlayer.Models;
 using Milkitic.OsuPlayer.Utils;
+using osu.Shared;
+using osu_database_reader.Components.Beatmaps;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,39 +17,101 @@ namespace Milkitic.OsuPlayer.Winforms
     public partial class RenderForm : Form
     {
         private HitsoundPlayer _hitsoundPlayer;
+        private VolumeForm _volumeForm;
+
+        private Dictionary<(string artist, string title), BeatmapEntry[]> _currentKv =
+            new Dictionary<(string artist, string title), BeatmapEntry[]>();
+        //local control
+        private PlayrEnum PlayrEnum { get; set; } = PlayrEnum.LoopRandom;
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private Task _statusTask;
-        private PlayStatusEnum _tmpStatus = PlayStatusEnum.Stopped;
         private bool _scrollLock;
-
-        private VolumeForm _volumeForm;
+        private bool _queryLock;
+        private bool _isManualStop = true;
+        private PlayStatusEnum _status = PlayStatusEnum.Stopped;
+        private readonly Stopwatch _querySw = new Stopwatch();
 
         public RenderForm()
         {
             InitializeComponent();
         }
 
-        private void OnLoad(object sender, EventArgs e)
+        private async void OnLoad(object sender, EventArgs e)
         {
             tkVolume.Value = (int)(Core.Config.Volume.Main * 100);
-
+            FillCbSortType();
+            await PlayListQueryAsync();
+            if (Core.BeatmapDb == null)
+                btnControlNext.Enabled = false;
             RunSurfaceUpdate();
+        }
+
+        private void FillCbSortType()
+        {
+            cbSortType.Items.AddRange(new object[] { SortEnum.Artist, SortEnum.Title });
+            cbSortType.SelectedItem = SortEnum.Artist;
         }
 
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
             _cts.Cancel();
             Task.WaitAll(_statusTask);
+            _cts.Dispose();
             ClearHitsoundPlayer();
             WavePlayer.Device?.Dispose();
             WavePlayer.MasteringVoice?.Dispose();
+        }
+
+        private async void TbKeyword_TextChanged(object sender, EventArgs e)
+        {
+            await PlayListQueryAsync();
+        }
+
+        private async void CbSortType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            await PlayListQueryAsync();
+        }
+        private void PlayList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (playList.SelectedItems.Count == 0) return;
+            string artist = playList.SelectedItems[0].Text;
+            string title = playList.SelectedItems[0].SubItems[1].Text;
+            var array = Query.GetListByTitleArtist(title, artist, Core.Beatmaps).ToArray();
+            ListViewItem[] items = new ListViewItem[array.Length];
+            for (int i = 0; i < items.Length; i++)
+            {
+                items[i] = new ListViewItem
+                {
+                    Text = array[i].Creator,
+                    Tag = array[i]
+                };
+                items[i].SubItems.Add(array[i].Version);
+                items[i].SubItems.Add(new TimeSpan(0, 0, 0, 0, array[i].TotalTime).ToString(@"mm\:ss"));
+            }
+            diffList.Items.Clear();
+            diffList.Items.AddRange(items);
+        }
+
+        private async void DiffList_DoubleClick(object sender, EventArgs e)
+        {
+            if (diffList.SelectedItems.Count == 0) return;
+            _currentKv.Clear();
+            BeatmapEntry map = (BeatmapEntry)diffList.SelectedItems[0].Tag;
+
+            await FillPlayDictionaryAsync();
+
+            _currentKv.Remove((MetaSelect.GetUnicode(map.Artist, map.ArtistUnicode),
+                MetaSelect.GetUnicode(map.Title, map.TitleUnicode)));
+            var path = Path.Combine(new FileInfo(Core.Config.DbPath).Directory.FullName, "Songs", map.FolderName,
+                map.BeatmapFileName);
+            PlayNewFile(path);
         }
 
         private void TkVolume_Scroll(object sender, EventArgs e) => Core.Config.Volume.Main = tkVolume.Value / 100f;
 
         private void MenuFile_Open_Click(object sender, EventArgs e)
         {
-            PlayNewFile();
+            PlayNewFile(LoadFile());
         }
 
         private void MenuPlay_Volume_Click(object sender, EventArgs e)
@@ -58,7 +125,7 @@ namespace Milkitic.OsuPlayer.Winforms
         {
             if (_hitsoundPlayer == null)
             {
-                PlayNewFile();
+                PlayNewFile(LoadFile());
                 return;
             }
 
@@ -76,7 +143,14 @@ namespace Milkitic.OsuPlayer.Winforms
 
         private void BtnControlStop_Click(object sender, EventArgs e)
         {
+            _isManualStop = true;
             _hitsoundPlayer?.Stop();
+        }
+
+        private void BtnControlNext_Click(object sender, EventArgs e)
+        {
+            btnControlNext.Enabled = false;
+            AutoPlayNext();
         }
 
         private void TkProgress_MouseUp(object sender, MouseEventArgs e)
@@ -103,47 +177,6 @@ namespace Milkitic.OsuPlayer.Winforms
             _scrollLock = true;
         }
 
-        private void PlayNewFile()
-        {
-            string path = LoadFile();
-            if (path == null) return;
-            if (!File.Exists(path))
-            {
-                MessageBox.Show(@"你选择了一个不存在的文件。");
-                return;
-            }
-
-            var dir = new FileInfo(path).Directory.FullName;
-            ClearHitsoundPlayer();
-#if DEBUG
-#endif
-            try
-            {
-                _hitsoundPlayer = new HitsoundPlayer(path);
-                _cts = new CancellationTokenSource();
-                _hitsoundPlayer.Play();
-                var bgPath = Path.Combine(dir, _hitsoundPlayer.Osufile.Events.BackgroundInfo.Filename);
-                if (File.Exists(bgPath))
-                    pbBackground.Image = Image.FromFile(bgPath);
-                else
-                    pbBackground.Image.Dispose();
-                tssLblMeta.Text = string.Format("{0} - {1}", _hitsoundPlayer.Osufile.Metadata.GetUnicodeArtist(),
-                    _hitsoundPlayer.Osufile.Metadata.GetUnicodeTitle());
-            }
-            catch (NotSupportedException ex)
-            {
-                MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            catch (FormatException ex)
-            {
-                MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, @"发生未处理的异常问题：" + ex.ToString(), Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
-
         private static string LoadFile()
         {
             var openFileDialog = new OpenFileDialog
@@ -152,6 +185,163 @@ namespace Milkitic.OsuPlayer.Winforms
                 Filter = @"Osu Files(*.osu)|*.osu"
             };
             return openFileDialog.ShowDialog() != DialogResult.OK ? null : openFileDialog.FileName;
+        }
+
+        private void PlayNewFile(string path)
+        {
+            if (path == null) return;
+            if (!File.Exists(path))
+            {
+                MessageBox.Show(@"你选择了一个不存在的文件。", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var dir = new FileInfo(path).Directory.FullName;
+            ClearHitsoundPlayer();
+            try
+            {
+                _hitsoundPlayer = new HitsoundPlayer(path);
+                _cts = new CancellationTokenSource();
+                _hitsoundPlayer.Play();
+                tkOffset.Value = _hitsoundPlayer.SingleOffset;
+                pbBackground.Image?.Dispose();
+                if (_hitsoundPlayer.Osufile.Events.BackgroundInfo != null)
+                {
+                    var bgPath = Path.Combine(dir, _hitsoundPlayer.Osufile.Events.BackgroundInfo.Filename);
+                    pbBackground.Image = File.Exists(bgPath) ? Image.FromFile(bgPath) : null;
+                }
+                else
+                    pbBackground.Image = null;
+
+                tssLblMeta.Text = string.Format("{0} - {1} ({2}) [{3}]",
+                    _hitsoundPlayer.Osufile.Metadata.GetUnicodeArtist(),
+                    _hitsoundPlayer.Osufile.Metadata.GetUnicodeTitle(), _hitsoundPlayer.Osufile.Metadata.Creator,
+                    _hitsoundPlayer.Osufile.Metadata.Version);
+            }
+            catch (NotSupportedException ex)
+            {
+                //MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                AutoPlayNext();
+            }
+            catch (FormatException ex)
+            {
+                //MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                AutoPlayNext();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, @"发生未处理的异常问题：" + ex, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                AutoPlayNext();
+            }
+            finally
+            {
+                btnControlNext.Enabled = true;
+            }
+        }
+
+        private async void AutoPlayNext()
+        {
+            if (Core.BeatmapDb == null)
+                return;
+            BeatmapEntry map;
+            Dictionary<GameMode, BeatmapEntry[]> dic;
+            if (_currentKv.Count == 0)
+                if (PlayrEnum == PlayrEnum.Loop || PlayrEnum == PlayrEnum.LoopRandom)
+                {
+                    await FillPlayDictionaryAsync();
+                }
+                else
+                {
+                    _isManualStop = true;
+                    return;
+                }
+
+            switch (PlayrEnum)
+            {
+                default:
+                case PlayrEnum.Normal:
+                case PlayrEnum.Loop:
+                    dic = _currentKv.First().Value.GroupBy(k => k.GameMode).ToDictionary(k => k.Key, k => k.ToArray());
+                    break;
+                case PlayrEnum.Ramdom:
+                case PlayrEnum.LoopRandom:
+                    var sb = _currentKv.RandomKeys().First();
+                    var thing = _currentKv.First(k => k.Key.Equals(sb));
+                    dic = thing.Value.GroupBy(k => k.GameMode).ToDictionary(k => k.Key, k => k.ToArray());
+                    break;
+            }
+
+            if (dic.ContainsKey(GameMode.Standard))
+                map = dic[GameMode.Standard].OrderBy(k => k.DiffStarRatingStandard[Mods.None]).Last();
+            else if (dic.ContainsKey(GameMode.Mania))
+                map = dic[GameMode.Mania].OrderBy(k => k.DiffStarRatingMania[Mods.None]).Last();
+            else if (dic.ContainsKey(GameMode.CatchTheBeat))
+                map = dic[GameMode.CatchTheBeat].OrderBy(k => k.DiffStarRatingCtB[Mods.None]).Last();
+            else
+                map = dic[GameMode.Taiko].OrderBy(k => k.DiffStarRatingTaiko[Mods.None]).Last();
+            _currentKv.Remove((MetaSelect.GetUnicode(map.Artist, map.ArtistUnicode),
+                MetaSelect.GetUnicode(map.Title, map.TitleUnicode)));
+
+            var path = Path.Combine(new FileInfo(Core.Config.DbPath).Directory.FullName, "Songs", map.FolderName,
+                map.BeatmapFileName);
+            PlayNewFile(path);
+        }
+
+        private async Task PlayListQueryAsync()
+        {
+            if (Core.BeatmapDb == null)
+                return;
+
+            SortEnum sortEnum = (SortEnum)cbSortType.SelectedItem;
+            _querySw.Restart();
+            if (_queryLock)
+                return;
+            _queryLock = true;
+            await Task.Run(() =>
+            {
+                while (_querySw.ElapsedMilliseconds < 150)
+                    Thread.Sleep(1);
+                _querySw.Stop();
+                _queryLock = false;
+                string keyword = tbKeyword.Text;
+                var list = Query.GetListByKeyword(keyword, Core.Beatmaps);
+
+                var sorted = Query.GetStringsBySortType(sortEnum, list);
+
+                BeginInvoke(new Action(() =>
+                {
+                    (string, string)[] used = sorted.Select(k => (MetaSelect.GetUnicode(k.Artist, k.ArtistUnicode),
+                        MetaSelect.GetUnicode(k.Title, k.TitleUnicode))).Distinct().ToArray();
+                    // valuetuple may always call GC
+                    if (playList.Tag != null) playList.Tag = null;
+                    playList.Tag = used;
+                    ListViewItem[] items = new ListViewItem[used.Length];
+                    for (int i = 0; i < items.Length; i++)
+                    {
+                        items[i] = new ListViewItem { Text = used[i].Item1 };
+                        items[i].SubItems.Add(used[i].Item2);
+                    }
+                    playList.Items.Clear();
+                    playList.Items.AddRange(items);
+                }));
+            });
+
+        }
+
+        private async Task FillPlayDictionaryAsync()
+        {
+            await Task.Run(() =>
+            {
+                (string, string)[] playTuple = ((string, string)[])playList.Tag;
+                var artists = playTuple.Select(k => k.Item1);
+                var titles = playTuple.Select(k => k.Item2);
+                _currentKv = Core.Beatmaps.Where(k =>
+                        artists.Contains(MetaSelect.GetUnicode(k.Artist, k.ArtistUnicode)) &&
+                        titles.Contains(MetaSelect.GetUnicode(k.Title, k.TitleUnicode)))
+                    .GroupBy(k => (MetaSelect.GetUnicode(k.Artist, k.ArtistUnicode),
+                        MetaSelect.GetUnicode(k.Title, k.TitleUnicode)))
+                    .ToDictionary(k => k.Key, k => k.ToArray());
+            });
         }
 
         private void RunSurfaceUpdate()
@@ -175,12 +365,17 @@ namespace Milkitic.OsuPlayer.Winforms
                             btnControlStop.Enabled = true;
                             tkProgress.Enabled = true;
                         }));
-                    if (_tmpStatus != _hitsoundPlayer.PlayStatus)
+                    if (_hitsoundPlayer != null && _status != _hitsoundPlayer.PlayStatus)
                     {
-                        switch (_hitsoundPlayer.PlayStatus)
+                        var s = _hitsoundPlayer.PlayStatus;
+                        switch (s)
                         {
                             case PlayStatusEnum.Playing:
+                                _isManualStop = false;
                                 BeginInvoke(new Action(() => { btnControlPlayPause.Text = @"◫"; }));
+                                break;
+                            case PlayStatusEnum.Stopped when !_isManualStop:
+                                BeginInvoke(new Action(AutoPlayNext));
                                 break;
                             case PlayStatusEnum.Stopped:
                             case PlayStatusEnum.Paused:
@@ -195,10 +390,10 @@ namespace Milkitic.OsuPlayer.Winforms
                                 break;
                         }
 
-                        _tmpStatus = _hitsoundPlayer.PlayStatus;
+                        _status = _hitsoundPlayer.PlayStatus;
                     }
 
-                    if (_tmpStatus == PlayStatusEnum.Playing && !_scrollLock)
+                    if (_status == PlayStatusEnum.Playing && !_scrollLock)
                     {
                         var ok = Math.Min(_hitsoundPlayer.PlayTime, tkProgress.Maximum);
                         BeginInvoke(new Action(() =>
@@ -231,6 +426,12 @@ namespace Milkitic.OsuPlayer.Winforms
             _hitsoundPlayer?.Stop();
             _hitsoundPlayer?.Dispose();
             _hitsoundPlayer = null;
+        }
+
+        private void TkOffset_Scroll(object sender, EventArgs e)
+        {
+            _hitsoundPlayer.SingleOffset = tkOffset.Value;
+            toolTip.SetToolTip(tkOffset, tkOffset.Value.ToString());
         }
     }
 }

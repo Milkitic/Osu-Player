@@ -50,6 +50,12 @@
     <Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NVorbis.0.8.4.0\lib\NVorbis.dll</HintPath>
     </Reference>
+    <Reference Include="osu-database-reader, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HoLLy.osu.DatabaseReader.2.1.0\lib\net40\osu-database-reader.dll</HintPath>
+    </Reference>
+    <Reference Include="osu.Shared, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\osu.Shared.1.0.2\lib\net20\osu.Shared.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
     </Reference>
@@ -75,7 +81,12 @@
     <Compile Include="Config.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="Interface\IPlayer.cs" />
+    <Compile Include="Models\PlayrEnum.cs" />
     <Compile Include="Models\PlayStatus.cs" />
+    <Compile Include="Models\SortEnum.cs" />
+    <Compile Include="Query.cs" />
+    <Compile Include="Utils\DictionaryExtension.cs" />
+    <Compile Include="Utils\MetaSelect.cs" />
     <Compile Include="Winforms\RenderForm.cs">
       <SubType>Form</SubType>
     </Compile>

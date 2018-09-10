@@ -8,9 +8,10 @@ namespace Milkitic.OsuPlayer
 {
     public class Config
     {
-        public int Offset { get; set; } = 85;
-        public VolumeControl Volume { get; set; } = new VolumeControl();
         public int DesiredLatency { get; set; } = 80;
+        public string DbPath { get; set; }
+        public VolumeControl Volume { get; set; } = new VolumeControl();
+        public OffsetControl OffsetControl { get; set; } = new OffsetControl();
     }
 
     public class VolumeControl
@@ -29,5 +30,10 @@ namespace Milkitic.OsuPlayer
             else if (value > 1) source = 1;
             else source = value;
         }
+    }
+    public class OffsetControl
+    {
+        public int GeneralOffset { get; set; } = 85;
+        public Dictionary<string, int> OffsetList { get; set; } = new Dictionary<string, int>();
     }
 }

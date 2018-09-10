@@ -28,21 +28,37 @@ namespace Milkitic.OsuPlayer.Utils
             }
         }
 
+        public int SingleOffset
+        {
+            get => _singleOffset;
+            set
+            {
+                if (!Core.Config.OffsetControl.OffsetList.ContainsKey(_filePath))
+                    Core.Config.OffsetControl.OffsetList.Add(_filePath, value);
+                else
+                    Core.Config.OffsetControl.OffsetList[_filePath] = value;
+                _singleOffset = value;
+            }
+        }
+
         private readonly MusicPlayer _musicPlayer;
         private readonly string _defaultDir = Domain.DefaultPath;
         private ConcurrentQueue<HitsoundElement> _hsQueue;
         private readonly List<HitsoundElement> _hitsoundList;
+        private readonly string _filePath;
 
         // Play Control
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private int _controlOffset;
         private Task _playingTask, _offsetTask;
+        private int _singleOffset;
 
         private readonly Stopwatch _sw = new Stopwatch();
         public OsuFile Osufile { get; private set; }
 
         public HitsoundPlayer(string filePath)
         {
+            _filePath = filePath;
             FileInfo fileInfo = new FileInfo(filePath);
             DirectoryInfo dirInfo = fileInfo.Directory;
             if (!fileInfo.Exists)
@@ -60,6 +76,8 @@ namespace Milkitic.OsuPlayer.Utils
             FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, Osufile.General.AudioFilename));
             _musicPlayer = new MusicPlayer(musicInfo.FullName);
             Duration = (int)Math.Ceiling(Math.Max(_hitsoundList.Max(k => k.Offset), _musicPlayer.Duration));
+            if (Core.Config.OffsetControl.OffsetList.ContainsKey(_filePath))
+                _singleOffset = Core.Config.OffsetControl.OffsetList[_filePath];
         }
 
         public void Play()
@@ -144,8 +162,8 @@ namespace Milkitic.OsuPlayer.Utils
                         if (playerMs != preMs)
                         {
                             preMs = playerMs;
-                            var d = playerMs - (_sw.ElapsedMilliseconds + _controlOffset);
-                            var r = Core.Config.Offset - d;
+                            var d = playerMs - (_sw.ElapsedMilliseconds + _controlOffset + SingleOffset);
+                            var r = Core.Config.OffsetControl.GeneralOffset - d;
                             if (Math.Abs(r) > 5)
                             {
                                 Console.WriteLine($@"music: {_musicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
