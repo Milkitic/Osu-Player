@@ -40,8 +40,7 @@ namespace Milkitic.OsuPlayer.Utils
                 _singleOffset = value;
             }
         }
-
-        private readonly MusicPlayer _musicPlayer;
+        
         private readonly string _defaultDir = Domain.DefaultPath;
         private ConcurrentQueue<HitsoundElement> _hsQueue;
         private readonly List<HitsoundElement> _hitsoundList;
@@ -74,8 +73,8 @@ namespace Milkitic.OsuPlayer.Utils
                 WavePlayer.SaveToCache(path); // Cache each file once before play.
 
             FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, Osufile.General.AudioFilename));
-            _musicPlayer = new MusicPlayer(musicInfo.FullName);
-            Duration = (int)Math.Ceiling(Math.Max(_hitsoundList.Max(k => k.Offset), _musicPlayer.Duration));
+          Core.MusicPlayer   = new MusicPlayer(musicInfo.FullName);
+            Duration = (int)Math.Ceiling(Math.Max(_hitsoundList.Max(k => k.Offset), Core.MusicPlayer.Duration));
             if (Core.Config.OffsetControl.OffsetList.ContainsKey(_filePath))
                 _singleOffset = Core.Config.OffsetControl.OffsetList[_filePath];
         }
@@ -83,7 +82,7 @@ namespace Milkitic.OsuPlayer.Utils
         public void Play()
         {
             StartTask();
-            _musicPlayer.Play();
+            Core.MusicPlayer.Play();
             DynamicOffset();
             _playingTask = new Task(PlayHitsound);
             _playingTask.Start();
@@ -93,7 +92,7 @@ namespace Milkitic.OsuPlayer.Utils
         private void PlayHitsound()
         {
             _sw.Restart();
-            while (_hsQueue.Count > 0 || _musicPlayer.PlayStatus != PlayStatusEnum.Stopped)
+            while (_hsQueue.Count > 0 || Core.MusicPlayer.PlayStatus != PlayStatusEnum.Stopped)
             {
                 if (_cts.Token.IsCancellationRequested)
                 {
@@ -126,7 +125,7 @@ namespace Milkitic.OsuPlayer.Utils
             CancelTask();
             PlayTime = PlayTime;
             PlayStatus = PlayStatusEnum.Paused;
-            _musicPlayer.Pause();
+            Core.MusicPlayer.Pause();
         }
 
         public void Stop()
@@ -141,11 +140,11 @@ namespace Milkitic.OsuPlayer.Utils
             Requeue(ms);
             if (play)
             {
-                _musicPlayer.SetTime(ms);
+                Core.MusicPlayer.SetTime(ms);
                 Play();
             }
             else
-                _musicPlayer.SetTime(ms, false);
+                Core.MusicPlayer.SetTime(ms, false);
 
         }
 
@@ -156,9 +155,9 @@ namespace Milkitic.OsuPlayer.Utils
                 {
                     Thread.Sleep(10);
                     int? preMs = null;
-                    while (!_cts.IsCancellationRequested && _musicPlayer.PlayStatus == PlayStatusEnum.Playing)
+                    while (!_cts.IsCancellationRequested && Core.MusicPlayer.PlayStatus == PlayStatusEnum.Playing)
                     {
-                        int playerMs = _musicPlayer.PlayTime;
+                        int playerMs = Core.MusicPlayer.PlayTime;
                         if (playerMs != preMs)
                         {
                             preMs = playerMs;
@@ -166,7 +165,7 @@ namespace Milkitic.OsuPlayer.Utils
                             var r = Core.Config.OffsetControl.GeneralOffset - d;
                             if (Math.Abs(r) > 5)
                             {
-                                Console.WriteLine($@"music: {_musicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
+                                //Console.WriteLine($@"music: {Core.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
                                 _controlOffset -= (int)(r / 2f);
                             }
                         }
@@ -182,7 +181,7 @@ namespace Milkitic.OsuPlayer.Utils
             PlayTime = 0;
             PlayStatus = PlayStatusEnum.Stopped;
             Requeue();
-            _musicPlayer.Stop();
+            Core.MusicPlayer.Stop();
         }
 
         private void Requeue(long skippedMs = 0)
@@ -214,7 +213,7 @@ namespace Milkitic.OsuPlayer.Utils
             Stop();
             Task.WaitAll(_playingTask);
             _playingTask?.Dispose();
-            _musicPlayer?.Dispose();
+            Core.MusicPlayer?.Dispose();
             _cts?.Dispose();
             WavePlayer.ClearCache();
             GC.Collect();

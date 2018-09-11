@@ -1,4 +1,7 @@
-﻿using Milkitic.OsuPlayer.Models;
+﻿using Milkitic.OsuPlayer.LyricExtension;
+using Milkitic.OsuPlayer.LyricExtension.SourcePrivoder.Auto;
+using Milkitic.OsuPlayer.LyricExtension.SourcePrivoder.Netease;
+using Milkitic.OsuPlayer.Models;
 using Milkitic.OsuPlayer.Utils;
 using Milkitic.OsuPlayer.Winforms;
 using NAudio.Wave;
@@ -9,6 +12,7 @@ using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -23,12 +27,27 @@ namespace Milkitic.OsuPlayer
         public static OsuDb BeatmapDb { get; set; }
         public static List<BeatmapEntry> Beatmaps => BeatmapDb.Beatmaps;
 
+        public static MusicPlayer MusicPlayer;
+        public static HitsoundPlayer HitsoundPlayer;
+        public static LyricProvider LyricProvider;
+
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            if (!LoadSettings()) return;
+            LoadDb();
+
+            LyricProvider = new LyricProvider(new AutoSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
+
+            Application.Run(new RenderForm());
+            SaveConfig(Domain.ConfigFile);
+        }
+
+        private static bool LoadSettings()
+        {
             var file = Domain.ConfigFile;
             if (!File.Exists(file))
             {
@@ -49,15 +68,11 @@ namespace Milkitic.OsuPlayer
                         CreateConfig(file);
                     }
                     else
-                        return;
+                        return false;
                 }
             }
 
-            LoadDb();
-
-            Application.Run(new RenderForm());
-
-            SaveConfig(file);
+            return true;
         }
 
         private static void LoadDb()

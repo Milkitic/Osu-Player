@@ -67,6 +67,7 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -81,12 +82,42 @@
     <Compile Include="Config.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="Interface\IPlayer.cs" />
+    <Compile Include="LyricExtension\LyricProvider.cs" />
+    <Compile Include="LyricExtension\Model\Info.cs" />
+    <Compile Include="LyricExtension\Model\Lyric.cs" />
+    <Compile Include="LyricExtension\Model\Sentence.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Auto\AutoSourceProvider.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Base\LyricDownloaderBase.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Base\LyricParserBase.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Base\SearchSongResultBase.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Base\SongSearchBase.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Base\SourceProviderBase.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Kugou\KugouLyricDownloader.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Kugou\KugouLyricsParser.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Kugou\KugouSearcher.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Kugou\KugouSourceProvider.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Netease\NeteaseLyricDownloader.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Netease\NeteaseLyricParser.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Netease\NeteaseSearch.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Netease\NeteaseSourceProvider.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\QQMusic\QQMusicLyricDownloader.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\QQMusic\QQMusicLyricParser.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\QQMusic\QQMusicSearch.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\QQMusic\QQMusicSourceProvider.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Settings.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Utils.cs" />
     <Compile Include="Models\PlayrEnum.cs" />
     <Compile Include="Models\PlayStatus.cs" />
     <Compile Include="Models\SortEnum.cs" />
     <Compile Include="Query.cs" />
     <Compile Include="Utils\DictionaryExtension.cs" />
     <Compile Include="Utils\MetaSelect.cs" />
+    <Compile Include="Winforms\GdipForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Winforms\LyricForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Winforms\RenderForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -122,6 +153,7 @@
     <EmbeddedResource Include="Winforms\VolumeForm.resx">
       <DependentUpon>VolumeForm.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="LyricExtension\readme.md" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

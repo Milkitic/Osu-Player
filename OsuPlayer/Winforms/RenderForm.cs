@@ -16,8 +16,8 @@ namespace Milkitic.OsuPlayer.Winforms
 {
     public partial class RenderForm : Form
     {
-        private HitsoundPlayer _hitsoundPlayer;
         private VolumeForm _volumeForm;
+        private LyricForm _lyricForm;
 
         private Dictionary<(string artist, string title), BeatmapEntry[]> _currentKv =
             new Dictionary<(string artist, string title), BeatmapEntry[]>();
@@ -34,6 +34,8 @@ namespace Milkitic.OsuPlayer.Winforms
         public RenderForm()
         {
             InitializeComponent();
+            _lyricForm = new LyricForm(new Bitmap(Path.Combine(Domain.ResourcePath, "default.png")));
+            _lyricForm.Show();
         }
 
         private async void OnLoad(object sender, EventArgs e)
@@ -123,20 +125,20 @@ namespace Milkitic.OsuPlayer.Winforms
 
         private void BtnControlPlayPause_Click(object sender, EventArgs e)
         {
-            if (_hitsoundPlayer == null)
+            if (Core.HitsoundPlayer == null)
             {
                 PlayNewFile(LoadFile());
                 return;
             }
 
-            switch (_hitsoundPlayer.PlayStatus)
+            switch (Core.HitsoundPlayer.PlayStatus)
             {
                 case PlayStatusEnum.Playing:
-                    _hitsoundPlayer.Pause();
+                    Core.HitsoundPlayer.Pause();
                     break;
                 case PlayStatusEnum.Stopped:
                 case PlayStatusEnum.Paused:
-                    _hitsoundPlayer.Play();
+                    Core.HitsoundPlayer.Play();
                     break;
             }
         }
@@ -144,7 +146,7 @@ namespace Milkitic.OsuPlayer.Winforms
         private void BtnControlStop_Click(object sender, EventArgs e)
         {
             _isManualStop = true;
-            _hitsoundPlayer?.Stop();
+            Core.HitsoundPlayer?.Stop();
         }
 
         private void BtnControlNext_Click(object sender, EventArgs e)
@@ -155,16 +157,16 @@ namespace Milkitic.OsuPlayer.Winforms
 
         private void TkProgress_MouseUp(object sender, MouseEventArgs e)
         {
-            if (_hitsoundPlayer != null)
+            if (Core.HitsoundPlayer != null)
             {
-                switch (_hitsoundPlayer.PlayStatus)
+                switch (Core.HitsoundPlayer.PlayStatus)
                 {
                     case PlayStatusEnum.Playing:
-                        _hitsoundPlayer.SetTime(tkProgress.Value);
+                        Core.HitsoundPlayer.SetTime(tkProgress.Value);
                         break;
                     case PlayStatusEnum.Paused:
                     case PlayStatusEnum.Stopped:
-                        _hitsoundPlayer.SetTime(tkProgress.Value, false);
+                        Core.HitsoundPlayer.SetTime(tkProgress.Value, false);
                         break;
                 }
             }
@@ -192,7 +194,8 @@ namespace Milkitic.OsuPlayer.Winforms
             if (path == null) return;
             if (!File.Exists(path))
             {
-                MessageBox.Show(@"你选择了一个不存在的文件。", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(string.Format(@"所选文件不存在{0}。", Core.BeatmapDb == null ?
+                        "" : " ，可能是db没有及时更新。请关闭此播放器或osu后重试"), Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -200,36 +203,47 @@ namespace Milkitic.OsuPlayer.Winforms
             ClearHitsoundPlayer();
             try
             {
-                _hitsoundPlayer = new HitsoundPlayer(path);
+                Core.HitsoundPlayer = new HitsoundPlayer(path);
                 _cts = new CancellationTokenSource();
-                _hitsoundPlayer.Play();
-                tkOffset.Value = _hitsoundPlayer.SingleOffset;
+                Core.HitsoundPlayer.Play();
+                var lyric = Core.LyricProvider.GetLyric(Core.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist(),
+                     Core.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle(), Core.MusicPlayer.Duration);
+                _lyricForm.SetNewLyric(lyric, Core.HitsoundPlayer.Osufile);
+                _lyricForm.StartWork();
+                tkOffset.Value = Core.HitsoundPlayer.SingleOffset;
                 pbBackground.Image?.Dispose();
-                if (_hitsoundPlayer.Osufile.Events.BackgroundInfo != null)
+                tssLblMeta.Text = string.Format("{0} - {1} ({2}) [{3}]",
+                    Core.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist(),
+                    Core.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle(), Core.HitsoundPlayer.Osufile.Metadata.Creator,
+                    Core.HitsoundPlayer.Osufile.Metadata.Version);
+
+                if (Core.HitsoundPlayer.Osufile.Events.BackgroundInfo != null)
                 {
-                    var bgPath = Path.Combine(dir, _hitsoundPlayer.Osufile.Events.BackgroundInfo.Filename);
+                    var bgPath = Path.Combine(dir, Core.HitsoundPlayer.Osufile.Events.BackgroundInfo.Filename);
                     pbBackground.Image = File.Exists(bgPath) ? Image.FromFile(bgPath) : null;
                 }
                 else
                     pbBackground.Image = null;
+            }
 
-                tssLblMeta.Text = string.Format("{0} - {1} ({2}) [{3}]",
-                    _hitsoundPlayer.Osufile.Metadata.GetUnicodeArtist(),
-                    _hitsoundPlayer.Osufile.Metadata.GetUnicodeTitle(), _hitsoundPlayer.Osufile.Metadata.Creator,
-                    _hitsoundPlayer.Osufile.Metadata.Version);
-            }
-            catch (NotSupportedException ex)
-            {
-                //MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                AutoPlayNext();
-            }
-            catch (FormatException ex)
-            {
-                //MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                AutoPlayNext();
-            }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                    switch (ex.InnerException)
+                    {
+                        case OsuLib.MultiTimingSectionException e:
+                            //MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            AutoPlayNext();
+                            return;
+                        case OsuLib.BadOsuFormatException e:
+                            //MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            AutoPlayNext();
+                            return;
+                        case OsuLib.VersionNotSupportedException e:
+                            //MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            AutoPlayNext();
+                            return;
+                    }
                 MessageBox.Show(this, @"发生未处理的异常问题：" + ex, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 AutoPlayNext();
             }
@@ -263,7 +277,7 @@ namespace Milkitic.OsuPlayer.Winforms
                 case PlayrEnum.Loop:
                     dic = _currentKv.First().Value.GroupBy(k => k.GameMode).ToDictionary(k => k.Key, k => k.ToArray());
                     break;
-                case PlayrEnum.Ramdom:
+                case PlayrEnum.Random:
                 case PlayrEnum.LoopRandom:
                     var sb = _currentKv.RandomKeys().First();
                     var thing = _currentKv.First(k => k.Key.Equals(sb));
@@ -356,7 +370,7 @@ namespace Milkitic.OsuPlayer.Winforms
                 if (_cts.IsCancellationRequested) return;
 
                 bool isStart = btnControlPlayPause.Enabled || btnControlStop.Enabled || tkProgress.Enabled;
-                if (_hitsoundPlayer != null)
+                if (Core.HitsoundPlayer != null)
                 {
                     if (!isStart)
                         BeginInvoke(new Action(() =>
@@ -365,9 +379,9 @@ namespace Milkitic.OsuPlayer.Winforms
                             btnControlStop.Enabled = true;
                             tkProgress.Enabled = true;
                         }));
-                    if (_hitsoundPlayer != null && _status != _hitsoundPlayer.PlayStatus)
+                    if (Core.HitsoundPlayer != null && _status != Core.HitsoundPlayer.PlayStatus)
                     {
-                        var s = _hitsoundPlayer.PlayStatus;
+                        var s = Core.HitsoundPlayer.PlayStatus;
                         switch (s)
                         {
                             case PlayStatusEnum.Playing:
@@ -379,30 +393,30 @@ namespace Milkitic.OsuPlayer.Winforms
                                 break;
                             case PlayStatusEnum.Stopped:
                             case PlayStatusEnum.Paused:
-                                var ok = Math.Min(_hitsoundPlayer.PlayTime, tkProgress.Maximum);
+                                var ok = Math.Min(Core.HitsoundPlayer.PlayTime, tkProgress.Maximum);
                                 BeginInvoke(new Action(() =>
                                 {
                                     btnControlPlayPause.Text = @"▶";
                                     tkProgress.Value = ok < 0 ? 0 : ok;
-                                    lbTime.Text = new TimeSpan(0, 0, 0, 0, _hitsoundPlayer.PlayTime).ToString(@"mm\:ss") + @"/" +
-                                                  new TimeSpan(0, 0, 0, 0, _hitsoundPlayer.Duration).ToString(@"mm\:ss");
+                                    lbTime.Text = new TimeSpan(0, 0, 0, 0, Core.HitsoundPlayer.PlayTime).ToString(@"mm\:ss") + @"/" +
+                                                  new TimeSpan(0, 0, 0, 0, Core.HitsoundPlayer.Duration).ToString(@"mm\:ss");
                                 }));
                                 break;
                         }
 
-                        _status = _hitsoundPlayer.PlayStatus;
+                        if (Core.HitsoundPlayer != null) _status = Core.HitsoundPlayer.PlayStatus;
                     }
 
                     if (_status == PlayStatusEnum.Playing && !_scrollLock)
                     {
-                        var ok = Math.Min(_hitsoundPlayer.PlayTime, tkProgress.Maximum);
+                        var ok = Math.Min(Core.HitsoundPlayer.PlayTime, tkProgress.Maximum);
                         BeginInvoke(new Action(() =>
                         {
-                            if (_hitsoundPlayer == null) return;
-                            tkProgress.Maximum = _hitsoundPlayer.Duration;
+                            if (Core.HitsoundPlayer == null) return;
+                            tkProgress.Maximum = Core.HitsoundPlayer.Duration;
                             tkProgress.Value = ok < 0 ? 0 : (ok > tkProgress.Maximum ? tkProgress.Maximum : ok);
-                            lbTime.Text = new TimeSpan(0, 0, 0, 0, _hitsoundPlayer.PlayTime).ToString(@"mm\:ss") + @"/" +
-                                          new TimeSpan(0, 0, 0, 0, _hitsoundPlayer.Duration).ToString(@"mm\:ss");
+                            lbTime.Text = new TimeSpan(0, 0, 0, 0, Core.HitsoundPlayer.PlayTime).ToString(@"mm\:ss") + @"/" +
+                                          new TimeSpan(0, 0, 0, 0, Core.HitsoundPlayer.Duration).ToString(@"mm\:ss");
                         }));
                     }
                 }
@@ -423,14 +437,14 @@ namespace Milkitic.OsuPlayer.Winforms
 
         private void ClearHitsoundPlayer()
         {
-            _hitsoundPlayer?.Stop();
-            _hitsoundPlayer?.Dispose();
-            _hitsoundPlayer = null;
+            Core.HitsoundPlayer?.Stop();
+            Core.HitsoundPlayer?.Dispose();
+            Core.HitsoundPlayer = null;
         }
 
         private void TkOffset_Scroll(object sender, EventArgs e)
         {
-            _hitsoundPlayer.SingleOffset = tkOffset.Value;
+            Core.HitsoundPlayer.SingleOffset = tkOffset.Value;
             toolTip.SetToolTip(tkOffset, tkOffset.Value.ToString());
         }
     }

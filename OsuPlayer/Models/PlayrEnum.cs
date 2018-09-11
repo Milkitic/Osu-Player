@@ -8,6 +8,6 @@ namespace Milkitic.OsuPlayer.Models
 {
     internal enum PlayrEnum
     {
-        Normal, Ramdom, Loop, LoopRandom
+        Normal, Random, Loop, LoopRandom
     }
 }
