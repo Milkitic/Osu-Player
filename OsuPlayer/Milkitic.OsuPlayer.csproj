@@ -115,6 +115,12 @@
     <Compile Include="Winforms\GdipForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Winforms\LyricControlForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Winforms\LyricControlForm.Designer.cs">
+      <DependentUpon>LyricControlForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Winforms\LyricForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -137,6 +143,9 @@
     <Compile Include="Winforms\VolumeForm.Designer.cs">
       <DependentUpon>VolumeForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Winforms\LyricControlForm.resx">
+      <DependentUpon>LyricControlForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Winforms\RenderForm.resx">
       <DependentUpon>RenderForm.cs</DependentUpon>
     </EmbeddedResource>

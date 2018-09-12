@@ -59,6 +59,7 @@
             this.cbSortType = new System.Windows.Forms.ComboBox();
             this.tbKeyword = new System.Windows.Forms.TextBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.MenuPlay_Lyric = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.tkProgress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tkVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbBackground)).BeginInit();
@@ -165,13 +166,14 @@
             // MenuFile_Open
             // 
             this.MenuFile_Open.Name = "MenuFile_Open";
-            this.MenuFile_Open.Size = new System.Drawing.Size(127, 22);
+            this.MenuFile_Open.Size = new System.Drawing.Size(180, 22);
             this.MenuFile_Open.Text = "打开(&O)...";
             this.MenuFile_Open.Click += new System.EventHandler(this.MenuFile_Open_Click);
             // 
             // MenuPlay
             // 
             this.MenuPlay.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuPlay_Lyric,
             this.MenuPlay_Volume});
             this.MenuPlay.Name = "MenuPlay";
             this.MenuPlay.Size = new System.Drawing.Size(59, 21);
@@ -180,7 +182,7 @@
             // MenuPlay_Volume
             // 
             this.MenuPlay_Volume.Name = "MenuPlay_Volume";
-            this.MenuPlay_Volume.Size = new System.Drawing.Size(148, 22);
+            this.MenuPlay_Volume.Size = new System.Drawing.Size(180, 22);
             this.MenuPlay_Volume.Text = "音效调节(&E)...";
             this.MenuPlay_Volume.Click += new System.EventHandler(this.MenuPlay_Volume_Click);
             // 
@@ -360,6 +362,15 @@
             this.tbKeyword.TabIndex = 2;
             this.tbKeyword.TextChanged += new System.EventHandler(this.TbKeyword_TextChanged);
             // 
+            // MenuPlay_Lyric
+            // 
+            this.MenuPlay_Lyric.Checked = true;
+            this.MenuPlay_Lyric.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.MenuPlay_Lyric.Name = "MenuPlay_Lyric";
+            this.MenuPlay_Lyric.Size = new System.Drawing.Size(180, 22);
+            this.MenuPlay_Lyric.Text = "显示桌面歌词(&L)";
+            this.MenuPlay_Lyric.Click += new System.EventHandler(this.MenuPlay_Lyric_Click);
+            // 
             // RenderForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -427,6 +438,7 @@
         private System.Windows.Forms.Label lblOffset;
         private System.Windows.Forms.TrackBar tkOffset;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.ToolStripMenuItem MenuPlay_Lyric;
     }
 }
 

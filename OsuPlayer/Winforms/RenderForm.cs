@@ -56,10 +56,8 @@ namespace Milkitic.OsuPlayer.Winforms
 
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
-            _cts.Cancel();
-            Task.WaitAll(_statusTask);
-            _cts.Dispose();
             ClearHitsoundPlayer();
+            _cts.Dispose();
             WavePlayer.Device?.Dispose();
             WavePlayer.MasteringVoice?.Dispose();
         }
@@ -205,11 +203,9 @@ namespace Milkitic.OsuPlayer.Winforms
             {
                 Core.HitsoundPlayer = new HitsoundPlayer(path);
                 _cts = new CancellationTokenSource();
+                RunSurfaceUpdate();
                 Core.HitsoundPlayer.Play();
-                var lyric = Core.LyricProvider.GetLyric(Core.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist(),
-                     Core.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle(), Core.MusicPlayer.Duration);
-                _lyricForm.SetNewLyric(lyric, Core.HitsoundPlayer.Osufile);
-                _lyricForm.StartWork();
+                SetLyric();
                 tkOffset.Value = Core.HitsoundPlayer.SingleOffset;
                 pbBackground.Image?.Dispose();
                 tssLblMeta.Text = string.Format("{0} - {1} ({2}) [{3}]",
@@ -251,6 +247,15 @@ namespace Milkitic.OsuPlayer.Winforms
             {
                 btnControlNext.Enabled = true;
             }
+        }
+
+        private void SetLyric()
+        {
+            if (_lyricForm.IsDisposed) return;
+            var lyric = Core.LyricProvider.GetLyric(Core.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist(),
+                 Core.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle(), Core.MusicPlayer.Duration);
+            _lyricForm.SetNewLyric(lyric, Core.HitsoundPlayer.Osufile);
+            _lyricForm.StartWork();
         }
 
         private async void AutoPlayNext()
@@ -379,7 +384,7 @@ namespace Milkitic.OsuPlayer.Winforms
                             btnControlStop.Enabled = true;
                             tkProgress.Enabled = true;
                         }));
-                    if (Core.HitsoundPlayer != null && _status != Core.HitsoundPlayer.PlayStatus)
+                    if (_status != Core.HitsoundPlayer.PlayStatus)
                     {
                         var s = Core.HitsoundPlayer.PlayStatus;
                         switch (s)
@@ -404,7 +409,7 @@ namespace Milkitic.OsuPlayer.Winforms
                                 break;
                         }
 
-                        if (Core.HitsoundPlayer != null) _status = Core.HitsoundPlayer.PlayStatus;
+                        _status = Core.HitsoundPlayer.PlayStatus;
                     }
 
                     if (_status == PlayStatusEnum.Playing && !_scrollLock)
@@ -431,12 +436,14 @@ namespace Milkitic.OsuPlayer.Winforms
                         }));
                 }
 
-                Thread.Sleep(50);
+                Thread.Sleep(100);
             }
         }
 
         private void ClearHitsoundPlayer()
         {
+            _cts.Cancel();
+            Task.WaitAll(_statusTask);
             Core.HitsoundPlayer?.Stop();
             Core.HitsoundPlayer?.Dispose();
             Core.HitsoundPlayer = null;
@@ -446,6 +453,26 @@ namespace Milkitic.OsuPlayer.Winforms
         {
             Core.HitsoundPlayer.SingleOffset = tkOffset.Value;
             toolTip.SetToolTip(tkOffset, tkOffset.Value.ToString());
+        }
+
+        private void MenuPlay_Lyric_Click(object sender, EventArgs e)
+        {
+            if (MenuPlay_Lyric.Checked)
+            {
+                MenuPlay_Lyric.Checked = false;
+                if (!_lyricForm.IsDisposed)
+                {
+                    _lyricForm.StopWork();
+                    _lyricForm.Dispose();
+                }
+            }
+            else
+            {
+                MenuPlay_Lyric.Checked = true;
+                _lyricForm = new LyricForm(new Bitmap(Path.Combine(Domain.ResourcePath, "default.png")));
+                _lyricForm.Show();
+                SetLyric();
+            }
         }
     }
 }

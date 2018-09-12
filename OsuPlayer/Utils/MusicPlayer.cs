@@ -47,7 +47,7 @@ namespace Milkitic.OsuPlayer.Utils
                         _audioFile.Volume = Core.Config.Volume.Main * Core.Config.Volume.Music;
                         PlayTime = (int)_audioFile?.CurrentTime.TotalMilliseconds;
                     }
-                    Thread.Sleep(1);
+                    Thread.Sleep(10);
                 }
             });
         }

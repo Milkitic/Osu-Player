@@ -23,11 +23,18 @@ namespace Milkitic.OsuPlayer.Winforms
         private static int ScreenWidth => Screen.PrimaryScreen.Bounds.Width;
 
         private FontFamily _fontFamily;
+        //private Image _backGround;
 
         private List<Sentence> _lyricList;
         private CancellationTokenSource _cts;
         private Task _playingTask;
-        private int? _height = null;
+        private int? _height;
+        private bool _hoverd;
+
+        private readonly Stopwatch _sw = new Stopwatch();
+        private CancellationTokenSource _hoverCts = new CancellationTokenSource();
+
+        private LyricControlForm _ctrlForm;
 
         public LyricForm(Bitmap bitmap) : base(bitmap)
         {
@@ -41,6 +48,45 @@ namespace Milkitic.OsuPlayer.Winforms
                 pfc.AddFontFile(fi.FullName);
                 _fontFamily = pfc.Families[0];
             }
+
+            _ctrlForm = new LyricControlForm(this, ref _hoverd, ref _hoverCts, _sw);
+            this.MouseMove += OnMouseMove;
+            this.MouseLeave += OnMouseLeave;
+        }
+
+        private void OnMouseLeave(object sender, EventArgs e)
+        {
+            _hoverCts = new CancellationTokenSource();
+            _sw.Restart();
+            Task.Run(() =>
+            {
+                while (_sw.ElapsedMilliseconds < 1500)
+                {
+                    if (_hoverCts.IsCancellationRequested)
+                        return;
+                    Thread.Sleep(20);
+                }
+                _hoverd = false;
+                if (!this.IsDisposed)
+                    BeginInvoke(new Action(() =>
+                    {
+                        _ctrlForm?.Hide();
+                    }));
+                else
+                {
+                    StopWork();
+                }
+            }, _hoverCts.Token);
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            _hoverCts?.Cancel();
+            _sw.Reset();
+            _hoverd = true;
+            _ctrlForm.Top = Top - _ctrlForm.Height;
+            _ctrlForm.Left = Left;
+            _ctrlForm?.Show();
         }
 
         private void SetBitmap(Bitmap bitmap)
@@ -67,6 +113,7 @@ namespace Milkitic.OsuPlayer.Winforms
             _playingTask = Task.Run(() =>
             {
                 int oldTime = -1;
+                bool oldhover = false;
                 while (true)
                 {
                     Thread.Sleep(50);
@@ -77,13 +124,13 @@ namespace Milkitic.OsuPlayer.Winforms
                     if (sb.Length < 1)
                         continue;
                     int maxTime = sb.Max(t => t.StartTime);
-                    if (oldTime == maxTime)
+                    if (oldTime == maxTime && oldhover == _hoverd)
                         continue;
-
+                    oldhover = _hoverd;
                     oldTime = maxTime;
                     var current = _lyricList.First(t => t.StartTime == maxTime);
                     Console.WriteLine(current.Content);
-                    DrawLyric(current);
+                    if (!IsDisposed) DrawLyric(current);
                 }
             }, _cts.Token);
         }
@@ -93,7 +140,7 @@ namespace Milkitic.OsuPlayer.Winforms
             Bitmap bmp = new Bitmap(1, 1);
             SizeF size;
             using (Graphics g = Graphics.FromImage(bmp))
-            using (Font f = new Font(_fontFamily, 45))
+            using (Font f = new Font(_fontFamily, 40))
             {
                 size = g.MeasureString(sentence.Content, f);
             }
@@ -102,18 +149,25 @@ namespace Milkitic.OsuPlayer.Winforms
             if (_height == null) _height = (int)size.Height < 1 ? 1 : (int)size.Height;
 
             bmp.Dispose();
-            bmp = new Bitmap(width + 4, _height.Value + 4);
+            bmp = new Bitmap(width + 5, _height.Value + 5);
             using (StringFormat format = StringFormat.GenericTypographic)
             using (Graphics g = Graphics.FromImage(bmp))
-            using (Brush b = new SolidBrush(Color.White))
-            using (Pen p = new Pen(Color.Red))
-            using (Pen p2 = new Pen(Color.FromArgb(24, 24, 24), 4))
-            using (Font f = new Font(_fontFamily, 45))
+            using (Brush bBg = new SolidBrush(Color.FromArgb(48, 0, 176, 255)))
+            using (Pen pBg = new Pen(Color.FromArgb(192, 0, 176, 255), 3))
+            using (Brush b = new TextureBrush(Image.FromFile(Path.Combine(Domain.ResourcePath, "texture", "2.png"))))
+            //using (Pen p = new Pen(Color.Red))
+            using (Pen p2 = new Pen(Color.FromArgb(255, 255, 255), 6))
+            using (Font f = new Font(_fontFamily, 40))
             {
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 //g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
                 g.TextRenderingHint = TextRenderingHint.AntiAlias;
-                Rectangle rect = new Rectangle(4, 4, bmp.Width - 1, bmp.Height - 1);
+                if (_hoverd)
+                {
+                    g.DrawRectangle(pBg, 0, 0, bmp.Width - 1, bmp.Height - 1);
+                    g.FillRectangle(bBg, 0, 0, bmp.Width - 1, bmp.Height - 1);
+                }
+                Rectangle rect = new Rectangle(16, 5, bmp.Width - 1, bmp.Height - 1);
                 float dpi = g.DpiY;
                 using (GraphicsPath gp = GetStringPath(sentence.Content, dpi, rect, f, format))
                 {
@@ -142,7 +196,7 @@ namespace Milkitic.OsuPlayer.Winforms
             CancelTask();
         }
 
-        private void StartTask()
+        public void StartTask()
         {
             _cts = new CancellationTokenSource();
         }

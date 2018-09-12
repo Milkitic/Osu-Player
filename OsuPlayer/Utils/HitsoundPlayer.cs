@@ -40,7 +40,7 @@ namespace Milkitic.OsuPlayer.Utils
                 _singleOffset = value;
             }
         }
-        
+
         private readonly string _defaultDir = Domain.DefaultPath;
         private ConcurrentQueue<HitsoundElement> _hsQueue;
         private readonly List<HitsoundElement> _hitsoundList;
@@ -73,7 +73,7 @@ namespace Milkitic.OsuPlayer.Utils
                 WavePlayer.SaveToCache(path); // Cache each file once before play.
 
             FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, Osufile.General.AudioFilename));
-          Core.MusicPlayer   = new MusicPlayer(musicInfo.FullName);
+            Core.MusicPlayer = new MusicPlayer(musicInfo.FullName);
             Duration = (int)Math.Ceiling(Math.Max(_hitsoundList.Max(k => k.Offset), Core.MusicPlayer.Duration));
             if (Core.Config.OffsetControl.OffsetList.ContainsKey(_filePath))
                 _singleOffset = Core.Config.OffsetControl.OffsetList[_filePath];
@@ -122,10 +122,10 @@ namespace Milkitic.OsuPlayer.Utils
 
         public void Pause()
         {
-            CancelTask();
-            PlayTime = PlayTime;
-            PlayStatus = PlayStatusEnum.Paused;
             Core.MusicPlayer.Pause();
+            CancelTask();
+            PlayStatus = PlayStatusEnum.Paused;
+            PlayTime = PlayTime;
         }
 
         public void Stop()
@@ -153,7 +153,7 @@ namespace Milkitic.OsuPlayer.Utils
             if (_offsetTask == null || _offsetTask.IsCanceled || _offsetTask.IsCompleted)
                 _offsetTask = Task.Run(() =>
                 {
-                    Thread.Sleep(10);
+                    Thread.Sleep(30);
                     int? preMs = null;
                     while (!_cts.IsCancellationRequested && Core.MusicPlayer.PlayStatus == PlayStatusEnum.Playing)
                     {
