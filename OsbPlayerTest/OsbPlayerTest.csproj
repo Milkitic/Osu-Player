@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Milkitic.LibOsb, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -66,14 +68,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DxAnimation\AnimationObject.cs" />
+    <Compile Include="DxAnimation\ElementObject.cs" />
     <Compile Include="DxAnimation\BitmapObject.cs" />
     <Compile Include="RenderForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Layer\DxLayer.cs" />
     <Compile Include="Util\LogUtil.cs" />
-    <Compile Include="Util\WicUtil.cs" />
-    <Compile Include="Layer\BgDxLayer.cs" />
+    <Compile Include="Util\Loader.cs" />
+    <Compile Include="Layer\BackgroundLayer.cs" />
     <Compile Include="Layer\FpsDxLayer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

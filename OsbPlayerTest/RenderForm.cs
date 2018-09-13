@@ -3,6 +3,7 @@ using OsbPlayerTest.Layer;
 using OsbPlayerTest.Util;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using D2D = SharpDX.Direct2D1;
@@ -15,7 +16,7 @@ namespace OsbPlayerTest
     internal class RenderForm : Form
     {
         private readonly ElementGroup _elementGroup;
-        private D2D.Factory Factory { get; } = new D2D.Factory(); // Factory for creating 2D elements
+        private D2D.Factory Factory { get; } = new D2D.Factory(D2D.FactoryType.SingleThreaded); // Factory for creating 2D elements
         private D2D.RenderTarget RenderTarget { get; set; } // Target of rendering
         public List<DxLayer> LayerList { get; set; }
 
@@ -23,22 +24,41 @@ namespace OsbPlayerTest
 
         private readonly bool _useVsync;
 
-        public RenderForm(ElementGroup elementGroup)
+        public RenderForm()
         {
-            _elementGroup = elementGroup;
 
+            OpenFileDialog ofd = new OpenFileDialog
+            {
+                Filter = @"osb files (*.osb)|*.osb|All files (*.*)|*.*"
+            };
+            var result = ofd.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                Program.Fi = new FileInfo(ofd.FileName);
+            }
+
+            var text = File.ReadAllText(Program.Fi.FullName);
+            ElementGroup sb = ElementGroup.Parse(text, 0);
+
+            _elementGroup = sb;
             // Window settings
             ClientSize = new System.Drawing.Size(854, 480);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             StartPosition = FormStartPosition.CenterScreen;
-            //TopMost = true;
+            TopMost = true;
             // Render settings
-            _useVsync = true;
+            _useVsync = false;
 
             // Events
             Load += OnFormLoad;
+            Shown += OnShown;
             FormClosed += OnFormClosed;
+        }
+
+        private void OnShown(object sender, EventArgs e)
+        {
+            TopMost = false;
         }
 
         private void OnFormLoad(object sender, EventArgs e)
@@ -56,14 +76,14 @@ namespace OsbPlayerTest
                 D2D.RenderTargetUsage.ForceBitmapRemoting, D2D.FeatureLevel.Level_DEFAULT);
             RenderTarget = new D2D.WindowRenderTarget(Factory, renderProp, winProp)
             {
-                AntialiasMode = D2D.AntialiasMode.PerPrimitive,
-                TextAntialiasMode = D2D.TextAntialiasMode.Grayscale,
+                AntialiasMode = D2D.AntialiasMode.Aliased,
+                TextAntialiasMode = D2D.TextAntialiasMode.Default,
                 Transform = new Mathe.RawMatrix3x2(1, 0, 0, 1, 0, 0)
             };
 
             LayerList = new List<DxLayer>
             {
-                new BgDxLayer(RenderTarget, _elementGroup),
+                new BackgroundLayer(RenderTarget, _elementGroup),
                 new FpsDxLayer(RenderTarget),
                 //new TestLayer(RenderTarget, _obj, _osuModel),
             };

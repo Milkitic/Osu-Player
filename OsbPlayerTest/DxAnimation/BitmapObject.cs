@@ -26,7 +26,9 @@ namespace OsbPlayerTest.DxAnimation
         protected readonly bool EnableLog;
         public bool IsStarted { get; private set; }
         public bool IsFinished { get; private set; }
-        private readonly Stopwatch _watch = new Stopwatch();
+        private readonly Stopwatch _watch;
+        private bool _innerWatch = true;
+
         public long Offset;
         private long _timeOffset;
 
@@ -71,7 +73,11 @@ namespace OsbPlayerTest.DxAnimation
 
         #endregion private statics
 
-        public BitmapObject(D2D.RenderTarget target, D2D.Bitmap bitmap, OriginType origin, Mathe.RawPoint initPosision, bool enableLog = false)
+        public BitmapObject(D2D.RenderTarget target, D2D.Bitmap bitmap, OriginType origin, Mathe.RawPoint initPosision,
+            bool enableLog = false) : this(target, bitmap, origin, initPosision, null, enableLog) { }
+
+        public BitmapObject(D2D.RenderTarget target, D2D.Bitmap bitmap, OriginType origin, Mathe.RawPoint initPosision, Stopwatch sw,
+            bool enableLog = false)
         {
             Target = target;
             Bitmap = bitmap;
@@ -140,9 +146,19 @@ namespace OsbPlayerTest.DxAnimation
                     break;
             }
 
+            if (sw != null)
+            {
+                _watch = sw;
+                _innerWatch = false;
+            }
+            else
+                _watch = new Stopwatch();
+
             EnableLog = enableLog;
         }
 
+
+        
         /// <summary>
         /// Do not use with MOVEX or MOVEY at same time!
         /// </summary>
@@ -457,15 +473,19 @@ namespace OsbPlayerTest.DxAnimation
         {
             if (!IsStarted)
             {
-                _watch.Start();
+                if (_innerWatch)
+                    _watch.Start();
                 IsStarted = true;
             }
             else
             {
                 if (Offset >= MaxTime)
                 {
-                    _watch.Stop();
-                    _watch.Reset();
+                    if (_innerWatch)
+                    {
+                        _watch.Stop();
+                        _watch.Reset();
+                    }
                     IsFinished = true;
                     //if (EnableLog) LogUtil.LogInfo("finished");
                 }
@@ -489,7 +509,7 @@ namespace OsbPlayerTest.DxAnimation
                         Target.DrawBitmap(Bitmap,
                             new RectangleF(Rect.RealTime.Left - _originOffsetX, Rect.RealTime.Top - _originOffsetY,
                                 Rect.RealTime.Right - Rect.RealTime.Left, Rect.RealTime.Bottom - Rect.RealTime.Top),
-                            _f.RealTime, D2D.BitmapInterpolationMode.Linear /*, RtInRect*/); //todo: bug
+                            _f.RealTime, D2D.BitmapInterpolationMode.Linear);
 #if DEBUG
                         //Target.DrawRectangle(Rect.RealTime, _redBrush, 1);
 #endif
@@ -499,7 +519,7 @@ namespace OsbPlayerTest.DxAnimation
             }
             else
             {
-                Dispose();
+                //Dispose();
                 //                Target.Transform = Matrix3x2.Translation(-_x.RealTime - _originOffsetX, -_y.RealTime - _originOffsetY) *
                 //                                   Matrix3x2.Scaling(_vx.RealTime, _vy.RealTime) *
                 //                                   Matrix3x2.Rotation(_r.RealTime) *
@@ -523,8 +543,10 @@ namespace OsbPlayerTest.DxAnimation
 
         private int? _preMs;
         private Queue<int> _ms = new Queue<int>();
+
         public void AdjustTime(int ms)
         {
+            if (!_innerWatch) return;
             if (_ms.Count >= 20)
                 _ms.Dequeue();
             _ms.Enqueue(ms);
