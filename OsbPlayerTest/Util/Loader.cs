@@ -61,7 +61,7 @@ namespace OsbPlayerTest.Util
             if (!Cached.ContainsKey(imagePath))
             {
                 Cached.TryAdd(imagePath, bmp);
-                LogUtil.LogInfo("Created cache.");
+                //LogUtil.LogInfo("Created cache.");
             }
 
             return bmp;

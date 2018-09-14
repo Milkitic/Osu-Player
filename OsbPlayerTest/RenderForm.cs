@@ -2,6 +2,7 @@
 using OsbPlayerTest.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -38,8 +39,12 @@ namespace OsbPlayerTest
             }
 
             var text = File.ReadAllText(Program.Fi.FullName);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            Console.WriteLine(@"Parsing..");
             ElementGroup sb = ElementGroup.Parse(text, 0);
-
+            Console.WriteLine($@"Parse done in {sw.ElapsedMilliseconds} ms");
+            sw.Stop();
             _elementGroup = sb;
             // Window settings
             ClientSize = new System.Drawing.Size(854, 480);

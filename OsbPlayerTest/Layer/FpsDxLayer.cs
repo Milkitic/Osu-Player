@@ -15,6 +15,7 @@ namespace OsbPlayerTest.Layer
 
         // Brushes
         private readonly D2D.Brush _whiteBrush;
+        private readonly D2D.Brush _blackBrush;
 
         private readonly Stopwatch _sw = new Stopwatch();
         private readonly Stopwatch _bufferSw;
@@ -25,6 +26,7 @@ namespace OsbPlayerTest.Layer
         public FpsDxLayer(D2D.RenderTarget renderTarget) : base(renderTarget)
         {
             _whiteBrush = new D2D.SolidColorBrush(RenderTarget, new Mathe.RawColor4(1, 1, 1, 1));
+            _blackBrush = new D2D.SolidColorBrush(RenderTarget, new Mathe.RawColor4(0, 0, 0, 1));
             _textFormat = new DW.TextFormat(_factoryWrite, "Microsoft YaHei", 12);
             _bufferSw = new Stopwatch();
             _bufferSw.Start();
@@ -50,8 +52,9 @@ namespace OsbPlayerTest.Layer
                 _buffer = tmp;
             }
 
+            RenderTarget.DrawText(_fpsStr, _textFormat, new Mathe.RawRectangleF(1, 1, 400, 200), _blackBrush);
             RenderTarget.DrawText(_fpsStr, _textFormat, new Mathe.RawRectangleF(0, 0, 400, 200), _whiteBrush);
-
+          
             _sw.Restart();
         }
 
