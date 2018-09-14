@@ -1,11 +1,11 @@
-﻿using LibOsb.Enums;
-using LibOsb.Utils;
-using OsbPlayerTest.Util;
+﻿using OsbPlayerTest.Util;
 using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Milkitic.OsbLib.Enums;
+using Milkitic.OsbLib.Utils;
 using D2D = SharpDX.Direct2D1;
 using Gdip = System.Drawing;
 using Mathe = SharpDX.Mathematics.Interop;

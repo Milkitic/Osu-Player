@@ -1,11 +1,11 @@
-﻿using LibOsb;
-using OsbPlayerTest.Layer;
+﻿using OsbPlayerTest.Layer;
 using OsbPlayerTest.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Milkitic.OsbLib;
 using D2D = SharpDX.Direct2D1;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using LibOsb.Enums;
+using Milkitic.OsbLib.Enums;
 using Gdip = System.Drawing;
 
 namespace OsbPlayerTest.DxAnimation

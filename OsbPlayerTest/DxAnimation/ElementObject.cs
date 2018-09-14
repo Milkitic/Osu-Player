@@ -1,6 +1,6 @@
-﻿using LibOsb;
-using LibOsb.Enums;
-using LibOsb.Utils;
+﻿using Milkitic.OsbLib;
+using Milkitic.OsbLib.Enums;
+using Milkitic.OsbLib.Utils;
 using OsbPlayerTest.Util;
 using SharpDX;
 using System;
@@ -107,8 +107,8 @@ namespace OsbPlayerTest.DxAnimation
                     Min = (int)_element.FadeList.Min(k => k.StartTime),
                     Max = (int)_element.FadeList.Max(k => k.EndTime),
                 };
-                _f.Source = _element.FadeList.First().Start;
-                _f.Target = _element.FadeList.Last().End;
+                _f.Source = _element.FadeList.First().F1;
+                _f.Target = _element.FadeList.Last().F2;
             }
             if (_element.RotateList.Count > 0)
             {
@@ -117,8 +117,8 @@ namespace OsbPlayerTest.DxAnimation
                     Min = (int)_element.RotateList.Min(k => k.StartTime),
                     Max = (int)_element.RotateList.Max(k => k.EndTime),
                 };
-                _r.Source = _element.RotateList.First().Start;
-                _r.Target = _element.RotateList.Last().End;
+                _r.Source = _element.RotateList.First().R1;
+                _r.Target = _element.RotateList.Last().R2;
             }
 
             if (_element.ScaleList.Count > 0)
@@ -128,10 +128,10 @@ namespace OsbPlayerTest.DxAnimation
                     Min = (int)_element.ScaleList.Min(k => k.StartTime),
                     Max = (int)_element.ScaleList.Max(k => k.EndTime)
                 };
-                _vx.Source = _element.ScaleList.First().Start;
-                _vy.Source = _element.ScaleList.First().Start;
-                _vx.Target = _element.ScaleList.Last().End;
-                _vy.Target = _element.ScaleList.Last().End;
+                _vx.Source = _element.ScaleList.First().S1;
+                _vy.Source = _element.ScaleList.First().S1;
+                _vx.Target = _element.ScaleList.Last().S2;
+                _vy.Target = _element.ScaleList.Last().S2;
             }
             if (_element.VectorList.Count > 0)
             {
@@ -143,15 +143,15 @@ namespace OsbPlayerTest.DxAnimation
                     if (tmpMin < _vTime.Min)
                     {
                         _vTime.Min = tmpMin;
-                        _vx.Source = _element.VectorList.First().Start.x;
-                        _vy.Source = _element.VectorList.First().Start.y;
+                        _vx.Source = _element.VectorList.First().Vx1;
+                        _vy.Source = _element.VectorList.First().Vy1;
                     }
 
                     if (tmpMax > _vTime.Max)
                     {
                         _vTime.Max = tmpMax;
-                        _vx.Target = _element.VectorList.Last().End.x;
-                        _vy.Target = _element.VectorList.Last().End.y;
+                        _vx.Target = _element.VectorList.Last().Vx2;
+                        _vy.Target = _element.VectorList.Last().Vy2;
                     }
                 }
                 else
@@ -161,10 +161,10 @@ namespace OsbPlayerTest.DxAnimation
                         Min = (int)_element.VectorList.Min(k => k.StartTime),
                         Max = (int)_element.VectorList.Max(k => k.EndTime)
                     };
-                    _vx.Source = _element.VectorList.First().Start.x;
-                    _vy.Source = _element.VectorList.First().Start.y;
-                    _vx.Target = _element.VectorList.Last().End.x;
-                    _vy.Target = _element.VectorList.Last().End.y;
+                    _vx.Source = _element.VectorList.First().Vx1;
+                    _vy.Source = _element.VectorList.First().Vy1;
+                    _vx.Target = _element.VectorList.Last().Vx2;
+                    _vy.Target = _element.VectorList.Last().Vy2;
                 }
             }
 
@@ -175,10 +175,10 @@ namespace OsbPlayerTest.DxAnimation
                     Min = (int)_element.MoveList.Min(k => k.StartTime),
                     Max = (int)_element.MoveList.Max(k => k.EndTime)
                 };
-                _x.Source = _element.MoveList.First().Start.x + 107;
-                _y.Source = _element.MoveList.First().Start.y;
-                _x.Target = _element.MoveList.Last().End.x + 107;
-                _y.Target = _element.MoveList.Last().End.y;
+                _x.Source = _element.MoveList.First().X1 + 107;
+                _y.Source = _element.MoveList.First().Y1;
+                _x.Target = _element.MoveList.Last().X2 + 107;
+                _y.Target = _element.MoveList.Last().Y2;
             }
             if (_element.MoveXList.Count > 0)
             {
@@ -190,13 +190,13 @@ namespace OsbPlayerTest.DxAnimation
                     if (tmpMin < _movTime.Min)
                     {
                         _movTime.Min = tmpMin;
-                        _x.Source = _element.MoveXList.First().Start + 107;
+                        _x.Source = _element.MoveXList.First().X1 + 107;
                     }
 
                     if (tmpMax > _movTime.Max)
                     {
                         _movTime.Max = tmpMax;
-                        _x.Target = _element.MoveXList.Last().End + 107;
+                        _x.Target = _element.MoveXList.Last().X2 + 107;
                     }
                 }
                 else
@@ -206,8 +206,8 @@ namespace OsbPlayerTest.DxAnimation
                         Min = (int)_element.MoveXList.Min(k => k.StartTime),
                         Max = (int)_element.MoveXList.Max(k => k.EndTime)
                     };
-                    _x.Source = _element.MoveXList.First().Start + 107;
-                    _x.Target = _element.MoveXList.Last().End + 107;
+                    _x.Source = _element.MoveXList.First().X1 + 107;
+                    _x.Target = _element.MoveXList.Last().X2 + 107;
                 }
             }
             if (_element.MoveYList.Count > 0)
@@ -220,13 +220,13 @@ namespace OsbPlayerTest.DxAnimation
                     if (tmpMin < _movTime.Min)
                     {
                         _movTime.Min = tmpMin;
-                        _y.Source = _element.MoveYList.First().Start;
+                        _y.Source = _element.MoveYList.First().Y1;
                     }
 
                     if (tmpMax > _movTime.Max)
                     {
                         _movTime.Max = tmpMax;
-                        _y.Target = _element.MoveYList.Last().End;
+                        _y.Target = _element.MoveYList.Last().Y2;
                     }
                 }
                 else
@@ -236,8 +236,8 @@ namespace OsbPlayerTest.DxAnimation
                         Min = (int)_element.MoveYList.Min(k => k.StartTime),
                         Max = (int)_element.MoveYList.Max(k => k.EndTime)
                     };
-                    _y.Source = _element.MoveYList.First().Start;
-                    _y.Target = _element.MoveYList.Last().End;
+                    _y.Source = _element.MoveYList.First().Y1;
+                    _y.Target = _element.MoveYList.Last().Y2;
                 }
             }
 

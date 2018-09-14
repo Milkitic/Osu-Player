@@ -35,9 +35,8 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Milkitic.LibOsb, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\库\OsbLib\LibOsb\bin\Release\Milkitic.LibOsb.dll</HintPath>
+    <Reference Include="OsbLib">
+      <HintPath>..\..\库\OsbLib\OsbLib\bin\Release\OsbLib.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
