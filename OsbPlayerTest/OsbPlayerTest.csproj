@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DxAnimation\AnimatedElementObject.cs" />
     <Compile Include="DxAnimation\AnimationObject.cs" />
     <Compile Include="DxAnimation\ElementObject.cs" />
     <Compile Include="DxAnimation\BitmapObject.cs" />

@@ -2,6 +2,7 @@
 using Milkitic.OsbLib.Enums;
 using Milkitic.OsbLib.Extension;
 using Milkitic.OsbLib.Models;
+using Milkitic.OsbLib.Models.EventType;
 using OsbPlayerTest.DxAnimation;
 using OsbPlayerTest.Util;
 using System;
@@ -23,15 +24,31 @@ namespace OsbPlayerTest.Layer
             public IEnumerable<Event> Events;
         }
 
+        public class Timing
+        {
+            public long Offset => ControlOffset + Watch.ElapsedMilliseconds;
+            public long ControlOffset;
+            public readonly Stopwatch Watch;
+
+            public Timing(long controlOffset, Stopwatch watch)
+            {
+                ControlOffset = controlOffset;
+                Watch = watch;
+            }
+        }
+
         private readonly ElementObject[] _objs;
-        private readonly Stopwatch _watch = new Stopwatch();
         private RenderThings[] _renderList;
+        private readonly Timing _timing;
+        private readonly Stopwatch _watch = new Stopwatch();
+        private readonly ElementGroup _elementGroup;
 
         public BackgroundLayer(D2D.RenderTarget renderTarget, ElementGroup elementGroup) : base(renderTarget)
         {
             _watch.Start();
             Console.WriteLine(@"Expanding..");
             elementGroup.Expand();
+            File.WriteAllText("d:\\ok.txt", elementGroup.ToString());
             Console.WriteLine($@"Expand done in {_watch.ElapsedMilliseconds} ms");
             _watch.Stop();
             _watch.Reset();
@@ -43,36 +60,36 @@ namespace OsbPlayerTest.Layer
                     Elment = elementGroup.ElementList[i],
                     Events = elementGroup.ElementList[i].EventList
                 };
-
+            _elementGroup = elementGroup;
+            _timing = new Timing(0, new Stopwatch());
             _objs = new ElementObject[elements.Length];
             for (var i = 0; i < elements.Length; i++)
             {
                 var item = elements[i];
                 if (item.Elment.Type == ElementType.Animation)
-                    continue;
-
-                _objs[i] = new ElementObject(RenderTarget, item.Elment, _watch);
+                    _objs[i] = new AnimatedElementObject(RenderTarget, (AnimatedElement)item.Elment, _timing);
+                else
+                    _objs[i] = new ElementObject(RenderTarget, item.Elment, _timing);
             }
 
-            const int updateDelay = 1000;
+            const int updateDelay = 500;
 
             bool first = true;
             Task.Run(() =>
             {
                 while (true)
                 {
-                    var ms = _watch.ElapsedMilliseconds;
-                    _renderList = elements.Where(k => ms > k.Elment.MinTime - (updateDelay + 100) && ms < k.Elment.MaxTime &&
-                        !k.Elment.FadeoutList.InRange((int)ms)).ToArray();
+                    var ms = _timing.Offset;
+                    _renderList = elements.Where(k => !k.Elment.FadeoutList.InRange((int)ms, (updateDelay + 100), -(updateDelay + 100)) &&   // todo: 有点问题
+                                                      ms >= k.Elment.MinTime - (updateDelay + 100) &&
+                                                      ms <= k.Elment.MaxTime).ToArray();
                     Console.WriteLine($@"更新图象队列：{_renderList.Length}");
 
-                    // todo: 有点问题
                     for (var i = 0; i < _renderList.Length; i++)
                     {
                         _renderList[i].Events = _renderList[i].Elment.EventList
-                            .Where(k => k.StartTime >= ms - (k.EndTime - k.StartTime) && ms <= k.EndTime);
+                            .Where(k => ms >= k.StartTime - (updateDelay + 150) && ms <= k.EndTime);
                     }
-                    //
 
                     Console.WriteLine($@"更新动作队列：{_renderList.Select(k => k.Events.Count()).Sum()}");
                     Thread.Sleep(updateDelay);
@@ -85,7 +102,8 @@ namespace OsbPlayerTest.Layer
             {
                 Thread.Sleep(1);
             }
-            _watch.Start();
+
+            _timing.Watch.Start();
         }
 
         public override void Measure()
@@ -131,35 +149,30 @@ namespace OsbPlayerTest.Layer
                         case EventEnum.Rotate:
                             _objs[i].Rotate(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.End[0]);
                             break;
-                            //case EventEnum.Color:
-                            //    break;
-                            //case EventEnum.Parameter:
-                            //    break;
+                        case EventEnum.Parameter:
+                            var p = (Parameter)e;
+                            switch (p.Type)
+                            {
+                                case ParameterEnum.Horizontal:
+                                    _objs[i].FlipH((int)p.StartTime, (int)p.EndTime);
+                                    break;
+                                case ParameterEnum.Vertical:
+                                    _objs[i].FlipV((int)p.StartTime, (int)p.EndTime);
+                                    break;
+                                case ParameterEnum.Additive:
+                                    _objs[i].Additive((int)p.StartTime, (int)p.EndTime);
+                                    break;
+                            }
+                            break;
+                        case EventEnum.Color:
+                            _objs[i].Color(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.Start[1], e.Start[2],
+                                e.End[0], e.End[1], e.End[2]);
+                            break;
                     }
                 }
-                //foreach (var sb in element.ScaleList)
-                //    _objs[i].ScaleVec(sb.Easing, (int)sb.StartTime, (int)sb.EndTime, sb.S1,
-                //        sb.S1, sb.S2, sb.S2);
-                //foreach (var sb in element.RotateList)
-                //    _objs[i].Rotate(sb.Easing, (int)sb.StartTime, (int)sb.EndTime, sb.R1, sb.R2);
-                //foreach (var sb in element.MoveList)
-                //    _objs[i].Move(sb.Easing, (int)sb.StartTime, (int)sb.EndTime,
-                //        new System.Drawing.PointF(sb.X1 + 107, sb.Y1),
-                //        new System.Drawing.PointF(sb.X2 + 107, sb.Y2));
-                //foreach (var sb in element.FadeList)
-                //    _objs[i].Fade(sb.Easing, (int)sb.StartTime, (int)sb.EndTime, sb.F1, sb.F2);
-                //foreach (var sb in element.VectorList)
-                //    _objs[i].ScaleVec(sb.Easing, (int)sb.StartTime, (int)sb.EndTime, sb.Vx1, sb.Vy1,
-                //        sb.Vx2, sb.Vy2);
-                //foreach (var sb in element.MoveXList)
-                //    _objs[i].MoveX(sb.Easing, (int)sb.StartTime, (int)sb.EndTime, sb.X1 + 107, sb.X2 + 107);
-                //foreach (var sb in element.MoveYList)
-                //    _objs[i].MoveY(sb.Easing, (int)sb.StartTime, (int)sb.EndTime, sb.Y1, sb.Y2);
                 _objs[i].EndDraw();
 
             }
-
-            //Console.WriteLine(_objs[1].Offset);
         }
 
         public override void Dispose()

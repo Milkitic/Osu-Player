@@ -24,6 +24,7 @@ namespace OsbPlayerTest
         private Task[] _renderTask;
 
         private readonly bool _useVsync;
+        private bool _rendering;
 
         public RenderForm()
         {
@@ -37,7 +38,8 @@ namespace OsbPlayerTest
             {
                 Program.Fi = new FileInfo(ofd.FileName);
             }
-
+            else
+                Environment.Exit(0);
             var text = File.ReadAllText(Program.Fi.FullName);
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -59,6 +61,18 @@ namespace OsbPlayerTest
             Load += OnFormLoad;
             Shown += OnShown;
             FormClosed += OnFormClosed;
+            //this.ResizeBegin += OnResizeBegin;
+            //this.ResizeEnd += OnResizeEnd;
+        }
+
+        private void OnResizeEnd(object sender, EventArgs e)
+        {
+            _rendering = true;
+        }
+
+        private void OnResizeBegin(object sender, EventArgs e)
+        {
+            _rendering = false;
         }
 
         private void OnShown(object sender, EventArgs e)
@@ -114,7 +128,7 @@ namespace OsbPlayerTest
         {
             if (WindowState == FormWindowState.Minimized) return;
             if (RenderTarget == null || RenderTarget.IsDisposed) return;
-
+      
             Render();
             Invalidate();
         }
