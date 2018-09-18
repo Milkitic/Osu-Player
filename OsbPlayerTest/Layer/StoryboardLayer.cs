@@ -3,7 +3,7 @@ using Milkitic.OsbLib.Enums;
 using Milkitic.OsbLib.Extension;
 using Milkitic.OsbLib.Models;
 using Milkitic.OsbLib.Models.EventType;
-using OsbPlayerTest.DxAnimation;
+using OsbPlayerTest.Animation;
 using OsbPlayerTest.Util;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using D2D = SharpDX.Direct2D1;
 namespace OsbPlayerTest.Layer
 {
-    internal class BackgroundLayer : DxLayer
+    internal class StoryboardLayer : CustomLayer
     {
         private struct RenderThings
         {
@@ -24,26 +24,13 @@ namespace OsbPlayerTest.Layer
             public IEnumerable<Event> Events;
         }
 
-        public class Timing
-        {
-            public long Offset => ControlOffset + Watch.ElapsedMilliseconds;
-            public long ControlOffset;
-            public readonly Stopwatch Watch;
-
-            public Timing(long controlOffset, Stopwatch watch)
-            {
-                ControlOffset = controlOffset;
-                Watch = watch;
-            }
-        }
-
-        private readonly ElementObject[] _objs;
+        private readonly ElementInstance[] _instances;
         private RenderThings[] _renderList;
         private readonly Timing _timing;
         private readonly Stopwatch _watch = new Stopwatch();
         private readonly ElementGroup _elementGroup;
 
-        public BackgroundLayer(D2D.RenderTarget renderTarget, ElementGroup elementGroup) : base(renderTarget)
+        public StoryboardLayer(D2D.RenderTarget renderTarget, ElementGroup elementGroup) : base(renderTarget)
         {
             _watch.Start();
             Console.WriteLine(@"Expanding..");
@@ -62,14 +49,11 @@ namespace OsbPlayerTest.Layer
                 };
             _elementGroup = elementGroup;
             _timing = new Timing(0, new Stopwatch());
-            _objs = new ElementObject[elements.Length];
+            _instances = new ElementInstance[elements.Length];
             for (var i = 0; i < elements.Length; i++)
             {
                 var item = elements[i];
-                if (item.Elment.Type == ElementType.Animation)
-                    _objs[i] = new AnimatedElementObject(RenderTarget, (AnimatedElement)item.Elment, _timing);
-                else
-                    _objs[i] = new ElementObject(RenderTarget, item.Elment, _timing);
+                _instances[i] = new ElementInstance(RenderTarget, item.Elment, _timing);
             }
 
             const int updateDelay = 500;
@@ -111,7 +95,7 @@ namespace OsbPlayerTest.Layer
 
         }
 
-        public override void Draw()
+        public override void OnFrameUpdate()
         {
             foreach (var render in _renderList)
             {
@@ -119,60 +103,61 @@ namespace OsbPlayerTest.Layer
                 var element = render.Elment;
                 var events = render.Events;
 
-                if (_objs[i] == null)
+                if (_instances[i] == null)
                     continue;
-                _objs[i].StartDraw();
+                _instances[i].StartDraw();
                 foreach (Event e in events)
                 {
                     switch (e.EventType)
                     {
                         case EventEnum.Fade:
-                            _objs[i].Fade(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.End[0]);
+                            _instances[i].Fade(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.End[0]);
                             break;
                         case EventEnum.Move:
-                            _objs[i].Move(e.Easing, (int)e.StartTime, (int)e.EndTime,
+                            _instances[i].Move(e.Easing, (int)e.StartTime, (int)e.EndTime,
                                     new System.Drawing.PointF(e.Start[0] + 107, e.Start[1]),
                                     new System.Drawing.PointF(e.End[0] + 107, e.End[1]));
                             break;
                         case EventEnum.MoveX:
-                            _objs[i].MoveX(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0] + 107, e.End[0] + 107);
+                            _instances[i].MoveX(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0] + 107, e.End[0] + 107);
                             break;
                         case EventEnum.MoveY:
-                            _objs[i].MoveY(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.End[0]);
+                            _instances[i].MoveY(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.End[0]);
                             break;
                         case EventEnum.Scale:
-                            _objs[i].ScaleVec(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.Start[0], e.End[0], e.End[0]);
+                            _instances[i].ScaleVec(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.Start[0], e.End[0], e.End[0]);
                             break;
                         case EventEnum.Vector:
-                            _objs[i].ScaleVec(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.Start[1], e.End[0], e.End[1]);
+                            _instances[i].ScaleVec(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.Start[1], e.End[0], e.End[1]);
                             break;
                         case EventEnum.Rotate:
-                            _objs[i].Rotate(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.End[0]);
+                            _instances[i].Rotate(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.End[0]);
                             break;
                         case EventEnum.Parameter:
                             var p = (Parameter)e;
                             switch (p.Type)
                             {
                                 case ParameterEnum.Horizontal:
-                                    _objs[i].FlipH((int)p.StartTime, (int)p.EndTime);
+                                    _instances[i].FlipH((int)p.StartTime, (int)p.EndTime);
                                     break;
                                 case ParameterEnum.Vertical:
-                                    _objs[i].FlipV((int)p.StartTime, (int)p.EndTime);
+                                    _instances[i].FlipV((int)p.StartTime, (int)p.EndTime);
                                     break;
                                 case ParameterEnum.Additive:
-                                    _objs[i].Additive((int)p.StartTime, (int)p.EndTime);
+                                    _instances[i].Additive((int)p.StartTime, (int)p.EndTime);
                                     break;
                             }
                             break;
                         case EventEnum.Color:
-                            _objs[i].Color(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.Start[1], e.Start[2],
+                            _instances[i].Color(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.Start[1], e.Start[2],
                                 e.End[0], e.End[1], e.End[2]);
                             break;
                     }
                 }
-                _objs[i].EndDraw();
+                _instances[i].EndDraw();
 
             }
+
         }
 
         public override void Dispose()

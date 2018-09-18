@@ -1,33 +1,34 @@
-﻿using OsbPlayerTest.Util;
+﻿using Milkitic.OsbLib.Enums;
+using Milkitic.OsbLib.Utils;
+using OsbPlayerTest.Util;
 using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Milkitic.OsbLib.Enums;
-using Milkitic.OsbLib.Utils;
 using D2D = SharpDX.Direct2D1;
 using Gdip = System.Drawing;
 using Mathe = SharpDX.Mathematics.Interop;
+using RectangleF = SharpDX.RectangleF;
 
-namespace OsbPlayerTest.DxAnimation
+namespace OsbPlayerTest.Animation
 {
-    internal class BitmapObject : AnimationObject, IDisposable
+    internal sealed class BitmapInstance : AnimatedInstance, IDisposable
     {
-        public Size2F Size => Bitmap.Size;
+        public Size2F Size => _bitmap.Size;
         public float Width => Size.Width;
         public float Height => Size.Height;
         private OriginType Origin { get; }
 
-        protected readonly D2D.RenderTarget Target;
-        protected readonly D2D.Bitmap Bitmap;
+        private readonly D2D.RenderTarget _target;
+        private readonly D2D.Bitmap _bitmap;
 
         // control
-        protected readonly bool EnableLog;
+        private readonly bool _enableLog;
         public bool IsStarted { get; private set; }
         public bool IsFinished { get; private set; }
         private readonly Stopwatch _watch;
-        private bool _innerWatch = true;
+        private readonly bool _useInnerWatch = true;
 
         public long Offset;
         private long _timeOffset;
@@ -73,14 +74,14 @@ namespace OsbPlayerTest.DxAnimation
 
         #endregion private statics
 
-        public BitmapObject(D2D.RenderTarget target, D2D.Bitmap bitmap, OriginType origin, Mathe.RawPoint initPosision,
+        public BitmapInstance(D2D.RenderTarget target, D2D.Bitmap bitmap, OriginType origin, Mathe.RawPoint initPosision,
             bool enableLog = false) : this(target, bitmap, origin, initPosision, null, enableLog) { }
 
-        public BitmapObject(D2D.RenderTarget target, D2D.Bitmap bitmap, OriginType origin, Mathe.RawPoint initPosision, Stopwatch sw,
+        public BitmapInstance(D2D.RenderTarget target, D2D.Bitmap bitmap, OriginType origin, Mathe.RawPoint initPosision, Stopwatch sw,
             bool enableLog = false)
         {
-            Target = target;
-            Bitmap = bitmap;
+            _target = target;
+            _bitmap = bitmap;
             Origin = origin;
 #if DEBUG
             _redBrush = new D2D.SolidColorBrush(target, new Mathe.RawColor4(1, 0, 0, 1));
@@ -149,16 +150,16 @@ namespace OsbPlayerTest.DxAnimation
             if (sw != null)
             {
                 _watch = sw;
-                _innerWatch = false;
+                _useInnerWatch = false;
             }
             else
                 _watch = new Stopwatch();
 
-            EnableLog = enableLog;
+            _enableLog = enableLog;
         }
 
 
-        
+
         /// <summary>
         /// Do not use with MOVEX or MOVEY at same time!
         /// </summary>
@@ -473,7 +474,7 @@ namespace OsbPlayerTest.DxAnimation
         {
             if (!IsStarted)
             {
-                if (_innerWatch)
+                if (_useInnerWatch)
                     _watch.Start();
                 IsStarted = true;
             }
@@ -481,7 +482,7 @@ namespace OsbPlayerTest.DxAnimation
             {
                 if (Offset >= MaxTime)
                 {
-                    if (_innerWatch)
+                    if (_useInnerWatch)
                     {
                         _watch.Stop();
                         _watch.Reset();
@@ -500,13 +501,13 @@ namespace OsbPlayerTest.DxAnimation
             {
                 if (Offset >= MinTime)
                 {
-                    Target.Transform = Matrix3x2.Translation(-_x.RealTime, -_y.RealTime) *
+                    _target.Transform = Matrix3x2.Translation(-_x.RealTime, -_y.RealTime) *
                                        Matrix3x2.Scaling(_vx.RealTime, _vy.RealTime) *
                                        Matrix3x2.Rotation(_r.RealTime) *
                                        Matrix3x2.Translation(_x.RealTime, _y.RealTime);
                     if (_f.RealTime > 0)
                     {
-                        Target.DrawBitmap(Bitmap,
+                        _target.DrawBitmap(_bitmap,
                             new RectangleF(Rect.RealTime.Left - _originOffsetX, Rect.RealTime.Top - _originOffsetY,
                                 Rect.RealTime.Right - Rect.RealTime.Left, Rect.RealTime.Bottom - Rect.RealTime.Top),
                             _f.RealTime, D2D.BitmapInterpolationMode.Linear);
@@ -514,7 +515,7 @@ namespace OsbPlayerTest.DxAnimation
                         //Target.DrawRectangle(Rect.RealTime, _redBrush, 1);
 #endif
                     }
-                    Target.Transform = new Matrix3x2(1, 0, 0, 1, 0, 0);
+                    _target.Transform = new Matrix3x2(1, 0, 0, 1, 0, 0);
                 }
             }
             else
@@ -538,15 +539,15 @@ namespace OsbPlayerTest.DxAnimation
             }
         }
 
-        public BitmapObject Reset(OriginType origin, Mathe.RawPoint posision) =>
-            new BitmapObject(Target, Bitmap, origin, posision, EnableLog);
+        public BitmapInstance Reset(OriginType origin, Mathe.RawPoint posision) =>
+            new BitmapInstance(_target, _bitmap, origin, posision, _enableLog);
 
         private int? _preMs;
         private Queue<int> _ms = new Queue<int>();
 
         public void AdjustTime(int ms)
         {
-            if (!_innerWatch) return;
+            if (!_useInnerWatch) return;
             if (_ms.Count >= 20)
                 _ms.Dequeue();
             _ms.Enqueue(ms);
@@ -557,7 +558,7 @@ namespace OsbPlayerTest.DxAnimation
                 if (Math.Abs(Offset - ms) <= 3)
                     return;
 
-                if (EnableLog) LogUtil.LogInfo($"OFFSET CORRECTION: {Offset}>{ms}");
+                if (_enableLog) LogUtil.LogInfo($"OFFSET CORRECTION: {Offset}>{ms}");
 
                 if (ms < MaxTime)
                     IsFinished = false;
@@ -570,7 +571,7 @@ namespace OsbPlayerTest.DxAnimation
         public void Dispose()
         {
             //Target?.Dispose();
-            Bitmap?.Dispose();
+            _bitmap?.Dispose();
 #if DEBUG
             _redBrush?.Dispose();
 #endif

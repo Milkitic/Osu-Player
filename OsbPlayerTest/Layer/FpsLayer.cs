@@ -8,7 +8,7 @@ using Mathe = SharpDX.Mathematics.Interop;
 
 namespace OsbPlayerTest.Layer
 {
-    internal class FpsDxLayer : DxLayer
+    internal class FpsLayer : CustomLayer
     {
         private readonly DW.Factory _factoryWrite = new DW.Factory(); // For creating DirectWrite Elements
         private readonly DW.TextFormat _textFormat; // Text formats
@@ -23,7 +23,7 @@ namespace OsbPlayerTest.Layer
         private int _buffer;
         private readonly Queue<long> _delayQueue = new Queue<long>();
         private string _fpsStr = "0 FPS";
-        public FpsDxLayer(D2D.RenderTarget renderTarget) : base(renderTarget)
+        public FpsLayer(D2D.RenderTarget renderTarget) : base(renderTarget)
         {
             _whiteBrush = new D2D.SolidColorBrush(RenderTarget, new Mathe.RawColor4(1, 1, 1, 1));
             _blackBrush = new D2D.SolidColorBrush(RenderTarget, new Mathe.RawColor4(0, 0, 0, 1));
@@ -37,7 +37,7 @@ namespace OsbPlayerTest.Layer
 
         }
 
-        public override void Draw()
+        public override void OnFrameUpdate()
         {
             _delay = _sw.ElapsedTicks;
             if (_delayQueue.Count >= 50)

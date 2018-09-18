@@ -69,18 +69,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DxAnimation\AnimatedElementObject.cs" />
-    <Compile Include="DxAnimation\AnimationObject.cs" />
-    <Compile Include="DxAnimation\ElementObject.cs" />
-    <Compile Include="DxAnimation\BitmapObject.cs" />
+    <Compile Include="Animation\AnimatedObject.cs" />
+    <Compile Include="Animation\StoryboardObject.cs" />
+    <Compile Include="Static.cs" />
+    <Compile Include="TimeRange.cs" />
+    <Compile Include="Timing.cs" />
+    <Compile Include="Render\HwndRenderBase.cs" />
+    <Compile Include="Render\RenderBase.cs" />
+    <Compile Include="Animation\AnimatedInstance.cs" />
+    <Compile Include="Animation\ElementInstance.cs" />
+    <Compile Include="Animation\BitmapInstance.cs" />
+    <Compile Include="Layer\CoverLayer.cs" />
     <Compile Include="RenderForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Layer\DxLayer.cs" />
+    <Compile Include="Layer\CustomLayer.cs" />
     <Compile Include="Util\LogUtil.cs" />
-    <Compile Include="Util\Loader.cs" />
-    <Compile Include="Layer\BackgroundLayer.cs" />
-    <Compile Include="Layer\FpsDxLayer.cs" />
+    <Compile Include="Util\TextureLoader.cs" />
+    <Compile Include="Layer\StoryboardLayer.cs" />
+    <Compile Include="Layer\FpsLayer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="RenderForm.resx">

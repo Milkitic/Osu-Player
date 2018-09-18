@@ -2,17 +2,17 @@
 
 namespace OsbPlayerTest.Layer
 {
-    internal abstract class DxLayer
+    public abstract class CustomLayer
     {
         protected readonly RenderTarget RenderTarget;
 
-        protected DxLayer(RenderTarget renderTarget)
+        protected CustomLayer(RenderTarget renderTarget)
         {
             RenderTarget = renderTarget;
         }
 
-        public abstract void Measure();
-        public abstract void Draw();
+        public abstract void Measure(); //Calculation before drawing.
+        public abstract void OnFrameUpdate();
         public abstract void Dispose();
     }
 }
