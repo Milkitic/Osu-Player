@@ -10,8 +10,8 @@ namespace OsbPlayerTest
 {
     static class Program
     {
+        public static Manager Manager { get; set; }
 
-        public static FileInfo Fi;
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>

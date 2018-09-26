@@ -1,5 +1,6 @@
 ﻿using Milkitic.OsbLib;
 using Milkitic.OsbLib.Enums;
+using Milkitic.OsbLib.Models;
 using Milkitic.OsbLib.Utils;
 using OsbPlayerTest.Layer;
 using OsbPlayerTest.Util;
@@ -18,48 +19,37 @@ namespace OsbPlayerTest.Animation
 {
     public class StoryboardObject : IDisposable
     {
-        public class TimeRanges
-        {
-            public TimeRange FadeTime = TimeRange.Default;
-            public TimeRange RotateTime = TimeRange.Default;
-            public TimeRange VTime = TimeRange.Default;
-            public TimeRange MovTime = TimeRange.Default;
-            public TimeRange PTime = TimeRange.Default;
-            public TimeRange CTime = TimeRange.Default;
-            public int MaxTime => TimeRange.GetMaxTime(FadeTime, RotateTime, MovTime, VTime, PTime, CTime);
-            public int MinTime => TimeRange.GetMinTime(FadeTime, RotateTime, MovTime, VTime, PTime, CTime);
-        }
-
-        public class EventStatics
-        {
-            public Static<float> F;
-            public Static<float> X, Y, W, H;
-            public Static<float> Rad, Vx, Vy;
-            public Static<float> R, G, B;
-            public Static<Mathe.RawRectangleF> Rect => new Static<Mathe.RawRectangleF>
-            {
-                Source = new Mathe.RawRectangleF(X.Source, Y.Source, X.Source + W.Source, Y.Source + H.Source),
-                RealTime =
-                    new Mathe.RawRectangleF(X.RealTime, Y.RealTime, X.RealTime + W.RealTime, Y.RealTime + H.RealTime),
-                Target = new Mathe.RawRectangleF(X.Target, Y.Target, X.Target + W.Target, Y.Target + H.Target)
-            };
-        }
-
         public D2D.Bitmap[] TextureList;
         public D2D.Bitmap Texture;
 
         public Size2F Size => Texture.Size;
         public float Width => Size.Width;
         public float Height => Size.Height;
-        public int MaxTime => Ranges.MaxTime;
-        public int MinTime => Ranges.MinTime;
 
         public OriginType Origin { get; set; }
         public float OriginOffsetX;
         public float OriginOffsetY;
 
-        public TimeRanges Ranges { get; set; } = new TimeRanges();
-        public EventStatics Statics { get; set; } = new EventStatics();
+        public TimeRange FadeTime = TimeRange.Default;
+        public TimeRange RotateTime = TimeRange.Default;
+        public TimeRange VTime = TimeRange.Default;
+        public TimeRange MovTime = TimeRange.Default;
+        public TimeRange PTime = TimeRange.Default;
+        public TimeRange CTime = TimeRange.Default;
+        public int MaxTime => TimeRange.GetMaxTime(FadeTime, RotateTime, MovTime, VTime, PTime, CTime);
+        public int MinTime => TimeRange.GetMinTime(FadeTime, RotateTime, MovTime, VTime, PTime, CTime);
+
+        public Static<float> F;
+        public Static<float> X, Y, W, H;
+        public Static<float> Rad, Vx, Vy;
+        public Static<float> R, G, B;
+        public Static<Mathe.RawRectangleF> Rect => new Static<Mathe.RawRectangleF>
+        {
+            Source = new Mathe.RawRectangleF(X.Source, Y.Source, X.Source + W.Source, Y.Source + H.Source),
+            RealTime =
+                new Mathe.RawRectangleF(X.RealTime, Y.RealTime, X.RealTime + W.RealTime, Y.RealTime + H.RealTime),
+            Target = new Mathe.RawRectangleF(X.Target, Y.Target, X.Target + W.Target, Y.Target + H.Target)
+        };
 
         public bool UseH, UseV, UseA; //todo
 
@@ -67,13 +57,14 @@ namespace OsbPlayerTest.Animation
 
         private readonly Element _element;
         private readonly Timing _timing;
+        private Size2F _vSize;
 
-        public StoryboardObject(Element element, Timing timing, D2D.RenderTarget target)
+        public StoryboardObject(Element element, Timing timing, D2D.RenderTarget target, Size2F vSize)
         {
             _timing = timing;
             _element = element;
-
-            var path = Path.Combine(Program.Fi.Directory.FullName, element.ImagePath);
+            _vSize = vSize;
+            var path = Path.Combine(Program.Manager.Directory, element.ImagePath);
             if (File.Exists(path))
             {
                 TextureList = new[] { TextureLoader.LoadBitmap(target, path) };
@@ -91,198 +82,219 @@ namespace OsbPlayerTest.Animation
             // 与bitmapObject不同，由于sb是纯静态的，所以可先判断出范围，为提高效率，这里先进行计算
             if (_element.FadeList.Count > 0)
             {
-                Ranges.FadeTime = new TimeRange
+                FadeTime = new TimeRange
                 {
                     Min = (int)_element.FadeList.Min(k => k.StartTime),
                     Max = (int)_element.FadeList.Max(k => k.EndTime),
                 };
-                Statics.F.Source = _element.FadeList.First().F1;
-                Statics.F.Target = _element.FadeList.Last().F2;
+                F.Source = _element.FadeList.First().F1;
+                F.Target = _element.FadeList.Last().F2;
             }
             if (_element.RotateList.Count > 0)
             {
-                Ranges.RotateTime = new TimeRange
+                RotateTime = new TimeRange
                 {
                     Min = (int)_element.RotateList.Min(k => k.StartTime),
                     Max = (int)_element.RotateList.Max(k => k.EndTime),
                 };
-                Statics.Rad.Source = _element.RotateList.First().R1;
-                Statics.Rad.Target = _element.RotateList.Last().R2;
+                Rad.Source = _element.RotateList.First().R1;
+                Rad.Target = _element.RotateList.Last().R2;
             }
 
             if (_element.ScaleList.Count > 0)
             {
-                Ranges.VTime = new TimeRange
+                VTime = new TimeRange
                 {
                     Min = (int)_element.ScaleList.Min(k => k.StartTime),
                     Max = (int)_element.ScaleList.Max(k => k.EndTime)
                 };
-                Statics.Vx.Source = _element.ScaleList.First().S1;
-                Statics.Vy.Source = _element.ScaleList.First().S1;
-                Statics.Vx.Target = _element.ScaleList.Last().S2;
-                Statics.Vy.Target = _element.ScaleList.Last().S2;
+                Vx.Source = _element.ScaleList.First().S1 * _vSize.Width;
+                Vy.Source = _element.ScaleList.First().S1 * _vSize.Width;
+                Vx.Target = _element.ScaleList.Last().S2 * _vSize.Height;
+                Vy.Target = _element.ScaleList.Last().S2 * _vSize.Height;
             }
             if (_element.VectorList.Count > 0)
             {
-                if (!Ranges.VTime.Equals(TimeRange.Default))
+                if (!VTime.Equals(TimeRange.Default))
                 {
                     var tmpMin = (int)_element.VectorList.Min(k => k.StartTime);
                     var tmpMax = (int)_element.VectorList.Max(k => k.EndTime);
 
-                    if (tmpMin < Ranges.VTime.Min)
+                    if (tmpMin < VTime.Min)
                     {
-                        Ranges.VTime.Min = tmpMin;
-                        Statics.Vx.Source = _element.VectorList.First().Vx1;
-                        Statics.Vy.Source = _element.VectorList.First().Vy1;
+                        VTime.Min = tmpMin;
+                        Vx.Source = _element.VectorList.First().Vx1 * _vSize.Width;
+                        Vy.Source = _element.VectorList.First().Vy1 * _vSize.Height;
                     }
 
-                    if (tmpMax > Ranges.VTime.Max)
+                    if (tmpMax > VTime.Max)
                     {
-                        Ranges.VTime.Max = tmpMax;
-                        Statics.Vx.Target = _element.VectorList.Last().Vx2;
-                        Statics.Vy.Target = _element.VectorList.Last().Vy2;
+                        VTime.Max = tmpMax;
+                        Vx.Target = _element.VectorList.Last().Vx2 * _vSize.Width;
+                        Vy.Target = _element.VectorList.Last().Vy2 * _vSize.Height;
                     }
                 }
                 else
                 {
-                    Ranges.VTime = new TimeRange
+                    VTime = new TimeRange
                     {
                         Min = (int)_element.VectorList.Min(k => k.StartTime),
                         Max = (int)_element.VectorList.Max(k => k.EndTime)
                     };
-                    Statics.Vx.Source = _element.VectorList.First().Vx1;
-                    Statics.Vy.Source = _element.VectorList.First().Vy1;
-                    Statics.Vx.Target = _element.VectorList.Last().Vx2;
-                    Statics.Vy.Target = _element.VectorList.Last().Vy2;
+                    Vx.Source = _element.VectorList.First().Vx1 * _vSize.Width;
+                    Vy.Source = _element.VectorList.First().Vy1 * _vSize.Height;
+                    Vx.Target = _element.VectorList.Last().Vx2 * _vSize.Width;
+                    Vy.Target = _element.VectorList.Last().Vy2 * _vSize.Height;
                 }
             }
 
             if (_element.MoveList.Count > 0)
             {
-                Ranges.MovTime = new TimeRange
+                MovTime = new TimeRange
                 {
                     Min = (int)_element.MoveList.Min(k => k.StartTime),
                     Max = (int)_element.MoveList.Max(k => k.EndTime)
                 };
-                Statics.X.Source = _element.MoveList.First().X1 + 107;
-                Statics.Y.Source = _element.MoveList.First().Y1;
-                Statics.X.Target = _element.MoveList.Last().X2 + 107;
-                Statics.Y.Target = _element.MoveList.Last().Y2;
+                X.Source = (_element.MoveList.First().X1 + 107) * _vSize.Width;
+                Y.Source = _element.MoveList.First().Y1 * _vSize.Height;
+                X.Target = (_element.MoveList.Last().X2 + 107) * _vSize.Width;
+                Y.Target = _element.MoveList.Last().Y2 * _vSize.Height;
             }
             if (_element.MoveXList.Count > 0)
             {
-                if (!Ranges.MovTime.Equals(TimeRange.Default))
+                if (!MovTime.Equals(TimeRange.Default))
                 {
                     var tmpMin = (int)_element.MoveXList.Min(k => k.StartTime);
                     var tmpMax = (int)_element.MoveXList.Max(k => k.EndTime);
 
-                    if (tmpMin < Ranges.MovTime.Min)
+                    if (tmpMin < MovTime.Min)
                     {
-                        Ranges.MovTime.Min = tmpMin;
-                        Statics.X.Source = _element.MoveXList.First().X1 + 107;
+                        MovTime.Min = tmpMin;
+                        X.Source =( _element.MoveXList.First().X1 + 107) * _vSize.Width;
                     }
 
-                    if (tmpMax > Ranges.MovTime.Max)
+                    if (tmpMax > MovTime.Max)
                     {
-                        Ranges.MovTime.Max = tmpMax;
-                        Statics.X.Target = _element.MoveXList.Last().X2 + 107;
+                        MovTime.Max = tmpMax;
+                        X.Target = (_element.MoveXList.Last().X2 + 107) * _vSize.Width;
                     }
                 }
                 else
                 {
-                    Ranges.MovTime = new TimeRange
+                    MovTime = new TimeRange
                     {
                         Min = (int)_element.MoveXList.Min(k => k.StartTime),
                         Max = (int)_element.MoveXList.Max(k => k.EndTime)
                     };
-                    Statics.X.Source = _element.MoveXList.First().X1 + 107;
-                    Statics.X.Target = _element.MoveXList.Last().X2 + 107;
+                    X.Source = (_element.MoveXList.First().X1 + 107) * _vSize.Width;
+                    X.Target =( _element.MoveXList.Last().X2 + 107) * _vSize.Width;
                 }
             }
             if (_element.MoveYList.Count > 0)
             {
-                if (!Ranges.MovTime.Equals(TimeRange.Default))
+                if (!MovTime.Equals(TimeRange.Default))
                 {
                     var tmpMin = (int)_element.MoveYList.Min(k => k.StartTime);
                     var tmpMax = (int)_element.MoveYList.Max(k => k.EndTime);
 
-                    if (tmpMin <= Ranges.MovTime.Min)
+                    if (tmpMin <= MovTime.Min)
                     {
-                        Ranges.MovTime.Min = tmpMin;
-                        Statics.Y.Source = _element.MoveYList.First().Y1;
+                        MovTime.Min = tmpMin;
+                        Y.Source = _element.MoveYList.First().Y1 * _vSize.Height;
                     }
 
-                    if (tmpMax >= Ranges.MovTime.Max)
+                    if (tmpMax >= MovTime.Max)
                     {
-                        Ranges.MovTime.Max = tmpMax;
-                        Statics.Y.Target = _element.MoveYList.Last().Y2;
+                        MovTime.Max = tmpMax;
+                        Y.Target = _element.MoveYList.Last().Y2 * _vSize.Height;
                     }
                 }
                 else
                 {
-                    Ranges.MovTime = new TimeRange
+                    MovTime = new TimeRange
                     {
                         Min = (int)_element.MoveYList.Min(k => k.StartTime),
                         Max = (int)_element.MoveYList.Max(k => k.EndTime)
                     };
-                    Statics.Y.Source = _element.MoveYList.First().Y1;
-                    Statics.Y.Target = _element.MoveYList.Last().Y2;
+                    Y.Source = _element.MoveYList.First().Y1 * _vSize.Height;
+                    Y.Target = _element.MoveYList.Last().Y2 * _vSize.Height;
                 }
             }
 
             if (_element.ColorList.Count > 0)
             {
-                Ranges.CTime = new TimeRange
+                CTime = new TimeRange
                 {
                     Min = (int)_element.ColorList.Min(k => k.StartTime),
                     Max = (int)_element.ColorList.Max(k => k.EndTime)
                 };
-                Statics.R.Source = _element.ColorList.First().R1;
-                Statics.G.Source = _element.ColorList.First().G1;
-                Statics.B.Source = _element.ColorList.First().B1;
-                Statics.R.Target = _element.ColorList.Last().R2;
-                Statics.G.Target = _element.ColorList.Last().G2;
-                Statics.B.Target = _element.ColorList.Last().B2;
+                R.Source = _element.ColorList.First().R1;
+                G.Source = _element.ColorList.First().G1;
+                B.Source = _element.ColorList.First().B1;
+                R.Target = _element.ColorList.Last().R2;
+                G.Target = _element.ColorList.Last().G2;
+                B.Target = _element.ColorList.Last().B2;
+
             }
 
             if (_element.ParameterList.Count > 0)
             {
-                Ranges.PTime = new TimeRange
+                PTime = new TimeRange
                 {
                     Min = (int)_element.ParameterList.Min(k => k.StartTime),
                     Max = (int)_element.ParameterList.Max(k => k.EndTime)
                 };
             }
 
-            Statics.X.RealTimeToSource();
-            Statics.Y.RealTimeToSource();
-            Statics.Rad.RealTimeToSource();
-            Statics.Vx.RealTimeToSource();
-            Statics.Vy.RealTimeToSource();
-            Statics.F.RealTimeToSource();
+            X.RealTimeToSource();
+            Y.RealTimeToSource();
+            Rad.RealTimeToSource();
+            Vx.RealTimeToSource();
+            Vy.RealTimeToSource();
+            F.RealTimeToSource();
+            R.RealTimeToSource();
+            G.RealTimeToSource();
+            B.RealTimeToSource();
         }
 
         protected void SetDefaultValue()
         {
             Origin = _element.Origin;
 
-            Statics.X = (Static<float>)(_element.DefaultX + 107);
-            Statics.Y = (Static<float>)_element.DefaultY;
-            Statics.F = (Static<float>)1;
-            Statics.Rad = (Static<float>)0;
-            Statics.Vx = (Static<float>)1;
-            Statics.Vy = (Static<float>)1;
-            Statics.R = (Static<float>)255;
-            Statics.G = (Static<float>)255;
-            Statics.B = (Static<float>)255;
+            X = (Static<float>)((_element.DefaultX + 107) * _vSize.Width);
+            Y = (Static<float>)(_element.DefaultY * _vSize.Height);
+            F = (Static<float>)1;
+            Rad = (Static<float>)0;
+            Vx = (Static<float>)(1 * _vSize.Width);
+            Vy = (Static<float>)(1 * _vSize.Height);
+            R = (Static<float>)255;
+            G = (Static<float>)255;
+            B = (Static<float>)255;
 
-            UseH = _element.ParameterList.Any(e => e.Type == Milkitic.OsbLib.Models.ParameterEnum.Horizontal);
-            UseV = _element.ParameterList.Any(e => e.Type == Milkitic.OsbLib.Models.ParameterEnum.Vertical);
-            UseA = _element.ParameterList.Any(e => e.Type == Milkitic.OsbLib.Models.ParameterEnum.Additive);
+            var sb = _element.ParameterList.GroupBy(k => k.Type);
+            foreach (var kv in sb)
+            {
+                var array = kv.ToArray();
+                var flag = array.Length > 0 && array[0].StartTime == array[0].EndTime;
+                switch (kv.Key)
+                {
+                    case ParameterEnum.Horizontal:
+                        UseH = flag;
+                        break;
+                    case ParameterEnum.Vertical:
+                        UseV = flag;
+                        break;
+                    case ParameterEnum.Additive:
+                        UseA = flag;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
 
             // rects
-            Statics.W = (Static<float>)Texture.Size.Width;
-            Statics.H = (Static<float>)Texture.Size.Height;
+            W = (Static<float>)Texture.Size.Width;
+            H = (Static<float>)Texture.Size.Height;
 
             //origin
             switch (_element.Origin)
@@ -332,14 +344,14 @@ namespace OsbPlayerTest.Animation
             if (!IsFinished && ms >= startTime && ms <= endTime)
             {
                 var t = (ms - startTime) / (endTime - startTime);
-                Statics.X.RealTime = startPoint.X + (float)easingEnum.Ease(t) * (endPoint.X - startPoint.X);
-                Statics.Y.RealTime = startPoint.Y + (float)easingEnum.Ease(t) * (endPoint.Y - startPoint.Y);
+                X.RealTime = startPoint.X + (float)easingEnum.Ease(t) * (endPoint.X - startPoint.X);
+                Y.RealTime = startPoint.Y + (float)easingEnum.Ease(t) * (endPoint.Y - startPoint.Y);
             }
 
-            if (ms >= Ranges.MovTime.Max)
+            if (ms >= MovTime.Max)
             {
-                Statics.X.RealTimeToTarget();
-                Statics.Y.RealTimeToTarget();
+                X.RealTimeToTarget();
+                Y.RealTimeToTarget();
             }
         }
 
@@ -349,11 +361,11 @@ namespace OsbPlayerTest.Animation
             if (!IsFinished && ms >= startTime && ms <= endTime)
             {
                 var t = (ms - startTime) / (endTime - startTime);
-                Statics.X.RealTime = startX + (float)easingEnum.Ease(t) * (endX - startX);
+                X.RealTime = startX + (float)easingEnum.Ease(t) * (endX - startX);
             }
 
-            if (ms >= Ranges.MovTime.Max)
-                Statics.X.RealTimeToTarget();
+            if (ms >= MovTime.Max)
+                X.RealTimeToTarget();
         }
 
         public void MoveY(EasingType easingEnum, int startTime, int endTime, float startY, float endY)
@@ -362,11 +374,11 @@ namespace OsbPlayerTest.Animation
             if (!IsFinished && ms >= startTime && ms <= endTime)
             {
                 var t = (ms - startTime) / (endTime - startTime);
-                Statics.Y.RealTime = startY + (float)easingEnum.Ease(t) * (endY - startY);
+                Y.RealTime = startY + (float)easingEnum.Ease(t) * (endY - startY);
             }
 
-            if (ms >= Ranges.MovTime.Max)
-                Statics.Y.RealTimeToTarget();
+            if (ms >= MovTime.Max)
+                Y.RealTimeToTarget();
         }
 
         public void Rotate(EasingType easingEnum, int startTime, int endTime, float startRad, float endRad)
@@ -375,12 +387,12 @@ namespace OsbPlayerTest.Animation
             if (!IsFinished && ms >= startTime && ms <= endTime)
             {
                 var t = (ms - startTime) / (endTime - startTime);
-                Statics.Rad.RealTime = startRad + (float)easingEnum.Ease(t) * (endRad - startRad);
+                Rad.RealTime = startRad + (float)easingEnum.Ease(t) * (endRad - startRad);
             }
 
-            if (ms >= Ranges.RotateTime.Max)
+            if (ms >= RotateTime.Max)
             {
-                Statics.Rad.RealTimeToTarget();
+                Rad.RealTimeToTarget();
             }
         }
 
@@ -411,14 +423,14 @@ namespace OsbPlayerTest.Animation
             if (!IsFinished && ms >= startTime && ms <= endTime)
             {
                 var t = (ms - startTime) / (endTime - startTime);
-                Statics.Vx.RealTime = startVx + (float)easingEnum.Ease(t) * (endVx - startVx);
-                Statics.Vy.RealTime = startVy + (float)easingEnum.Ease(t) * (endVy - startVy);
+                Vx.RealTime = startVx + (float)easingEnum.Ease(t) * (endVx - startVx);
+                Vy.RealTime = startVy + (float)easingEnum.Ease(t) * (endVy - startVy);
             }
 
-            if (ms >= Ranges.VTime.Max)
+            if (ms >= VTime.Max)
             {
-                Statics.Vx.RealTimeToTarget();
-                Statics.Vy.RealTimeToTarget();
+                Vx.RealTimeToTarget();
+                Vy.RealTimeToTarget();
             }
         }
 
@@ -428,12 +440,12 @@ namespace OsbPlayerTest.Animation
             if (!IsFinished && ms >= startTime && ms <= endTime)
             {
                 var t = (ms - startTime) / (endTime - startTime);
-                Statics.F.RealTime = startOpacity + (float)easingEnum.Ease(t) * (endOpacity - startOpacity);
+                F.RealTime = startOpacity + (float)easingEnum.Ease(t) * (endOpacity - startOpacity);
             }
 
-            if (ms >= Ranges.FadeTime.Max)
+            if (ms >= FadeTime.Max)
             {
-                Statics.F.RealTimeToTarget();
+                F.RealTimeToTarget();
             }
         }
 
@@ -443,16 +455,16 @@ namespace OsbPlayerTest.Animation
             if (!IsFinished && ms >= startTime && ms <= endTime)
             {
                 var t = (ms - startTime) / (endTime - startTime);
-                Statics.R.RealTime = r1 + (float)easingEnum.Ease(t) * (r2 - r1);
-                Statics.G.RealTime = g1 + (float)easingEnum.Ease(t) * (g2 - g1);
-                Statics.B.RealTime = b1 + (float)easingEnum.Ease(t) * (b2 - b1);
+                R.RealTime = r1 + (float)easingEnum.Ease(t) * (r2 - r1);
+                G.RealTime = g1 + (float)easingEnum.Ease(t) * (g2 - g1);
+                B.RealTime = b1 + (float)easingEnum.Ease(t) * (b2 - b1);
             }
 
-            if (ms >= Ranges.CTime.Max)
+            if (ms >= CTime.Max)
             {
-                Statics.R.RealTimeToTarget();
-                Statics.G.RealTimeToTarget();
-                Statics.B.RealTimeToTarget();
+                R.RealTimeToTarget();
+                G.RealTimeToTarget();
+                B.RealTimeToTarget();
             }
         }
 
@@ -468,8 +480,6 @@ namespace OsbPlayerTest.Animation
                 b?.Dispose();
             TextureList = null;
             Texture = null;
-            Ranges = null;
-            Statics = null;
         }
     }
 }

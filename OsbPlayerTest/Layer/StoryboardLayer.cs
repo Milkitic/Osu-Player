@@ -1,91 +1,52 @@
 ﻿using Milkitic.OsbLib;
 using Milkitic.OsbLib.Enums;
-using Milkitic.OsbLib.Extension;
 using Milkitic.OsbLib.Models;
 using Milkitic.OsbLib.Models.EventType;
 using OsbPlayerTest.Animation;
-using OsbPlayerTest.Util;
+using SharpDX;
+using SharpDX.Direct2D1;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using D2D = SharpDX.Direct2D1;
+
 namespace OsbPlayerTest.Layer
 {
-    internal class StoryboardLayer : CustomLayer
+    public class StoryboardLayer : CustomLayer
     {
-        private struct RenderThings
-        {
-            public int Index;
-            public Element Elment;
-            public IEnumerable<Event> Events;
-        }
-
-        private readonly ElementInstance[] _instances;
+        private ElementInstance[] _instances;
         private RenderThings[] _renderList;
-        private readonly Timing _timing;
-        private readonly Stopwatch _watch = new Stopwatch();
-        private readonly ElementGroup _elementGroup;
+        private Timing _timing;
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private Task _task;
 
-        public StoryboardLayer(D2D.RenderTarget renderTarget, ElementGroup elementGroup) : base(renderTarget)
+        private readonly Size2F _vSize;
+
+        public StoryboardLayer(RenderTarget renderTarget, IReadOnlyList<Element> elements, Timing timing) : base(renderTarget)
         {
-            _watch.Start();
-            Console.WriteLine(@"Expanding..");
-            elementGroup.Expand();
-            File.WriteAllText("d:\\ok.txt", elementGroup.ToString());
-            Console.WriteLine($@"Expand done in {_watch.ElapsedMilliseconds} ms");
-            _watch.Stop();
-            _watch.Reset();
-            RenderThings[] elements = new RenderThings[elementGroup.ElementList.Count];
-            for (int i = 0; i < elements.Length; i++)
-                elements[i] = new RenderThings
+            if (elements == null)
+                return;
+            _vSize = new Size2F(renderTarget.Size.Width / 854f, renderTarget.Size.Height / 480f);
+            RenderThings[] instants = new RenderThings[elements.Count];
+            for (int i = 0; i < instants.Length; i++)
+                instants[i] = new RenderThings
                 {
                     Index = i,
-                    Elment = elementGroup.ElementList[i],
-                    Events = elementGroup.ElementList[i].EventList
+                    Elment = elements[i],
+                    Events = elements[i].EventList
                 };
-            _elementGroup = elementGroup;
-            _timing = new Timing(0, new Stopwatch());
-            _instances = new ElementInstance[elements.Length];
-            for (var i = 0; i < elements.Length; i++)
+
+            _timing = timing ?? new Timing(0, new Stopwatch());
+            _instances = new ElementInstance[instants.Length];
+            for (var i = 0; i < instants.Length; i++)
             {
-                var item = elements[i];
-                _instances[i] = new ElementInstance(RenderTarget, item.Elment, _timing);
+                var item = instants[i];
+                _instances[i] = new ElementInstance(RenderTarget, item.Elment, _vSize, _timing);
             }
 
-            const int updateDelay = 500;
-
-            bool first = true;
-            Task.Run(() =>
-            {
-                while (true)
-                {
-                    var ms = _timing.Offset;
-                    _renderList = elements.Where(k => !k.Elment.FadeoutList.InRange((int)ms, (updateDelay + 100), -(updateDelay + 100)) &&   // todo: 有点问题
-                                                      ms >= k.Elment.MinTime - (updateDelay + 100) &&
-                                                      ms <= k.Elment.MaxTime).ToArray();
-                    Console.WriteLine($@"更新图象队列：{_renderList.Length}");
-
-                    for (var i = 0; i < _renderList.Length; i++)
-                    {
-                        _renderList[i].Events = _renderList[i].Elment.EventList
-                            .Where(k => ms >= k.StartTime - (updateDelay + 150) && ms <= k.EndTime);
-                    }
-
-                    Console.WriteLine($@"更新动作队列：{_renderList.Select(k => k.Events.Count()).Sum()}");
-                    Thread.Sleep(updateDelay);
-
-                    first = false;
-                }
-            });
-            Console.WriteLine(@"Loading...");
-            while (first)
-            {
-                Thread.Sleep(1);
-            }
+            LoadFirstFrame(instants);
 
             _timing.Watch.Start();
         }
@@ -97,16 +58,17 @@ namespace OsbPlayerTest.Layer
 
         public override void OnFrameUpdate()
         {
+            if (_renderList == null)
+                return;
             foreach (var render in _renderList)
             {
                 int i = render.Index;
-                var element = render.Elment;
                 var events = render.Events;
 
                 if (_instances[i] == null)
                     continue;
                 _instances[i].StartDraw();
-                foreach (Event e in events)
+                foreach (IEvent e in events)
                 {
                     switch (e.EventType)
                     {
@@ -115,20 +77,27 @@ namespace OsbPlayerTest.Layer
                             break;
                         case EventEnum.Move:
                             _instances[i].Move(e.Easing, (int)e.StartTime, (int)e.EndTime,
-                                    new System.Drawing.PointF(e.Start[0] + 107, e.Start[1]),
-                                    new System.Drawing.PointF(e.End[0] + 107, e.End[1]));
+                                new System.Drawing.PointF((e.Start[0] + 107) * _vSize.Width,
+                                    e.Start[1] * _vSize.Height),
+                                new System.Drawing.PointF((e.End[0] + 107) * _vSize.Width, e.End[1] * _vSize.Height));
                             break;
                         case EventEnum.MoveX:
-                            _instances[i].MoveX(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0] + 107, e.End[0] + 107);
+                            _instances[i].MoveX(e.Easing, (int)e.StartTime, (int)e.EndTime,
+                                (e.Start[0] + 107) * _vSize.Width, (e.End[0] + 107) * _vSize.Width);
                             break;
                         case EventEnum.MoveY:
-                            _instances[i].MoveY(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.End[0]);
+                            _instances[i].MoveY(e.Easing, (int)e.StartTime, (int)e.EndTime,
+                                e.Start[0] * _vSize.Height, e.End[0] * _vSize.Height);
                             break;
                         case EventEnum.Scale:
-                            _instances[i].ScaleVec(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.Start[0], e.End[0], e.End[0]);
+                            _instances[i].ScaleVec(e.Easing, (int)e.StartTime, (int)e.EndTime,
+                                e.Start[0] * _vSize.Width, e.Start[0] * _vSize.Height, e.End[0] * _vSize.Width,
+                                e.End[0] * _vSize.Height);
                             break;
                         case EventEnum.Vector:
-                            _instances[i].ScaleVec(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.Start[1], e.End[0], e.End[1]);
+                            _instances[i].ScaleVec(e.Easing, (int)e.StartTime, (int)e.EndTime,
+                                e.Start[0] * _vSize.Width, e.Start[1] * _vSize.Height, e.End[0] * _vSize.Width,
+                                e.End[1] * _vSize.Height);
                             break;
                         case EventEnum.Rotate:
                             _instances[i].Rotate(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.End[0]);
@@ -147,22 +116,73 @@ namespace OsbPlayerTest.Layer
                                     _instances[i].Additive((int)p.StartTime, (int)p.EndTime);
                                     break;
                             }
+
                             break;
                         case EventEnum.Color:
-                            _instances[i].Color(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.Start[1], e.Start[2],
+                            _instances[i].Color(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.Start[1],
+                                e.Start[2],
                                 e.End[0], e.End[1], e.End[2]);
                             break;
                     }
                 }
+
                 _instances[i].EndDraw();
-
             }
-
         }
 
         public override void Dispose()
         {
+            _cts.Cancel();
+            if (_task != null) Task.WaitAll(_task);
 
+            foreach (var instance in _instances)
+                instance.Dispose();
+            _instances = null;
+
+            for (var i = 0; i < _renderList.Length; i++)
+            {
+                _renderList[i].Elment = null;
+                _renderList[i].Events = null;
+            }
+            _renderList = null;
+
+            _timing = null;
+        }
+
+        private void LoadFirstFrame(RenderThings[] elements)
+        {
+            bool first = true;
+            _task = Task.Run(() =>
+            {
+                int updateDelay = (int)(500 / _timing.PlayBack);
+                int delay = (int)(150 * _timing.PlayBack);
+                int delay2 = (int)(150 * _timing.PlayBack);
+
+                while (!_cts.IsCancellationRequested)
+                {
+                    var ms = _timing.Offset;
+                    _renderList = elements.Where(k =>
+                        !k.Elment.FadeoutList.InRange((int)ms, (updateDelay + delay),
+                            -(updateDelay + delay)) && // todo: 有点问题
+                        ms >= k.Elment.MinTime - (updateDelay + delay) &&
+                        ms <= k.Elment.MaxTime).ToArray();
+                    Console.WriteLine($@"更新图象队列：{_renderList.Length}");
+
+                    for (var i = 0; i < _renderList.Length; i++)
+                    {
+                        _renderList[i].Events = _renderList[i].Elment.EventList
+                            .Where(k => ms >= k.StartTime - (updateDelay + delay2) && ms <= k.EndTime);
+                    }
+
+                    Console.WriteLine($@"更新动作队列：{_renderList.Select(k => k.Events.Count()).Sum()}");
+                    Thread.Sleep(updateDelay);
+
+                    first = false;
+                }
+            }, _cts.Token);
+            Console.WriteLine(@"Loading...");
+            while (first)
+                Thread.Sleep(1);
         }
     }
 }

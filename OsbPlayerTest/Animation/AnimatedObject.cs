@@ -1,6 +1,7 @@
 ﻿using Milkitic.OsbLib;
 using OsbPlayerTest.Layer;
 using OsbPlayerTest.Util;
+using SharpDX;
 using SharpDX.Direct2D1;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace OsbPlayerTest.Animation
         public readonly bool Loop;
         public int PrevIndex = -1;
 
-        public AnimatedObject(AnimatedElement element, Timing timing, RenderTarget target) : base(element, timing, target)
+        public AnimatedObject(AnimatedElement element, Timing timing, RenderTarget target, Size2F vSize) : base(element, timing, target, vSize)
         {
             Times = element.FrameCount;
             Delay = element.FrameDelay;
@@ -27,7 +28,7 @@ namespace OsbPlayerTest.Animation
             TextureList = new Bitmap[Times];
             for (var i = 0; i < Times; i++)
             {
-                var path = Path.Combine(Program.Fi.Directory.FullName, element.ImagePath);
+                var path = Path.Combine(Program.Manager.Directory, element.ImagePath);
                 var fullPath = path.Insert(path.Length - 4, i.ToString());
                 if (!File.Exists(fullPath)) continue;
                 TextureList[i] = TextureLoader.LoadBitmap(target, fullPath);

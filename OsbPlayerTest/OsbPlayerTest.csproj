@@ -71,6 +71,9 @@
   <ItemGroup>
     <Compile Include="Animation\AnimatedObject.cs" />
     <Compile Include="Animation\StoryboardObject.cs" />
+    <Compile Include="Layer\StoryboardLayer.cs" />
+    <Compile Include="RenderThings.cs" />
+    <Compile Include="Manager.cs" />
     <Compile Include="Static.cs" />
     <Compile Include="TimeRange.cs" />
     <Compile Include="Timing.cs" />
@@ -86,7 +89,6 @@
     <Compile Include="Layer\CustomLayer.cs" />
     <Compile Include="Util\LogUtil.cs" />
     <Compile Include="Util\TextureLoader.cs" />
-    <Compile Include="Layer\StoryboardLayer.cs" />
     <Compile Include="Layer\FpsLayer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -115,6 +117,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\库\OsuLib\Milkitic.OsuLib\Milkitic.OsuLib.csproj">
+      <Project>{c86d348d-a961-456b-9820-0bd9f069a9cb}</Project>
+      <Name>Milkitic.OsuLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

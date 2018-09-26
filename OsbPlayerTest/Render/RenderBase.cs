@@ -17,9 +17,9 @@ namespace OsbPlayerTest.Render
         protected D2D.Factory Factory { get; } = new D2D.Factory(D2D.FactoryType.SingleThreaded);
         public D2D.RenderTarget RenderTarget { get; set; }
 
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly List<TaskLayerList> _layerList = new List<TaskLayerList>();
-        private readonly Task _task;
+        private Task _task;
+        private CancellationTokenSource _cts = new CancellationTokenSource();
         private bool _render, _isRendering;
         public bool Vsync { get; set; } = false;
         public bool DisposeRequested { get; set; } = false;
@@ -27,35 +27,41 @@ namespace OsbPlayerTest.Render
         public RenderBase()
         {
             _render = true;
-
-            _task = Task.Run(() =>
-            {
-                while (!_cts.IsCancellationRequested)
-                {
-                    foreach (var t in _layerList)
-                    {
-                        if (t.MeasureTask == null || t.MeasureTask.IsCanceled || t.MeasureTask.IsCompleted)
-                            t.MeasureTask = Task.Run(() => { t.Layer.Measure(); }, _cts.Token);
-                    }
-
-                    Thread.Sleep(1);
-                }
-            }, _cts.Token);
+            StartMeasure();
         }
 
         public void AddLayers(IEnumerable<CustomLayer> layers)
         {
             _render = false;
             while (_isRendering) ;
+            CancelMeasure();
             _layerList.AddRange(layers.Select(k => new TaskLayerList(k, null)));
+            StartMeasure();
+            _render = true;
+        }
+
+        public void RemoveAllLayers()
+        {
+            _render = false;
+            CancelMeasure();
+            while (_isRendering) ;
+            foreach (var item in _layerList)
+                item.Layer?.Dispose();
+            _layerList.Clear();
             _render = true;
         }
 
         public void RemoveLayer(CustomLayer layer)
         {
             _render = false;
+            CancelMeasure();
             while (_isRendering) ;
-            _layerList.Remove(_layerList.FirstOrDefault(k => k.Layer == layer));
+            var choice = _layerList.FirstOrDefault(k => k.Layer == layer);
+            if (choice != null)
+            {
+                choice.Layer.Dispose();
+                _layerList.Remove(choice);
+            }
             _render = true;
         }
 
@@ -75,6 +81,23 @@ namespace OsbPlayerTest.Render
             _cts.Cancel();
             Task.WaitAll(_layerList.Select(k => k.MeasureTask).Where(k => !k.IsCanceled && !k.IsCompleted).ToArray());
             Task.WaitAll(_task);
+        }
+        private void StartMeasure()
+        {
+            _cts = new CancellationTokenSource();
+            _task = Task.Run(() =>
+            {
+                while (!_cts.IsCancellationRequested)
+                {
+                    foreach (var t in _layerList)
+                    {
+                        if (t.MeasureTask == null || t.MeasureTask.IsCanceled || t.MeasureTask.IsCompleted)
+                            t.MeasureTask = Task.Run(() => { t.Layer.Measure(); }, _cts.Token);
+                    }
+
+                    Thread.Sleep(1);
+                }
+            }, _cts.Token);
         }
 
         public void UpdateFrame()

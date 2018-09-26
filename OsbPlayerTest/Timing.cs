@@ -4,9 +4,16 @@ namespace OsbPlayerTest
 {
     public class Timing
     {
-        public long Offset => ControlOffset + Watch.ElapsedMilliseconds;
+        public float Offset => ControlOffset + Watch.ElapsedMilliseconds * PlayBack;
         public long ControlOffset;
         public readonly Stopwatch Watch;
+        public float PlayBack { get; set; } = 1f;
+
+        public Timing(long controlOffset, Stopwatch watch)
+        {
+            ControlOffset = controlOffset;
+            Watch = watch;
+        }
 
         public void SetTiming(long time)
         {
@@ -14,10 +21,20 @@ namespace OsbPlayerTest
             Watch.Reset();
         }
 
-        public Timing(long controlOffset, Stopwatch watch)
+        public void Reset()
         {
-            ControlOffset = controlOffset;
-            Watch = watch;
+            ControlOffset = 0;
+            Watch.Stop();
+            Watch.Reset();
+        }
+
+        public void Pause()
+        {
+            Watch.Stop();
+        }
+        public void Start()
+        {
+            Watch.Start();
         }
     }
 }

@@ -35,7 +35,7 @@ namespace OsbPlayerTest.Animation
 #endif
         private readonly StoryboardObject _sbObj;
 
-        public ElementInstance(D2D.RenderTarget target, Element element, Timing timing = null)
+        public ElementInstance(D2D.RenderTarget target, Element element, Size2F vSize, Timing timing = null)
         {
             _target = target;
 #if DEBUG
@@ -51,8 +51,8 @@ namespace OsbPlayerTest.Animation
                 _timing = new Timing(0, new Stopwatch());
 
             _sbObj = element.Type == ElementType.Animation
-                ? new AnimatedObject((AnimatedElement)element, timing, target)
-                : new StoryboardObject(element, timing, target);
+                ? new AnimatedObject((AnimatedElement)element, timing, target, vSize)
+                : new StoryboardObject(element, timing, target, vSize);
         }
 
         public void StartDraw()
@@ -94,33 +94,34 @@ namespace OsbPlayerTest.Animation
                 }
             }
 
-            if (_sbObj.IsFinished || _timing.Offset < _sbObj.MinTime || _sbObj.Statics.F.RealTime <= 0) return;
+            if (_sbObj.IsFinished || _timing.Offset < _sbObj.MinTime || _sbObj.F.RealTime <= 0) return;
 
-            var translateMtx = Matrix3x2.Translation(-_sbObj.Statics.X.RealTime, -_sbObj.Statics.Y.RealTime);
-            var scaleMtx = Matrix3x2.Scaling((_sbObj.UseH ? -1 : 1) * _sbObj.Statics.Vx.RealTime, (_sbObj.UseV ? -1 : 1) * _sbObj.Statics.Vy.RealTime);
-            var rotateMtx = Matrix3x2.Rotation(_sbObj.Statics.Rad.RealTime);
-            var negTranslateMtx = Matrix3x2.Translation(_sbObj.Statics.X.RealTime, _sbObj.Statics.Y.RealTime);
+            var translateMtx = Matrix3x2.Translation(-_sbObj.X.RealTime, -_sbObj.Y.RealTime);
+            var scaleMtx = Matrix3x2.Scaling((_sbObj.UseH ? -1 : 1) * _sbObj.Vx.RealTime, (_sbObj.UseV ? -1 : 1) * _sbObj.Vy.RealTime);
+            var rotateMtx = Matrix3x2.Rotation(_sbObj.Rad.RealTime);
+            var negTranslateMtx = Matrix3x2.Translation(_sbObj.X.RealTime, _sbObj.Y.RealTime);
             _target.Transform = translateMtx * scaleMtx * rotateMtx * negTranslateMtx;
 
-            float rectL = _sbObj.Statics.Rect.RealTime.Left - _sbObj.OriginOffsetX - (_sbObj.UseH ? 2 * (_sbObj.Width / 2 - _sbObj.OriginOffsetX) : 0);
-            float rectT = _sbObj.Statics.Rect.RealTime.Top - _sbObj.OriginOffsetY - (_sbObj.UseV ? 2 * (_sbObj.Height / 2 - _sbObj.OriginOffsetY) : 0);
-            float rectW = _sbObj.Statics.Rect.RealTime.Right - _sbObj.Statics.Rect.RealTime.Left;
-            float rectH = _sbObj.Statics.Rect.RealTime.Bottom - _sbObj.Statics.Rect.RealTime.Top;
+            float rectL = _sbObj.Rect.RealTime.Left - _sbObj.OriginOffsetX - (_sbObj.UseH ? 2 * (_sbObj.Width / 2 - _sbObj.OriginOffsetX) : 0);
+            float rectT = _sbObj.Rect.RealTime.Top - _sbObj.OriginOffsetY - (_sbObj.UseV ? 2 * (_sbObj.Height / 2 - _sbObj.OriginOffsetY) : 0);
+            float rectW = _sbObj.Rect.RealTime.Right - _sbObj.Rect.RealTime.Left;
+            float rectH = _sbObj.Rect.RealTime.Bottom - _sbObj.Rect.RealTime.Top;
 
             var realRect = new RectangleF(rectL, rectT, rectW, rectH);
             if (_sbObj.Texture != null)
             {
-                if (_sbObj.Statics.R.RealTime != 255 || _sbObj.Statics.G.RealTime != 255 || _sbObj.Statics.B.RealTime != 255)
+                if (_sbObj.R.RealTime != 255 || _sbObj.G.RealTime != 255 || _sbObj.B.RealTime != 255)
                 {
                     //JUST FAKE THING
                     var sb = new D2D.SolidColorBrush(_target,
-                       new Mathe.RawColor4(_sbObj.Statics.R.RealTime / 255f, _sbObj.Statics.G.RealTime / 255f,
-                           _sbObj.Statics.B.RealTime / 255f, _sbObj.Statics.F.RealTime));
+                       new Mathe.RawColor4(_sbObj.R.RealTime / 255f, _sbObj.G.RealTime / 255f,
+                           _sbObj.B.RealTime / 255f, _sbObj.F.RealTime));
                     _target.FillOpacityMask(_sbObj.Texture, sb, D2D.OpacityMaskContent.Graphics, realRect, null);
                     sb.Dispose();
+                    sb = null;
                 }
                 else
-                    _target.DrawBitmap(_sbObj.Texture, realRect, _sbObj.Statics.F.RealTime, D2D.BitmapInterpolationMode.Linear);
+                    _target.DrawBitmap(_sbObj.Texture, realRect, _sbObj.F.RealTime, D2D.BitmapInterpolationMode.Linear);
             }
 
 #if DEBUG

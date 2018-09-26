@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milkitic.OsuLib", "..\库\O
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsbPlayerTest", "OsbPlayerTest\OsbPlayerTest.csproj", "{469FE0EB-7CCF-4CB0-9695-923CA82A4454}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsbLib", "..\库\OsbLib\OsbLib\OsbLib.csproj", "{39F7E783-F770-47D0-BFBB-49BC30443B3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milkitic.OsuPlayer.Wpf", "Milkitic.OsuPlayer.Wpf\Milkitic.OsuPlayer.Wpf.csproj", "{02773E4B-21FC-47DB-A7C1-BD096F325136}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{469FE0EB-7CCF-4CB0-9695-923CA82A4454}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{469FE0EB-7CCF-4CB0-9695-923CA82A4454}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{469FE0EB-7CCF-4CB0-9695-923CA82A4454}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39F7E783-F770-47D0-BFBB-49BC30443B3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39F7E783-F770-47D0-BFBB-49BC30443B3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39F7E783-F770-47D0-BFBB-49BC30443B3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39F7E783-F770-47D0-BFBB-49BC30443B3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02773E4B-21FC-47DB-A7C1-BD096F325136}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02773E4B-21FC-47DB-A7C1-BD096F325136}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02773E4B-21FC-47DB-A7C1-BD096F325136}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02773E4B-21FC-47DB-A7C1-BD096F325136}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

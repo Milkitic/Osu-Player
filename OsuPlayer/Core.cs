@@ -1,10 +1,8 @@
 ﻿using Milkitic.OsuPlayer.LyricExtension;
 using Milkitic.OsuPlayer.LyricExtension.SourcePrivoder.Auto;
-using Milkitic.OsuPlayer.LyricExtension.SourcePrivoder.Netease;
-using Milkitic.OsuPlayer.Models;
+using Milkitic.OsuPlayer.Storyboard;
 using Milkitic.OsuPlayer.Utils;
 using Milkitic.OsuPlayer.Winforms;
-using NAudio.Wave;
 using Newtonsoft.Json;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;
@@ -12,11 +10,8 @@ using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Milkitic.OsuPlayer
@@ -30,6 +25,7 @@ namespace Milkitic.OsuPlayer
         public static MusicPlayer MusicPlayer;
         public static HitsoundPlayer HitsoundPlayer;
         public static LyricProvider LyricProvider;
+        public static StoryboardProvider StoryboardProvider;
 
         [STAThread]
         static void Main()
@@ -42,7 +38,7 @@ namespace Milkitic.OsuPlayer
 
             LyricProvider = new LyricProvider(new AutoSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
 
-            Application.Run(new RenderForm());
+            Application.Run(new MainForm());
             SaveConfig(Domain.ConfigFile);
         }
 

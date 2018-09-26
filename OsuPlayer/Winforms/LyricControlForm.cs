@@ -62,5 +62,10 @@ namespace Milkitic.OsuPlayer.Winforms
             _baseForm.Close();
             this.Close();
         }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+
+        }
     }
 }
