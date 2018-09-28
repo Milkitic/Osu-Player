@@ -12,7 +12,7 @@ namespace Milkitic.OsuPlayer.Wpf
 
     public class VolumeControl
     {
-        private float _main = 0.7f;
+        private float _main = 0.75f;
         private float _bgm = 1;
         private float _hs = 1;
 

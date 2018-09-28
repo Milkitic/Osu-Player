@@ -57,16 +57,21 @@ namespace Milkitic.OsuPlayer.Wpf.Data
         public static IEnumerable<BeatmapEntry> GetRecentListFromDb(
             this IEnumerable<BeatmapEntry> list)
         {
-            var recents = DbOperator.GetRecent().ToList();
+            return list.GetMapListFromDb(DbOperator.GetRecent().ToList());
+        }
+
+        public static IEnumerable<BeatmapEntry> GetMapListFromDb(
+            this IEnumerable<BeatmapEntry> list, List<MapInfo> infos)
+        {
 
             var db = new List<(BeatmapEntry entry, DateTime dateTime)>();
             foreach (BeatmapEntry k in list)
             {
-                foreach (var mapInfo in recents)
+                foreach (var mapInfo in infos)
                 {
                     if (mapInfo.Folder == k.FolderName && mapInfo.Version == k.Version)
                     {
-                        db.Add((k, mapInfo.LastPlayTime.Value));
+                        db.Add((k, mapInfo.LastPlayTime ?? new DateTime()));
                         break;
                     }
                 }
@@ -74,7 +79,6 @@ namespace Milkitic.OsuPlayer.Wpf.Data
 
             return db.OrderByDescending(k => k.dateTime).Select(k => k.entry);
         }
-
 
         public static IEnumerable<BeatmapEntry> SortBy(this IEnumerable<BeatmapEntry> list, SortMode sortMode)
         {

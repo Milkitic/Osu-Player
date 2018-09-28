@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Windows.Controls;
-using Milkitic.OsbLib;
+﻿using Milkitic.OsbLib;
 using Milkitic.OsbLib.Extension;
 using Milkitic.OsuLib;
 using Milkitic.OsuPlayer.Wpf.Storyboard.Layer;
 using Milkitic.OsuPlayer.Wpf.Storyboard.Render;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Milkitic.OsuPlayer.Wpf.Storyboard
 {
@@ -18,9 +19,14 @@ namespace Milkitic.OsuPlayer.Wpf.Storyboard
         public string Directory { get; set; }
         public Timing StoryboardTiming { get; } = new Timing(0, new Stopwatch());
 
-        public StoryboardProvider(ContentControl control)
+        //public StoryboardProvider(Window window)
+        //{
+        //    HwndRenderBase = new HwndRenderBase(window);
+        //}
+
+        public StoryboardProvider(FrameworkElement window)
         {
-            HwndRenderBase = new HwndRenderBase(control);
+            HwndRenderBase = new HwndRenderBase(window);
         }
 
         public void LoadStoryboard(string dir, OsuFile osu)

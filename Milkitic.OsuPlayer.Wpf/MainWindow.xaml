@@ -4,11 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Milkitic.OsuPlayer.Wpf"
+        xmlns:data="clr-namespace:Milkitic.OsuPlayer.Wpf.Data"
         mc:Ignorable="d" Style="{StaticResource MainWindowStyle}"
         Title="Osu Player" Width="960" Height="720" MinWidth="640" MinHeight="88"
         Loaded="Window_Loaded" Closing="Window_Closing">
 
-    <Grid>
+    <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="Auto" MinHeight="48" />
@@ -57,7 +58,29 @@
                                             Style="{StaticResource NavigationButtonStyle}" />
                                 </StackPanel>
                                 <StackPanel Grid.Row="2">
-                                    <Label Style="{StaticResource NavigationLabelStyle}">收藏夹</Label>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Style="{StaticResource NavigationLabelStyle}" VerticalAlignment="Center">收藏夹</Label>
+                                        <Button x:Name="BtnAddCollection" Content="+" Width="20" Height="20" Margin="5,10,0,0" Click="BtnAddCollection_Click" />
+                                    </StackPanel>
+                                    <ListView x:Name="CollectionList" Margin="5" Background="Transparent" BorderThickness="0"
+                                              ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="CollectionList_MouseDoubleClick">
+                                        <ListView.DataContext>
+                                            <data:Collection/>
+                                        </ListView.DataContext>
+                                        <ListView.Resources>
+                                            <DataTemplate DataType="{x:Type data:Collection}">
+                                                <Grid>
+                                                    <Label x:Name="LblVersion" VerticalAlignment="Center" Foreground="#333333" Height="30">
+                                                        <TextBlock Text="{Binding Name}" />
+                                                    </Label>
+                                                </Grid>
+                                            </DataTemplate>
+                                            <Style TargetType="{x:Type ListViewItem}">
+                                                <Setter Property="BorderThickness" Value="0" />
+                                            </Style>
+                                        </ListView.Resources>
+                                    </ListView>
+
                                 </StackPanel>
                             </Grid>
                             <Grid Grid.Row="1">
@@ -117,6 +140,9 @@
                     <Button x:Name="BtnVolume" Style="{StaticResource VolumeButtonStyle}" Click="BtnVolume_Click" />
                 </StackPanel>
             </Grid>
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True" >
+            <Frame Name="FramePop" NavigationUIVisibility="Hidden"></Frame>
         </Grid>
         <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Pop" PopupAnimation="Fade" Height="100"
                PlacementTarget="{Binding ElementName=BtnVolume}" Placement="Top" AllowsTransparency="True"

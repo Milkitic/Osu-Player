@@ -23,6 +23,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using Collection = Milkitic.OsuPlayer.Wpf.Data.Collection;
 
 namespace Milkitic.OsuPlayer.Wpf
 {
@@ -34,12 +35,20 @@ namespace Milkitic.OsuPlayer.Wpf
         public PageParts Pages => new PageParts
         {
             SearchPage = new SearchPage(this),
-            RecentPlayPage = new RecentPlayPage(this)
+            RecentPlayPage = new RecentPlayPage(this),
+            FindPage = new FindPage(this),
+            StoryboardPage = new StoryboardPage(this),
         };
+
+        public PageBox PageBox;
+        private LyricWindow _lyricWindow;
 
         public MainWindow()
         {
             InitializeComponent();
+            PageBox = new PageBox(MainGrid, "_main");
+            _lyricWindow = new LyricWindow();
+            _lyricWindow.Show();
         }
 
         public void AddToCollection(BeatmapEntry entry)
@@ -50,9 +59,17 @@ namespace Milkitic.OsuPlayer.Wpf
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             MainFrame.Navigate(Pages.RecentPlayPage);
+            UpdateCollections();
 
             LoadSurfaceSettings();
             RunSurfaceUpdate();
+        }
+
+        public void UpdateCollections()
+        {
+            var list = (List<Collection>)DbOperator.GetCollections();
+            list.Reverse();
+            CollectionList.DataContext = list;
         }
 
         private void Window_Closing(object sender, EventArgs e)
@@ -61,6 +78,7 @@ namespace Milkitic.OsuPlayer.Wpf
             _cts.Dispose();
             WavePlayer.Device?.Dispose();
             WavePlayer.MasteringVoice?.Dispose();
+            _lyricWindow.Dispose();
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -74,6 +92,7 @@ namespace Milkitic.OsuPlayer.Wpf
         private void BtnSearch_Click(object sender, RoutedEventArgs e)
         {
             MainFrame.Navigate(Pages.SearchPage);
+            //MainFrame.Navigate(new Uri("Pages/SearchPage.xaml", UriKind.Relative), this);
         }
 
         /// <summary>
@@ -81,6 +100,9 @@ namespace Milkitic.OsuPlayer.Wpf
         /// </summary>
         private void BtnFind_Click(object sender, RoutedEventArgs e)
         {
+            //MainFrame.Navigate(Pages.FindPage);
+            PageBox.Show(Title, "功能完善中，敬请期待~", delegate { });
+            //bool? b = await PageBox.ShowDialog(Title, "功能完善中，敬请期待~");
 
         }
 
@@ -89,7 +111,11 @@ namespace Milkitic.OsuPlayer.Wpf
         /// </summary>
         private void Storyboard_Click(object sender, RoutedEventArgs e)
         {
-
+#if DEBUG
+            MainFrame.Navigate(Pages.StoryboardPage);
+#else
+            PageBox.Show(Title, "功能完善中，敬请期待~", delegate { });
+#endif
         }
 
         /// <summary>
@@ -106,6 +132,19 @@ namespace Milkitic.OsuPlayer.Wpf
         private void BtnExport_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
+        {
+            FramePop.Navigate(new AddCollectionPage(this));
+        }
+
+        private void CollectionList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (CollectionList.SelectedItem == null)
+                return;
+            var collection = (Collection)CollectionList.SelectedItem;
+            MainFrame.Navigate(new CollectionPage(this, collection));
         }
 
         private void BtnFeedback_Click(object sender, RoutedEventArgs e)
@@ -132,6 +171,7 @@ namespace Milkitic.OsuPlayer.Wpf
         private bool _scrollLock;
         private bool _isManualStop = true;
         private PlayerStatus _status = PlayerStatus.Stopped;
+        private (string Version, string Folder) _nowInfo;
 
         private void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
@@ -162,7 +202,9 @@ namespace Milkitic.OsuPlayer.Wpf
 
         private void BtnLike_Click(object sender, RoutedEventArgs e)
         {
-
+            FramePop.Navigate(new SelectCollectionPage(this,
+                App.Beatmaps.GetBeatmapsetsByFolder(_nowInfo.Folder)
+                    .FirstOrDefault(k => k.Version == _nowInfo.Version)));
         }
 
         private void BtnVolume_Click(object sender, RoutedEventArgs e)
@@ -230,77 +272,98 @@ namespace Milkitic.OsuPlayer.Wpf
         public void PlayNewFile(string path)
         {
             if (path == null) return;
-            if (!File.Exists(path))
+            if (File.Exists(path))
             {
-                MessageBox.Show(string.Format(@"所选文件不存在{0}。", App.Beatmaps == null ?
-                        "" : " ，可能是db没有及时更新。请关闭此播放器或osu后重试"), this.Title, MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            try
-            {
-                var osu = new OsuFile(path);
-                var fi = new FileInfo(path);
-                var dir = fi.Directory.FullName;
-                ClearHitsoundPlayer();
-                _isManualStop = true;
-                App.HitsoundPlayer = new HitsoundPlayer(path, osu);
-                _cts = new CancellationTokenSource();
-                App.HitsoundPlayer.Play();
-                RunSurfaceUpdate();
-
-                /* Set Lyric */
-                //SetLyric();
-
-                /* Set Progress */
-                PlayProgress.Value = App.HitsoundPlayer.SingleOffset;
-
-                /* Set Meta */
-                LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle();
-                LblArtist.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist();
-
-                /* Set Storyboard */
-                //App.StoryboardProvider.LoadStoryboard(dir, App.HitsoundPlayer.Osufile);
-
-                /* Set Background */
-                if (App.HitsoundPlayer.Osufile.Events.BackgroundInfo != null)
+                try
                 {
-                    var bgPath = Path.Combine(dir, App.HitsoundPlayer.Osufile.Events.BackgroundInfo.Filename);
-                    StoryboardScene.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
-                    Thumb.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
-                }
-                else
-                    StoryboardScene.Source = null;
+                    var osu = new OsuFile(path);
+                    var fi = new FileInfo(path);
+                    var dir = fi.Directory.FullName;
+                    ClearHitsoundPlayer();
+                    _isManualStop = true;
+                    App.HitsoundPlayer = new HitsoundPlayer(path, osu);
+                    _cts = new CancellationTokenSource();
 
-                DbOperator.UpdateMap(App.HitsoundPlayer.Osufile.Metadata.Version, fi.Directory.Name);
-                Pages.RecentPlayPage.UpdateList();
+                    /* Set Meta */
+                    LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle();
+                    LblArtist.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist();
+
+                    /* Set Lyric */
+                    SetLyric();
+
+                    /* Set Progress */
+                    PlayProgress.Value = App.HitsoundPlayer.SingleOffset;
+
+                    /* Set Storyboard */
+#if DEBUG
+                    if (false) App.StoryboardProvider.LoadStoryboard(dir, App.HitsoundPlayer.Osufile);
+#endif
+                    /* Set Background */
+                    if (App.HitsoundPlayer.Osufile.Events.BackgroundInfo != null)
+                    {
+                        var bgPath = Path.Combine(dir, App.HitsoundPlayer.Osufile.Events.BackgroundInfo.Filename);
+                        StoryboardScene.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
+                        Thumb.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
+                    }
+                    else
+                        StoryboardScene.Source = null;
+
+                    /* Start Play */
+                    App.HitsoundPlayer.Play();
+                    RunSurfaceUpdate();
+
+                    _nowInfo = (App.HitsoundPlayer.Osufile.Metadata.Version, fi.Directory.Name);
+                    DbOperator.UpdateMap(_nowInfo.Version, _nowInfo.Folder);
+                    Pages.RecentPlayPage.UpdateList();
+                }
+                catch (MultiTimingSectionException ex)
+                {
+                    PageBox.Show(Title, @"铺面读取时发生问题：" + ex.Message, () =>
+                    {
+                        if (App.HitsoundPlayer == null) return;
+                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) AutoPlayNext(false);
+                    });
+                }
+                catch (BadOsuFormatException ex)
+                {
+                    PageBox.Show(Title, @"铺面读取时发生问题：" + ex.Message, () =>
+                    {
+                        if (App.HitsoundPlayer == null) return;
+                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) AutoPlayNext(false);
+                    });
+                }
+                catch (VersionNotSupportedException ex)
+                {
+                    PageBox.Show(Title, @"铺面读取时发生问题：" + ex.Message, () =>
+                    {
+                        if (App.HitsoundPlayer == null) return;
+                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) AutoPlayNext(false);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    PageBox.Show(Title, @"发生未处理的异常问题：" + (ex.InnerException ?? ex), () =>
+                    {
+                        if (App.HitsoundPlayer == null) return;
+                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) AutoPlayNext(false);
+                    });
+                }
             }
-            catch (MultiTimingSectionException ex)
+            else
             {
-                MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-                if (App.HitsoundPlayer == null) return;
-                if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) AutoPlayNext(false);
+                PageBox.Show(Title, string.Format(@"所选文件不存在{0}。",
+                        App.Beatmaps == null ? "" : " ，可能是db没有及时更新。请关闭此播放器或osu后重试"),
+                    () => { });
             }
-            catch (BadOsuFormatException ex)
-            {
-                MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-                if (App.HitsoundPlayer == null) return;
-                if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) AutoPlayNext(false);
-            }
-            catch (VersionNotSupportedException ex)
-            {
-                MessageBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-                if (App.HitsoundPlayer == null) return;
-                if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) AutoPlayNext(false);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, @"发生未处理的异常问题：" + ex.InnerException, Title, MessageBoxButton.OK, MessageBoxImage.Warning);
-                AutoPlayNext(false);
-            }
+        }
+
+        private void SetLyric()
+        {
+            if (!_lyricWindow.IsVisible) return;
+            var lyric = App.LyricProvider.GetLyric(App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist(),
+                App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle(), App.MusicPlayer.Duration);
+            _lyricWindow.SetNewLyric(lyric, App.HitsoundPlayer.Osufile);
+            _lyricWindow.StartWork();
         }
 
         private void AutoPlayNext(bool isManual)
@@ -447,12 +510,13 @@ namespace Milkitic.OsuPlayer.Wpf
                 Thread.Sleep(interval);
             }
         }
-
     }
 
     public class PageParts
     {
         public SearchPage SearchPage { get; set; }
+        public StoryboardPage StoryboardPage { get; set; }
         public RecentPlayPage RecentPlayPage { get; set; }
+        public FindPage FindPage { get; set; }
     }
 }

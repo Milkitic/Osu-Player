@@ -14,7 +14,7 @@ namespace Milkitic.OsuPlayer.Wpf.Data
     {
         public MapInfo() { }
 
-        public MapInfo(string id, string version, string folder, int offset,DateTime? lastPlayTime)
+        public MapInfo(string id, string version, string folder, int offset, DateTime? lastPlayTime)
         {
             Id = id;
             Version = version;

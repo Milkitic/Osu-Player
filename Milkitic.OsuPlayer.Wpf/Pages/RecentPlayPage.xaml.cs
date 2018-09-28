@@ -1,5 +1,6 @@
 ﻿using Milkitic.OsuPlayer.Wpf.Data;
 using Milkitic.OsuPlayer.Wpf.Models;
+using MS.Internal.AppModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -22,12 +24,14 @@ namespace Milkitic.OsuPlayer.Wpf.Pages
     /// </summary>
     public partial class RecentPlayPage : Page
     {
+        private PageBox _pageBox;
         public MainWindow ParentWindow { get; set; }
 
         public RecentPlayPage(MainWindow mainWindow)
         {
             ParentWindow = mainWindow;
             InitializeComponent();
+            _pageBox = new PageBox(mainWindow.MainGrid, "_recent");
         }
 
         public void UpdateList()
@@ -74,6 +78,20 @@ namespace Milkitic.OsuPlayer.Wpf.Pages
             DbOperator.RemoveFromRecent(searchInfo.Version, searchInfo.FolderName);
             UpdateList();
             ParentWindow.FillPlayList(true, true, PlayListMode.RecentList);
+        }
+
+        private void BtnDelAll_Click(object sender, RoutedEventArgs e)
+        {
+            _pageBox.Show("提示", "真的要删除全部吗？", () =>
+            {
+                DbOperator.ClearRecent();
+                UpdateList();
+            });
+        }
+
+        private void BtnPlayAll_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

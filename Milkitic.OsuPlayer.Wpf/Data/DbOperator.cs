@@ -10,6 +10,22 @@ namespace Milkitic.OsuPlayer.Wpf.Data
 {
     public static class DbOperator
     {
+        public static MapInfo GetMapFromDb(string version, string folderName)
+        {
+            using (MapInfoContext mapContext = new MapInfoContext())
+            {
+                try
+                {
+                    return GetMapFromDb(version, folderName, mapContext);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(@"Failed: " + ex);
+                    throw;
+                }
+            }
+        }
+
         public static void UpdateMap(string version, string folderName)
         {
             if (!Directory.Exists(Path.Combine(Domain.OsuSongPath, folderName)))
@@ -45,9 +61,21 @@ namespace Milkitic.OsuPlayer.Wpf.Data
                 mapContext.SaveChanges();
             }
         }
+
         public static void RemoveFromRecent(BeatmapEntry entry)
         {
             RemoveFromRecent(entry.Version, entry.FolderName);
+        }
+
+        public static void ClearRecent()
+        {
+            using (MapInfoContext mapContext = new MapInfoContext())
+            {
+                var maps = mapContext.MapInfos;
+                foreach (var map in maps)
+                    map.LastPlayTime = null;
+                mapContext.SaveChanges();
+            }
         }
 
         public static IEnumerable<MapInfo> GetRecent()
@@ -119,8 +147,12 @@ namespace Milkitic.OsuPlayer.Wpf.Data
             {
                 try
                 {
-                    collectionContext.Collections.Remove(collection);
-                    collectionContext.SaveChanges();
+                    var sb = collectionContext.Collections.FirstOrDefault(k => k.Id == collection.Id);
+                    if (sb != null)
+                    {
+                        collectionContext.Collections.Remove(sb);
+                        collectionContext.SaveChanges();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -136,6 +168,25 @@ namespace Milkitic.OsuPlayer.Wpf.Data
                     relationContext.Relations.RemoveRange(
                        relationContext.Relations.Where(k => k.CollectionId == collection.Id));
                     relationContext.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(@"Failed: " + ex);
+                    throw;
+                }
+            }
+        }
+
+        public static IEnumerable<MapInfo> GetMapsFromCollection(Collection collection)
+        {
+            using (MapInfoContext mapContext = new MapInfoContext())
+            using (RelationContext relationContext = new RelationContext())
+            {
+                try
+                {
+                    var mapIds = relationContext.Relations.Where(k => k.CollectionId == collection.Id)
+                        .Select(k => k.MapId).ToList();
+                    return mapContext.MapInfos.Where(k => mapIds.Contains(k.Id)).ToList();
                 }
                 catch (Exception ex)
                 {
@@ -165,14 +216,19 @@ namespace Milkitic.OsuPlayer.Wpf.Data
             }
         }
 
-        public static void RemoveMapToCollection(BeatmapEntry entry, Collection collection)
+        public static void RemoveMapFromCollection(BeatmapEntry entry, Collection collection)
+        {
+            RemoveMapFromCollection(entry.Version, entry.FolderName, collection);
+        }
+
+        public static void RemoveMapFromCollection(string version, string folderName, Collection collection)
         {
             using (MapInfoContext mapContext = new MapInfoContext())
             using (RelationContext relationContext = new RelationContext())
             {
                 try
                 {
-                    MapInfo map = GetMapFromDb(entry.Version, entry.FolderName, mapContext);
+                    MapInfo map = GetMapFromDb(version, folderName, mapContext);
                     relationContext.Relations.RemoveRange(relationContext.Relations.Where(k =>
                         k.CollectionId == collection.Id && k.MapId == map.Id));
                     relationContext.SaveChanges();

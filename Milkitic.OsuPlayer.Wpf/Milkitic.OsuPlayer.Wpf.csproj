@@ -141,9 +141,28 @@
     <Compile Include="LyricExtension\SourcePrivoder\QQMusic\QQMusicSourceProvider.cs" />
     <Compile Include="LyricExtension\SourcePrivoder\Settings.cs" />
     <Compile Include="LyricExtension\SourcePrivoder\Utils.cs" />
+    <Compile Include="LyricWindow.xaml.cs">
+      <DependentUpon>LyricWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Models\Beatmaps.cs" />
     <Compile Include="Models\HitsoundElement.cs" />
     <Compile Include="Models\Enums.cs" />
+    <Compile Include="Models\PageBox.cs" />
+    <Compile Include="Pages\AddCollectionPage.xaml.cs">
+      <DependentUpon>AddCollectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\CollectionPage.xaml.cs">
+      <DependentUpon>CollectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MessageBoxPage.xaml.cs">
+      <DependentUpon>MessageBoxPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\FindPage.xaml.cs">
+      <DependentUpon>FindPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SelectCollectionPage.xaml.cs">
+      <DependentUpon>SelectCollectionPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\RecentPlayPage.xaml.cs">
       <DependentUpon>RecentPlayPage.xaml</DependentUpon>
     </Compile>
@@ -151,6 +170,12 @@
       <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\EntryQuery.cs" />
+    <Compile Include="Pages\StoryboardPage.xaml.cs">
+      <DependentUpon>StoryboardPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StoryboardWindow.xaml.cs">
+      <DependentUpon>StoryboardWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Storyboard\Animation\AnimatedInstance.cs" />
     <Compile Include="Storyboard\Animation\AnimatedObject.cs" />
     <Compile Include="Storyboard\Animation\ElementInstance.cs" />
@@ -174,6 +199,10 @@
     <Compile Include="Utils\MusicPlayer.cs" />
     <Compile Include="Utils\MyAudioFileReader.cs" />
     <Compile Include="Utils\WavePlayer.cs" />
+    <Page Include="LyricWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -186,11 +215,39 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Pages\AddCollectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\CollectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Models\MessageBoxPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\FindPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\SelectCollectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\RecentPlayPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\SearchPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\StoryboardPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StoryboardWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

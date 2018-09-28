@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Milkitic.OsuPlayer.Wpf.Storyboard.Layer;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Milkitic.OsuPlayer.Wpf.Storyboard.Layer;
 using D2D = SharpDX.Direct2D1;
 using Mathe = SharpDX.Mathematics.Interop;
 
@@ -96,7 +97,7 @@ namespace Milkitic.OsuPlayer.Wpf.Storyboard.Render
             }, _cts.Token);
         }
 
-        public void UpdateFrame()
+        public void UpdateFrame(Action custom = null)
         {
             if (!_render) return;
             _isRendering = true;
@@ -106,6 +107,7 @@ namespace Milkitic.OsuPlayer.Wpf.Storyboard.Render
 
             foreach (var item in _layerList)
                 item.Layer.OnFrameUpdate();
+            custom?.Invoke();
             // End drawing
             RenderTarget.TryEndDraw(out _, out _);
             _isRendering = false;

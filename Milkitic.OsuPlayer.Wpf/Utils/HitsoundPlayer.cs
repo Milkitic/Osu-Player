@@ -203,15 +203,15 @@ namespace Milkitic.OsuPlayer.Wpf.Utils
         private void CancelTask(bool innerCall = false)
         {
             _cts.Cancel();
-            if (!innerCall) Task.WaitAll(_playingTask);
-            Task.WaitAll(_offsetTask);
+            if (!innerCall && _playingTask != null) Task.WaitAll(_playingTask);
+            if (_offsetTask != null) Task.WaitAll(_offsetTask);
             Console.WriteLine(@"Task canceled.");
         }
 
         public void Dispose()
         {
             Stop();
-            Task.WaitAll(_playingTask);
+            if (_playingTask != null) Task.WaitAll(_playingTask);
             _playingTask?.Dispose();
             App.MusicPlayer?.Dispose();
             _cts?.Dispose();

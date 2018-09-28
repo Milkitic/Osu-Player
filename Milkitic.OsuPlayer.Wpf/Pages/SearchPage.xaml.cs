@@ -34,6 +34,7 @@ namespace Milkitic.OsuPlayer.Wpf.Pages
         {
             ParentWindow = mainWindow;
             InitializeComponent();
+
         }
 
         private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)

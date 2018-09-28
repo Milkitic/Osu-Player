@@ -10,12 +10,25 @@ namespace Milkitic.OsuPlayer.Wpf.Storyboard.Render
 {
     public sealed class HwndRenderBase : RenderBase
     {
+        public HwndRenderBase(Window window)
+        {
+            var hwnd = new WindowInteropHelper(window).Handle;
+            CreateTarget((int)window.Width, (int)window.Height, hwnd);
+        }
+
         public HwndRenderBase(FrameworkElement control)
         {
+            var hwnd = ((HwndSource)PresentationSource.FromVisual(control)).Handle;
+            CreateTarget((int)control.Width, (int)control.Height, hwnd);
+        }
+
+        private void CreateTarget(int width, int height, System.IntPtr hwnd)
+        {
+            RenderTarget?.Dispose();
             var hwndProp = new D2D.HwndRenderTargetProperties
             {
-                Hwnd = ((HwndSource)PresentationSource.FromVisual(control)).Handle,
-                PixelSize = new DX.Size2((int)control.Width, (int)control.Height),
+                Hwnd = hwnd,
+                PixelSize = new DX.Size2(width, height),
                 PresentOptions = Vsync ? D2D.PresentOptions.None : D2D.PresentOptions.Immediately
             };
 
@@ -29,6 +42,11 @@ namespace Milkitic.OsuPlayer.Wpf.Storyboard.Render
                 TextAntialiasMode = D2D.TextAntialiasMode.Default,
                 Transform = new Mathe.RawMatrix3x2(1, 0, 0, 1, 0, 0)
             };
+        }
+
+        public void CreateTarget()
+        {
+          
         }
     }
 }
