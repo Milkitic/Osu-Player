@@ -1,0 +1,55 @@
+﻿<Page x:Class="Milkitic.OsuPlayer.Wpf.Pages.ExportPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Milkitic.OsuPlayer.Wpf.Pages"
+      xmlns:beatmaps="clr-namespace:osu_database_reader.Components.Beatmaps;assembly=osu-database-reader"
+      xmlns:models="clr-namespace:Milkitic.OsuPlayer.Wpf.Models"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ExportPage">
+
+    <Grid>
+        <TabControl>
+            <TabItem Header="已导出">
+                <Grid Background="#FFE5E5E5">
+                    <ListView x:Name="ExportList" Margin="0,20,0,2" Background="Transparent" BorderThickness="0"
+                              ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="ExportList_MouseDoubleClick">
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="ItemDelete" Header="删除" Click="ItemDelete_Click" />
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                        <ListView.DataContext>
+                            <models:BeatmapViewModel/>
+                        </ListView.DataContext>
+                        <ListView.Resources>
+                            <DataTemplate DataType="{x:Type models:BeatmapViewModel}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="55"/>
+                                        <ColumnDefinition Width="260"/>
+                                        <ColumnDefinition Width="180"/>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Label VerticalAlignment="Center" Margin="15,7,15,7" Grid.Column="0" Content="{Binding Id}"/>
+                                    <Label VerticalAlignment="Center" Grid.Column="1" Content="{Binding AutoTitle}"/>
+                                    <Label VerticalAlignment="Center" Grid.Column="2" Content="{Binding AutoArtist}" Foreground="#FF9C9C9C"/>
+                                    <Label VerticalAlignment="Center" Grid.Column="3" Content="{Binding SongSource}" Foreground="#FF9C9C9C"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.Resources>
+                    </ListView>
+                </Grid>
+
+            </TabItem>
+            <TabItem Header="正在进行">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+  
+</Page>

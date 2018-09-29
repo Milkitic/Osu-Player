@@ -16,7 +16,18 @@ namespace Milkitic.OsuPlayer.Wpf.Utils
 {
     public class HitsoundPlayer : IPlayer, IDisposable
     {
-        public PlayerStatus PlayerStatus { get; private set; }
+        public PlayerStatus PlayerStatus
+        {
+            get => _playerStatus;
+            private set
+            {
+                Console.WriteLine(@"Hitsound: " + value);
+                _playerStatus = value;
+            }
+        }
+        public PlayerMode PlayerMode { get; set; } = PlayerMode.SingleLoop;
+        public PlayListMode PlayListMode { get; set; }
+
         public int Duration { get; }
         public int PlayTime
         {
@@ -53,6 +64,7 @@ namespace Milkitic.OsuPlayer.Wpf.Utils
         private int _singleOffset;
 
         private readonly Stopwatch _sw = new Stopwatch();
+        private PlayerStatus _playerStatus;
         public OsuFile Osufile { get; private set; }
 
         public HitsoundPlayer(string filePath, OsuFile osuFile)
@@ -92,7 +104,7 @@ namespace Milkitic.OsuPlayer.Wpf.Utils
         private void PlayHitsound()
         {
             _sw.Restart();
-            while (_hsQueue.Count > 0 || App.MusicPlayer.PlayerStatus != PlayerStatus.Stopped)
+            while (_hsQueue.Count > 0 || App.MusicPlayer.PlayerStatus != PlayerStatus.Finished)
             {
                 if (_cts.Token.IsCancellationRequested)
                 {
@@ -130,7 +142,7 @@ namespace Milkitic.OsuPlayer.Wpf.Utils
 
         public void Stop()
         {
-            InnerStop();
+            InnerStop(interrupt: true);
         }
 
         public void SetTime(int ms, bool play = true)
@@ -175,11 +187,11 @@ namespace Milkitic.OsuPlayer.Wpf.Utils
                 }, _cts.Token);
         }
 
-        private void InnerStop(bool innerCall = false)
+        private void InnerStop(bool innerCall = false, bool interrupt = false)
         {
             CancelTask(innerCall);
             PlayTime = 0;
-            PlayerStatus = PlayerStatus.Stopped;
+            PlayerStatus = interrupt ? PlayerStatus.Stopped : PlayerStatus.Finished;
             Requeue();
             App.MusicPlayer.Stop();
         }
@@ -258,7 +270,7 @@ namespace Milkitic.OsuPlayer.Wpf.Utils
                 {
                     //var currentTiming = file.TimingPoints.GetRedLine(obj.Offset);
                     var currentLine = Osufile.TimingPoints.GetLine(obj.Offset);
-                    var offset = obj.Offset; //todo: spinner & hold
+                    var offset = obj.Offset; //todo: Spinner & hold
 
                     var element = new HitsoundElement
                     {

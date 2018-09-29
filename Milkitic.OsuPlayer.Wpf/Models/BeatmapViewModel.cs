@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Milkitic.OsuPlayer.Wpf.Models
 {
-    public struct BeatmapSearchInfo
+    public struct BeatmapViewModel
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string Artist { get; set; }
         public string ArtistUnicode { get; set; }
@@ -32,6 +32,5 @@ namespace Milkitic.OsuPlayer.Wpf.Models
         public string AutoArtist => MetaSelect.GetUnicode(Artist, ArtistUnicode).Replace("_", "__");
         public string AutoCreator => Creator.Replace("_", "__");
         public string AutoVersion => Version.Replace("_", "__");
-        public void SetId(int value) => Id = value;
     }
 }

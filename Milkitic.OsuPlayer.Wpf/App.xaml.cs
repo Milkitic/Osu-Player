@@ -45,9 +45,17 @@ namespace Milkitic.OsuPlayer.Wpf
 
         static App()
         {
+            InitDb();
+            LyricProvider = new LyricProvider(new AutoSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
+
             if (!LoadSettings()) return;
             LoadDb();
-            LyricProvider = new LyricProvider(new AutoSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
+        }
+
+        private static void InitDb()
+        {
+            var defCol = DbOperator.GetCollections().Where(k => k.Locked);
+            if (!defCol.Any()) DbOperator.AddCollection("最喜爱的", true);
         }
 
         private static bool LoadSettings()

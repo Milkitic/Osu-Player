@@ -13,9 +13,10 @@ namespace Milkitic.OsuPlayer.Wpf
 
         public static string DefaultPath => Path.Combine(CurrentPath, "Default");
         public static string ResourcePath => Path.Combine(CurrentPath, "Resource");
+        public static string MusicPath => Path.Combine(CurrentPath, "Music");
+        public static string BackgroundPath => Path.Combine(CurrentPath, "Background");
 
         public static string OsuPath => new FileInfo(App.Config.DbPath).Directory.FullName;
         public static string OsuSongPath => Path.Combine(OsuPath, "Songs");
-
     }
 }

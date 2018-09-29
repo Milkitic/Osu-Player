@@ -144,10 +144,13 @@
     <Compile Include="LyricWindow.xaml.cs">
       <DependentUpon>LyricWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\Beatmaps.cs" />
+    <Compile Include="Models\BeatmapViewModel.cs" />
+    <Compile Include="Models\EntryExtension.cs" />
     <Compile Include="Models\HitsoundElement.cs" />
     <Compile Include="Models\Enums.cs" />
+    <Compile Include="Models\MapIndentity.cs" />
     <Compile Include="Models\PageBox.cs" />
+    <Compile Include="Models\PlayList.cs" />
     <Compile Include="Pages\AddCollectionPage.xaml.cs">
       <DependentUpon>AddCollectionPage.xaml</DependentUpon>
     </Compile>
@@ -156,6 +159,9 @@
     </Compile>
     <Compile Include="Models\MessageBoxPage.xaml.cs">
       <DependentUpon>MessageBoxPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\ExportPage.xaml.cs">
+      <DependentUpon>ExportPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\FindPage.xaml.cs">
       <DependentUpon>FindPage.xaml</DependentUpon>
@@ -224,6 +230,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Models\MessageBoxPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\ExportPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

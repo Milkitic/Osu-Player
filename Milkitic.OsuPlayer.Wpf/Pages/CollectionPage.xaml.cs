@@ -1,5 +1,6 @@
 ﻿using Milkitic.OsuPlayer.Wpf.Data;
 using Milkitic.OsuPlayer.Wpf.Models;
+using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using Collection = Milkitic.OsuPlayer.Wpf.Data.Collection;
 
 namespace Milkitic.OsuPlayer.Wpf.Pages
 {
@@ -24,7 +26,8 @@ namespace Milkitic.OsuPlayer.Wpf.Pages
     {
         private MainWindow ParentWindow { get; set; }
         private readonly Collection _collection;
-        private List<BeatmapSearchInfo> _maps;
+        private List<BeatmapViewModel> _maps;
+        private IEnumerable<BeatmapEntry> _entry;
 
         public CollectionPage(MainWindow mainWindow, Collection collection)
         {
@@ -32,13 +35,16 @@ namespace Milkitic.OsuPlayer.Wpf.Pages
             _collection = collection;
             InitializeComponent();
             UpdateList();
+            if (collection.Locked)
+                BtnDelCol.Visibility = Visibility.Collapsed;
             LblTitle.Content = _collection.Name;
         }
 
         private void UpdateList()
         {
             var infos = (List<MapInfo>)DbOperator.GetMapsFromCollection(_collection);
-            _maps = App.Beatmaps.GetMapListFromDb(infos).Transform(true).ToList();
+            _entry = App.Beatmaps.GetMapListFromDb(infos);
+            _maps = _entry.Transform(true).ToList();
             MapList.DataContext = _maps;
         }
 
@@ -58,7 +64,7 @@ namespace Milkitic.OsuPlayer.Wpf.Pages
                 return;
             if (e.OriginalSource is TextBlock)
                 return;
-            var searchInfo = (BeatmapSearchInfo)MapList.SelectedItem;
+            var searchInfo = (BeatmapViewModel)MapList.SelectedItem;
             var map = App.Beatmaps.GetBeatmapsetsByFolder(searchInfo.FolderName)
                 .FirstOrDefault(k => k.Version == searchInfo.Version);
             if (map != null)
@@ -77,10 +83,10 @@ namespace Milkitic.OsuPlayer.Wpf.Pages
         {
             if (MapList.SelectedItem == null)
                 return;
-            var searchInfo = (BeatmapSearchInfo)MapList.SelectedItem;
-            DbOperator.RemoveMapFromCollection(searchInfo.Version, searchInfo.FolderName, _collection);
+            var searchInfo = (BeatmapViewModel)MapList.SelectedItem;
+            DbOperator.RemoveMapFromCollection(searchInfo.GetIdentity(), _collection);
             UpdateList();
-            ParentWindow.FillPlayList(true, true, PlayListMode.RecentList);
+            ParentWindow.FillPlayList(true, true, PlayListMode.Collection, _collection);
         }
 
         private void LblCreator_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -96,6 +102,11 @@ namespace Milkitic.OsuPlayer.Wpf.Pages
                 ParentWindow.MainFrame.Navigate(ParentWindow.Pages.RecentPlayPage);
                 ParentWindow.UpdateCollections();
             });
+        }
+
+        private void BtnExportAll_Click(object sender, RoutedEventArgs e)
+        {
+            ExportPage.QueueEntries(_entry);
         }
     }
 }

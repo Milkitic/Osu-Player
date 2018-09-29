@@ -385,5 +385,17 @@
             </Setter>
         </Style>
 
+        <Style TargetType="{x:Type ListViewItem}">
+            <Setter Property="Background" Value="#88EEEEF5"/>
+            <Setter Property="BorderThickness" Value="0" />
+            <Style.Triggers>
+                <Trigger Property="ListBox.AlternationIndex" Value="1">
+                    <Setter Property="Background"  Value="#88E0E0EF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="{x:Type ListView}">
+            <Setter Property="AlternationCount" Value="2"/>
+        </Style>
     </Application.Resources>
 </Application>

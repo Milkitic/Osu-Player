@@ -55,13 +55,13 @@ namespace Milkitic.OsuPlayer.Wpf.Pages
             _queryLock = true;
             await Task.Run(() =>
             {
-                while (_querySw.ElapsedMilliseconds < 150)
+                while (_querySw.ElapsedMilliseconds < 300)
                     Thread.Sleep(1);
                 _querySw.Stop();
                 _queryLock = false;
                 string keyword = null;
                 Dispatcher.Invoke(() => { keyword = SearchBox.Text; });
-                IEnumerable<BeatmapSearchInfo> sorted =
+                IEnumerable<BeatmapViewModel> sorted =
                      EntryQuery.GetListByKeyword(keyword, App.Beatmaps).SortBy(sortMode).Transform(false);
 
                 Dispatcher.BeginInvoke(new Action(() =>
@@ -83,7 +83,7 @@ namespace Milkitic.OsuPlayer.Wpf.Pages
                 return;
             if (e.OriginalSource is TextBlock)
                 return;
-            var map = App.Beatmaps.GetBeatmapsetsByFolder(((BeatmapSearchInfo)ResultList.SelectedItem).FolderName)
+            var map = App.Beatmaps.GetBeatmapsetsByFolder(((BeatmapViewModel)ResultList.SelectedItem).FolderName)
                 .GetHighestDiff();
             ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                 map.BeatmapFileName));

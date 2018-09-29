@@ -14,11 +14,11 @@ namespace Milkitic.OsuPlayer.Wpf.Data
     {
         public MapInfo() { }
 
-        public MapInfo(string id, string version, string folder, int offset, DateTime? lastPlayTime)
+        public MapInfo(string id, string version, string folderName, int offset, DateTime? lastPlayTime)
         {
             Id = id;
             Version = version;
-            Folder = folder;
+            FolderName = folderName;
             Offset = offset;
             LastPlayTime = lastPlayTime;
         }
@@ -28,11 +28,13 @@ namespace Milkitic.OsuPlayer.Wpf.Data
         [Required, Column("version")]
         public string Version { get; set; }
         [Required, Column("folder")]
-        public string Folder { get; set; }
+        public string FolderName { get; set; }
         [Column("offset")]
         public int Offset { get; set; }
         [Column("lastPlayTime")]
         public DateTime? LastPlayTime { get; set; }
+        [Column("exportFile")]
+        public string ExportFile { get; set; }
     }
 
     public class MapInfoContext : DbContext
@@ -46,16 +48,24 @@ namespace Milkitic.OsuPlayer.Wpf.Data
     {
         public Collection() { }
 
-        public Collection(string id, string name)
+        public Collection(string id, string name, bool locked, int index)
         {
             Id = id;
             Name = name;
+            LockedInt = locked ? 1 : 0;
+            Index = index;
         }
 
         [Required, Column("id")]
         public string Id { get; set; }
         [Required, Column("name")]
         public string Name { get; set; }
+        [Column("locked")]
+        public int LockedInt { get; set; }
+        [Column("index")]
+        public int Index { get; set; }
+
+        public bool Locked => LockedInt == 1;
     }
 
     public class CollectionContext : DbContext

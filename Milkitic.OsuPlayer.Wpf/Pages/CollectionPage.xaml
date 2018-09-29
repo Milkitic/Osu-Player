@@ -25,7 +25,7 @@
         <Grid Grid.Row="1">
             <StackPanel Orientation="Horizontal">
                 <Button Content="播放全部" Width="80" Margin="5" Height="30" />
-                <Button Content="导出全部" Width="80" Margin="5" Height="30" />
+                <Button x:Name="BtnExportAll" Content="导出全部" Width="80" Margin="5" Height="30" Click="BtnExportAll_Click" />
             </StackPanel>
         </Grid>
         <ListView Grid.Row="2" x:Name="MapList" Margin="0,20,0,2" Background="Transparent" BorderThickness="0"
@@ -36,10 +36,10 @@
                 </ContextMenu>
             </ListView.ContextMenu>
             <ListView.DataContext>
-                <models:BeatmapSearchInfo/>
+                <models:BeatmapViewModel/>
             </ListView.DataContext>
             <ListView.Resources>
-                <DataTemplate DataType="{x:Type models:BeatmapSearchInfo}">
+                <DataTemplate DataType="{x:Type models:BeatmapViewModel}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="55"/>
@@ -58,18 +58,6 @@
                                Content="{Binding AutoVersion}" Foreground="#FF9C9C9C" />
                     </Grid>
                 </DataTemplate>
-                <Style TargetType="{x:Type ListViewItem}">
-                    <Setter Property="Background" Value="#88EEEEF5"/>
-                    <Setter Property="BorderThickness" Value="0" />
-                    <Style.Triggers>
-                        <Trigger Property="ListBox.AlternationIndex" Value="1">
-                            <Setter Property="Background"  Value="#88E0E0EF"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-                <Style  TargetType="{x:Type ListView}">
-                    <Setter Property="AlternationCount" Value="2"/>
-                </Style>
             </ListView.Resources>
         </ListView>
     </Grid>

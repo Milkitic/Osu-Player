@@ -15,7 +15,7 @@
             <RowDefinition Height="Auto" MinHeight="48" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Background="White">
-            <Image x:Name="StoryboardScene" Margin="1" Source="C:\Users\YureruMiira\Desktop\bg.jpg"
+            <Image x:Name="BlurScene" Margin="1" Source="C:\Users\YureruMiira\Desktop\bg.jpg"
                    Stretch="UniformToFill" Opacity="1">
                 <Image.Effect>
                     <BlurEffect Radius="75" />
@@ -109,7 +109,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Image x:Name="Thumb" Margin="1" MaxHeight="46" MaxWidth="61.333333"
-                   Source="{Binding Source, ElementName=StoryboardScene}" />
+                   Source="{Binding Source, ElementName=BlurScene}" />
             <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
                 <Button x:Name="BtnPlay" Style="{StaticResource PlayButtonStyle}" Click="BtnPlay_Click" />
                 <Button x:Name="BtnNext" Style="{StaticResource NextButtonStyle}" Click="BtnNext_Click" />

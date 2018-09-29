@@ -7,12 +7,12 @@
 
     public enum PlayerStatus
     {
-        NotInitialized, Ready, Playing, Paused, Stopped
+        NotInitialized, Ready, Playing, Paused, Stopped,Finished
     }
 
-    internal enum PlayerMode
+    public enum PlayerMode
     {
-        Normal, Random, Loop, LoopRandom
+        Normal, Random, Loop, LoopRandom, Single, SingleLoop,
     }
 
     public enum PlayListMode

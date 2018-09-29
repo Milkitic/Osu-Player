@@ -1,22 +1,32 @@
-﻿using System;
+﻿using Milkitic.OsuPlayer.Wpf.Interface;
+using Milkitic.OsuPlayer.Wpf.Models;
+using NAudio.Wave;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Milkitic.OsuPlayer.Wpf.Interface;
-using Milkitic.OsuPlayer.Wpf.Models;
-using NAudio.Wave;
 
 namespace Milkitic.OsuPlayer.Wpf.Utils
 {
     public class MusicPlayer : IPlayer, IDisposable
     {
-        public PlayerStatus PlayerStatus { get; private set; }
+        public PlayerStatus PlayerStatus
+        {
+            get => _playerStatus;
+            private set
+            {
+                Console.WriteLine(@"Music: " + value);
+                _playerStatus = value;
+            }
+        }
+
         public int Duration => (int)_audioFile.TotalTime.TotalMilliseconds;
         public int PlayTime { get; private set; }
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private WaveOutEvent _device;
         private MyAudioFileReader _audioFile;
+        private PlayerStatus _playerStatus;
 
         public MusicPlayer(string filePath)
         {
@@ -26,7 +36,7 @@ namespace Milkitic.OsuPlayer.Wpf.Utils
             _device = new WaveOutEvent { DesiredLatency = 80 };
             _device.PlaybackStopped += (sender, args) =>
             {
-                PlayerStatus = PlayerStatus.Stopped;
+                PlayerStatus = PlayerStatus.Finished;
             };
 
             _audioFile = new MyAudioFileReader(filePath);

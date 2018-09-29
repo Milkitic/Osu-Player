@@ -31,14 +31,14 @@
                 </Style>
             </TextBlock.Style>
         </TextBlock>
-        
-        <ListBox x:Name="ResultList" Margin="0,20,0,2" Grid.Row="1" Background="Transparent" BorderThickness="0"
-                 ItemsSource="{Binding Mode=OneWay}"  MouseDoubleClick="ResultList_MouseDoubleClick">
-            <ListBox.DataContext>
-                <beatmaps:BeatmapEntry/>
-            </ListBox.DataContext>
-            <ListBox.Resources>
-                <DataTemplate DataType="{x:Type models:BeatmapSearchInfo}">
+
+        <ListView x:Name="ResultList" Margin="0,20,0,2" Grid.Row="1" Background="Transparent" BorderThickness="0"
+                 ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="ResultList_MouseDoubleClick">
+            <ListView.DataContext>
+                <models:BeatmapViewModel/>
+            </ListView.DataContext>
+            <ListView.Resources>
+                <DataTemplate DataType="{x:Type models:BeatmapViewModel}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="315"/>
@@ -52,19 +52,7 @@
                                Foreground="#FF1672CD" Cursor="Hand" />
                     </Grid>
                 </DataTemplate>
-                <Style TargetType="{x:Type ListBoxItem}">
-                    <Setter Property="Background" Value="#88EEEEF5"/>
-                    <Setter Property="BorderThickness" Value="0" />
-                    <Style.Triggers>
-                        <Trigger Property="ListBox.AlternationIndex" Value="1">
-                            <Setter Property="Background"  Value="#88E0E0EF"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-                <Style  TargetType="{x:Type ListBox}">
-                    <Setter Property="AlternationCount" Value="2"/>
-                </Style>
-            </ListBox.Resources>
-        </ListBox>
+            </ListView.Resources>
+        </ListView>
     </Grid>
 </Page>

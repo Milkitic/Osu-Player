@@ -163,7 +163,7 @@ namespace Milkitic.OsuPlayer.Wpf.Storyboard.Layer
                     var ms = _timing.Offset;
                     _renderList = elements.Where(k =>
                         !k.Elment.FadeoutList.InRange((int)ms, (updateDelay + delay),
-                            -(updateDelay + delay)) && // todo: 有点问题
+                            -(updateDelay + delay)) && // todo: Maybe has some defects
                         ms >= k.Elment.MinTime - (updateDelay + delay) &&
                         ms <= k.Elment.MaxTime).ToArray();
                     Console.WriteLine($@"更新图象队列：{_renderList.Length}");

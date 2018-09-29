@@ -57,7 +57,8 @@ namespace Milkitic.OsuPlayer.Wpf.Data
         public static IEnumerable<BeatmapEntry> GetRecentListFromDb(
             this IEnumerable<BeatmapEntry> list)
         {
-            return list.GetMapListFromDb(DbOperator.GetRecent().ToList());
+            var recent = DbOperator.GetRecent().ToList();
+            return list.GetMapListFromDb(recent);
         }
 
         public static IEnumerable<BeatmapEntry> GetMapListFromDb(
@@ -69,7 +70,7 @@ namespace Milkitic.OsuPlayer.Wpf.Data
             {
                 foreach (var mapInfo in infos)
                 {
-                    if (mapInfo.Folder == k.FolderName && mapInfo.Version == k.Version)
+                    if (mapInfo.FolderName == k.FolderName && mapInfo.Version == k.Version)
                     {
                         db.Add((k, mapInfo.LastPlayTime ?? new DateTime()));
                         break;
@@ -94,11 +95,11 @@ namespace Milkitic.OsuPlayer.Wpf.Data
             }
         }
 
-        public static IEnumerable<BeatmapSearchInfo> Transform(this IEnumerable<BeatmapEntry> list, bool multiVersions)
+        public static IEnumerable<BeatmapViewModel> Transform(this IEnumerable<BeatmapEntry> list, bool multiVersions)
         {
-            return list.Select((entry, i) => new BeatmapSearchInfo
+            return list.Select((entry, i) => new BeatmapViewModel
             {
-                Id = multiVersions ? i + 1 : 0,
+                Id = multiVersions ? (i + 1).ToString("00") : "",
                 Artist = entry.Artist,
                 ArtistUnicode = entry.ArtistUnicode,
                 BeatmapId = entry.BeatmapId,
@@ -113,7 +114,7 @@ namespace Milkitic.OsuPlayer.Wpf.Data
             }).Distinct(new Comparer(multiVersions)).ToList();
         }
 
-        public class Comparer : IEqualityComparer<BeatmapSearchInfo>
+        public class Comparer : IEqualityComparer<BeatmapViewModel>
         {
             private readonly bool _multiVersions;
 
@@ -122,7 +123,7 @@ namespace Milkitic.OsuPlayer.Wpf.Data
                 _multiVersions = multiVersions;
             }
 
-            public bool Equals(BeatmapSearchInfo x, BeatmapSearchInfo y)
+            public bool Equals(BeatmapViewModel x, BeatmapViewModel y)
             {
                 if (x.AutoArtist != y.AutoArtist) return false;
                 if (x.AutoTitleSource != y.AutoTitleSource) return false;
@@ -135,7 +136,7 @@ namespace Milkitic.OsuPlayer.Wpf.Data
                 return true;
             }
 
-            public int GetHashCode(BeatmapSearchInfo obj)
+            public int GetHashCode(BeatmapViewModel obj)
             {
                 return obj.GetHashCode();
             }

@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -38,10 +39,19 @@ namespace Milkitic.OsuPlayer.Wpf
             RecentPlayPage = new RecentPlayPage(this),
             FindPage = new FindPage(this),
             StoryboardPage = new StoryboardPage(this),
+            ExportPage = new ExportPage(this),
         };
 
-        public PageBox PageBox;
-        private LyricWindow _lyricWindow;
+        public readonly PageBox PageBox;
+        private readonly PlayList _playList = new PlayList();
+        private readonly LyricWindow _lyricWindow;
+
+        //local player control
+        private CancellationTokenSource _cts = new CancellationTokenSource();
+        private Task _statusTask;
+        private bool _scrollLock;
+        private PlayerStatus _tmpStatus = PlayerStatus.Stopped;
+        private MapIdentity _nowIdentity;
 
         public MainWindow()
         {
@@ -51,20 +61,18 @@ namespace Milkitic.OsuPlayer.Wpf
             _lyricWindow.Show();
         }
 
-        public void AddToCollection(BeatmapEntry entry)
-        {
-
-        }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // todo: This should be kept since the application exit last time.
             MainFrame.Navigate(Pages.RecentPlayPage);
             UpdateCollections();
-
             LoadSurfaceSettings();
             RunSurfaceUpdate();
         }
 
+        /// <summary>
+        /// Update collections in the navigation bar.
+        /// </summary>
         public void UpdateCollections()
         {
             var list = (List<Collection>)DbOperator.GetCollections();
@@ -72,6 +80,9 @@ namespace Milkitic.OsuPlayer.Wpf
             CollectionList.DataContext = list;
         }
 
+        /// <summary>
+        /// Clear things.
+        /// </summary>
         private void Window_Closing(object sender, EventArgs e)
         {
             ClearHitsoundPlayer();
@@ -81,13 +92,8 @@ namespace Milkitic.OsuPlayer.Wpf
             _lyricWindow.Dispose();
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            PlayNewFile(LoadFile());
-        }
-
         /// <summary>
-        /// Navigation Search
+        /// Navigate search page.
         /// </summary>
         private void BtnSearch_Click(object sender, RoutedEventArgs e)
         {
@@ -96,18 +102,17 @@ namespace Milkitic.OsuPlayer.Wpf
         }
 
         /// <summary>
-        /// Navigation Find
+        /// Navigate find page.
         /// </summary>
         private void BtnFind_Click(object sender, RoutedEventArgs e)
         {
             //MainFrame.Navigate(Pages.FindPage);
             PageBox.Show(Title, "功能完善中，敬请期待~", delegate { });
             //bool? b = await PageBox.ShowDialog(Title, "功能完善中，敬请期待~");
-
         }
 
         /// <summary>
-        /// Navigation Storyboard
+        /// Navigate storyboard page.
         /// </summary>
         private void Storyboard_Click(object sender, RoutedEventArgs e)
         {
@@ -119,7 +124,7 @@ namespace Milkitic.OsuPlayer.Wpf
         }
 
         /// <summary>
-        /// Navigation Recent
+        /// Navigate recent page.
         /// </summary>
         private void BtnRecent_Click(object sender, RoutedEventArgs e)
         {
@@ -127,11 +132,11 @@ namespace Milkitic.OsuPlayer.Wpf
         }
 
         /// <summary>
-        /// Navigation Export
+        /// Navigate export page.
         /// </summary>
         private void BtnExport_Click(object sender, RoutedEventArgs e)
         {
-
+            MainFrame.Navigate(Pages.ExportPage);
         }
 
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
@@ -139,6 +144,9 @@ namespace Milkitic.OsuPlayer.Wpf
             FramePop.Navigate(new AddCollectionPage(this));
         }
 
+        /// <summary>
+        /// Navigate collection page.
+        /// </summary>
         private void CollectionList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (CollectionList.SelectedItem == null)
@@ -147,32 +155,24 @@ namespace Milkitic.OsuPlayer.Wpf
             MainFrame.Navigate(new CollectionPage(this, collection));
         }
 
+        /// <summary>
+        /// Open browser linked to Github issue page
+        /// </summary>
         private void BtnFeedback_Click(object sender, RoutedEventArgs e)
         {
-
+            throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Popup a dialog for settings.
+        /// </summary>
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
-
-        private List<BeatmapEntry> _playList = new List<BeatmapEntry>();
-        private List<int> _indexes = new List<int>();
-        private int _point;
-
-        //local control
-        private PlayerMode PlayerMode { get; set; } = PlayerMode.LoopRandom;
-        private PlayListMode PlayListMode { get; set; }
-
-        private CancellationTokenSource _cts = new CancellationTokenSource();
-        private Task _statusTask;
-        private bool _scrollLock;
-        private bool _isManualStop = true;
-        private PlayerStatus _status = PlayerStatus.Stopped;
-        private (string Version, string Folder) _nowInfo;
-
+        /// <summary>
+        /// Play next song in playlist.
+        /// </summary>
         private void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
             if (App.HitsoundPlayer == null)
@@ -200,11 +200,14 @@ namespace Milkitic.OsuPlayer.Wpf
             AutoPlayNext(true);
         }
 
+        /// <summary>
+        /// Popup a dialog for adding music to a collection.
+        /// </summary>
         private void BtnLike_Click(object sender, RoutedEventArgs e)
         {
             FramePop.Navigate(new SelectCollectionPage(this,
-                App.Beatmaps.GetBeatmapsetsByFolder(_nowInfo.Folder)
-                    .FirstOrDefault(k => k.Version == _nowInfo.Version)));
+                App.Beatmaps.GetBeatmapsetsByFolder(_nowIdentity.FolderName)
+                    .FirstOrDefault(k => k.Version == _nowIdentity.Version)));
         }
 
         private void BtnVolume_Click(object sender, RoutedEventArgs e)
@@ -212,17 +215,28 @@ namespace Milkitic.OsuPlayer.Wpf
             Pop.IsOpen = true;
         }
 
+        /// <summary>
+        /// While popup lost focus, we should hide it.
+        /// </summary>
         private void Popup_LostFocus(object sender, RoutedEventArgs e)
         {
             Pop.IsOpen = false;
         }
 
-        private void PlayProgress_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        /// <summary>
+        /// Play progress control.
+        /// While drag started, slider's updating should be paused.
+        /// </summary>
+        private void PlayProgress_DragStarted(object sender, DragStartedEventArgs e)
         {
             _scrollLock = true;
         }
 
-        private void PlayProgress_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        /// <summary>
+        /// Play progress control.
+        /// While drag started, slider's updating should be recoverd.
+        /// </summary>
+        private void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
         {
             if (App.HitsoundPlayer != null)
             {
@@ -243,21 +257,35 @@ namespace Milkitic.OsuPlayer.Wpf
             _scrollLock = false;
         }
 
-        private void MasterVolume_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        /// <summary>
+        /// Master Volume Settings
+        /// </summary>
+        private void MasterVolume_DragDelta(object sender, DragDeltaEventArgs e)
         {
             App.Config.Volume.Main = (float)(MasterVolume.Value / 100);
         }
 
-        private void MusicVolume_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        /// <summary>
+        /// Music Volume Settings
+        /// </summary>
+        private void MusicVolume_DragDelta(object sender, DragDeltaEventArgs e)
         {
             App.Config.Volume.Music = (float)(MusicVolume.Value / 100);
         }
 
-        private void HitsoundVolume_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        /// <summary>
+        /// Effect Volume Settings
+        /// </summary>
+        private void HitsoundVolume_DragDelta(object sender, DragDeltaEventArgs e)
         {
             App.Config.Volume.Hitsound = (float)(HitsoundVolume.Value / 100);
         }
 
+        #region Player
+
+        /// <summary>
+        /// Call a file dialog to open custom file.
+        /// </summary>
         public string LoadFile()
         {
             var openFileDialog = new OpenFileDialog
@@ -269,6 +297,9 @@ namespace Milkitic.OsuPlayer.Wpf
             return (result.HasValue && result.Value) ? openFileDialog.FileName : null;
         }
 
+        /// <summary>
+        /// Play a new file by file path.
+        /// </summary>
         public void PlayNewFile(string path)
         {
             if (path == null) return;
@@ -278,42 +309,52 @@ namespace Milkitic.OsuPlayer.Wpf
                 {
                     var osu = new OsuFile(path);
                     var fi = new FileInfo(path);
+                    if (!fi.Exists)
+                        throw new FileNotFoundException("Cannot locate.", fi.FullName);
                     var dir = fi.Directory.FullName;
+
+                    /* Clear */
                     ClearHitsoundPlayer();
-                    _isManualStop = true;
+
+                    /* Set new hitsound player*/
                     App.HitsoundPlayer = new HitsoundPlayer(path, osu);
                     _cts = new CancellationTokenSource();
 
                     /* Set Meta */
+                    _nowIdentity = new MapIdentity(fi.Directory.Name, App.HitsoundPlayer.Osufile.Metadata.Version);
                     LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle();
                     LblArtist.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist();
+                    var map = DbOperator.GetMapFromDb(_nowIdentity);
+                    var album = DbOperator.GetCollectionsByMap(map);
+                    bool faved = album != null && album.Any(k => k.Locked);
+                    BtnLike.Style = faved
+                        ? (Style)FindResource("FavedButtonStyle")
+                        : (Style)FindResource("FavButtonStyle");
 
                     /* Set Lyric */
                     SetLyric();
 
                     /* Set Progress */
                     PlayProgress.Value = App.HitsoundPlayer.SingleOffset;
-
-                    /* Set Storyboard */
 #if DEBUG
+                    /* Set Storyboard */
                     if (false) App.StoryboardProvider.LoadStoryboard(dir, App.HitsoundPlayer.Osufile);
 #endif
                     /* Set Background */
                     if (App.HitsoundPlayer.Osufile.Events.BackgroundInfo != null)
                     {
                         var bgPath = Path.Combine(dir, App.HitsoundPlayer.Osufile.Events.BackgroundInfo.Filename);
-                        StoryboardScene.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
+                        BlurScene.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
                         Thumb.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
                     }
                     else
-                        StoryboardScene.Source = null;
+                        BlurScene.Source = null;
 
                     /* Start Play */
                     App.HitsoundPlayer.Play();
                     RunSurfaceUpdate();
 
-                    _nowInfo = (App.HitsoundPlayer.Osufile.Metadata.Version, fi.Directory.Name);
-                    DbOperator.UpdateMap(_nowInfo.Version, _nowInfo.Folder);
+                    DbOperator.UpdateMap(_nowIdentity);
                     Pages.RecentPlayPage.UpdateList();
                 }
                 catch (MultiTimingSectionException ex)
@@ -357,22 +398,31 @@ namespace Milkitic.OsuPlayer.Wpf
             }
         }
 
-        private void SetLyric()
-        {
-            if (!_lyricWindow.IsVisible) return;
-            var lyric = App.LyricProvider.GetLyric(App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist(),
-                App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle(), App.MusicPlayer.Duration);
-            _lyricWindow.SetNewLyric(lyric, App.HitsoundPlayer.Osufile);
-            _lyricWindow.StartWork();
-        }
-
+        /// <summary>
+        /// Play next song in list if list exist.
+        /// </summary>
+        /// <param name="isManual">Whether it is called by user (Click next button manually)
+        /// or called by application (A song finshed).</param>
         private void AutoPlayNext(bool isManual)
         {
-            if (App.Beatmaps == null) return;
-            if (_point > _indexes.Count - 1)
+            if (App.HitsoundPlayer == null) return;
+            if (App.HitsoundPlayer.PlayerMode == PlayerMode.Single && !isManual)
             {
-                if (_indexes.Count == 0) return;
-                else if (PlayerMode == PlayerMode.Loop || PlayerMode == PlayerMode.LoopRandom)
+                App.HitsoundPlayer.Stop();
+                return;
+            }
+
+            if (App.HitsoundPlayer.PlayerMode == PlayerMode.SingleLoop && !isManual)
+            {
+                App.HitsoundPlayer.Play();
+                return;
+            }
+
+            if (_playList.Pointer > _playList.Indexes.Count - 1)
+            {
+                if (_playList.Indexes.Count == 0) return;
+                if (App.HitsoundPlayer.PlayerMode == PlayerMode.Loop ||
+                    App.HitsoundPlayer.PlayerMode == PlayerMode.LoopRandom)
                 {
                     FillPlayList(false, true);
                 }
@@ -384,30 +434,43 @@ namespace Milkitic.OsuPlayer.Wpf
                     }
                     else
                     {
-                        _isManualStop = true;
+                        App.HitsoundPlayer.Stop();
                         return;
                     }
                 }
             }
-            else if (_point == -1)
+            else if (_playList.Pointer == -1)
             {
-                _point = _indexes.Count - 1;
+                _playList.Pointer = _playList.Indexes.Count - 1;
             }
-            BeatmapEntry map = _playList[_indexes[_point]];
-            _point++;
+
+            BeatmapEntry map = _playList.Entries[_playList.Indexes[_playList.Pointer]];
+            _playList.Pointer++;
             var path = Path.Combine(new FileInfo(App.Config.DbPath).Directory.FullName, "Songs", map.FolderName,
                 map.BeatmapFileName);
             PlayNewFile(path);
         }
 
-        public void FillPlayList(bool refreshList, bool refreshIndex, PlayListMode? playListMode = null)
+        /// <summary>
+        /// Update current play list.
+        /// </summary>
+        /// <param name="refreshList">The play list will be refreshed if true.
+        /// (For those who updated recent list or collection list)</param>
+        /// <param name="refreshIndex">The Index list will be refreshed if true.
+        /// (After we finished the list, there is no need to refresh the whole playlist)</param>
+        /// <param name="playListMode">If the value is null, current mode will not be infected.</param>
+        /// <param name="collection">If the value is not null, current mode will forcly changed to collection mode.
+        /// todo: should create a collection list. </param>
+        public void FillPlayList(bool refreshList, bool refreshIndex, PlayListMode? playListMode = null,
+            Collection collection = null)
         {
-            if (playListMode != null) PlayListMode = playListMode.Value;
-            if (refreshList || _playList.Count == 0)
-                switch (PlayListMode)
+            if (playListMode != null) App.HitsoundPlayer.PlayListMode = playListMode.Value;
+            if (collection != null) App.HitsoundPlayer.PlayListMode = PlayListMode.Collection;
+            if (refreshList || _playList.Entries.Count == 0)
+                switch (App.HitsoundPlayer.PlayListMode)
                 {
                     case PlayListMode.RecentList:
-                        _playList = App.Beatmaps.GetRecentListFromDb().ToList();
+                        _playList.Entries = App.Beatmaps.GetRecentListFromDb().ToList();
                         break;
                     default:
                     case PlayListMode.Collection:
@@ -415,20 +478,20 @@ namespace Milkitic.OsuPlayer.Wpf
                         break;
                 }
 
-            if (refreshIndex || _indexes == null || _indexes.Count == 0)
-                switch (PlayerMode)
+            if (refreshIndex || _playList.Indexes == null || _playList.Indexes.Count == 0)
+                switch (App.HitsoundPlayer.PlayerMode)
                 {
                     default:
                     case PlayerMode.Normal:
                     case PlayerMode.Loop:
-                        _indexes = _playList.Select((o, i) => i).ToList();
+                        _playList.Indexes = _playList.Entries.Select((o, i) => i).ToList();
                         break;
                     case PlayerMode.Random:
                     case PlayerMode.LoopRandom:
-                        _indexes = _playList.Select((o, i) => i).ShuffleToList();
+                        _playList.Indexes = _playList.Entries.Select((o, i) => i).ShuffleToList();
                         break;
                 }
-            _point = 0;
+            _playList.Pointer = 0;
         }
 
         private void ClearHitsoundPlayer()
@@ -440,6 +503,26 @@ namespace Milkitic.OsuPlayer.Wpf
             App.HitsoundPlayer = null;
         }
 
+        #endregion
+
+        /// <summary>
+        /// Call lyric provider to check lyric
+        /// todo: this should run synchronously.
+        /// </summary>
+        private void SetLyric()
+        {
+            if (!_lyricWindow.IsVisible) return;
+            var lyric = App.LyricProvider.GetLyric(App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist(),
+                App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle(), App.MusicPlayer.Duration);
+            _lyricWindow.SetNewLyric(lyric, App.HitsoundPlayer.Osufile);
+            _lyricWindow.StartWork();
+        }
+
+        #region Surface
+
+        /// <summary>
+        /// Initialize default player settings.
+        /// </summary>
         private void LoadSurfaceSettings()
         {
             MasterVolume.Value = App.Config.Volume.Main * 100;
@@ -447,11 +530,17 @@ namespace Milkitic.OsuPlayer.Wpf
             HitsoundVolume.Value = App.Config.Volume.Hitsound * 100;
         }
 
+        /// <summary>
+        /// Start a task to update player info (Starter).
+        /// </summary>
         private void RunSurfaceUpdate()
         {
             _statusTask = Task.Run(new Action(UpdateSurface), _cts.Token);
         }
 
+        /// <summary>
+        /// Start a task to update player info (Looping in another thread).
+        /// </summary>
         private void UpdateSurface()
         {
             const int interval = 10;
@@ -463,16 +552,18 @@ namespace Milkitic.OsuPlayer.Wpf
                     continue;
                 }
 
-                if (_status != App.HitsoundPlayer.PlayerStatus)
+                if (_tmpStatus != App.HitsoundPlayer.PlayerStatus)
                 {
                     var s = App.HitsoundPlayer.PlayerStatus;
                     switch (s)
                     {
                         case PlayerStatus.Playing:
-                            _isManualStop = false;
-                            Dispatcher.BeginInvoke(new Action(() => { BtnPlay.Style = (Style)FindResource("PauseButtonStyle"); }));
+                            Dispatcher.BeginInvoke(new Action(() =>
+                            {
+                                BtnPlay.Style = (Style)FindResource("PauseButtonStyle");
+                            }));
                             break;
-                        case PlayerStatus.Stopped when !_isManualStop:
+                        case PlayerStatus.Finished:
                             Dispatcher.BeginInvoke(new Action(() => { AutoPlayNext(false); }));
                             break;
                         case PlayerStatus.Stopped:
@@ -491,17 +582,19 @@ namespace Milkitic.OsuPlayer.Wpf
                             break;
                     }
 
-                    _status = App.HitsoundPlayer.PlayerStatus;
+                    _tmpStatus = App.HitsoundPlayer.PlayerStatus;
                 }
 
-                if (_status == PlayerStatus.Playing && !_scrollLock)
+                if (_tmpStatus == PlayerStatus.Playing && !_scrollLock)
                 {
                     Dispatcher.BeginInvoke(new Action(() =>
                     {
                         if (App.HitsoundPlayer == null) return;
                         var playTime = Math.Min(App.HitsoundPlayer.PlayTime, PlayProgress.Maximum);
                         PlayProgress.Maximum = App.HitsoundPlayer.Duration;
-                        PlayProgress.Value = playTime < 0 ? 0 : (playTime > PlayProgress.Maximum ? PlayProgress.Maximum : playTime);
+                        PlayProgress.Value = playTime < 0
+                            ? 0
+                            : (playTime > PlayProgress.Maximum ? PlayProgress.Maximum : playTime);
                         LblTotal.Content = new TimeSpan(0, 0, 0, 0, App.HitsoundPlayer.Duration).ToString(@"mm\:ss");
                         LblNow.Content = new TimeSpan(0, 0, 0, 0, App.HitsoundPlayer.PlayTime).ToString(@"mm\:ss");
                     }));
@@ -510,6 +603,8 @@ namespace Milkitic.OsuPlayer.Wpf
                 Thread.Sleep(interval);
             }
         }
+
+        #endregion
     }
 
     public class PageParts
@@ -518,5 +613,6 @@ namespace Milkitic.OsuPlayer.Wpf
         public StoryboardPage StoryboardPage { get; set; }
         public RecentPlayPage RecentPlayPage { get; set; }
         public FindPage FindPage { get; set; }
+        public ExportPage ExportPage { get; set; }
     }
 }

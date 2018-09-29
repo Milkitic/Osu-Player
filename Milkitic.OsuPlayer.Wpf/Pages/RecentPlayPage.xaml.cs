@@ -55,7 +55,7 @@ namespace Milkitic.OsuPlayer.Wpf.Pages
                 return;
             if (e.OriginalSource is TextBlock)
                 return;
-            var searchInfo = (BeatmapSearchInfo)RecentList.SelectedItem;
+            var searchInfo = (BeatmapViewModel)RecentList.SelectedItem;
             var map = App.Beatmaps.GetBeatmapsetsByFolder(searchInfo.FolderName)
                 .FirstOrDefault(k => k.Version == searchInfo.Version);
             if (map != null)
@@ -74,8 +74,8 @@ namespace Milkitic.OsuPlayer.Wpf.Pages
         {
             if (RecentList.SelectedItem == null)
                 return;
-            var searchInfo = (BeatmapSearchInfo)RecentList.SelectedItem;
-            DbOperator.RemoveFromRecent(searchInfo.Version, searchInfo.FolderName);
+            var searchInfo = (BeatmapViewModel)RecentList.SelectedItem;
+            DbOperator.RemoveFromRecent(searchInfo.GetIdentity());
             UpdateList();
             ParentWindow.FillPlayList(true, true, PlayListMode.RecentList);
         }

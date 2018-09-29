@@ -471,7 +471,7 @@ namespace Milkitic.OsuPlayer.Wpf.Storyboard.Animation
 
         public void Additive(int startTime, int endTime)
         {
-            // Todo: Not implemented
+            // todo: Not implemented
         }
 
         public void Dispose()
