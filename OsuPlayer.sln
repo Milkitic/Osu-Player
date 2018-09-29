@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2016
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milkitic.OsuPlayer", "OsuPlayer\Milkitic.OsuPlayer.csproj", "{9F64872B-6E39-419E-85F7-54C910220FD5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer", "OsuPlayer\OsuPlayer.csproj", "{9F64872B-6E39-419E-85F7-54C910220FD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milkitic.OsuLib", "..\库\OsuLib\Milkitic.OsuLib\Milkitic.OsuLib.csproj", "{C86D348D-A961-456B-9820-0BD9F069A9CB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuLib", "..\库\OsuLib\Milkitic.OsuLib\OsuLib.csproj", "{C86D348D-A961-456B-9820-0BD9F069A9CB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsbPlayerTest", "OsbPlayerTest\OsbPlayerTest.csproj", "{469FE0EB-7CCF-4CB0-9695-923CA82A4454}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsbLib", "..\库\OsbLib\OsbLib\OsbLib.csproj", "{39F7E783-F770-47D0-BFBB-49BC30443B3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milkitic.OsuPlayer.Wpf", "Milkitic.OsuPlayer.Wpf\Milkitic.OsuPlayer.Wpf.csproj", "{02773E4B-21FC-47DB-A7C1-BD096F325136}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Wpf", "OsuPlayer.Wpf\OsuPlayer.Wpf.csproj", "{02773E4B-21FC-47DB-A7C1-BD096F325136}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -119,9 +119,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\库\OsuLib\Milkitic.OsuLib\Milkitic.OsuLib.csproj">
+    <ProjectReference Include="..\..\库\OsuLib\Milkitic.OsuLib\OsuLib.csproj">
       <Project>{c86d348d-a961-456b-9820-0bd9f069a9cb}</Project>
-      <Name>Milkitic.OsuLib</Name>
+      <Name>OsuLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,0 +1,179 @@
+﻿<Window x:Class="Milkitic.OsuPlayer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:data="clr-namespace:Milkitic.OsuPlayer.Data"
+        mc:Ignorable="d" Style="{StaticResource MainWindowStyle}"
+        Title="Osu Player" Width="960" Height="720" MinWidth="640" MinHeight="88"
+        Loaded="Window_Loaded" Closing="Window_Closing">
+
+    <Grid x:Name="MainGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" MinHeight="48" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="White">
+            <Image x:Name="BlurScene" Margin="1" Source="C:\Users\YureruMiira\Desktop\bg.jpg"
+                   Stretch="UniformToFill" Opacity="1">
+                <Image.Effect>
+                    <BlurEffect Radius="75" />
+                </Image.Effect>
+            </Image>
+            <Rectangle Fill="#FFFFFF" Opacity="0.666667" />
+            <DockPanel Width="Auto" Height="Auto">
+                <Grid>
+                    <GroupBox Background="#99EFEFF8">
+                        <Grid Width="150">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0">
+                                    <Label Style="{StaticResource NavigationLabelStyle}">库</Label>
+                                    <Button x:Name="BtnSearch" Grid.Row="0" Height="40" Click="BtnSearch_Click"
+                                            Content="搜索"
+                                            Style="{StaticResource NavigationButtonStyle}" />
+                                    <Button x:Name="BtnFind" Grid.Row="1" Height="40" Click="BtnFind_Click"
+                                            Content="发现"
+                                            Style="{StaticResource NavigationButtonStyle}" />
+                                    <Button x:Name="Storyboard" Grid.Row="1" Height="40" Click="Storyboard_Click"
+                                            Content="故事板"
+                                            Style="{StaticResource NavigationButtonStyle}" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="1">
+                                    <Label Style="{StaticResource NavigationLabelStyle}">我的</Label>
+                                    <Button x:Name="BtnRecent" Grid.Row="1" Height="40" Click="BtnRecent_Click"
+                                            Content="最近播放"
+                                            Style="{StaticResource NavigationButtonStyle}" />
+                                    <Button x:Name="BtnExport" Grid.Row="0" Height="40" Click="BtnExport_Click"
+                                            Content="导出管理"
+                                            Style="{StaticResource NavigationButtonStyle}" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="2">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Style="{StaticResource NavigationLabelStyle}" VerticalAlignment="Center">收藏夹</Label>
+                                        <Button x:Name="BtnAddCollection" Content="+" Width="20" Height="20" Margin="5,10,0,0" Click="BtnAddCollection_Click" />
+                                    </StackPanel>
+                                    <ListView x:Name="CollectionList" Margin="5" Background="Transparent" BorderThickness="0"
+                                              ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="CollectionList_MouseDoubleClick">
+                                        <ListView.DataContext>
+                                            <data:Collection/>
+                                        </ListView.DataContext>
+                                        <ListView.Resources>
+                                            <DataTemplate DataType="{x:Type data:Collection}">
+                                                <Grid>
+                                                    <Label x:Name="LblVersion" VerticalAlignment="Center" Foreground="#333333" Height="30">
+                                                        <TextBlock Text="{Binding Name}" />
+                                                    </Label>
+                                                </Grid>
+                                            </DataTemplate>
+                                            <Style TargetType="{x:Type ListViewItem}">
+                                                <Setter Property="BorderThickness" Value="0" />
+                                            </Style>
+                                        </ListView.Resources>
+                                    </ListView>
+
+                                </StackPanel>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" x:Name="BtnFeedback" Click="BtnFeedback_Click">反馈</Button>
+                                    <Button Grid.Column="1" x:Name="BtnSettings" Click="BtnSettings_Click">设置</Button>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+                <Grid>
+                    <Frame Name="MainFrame" NavigationUIVisibility="Hidden"></Frame>
+                </Grid>
+            </DockPanel>
+        </Grid>
+        <Grid Grid.Row="1" Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Image x:Name="Thumb" Margin="1" MaxHeight="46" MaxWidth="61.333333"
+                   Source="{Binding Source, ElementName=BlurScene}" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
+                <Button x:Name="BtnPlay" Style="{StaticResource PlayButtonStyle}" Click="BtnPlay_Click" />
+                <Button x:Name="BtnNext" Style="{StaticResource NextButtonStyle}" Click="BtnNext_Click" />
+            </StackPanel>
+            <Grid Grid.Column="2" Background="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3">
+                    <Label x:Name="LblTitle" Content="Title" Foreground="#777" />
+                    <Label Content="-" Foreground="#858585" Margin="-5,0,-5,0" />
+                    <Label x:Name="LblArtist" Content="Artist" Foreground="#AAA" />
+                </StackPanel>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3" HorizontalAlignment="Right">
+                    <Label x:Name="LblNow" Content="00:00" Foreground="#777" />
+                    <Label Content="/" Foreground="#858585" Margin="-5,0,-5,0" />
+                    <Label x:Name="LblTotal" Content="03:20" Foreground="#AAA" />
+                </StackPanel>
+                <Slider x:Name="PlayProgress" Grid.Row="1" Margin="3"
+                        Style="{StaticResource HorizontalSliderPinkStyle}" Value="1"
+                        Thumb.DragStarted="PlayProgress_DragStarted"
+                        Thumb.DragCompleted="PlayProgress_DragCompleted" />
+            </Grid>
+            <Grid Grid.Column="3">
+                <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
+                    <Button x:Name="BtnLike" Style="{StaticResource FavedButtonStyle}" Click="BtnLike_Click" />
+                    <Button x:Name="BtnVolume" Style="{StaticResource VolumeButtonStyle}" Click="BtnVolume_Click" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True" >
+            <Frame Name="FramePop" NavigationUIVisibility="Hidden"></Frame>
+        </Grid>
+        <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Pop" PopupAnimation="Fade" Height="100"
+               PlacementTarget="{Binding ElementName=BtnVolume}" Placement="Top" AllowsTransparency="True"
+               StaysOpen="False"
+               LostFocus="Popup_LostFocus">
+            <Border Background="White" HorizontalAlignment="Center" BorderBrush="#cccccc" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <Slider x:Name="MasterVolume" Orientation="Vertical" Margin="10,5"
+                                Style="{StaticResource VerticalSliderPinkStyle}" Maximum="100"
+                                Thumb.DragDelta="MasterVolume_DragDelta" Height="70" />
+                        <Label Content="主" Margin="0,-5,0,0" HorizontalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <Slider x:Name="MusicVolume" Orientation="Vertical" Margin="10,5"
+                                Style="{StaticResource VerticalSliderPinkStyle}" Maximum="100"
+                                Thumb.DragDelta="MusicVolume_DragDelta" Height="70" />
+                        <Label Content="音" Margin="0,-5,0,0" HorizontalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <Slider x:Name="HitsoundVolume" Orientation="Vertical" Margin="10,5"
+                                Style="{StaticResource VerticalSliderPinkStyle}" Maximum="100"
+                                Thumb.DragDelta="HitsoundVolume_DragDelta" Height="70" />
+                        <Label Content="声" Margin="0,-5,0,0" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Popup>
+    </Grid>
+</Window>
