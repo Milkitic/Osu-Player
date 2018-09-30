@@ -1,11 +1,11 @@
-﻿using System.IO;
+﻿using Milkitic.OsuPlayer.Control;
+using Milkitic.OsuPlayer.Data;
+using Milkitic.OsuPlayer.Models;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milkitic.OsuPlayer.Control;
-using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Models;
 
 namespace Milkitic.OsuPlayer.Pages
 {
@@ -52,7 +52,7 @@ namespace Milkitic.OsuPlayer.Pages
             {
                 ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                     map.BeatmapFileName));
-                ParentWindow.FillPlayList(false, false, PlayListMode.RecentList);
+                App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.None, PlayListMode.RecentList);
             }
             else
             {
@@ -67,7 +67,7 @@ namespace Milkitic.OsuPlayer.Pages
             var searchInfo = (BeatmapViewModel)RecentList.SelectedItem;
             DbOperator.RemoveFromRecent(searchInfo.GetIdentity());
             UpdateList();
-            ParentWindow.FillPlayList(true, true, PlayListMode.RecentList);
+            App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.All, PlayListMode.RecentList);
         }
 
         private void BtnDelAll_Click(object sender, RoutedEventArgs e)

@@ -1,19 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media.Lyric;
 using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Auto;
 using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Media.Storyboard;
+using Milkitic.OsuPlayer.Models;
 using Newtonsoft.Json;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;
 using osu_database_reader.Components.Beatmaps;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Windows;
 
 namespace Milkitic.OsuPlayer
 {
@@ -37,19 +38,22 @@ namespace Milkitic.OsuPlayer
 
         public static MusicPlayer MusicPlayer;
         public static HitsoundPlayer HitsoundPlayer;
-        public static LyricProvider LyricProvider;
         public static StoryboardProvider StoryboardProvider;
+
+        public static readonly LyricProvider LyricProvider =
+            new LyricProvider(new AutoSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
+        public static readonly PlayerControl PlayerControl = new PlayerControl();
 
         static App()
         {
-            InitDb();
-            LyricProvider = new LyricProvider(new AutoSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
-
-            if (!LoadSettings()) return;
-            LoadDb();
+            if (!LoadSettings())
+                Environment.Exit(0);
+            CreateDirectories();
+            InitLocalDb();
+            LoadOsuDb();
         }
 
-        private static void InitDb()
+        private static void InitLocalDb()
         {
             var defCol = DbOperator.GetCollections().Where(k => k.Locked);
             if (!defCol.Any()) DbOperator.AddCollection("最喜爱的", true);
@@ -84,7 +88,7 @@ namespace Milkitic.OsuPlayer
             return true;
         }
 
-        private static void LoadDb()
+        private static void LoadOsuDb()
         {
             string dbPath = Config.DbPath;
             if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath))
@@ -133,6 +137,29 @@ namespace Milkitic.OsuPlayer
         {
             Config = new Config();
             File.WriteAllText(file, JsonConvert.SerializeObject(Config));
+        }
+
+        /// <summary>
+        /// 创建目录
+        /// </summary>
+        private static void CreateDirectories()
+        {
+            Type t = typeof(Domain);
+            var infos = t.GetProperties();
+            foreach (var item in infos)
+            {
+                if (!item.Name.EndsWith("Path")) continue;
+                try
+                {
+                    string path = (string)item.GetValue(null, null);
+                    if (!Directory.Exists(path))
+                        Directory.CreateDirectory(path);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine(@"未创建：" + item.Name);
+                }
+            }
         }
     }
 }

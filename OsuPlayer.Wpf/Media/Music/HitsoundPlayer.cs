@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Milkitic.OsuLib;
 using Milkitic.OsuLib.Enums;
 using Milkitic.OsuLib.Model.Raw;
-using Milkitic.OsuPlayer.Models;
 
 namespace Milkitic.OsuPlayer.Media.Music
 {
@@ -24,9 +23,7 @@ namespace Milkitic.OsuPlayer.Media.Music
                 _playerStatus = value;
             }
         }
-        public PlayerMode PlayerMode { get; set; } = PlayerMode.SingleLoop;
-        public PlayListMode PlayListMode { get; set; }
-
+    
         public int Duration { get; }
         public int PlayTime
         {

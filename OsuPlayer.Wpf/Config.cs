@@ -20,12 +20,7 @@ namespace Milkitic.OsuPlayer
         public float Music { get => _bgm; set => SetValue(ref _bgm, value); }
         public float Hitsound { get => _hs; set => SetValue(ref _hs, value); }
 
-        private static void SetValue(ref float source, float value)
-        {
-            if (value < 0) source = 0;
-            else if (value > 1) source = 1;
-            else source = value;
-        }
+        private static void SetValue(ref float source, float value) => source = value < 0 ? 0 : (value > 1 ? 1 : value);
     }
     public class OffsetControl
     {

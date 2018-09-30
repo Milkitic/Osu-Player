@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Milkitic.OsuPlayer.Data;
+using Milkitic.OsuPlayer.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -6,8 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Models;
 
 namespace Milkitic.OsuPlayer.Pages
 {
@@ -77,7 +77,7 @@ namespace Milkitic.OsuPlayer.Pages
                 .GetHighestDiff();
             ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                 map.BeatmapFileName));
-            ParentWindow.FillPlayList(true, true);
+            App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.All, PlayListMode.RecentList);
         }
     }
 }

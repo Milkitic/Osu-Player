@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <BitmapImage x:Key="TextrueSource1" CacheOption="OnLoad" UriSource="C:\Users\YureruMiira\Source\Repos\完整项目\Osu-Player\OsuPlayer.Wpf\Resource\texture\2.png"/>
-        <BitmapImage x:Key="Fav" CacheOption="OnLoad" UriSource="C:\Users\YureruMiira\Source\Repos\完整项目\Osu-Player\OsuPlayer.Wpf\Resource\Fav.png"/>
-        <BitmapImage x:Key="Faved" CacheOption="OnLoad" UriSource="C:\Users\YureruMiira\Source\Repos\完整项目\Osu-Player\OsuPlayer.Wpf\Resource\Faved.png"/>
-        <BitmapImage x:Key="Volume" CacheOption="OnLoad" UriSource="C:\Users\YureruMiira\Source\Repos\完整项目\Osu-Player\OsuPlayer.Wpf\Resource\Volume2.png"/>
+        <BitmapImage x:Key="TextrueSource1" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/osu_texture.png"/>
+        <BitmapImage x:Key="Fav" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/btn_fav.png"/>
+        <BitmapImage x:Key="Faved" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/btn_faved.png"/>
+        <BitmapImage x:Key="Volume" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/btn_volume2.png"/>
 
         <LinearGradientBrush x:Key="SliderBackground"  StartPoint="0,0" EndPoint="0,1">
             <GradientStop Offset="0" Color="#FFFC59A3"/>
@@ -47,11 +47,9 @@
                         <ControlTemplate.Triggers>
                             <!-- Set properties when mouse pointer is over the button. -->
                             <Trigger Property="IsMouseOver" Value="True">
-                                <!-- Below are three property settings that occur when the condition is met (user mouses over button).  -->
                                 <!-- Sets the glass opacity to 1, therefore, the glass "appears" when user mouses over it. -->
                                 <Setter Property="Rectangle.Opacity" Value="1" TargetName="innerRectangle" />
-                                <!-- Makes the text slightly blurry as though you were looking at it through blurry glass. -->
-                         
+                          
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

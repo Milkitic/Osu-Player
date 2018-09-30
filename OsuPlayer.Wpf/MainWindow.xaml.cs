@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using Milkitic.OsuLib;
 using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
@@ -18,6 +8,16 @@ using Milkitic.OsuPlayer.Models;
 using Milkitic.OsuPlayer.Pages;
 using Milkitic.OsuPlayer.Utils;
 using osu_database_reader.Components.Beatmaps;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using Collection = Milkitic.OsuPlayer.Data.Collection;
 
 namespace Milkitic.OsuPlayer
@@ -37,7 +37,6 @@ namespace Milkitic.OsuPlayer
         };
 
         public readonly PageBox PageBox;
-        private readonly PlayList _playList = new PlayList();
         private readonly LyricWindow _lyricWindow;
 
         //local player control
@@ -45,8 +44,7 @@ namespace Milkitic.OsuPlayer
         private Task _statusTask;
         private bool _scrollLock;
         private PlayerStatus _tmpStatus = PlayerStatus.Stopped;
-        private MapIdentity _nowIdentity;
-
+       
         public MainWindow()
         {
             InitializeComponent();
@@ -191,7 +189,7 @@ namespace Milkitic.OsuPlayer
 
         private void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            AutoPlayNext(true);
+            PlayNext(true);
         }
 
         /// <summary>
@@ -200,8 +198,8 @@ namespace Milkitic.OsuPlayer
         private void BtnLike_Click(object sender, RoutedEventArgs e)
         {
             FramePop.Navigate(new SelectCollectionPage(this,
-                App.Beatmaps.GetBeatmapsetsByFolder(_nowIdentity.FolderName)
-                    .FirstOrDefault(k => k.Version == _nowIdentity.Version)));
+                App.Beatmaps.GetBeatmapsetsByFolder(App.PlayerControl.NowIdentity.FolderName)
+                    .FirstOrDefault(k => k.Version == App.PlayerControl.NowIdentity.Version)));
         }
 
         private void BtnVolume_Click(object sender, RoutedEventArgs e)
@@ -315,10 +313,10 @@ namespace Milkitic.OsuPlayer
                     _cts = new CancellationTokenSource();
 
                     /* Set Meta */
-                    _nowIdentity = new MapIdentity(fi.Directory.Name, App.HitsoundPlayer.Osufile.Metadata.Version);
+                    App.PlayerControl.NowIdentity = new MapIdentity(fi.Directory.Name, App.HitsoundPlayer.Osufile.Metadata.Version);
                     LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle();
                     LblArtist.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist();
-                    var map = DbOperator.GetMapFromDb(_nowIdentity);
+                    var map = DbOperator.GetMapFromDb(App.PlayerControl.NowIdentity);
                     var album = DbOperator.GetCollectionsByMap(map);
                     bool faved = album != null && album.Any(k => k.Locked);
                     BtnLike.Style = faved
@@ -348,7 +346,7 @@ namespace Milkitic.OsuPlayer
                     App.HitsoundPlayer.Play();
                     RunSurfaceUpdate();
 
-                    DbOperator.UpdateMap(_nowIdentity);
+                    DbOperator.UpdateMap(App.PlayerControl.NowIdentity);
                     Pages.RecentPlayPage.UpdateList();
                 }
                 catch (MultiTimingSectionException ex)
@@ -356,7 +354,7 @@ namespace Milkitic.OsuPlayer
                     PageBox.Show(Title, @"铺面读取时发生问题：" + ex.Message, () =>
                     {
                         if (App.HitsoundPlayer == null) return;
-                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) AutoPlayNext(false);
+                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false);
                     });
                 }
                 catch (BadOsuFormatException ex)
@@ -364,7 +362,7 @@ namespace Milkitic.OsuPlayer
                     PageBox.Show(Title, @"铺面读取时发生问题：" + ex.Message, () =>
                     {
                         if (App.HitsoundPlayer == null) return;
-                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) AutoPlayNext(false);
+                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false);
                     });
                 }
                 catch (VersionNotSupportedException ex)
@@ -372,7 +370,7 @@ namespace Milkitic.OsuPlayer
                     PageBox.Show(Title, @"铺面读取时发生问题：" + ex.Message, () =>
                     {
                         if (App.HitsoundPlayer == null) return;
-                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) AutoPlayNext(false);
+                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false);
                     });
                 }
                 catch (Exception ex)
@@ -380,7 +378,7 @@ namespace Milkitic.OsuPlayer
                     PageBox.Show(Title, @"发生未处理的异常问题：" + (ex.InnerException ?? ex), () =>
                     {
                         if (App.HitsoundPlayer == null) return;
-                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) AutoPlayNext(false);
+                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false);
                     });
                 }
             }
@@ -397,95 +395,26 @@ namespace Milkitic.OsuPlayer
         /// </summary>
         /// <param name="isManual">Whether it is called by user (Click next button manually)
         /// or called by application (A song finshed).</param>
-        private void AutoPlayNext(bool isManual)
+        private void PlayNext(bool isManual)
         {
             if (App.HitsoundPlayer == null) return;
-            if (App.HitsoundPlayer.PlayerMode == PlayerMode.Single && !isManual)
+            var result = App.PlayerControl.PlayTo(true, isManual, out var entry);
+            switch (result)
             {
-                App.HitsoundPlayer.Stop();
-                return;
+                case PlayerControl.ChangeType.Keep:
+                    App.HitsoundPlayer.Play();
+                    break;
+
+                case PlayerControl.ChangeType.Stop:
+                    App.HitsoundPlayer.Stop();
+                    break;
+                case PlayerControl.ChangeType.Change:
+                default:
+                    var path = Path.Combine(new FileInfo(App.Config.DbPath).Directory.FullName, "Songs",
+                        entry.FolderName, entry.BeatmapFileName);
+                    PlayNewFile(path);
+                    break;
             }
-
-            if (App.HitsoundPlayer.PlayerMode == PlayerMode.SingleLoop && !isManual)
-            {
-                App.HitsoundPlayer.Play();
-                return;
-            }
-
-            if (_playList.Pointer > _playList.Indexes.Count - 1)
-            {
-                if (_playList.Indexes.Count == 0) return;
-                if (App.HitsoundPlayer.PlayerMode == PlayerMode.Loop ||
-                    App.HitsoundPlayer.PlayerMode == PlayerMode.LoopRandom)
-                {
-                    FillPlayList(false, true);
-                }
-                else
-                {
-                    if (isManual)
-                    {
-                        FillPlayList(false, true);
-                    }
-                    else
-                    {
-                        App.HitsoundPlayer.Stop();
-                        return;
-                    }
-                }
-            }
-            else if (_playList.Pointer == -1)
-            {
-                _playList.Pointer = _playList.Indexes.Count - 1;
-            }
-
-            BeatmapEntry map = _playList.Entries[_playList.Indexes[_playList.Pointer]];
-            _playList.Pointer++;
-            var path = Path.Combine(new FileInfo(App.Config.DbPath).Directory.FullName, "Songs", map.FolderName,
-                map.BeatmapFileName);
-            PlayNewFile(path);
-        }
-
-        /// <summary>
-        /// Update current play list.
-        /// </summary>
-        /// <param name="refreshList">The play list will be refreshed if true.
-        /// (For those who updated recent list or collection list)</param>
-        /// <param name="refreshIndex">The Index list will be refreshed if true.
-        /// (After we finished the list, there is no need to refresh the whole playlist)</param>
-        /// <param name="playListMode">If the value is null, current mode will not be infected.</param>
-        /// <param name="collection">If the value is not null, current mode will forcly changed to collection mode.
-        /// todo: should create a collection list. </param>
-        public void FillPlayList(bool refreshList, bool refreshIndex, PlayListMode? playListMode = null,
-            Collection collection = null)
-        {
-            if (playListMode != null) App.HitsoundPlayer.PlayListMode = playListMode.Value;
-            if (collection != null) App.HitsoundPlayer.PlayListMode = PlayListMode.Collection;
-            if (refreshList || _playList.Entries.Count == 0)
-                switch (App.HitsoundPlayer.PlayListMode)
-                {
-                    case PlayListMode.RecentList:
-                        _playList.Entries = App.Beatmaps.GetRecentListFromDb().ToList();
-                        break;
-                    default:
-                    case PlayListMode.Collection:
-                        throw new NotImplementedException();
-                        break;
-                }
-
-            if (refreshIndex || _playList.Indexes == null || _playList.Indexes.Count == 0)
-                switch (App.HitsoundPlayer.PlayerMode)
-                {
-                    default:
-                    case PlayerMode.Normal:
-                    case PlayerMode.Loop:
-                        _playList.Indexes = _playList.Entries.Select((o, i) => i).ToList();
-                        break;
-                    case PlayerMode.Random:
-                    case PlayerMode.LoopRandom:
-                        _playList.Indexes = _playList.Entries.Select((o, i) => i).ShuffleToList();
-                        break;
-                }
-            _playList.Pointer = 0;
         }
 
         private void ClearHitsoundPlayer()
@@ -558,7 +487,7 @@ namespace Milkitic.OsuPlayer
                             }));
                             break;
                         case PlayerStatus.Finished:
-                            Dispatcher.BeginInvoke(new Action(() => { AutoPlayNext(false); }));
+                            Dispatcher.BeginInvoke(new Action(() => { PlayNext(false); }));
                             break;
                         case PlayerStatus.Stopped:
                         case PlayerStatus.Paused:

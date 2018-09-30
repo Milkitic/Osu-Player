@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Milkitic.OsuPlayer.Data;
+using Milkitic.OsuPlayer.Models;
+using osu_database_reader.Components.Beatmaps;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Models;
-using osu_database_reader.Components.Beatmaps;
 using Collection = Milkitic.OsuPlayer.Data.Collection;
 
 namespace Milkitic.OsuPlayer.Pages
@@ -20,7 +20,7 @@ namespace Milkitic.OsuPlayer.Pages
         private MainWindow ParentWindow { get; set; }
         private readonly Collection _collection;
         private List<BeatmapViewModel> _maps;
-        private IEnumerable<BeatmapEntry> _entry;
+        private IEnumerable<BeatmapEntry> _entries;
 
         public CollectionPage(MainWindow mainWindow, Collection collection)
         {
@@ -36,8 +36,8 @@ namespace Milkitic.OsuPlayer.Pages
         private void UpdateList()
         {
             var infos = (List<MapInfo>)DbOperator.GetMapsFromCollection(_collection);
-            _entry = App.Beatmaps.GetMapListFromDb(infos);
-            _maps = _entry.Transform(true).ToList();
+            _entries = App.Beatmaps.GetMapListFromDb(infos);
+            _maps = _entries.Transform(true).ToList();
             MapList.DataContext = _maps;
         }
 
@@ -64,7 +64,7 @@ namespace Milkitic.OsuPlayer.Pages
             {
                 ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                     map.BeatmapFileName));
-                ParentWindow.FillPlayList(false, false, PlayListMode.RecentList);
+                App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.None, PlayListMode.Collection, _entries);
             }
             else
             {
@@ -79,7 +79,7 @@ namespace Milkitic.OsuPlayer.Pages
             var searchInfo = (BeatmapViewModel)MapList.SelectedItem;
             DbOperator.RemoveMapFromCollection(searchInfo.GetIdentity(), _collection);
             UpdateList();
-            ParentWindow.FillPlayList(true, true, PlayListMode.Collection, _collection);
+            App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.All, PlayListMode.Collection, _entries);
         }
 
         private void LblCreator_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -99,7 +99,7 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void BtnExportAll_Click(object sender, RoutedEventArgs e)
         {
-            ExportPage.QueueEntries(_entry);
+            ExportPage.QueueEntries(_entries);
         }
     }
 }

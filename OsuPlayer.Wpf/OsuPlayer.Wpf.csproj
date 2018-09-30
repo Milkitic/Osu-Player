@@ -151,7 +151,7 @@
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\MapIndentity.cs" />
     <Compile Include="Control\PageBox.cs" />
-    <Compile Include="Models\PlayList.cs" />
+    <Compile Include="Models\PlayerControl.cs" />
     <Compile Include="Pages\AddCollectionPage.xaml.cs">
       <DependentUpon>AddCollectionPage.xaml</DependentUpon>
     </Compile>
@@ -308,7 +308,21 @@
       <Name>OsuLib</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\osu_texture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\btn_fav.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\btn_faved.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\btn_volume.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\btn_volume2.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.109.1\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.109.1\build\net451\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
