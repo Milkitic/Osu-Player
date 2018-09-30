@@ -151,7 +151,7 @@
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\MapIndentity.cs" />
     <Compile Include="Control\PageBox.cs" />
-    <Compile Include="Models\PlayerControl.cs" />
+    <Compile Include="PlayerControl.cs" />
     <Compile Include="Pages\AddCollectionPage.xaml.cs">
       <DependentUpon>AddCollectionPage.xaml</DependentUpon>
     </Compile>

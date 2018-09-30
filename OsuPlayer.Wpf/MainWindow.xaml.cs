@@ -4,7 +4,7 @@ using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media;
 using Milkitic.OsuPlayer.Media.Music;
-using Milkitic.OsuPlayer.Models;
+using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Pages;
 using Milkitic.OsuPlayer.Utils;
 using osu_database_reader.Components.Beatmaps;

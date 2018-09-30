@@ -1,4 +1,4 @@
-﻿using Milkitic.OsuPlayer.Models;
+﻿using Milkitic.OsuPlayer;
 using System;
 using System.Diagnostics;
 using System.Threading;

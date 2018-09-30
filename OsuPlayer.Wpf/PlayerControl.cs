@@ -2,12 +2,11 @@
 using Milkitic.OsuPlayer.Media;
 using Milkitic.OsuPlayer.Utils;
 using osu_database_reader.Components.Beatmaps;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Collection = Milkitic.OsuPlayer.Data.Collection;
+using Milkitic.OsuPlayer;
 
-namespace Milkitic.OsuPlayer.Models
+namespace Milkitic.OsuPlayer
 {
     public class PlayerControl
     {

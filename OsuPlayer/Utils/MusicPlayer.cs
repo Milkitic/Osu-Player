@@ -1,5 +1,5 @@
 ﻿using Milkitic.OsuPlayer.Interface;
-using Milkitic.OsuPlayer.Models;
+using Milkitic.OsuPlayer;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;

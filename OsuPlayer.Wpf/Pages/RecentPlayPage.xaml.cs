@@ -1,6 +1,6 @@
 ﻿using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Models;
+using Milkitic.OsuPlayer;
 using System.IO;
 using System.Linq;
 using System.Windows;

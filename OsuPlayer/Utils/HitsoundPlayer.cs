@@ -2,7 +2,7 @@
 using Milkitic.OsuLib.Enums;
 using Milkitic.OsuLib.Model.Raw;
 using Milkitic.OsuPlayer.Interface;
-using Milkitic.OsuPlayer.Models;
+using Milkitic.OsuPlayer;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

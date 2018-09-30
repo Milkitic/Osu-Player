@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Milkitic.OsuPlayer.Models
+namespace Milkitic.OsuPlayer
 {
     public class HitsoundElement
     {

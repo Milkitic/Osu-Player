@@ -1,4 +1,4 @@
-﻿using Milkitic.OsuPlayer.Models;
+﻿using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Storyboard;
 using Milkitic.OsuPlayer.Utils;
 using osu.Shared;

@@ -4,7 +4,7 @@ using Milkitic.OsuPlayer.Media.Lyric;
 using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Auto;
 using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Media.Storyboard;
-using Milkitic.OsuPlayer.Models;
+using Milkitic.OsuPlayer;
 using Newtonsoft.Json;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;

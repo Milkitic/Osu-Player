@@ -1,6 +1,6 @@
 ﻿using Milkitic.OsuLib;
 using Milkitic.OsuPlayer.LyricExtension.Model;
-using Milkitic.OsuPlayer.Models;
+using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Utils;
 using System;
 using System.Collections.Generic;

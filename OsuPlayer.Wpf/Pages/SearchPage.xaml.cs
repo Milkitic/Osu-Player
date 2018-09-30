@@ -1,5 +1,5 @@
 ﻿using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Models;
+using Milkitic.OsuPlayer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

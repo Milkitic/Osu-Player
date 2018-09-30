@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Milkitic.OsuPlayer.Models
+namespace Milkitic.OsuPlayer
 {
     public enum SortEnum
     {

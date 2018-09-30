@@ -1,4 +1,4 @@
-﻿namespace Milkitic.OsuPlayer.Models
+﻿namespace Milkitic.OsuPlayer
 {
     public struct MapIdentity
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Milkitic.OsuPlayer.Models;
+using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Utils;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;

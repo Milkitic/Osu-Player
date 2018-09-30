@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Milkitic.OsuPlayer.Models;
+using Milkitic.OsuPlayer;
 using osu_database_reader.Components.Beatmaps;
 
 namespace Milkitic.OsuPlayer.Data

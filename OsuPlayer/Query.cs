@@ -1,4 +1,4 @@
-﻿using Milkitic.OsuPlayer.Models;
+﻿using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Utils;
 using osu_database_reader.Components.Beatmaps;
 using System;

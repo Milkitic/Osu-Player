@@ -1,7 +1,7 @@
 ﻿using Milkitic.OsuPlayer.Utils;
 using osu.Shared;
 
-namespace Milkitic.OsuPlayer.Models
+namespace Milkitic.OsuPlayer
 {
     public struct BeatmapViewModel
     {

@@ -9,7 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Milkitic.OsuLib;
 using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Models;
+using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Utils;
 using osu_database_reader.Components.Beatmaps;
 using Path = System.IO.Path;
