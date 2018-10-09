@@ -1,10 +1,10 @@
-﻿using Milkitic.OsuPlayer.Data;
+﻿using Milkitic.OsuPlayer;
+using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media;
 using Milkitic.OsuPlayer.Utils;
 using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.Linq;
-using Milkitic.OsuPlayer;
 
 namespace Milkitic.OsuPlayer
 {
@@ -30,7 +30,7 @@ namespace Milkitic.OsuPlayer
         /// <param name="playListMode">If the value is null, current mode will not be infected.</param>
         /// <param name="entries">If the value is not null, current mode will forcly changed to collection mode.</param>
         public void RefreshPlayList(FreshType freshType, PlayListMode? playListMode = null,
-            IEnumerable<BeatmapEntry> entries = null)
+            IEnumerable<BeatmapEntry> entries = null, bool finishList = false)
         {
             bool force = false;
             if (playListMode != null)
@@ -67,7 +67,7 @@ namespace Milkitic.OsuPlayer
                         break;
                 }
             Pointer = 0;
-            RedirectPointer();
+            if (!finishList) RedirectPointer();
         }
 
         public void RedirectPointer()
@@ -114,7 +114,7 @@ namespace Milkitic.OsuPlayer
                 if (Pointer > Indexes.Count - 1)
                 {
                     Pointer = 0;
-                    RefreshPlayList(FreshType.IndexOnly);
+                    RefreshPlayList(FreshType.IndexOnly, finishList: true);
                 }
             }
             else
@@ -138,7 +138,7 @@ namespace Milkitic.OsuPlayer
                     Pointer = 0;
                     if (PlayerMode == PlayerMode.LoopRandom || PlayerMode == PlayerMode.Loop)
                     {
-                        RefreshPlayList(FreshType.IndexOnly);
+                        RefreshPlayList(FreshType.IndexOnly, finishList: true);
                     }
                     else
                     {

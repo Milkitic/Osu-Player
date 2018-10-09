@@ -59,7 +59,9 @@
                                 <StackPanel Grid.Row="2">
                                     <StackPanel Orientation="Horizontal">
                                         <Label Style="{StaticResource NavigationLabelStyle}" VerticalAlignment="Center">收藏夹</Label>
-                                        <Button x:Name="BtnAddCollection" Content="+" Width="20" Height="20" Margin="5,10,0,0" Click="BtnAddCollection_Click" />
+                                        <Button x:Name="BtnAddCollection" Content="+" Width="20" Height="20"
+                                                Margin="5,10,0,0" Style="{StaticResource Collection2ButtonStyle}"
+                                                Click="BtnAddCollection_Click" />
                                     </StackPanel>
                                     <ListView x:Name="CollectionList" Margin="5" Background="Transparent" BorderThickness="0"
                                               ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="CollectionList_MouseDoubleClick">
@@ -88,8 +90,12 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" x:Name="BtnFeedback" Click="BtnFeedback_Click">反馈</Button>
-                                    <Button Grid.Column="1" x:Name="BtnSettings" Click="BtnSettings_Click">设置</Button>
+                                    <Button Grid.Column="0" x:Name="BtnFeedback"
+                                            Style="{StaticResource CollectionButtonStyle}" Click="BtnFeedback_Click"
+                                            Content="反馈" />
+                                    <Button Grid.Column="1" x:Name="BtnSettings"
+                                            Style="{StaticResource CollectionButtonStyle}" Click="BtnSettings_Click"
+                                            Content="设置" />
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -153,6 +159,7 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
                         <Slider x:Name="MasterVolume" Orientation="Vertical" Margin="10,5"
@@ -171,6 +178,12 @@
                                 Style="{StaticResource VerticalSliderPinkStyle}" Maximum="100"
                                 Thumb.DragDelta="HitsoundVolume_DragDelta" Height="70" />
                         <Label Content="声" Margin="0,-5,0,0" HorizontalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="3">
+                        <Slider x:Name="Offset" Orientation="Vertical" Margin="10,5"
+                                Style="{StaticResource VerticalSliderPinkStyle}" Maximum="200"
+                                Thumb.DragDelta="Offset_DragDelta"  Height="70" Minimum="-200" AutoToolTipPlacement="BottomRight" />
+                        <Label Content="单曲偏移" Margin="0,-5,0,0" HorizontalAlignment="Center" />
                     </StackPanel>
                 </Grid>
             </Border>

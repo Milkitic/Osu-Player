@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Milkitic.OsuPlayer;
+using osu_database_reader.Components.Beatmaps;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Milkitic.OsuPlayer;
-using osu_database_reader.Components.Beatmaps;
 
 namespace Milkitic.OsuPlayer.Data
 {
@@ -178,7 +178,7 @@ namespace Milkitic.OsuPlayer.Data
             }
         }
 
-        public static void UpdateMap(MapIdentity id)
+        public static void UpdateMap(MapIdentity id, int offset = 0)
         {
             if (!Directory.Exists(Path.Combine(Domain.OsuSongPath, id.FolderName)))
                 throw new DirectoryNotFoundException(id.FolderName);
@@ -189,6 +189,8 @@ namespace Milkitic.OsuPlayer.Data
                 {
                     MapInfo map = InnerGetMapFromDb(id, mapContext);
                     map.LastPlayTime = DateTime.Now;
+                    if (offset != 0)
+                        map.Offset = offset;
                     mapContext.SaveChanges();
                 }
                 catch (Exception ex)
@@ -235,7 +237,7 @@ namespace Milkitic.OsuPlayer.Data
             }
         }
 
-        public static void UpdateMap(BeatmapEntry entry)
+        public static void UpdateMap(BeatmapEntry entry, int offset)
         {
             UpdateMap(entry.GetIdentity());
         }

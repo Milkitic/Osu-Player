@@ -35,18 +35,7 @@ namespace Milkitic.OsuPlayer.Media.Music
             }
         }
 
-        public int SingleOffset
-        {
-            get => _singleOffset;
-            set
-            {
-                if (!App.Config.OffsetControl.OffsetList.ContainsKey(_filePath))
-                    App.Config.OffsetControl.OffsetList.Add(_filePath, value);
-                else
-                    App.Config.OffsetControl.OffsetList[_filePath] = value;
-                _singleOffset = value;
-            }
-        }
+        public int SingleOffset { get; set; }
 
         private readonly string _defaultDir = Domain.DefaultPath;
         private ConcurrentQueue<HitsoundElement> _hsQueue;
@@ -57,7 +46,6 @@ namespace Milkitic.OsuPlayer.Media.Music
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private int _controlOffset;
         private Task _playingTask, _offsetTask;
-        private int _singleOffset;
 
         private readonly Stopwatch _sw = new Stopwatch();
         private PlayerStatus _playerStatus;
@@ -83,8 +71,6 @@ namespace Milkitic.OsuPlayer.Media.Music
             FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, Osufile.General.AudioFilename));
             App.MusicPlayer = new MusicPlayer(musicInfo.FullName);
             Duration = (int)Math.Ceiling(Math.Max(_hitsoundList.Max(k => k.Offset), App.MusicPlayer.Duration));
-            if (App.Config.OffsetControl.OffsetList.ContainsKey(_filePath))
-                _singleOffset = App.Config.OffsetControl.OffsetList[_filePath];
         }
 
         public void Play()

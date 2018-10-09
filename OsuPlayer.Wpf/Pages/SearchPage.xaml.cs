@@ -79,6 +79,36 @@ namespace Milkitic.OsuPlayer.Pages
                 map.BeatmapFileName));
             App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.All, PlayListMode.RecentList);
         }
+
+        private void ItemSearchMapper_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
+
+        private void ItemSearchSource_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
+
+        private void ItemSearchArtist_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
+
+        private void ItemExport_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
+
+        private void ItemCollect_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
+
+        private void ItemPlay_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
     }
 }
 

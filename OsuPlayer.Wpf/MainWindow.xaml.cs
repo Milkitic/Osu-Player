@@ -1,10 +1,10 @@
 ﻿using Microsoft.Win32;
 using Milkitic.OsuLib;
+using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media;
 using Milkitic.OsuPlayer.Media.Music;
-using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Pages;
 using Milkitic.OsuPlayer.Utils;
 using osu_database_reader.Components.Beatmaps;
@@ -44,7 +44,7 @@ namespace Milkitic.OsuPlayer
         private Task _statusTask;
         private bool _scrollLock;
         private PlayerStatus _tmpStatus = PlayerStatus.Stopped;
-       
+
         public MainWindow()
         {
             InitializeComponent();
@@ -273,6 +273,16 @@ namespace Milkitic.OsuPlayer
             App.Config.Volume.Hitsound = (float)(HitsoundVolume.Value / 100);
         }
 
+        /// <summary>
+        /// Offset Settings
+        /// </summary>
+        private void Offset_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            if (App.HitsoundPlayer == null) return;
+            App.HitsoundPlayer.SingleOffset = (int)Offset.Value;
+            DbOperator.UpdateMap(App.PlayerControl.NowIdentity, App.HitsoundPlayer.SingleOffset);
+        }
+
         #region Player
 
         /// <summary>
@@ -322,6 +332,8 @@ namespace Milkitic.OsuPlayer
                     BtnLike.Style = faved
                         ? (Style)FindResource("FavedButtonStyle")
                         : (Style)FindResource("FavButtonStyle");
+                    App.HitsoundPlayer.SingleOffset = DbOperator.GetMapFromDb(App.PlayerControl.NowIdentity).Offset;
+                    Offset.Value = App.HitsoundPlayer.SingleOffset;
 
                     /* Set Lyric */
                     SetLyric();
@@ -528,6 +540,7 @@ namespace Milkitic.OsuPlayer
         }
 
         #endregion
+
     }
 
     public class PageParts

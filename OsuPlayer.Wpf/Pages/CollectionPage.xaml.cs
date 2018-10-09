@@ -101,5 +101,30 @@ namespace Milkitic.OsuPlayer.Pages
         {
             ExportPage.QueueEntries(_entries);
         }
+
+        private void ItemSearchMapper_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ItemSearchSource_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ItemSearchArtist_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ItemExport_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ItemCollect_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

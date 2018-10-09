@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Milkitic.OsuPlayer
 {
@@ -25,6 +26,5 @@ namespace Milkitic.OsuPlayer
     public class OffsetControl
     {
         public int GeneralOffset { get; set; } = 85;
-        public Dictionary<string, int> OffsetList { get; set; } = new Dictionary<string, int>();
     }
 }

@@ -14,16 +14,27 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Label x:Name="LblTitle" FontSize="14" Content="最近播放" VerticalAlignment="Center" />
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button x:Name="BtnPlayAll" Content="全部播放" Width="80" Margin="5" Height="30" Click="BtnPlayAll_Click" />
-            <Button x:Name="BtnDelAll" Content="全部删除" Width="80" Margin="5" Height="30" Click="BtnDelAll_Click"/>
+        <Label x:Name="LblTitle" FontSize="14" Content="最近播放" VerticalAlignment="Center" Margin="10" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,15,0,0">
+            <Button x:Name="BtnPlayAll" Content="全部播放" Width="70" Margin="5" Height="30"
+                    Style="{StaticResource Collection2ButtonStyle}" Click="BtnPlayAll_Click" />
+            <Button x:Name="BtnDelAll" Content="全部删除" Width="70" Margin="5" Height="30"
+                    Style="{StaticResource Collection2ButtonStyle}" Click="BtnDelAll_Click" />
         </StackPanel>
-        <ListView Grid.Row="2" x:Name="RecentList" Margin="0,20,0,2" Background="Transparent" BorderThickness="0"
+        <ListView Grid.Row="2" x:Name="RecentList" Margin="0,5,0,2" Background="Transparent" BorderThickness="0"
                   ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="Recent_MouseDoubleClick">
             <ListView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem x:Name="ItemDelete" Header="删除" Click="ItemDelete_Click">
+                    <MenuItem x:Name="ItemPlay" Header="至播放列表队首" Click="ItemDelete_Click" />
+                    <Separator/>
+                    <MenuItem x:Name="ItemCollect" Header="收藏" Click="ItemCollect_Click" />
+                    <MenuItem x:Name="ItemExport" Header="导出" Click="ItemExport_Click" />
+                    <Separator/>
+                    <MenuItem x:Name="ItemSearchArtist" Header="搜索该艺术家" Click="ItemSearchArtist_Click" />
+                    <MenuItem x:Name="ItemSearchSource" Header="搜索该来源" Click="ItemSearchSource_Click" />
+                    <MenuItem x:Name="ItemSearchMapper" Header="搜索该作者" Click="ItemSearchMapper_Click" />
+                    <Separator/>
+                    <MenuItem x:Name="ItemDelete" Header="从最近中播放中移除" Click="ItemDelete_Click">
                         <!--<MenuItem.Icon>
                             <Image Source="delect.jpg" Width="20" Height="20"  />
                         </MenuItem.Icon>-->

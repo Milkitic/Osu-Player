@@ -34,6 +34,18 @@
 
         <ListView x:Name="ResultList" Margin="0,20,0,2" Grid.Row="1" Background="Transparent" BorderThickness="0"
                  ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="ResultList_MouseDoubleClick">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="ItemPlay" Header="至播放列表队首" Click="ItemPlay_Click" />
+                    <Separator/>
+                    <MenuItem x:Name="ItemCollect" Header="收藏" Click="ItemCollect_Click" />
+                    <MenuItem x:Name="ItemExport" Header="导出" Click="ItemExport_Click" />
+                    <Separator/>
+                    <MenuItem x:Name="ItemSearchArtist" Header="搜索该艺术家" Click="ItemSearchArtist_Click" />
+                    <MenuItem x:Name="ItemSearchSource" Header="搜索该来源" Click="ItemSearchSource_Click" />
+                    <MenuItem x:Name="ItemSearchMapper" Header="搜索该作者" Click="ItemSearchMapper_Click" />
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.DataContext>
                 <models:BeatmapViewModel/>
             </ListView.DataContext>
