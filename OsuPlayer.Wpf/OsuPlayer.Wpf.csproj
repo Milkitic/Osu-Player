@@ -151,6 +151,9 @@
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\MapIndentity.cs" />
     <Compile Include="Control\PageBox.cs" />
+    <Compile Include="Pages\DiffSelectPage.xaml.cs">
+      <DependentUpon>DiffSelectPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PlayerControl.cs" />
     <Compile Include="Pages\AddCollectionPage.xaml.cs">
       <DependentUpon>AddCollectionPage.xaml</DependentUpon>
@@ -231,6 +234,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Control\MessageBoxPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\DiffSelectPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

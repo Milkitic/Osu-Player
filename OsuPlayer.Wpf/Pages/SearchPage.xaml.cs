@@ -1,11 +1,14 @@
 ﻿using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer;
+using Milkitic.OsuPlayer.Utils;
+using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -24,7 +27,11 @@ namespace Milkitic.OsuPlayer.Pages
         {
             ParentWindow = mainWindow;
             InitializeComponent();
+        }
 
+        public SearchPage(MainWindow mainWindow, string searchKey) : this(mainWindow)
+        {
+            SearchBox.Text = searchKey;
         }
 
         private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -69,45 +76,102 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void ResultList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (ResultList.SelectedItem == null)
-                return;
             if (e.OriginalSource is TextBlock)
                 return;
-            var map = App.Beatmaps.GetBeatmapsetsByFolder(((BeatmapViewModel)ResultList.SelectedItem).FolderName)
-                .GetHighestDiff();
+            PlaySelectedDefault();
+        }
+
+        private void ItemPlay_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (ResultList.SelectedItem == null)
+                return;
+            var ok = (BeatmapViewModel)ResultList.SelectedItem;
+            var page = new DiffSelectPage(ParentWindow,
+                App.Beatmaps.GetBeatmapsetsByFolder(ok.GetIdentity().FolderName));
+            page.Callback = () =>
+            {
+                ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, page.SelectedMap.FolderName,
+                    page.SelectedMap.BeatmapFileName));
+                App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.All, PlayListMode.RecentList);
+                ParentWindow.FramePop.Navigate(null);
+            };
+            ParentWindow.FramePop.Navigate(page);
+        }
+
+        private void ItemNextPlay_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ItemSearchMapper_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var map = GetSelectedDefault();
+            if (map == null) return;
+            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow, map.Creator));
+        }
+
+        private void ItemSearchSource_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var map = GetSelectedDefault();
+            if (map == null) return;
+            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow, map.SongSource));
+        }
+
+        private void ItemSearchArtist_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var map = GetSelectedDefault();
+            if (map == null) return;
+            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow,
+                MetaSelect.GetUnicode(map.Artist, map.ArtistUnicode)));
+        }
+
+        private void ItemSearchTitle_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var map = GetSelectedDefault();
+            if (map == null) return;
+            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow,
+                MetaSelect.GetUnicode(map.Title, map.TitleUnicode)));
+        }
+
+        private void ItemExport_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var map = GetSelectedDefault();
+            if (map == null) return;
+            ExportPage.QueueEntry(map);
+        }
+
+        private void ItemCollect_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (ResultList.SelectedItem == null)
+                return;
+            var ok = (BeatmapViewModel)ResultList.SelectedItem;
+            var page = new DiffSelectPage(ParentWindow,
+                App.Beatmaps.GetBeatmapsetsByFolder(ok.GetIdentity().FolderName));
+            page.Callback = () =>
+            {
+                ParentWindow.FramePop.Navigate(new SelectCollectionPage(ParentWindow,
+                    App.Beatmaps.GetBeatmapsetsByFolder(page.SelectedMap.FolderName)
+                        .FirstOrDefault(k => k.Version == page.SelectedMap.Version)));
+            };
+            ParentWindow.FramePop.Navigate(page);
+        }
+
+        private void PlaySelectedDefault()
+        {
+            var map = GetSelectedDefault();
+            if (map == null) return;
             ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                 map.BeatmapFileName));
             App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.All, PlayListMode.RecentList);
         }
 
-        private void ItemSearchMapper_Click(object sender, System.Windows.RoutedEventArgs e)
+        private BeatmapEntry GetSelectedDefault()
         {
-
-        }
-
-        private void ItemSearchSource_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-
-        }
-
-        private void ItemSearchArtist_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-
-        }
-
-        private void ItemExport_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-
-        }
-
-        private void ItemCollect_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-
-        }
-
-        private void ItemPlay_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-
+            if (ResultList.SelectedItem == null)
+                return null;
+            var map = App.Beatmaps.GetBeatmapsetsByFolder(((BeatmapViewModel)ResultList.SelectedItem).FolderName)
+                .GetHighestDiff();
+            return map;
         }
     }
 }

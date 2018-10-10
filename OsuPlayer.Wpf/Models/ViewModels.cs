@@ -19,6 +19,7 @@ namespace Milkitic.OsuPlayer
         public GameMode GameMode { get; set; }
         public int BeatmapId { get; set; }
         public string FolderName { get; set; }
+        public string BeatmapFileName { get; set; }
         public string AutoTitleSource =>
             (MetaSelect.GetUnicode(Title, TitleUnicode) +
              (string.IsNullOrEmpty(SongSource) ? "" : $"\r\n\r\n —— {SongSource}")).Replace("_", "__");

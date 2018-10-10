@@ -10,13 +10,16 @@ namespace Milkitic.OsuPlayer.Data
     {
         public MapInfo() { }
 
-        public MapInfo(string id, string version, string folderName, int offset, DateTime? lastPlayTime)
+        public MapInfo(string id, string version, string folderName, int offset, DateTime? lastPlayTime,
+            string exportFile = null, DateTime? addTime = null)
         {
             Id = id;
             Version = version;
             FolderName = folderName;
             Offset = offset;
             LastPlayTime = lastPlayTime;
+            AddTime = addTime;
+            if (exportFile != null) ExportFile = exportFile;
         }
 
         [Required, Column("id")]
@@ -29,8 +32,12 @@ namespace Milkitic.OsuPlayer.Data
         public int Offset { get; set; }
         [Column("lastPlayTime")]
         public DateTime? LastPlayTime { get; set; }
-        [Column("exportFile")]
+         [Column("exportFile")]
         public string ExportFile { get; set; }
+
+        //Extension
+        public DateTime? AddTime { get; }
+
     }
 
     public class MapInfoContext : DbContext
@@ -80,6 +87,7 @@ namespace Milkitic.OsuPlayer.Data
             Id = id;
             CollectionId = collectionId;
             MapId = mapId;
+            AddTime = DateTime.Now;
         }
 
         [Required, Column("id")]
@@ -88,7 +96,8 @@ namespace Milkitic.OsuPlayer.Data
         public string CollectionId { get; set; }
         [Required, Column("mapId")]
         public string MapId { get; set; }
-
+        [Column("addTime")]
+        public DateTime? AddTime { get; set; }
     }
 
     public class RelationContext : DbContext

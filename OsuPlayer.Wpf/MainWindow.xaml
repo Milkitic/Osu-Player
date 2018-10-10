@@ -14,8 +14,7 @@
             <RowDefinition Height="Auto" MinHeight="48" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Background="White">
-            <Image x:Name="BlurScene" Margin="1" Source="C:\Users\YureruMiira\Desktop\bg.jpg"
-                   Stretch="UniformToFill" Opacity="1">
+            <Image x:Name="BlurScene" Margin="1" Stretch="UniformToFill" Opacity="1">
                 <Image.Effect>
                     <BlurEffect Radius="75" />
                 </Image.Effect>
@@ -132,16 +131,16 @@
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3" HorizontalAlignment="Right">
                     <Label x:Name="LblNow" Content="00:00" Foreground="#777" />
                     <Label Content="/" Foreground="#858585" Margin="-5,0,-5,0" />
-                    <Label x:Name="LblTotal" Content="03:20" Foreground="#AAA" />
+                    <Label x:Name="LblTotal" Content="00:00" Foreground="#AAA" />
                 </StackPanel>
                 <Slider x:Name="PlayProgress" Grid.Row="1" Margin="3"
-                        Style="{StaticResource HorizontalSliderPinkStyle}" Value="1"
+                        Style="{StaticResource HorizontalSliderPinkStyle}"
                         Thumb.DragStarted="PlayProgress_DragStarted"
                         Thumb.DragCompleted="PlayProgress_DragCompleted" />
             </Grid>
             <Grid Grid.Column="3">
                 <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
-                    <Button x:Name="BtnLike" Style="{StaticResource FavedButtonStyle}" Click="BtnLike_Click" />
+                    <Button x:Name="BtnLike" Style="{StaticResource FavButtonStyle}" Click="BtnLike_Click" />
                     <Button x:Name="BtnVolume" Style="{StaticResource VolumeButtonStyle}" Click="BtnVolume_Click" />
                 </StackPanel>
             </Grid>

@@ -24,6 +24,7 @@ namespace Milkitic.OsuPlayer
     public partial class App : Application
     {
         public static Config Config { get; set; }
+        public static bool UseDbMode => Config.DbPath != null;
 
         public static Lazy<OsuDb> BeatmapDb { get; set; } = new Lazy<OsuDb>(() =>
         {

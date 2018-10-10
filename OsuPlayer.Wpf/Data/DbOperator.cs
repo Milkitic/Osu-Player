@@ -79,9 +79,14 @@ namespace Milkitic.OsuPlayer.Data
             {
                 try
                 {
-                    var mapIds = relationContext.Relations.Where(k => k.CollectionId == collection.Id)
-                        .Select(k => k.MapId).ToList();
-                    return mapContext.MapInfos.Where(k => mapIds.Contains(k.Id)).ToList();
+                    var mapRelations = relationContext.Relations.Where(k => k.CollectionId == collection.Id)
+                      .ToList();
+                    var mapIds = mapRelations.Select(k => k.MapId).ToList();
+                    var maps = mapContext.MapInfos.Where(k => mapIds.Contains(k.Id)).ToList();
+                    return (from r in mapRelations
+                            join m in maps on r.MapId equals m.Id
+                            select new MapInfo(m.Id, m.Version, m.FolderName, m.Offset, m.LastPlayTime, m.ExportFile, r.AddTime))
+                        .ToList();
                 }
                 catch (Exception ex)
                 {
@@ -180,8 +185,8 @@ namespace Milkitic.OsuPlayer.Data
 
         public static void UpdateMap(MapIdentity id, int offset = 0)
         {
-            if (!Directory.Exists(Path.Combine(Domain.OsuSongPath, id.FolderName)))
-                throw new DirectoryNotFoundException(id.FolderName);
+            //if (!Directory.Exists(Path.Combine(Domain.OsuSongPath, id.FolderName)))
+            //    throw new DirectoryNotFoundException(id.FolderName);
 
             using (MapInfoContext mapContext = new MapInfoContext())
             {

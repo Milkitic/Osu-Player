@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Milkitic.OsuPlayer;
+﻿using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Utils;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Milkitic.OsuPlayer.Data
 {
@@ -43,6 +43,12 @@ namespace Milkitic.OsuPlayer.Data
             return list.Where(k => k.FolderName == folder);
         }
 
+        public static BeatmapEntry GetBeatmapByIdentity(this IEnumerable<BeatmapEntry> list,
+            MapIdentity identity)
+        {
+            return list.FirstOrDefault(k => k.FolderName == identity.FolderName && k.Version == identity.Version);
+        }
+
         public static BeatmapEntry GetHighestDiff(this IEnumerable<BeatmapEntry> list)
         {
             var ok = list.GroupBy(k => k.GameMode).ToDictionary(k => k.Key, k => k);
@@ -62,23 +68,25 @@ namespace Milkitic.OsuPlayer.Data
         }
 
         public static IEnumerable<BeatmapEntry> GetMapListFromDb(
-            this IEnumerable<BeatmapEntry> list, List<MapInfo> infos)
+            this IEnumerable<BeatmapEntry> list, List<MapInfo> infos, bool playedOrAddedTime = true)
         {
 
-            var db = new List<(BeatmapEntry entry, DateTime dateTime)>();
+            var db = new List<(BeatmapEntry entry, DateTime lastPlayedTime, DateTime? addTime)>();
             foreach (BeatmapEntry k in list)
             {
                 foreach (var mapInfo in infos)
                 {
                     if (mapInfo.FolderName == k.FolderName && mapInfo.Version == k.Version)
                     {
-                        db.Add((k, mapInfo.LastPlayTime ?? new DateTime()));
+                        db.Add((k, mapInfo.LastPlayTime ?? new DateTime(), mapInfo.AddTime));
                         break;
                     }
                 }
             }
 
-            return db.OrderByDescending(k => k.dateTime).Select(k => k.entry);
+            return playedOrAddedTime
+                ? db.OrderByDescending(k => k.lastPlayedTime).Select(k => k.entry)
+                : db.OrderByDescending(k => k.addTime).Select(k => k.entry);
         }
 
         public static IEnumerable<BeatmapEntry> SortBy(this IEnumerable<BeatmapEntry> list, SortMode sortMode)
@@ -111,6 +119,7 @@ namespace Milkitic.OsuPlayer.Data
                 Title = entry.Title,
                 TitleUnicode = entry.TitleUnicode,
                 Version = entry.Version,
+                BeatmapFileName = entry.BeatmapFileName,
             }).Distinct(new Comparer(multiVersions)).ToList();
         }
 

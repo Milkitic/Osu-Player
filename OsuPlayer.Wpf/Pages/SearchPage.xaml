@@ -36,11 +36,13 @@
                  ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="ResultList_MouseDoubleClick">
             <ListView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem x:Name="ItemPlay" Header="至播放列表队首" Click="ItemPlay_Click" />
+                    <MenuItem x:Name="ItemPlay" Header="播放..." Click="ItemPlay_Click" />
+                    <!--<MenuItem x:Name="ItemNextPlay" Header="下一首播放..." Click="ItemNextPlay_Click" />-->
                     <Separator/>
-                    <MenuItem x:Name="ItemCollect" Header="收藏" Click="ItemCollect_Click" />
+                    <MenuItem x:Name="ItemCollect" Header="收藏..." Click="ItemCollect_Click" />
                     <MenuItem x:Name="ItemExport" Header="导出" Click="ItemExport_Click" />
                     <Separator/>
+                    <MenuItem x:Name="ItemSearchTitle" Header="搜索该标题" Click="ItemSearchTitle_Click" />
                     <MenuItem x:Name="ItemSearchArtist" Header="搜索该艺术家" Click="ItemSearchArtist_Click" />
                     <MenuItem x:Name="ItemSearchSource" Header="搜索该来源" Click="ItemSearchSource_Click" />
                     <MenuItem x:Name="ItemSearchMapper" Header="搜索该作者" Click="ItemSearchMapper_Click" />

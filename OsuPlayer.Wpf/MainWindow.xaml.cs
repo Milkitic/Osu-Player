@@ -56,7 +56,7 @@ namespace Milkitic.OsuPlayer
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // todo: This should be kept since the application exit last time.
-            MainFrame.Navigate(Pages.RecentPlayPage);
+            BtnRecent_Click(sender, e);
             UpdateCollections();
             LoadSurfaceSettings();
             RunSurfaceUpdate();
@@ -89,6 +89,7 @@ namespace Milkitic.OsuPlayer
         /// </summary>
         private void BtnSearch_Click(object sender, RoutedEventArgs e)
         {
+            if (!ValidateDb()) return;
             MainFrame.Navigate(Pages.SearchPage);
             //MainFrame.Navigate(new Uri("Pages/SearchPage.xaml", UriKind.Relative), this);
         }
@@ -108,6 +109,7 @@ namespace Milkitic.OsuPlayer
         /// </summary>
         private void Storyboard_Click(object sender, RoutedEventArgs e)
         {
+            if (!ValidateDb()) return;
 #if DEBUG
             MainFrame.Navigate(Pages.StoryboardPage);
 #else
@@ -120,6 +122,7 @@ namespace Milkitic.OsuPlayer
         /// </summary>
         private void BtnRecent_Click(object sender, RoutedEventArgs e)
         {
+            if (!ValidateDb()) return;
             MainFrame.Navigate(Pages.RecentPlayPage);
         }
 
@@ -128,6 +131,7 @@ namespace Milkitic.OsuPlayer
         /// </summary>
         private void BtnExport_Click(object sender, RoutedEventArgs e)
         {
+            if (!ValidateDb()) return;
             MainFrame.Navigate(Pages.ExportPage);
         }
 
@@ -141,6 +145,7 @@ namespace Milkitic.OsuPlayer
         /// </summary>
         private void CollectionList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (!ValidateDb()) return;
             if (CollectionList.SelectedItem == null)
                 return;
             var collection = (Collection)CollectionList.SelectedItem;
@@ -197,9 +202,20 @@ namespace Milkitic.OsuPlayer
         /// </summary>
         private void BtnLike_Click(object sender, RoutedEventArgs e)
         {
+            if (!ValidateDb()) return;
+
             FramePop.Navigate(new SelectCollectionPage(this,
                 App.Beatmaps.GetBeatmapsetsByFolder(App.PlayerControl.NowIdentity.FolderName)
                     .FirstOrDefault(k => k.Version == App.PlayerControl.NowIdentity.Version)));
+        }
+
+        private bool ValidateDb()
+        {
+            if (App.UseDbMode)
+                return true;
+            PageBox.Show(Title, "你尚未初始化osu!db，因此该功能不可用。", delegate { });
+            return false;
+
         }
 
         private void BtnVolume_Click(object sender, RoutedEventArgs e)
@@ -355,11 +371,23 @@ namespace Milkitic.OsuPlayer
                         BlurScene.Source = null;
 
                     /* Start Play */
+                    switch (MainFrame.Content)
+                    {
+                        case RecentPlayPage recentPlayPage:
+                            var item = recentPlayPage.ViewModels.FirstOrDefault(k =>
+                                k.GetIdentity().Equals(App.PlayerControl.NowIdentity));
+                            recentPlayPage.RecentList.SelectedItem = item;
+                            break;
+                        case CollectionPage collectionPage:
+                            collectionPage.MapList.SelectedItem =
+                                collectionPage.ViewModels.FirstOrDefault(k =>
+                                    k.GetIdentity().Equals(App.PlayerControl.NowIdentity));
+                            break;
+                    }
                     App.HitsoundPlayer.Play();
                     RunSurfaceUpdate();
 
                     DbOperator.UpdateMap(App.PlayerControl.NowIdentity);
-                    Pages.RecentPlayPage.UpdateList();
                 }
                 catch (MultiTimingSectionException ex)
                 {
