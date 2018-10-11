@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:data="clr-namespace:Milkitic.OsuPlayer.Data"
         mc:Ignorable="d" Style="{StaticResource MainWindowStyle}"
-        Title="Osu Player" Width="960" Height="720" MinWidth="640" MinHeight="88"
+        Title="osu! 畅听" Width="960" Height="720" MinWidth="640" MinHeight="88"
         Loaded="Window_Loaded" Closing="Window_Closing">
 
     <Grid x:Name="MainGrid">
@@ -83,20 +83,9 @@
 
                                 </StackPanel>
                             </Grid>
-                            <Grid Grid.Row="1">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" x:Name="BtnFeedback"
-                                            Style="{StaticResource CollectionButtonStyle}" Click="BtnFeedback_Click"
-                                            Content="反馈" />
-                                    <Button Grid.Column="1" x:Name="BtnSettings"
+                            <Button x:Name="BtnSettings" Grid.Row="1"
                                             Style="{StaticResource CollectionButtonStyle}" Click="BtnSettings_Click"
                                             Content="设置" />
-                                </Grid>
-                            </Grid>
                         </Grid>
                     </GroupBox>
                 </Grid>

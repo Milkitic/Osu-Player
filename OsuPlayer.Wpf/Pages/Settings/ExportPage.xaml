@@ -1,0 +1,35 @@
+﻿<Page x:Class="Milkitic.OsuPlayer.Pages.Settings.ExportPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Milkitic.OsuPlayer.Pages.Settings"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ExportPage">
+
+    <Grid>
+        <ScrollViewer>
+            <StackPanel Margin="10">
+                <Label Style="{StaticResource ConfigTitleStyle}" Content="导出目录：" HorizontalAlignment="Left" />
+                <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
+                    <Label Style="{StaticResource ConfigLabel2Style}" Content="D:\asdf\asdf" />
+                    <Button Content="..." Width="20" Style="{StaticResource ConfigButtonStyle}" />
+                </StackPanel>
+                <Label Style="{StaticResource ConfigTitleStyle}" Content="文件命名格式：" HorizontalAlignment="Left" />
+                <StackPanel HorizontalAlignment="Left" >
+                    <RadioButton Style="{StaticResource ConfigRadioStyle}" Content="标题" HorizontalAlignment="Left" />
+                    <RadioButton Style="{StaticResource ConfigRadioStyle}" Content="艺术家 - 标题" HorizontalAlignment="Left" />
+                    <RadioButton Style="{StaticResource ConfigRadioStyle}" Content="标题 - 艺术家" HorizontalAlignment="Left" />
+                </StackPanel>
+                <Label Style="{StaticResource ConfigTitleStyle}" Content="目录分类：" HorizontalAlignment="Left" />
+                <StackPanel HorizontalAlignment="Left" >
+                    <RadioButton Style="{StaticResource ConfigRadioStyle}" Content="不分目录" HorizontalAlignment="Left" />
+                    <RadioButton Style="{StaticResource ConfigRadioStyle}" Content="按艺术家（Artist）分目录" HorizontalAlignment="Left" />
+                    <RadioButton Style="{StaticResource ConfigRadioStyle}" Content="按作者（Mapper）分目录" HorizontalAlignment="Left" />
+                    <RadioButton Style="{StaticResource ConfigRadioStyle}" Content="按来源（Source）分目录" HorizontalAlignment="Left" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

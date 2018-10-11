@@ -113,6 +113,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Config.cs" />
+    <Compile Include="ConfigWindow.xaml.cs">
+      <DependentUpon>ConfigWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Data\Models.cs" />
     <Compile Include="Data\DbOperator.cs" />
     <Compile Include="Domain.cs" />
@@ -153,6 +156,24 @@
     <Compile Include="Control\PageBox.cs" />
     <Compile Include="Pages\DiffSelectPage.xaml.cs">
       <DependentUpon>DiffSelectPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Settings\AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Settings\ExportPage.xaml.cs">
+      <DependentUpon>ExportPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Settings\GeneralPage.xaml.cs">
+      <DependentUpon>GeneralPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Settings\HotKeyPage.xaml.cs">
+      <DependentUpon>HotKeyPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Settings\LyricPage.xaml.cs">
+      <DependentUpon>LyricPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Settings\PlayPage.xaml.cs">
+      <DependentUpon>PlayPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="PlayerControl.cs" />
     <Compile Include="Pages\AddCollectionPage.xaml.cs">
@@ -209,6 +230,10 @@
     <Compile Include="Media\Music\MusicPlayer.cs" />
     <Compile Include="Media\Music\MyAudioFileReader.cs" />
     <Compile Include="Media\Music\WavePlayer.cs" />
+    <Page Include="ConfigWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="LyricWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -258,6 +283,30 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\SearchPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Settings\AboutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Settings\ExportPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Settings\GeneralPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Settings\HotKeyPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Settings\LyricPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Settings\PlayPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

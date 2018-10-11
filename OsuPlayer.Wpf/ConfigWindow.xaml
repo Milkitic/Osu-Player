@@ -1,0 +1,41 @@
+﻿<Window x:Class="Milkitic.OsuPlayer.ConfigWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Milkitic.OsuPlayer"
+        mc:Ignorable="d"
+        Title="播放器设置" Height="400" Width="600" Loaded="Window_Loaded" ResizeMode="NoResize">
+    <Grid>
+        <DockPanel Width="Auto" Height="Auto">
+            <Grid>
+                <GroupBox Background="#99EFEFF8" Width="150">
+                    <StackPanel>
+                        <Label Style="{StaticResource NavigationLabelStyle}">设置</Label>
+                        <Button x:Name="BtnGeneral" Height="40" Click="BtnGeneral_Click"
+                                            Content="常规"
+                                            Style="{StaticResource NavigationButtonStyle}" />
+                        <Button x:Name="BtnPlay" Height="40" Click="BtnPlay_Click"
+                                            Content="播放"
+                                            Style="{StaticResource NavigationButtonStyle}" />
+                        <Button x:Name="BtnHotkey" Height="40" Click="BtnHotkey_Click"
+                                            Content="热键"
+                                            Style="{StaticResource NavigationButtonStyle}" />
+                        <Button x:Name="BtnLyric" Height="40" Click="BtnLyric_Click"
+                                        Content="歌词"
+                                        Style="{StaticResource NavigationButtonStyle}" />
+                        <Button x:Name="BtnExport" Height="40" Click="BtnExport_Click"
+                                        Content="导出设置"
+                                        Style="{StaticResource NavigationButtonStyle}" />
+                        <Button x:Name="BtnAbout" Height="40" Click="BtnAbout_Click"
+                                        Content="关于"
+                                        Style="{StaticResource NavigationButtonStyle}" />
+                    </StackPanel>
+                </GroupBox>
+            </Grid>
+            <Grid>
+                <Frame Name="MainFrame" NavigationUIVisibility="Hidden"></Frame>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>

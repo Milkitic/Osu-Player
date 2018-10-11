@@ -27,6 +27,55 @@
             <Setter Property="Foreground" Value="#888888" />
             <Setter Property="Margin" Value="0,10,0,0" />
         </Style>
+        <!-- Config title style -->
+        <Style x:Key="ConfigTitleStyle" TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="13px" />
+            <Setter Property="Foreground" Value="#222222" />
+            <Setter Property="Margin" Value="0,10,0,5" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <!-- Config radio style -->
+        <Style x:Key="ConfigRadioStyle" TargetType="{x:Type RadioButton}">
+            <Setter Property="FontSize" Value="12px" />
+            <Setter Property="Foreground" Value="#606060" />
+            <Setter Property="Margin" Value="4,4" />
+        </Style>
+        <!-- Config check style -->
+        <Style x:Key="ConfigCheckStyle" TargetType="{x:Type CheckBox}">
+            <Setter Property="FontSize" Value="12px" />
+            <Setter Property="Foreground" Value="#606060" />
+            <Setter Property="Margin" Value="4,4" />
+        </Style>
+        <!-- Config label style -->
+        <Style x:Key="ConfigLabelStyle" TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="12px" />
+            <Setter Property="Foreground" Value="#606060" />
+            <Setter Property="Margin" Value="4,4" />
+        </Style>
+        <Style x:Key="ConfigLabel2Style" TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="12px" />
+        </Style>
+        <!-- Config stack hori style -->
+        <Style x:Key="ConfigStackHoriStyle" TargetType="{x:Type StackPanel}">
+
+        </Style>
+        <!-- Config slider style -->
+        <Style x:Key="ConfigSliderStyle" TargetType="{x:Type Slider}">
+
+        </Style>
+        <!-- Config textbox style -->
+        <Style x:Key="ConfigTextBoxStyle" TargetType="{x:Type TextBox}">
+
+        </Style>
+        <!-- Config button style -->
+        <Style x:Key="ConfigButtonStyle" TargetType="{x:Type Button}">
+
+        </Style>
+        <!-- Config grid style -->
+        <Style x:Key="ConfigGridStyle" TargetType="{x:Type Grid}">
+
+        </Style>
+
         <!-- Navigation button style -->
         <Style x:Key="NavigationButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="#E8E8F0" />

@@ -44,6 +44,7 @@ namespace Milkitic.OsuPlayer
         private Task _statusTask;
         private bool _scrollLock;
         private PlayerStatus _tmpStatus = PlayerStatus.Stopped;
+        private ConfigWindow _configWindow;
 
         public MainWindow()
         {
@@ -153,18 +154,17 @@ namespace Milkitic.OsuPlayer
         }
 
         /// <summary>
-        /// Open browser linked to Github issue page
-        /// </summary>
-        private void BtnFeedback_Click(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Popup a dialog for settings.
         /// </summary>
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
         {
+            if (_configWindow == null || _configWindow.IsClosed)
+            {
+                _configWindow = new ConfigWindow();
+                _configWindow.Show();
+            }
+            else
+                _configWindow.Focus();
         }
 
         /// <summary>
