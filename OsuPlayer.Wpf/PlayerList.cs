@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Milkitic.OsuPlayer
 {
-    public class PlayerControl
+    public class PlayerList
     {
         private int _pointer;
         public PlayerMode PlayerMode { get; set; } = PlayerMode.Loop;

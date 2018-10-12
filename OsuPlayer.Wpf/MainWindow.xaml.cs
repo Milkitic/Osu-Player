@@ -38,13 +38,14 @@ namespace Milkitic.OsuPlayer
 
         public readonly PageBox PageBox;
         private readonly LyricWindow _lyricWindow;
+        public ConfigWindow ConfigWindow;
+        public readonly OverallKeyHook OverallKeyHook;
 
         //local player control
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private Task _statusTask;
         private bool _scrollLock;
         private PlayerStatus _tmpStatus = PlayerStatus.Stopped;
-        private ConfigWindow _configWindow;
 
         public MainWindow()
         {
@@ -52,6 +53,8 @@ namespace Milkitic.OsuPlayer
             PageBox = new PageBox(MainGrid, "_main");
             _lyricWindow = new LyricWindow();
             _lyricWindow.Show();
+            OverallKeyHook = new OverallKeyHook(this);
+            TryBindHotKeys();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -76,13 +79,24 @@ namespace Milkitic.OsuPlayer
         /// <summary>
         /// Clear things.
         /// </summary>
-        private void Window_Closing(object sender, EventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (App.Config.General.ExitWhenClosed == null)
+            {
+                var result = MessageBox.Show("退出？", Title, MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.No)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
             ClearHitsoundPlayer();
             _cts.Dispose();
             WavePlayer.Device?.Dispose();
             WavePlayer.MasteringVoice?.Dispose();
             _lyricWindow.Dispose();
+            OverallKeyHook.Dispose();
         }
 
         /// <summary>
@@ -158,19 +172,22 @@ namespace Milkitic.OsuPlayer
         /// </summary>
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
         {
-            if (_configWindow == null || _configWindow.IsClosed)
+            if (ConfigWindow == null || ConfigWindow.IsClosed)
             {
-                _configWindow = new ConfigWindow();
-                _configWindow.Show();
+                ConfigWindow = new ConfigWindow(this);
+                ConfigWindow.Show();
             }
             else
-                _configWindow.Focus();
+            {
+                if (ConfigWindow.IsInitialized)
+                    ConfigWindow.Focus();
+            }
         }
 
         /// <summary>
         /// Play next song in playlist.
         /// </summary>
-        private void BtnPlay_Click(object sender, RoutedEventArgs e)
+        public void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
             if (App.HitsoundPlayer == null)
             {
@@ -192,7 +209,7 @@ namespace Milkitic.OsuPlayer
             }
         }
 
-        private void BtnNext_Click(object sender, RoutedEventArgs e)
+        public void BtnNext_Click(object sender, RoutedEventArgs e)
         {
             PlayNext(true);
         }
@@ -205,8 +222,8 @@ namespace Milkitic.OsuPlayer
             if (!ValidateDb()) return;
 
             FramePop.Navigate(new SelectCollectionPage(this,
-                App.Beatmaps.GetBeatmapsetsByFolder(App.PlayerControl.NowIdentity.FolderName)
-                    .FirstOrDefault(k => k.Version == App.PlayerControl.NowIdentity.Version)));
+                App.Beatmaps.GetBeatmapsetsByFolder(App.PlayerList.NowIdentity.FolderName)
+                    .FirstOrDefault(k => k.Version == App.PlayerList.NowIdentity.Version)));
         }
 
         private bool ValidateDb()
@@ -296,7 +313,7 @@ namespace Milkitic.OsuPlayer
         {
             if (App.HitsoundPlayer == null) return;
             App.HitsoundPlayer.SingleOffset = (int)Offset.Value;
-            DbOperator.UpdateMap(App.PlayerControl.NowIdentity, App.HitsoundPlayer.SingleOffset);
+            DbOperator.UpdateMap(App.PlayerList.NowIdentity, App.HitsoundPlayer.SingleOffset);
         }
 
         #region Player
@@ -339,16 +356,16 @@ namespace Milkitic.OsuPlayer
                     _cts = new CancellationTokenSource();
 
                     /* Set Meta */
-                    App.PlayerControl.NowIdentity = new MapIdentity(fi.Directory.Name, App.HitsoundPlayer.Osufile.Metadata.Version);
+                    App.PlayerList.NowIdentity = new MapIdentity(fi.Directory.Name, App.HitsoundPlayer.Osufile.Metadata.Version);
                     LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle();
                     LblArtist.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist();
-                    var map = DbOperator.GetMapFromDb(App.PlayerControl.NowIdentity);
+                    var map = DbOperator.GetMapFromDb(App.PlayerList.NowIdentity);
                     var album = DbOperator.GetCollectionsByMap(map);
                     bool faved = album != null && album.Any(k => k.Locked);
                     BtnLike.Style = faved
                         ? (Style)FindResource("FavedButtonStyle")
                         : (Style)FindResource("FavButtonStyle");
-                    App.HitsoundPlayer.SingleOffset = DbOperator.GetMapFromDb(App.PlayerControl.NowIdentity).Offset;
+                    App.HitsoundPlayer.SingleOffset = DbOperator.GetMapFromDb(App.PlayerList.NowIdentity).Offset;
                     Offset.Value = App.HitsoundPlayer.SingleOffset;
 
                     /* Set Lyric */
@@ -375,19 +392,19 @@ namespace Milkitic.OsuPlayer
                     {
                         case RecentPlayPage recentPlayPage:
                             var item = recentPlayPage.ViewModels.FirstOrDefault(k =>
-                                k.GetIdentity().Equals(App.PlayerControl.NowIdentity));
+                                k.GetIdentity().Equals(App.PlayerList.NowIdentity));
                             recentPlayPage.RecentList.SelectedItem = item;
                             break;
                         case CollectionPage collectionPage:
                             collectionPage.MapList.SelectedItem =
                                 collectionPage.ViewModels.FirstOrDefault(k =>
-                                    k.GetIdentity().Equals(App.PlayerControl.NowIdentity));
+                                    k.GetIdentity().Equals(App.PlayerList.NowIdentity));
                             break;
                     }
                     App.HitsoundPlayer.Play();
                     RunSurfaceUpdate();
 
-                    DbOperator.UpdateMap(App.PlayerControl.NowIdentity);
+                    DbOperator.UpdateMap(App.PlayerList.NowIdentity);
                 }
                 catch (MultiTimingSectionException ex)
                 {
@@ -438,19 +455,19 @@ namespace Milkitic.OsuPlayer
         private void PlayNext(bool isManual)
         {
             if (App.HitsoundPlayer == null) return;
-            var result = App.PlayerControl.PlayTo(true, isManual, out var entry);
+            var result = App.PlayerList.PlayTo(true, isManual, out var entry);
             switch (result)
             {
-                case PlayerControl.ChangeType.Keep:
+                case PlayerList.ChangeType.Keep:
                     App.HitsoundPlayer.Play();
                     break;
 
-                case PlayerControl.ChangeType.Stop:
+                case PlayerList.ChangeType.Stop:
                     App.HitsoundPlayer.Stop();
                     break;
-                case PlayerControl.ChangeType.Change:
+                case PlayerList.ChangeType.Change:
                 default:
-                    var path = Path.Combine(new FileInfo(App.Config.DbPath).Directory.FullName, "Songs",
+                    var path = Path.Combine(new FileInfo(App.Config.General.DbPath).Directory.FullName, "Songs",
                         entry.FolderName, entry.BeatmapFileName);
                     PlayNewFile(path);
                     break;
@@ -569,6 +586,34 @@ namespace Milkitic.OsuPlayer
 
         #endregion
 
+        private void TryBindHotKeys()
+        {
+            var page = new Pages.Settings.HotKeyPage(this);
+            OverallKeyHook.AddNewHotKey(page.PlayPause.Name, () => { BtnPlay_Click(null, null); });
+            OverallKeyHook.AddNewHotKey(page.Previous.Name, () =>
+            {
+                //TODO
+            });
+            OverallKeyHook.AddNewHotKey(page.Next.Name, () => { BtnNext_Click(null, null); });
+            OverallKeyHook.AddNewHotKey(page.VolumeUp.Name, () => { App.Config.Volume.Main += 0.05f; });
+            OverallKeyHook.AddNewHotKey(page.VolumeDown.Name, () => { App.Config.Volume.Main -= 0.05f; });
+            OverallKeyHook.AddNewHotKey(page.FullMini.Name, () =>
+            {
+                //TODO
+            });
+            OverallKeyHook.AddNewHotKey(page.AddToFav.Name, () =>
+            {
+                //TODO
+            });
+            OverallKeyHook.AddNewHotKey(page.Lyric.Name, () =>
+            {
+                if (_lyricWindow.IsHide)
+                    _lyricWindow.Show();
+                else
+                    _lyricWindow.Hide();
+            });
+            GC.SuppressFinalize(page);
+        }
     }
 
     public class PageParts

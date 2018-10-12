@@ -26,6 +26,8 @@ namespace Milkitic.OsuPlayer
     /// </summary>
     public partial class LyricWindow : Window
     {
+        public bool IsHide { get; set; }
+
         private List<Sentence> _lyricList;
         private CancellationTokenSource _cts;
         private Task _playingTask;
@@ -238,6 +240,18 @@ namespace Milkitic.OsuPlayer
         private void BtnHide_Click(object sender, RoutedEventArgs e)
         {
             Hide();
+        }
+
+        public new void Show()
+        {
+            IsHide = false;
+            base.Show();
+        }
+
+        public new void Hide()
+        {
+            IsHide = true;
+            base.Hide();
         }
 
         public void Dispose()

@@ -40,7 +40,7 @@ namespace Milkitic.OsuPlayer.Pages
         {
             UpdateList();
             var item = ViewModels.FirstOrDefault(k =>
-                k.GetIdentity().Equals(App.PlayerControl.NowIdentity));
+                k.GetIdentity().Equals(App.PlayerList.NowIdentity));
             RecentList.SelectedItem = item;
         }
 
@@ -73,7 +73,7 @@ namespace Milkitic.OsuPlayer.Pages
             var searchInfo = (BeatmapViewModel)RecentList.SelectedItem;
             DbOperator.RemoveFromRecent(searchInfo.GetIdentity());
             UpdateList();
-            App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.All, PlayListMode.RecentList);
+            App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
         }
 
         private void BtnDelAll_Click(object sender, RoutedEventArgs e)
@@ -139,7 +139,7 @@ namespace Milkitic.OsuPlayer.Pages
 
             ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                 map.BeatmapFileName));
-            App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.None, PlayListMode.RecentList);
+            App.PlayerList.RefreshPlayList(PlayerList.FreshType.None, PlayListMode.RecentList);
         }
 
         private BeatmapEntry GetSelected()

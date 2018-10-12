@@ -44,6 +44,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Gma.System.MouseKeyHook, Version=5.6.130.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MouseKeyHook.5.6.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
+    </Reference>
     <Reference Include="NAudio, Version=1.8.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
     </Reference>
@@ -94,6 +97,7 @@
       <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -154,6 +158,7 @@
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\MapIndentity.cs" />
     <Compile Include="Control\PageBox.cs" />
+    <Compile Include="OverallKeyHook.cs" />
     <Compile Include="Pages\DiffSelectPage.xaml.cs">
       <DependentUpon>DiffSelectPage.xaml</DependentUpon>
     </Compile>
@@ -175,7 +180,7 @@
     <Compile Include="Pages\Settings\PlayPage.xaml.cs">
       <DependentUpon>PlayPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PlayerControl.cs" />
+    <Compile Include="PlayerList.cs" />
     <Compile Include="Pages\AddCollectionPage.xaml.cs">
       <DependentUpon>AddCollectionPage.xaml</DependentUpon>
     </Compile>
@@ -230,6 +235,7 @@
     <Compile Include="Media\Music\MusicPlayer.cs" />
     <Compile Include="Media\Music\MyAudioFileReader.cs" />
     <Compile Include="Media\Music\WavePlayer.cs" />
+    <Compile Include="Utils\KeyConverter.cs" />
     <Page Include="ConfigWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,10 +1,13 @@
 ﻿using Microsoft.Win32;
+using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media.Lyric;
 using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Auto;
+using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Kugou;
+using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Netease;
+using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic;
 using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Media.Storyboard;
-using Milkitic.OsuPlayer;
 using Newtonsoft.Json;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;
@@ -24,34 +27,42 @@ namespace Milkitic.OsuPlayer
     public partial class App : Application
     {
         public static Config Config { get; set; }
-        public static bool UseDbMode => Config.DbPath != null;
+        public static bool UseDbMode => Config.General.DbPath != null;
 
-        public static Lazy<OsuDb> BeatmapDb { get; set; } = new Lazy<OsuDb>(() =>
-        {
-            if (string.IsNullOrEmpty(Config.DbPath))
-                return null;
-            var db = new OsuDb();
-            db.ReadFromStream(new SerializationReader(new FileStream(Config.DbPath, FileMode.Open)));
-            return db;
-        });
-
+        public static Lazy<OsuDb> BeatmapDb { get; set; } = new Lazy<OsuDb>(ReadDb);
+        
         public static List<BeatmapEntry> Beatmaps => BeatmapDb.Value?.Beatmaps;
 
         public static MusicPlayer MusicPlayer;
         public static HitsoundPlayer HitsoundPlayer;
         public static StoryboardProvider StoryboardProvider;
 
-        public static readonly LyricProvider LyricProvider =
-            new LyricProvider(new AutoSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
-        public static readonly PlayerControl PlayerControl = new PlayerControl();
+        public static readonly LyricProvider LyricProvider;
+        public static readonly PlayerList PlayerList = new PlayerList();
 
         static App()
         {
-            if (!LoadSettings())
+            if (!LoadConfig())
                 Environment.Exit(0);
             CreateDirectories();
             InitLocalDb();
             LoadOsuDb();
+            SaveConfig();
+            switch (Config.Lyric.LyricSource)
+            {
+                case LyricSource.Auto:
+                    LyricProvider = new LyricProvider(new AutoSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
+                    break;
+                case LyricSource.Netease:
+                    LyricProvider = new LyricProvider(new NeteaseSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
+                    break;
+                case LyricSource.Kugou:
+                    LyricProvider = new LyricProvider(new KugouSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
+                    break;
+                case LyricSource.QqMusic:
+                    LyricProvider = new LyricProvider(new QqMusicSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
+                    break;
+            }
         }
 
         private static void InitLocalDb()
@@ -60,12 +71,12 @@ namespace Milkitic.OsuPlayer
             if (!defCol.Any()) DbOperator.AddCollection("最喜爱的", true);
         }
 
-        private static bool LoadSettings()
+        private static bool LoadConfig()
         {
             var file = Domain.ConfigFile;
             if (!File.Exists(file))
             {
-                CreateConfig(file);
+                CreateConfig();
             }
             else
             {
@@ -79,7 +90,7 @@ namespace Milkitic.OsuPlayer
                         AppDomain.CurrentDomain.FriendlyName, MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
-                        CreateConfig(file);
+                        CreateConfig();
                     }
                     else
                         return false;
@@ -91,7 +102,7 @@ namespace Milkitic.OsuPlayer
 
         private static void LoadOsuDb()
         {
-            string dbPath = Config.DbPath;
+            string dbPath = Config.General.DbPath;
             if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath))
             {
                 var osuProcess = Process.GetProcesses().Where(x => x.ProcessName == "osu!").ToArray();
@@ -104,18 +115,11 @@ namespace Milkitic.OsuPlayer
 
                 if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath))
                 {
-                    string chosedPath;
-                    OpenFileDialog fbd = new OpenFileDialog
+                    var result = BrowserDb(out var chosedPath);
+                    if (!result.HasValue || !result.Value)
                     {
-                        Title = @"请选择osu所在目录内的""osu!.db""",
-                        Filter = @"Beatmap Database|osu!.db"
-                    };
-                    var result = fbd.ShowDialog();
-                    if (result.HasValue && result.Value)
-                        chosedPath = fbd.FileName;
-                    else
-                    {
-                        MessageBox.Show(@"你尚未初始化osu!db，因此部分功能将不可用。", typeof(App).Name, MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show(@"你尚未初始化osu!db，因此部分功能将不可用。", typeof(App).Name, MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
                         return;
                     }
 
@@ -130,14 +134,31 @@ namespace Milkitic.OsuPlayer
             }
 
             if (dbPath == null) return;
-            Config.DbPath = dbPath;
+            Config.General.DbPath = dbPath;
 
         }
 
-        private static void CreateConfig(string file)
+        public static bool? BrowserDb(out string chosedPath)
+        {
+            OpenFileDialog fbd = new OpenFileDialog
+            {
+                Title = @"请选择osu所在目录内的""osu!.db""",
+                Filter = @"Beatmap Database|osu!.db"
+            };
+            var result = fbd.ShowDialog();
+            chosedPath = fbd.FileName;
+            return result;
+        }
+
+        private static void CreateConfig()
         {
             Config = new Config();
-            File.WriteAllText(file, JsonConvert.SerializeObject(Config));
+            File.WriteAllText(Domain.ConfigFile, JsonConvert.SerializeObject(Config));
+        }
+
+        public static void SaveConfig()
+        {
+            File.WriteAllText(Domain.ConfigFile, ConvertJsonString(JsonConvert.SerializeObject(Config)));
         }
 
         /// <summary>
@@ -161,6 +182,40 @@ namespace Milkitic.OsuPlayer
                     Console.WriteLine(@"未创建：" + item.Name);
                 }
             }
+        }
+
+        private static string ConvertJsonString(string str)
+        {
+            //格式化json字符串
+            JsonSerializer serializer = new JsonSerializer();
+            TextReader tr = new StringReader(str);
+            JsonTextReader jtr = new JsonTextReader(tr);
+            object obj = serializer.Deserialize(jtr);
+            if (obj != null)
+            {
+                StringWriter textWriter = new StringWriter();
+                JsonTextWriter jsonWriter = new JsonTextWriter(textWriter)
+                {
+                    Formatting = Formatting.Indented,
+                    Indentation = 4,
+                    IndentChar = ' '
+                };
+                serializer.Serialize(jsonWriter, obj);
+                return textWriter.ToString();
+            }
+            else
+            {
+                return str;
+            }
+        }
+
+        public static OsuDb ReadDb()
+        {
+            if (string.IsNullOrEmpty(Config.General.DbPath))
+                return null;
+            var db = new OsuDb();
+            db.ReadFromStream(new SerializationReader(new FileStream(Config.General.DbPath, FileMode.Open)));
+            return db;
         }
     }
 }

@@ -156,7 +156,7 @@ namespace Milkitic.OsuPlayer.Media.Music
                         {
                             preMs = playerMs;
                             var d = playerMs - (_sw.ElapsedMilliseconds + _controlOffset + SingleOffset);
-                            var r = App.Config.OffsetControl.GeneralOffset - d;
+                            var r = App.Config.Play.GeneralOffset - d;
                             if (Math.Abs(r) > 5)
                             {
                                 //Console.WriteLine($@"music: {Core.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");

@@ -35,7 +35,7 @@ namespace Milkitic.OsuPlayer.Pages
             LblTitle.Content = _collection.Name;
 
             var item = ViewModels.FirstOrDefault(k =>
-                k.GetIdentity().Equals(App.PlayerControl.NowIdentity));
+                k.GetIdentity().Equals(App.PlayerList.NowIdentity));
             //MapList.SelectedItem = item;
         }
 
@@ -81,7 +81,7 @@ namespace Milkitic.OsuPlayer.Pages
             var searchInfo = (BeatmapViewModel)MapList.SelectedItem;
             DbOperator.RemoveMapFromCollection(searchInfo.GetIdentity(), _collection);
             UpdateList();
-            App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.All, PlayListMode.Collection, _entries);
+            App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
         }
 
         private void LblCreator_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -152,7 +152,7 @@ namespace Milkitic.OsuPlayer.Pages
             if (map == null) return;
             ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                 map.BeatmapFileName));
-            App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.None, PlayListMode.Collection, _entries);
+            App.PlayerList.RefreshPlayList(PlayerList.FreshType.None, PlayListMode.Collection, _entries);
         }
 
         private BeatmapEntry GetSelected()

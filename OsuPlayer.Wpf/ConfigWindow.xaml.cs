@@ -20,10 +20,12 @@ namespace Milkitic.OsuPlayer
     /// </summary>
     public partial class ConfigWindow : Window
     {
+        private readonly MainWindow _mainWindow;
         public bool IsClosed { get; private set; }
 
-        public ConfigWindow()
+        public ConfigWindow(MainWindow mainWindow)
         {
+            _mainWindow = mainWindow;
             InitializeComponent();
         }
 
@@ -35,12 +37,12 @@ namespace Milkitic.OsuPlayer
 
         private void BtnGeneral_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new GeneralPage());
+            MainFrame.Navigate(new GeneralPage(_mainWindow));
         }
 
         private void BtnHotkey_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new HotKeyPage());
+            MainFrame.Navigate(new HotKeyPage(_mainWindow));
         }
 
         private void BtnLyric_Click(object sender, RoutedEventArgs e)

@@ -92,7 +92,7 @@ namespace Milkitic.OsuPlayer.Pages
             {
                 ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, page.SelectedMap.FolderName,
                     page.SelectedMap.BeatmapFileName));
-                App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.All, PlayListMode.RecentList);
+                App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
                 ParentWindow.FramePop.Navigate(null);
             };
             ParentWindow.FramePop.Navigate(page);
@@ -162,7 +162,7 @@ namespace Milkitic.OsuPlayer.Pages
             if (map == null) return;
             ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                 map.BeatmapFileName));
-            App.PlayerControl.RefreshPlayList(PlayerControl.FreshType.All, PlayListMode.RecentList);
+            App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
         }
 
         private BeatmapEntry GetSelectedDefault()
