@@ -189,7 +189,7 @@
                         TrayToolTip="{DynamicResource TrayToolTip}"
                         TrayMouseDoubleClick="NotifyIcon_TrayMouseDoubleClick"/>
         <Grid.Resources>
-            <ToolTip x:Key="TrayToolTip"></ToolTip>
+            <ToolTip x:Key="TrayToolTip"/>
             <Popup x:Key="TrayStatusPopup"></Popup>
             <ContextMenu x:Key="TrayMenu" Style="{StaticResource DefaultContextMenu}">
                 <MenuItem Header="播放" Style="{DynamicResource DefaultMenuItem}" />

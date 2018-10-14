@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -371,6 +372,7 @@ namespace Milkitic.OsuPlayer
                     App.PlayerList.NowIdentity = new MapIdentity(fi.Directory.Name, App.HitsoundPlayer.Osufile.Metadata.Version);
                     LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle();
                     LblArtist.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist();
+                    ((ToolTip)NotifyIcon.TrayToolTip).Content = (string)LblArtist.Content + " - " + (string)LblTitle.Content;
                     var map = DbOperator.GetMapFromDb(App.PlayerList.NowIdentity);
                     var album = DbOperator.GetCollectionsByMap(map);
                     bool faved = album != null && album.Any(k => k.Locked);
