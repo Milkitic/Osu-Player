@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Milkitic.OsuPlayer"
         mc:Ignorable="d"
-        Title="播放器设置" Height="400" MinWidth="600" Loaded="Window_Loaded" SizeToContent="Width" ResizeMode="NoResize">
+        Title="播放器设置" Height="400" MinWidth="600" Loaded="Window_Loaded" SizeToContent="Width" ResizeMode="NoResize"
+        Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico">
     <Grid>
         <DockPanel Width="Auto" Height="Auto">
             <Grid>

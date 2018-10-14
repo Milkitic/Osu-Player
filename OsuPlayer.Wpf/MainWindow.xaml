@@ -7,7 +7,8 @@
         xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d" Style="{StaticResource MainWindowStyle}"
         Title="osu! 畅听" Width="960" Height="720" MinWidth="640" MinHeight="88"
-        Loaded="Window_Loaded" Closing="Window_Closing" Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico">
+        Loaded="Window_Loaded" Closing="Window_Closing"
+        Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico">
 
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
@@ -64,15 +65,18 @@
                                                 Margin="5,10,0,0" Style="{StaticResource Collection2ButtonStyle}"
                                                 Click="BtnAddCollection_Click" />
                                     </StackPanel>
-                                    <ListView x:Name="CollectionList" Margin="5" Background="Transparent" BorderThickness="0"
-                                              ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="CollectionList_MouseDoubleClick">
+                                    <ListView x:Name="CollectionList" Margin="5" Background="Transparent"
+                                              BorderThickness="0"
+                                              ItemsSource="{Binding Mode=OneWay}"
+                                              MouseDoubleClick="CollectionList_MouseDoubleClick">
                                         <ListView.DataContext>
-                                            <data:Collection/>
+                                            <data:Collection />
                                         </ListView.DataContext>
                                         <ListView.Resources>
                                             <DataTemplate DataType="{x:Type data:Collection}">
                                                 <Grid>
-                                                    <Label x:Name="LblVersion" VerticalAlignment="Center" Foreground="#333333" Height="30">
+                                                    <Label x:Name="LblVersion" VerticalAlignment="Center"
+                                                           Foreground="#333333" Height="30">
                                                         <TextBlock Text="{Binding Name}" />
                                                     </Label>
                                                 </Grid>
@@ -86,8 +90,8 @@
                                 </StackPanel>
                             </Grid>
                             <Button x:Name="BtnSettings" Grid.Row="1"
-                                            Style="{StaticResource CollectionButtonStyle}" Click="BtnSettings_Click"
-                                            Content="设置" />
+                                    Style="{StaticResource CollectionButtonStyle}" Click="BtnSettings_Click"
+                                    Content="设置" />
                         </Grid>
                     </GroupBox>
                 </Grid>
@@ -136,7 +140,7 @@
                 </StackPanel>
             </Grid>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True" >
+        <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True">
             <Frame Name="FramePop" NavigationUIVisibility="Hidden"></Frame>
         </Grid>
         <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Pop" PopupAnimation="Fade" Height="100"
@@ -172,7 +176,8 @@
                     <StackPanel Grid.Column="3">
                         <Slider x:Name="Offset" Orientation="Vertical" Margin="10,5"
                                 Style="{StaticResource VerticalSliderPinkStyle}" Maximum="200"
-                                Thumb.DragDelta="Offset_DragDelta"  Height="70" Minimum="-200" AutoToolTipPlacement="BottomRight" />
+                                Thumb.DragDelta="Offset_DragDelta" Height="70" Minimum="-200"
+                                AutoToolTipPlacement="BottomRight" />
                         <Label Content="单曲偏移" Margin="0,-5,0,0" HorizontalAlignment="Center" />
                     </StackPanel>
                 </Grid>
@@ -180,17 +185,17 @@
         </Popup>
         <tb:TaskbarIcon Grid.Row="0" x:Name="NotifyIcon"
                         Visibility="Visible"
-                        ToolTipText=""
                         IconSource="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
                         ContextMenu="{DynamicResource TrayMenu}"
                         MenuActivation="LeftOrRightClick"
-                        TrayPopup="{DynamicResource TrayStatusPopup}"
-                        PopupActivation="DoubleClick"
                         TrayToolTip="{DynamicResource TrayToolTip}"
-                        TrayMouseDoubleClick="NotifyIcon_TrayMouseDoubleClick"/>
+                        TrayMouseDoubleClick="NotifyIcon_TrayMouseDoubleClick" />
+        <!--ToolTipText=""-->
+        <!--PopupActivation="DoubleClick"-->
+        <!--TrayPopup="{DynamicResource TrayStatusPopup}"-->
         <Grid.Resources>
-            <ToolTip x:Key="TrayToolTip"/>
-            <Popup x:Key="TrayStatusPopup"></Popup>
+            <ToolTip x:Key="TrayToolTip" />
+            <!--<Popup x:Key="TrayStatusPopup"></Popup>-->
             <ContextMenu x:Key="TrayMenu" Style="{StaticResource DefaultContextMenu}">
                 <MenuItem Header="播放" Style="{DynamicResource DefaultMenuItem}" />
                 <MenuItem Header="上一首" Style="{DynamicResource DefaultMenuItem}" />
@@ -198,10 +203,12 @@
                 <MenuItem Header="循环模式" Style="{DynamicResource DefaultMenuItem}" />
                 <MenuItem Header="打开歌词" Style="{DynamicResource DefaultMenuItem}" />
                 <MenuItem Header="关闭歌词" Style="{DynamicResource DefaultMenuItem}" />
-                <Separator/>
-                <MenuItem x:Name="MenuConfig" Header="设置" Style="{DynamicResource DefaultMenuItem}" Click="MenuConfig_Click" />
-                <Separator/>
-                <MenuItem x:Name="MenuExit" Header="退出" Style="{DynamicResource DefaultMenuItem}" Click="MenuExit_Click" />
+                <Separator />
+                <MenuItem x:Name="MenuConfig" Header="设置" Style="{DynamicResource DefaultMenuItem}"
+                          Click="MenuConfig_Click" />
+                <Separator />
+                <MenuItem x:Name="MenuExit" Header="退出" Style="{DynamicResource DefaultMenuItem}"
+                          Click="MenuExit_Click" />
             </ContextMenu>
         </Grid.Resources>
     </Grid>
