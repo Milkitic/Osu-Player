@@ -4,16 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:data="clr-namespace:Milkitic.OsuPlayer.Data"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d" Style="{StaticResource MainWindowStyle}"
         Title="osu! 畅听" Width="960" Height="720" MinWidth="640" MinHeight="88"
-        Loaded="Window_Loaded" Closing="Window_Closing">
+        Loaded="Window_Loaded" Closing="Window_Closing" Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico">
 
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" MinHeight="48" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Background="White">
+        <Grid Grid.Row="1" Background="White">
             <Image x:Name="BlurScene" Margin="1" Stretch="UniformToFill" Opacity="1">
                 <Image.Effect>
                     <BlurEffect Radius="75" />
@@ -94,7 +96,7 @@
                 </Grid>
             </DockPanel>
         </Grid>
-        <Grid Grid.Row="1" Background="White">
+        <Grid Grid.Row="2" Background="White">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -134,7 +136,7 @@
                 </StackPanel>
             </Grid>
         </Grid>
-        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True" >
+        <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True" >
             <Frame Name="FramePop" NavigationUIVisibility="Hidden"></Frame>
         </Grid>
         <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Pop" PopupAnimation="Fade" Height="100"
@@ -176,5 +178,31 @@
                 </Grid>
             </Border>
         </Popup>
+        <tb:TaskbarIcon Grid.Row="0" x:Name="NotifyIcon"
+                        Visibility="Visible"
+                        ToolTipText=""
+                        IconSource="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
+                        ContextMenu="{DynamicResource TrayMenu}"
+                        MenuActivation="LeftOrRightClick"
+                        TrayPopup="{DynamicResource TrayStatusPopup}"
+                        PopupActivation="DoubleClick"
+                        TrayToolTip="{DynamicResource TrayToolTip}"
+                        TrayMouseDoubleClick="NotifyIcon_TrayMouseDoubleClick"/>
+        <Grid.Resources>
+            <ToolTip x:Key="TrayToolTip"></ToolTip>
+            <Popup x:Key="TrayStatusPopup"></Popup>
+            <ContextMenu x:Key="TrayMenu" Style="{StaticResource DefaultContextMenu}">
+                <MenuItem Header="播放" Style="{DynamicResource DefaultMenuItem}" />
+                <MenuItem Header="上一首" Style="{DynamicResource DefaultMenuItem}" />
+                <MenuItem Header="下一首" Style="{DynamicResource DefaultMenuItem}" />
+                <MenuItem Header="循环模式" Style="{DynamicResource DefaultMenuItem}" />
+                <MenuItem Header="打开歌词" Style="{DynamicResource DefaultMenuItem}" />
+                <MenuItem Header="关闭歌词" Style="{DynamicResource DefaultMenuItem}" />
+                <Separator/>
+                <MenuItem x:Name="MenuConfig" Header="设置" Style="{DynamicResource DefaultMenuItem}" Click="MenuConfig_Click" />
+                <Separator/>
+                <MenuItem x:Name="MenuExit" Header="退出" Style="{DynamicResource DefaultMenuItem}" Click="MenuExit_Click" />
+            </ContextMenu>
+        </Grid.Resources>
     </Grid>
 </Window>

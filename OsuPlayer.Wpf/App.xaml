@@ -503,5 +503,51 @@
         <Style TargetType="{x:Type ListView}">
             <Setter Property="AlternationCount" Value="2"/>
         </Style>
+
+        <SolidColorBrush x:Key="MenuBorderBrush" Color="#40000000" />
+        <SolidColorBrush x:Key="MenuBackground" Color="#FEFEFF" />
+        <SolidColorBrush x:Key="MenuForeground" Color="#505050" />
+        <DropShadowEffect x:Key="DefaultDropShadow" BlurRadius="4" ShadowDepth="0" Opacity="0.25" ></DropShadowEffect>
+        <Style x:Key="DefaultMenuItem">
+            <Setter Property="MenuItem.Margin" Value="0"/>
+            <Setter Property="MenuItem.Height" Value="30"/>
+            <Setter Property="MenuItem.Header" Value="{Binding Ticker}"/>
+        </Style>
+
+        <Style x:Key="DefaultContextMenu" TargetType="{x:Type ContextMenu}">
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="RenderOptions.ClearTypeHint" Value="Enabled" />
+            <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
+            <Setter Property="BorderBrush" Value="{StaticResource MenuBorderBrush}"/>
+            <Setter Property="Background" Value="{StaticResource MenuBackground}"/>
+            <Setter Property="Foreground" Value="{StaticResource MenuForeground}"/>
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Grid.IsSharedSizeScope" Value="True" />
+            <Setter Property="HasDropShadow" Value="True" />
+            <Setter Property="Width" Value="200" />
+            <!--<Setter Property="ItemContainerStyle" Value="{StaticResource DefaultMenuItem}" />-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ContextMenu}">
+                        <Grid>
+                            <Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" Margin="5"
+                                BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                                <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle"
+                                                Grid.IsSharedSizeScope="True" Margin="0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                KeyboardNavigation.TabNavigation="Cycle" />
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasDropShadow" Value="True">
+                                <Setter TargetName="Border" Property="Effect" Value="{StaticResource DefaultDropShadow}">
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Resources>
 </Application>

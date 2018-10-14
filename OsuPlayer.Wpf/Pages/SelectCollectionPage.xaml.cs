@@ -53,7 +53,7 @@ namespace Milkitic.OsuPlayer.Pages
             if (CollectionList.SelectedItem == null)
                 return;
             Collection col = (Collection)CollectionList.SelectedItem;
-            DbOperator.AddMapToCollection(_entry, col);
+             DbOperator.AddMapToCollection(_entry, col);
             Dispose();
         }
     }

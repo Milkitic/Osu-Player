@@ -8,6 +8,7 @@ using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Netease;
 using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic;
 using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Media.Storyboard;
+using Milkitic.OsuPlayer.Utils;
 using Newtonsoft.Json;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;
@@ -17,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Milkitic.OsuPlayer
@@ -30,7 +32,7 @@ namespace Milkitic.OsuPlayer
         public static bool UseDbMode => Config.General.DbPath != null;
 
         public static Lazy<OsuDb> BeatmapDb { get; set; } = new Lazy<OsuDb>(ReadDb);
-        
+
         public static List<BeatmapEntry> Beatmaps => BeatmapDb.Value?.Beatmaps;
 
         public static MusicPlayer MusicPlayer;
@@ -39,6 +41,8 @@ namespace Milkitic.OsuPlayer
 
         public static readonly LyricProvider LyricProvider;
         public static readonly PlayerList PlayerList = new PlayerList();
+        public static readonly Updater Updater = new Updater();
+
 
         static App()
         {

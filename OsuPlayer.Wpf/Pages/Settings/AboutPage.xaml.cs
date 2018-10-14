@@ -22,6 +22,7 @@ namespace Milkitic.OsuPlayer.Pages.Settings
     public partial class AboutPage : Page
     {
         private readonly string _dtFormat = "g";
+        private NewVersionWindow _newVersionWindow;
 
         public AboutPage()
         {
@@ -40,7 +41,9 @@ namespace Milkitic.OsuPlayer.Pages.Settings
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            CurrentVer.Content = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            CurrentVer.Content = App.Updater.CurrentVersion;
+            if (App.Updater.NewRelease != null)
+                NewVersion.Visibility = Visibility.Visible;
             GetLastUpdate();
         }
 
@@ -51,11 +54,38 @@ namespace Milkitic.OsuPlayer.Pages.Settings
                 : App.Config.LastUpdateCheck.Value.ToString(_dtFormat);
         }
 
-        private void CheckUpdate_Click(object sender, RoutedEventArgs e)
+        private async void CheckUpdate_Click(object sender, RoutedEventArgs e)
         {
+            //todo: action
+            CheckUpdate.IsEnabled = false;
+            var b = await App.Updater.CheckUpdateAsync();
+            CheckUpdate.IsEnabled = true;
+            if (b == null)
+            {
+                MessageBox.Show("出错");
+                return;
+            }
+
             App.Config.LastUpdateCheck = DateTime.Now;
             GetLastUpdate();
             App.SaveConfig();
+            if (b.Value)
+            {
+                NewVersion.Visibility = Visibility.Visible;
+                NewVersion_Click(sender, e);
+            }
+            else
+            {
+                MessageBox.Show("已是最新");
+            }
+        }
+
+        private void NewVersion_Click(object sender, RoutedEventArgs e)
+        {
+            if (_newVersionWindow != null && !_newVersionWindow.IsClosed)
+                _newVersionWindow.Close();
+            _newVersionWindow = new NewVersionWindow(App.Updater.NewRelease);
+            _newVersionWindow.ShowDialog();
         }
     }
 }

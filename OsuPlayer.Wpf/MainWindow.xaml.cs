@@ -41,6 +41,8 @@ namespace Milkitic.OsuPlayer
         public ConfigWindow ConfigWindow;
         public readonly OverallKeyHook OverallKeyHook;
 
+        public bool ForceExit = false;
+
         //local player control
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private Task _statusTask;
@@ -57,13 +59,19 @@ namespace Milkitic.OsuPlayer
             TryBindHotKeys();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // todo: This should be kept since the application exit last time.
             BtnRecent_Click(sender, e);
             UpdateCollections();
             LoadSurfaceSettings();
             RunSurfaceUpdate();
+            bool? sb = await App.Updater.CheckUpdateAsync();
+            if (sb.HasValue && sb.Value)
+            {
+                NewVersionWindow newVersionWindow = new NewVersionWindow(App.Updater.NewRelease);
+                newVersionWindow.ShowDialog();
+            }
         }
 
         /// <summary>
@@ -81,7 +89,7 @@ namespace Milkitic.OsuPlayer
         /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (App.Config.General.ExitWhenClosed == null)
+            if (App.Config.General.ExitWhenClosed == null && !ForceExit)
             {
                 var result = MessageBox.Show("退出？", Title, MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.No)
@@ -220,10 +228,14 @@ namespace Milkitic.OsuPlayer
         private void BtnLike_Click(object sender, RoutedEventArgs e)
         {
             if (!ValidateDb()) return;
-
-            FramePop.Navigate(new SelectCollectionPage(this,
-                App.Beatmaps.GetBeatmapsetsByFolder(App.PlayerList.NowIdentity.FolderName)
-                    .FirstOrDefault(k => k.Version == App.PlayerList.NowIdentity.Version)));
+            var entry = App.Beatmaps.GetBeatmapsetsByFolder(App.PlayerList.NowIdentity.FolderName)
+                .FirstOrDefault(k => k.Version == App.PlayerList.NowIdentity.Version);
+            if (entry == null)
+            {
+                PageBox.Show(Title, "该图不存在于该osu!db中。", delegate { });
+                return;
+            }
+            FramePop.Navigate(new SelectCollectionPage(this, entry));
         }
 
         private bool ValidateDb()
@@ -613,6 +625,24 @@ namespace Milkitic.OsuPlayer
                     _lyricWindow.Hide();
             });
             GC.SuppressFinalize(page);
+        }
+
+        private void NotifyIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            Topmost = true;
+            Topmost = false;
+            Show();
+        }
+
+        private void MenuExit_Click(object sender, RoutedEventArgs e)
+        {
+            ForceExit = true;
+            this.Close();
+        }
+
+        private void MenuConfig_Click(object sender, RoutedEventArgs e)
+        {
+            BtnSettings_Click(sender, e);
         }
     }
 

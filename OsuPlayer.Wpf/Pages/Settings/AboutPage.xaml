@@ -13,15 +13,20 @@
             <StackPanel Margin="10">
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="软件更新：" HorizontalAlignment="Left" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
-                    <Label Style="{StaticResource ConfigLabel2Style}" Content="当前版本" />
-                    <Label x:Name="CurrentVer" Style="{StaticResource ConfigLabel2Style}" Content="v100.20" />
+                    <Label Style="{StaticResource ConfigLabelStyle}" Content="当前版本：" />
+                    <Label x:Name="CurrentVer" Style="{StaticResource ConfigLabel2Style}" Content="v100.20" VerticalContentAlignment="Center" />
                 </StackPanel>
                 <StackPanel Style="{StaticResource ConfigStackHoriStyle}" Orientation="Horizontal">
-                    <Label Style="{StaticResource ConfigLabel2Style}" Content="上次检查时间" />
-                    <Label x:Name="LastUpdate" Style="{StaticResource ConfigLabel2Style}" Content="1970-06-07" />
+                    <Label Style="{StaticResource ConfigLabelStyle}" Content="上次检查时间：" />
+                    <Label x:Name="LastUpdate" Style="{StaticResource ConfigLabel2Style}" Content="1970-06-07" VerticalContentAlignment="Center" />
                 </StackPanel>
-                <Button x:Name="CheckUpdate" Style="{StaticResource ConfigButtonStyle}" Content="检查更新"
+                <StackPanel Style="{StaticResource ConfigStackHoriStyle}" Orientation="Horizontal">
+                    <Button x:Name="CheckUpdate" Style="{StaticResource ConfigButtonStyle}" Content="检查更新"
                         HorizontalAlignment="Left" Click="CheckUpdate_Click" />
+                    <Label x:Name="NewVersion" Visibility="Collapsed">
+                        <Hyperlink Click="NewVersion_Click" >有新版本</Hyperlink>
+                    </Label>
+                </StackPanel>
                 <StackPanel Style="{StaticResource ConfigStackHoriStyle}" Orientation="Horizontal">
                     <Label>
                         <Hyperlink Click="LinkGithub_Click">项目地址</Hyperlink>

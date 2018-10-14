@@ -30,19 +30,19 @@
         <ListView Grid.Row="2" x:Name="MapList" Margin="0,5,0,2" Background="Transparent" BorderThickness="0"
                  ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="RecentList_MouseDoubleClick">
             <ListView.ContextMenu>
-                <ContextMenu>
-                    <MenuItem x:Name="ItemPlay" Header="播放" Click="ItemPlay_Click" />
+                <ContextMenu Style="{StaticResource DefaultContextMenu}">
+                    <MenuItem x:Name="ItemPlay" Header="播放" Click="ItemPlay_Click" Style="{DynamicResource DefaultMenuItem}"  />
                     <!--<MenuItem x:Name="ItemNextPlay" Header="下一首播放" Click="ItemNextPlay_Click" />-->
                     <Separator/>
-                    <MenuItem x:Name="ItemCollect" Header="收藏" Click="ItemCollect_Click" />
-                    <MenuItem x:Name="ItemExport" Header="导出" Click="ItemExport_Click" />
+                    <MenuItem x:Name="ItemCollect" Header="收藏" Click="ItemCollect_Click" Style="{DynamicResource DefaultMenuItem}"  />
+                    <MenuItem x:Name="ItemExport" Header="导出" Click="ItemExport_Click" Style="{DynamicResource DefaultMenuItem}"  />
                     <Separator/>
-                    <MenuItem x:Name="ItemSearchTitle" Header="搜索该标题" Click="ItemSearchTitle_Click" />
-                    <MenuItem x:Name="ItemSearchArtist" Header="搜索该艺术家" Click="ItemSearchArtist_Click" />
-                    <MenuItem x:Name="ItemSearchSource" Header="搜索该来源" Click="ItemSearchSource_Click" />
-                    <MenuItem x:Name="ItemSearchMapper" Header="搜索该作者" Click="ItemSearchMapper_Click" />
+                    <MenuItem x:Name="ItemSearchTitle" Header="搜索该标题" Click="ItemSearchTitle_Click"  Style="{DynamicResource DefaultMenuItem}" />
+                    <MenuItem x:Name="ItemSearchArtist" Header="搜索该艺术家" Click="ItemSearchArtist_Click" Style="{DynamicResource DefaultMenuItem}"  />
+                    <MenuItem x:Name="ItemSearchSource" Header="搜索该来源" Click="ItemSearchSource_Click"  Style="{DynamicResource DefaultMenuItem}" />
+                    <MenuItem x:Name="ItemSearchMapper" Header="搜索该作者" Click="ItemSearchMapper_Click" Style="{DynamicResource DefaultMenuItem}"  />
                     <Separator/>
-                    <MenuItem x:Name="ItemDelete" Header="从收藏夹中移除" Click="ItemDelete_Click" />
+                    <MenuItem x:Name="ItemDelete" Header="从收藏夹中移除" Click="ItemDelete_Click"  Style="{DynamicResource DefaultMenuItem}" />
                 </ContextMenu>
             </ListView.ContextMenu>
             <ListView.DataContext>
