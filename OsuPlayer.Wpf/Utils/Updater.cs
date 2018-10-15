@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -18,17 +19,7 @@ namespace Milkitic.OsuPlayer.Utils
         private static readonly HttpClient HttpClient;
         public Release NewRelease { get; private set; }
         public bool IsRunningChecking;
-        static Updater()
-        {
-            HttpClient =
-                new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip })
-                {
-                    Timeout = new TimeSpan(0, 0, 0, 0, Timeout)
-                };
-            HttpClient.DefaultRequestHeaders.Add("User-Agent",
-                "ozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-        }
+
         public async Task<bool?> CheckUpdateAsync()
         {
             IsRunningChecking = true;
@@ -79,6 +70,18 @@ namespace Milkitic.OsuPlayer.Utils
             });
             IsRunningChecking = false;
             return result;
+        }
+
+        static Updater()
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            HttpClient =
+                new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip })
+                {
+                    Timeout = new TimeSpan(0, 0, 0, 0, Timeout)
+                };
+            HttpClient.DefaultRequestHeaders.Add("User-Agent",
+                "ozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
         }
 
         private static string HttpGet(string url)

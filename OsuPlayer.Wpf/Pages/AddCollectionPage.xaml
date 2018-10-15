@@ -8,10 +8,14 @@
       Title="AddCollectionPage">
 
     <Grid Background="#80FFFFFF">
-        <Grid Width="280" Height="130" Background="White">
-            <Grid.Effect>
+        <Border x:Name="Parallel" Background="White" Width="{Binding ActualWidth, ElementName=BoxGrid}"
+                Height="{Binding ActualHeight, ElementName=BoxGrid}" HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+            <Border.Effect>
                 <DropShadowEffect BlurRadius="10" ShadowDepth="0" Color="#000000" Opacity="0.3" />
-            </Grid.Effect>
+            </Border.Effect>
+        </Border>
+        <Grid x:Name="BoxGrid" Width="280" Height="130" Background="White">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />

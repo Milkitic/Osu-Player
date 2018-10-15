@@ -35,7 +35,7 @@
                     HorizontalAlignment="Right">
             <Button Style="{StaticResource CollectionButtonStyle}" Content="忽略此版本" Width="70" Height="25" Margin="0,5,5,5" />
             <Button Style="{StaticResource CollectionButtonStyle}" Content="以后再说" Width="70" Height="25" Margin="0,5,5,5" />
-            <Button Style="{StaticResource CollectionButtonStyle}" Content="现在更新" Width="70" Height="25" Margin="0,5,5,5" />
+            <Button x:Name="BtnUpdate" Style="{StaticResource CollectionButtonStyle}" Content="现在更新" Width="70" Height="25" Margin="0,5,5,5" Click="BtnUpdate_Click" />
         </StackPanel>
     </Grid>
 </Window>

@@ -9,10 +9,14 @@
 
     <Grid>
         <Grid Background="#80FFFFFF">
-            <Grid MinWidth="280" Height="Auto" Background="White" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Grid.Effect>
+            <Border x:Name="Parallel" Background="White" Width="{Binding ActualWidth, ElementName=BoxGrid}"
+                    Height="{Binding ActualHeight, ElementName=BoxGrid}" HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <Border.Effect>
                     <DropShadowEffect BlurRadius="10" ShadowDepth="0" Color="#000000" Opacity="0.3" />
-                </Grid.Effect>
+                </Border.Effect>
+            </Border>
+            <Grid x:Name="BoxGrid" MinWidth="280" Height="Auto" Background="White" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -26,7 +30,7 @@
                 <Label Grid.Row="1" x:Name="LblMessage" Content="MSG" Margin="10"></Label>
                 <Button Grid.Row="2" x:Name="BtnOk" Content="确定" HorizontalAlignment="Center" Margin="0,10"
                         VerticalAlignment="Top" Width="75" Height="30" Click="BtnOk_Click" >
-                  
+
                 </Button>
             </Grid>
         </Grid>

@@ -603,23 +603,23 @@ namespace Milkitic.OsuPlayer
         private void TryBindHotKeys()
         {
             var page = new Pages.Settings.HotKeyPage(this);
-            OverallKeyHook.AddNewHotKey(page.PlayPause.Name, () => { BtnPlay_Click(null, null); });
-            OverallKeyHook.AddNewHotKey(page.Previous.Name, () =>
+            OverallKeyHook.AddKeyHook(page.PlayPause.Name, () => { BtnPlay_Click(null, null); });
+            OverallKeyHook.AddKeyHook(page.Previous.Name, () =>
             {
                 //TODO
             });
-            OverallKeyHook.AddNewHotKey(page.Next.Name, () => { BtnNext_Click(null, null); });
-            OverallKeyHook.AddNewHotKey(page.VolumeUp.Name, () => { App.Config.Volume.Main += 0.05f; });
-            OverallKeyHook.AddNewHotKey(page.VolumeDown.Name, () => { App.Config.Volume.Main -= 0.05f; });
-            OverallKeyHook.AddNewHotKey(page.FullMini.Name, () =>
+            OverallKeyHook.AddKeyHook(page.Next.Name, () => { BtnNext_Click(null, null); });
+            OverallKeyHook.AddKeyHook(page.VolumeUp.Name, () => { App.Config.Volume.Main += 0.05f; });
+            OverallKeyHook.AddKeyHook(page.VolumeDown.Name, () => { App.Config.Volume.Main -= 0.05f; });
+            OverallKeyHook.AddKeyHook(page.FullMini.Name, () =>
             {
                 //TODO
             });
-            OverallKeyHook.AddNewHotKey(page.AddToFav.Name, () =>
+            OverallKeyHook.AddKeyHook(page.AddToFav.Name, () =>
             {
                 //TODO
             });
-            OverallKeyHook.AddNewHotKey(page.Lyric.Name, () =>
+            OverallKeyHook.AddKeyHook(page.Lyric.Name, () =>
             {
                 if (_lyricWindow.IsHide)
                     _lyricWindow.Show();

@@ -33,5 +33,12 @@ namespace Milkitic.OsuPlayer
             InitializeComponent();
             MainGrid.DataContext = _release;
         }
+
+        private void BtnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateWindow updateWindow = new UpdateWindow(_release);
+            updateWindow.Show();
+            Close();
+        }
     }
 }

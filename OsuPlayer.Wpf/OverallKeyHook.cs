@@ -33,7 +33,7 @@ namespace Milkitic.OsuPlayer
             _globalHook.KeyUp += GlobalHookKeyUp;
         }
 
-        public static void AddNewHotKey(string name, Action callback)
+        public static void AddKeyHook(string name, Action callback)
         {
             if (App.Config.HotKeys.FirstOrDefault(k => k.Name == name) == null)
                 App.Config.HotKeys.Add(new HotKey { Name = name, Callback = callback });
@@ -46,7 +46,8 @@ namespace Milkitic.OsuPlayer
 
         public static void BindHotKey(string name, bool useCtrl, bool useAlt, bool useShift, Keys key)
         {
-            var hotKey = App.Config.HotKeys.First(k => k.Name == name);
+            var hotKey = App.Config.HotKeys.FirstOrDefault(k => k.Name == name);
+            if (hotKey == null) throw new ArgumentException();
             hotKey.Key = key;
             hotKey.UseControlKey = useCtrl;
             hotKey.UseAltKey = useAlt;
