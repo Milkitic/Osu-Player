@@ -49,7 +49,7 @@ namespace Milkitic.OsuPlayer
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("更新出错，请重启软件重试：" + ex.Message, "更新出错", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -70,7 +70,7 @@ namespace Milkitic.OsuPlayer
 
         private void Downloader_OnFinishDownloading()
         {
-             Process.Start(new FileInfo(_savePath).DirectoryName);
+            Process.Start(new FileInfo(_savePath).DirectoryName);
             Process.Start(_savePath);
             Dispatcher.BeginInvoke(new Action(Close));
         }
