@@ -53,6 +53,9 @@
                               Style="{DynamicResource DefaultMenuItem}" />
                     <MenuItem x:Name="ItemSearchMapper" Header="搜索该作者" Click="ItemSearchMapper_Click"
                               Style="{DynamicResource DefaultMenuItem}" />
+                    <Separator/>
+                    <MenuItem x:Name="ItemSet" Header="打开成绩页" Click="ItemSet_Click"  Style="{DynamicResource DefaultMenuItem}" />
+                    <MenuItem x:Name="ItemFolder" Header="打开所在目录" Click="ItemFolder_Click"  Style="{DynamicResource DefaultMenuItem}" />
                 </ContextMenu>
             </ListView.ContextMenu>
             <ListView.DataContext>

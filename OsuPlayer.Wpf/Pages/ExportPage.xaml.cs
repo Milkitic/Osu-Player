@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Milkitic.OsuLib;
+using Milkitic.OsuPlayer;
+using Milkitic.OsuPlayer.Data;
+using Milkitic.OsuPlayer.Utils;
+using osu_database_reader.Components.Beatmaps;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -7,11 +12,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milkitic.OsuLib;
-using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer;
-using Milkitic.OsuPlayer.Utils;
-using osu_database_reader.Components.Beatmaps;
 using Path = System.IO.Path;
 
 namespace Milkitic.OsuPlayer.Pages
@@ -41,12 +41,10 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void ExportList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
         }
 
         private void ItemDelete_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         public static void QueueEntries(IEnumerable<BeatmapEntry> entries)
@@ -87,15 +85,64 @@ namespace Milkitic.OsuPlayer.Pages
 
             var artist = MetaSelect.GetUnicode(entry.Artist, entry.ArtistUnicode);
             var title = MetaSelect.GetUnicode(entry.Title, entry.TitleUnicode);
-            var escapedMp3 = Escape($"{artist} - {title}");
-            var escapedBg = Escape($"{artist} - {title}({entry.Creator})[{entry.Version}]");
+            string escapedMp3, escapedBg;
+            switch (App.Config.Export.NamingStyle)
+            {
+                case NamingStyle.Title:
+                    escapedMp3 = Escape($"{title}");
+                    escapedBg = Escape($"{title}({entry.Creator})[{entry.Version}]");
+                    break;
+                case NamingStyle.ArtistTitle:
+                    escapedMp3 = Escape($"{artist} - {title}");
+                    escapedBg = Escape($"{artist} - {title}({entry.Creator})[{entry.Version}]");
+                    break;
+                case NamingStyle.TitleArtist:
+                    escapedMp3 = Escape($"{title} - {artist}");
+                    escapedBg = Escape($"{title} - {artist}({entry.Creator})[{entry.Version}]");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            string exportMp3Folder, exportBgFolder;
+            switch (App.Config.Export.SortStyle)
+            {
+                case SortStyle.None:
+                    exportMp3Folder = Domain.MusicPath;
+                    exportBgFolder = Domain.BackgroundPath;
+                    break;
+                case SortStyle.Artist:
+                    {
+                        var f = Escape(artist);
+                        exportMp3Folder = Path.Combine(Domain.MusicPath, string.IsNullOrEmpty(f) ? "未知艺术家" : f);
+                        exportBgFolder = Path.Combine(Domain.BackgroundPath, string.IsNullOrEmpty(f) ? "未知艺术家" : f);
+                        break;
+                    }
+                case SortStyle.Mapper:
+                    {
+                        var f = Escape(entry.Creator);
+                        exportMp3Folder = Path.Combine(Domain.MusicPath, string.IsNullOrEmpty(f) ? "未知作者" : f);
+                        exportBgFolder = Path.Combine(Domain.BackgroundPath, string.IsNullOrEmpty(f) ? "未知作者" : f);
+                        break;
+                    }
+                case SortStyle.Source:
+                    {
+                        var f = Escape(entry.SongSource);
+                        exportMp3Folder = Path.Combine(Domain.MusicPath, string.IsNullOrEmpty(f) ? "未知来源" : f);
+                        exportBgFolder = Path.Combine(Domain.BackgroundPath, string.IsNullOrEmpty(f) ? "未知来源" : f);
+                        break;
+                    }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
             string validMp3Name = ValidateFilename(escapedMp3, Domain.MusicPath, mp3File.Extension);
             string validBgName = ValidateFilename(escapedBg, Domain.BackgroundPath, bgFile.Extension);
 
             if (mp3File.Exists)
-                Export(mp3File, Domain.MusicPath, validMp3Name);
+                Export(mp3File, exportMp3Folder, validMp3Name);
             if (bgFile.Exists)
-                Export(bgFile, Domain.BackgroundPath, validBgName);
+                Export(bgFile, exportBgFolder, validBgName);
             if (mp3File.Exists || bgFile.Exists)
                 DbOperator.AddMapExport(entry.GetIdentity(), validMp3Name + mp3File.Extension);
         }

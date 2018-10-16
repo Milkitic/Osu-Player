@@ -34,5 +34,9 @@ namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic
             pickedResult = tempPickedResult;
             return result;
         }
+
+        public QqMusicSourceProvider(bool strictMode) : base(strictMode)
+        {
+        }
     }
 }

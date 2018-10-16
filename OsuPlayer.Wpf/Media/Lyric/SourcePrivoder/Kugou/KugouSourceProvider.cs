@@ -6,5 +6,8 @@ namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Kugou
     public class KugouSourceProvider
         : SourceProviderBase<KugouSearchResultSong, KugouSearcher, KugouLyricDownloader, NeteaseLyricParser>
     {
+        public KugouSourceProvider(bool strictMode) : base(strictMode)
+        {
+        }
     }
 }

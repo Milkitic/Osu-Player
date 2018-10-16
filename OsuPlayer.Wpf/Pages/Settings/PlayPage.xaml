@@ -18,12 +18,12 @@
                     <TextBox x:Name="BoxOffset" Width="35" Style="{StaticResource ConfigTextBoxStyle}"
                              TextChanged="BoxOffset_TextChanged" />
                 </StackPanel>
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="播放列表：" HorizontalAlignment="Left" />
+                <Label Style="{StaticResource ConfigTitleStyle}" Content="播放列表：" HorizontalAlignment="Left" Visibility="Collapsed" />
                 <StackPanel HorizontalAlignment="Left">
                     <RadioButton x:Name="RadioReplace" Style="{StaticResource ConfigRadioStyle}"
-                                 Content="播放单曲时，用此单曲所在的歌曲列表替换播放列表" Checked="RadioReplace_Checked" />
+                                 Content="播放单曲时，用此单曲所在的歌曲列表替换播放列表" Checked="RadioReplace_Checked" Visibility="Collapsed" />
                     <RadioButton x:Name="RadioInsert" Style="{StaticResource ConfigRadioStyle}"
-                                 Content="播放单曲时，仅把此单曲添加到播放列表" Checked="RadioInsert_Checked" />
+                                 Content="播放单曲时，仅把此单曲添加到播放列表" Checked="RadioInsert_Checked" Visibility="Collapsed" />
                 </StackPanel>
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="自动播放：" HorizontalAlignment="Left" />
                 <CheckBox x:Name="ChkAutoPlay" Style="{StaticResource ConfigCheckStyle}" Content="程序启动时自动播放"

@@ -1,6 +1,8 @@
 ﻿using Milkitic.OsuPlayer.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,11 +23,14 @@ namespace Milkitic.OsuPlayer
     public partial class UpdateWindow : Window
     {
         private readonly Release _release;
+        private readonly MainWindow _mainWindow;
         private Downloader _downloader;
+        private readonly string _savePath = Path.Combine(Domain.CurrentPath, "update.zip");
 
-        public UpdateWindow(Release release)
+        public UpdateWindow(Release release, MainWindow mainWindow)
         {
             _release = release;
+            _mainWindow = mainWindow;
             InitializeComponent();
         }
 
@@ -33,11 +38,19 @@ namespace Milkitic.OsuPlayer
         {
             var asset = _release?.Assets.FirstOrDefault(k => k.Name == "Osu-Player.zip");
             if (asset == null) return;
+            _mainWindow.Close();
             _downloader = new Downloader(asset.BrowserDownloadUrl);
             _downloader.OnStartDownloading += Downloader_OnStartDownloading;
             _downloader.OnDownloading += Downloader_OnDownloading;
             _downloader.OnFinishDownloading += Downloader_OnFinishDownloading;
-            await _downloader.DownloadAsync(Path.Combine(Domain.CurrentPath, "update.zip"));
+            try
+            {
+                await _downloader.DownloadAsync(_savePath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void Downloader_OnStartDownloading(long size)
@@ -57,7 +70,8 @@ namespace Milkitic.OsuPlayer
 
         private void Downloader_OnFinishDownloading()
         {
-            //todo
+             Process.Start(new FileInfo(_savePath).DirectoryName);
+            Process.Start(_savePath);
             Dispatcher.BeginInvoke(new Action(Close));
         }
 

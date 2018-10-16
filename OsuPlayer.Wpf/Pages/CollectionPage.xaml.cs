@@ -4,6 +4,7 @@ using Milkitic.OsuPlayer.Utils;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -36,7 +37,7 @@ namespace Milkitic.OsuPlayer.Pages
 
             var item = ViewModels.FirstOrDefault(k =>
                 k.GetIdentity().Equals(App.PlayerList.NowIdentity));
-            //MapList.SelectedItem = item;
+            MapList.SelectedItem = item;
         }
 
         private void UpdateList()
@@ -69,11 +70,6 @@ namespace Milkitic.OsuPlayer.Pages
             PlaySelected();
         }
 
-        private void ItemNextPlay_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void ItemDelete_Click(object sender, RoutedEventArgs e)
         {
             if (MapList.SelectedItem == null)
@@ -82,11 +78,6 @@ namespace Milkitic.OsuPlayer.Pages
             DbOperator.RemoveMapFromCollection(searchInfo.GetIdentity(), _collection);
             UpdateList();
             App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
-        }
-
-        private void LblCreator_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-
         }
 
         private void BtnDelCol_Click(object sender, RoutedEventArgs e)
@@ -144,6 +135,22 @@ namespace Milkitic.OsuPlayer.Pages
         private void ItemCollect_Click(object sender, RoutedEventArgs e)
         {
             ParentWindow.FramePop.Navigate(new SelectCollectionPage(ParentWindow, GetSelected()));
+        }
+
+        private void ItemSet_Click(object sender, RoutedEventArgs e)
+        {
+            if (MapList.SelectedItem == null)
+                return;
+            var searchInfo = (BeatmapViewModel)MapList.SelectedItem;
+            Process.Start($"https://osu.ppy.sh/b/{searchInfo.BeatmapId}");
+        }
+
+        private void ItemFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if (MapList.SelectedItem == null)
+                return;
+            var searchInfo = (BeatmapViewModel)MapList.SelectedItem;
+            Process.Start(Path.Combine(Domain.OsuSongPath, searchInfo.FolderName));
         }
 
         private void PlaySelected()

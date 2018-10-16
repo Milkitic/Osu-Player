@@ -21,11 +21,13 @@ namespace Milkitic.OsuPlayer.Pages.Settings
     /// </summary>
     public partial class AboutPage : Page
     {
+        private readonly MainWindow _mainWindow;
         private readonly string _dtFormat = "g";
         private NewVersionWindow _newVersionWindow;
 
-        public AboutPage()
+        public AboutPage(MainWindow mainWindow)
         {
+            _mainWindow = mainWindow;
             InitializeComponent();
         }
 
@@ -84,7 +86,7 @@ namespace Milkitic.OsuPlayer.Pages.Settings
         {
             if (_newVersionWindow != null && !_newVersionWindow.IsClosed)
                 _newVersionWindow.Close();
-            _newVersionWindow = new NewVersionWindow(App.Updater.NewRelease);
+            _newVersionWindow = new NewVersionWindow(App.Updater.NewRelease, _mainWindow);
             _newVersionWindow.ShowDialog();
         }
     }

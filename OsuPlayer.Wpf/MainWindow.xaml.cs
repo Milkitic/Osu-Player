@@ -38,7 +38,7 @@ namespace Milkitic.OsuPlayer
         };
 
         public readonly PageBox PageBox;
-        private readonly LyricWindow _lyricWindow;
+        public readonly LyricWindow LyricWindow;
         public ConfigWindow ConfigWindow;
         public readonly OverallKeyHook OverallKeyHook;
 
@@ -54,8 +54,8 @@ namespace Milkitic.OsuPlayer
         {
             InitializeComponent();
             PageBox = new PageBox(MainGrid, "_main");
-            _lyricWindow = new LyricWindow();
-            _lyricWindow.Show();
+            LyricWindow = new LyricWindow();
+            LyricWindow.Show();
             OverallKeyHook = new OverallKeyHook(this);
             TryBindHotKeys();
         }
@@ -70,7 +70,7 @@ namespace Milkitic.OsuPlayer
             bool? sb = await App.Updater.CheckUpdateAsync();
             if (sb.HasValue && sb.Value)
             {
-                NewVersionWindow newVersionWindow = new NewVersionWindow(App.Updater.NewRelease);
+                NewVersionWindow newVersionWindow = new NewVersionWindow(App.Updater.NewRelease, this);
                 newVersionWindow.ShowDialog();
             }
         }
@@ -104,8 +104,12 @@ namespace Milkitic.OsuPlayer
             _cts.Dispose();
             WavePlayer.Device?.Dispose();
             WavePlayer.MasteringVoice?.Dispose();
-            _lyricWindow.Dispose();
-            OverallKeyHook.Dispose();
+            LyricWindow.Dispose();
+            if (ConfigWindow != null && !ConfigWindow.IsClosed)
+            {
+                if (ConfigWindow.IsInitialized)
+                    ConfigWindow.Close();
+            }
         }
 
         /// <summary>
@@ -503,13 +507,13 @@ namespace Milkitic.OsuPlayer
         /// Call lyric provider to check lyric
         /// todo: this should run synchronously.
         /// </summary>
-        private void SetLyric()
+        public void SetLyric()
         {
-            if (!_lyricWindow.IsVisible) return;
+            if (!LyricWindow.IsVisible) return;
             var lyric = App.LyricProvider.GetLyric(App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist(),
                 App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle(), App.MusicPlayer.Duration);
-            _lyricWindow.SetNewLyric(lyric, App.HitsoundPlayer.Osufile);
-            _lyricWindow.StartWork();
+            LyricWindow.SetNewLyric(lyric, App.HitsoundPlayer.Osufile);
+            LyricWindow.StartWork();
         }
 
         #region Surface
@@ -621,10 +625,10 @@ namespace Milkitic.OsuPlayer
             });
             OverallKeyHook.AddKeyHook(page.Lyric.Name, () =>
             {
-                if (_lyricWindow.IsHide)
-                    _lyricWindow.Show();
+                if (LyricWindow.IsHide)
+                    LyricWindow.Show();
                 else
-                    _lyricWindow.Hide();
+                    LyricWindow.Hide();
             });
             GC.SuppressFinalize(page);
         }

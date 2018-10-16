@@ -47,7 +47,7 @@ namespace Milkitic.OsuPlayer
 
         private void BtnLyric_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new LyricPage());
+            MainFrame.Navigate(new LyricPage(_mainWindow));
         }
 
         private void BtnExport_Click(object sender, RoutedEventArgs e)
@@ -57,7 +57,7 @@ namespace Milkitic.OsuPlayer
 
         private void BtnAbout_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new AboutPage());
+            MainFrame.Navigate(new AboutPage(_mainWindow));
         }
 
         private void BtnPlay_Click(object sender, RoutedEventArgs e)

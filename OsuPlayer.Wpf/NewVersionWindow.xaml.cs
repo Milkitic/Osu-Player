@@ -20,6 +20,7 @@ namespace Milkitic.OsuPlayer
     public partial class NewVersionWindow : Window
     {
         private readonly Release _release;
+        private readonly MainWindow _mainWindow;
         public bool IsClosed { get; private set; }
         protected override void OnClosed(EventArgs e)
         {
@@ -27,16 +28,17 @@ namespace Milkitic.OsuPlayer
             IsClosed = true;
         }
 
-        public NewVersionWindow(Release release)
+        public NewVersionWindow(Release release, MainWindow mainWindow)
         {
             _release = release;
+            _mainWindow = mainWindow;
             InitializeComponent();
             MainGrid.DataContext = _release;
         }
 
         private void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            UpdateWindow updateWindow = new UpdateWindow(_release);
+            UpdateWindow updateWindow = new UpdateWindow(_release, _mainWindow);
             updateWindow.Show();
             Close();
         }

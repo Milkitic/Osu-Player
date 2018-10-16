@@ -1,13 +1,20 @@
-﻿using System;
+﻿using Milkitic.OsuPlayer.Media.Lyric.Model;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Milkitic.OsuPlayer.Media.Lyric.Model;
 
 namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base
 {
     public abstract class SourceProviderBase
     {
+        protected readonly bool StrictMode;
+
+        protected SourceProviderBase(bool strictMode)
+        {
+            StrictMode = strictMode;
+        }
+
         public abstract Model.Lyric ProvideLyric(string artist, string title, int time, bool requestTransLyrics);
     }
 
@@ -140,7 +147,7 @@ namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base
 
             string checkStr = $"{title.Trim()}";
 
-            if (true) //(Setting.StrictMatch)
+            if (StrictMode) //(Setting.StrictMatch)
             {
                 //删除标题看起来不匹配的(超过1/3内容不对就出局)，当然开头相同除外
                 float threholdLength = checkStr.Length * (1.0f / 3);
@@ -159,6 +166,10 @@ namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base
             searchResult.Sort((a, b) => GetEditDistance(a) - GetEditDistance(b));
 
             int GetEditDistance(SearchSongResultBase s) => Utils.GetEditDistance($"{s.Title}", checkStr);
+        }
+
+        protected SourceProviderBase(bool strictMode) : base(strictMode)
+        {
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using System;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
+﻿using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
+using System;
 
 namespace Milkitic.OsuPlayer.Media.Lyric
 {
@@ -8,10 +8,12 @@ namespace Milkitic.OsuPlayer.Media.Lyric
         public ProvideTypeEnum ProvideType { get; set; }
 
         private readonly SourceProviderBase _sourceProvider;
+        private readonly bool _strictMode;
 
-        public LyricProvider(SourceProviderBase provider, ProvideTypeEnum provideType)
+        public LyricProvider(SourceProviderBase provider, ProvideTypeEnum provideType, bool strictMode)
         {
             _sourceProvider = provider;
+            _strictMode = strictMode;
             ProvideType = provideType;
         }
 

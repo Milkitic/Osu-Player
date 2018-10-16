@@ -156,6 +156,18 @@ namespace Milkitic.OsuPlayer.Pages
             ParentWindow.FramePop.Navigate(page);
         }
 
+        private void ItemSet_Click(object sender, RoutedEventArgs e)
+        {
+            var map = GetSelectedDefault();
+            Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
+        }
+
+        private void ItemFolder_Click(object sender, RoutedEventArgs e)
+        {
+            var map = GetSelectedDefault();
+            Process.Start(Path.Combine(Domain.OsuSongPath, map.FolderName));
+        }
+
         private void PlaySelectedDefault()
         {
             var map = GetSelectedDefault();

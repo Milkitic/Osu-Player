@@ -45,10 +45,13 @@
                     <Separator />
                     <MenuItem x:Name="ItemDelete" Header="从最近播放中移除" Click="ItemDelete_Click"
                               Style="{DynamicResource DefaultMenuItem}">
-                        <!--<MenuItem.Icon>
+                     <!--<MenuItem.Icon>
                             <Image Source="delect.jpg" Width="20" Height="20"  />
                         </MenuItem.Icon>-->
                     </MenuItem>
+                    <Separator/>
+                    <MenuItem x:Name="ItemSet" Header="打开成绩页" Click="ItemSet_Click"  Style="{DynamicResource DefaultMenuItem}" />
+                    <MenuItem x:Name="ItemFolder" Header="打开所在目录" Click="ItemFolder_Click"  Style="{DynamicResource DefaultMenuItem}" />
                 </ContextMenu>
             </ListView.ContextMenu>
             <ListView.DataContext>

@@ -28,7 +28,7 @@ namespace Milkitic.OsuPlayer.Utils
 
         public async Task DownloadAsync(string savePath)
         {
-            _downloadTask = new Task(() =>
+            _downloadTask = new Task(async () =>
             {
                 using (var ms = new MemoryStream())
                 {
@@ -45,7 +45,7 @@ namespace Milkitic.OsuPlayer.Utils
                         request.UserAgent =
                             "ozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36";
 
-                        var response = request.GetResponse() as HttpWebResponse;
+                        var response = await request.GetResponseAsync() as HttpWebResponse;
                         if (response == null)
                         {
                             // todo
@@ -70,7 +70,7 @@ namespace Milkitic.OsuPlayer.Utils
                             long totalSize = 0;
                             long lastSize = 0;
                             long speed = 0;
-                            Task.Run(() =>
+                            _ = Task.Run(() =>
                             {
                                 bool isFinished = false;
                                 OnFinishDownloading += () => { isFinished = true; };

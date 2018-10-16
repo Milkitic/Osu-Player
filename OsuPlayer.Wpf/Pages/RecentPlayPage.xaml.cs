@@ -4,6 +4,7 @@ using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Utils;
 using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -132,6 +133,18 @@ namespace Milkitic.OsuPlayer.Pages
                 MetaSelect.GetUnicode(map.Title, map.TitleUnicode)));
         }
 
+        private void ItemSet_Click(object sender, RoutedEventArgs e)
+        {
+            var map = GetSelected();
+            Process.Start($"https://osu.ppy.sh/b/{map.BeatmapId}");
+        }
+
+        private void ItemFolder_Click(object sender, RoutedEventArgs e)
+        {
+            var map = GetSelected();
+            Process.Start(Path.Combine(Domain.OsuSongPath, map.FolderName));
+        }
+
         private void PlaySelected()
         {
             var map = GetSelected();
@@ -150,5 +163,5 @@ namespace Milkitic.OsuPlayer.Pages
             return _entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
-    }
+        }
 }

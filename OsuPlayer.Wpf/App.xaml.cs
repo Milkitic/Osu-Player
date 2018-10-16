@@ -3,6 +3,7 @@ using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media.Lyric;
 using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Auto;
+using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
 using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Kugou;
 using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Netease;
 using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic;
@@ -39,10 +40,9 @@ namespace Milkitic.OsuPlayer
         public static HitsoundPlayer HitsoundPlayer;
         public static StoryboardProvider StoryboardProvider;
 
-        public static readonly LyricProvider LyricProvider;
+        public static LyricProvider LyricProvider;
         public static readonly PlayerList PlayerList = new PlayerList();
         public static readonly Updater Updater = new Updater();
-
 
         static App()
         {
@@ -52,21 +52,32 @@ namespace Milkitic.OsuPlayer
             InitLocalDb();
             LoadOsuDb();
             SaveConfig();
+            ReloadLyricProvider();
+        }
+
+        public static void ReloadLyricProvider()
+        {
+            bool strict = Config.Lyric.StrictMode;
+            SourceProviderBase provider;
             switch (Config.Lyric.LyricSource)
             {
                 case LyricSource.Auto:
-                    LyricProvider = new LyricProvider(new AutoSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
+                    provider = new AutoSourceProvider(strict);
                     break;
                 case LyricSource.Netease:
-                    LyricProvider = new LyricProvider(new NeteaseSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
+                    provider = new NeteaseSourceProvider(strict);
                     break;
                 case LyricSource.Kugou:
-                    LyricProvider = new LyricProvider(new KugouSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
+                    provider = new KugouSourceProvider(strict);
                     break;
                 case LyricSource.QqMusic:
-                    LyricProvider = new LyricProvider(new QqMusicSourceProvider(), LyricProvider.ProvideTypeEnum.Original);
+                    provider = new QqMusicSourceProvider(strict);
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+
+            LyricProvider = new LyricProvider(provider, LyricProvider.ProvideTypeEnum.Original, strict);
         }
 
         private static void InitLocalDb()

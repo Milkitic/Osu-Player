@@ -32,9 +32,8 @@
             <ListView.ContextMenu>
                 <ContextMenu Style="{StaticResource DefaultContextMenu}">
                     <MenuItem x:Name="ItemPlay" Header="播放" Click="ItemPlay_Click" Style="{DynamicResource DefaultMenuItem}"  />
-                    <!--<MenuItem x:Name="ItemNextPlay" Header="下一首播放" Click="ItemNextPlay_Click" />-->
                     <Separator/>
-                    <MenuItem x:Name="ItemCollect" Header="收藏" Click="ItemCollect_Click" Style="{DynamicResource DefaultMenuItem}"  />
+                    <MenuItem x:Name="ItemCollect" Header="收藏..." Click="ItemCollect_Click" Style="{DynamicResource DefaultMenuItem}"  />
                     <MenuItem x:Name="ItemExport" Header="导出" Click="ItemExport_Click" Style="{DynamicResource DefaultMenuItem}"  />
                     <Separator/>
                     <MenuItem x:Name="ItemSearchTitle" Header="搜索该标题" Click="ItemSearchTitle_Click"  Style="{DynamicResource DefaultMenuItem}" />
@@ -43,6 +42,9 @@
                     <MenuItem x:Name="ItemSearchMapper" Header="搜索该作者" Click="ItemSearchMapper_Click" Style="{DynamicResource DefaultMenuItem}"  />
                     <Separator/>
                     <MenuItem x:Name="ItemDelete" Header="从收藏夹中移除" Click="ItemDelete_Click"  Style="{DynamicResource DefaultMenuItem}" />
+                    <Separator/>
+                    <MenuItem x:Name="ItemSet" Header="打开成绩页" Click="ItemSet_Click"  Style="{DynamicResource DefaultMenuItem}" />
+                    <MenuItem x:Name="ItemFolder" Header="打开所在目录" Click="ItemFolder_Click"  Style="{DynamicResource DefaultMenuItem}" />
                 </ContextMenu>
             </ListView.ContextMenu>
             <ListView.DataContext>
@@ -62,8 +64,7 @@
                         <Label VerticalAlignment="Center" Grid.Column="1" Content="{Binding AutoTitle}"/>
                         <Label VerticalAlignment="Center" Grid.Column="2" Content="{Binding AutoArtist}" Foreground="#FF9C9C9C"/>
                         <Label x:Name="LblCreator" VerticalAlignment="Center" Grid.Column="3"
-                               Content="{Binding AutoCreator}" MouseDoubleClick="LblCreator_MouseDoubleClick" 
-                               Foreground="#FF1672CD" Cursor="Hand" />
+                               Content="{Binding AutoCreator}" Foreground="#FF1672CD" Cursor="Hand" />
                         <Label x:Name="LblVersion" VerticalAlignment="Center" Grid.Column="4"
                                Content="{Binding AutoVersion}" Foreground="#FF9C9C9C" />
                     </Grid>

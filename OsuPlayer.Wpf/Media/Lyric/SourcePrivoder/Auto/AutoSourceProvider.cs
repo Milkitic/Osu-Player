@@ -1,20 +1,15 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
+﻿using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
 using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Kugou;
 using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Netease;
 using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Auto
 {
     public class AutoSourceProvider : SourceProviderBase
     {
-        private readonly SourceProviderBase[] _searchEngines =
-        {
-            new NeteaseSourceProvider(),
-            new QqMusicSourceProvider(),
-            new KugouSourceProvider()
-        };
+        private readonly SourceProviderBase[] _searchEngines;
 
         public override Model.Lyric ProvideLyric(string artist, string title, int time, bool requestTransLyrics)
         {
@@ -44,6 +39,16 @@ namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Auto
             }
 
             return lyric;
+        }
+
+        public AutoSourceProvider(bool strictMode) : base(strictMode)
+        {
+            _searchEngines = new SourceProviderBase[]
+            {
+                new NeteaseSourceProvider(StrictMode),
+                new QqMusicSourceProvider(StrictMode),
+                new KugouSourceProvider(StrictMode)
+            };
         }
     }
 }
