@@ -48,6 +48,11 @@ namespace Milkitic.OsuPlayer.Data
         {
             return list.FirstOrDefault(k => k.FolderName == identity.FolderName && k.Version == identity.Version);
         }
+        public static IEnumerable<BeatmapEntry> GetBeatmapByIdentities(this IEnumerable<BeatmapEntry> list,
+            IEnumerable<MapIdentity> identities)
+        {
+            return identities.Select(id => list.FirstOrDefault(k => k.FolderName == id.FolderName && k.Version == id.Version));
+        }
 
         public static BeatmapEntry GetHighestDiff(this IEnumerable<BeatmapEntry> list)
         {

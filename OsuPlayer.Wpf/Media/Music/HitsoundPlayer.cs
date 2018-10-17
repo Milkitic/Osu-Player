@@ -71,6 +71,7 @@ namespace Milkitic.OsuPlayer.Media.Music
             FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, Osufile.General.AudioFilename));
             App.MusicPlayer = new MusicPlayer(musicInfo.FullName);
             Duration = (int)Math.Ceiling(Math.Max(_hitsoundList.Max(k => k.Offset), App.MusicPlayer.Duration));
+            PlayerStatus = PlayerStatus.Ready;
         }
 
         public void Play()

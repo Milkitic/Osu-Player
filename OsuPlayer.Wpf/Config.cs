@@ -14,6 +14,8 @@ namespace Milkitic.OsuPlayer
         public List<HotKey> HotKeys { get; set; } = new List<HotKey>();
         public LyricControl Lyric { get; set; } = new LyricControl();
         public ExportControl Export { get; set; } = new ExportControl();
+        public List<MapIdentity> CurrentList { get; set; } = new List<MapIdentity>();
+        public string CurrentPath { get; set; }
         public DateTime? LastUpdateCheck { get; set; } = null;
     }
 
@@ -77,7 +79,7 @@ namespace Milkitic.OsuPlayer
         public string MusicPath { get; set; } = Domain.MusicPath;
         public string BgPath { get; set; } = Domain.BackgroundPath;
         public NamingStyle NamingStyle { get; set; } = NamingStyle.ArtistTitle;
-        public SortStyle SortStyle { get; set; } = SortStyle.None;
+        public SortStyle SortStyle { get; set; } = SortStyle.Artist;
 
     }
     public enum NamingStyle

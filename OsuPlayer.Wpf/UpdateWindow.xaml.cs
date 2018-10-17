@@ -38,6 +38,7 @@ namespace Milkitic.OsuPlayer
         {
             var asset = _release?.Assets.FirstOrDefault(k => k.Name == "Osu-Player.zip");
             if (asset == null) return;
+            _mainWindow.ForceExit = true;
             _mainWindow.Close();
             _downloader = new Downloader(asset.BrowserDownloadUrl);
             _downloader.OnStartDownloading += Downloader_OnStartDownloading;

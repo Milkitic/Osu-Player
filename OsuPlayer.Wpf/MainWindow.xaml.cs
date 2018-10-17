@@ -62,11 +62,19 @@ namespace Milkitic.OsuPlayer
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // todo: This should be kept since the application exit last time.
-            BtnRecent_Click(sender, e);
+            //// todo: This should be kept since the application exit last time.
+            //BtnRecent_Click(sender, e);
             UpdateCollections();
             LoadSurfaceSettings();
             RunSurfaceUpdate();
+            if (App.Config.CurrentPath != null && App.Config.Play.Memory)
+            {
+                var entries = App.Beatmaps.GetBeatmapByIdentities(App.Config.CurrentList);
+                App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, entries: entries);
+                bool play = App.Config.Play.AutoPlay;
+                PlayNewFile(App.Config.CurrentPath, play);
+            }
+
             bool? sb = await App.Updater.CheckUpdateAsync();
             if (sb.HasValue && sb.Value)
             {
@@ -214,6 +222,7 @@ namespace Milkitic.OsuPlayer
                     App.HitsoundPlayer.Pause();
                     App.StoryboardProvider?.StoryboardTiming.Pause();
                     break;
+                case PlayerStatus.Ready:
                 case PlayerStatus.Stopped:
                 case PlayerStatus.Paused:
                     App.HitsoundPlayer.Play();
@@ -352,7 +361,7 @@ namespace Milkitic.OsuPlayer
         /// <summary>
         /// Play a new file by file path.
         /// </summary>
-        public void PlayNewFile(string path)
+        private void PlayNewFile(string path, bool play)
         {
             if (path == null) return;
             if (File.Exists(path))
@@ -419,9 +428,11 @@ namespace Milkitic.OsuPlayer
                                     k.GetIdentity().Equals(App.PlayerList.NowIdentity));
                             break;
                     }
-                    App.HitsoundPlayer.Play();
-                    RunSurfaceUpdate();
+                    if (play) App.HitsoundPlayer.Play();
+                    App.Config.CurrentPath = path;
+                    App.SaveConfig();
 
+                    RunSurfaceUpdate();
                     DbOperator.UpdateMap(App.PlayerList.NowIdentity);
                 }
                 catch (MultiTimingSectionException ex)
@@ -465,6 +476,10 @@ namespace Milkitic.OsuPlayer
             }
         }
 
+        public void PlayNewFile(string path)
+        {
+            PlayNewFile(path, true);
+        }
         /// <summary>
         /// Play next song in list if list exist.
         /// </summary>

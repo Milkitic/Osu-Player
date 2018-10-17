@@ -68,6 +68,9 @@ namespace Milkitic.OsuPlayer
                 }
             Pointer = 0;
             if (!finishList) RedirectPointer();
+
+            App.Config.CurrentList = Entries.Select(k => k.GetIdentity()).ToList();
+            App.SaveConfig();
         }
 
         public void RedirectPointer()
