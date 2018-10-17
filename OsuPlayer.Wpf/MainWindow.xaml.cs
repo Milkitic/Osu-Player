@@ -113,6 +113,7 @@ namespace Milkitic.OsuPlayer
             WavePlayer.Device?.Dispose();
             WavePlayer.MasteringVoice?.Dispose();
             LyricWindow.Dispose();
+            NotifyIcon.Dispose();
             if (ConfigWindow != null && !ConfigWindow.IsClosed)
             {
                 if (ConfigWindow.IsInitialized)
