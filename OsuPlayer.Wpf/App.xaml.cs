@@ -46,13 +46,21 @@ namespace Milkitic.OsuPlayer
 
         static App()
         {
-            if (!LoadConfig())
-                Environment.Exit(0);
-            CreateDirectories();
-            InitLocalDb();
-            LoadOsuDb();
-            SaveConfig();
-            ReloadLyricProvider();
+            try
+            {
+                if (!LoadConfig())
+                    Environment.Exit(0);
+                CreateDirectories();
+                InitLocalDb();
+                LoadOsuDb();
+                SaveConfig();
+                ReloadLyricProvider();
+            }
+            catch (Exception e)
+            {
+                File.AppendAllText("error.log",
+                    $@"{DateTime.Now}===================={Environment.NewLine}{e}{Environment.NewLine}");
+            }
         }
 
         public static void ReloadLyricProvider()

@@ -43,6 +43,7 @@ namespace Milkitic.OsuPlayer
         public readonly OverallKeyHook OverallKeyHook;
 
         public bool ForceExit = false;
+        private WindowState _lastState;
 
         //local player control
         private CancellationTokenSource _cts = new CancellationTokenSource();
@@ -100,12 +101,16 @@ namespace Milkitic.OsuPlayer
         {
             if (App.Config.General.ExitWhenClosed == null && !ForceExit)
             {
-                var result = MessageBox.Show("退出？", Title, MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.No)
-                {
-                    e.Cancel = true;
-                    return;
-                }
+                e.Cancel = true;
+                FramePop.Navigate(new ClosingPage(this));
+                return;
+            }
+            else if (App.Config.General.ExitWhenClosed == false && !ForceExit)
+            {
+                WindowState = WindowState.Minimized;
+                Hide();
+                e.Cancel = true;
+                return;
             }
 
             ClearHitsoundPlayer();
@@ -114,11 +119,9 @@ namespace Milkitic.OsuPlayer
             WavePlayer.MasteringVoice?.Dispose();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
-            if (ConfigWindow != null && !ConfigWindow.IsClosed)
-            {
-                if (ConfigWindow.IsInitialized)
-                    ConfigWindow.Close();
-            }
+            if (ConfigWindow == null || ConfigWindow.IsClosed) return;
+            if (ConfigWindow.IsInitialized)
+                ConfigWindow.Close();
         }
 
         /// <summary>
@@ -237,6 +240,11 @@ namespace Milkitic.OsuPlayer
             PlayNext(true);
         }
 
+        private void BtnMode_Click(object sender, RoutedEventArgs e)
+        {
+            PopMode.IsOpen = true;
+        }
+
         /// <summary>
         /// Popup a dialog for adding music to a collection.
         /// </summary>
@@ -267,12 +275,49 @@ namespace Milkitic.OsuPlayer
             Pop.IsOpen = true;
         }
 
+        private void PlayMode_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            if (Single.IsChecked == true)
+            {
+                BtnMode.Content = "单曲播放";
+                App.PlayerList.PlayerMode = PlayerMode.Single;
+            }
+            else if (SingleLoop.IsChecked == true)
+            {
+                BtnMode.Content = "单曲循环";
+                App.PlayerList.PlayerMode = PlayerMode.SingleLoop;
+            }
+            else if (Normal.IsChecked == true)
+            {
+                BtnMode.Content = "顺序播放";
+                App.PlayerList.PlayerMode = PlayerMode.Normal;
+            }
+            else if (Random.IsChecked == true)
+            {
+                BtnMode.Content = "随机播放";
+                App.PlayerList.PlayerMode = PlayerMode.Random;
+            }
+            else if (Loop.IsChecked == true)
+            {
+                BtnMode.Content = "循环列表";
+                App.PlayerList.PlayerMode = PlayerMode.Loop;
+            }
+            else if (LoopRandom.IsChecked == true)
+            {
+                BtnMode.Content = "随机循环";
+                App.PlayerList.PlayerMode = PlayerMode.LoopRandom;
+            }
+
+            App.PlayerList.RefreshPlayList(PlayerList.FreshType.IndexOnly);
+        }
+
         /// <summary>
         /// While popup lost focus, we should hide it.
         /// </summary>
         private void Popup_LostFocus(object sender, RoutedEventArgs e)
         {
             Pop.IsOpen = false;
+            PopMode.IsOpen = false;
         }
 
         /// <summary>
@@ -526,6 +571,7 @@ namespace Milkitic.OsuPlayer
         public void SetLyric()
         {
             if (!LyricWindow.IsVisible) return;
+            if (App.HitsoundPlayer == null) return;
             var lyric = App.LyricProvider.GetLyric(App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist(),
                 App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle(), App.MusicPlayer.Duration);
             LyricWindow.SetNewLyric(lyric, App.HitsoundPlayer.Osufile);
@@ -654,6 +700,7 @@ namespace Milkitic.OsuPlayer
             Topmost = true;
             Topmost = false;
             Show();
+            WindowState = _lastState;
         }
 
         private void MenuExit_Click(object sender, RoutedEventArgs e)
@@ -665,6 +712,13 @@ namespace Milkitic.OsuPlayer
         private void MenuConfig_Click(object sender, RoutedEventArgs e)
         {
             BtnSettings_Click(sender, e);
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (WindowState == WindowState.Minimized)
+                return;
+            _lastState = WindowState;
         }
     }
 

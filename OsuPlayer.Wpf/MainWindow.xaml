@@ -7,7 +7,7 @@
         xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d" Style="{StaticResource MainWindowStyle}"
         Title="osu! 畅听" Width="960" Height="720" MinWidth="640" MinHeight="88"
-        Loaded="Window_Loaded" Closing="Window_Closing"
+        Loaded="Window_Loaded" Closing="Window_Closing" SizeChanged="Window_SizeChanged"
         Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico">
 
     <Grid x:Name="MainGrid">
@@ -135,6 +135,7 @@
             </Grid>
             <Grid Grid.Column="3">
                 <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
+                    <Button x:Name="BtnMode" Content="播放模式" Click="BtnMode_Click" />
                     <Button x:Name="BtnLike" Style="{StaticResource FavButtonStyle}" Click="BtnLike_Click" />
                     <Button x:Name="BtnVolume" Style="{StaticResource VolumeButtonStyle}" Click="BtnVolume_Click" />
                 </StackPanel>
@@ -181,6 +182,21 @@
                         <Label Content="单曲偏移" Margin="0,-5,0,0" HorizontalAlignment="Center" />
                     </StackPanel>
                 </Grid>
+            </Border>
+        </Popup>
+        <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="PopMode" PopupAnimation="Fade"
+               PlacementTarget="{Binding ElementName=BtnMode}" Placement="Top" AllowsTransparency="True"
+               StaysOpen="False"
+               LostFocus="Popup_LostFocus">
+            <Border Background="White" HorizontalAlignment="Center" BorderBrush="#cccccc" BorderThickness="1">
+                <StackPanel>
+                    <RadioButton x:Name="Single" Content="单曲播放" Checked="PlayMode_CheckChanged"/>
+                    <RadioButton x:Name="SingleLoop" Content="单曲循环" Checked="PlayMode_CheckChanged"/>
+                    <RadioButton x:Name="Normal" Content="顺序播放" Checked="PlayMode_CheckChanged"/>
+                    <RadioButton x:Name="Random" Content="随机播放" Checked="PlayMode_CheckChanged"/>
+                    <RadioButton x:Name="Loop" Content="循环列表" Checked="PlayMode_CheckChanged"/>
+                    <RadioButton x:Name="LoopRandom" Content="随机循环" Checked="PlayMode_CheckChanged"/>
+                </StackPanel>
             </Border>
         </Popup>
         <tb:TaskbarIcon Grid.Row="0" x:Name="NotifyIcon"

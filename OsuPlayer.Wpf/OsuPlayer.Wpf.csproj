@@ -181,6 +181,9 @@
       <DependentUpon>NewVersionWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="OverallKeyHook.cs" />
+    <Compile Include="Pages\ClosingPage.xaml.cs">
+      <DependentUpon>ClosingPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\DiffSelectPage.xaml.cs">
       <DependentUpon>DiffSelectPage.xaml</DependentUpon>
     </Compile>
@@ -288,6 +291,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\AddCollectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\ClosingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
