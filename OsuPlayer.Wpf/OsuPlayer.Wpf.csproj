@@ -100,6 +100,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.109.1\lib\net451\System.Data.SQLite.dll</HintPath>
@@ -138,7 +139,7 @@
     <Compile Include="ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Data\Models.cs" />
+    <Compile Include="Data\ModelsContexts.cs" />
     <Compile Include="Data\DbOperator.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="Media\Enums.cs" />
@@ -254,6 +255,7 @@
     <Compile Include="Media\Storyboard\Timing.cs" />
     <Compile Include="Media\Storyboard\Util\LogUtil.cs" />
     <Compile Include="Media\Storyboard\Util\TextureLoader.cs" />
+    <Compile Include="Utils\Util.cs" />
     <Compile Include="UpdateWindow.xaml.cs">
       <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
@@ -391,9 +393,6 @@
     </EmbeddedResource>
     <None Include="Media\Lyric\readme.md" />
     <None Include="packages.config" />
-    <None Include="player.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -414,6 +413,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\osu_texture.png" />
+    <None Include="Resources\pure.db" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\btn_fav.png" />

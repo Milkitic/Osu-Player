@@ -16,6 +16,7 @@ using osu_database_reader.BinaryFiles;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -90,6 +91,13 @@ namespace Milkitic.OsuPlayer
 
         private static void InitLocalDb()
         {
+            if (!File.Exists(Path.Combine(Domain.CurrentPath, "player.db")))
+                Util.ExportResource("pure", Path.Combine(Domain.CurrentPath, "player.db"));
+
+            var olds = ConfigurationManager.ConnectionStrings["sqlite"].ConnectionString.Split('=');
+            Util.UpdateConnectionStringsConfig("sqlite", $"{olds[0]}={Path.Combine(Domain.CurrentPath, olds[1])}");
+            Console.WriteLine(ConfigurationManager.ConnectionStrings["sqlite"].ConnectionString);
+
             var defCol = DbOperator.GetCollections().Where(k => k.Locked);
             if (!defCol.Any()) DbOperator.AddCollection("最喜爱的", true);
         }

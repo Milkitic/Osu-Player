@@ -2,6 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace Milkitic.OsuPlayer.Data
 {
@@ -32,7 +36,7 @@ namespace Milkitic.OsuPlayer.Data
         public int Offset { get; set; }
         [Column("lastPlayTime")]
         public DateTime? LastPlayTime { get; set; }
-         [Column("exportFile")]
+        [Column("exportFile")]
         public string ExportFile { get; set; }
 
         //Extension
@@ -40,11 +44,6 @@ namespace Milkitic.OsuPlayer.Data
 
     }
 
-    public class MapInfoContext : DbContext
-    {
-        public DbSet<MapInfo> MapInfos { get; set; }
-        public MapInfoContext() : base("sqlite") { }
-    }
 
     [Table("collection")]
     public class Collection
@@ -71,11 +70,6 @@ namespace Milkitic.OsuPlayer.Data
         public bool Locked => LockedInt == 1;
     }
 
-    public class CollectionContext : DbContext
-    {
-        public DbSet<Collection> Collections { get; set; }
-        public CollectionContext() : base("sqlite") { }
-    }
 
     [Table("collection_relation")]
     public class CollectionRelation
@@ -100,9 +94,22 @@ namespace Milkitic.OsuPlayer.Data
         public DateTime? AddTime { get; set; }
     }
 
-    public class RelationContext : DbContext
+    public class ApplicationDbContext : DbContext
     {
+        public DbSet<MapInfo> MapInfos { get; set; }
+        public DbSet<Collection> Collections { get; set; }
         public DbSet<CollectionRelation> Relations { get; set; }
-        public RelationContext() : base("sqlite") { }
+
+        public ApplicationDbContext() : base("name=sqlite")
+        {
+            Database.Initialize(false);
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions
+                .Remove<System.Data.Entity.ModelConfiguration.Conventions.PluralizingTableNameConvention>();
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

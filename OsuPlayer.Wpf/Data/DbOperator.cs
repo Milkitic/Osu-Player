@@ -12,7 +12,7 @@ namespace Milkitic.OsuPlayer.Data
 
         public static MapInfo GetMapFromDb(MapIdentity id)
         {
-            using (MapInfoContext mapContext = new MapInfoContext())
+            using (ApplicationDbContext mapContext = new ApplicationDbContext())
             {
                 try
                 {
@@ -41,11 +41,11 @@ namespace Milkitic.OsuPlayer.Data
             //        c3.SaveChanges();
             //    }
             #endregion
-            using (MapInfoContext mapContext = new MapInfoContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
-                    return mapContext.MapInfos.Where(k => k.LastPlayTime != null).OrderBy(k => k.LastPlayTime)
+                    return context.MapInfos.Where(k => k.LastPlayTime != null).OrderBy(k => k.LastPlayTime)
                         .ToList();
                 }
                 catch (Exception ex)
@@ -58,11 +58,11 @@ namespace Milkitic.OsuPlayer.Data
 
         public static IEnumerable<MapInfo> GetExportedMaps()
         {
-            using (MapInfoContext mapContext = new MapInfoContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
-                    return mapContext.MapInfos.Where(k => !string.IsNullOrEmpty(k.ExportFile)).ToList();
+                    return context.MapInfos.Where(k => !string.IsNullOrEmpty(k.ExportFile)).ToList();
                 }
                 catch (Exception ex)
                 {
@@ -74,15 +74,13 @@ namespace Milkitic.OsuPlayer.Data
 
         public static IEnumerable<MapInfo> GetMapsFromCollection(Collection collection)
         {
-            using (MapInfoContext mapContext = new MapInfoContext())
-            using (RelationContext relationContext = new RelationContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
-                    var mapRelations = relationContext.Relations.Where(k => k.CollectionId == collection.Id)
-                      .ToList();
+                    var mapRelations = context.Relations.Where(k => k.CollectionId == collection.Id).ToList();
                     var mapIds = mapRelations.Select(k => k.MapId).ToList();
-                    var maps = mapContext.MapInfos.Where(k => mapIds.Contains(k.Id)).ToList();
+                    var maps = context.MapInfos.Where(k => mapIds.Contains(k.Id)).ToList();
                     return (from r in mapRelations
                             join m in maps on r.MapId equals m.Id
                             select new MapInfo(m.Id, m.Version, m.FolderName, m.Offset, m.LastPlayTime, m.ExportFile, r.AddTime))
@@ -98,7 +96,7 @@ namespace Milkitic.OsuPlayer.Data
 
         public static IEnumerable<Collection> GetCollections()
         {
-            using (CollectionContext context = new CollectionContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
@@ -114,7 +112,7 @@ namespace Milkitic.OsuPlayer.Data
 
         public static IEnumerable<Collection> GetCollectionById(string[] id)
         {
-            using (CollectionContext context = new CollectionContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
@@ -130,11 +128,11 @@ namespace Milkitic.OsuPlayer.Data
 
         public static IEnumerable<Collection> GetCollectionsByMap(MapInfo map)
         {
-            using (RelationContext relContext = new RelationContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
-                    var ids = relContext.Relations.Where(k => k.MapId == map.Id).Select(k => k.CollectionId);
+                    var ids = context.Relations.Where(k => k.MapId == map.Id).Select(k => k.CollectionId);
                     if (!ids.Any()) return null;
                     return GetCollectionById(ids.ToArray());
                 }
@@ -148,12 +146,12 @@ namespace Milkitic.OsuPlayer.Data
 
         public static void AddCollection(string name, bool locked = false)
         {
-            using (CollectionContext collectionContext = new CollectionContext())
+            using (ApplicationDbContext applicationDbContext = new ApplicationDbContext())
             {
                 try
                 {
-                    collectionContext.Collections.Add(new Collection(Guid.NewGuid().ToString(), name, locked, 0));
-                    collectionContext.SaveChanges();
+                    applicationDbContext.Collections.Add(new Collection(Guid.NewGuid().ToString(), name, locked, 0));
+                    applicationDbContext.SaveChanges();
                 }
                 catch (Exception ex)
                 {
@@ -165,15 +163,14 @@ namespace Milkitic.OsuPlayer.Data
 
         public static void AddMapToCollection(BeatmapEntry entry, Collection collection)
         {
-            using (MapInfoContext mapContext = new MapInfoContext())
-            using (RelationContext relationContext = new RelationContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
-                    MapInfo map = InnerGetMapFromDb(entry.GetIdentity(), mapContext);
-                    relationContext.Relations.Add(new CollectionRelation(Guid.NewGuid().ToString(), collection.Id,
+                    MapInfo map = InnerGetMapFromDb(entry.GetIdentity(), context);
+                    context.Relations.Add(new CollectionRelation(Guid.NewGuid().ToString(), collection.Id,
                         map.Id));
-                    relationContext.SaveChanges();
+                    context.SaveChanges();
                 }
                 catch (Exception ex)
                 {
@@ -188,15 +185,15 @@ namespace Milkitic.OsuPlayer.Data
             //if (!Directory.Exists(Path.Combine(Domain.OsuSongPath, id.FolderName)))
             //    throw new DirectoryNotFoundException(id.FolderName);
 
-            using (MapInfoContext mapContext = new MapInfoContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
-                    MapInfo map = InnerGetMapFromDb(id, mapContext);
+                    MapInfo map = InnerGetMapFromDb(id, context);
                     map.LastPlayTime = DateTime.Now;
                     if (offset != 0)
                         map.Offset = offset;
-                    mapContext.SaveChanges();
+                    context.SaveChanges();
                 }
                 catch (Exception ex)
                 {
@@ -208,13 +205,13 @@ namespace Milkitic.OsuPlayer.Data
 
         public static void AddMapExport(MapIdentity id, string exportFilePath)
         {
-            using (MapInfoContext mapContext = new MapInfoContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
-                    MapInfo map = InnerGetMapFromDb(id, mapContext);
+                    MapInfo map = InnerGetMapFromDb(id, context);
                     map.ExportFile = exportFilePath;
-                    mapContext.SaveChanges();
+                    context.SaveChanges();
                 }
                 catch (Exception ex)
                 {
@@ -226,13 +223,13 @@ namespace Milkitic.OsuPlayer.Data
 
         public static void RemoveMapExport(MapIdentity id)
         {
-            using (MapInfoContext mapContext = new MapInfoContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
-                    MapInfo map = InnerGetMapFromDb(id, mapContext);
+                    MapInfo map = InnerGetMapFromDb(id, context);
                     map.ExportFile = string.Empty;
-                    mapContext.SaveChanges();
+                    context.SaveChanges();
                 }
                 catch (Exception ex)
                 {
@@ -249,11 +246,11 @@ namespace Milkitic.OsuPlayer.Data
 
         public static void RemoveFromRecent(MapIdentity id)
         {
-            using (MapInfoContext mapContext = new MapInfoContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
-                MapInfo map = InnerGetMapFromDb(id, mapContext);
+                MapInfo map = InnerGetMapFromDb(id, context);
                 map.LastPlayTime = null;
-                mapContext.SaveChanges();
+                context.SaveChanges();
             }
         }
 
@@ -264,42 +261,26 @@ namespace Milkitic.OsuPlayer.Data
 
         public static void ClearRecent()
         {
-            using (MapInfoContext mapContext = new MapInfoContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
-                var maps = mapContext.MapInfos;
+                var maps = context.MapInfos;
                 foreach (var map in maps)
                     map.LastPlayTime = null;
-                mapContext.SaveChanges();
+                context.SaveChanges();
             }
         }
 
         public static void RemoveCollection(Collection collection)
         {
-            using (CollectionContext collectionContext = new CollectionContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
-                    var sb = collectionContext.Collections.FirstOrDefault(k => k.Id == collection.Id);
-                    if (sb != null)
-                    {
-                        collectionContext.Collections.Remove(sb);
-                        collectionContext.SaveChanges();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(@"Failed: " + ex);
-                    throw;
-                }
-            }
+                    var coll = context.Collections.FirstOrDefault(k => k.Id == collection.Id);
+                    if (coll != null) context.Collections.Remove(coll);
+                    context.Relations.RemoveRange(context.Relations.Where(k => k.CollectionId == collection.Id));
 
-            using (RelationContext relationContext = new RelationContext())
-            {
-                try
-                {
-                    relationContext.Relations.RemoveRange(
-                       relationContext.Relations.Where(k => k.CollectionId == collection.Id));
-                    relationContext.SaveChanges();
+                    context.SaveChanges();
                 }
                 catch (Exception ex)
                 {
@@ -316,15 +297,14 @@ namespace Milkitic.OsuPlayer.Data
 
         public static void RemoveMapFromCollection(MapIdentity id, Collection collection)
         {
-            using (MapInfoContext mapContext = new MapInfoContext())
-            using (RelationContext relationContext = new RelationContext())
+            using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
-                    MapInfo map = InnerGetMapFromDb(id, mapContext);
-                    relationContext.Relations.RemoveRange(relationContext.Relations.Where(k =>
+                    MapInfo map = InnerGetMapFromDb(id, context);
+                    context.Relations.RemoveRange(context.Relations.Where(k =>
                         k.CollectionId == collection.Id && k.MapId == map.Id));
-                    relationContext.SaveChanges();
+                    context.SaveChanges();
                 }
                 catch (Exception ex)
                 {
@@ -334,15 +314,15 @@ namespace Milkitic.OsuPlayer.Data
             }
         }
 
-        private static MapInfo InnerGetMapFromDb(MapIdentity id, MapInfoContext mapContext)
+        private static MapInfo InnerGetMapFromDb(MapIdentity id, ApplicationDbContext context)
         {
-            var map = mapContext.MapInfos.FirstOrDefault(k =>
+            var map = context.MapInfos.FirstOrDefault(k =>
                 k.Version == id.Version && k.FolderName == id.FolderName);
             if (map == null)
             {
-                mapContext.MapInfos.Add(new MapInfo(Guid.NewGuid().ToString(), id.Version, id.FolderName, 0, null));
-                mapContext.SaveChanges();
-                map = mapContext.MapInfos.First(k => k.Version == id.Version && k.FolderName == id.FolderName);
+                context.MapInfos.Add(new MapInfo(Guid.NewGuid().ToString(), id.Version, id.FolderName, 0, null));
+                context.SaveChanges();
+                map = context.MapInfos.First(k => k.Version == id.Version && k.FolderName == id.FolderName);
             }
 
             return map;
