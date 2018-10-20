@@ -56,11 +56,15 @@ namespace Milkitic.OsuPlayer
                 LoadOsuDb();
                 SaveConfig();
                 ReloadLyricProvider();
+                RedirectHandler.Redirect();
             }
             catch (Exception e)
             {
+                MessageBox.Show($"发生严重错误，即将退出。。。详情请查看error.log。{Environment.NewLine}{e.Message}", "APP",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 File.AppendAllText("error.log",
                     $@"{DateTime.Now}===================={Environment.NewLine}{e}{Environment.NewLine}");
+                Environment.Exit(1);
             }
         }
 
@@ -93,9 +97,8 @@ namespace Milkitic.OsuPlayer
         {
             if (!File.Exists(Path.Combine(Domain.CurrentPath, "player.db")))
                 Util.ExportResource("pure", Path.Combine(Domain.CurrentPath, "player.db"));
-
-            var olds = ConfigurationManager.ConnectionStrings["sqlite"].ConnectionString.Split('=');
-            Util.UpdateConnectionStringsConfig("sqlite", $"{olds[0]}={Path.Combine(Domain.CurrentPath, olds[1])}");
+          //  var olds = ConfigurationManager.ConnectionStrings["sqlite"].ConnectionString.Split('=');
+          //  Util.UpdateConnectionStringsConfig("sqlite", $"{olds[0]}={Path.Combine(Domain.CurrentPath, olds[1])}");
             Console.WriteLine(ConfigurationManager.ConnectionStrings["sqlite"].ConnectionString);
 
             var defCol = DbOperator.GetCollections().Where(k => k.Locked);

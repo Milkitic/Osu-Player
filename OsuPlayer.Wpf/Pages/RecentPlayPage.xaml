@@ -9,76 +9,89 @@
       Title="RecentPlayPage" Loaded="Page_Loaded">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <Label x:Name="LblTitle" FontSize="14" Content="最近播放" VerticalAlignment="Center" Margin="10" />
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,15,0,0">
-            <Button x:Name="BtnPlayAll" Content="全部播放" Width="70" Margin="5" Height="30"
+        <TabControl Background="Transparent" BorderThickness="0">
+            <TabItem Style="{StaticResource PinkTabItem}">
+                <TabItem.Header>
+                    <TextBlock x:Name="LblTitle" Text="最近播放" Cursor="Hand" FontSize="16" Padding="26,10"/>
+                </TabItem.Header>
+                <Grid Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,0">
+                        <Button x:Name="BtnPlayAll" Content="全部播放" Width="70" Margin="5" Height="30"
                     Style="{StaticResource Collection2ButtonStyle}" Click="BtnPlayAll_Click" />
-            <Button x:Name="BtnDelAll" Content="全部删除" Width="70" Margin="5" Height="30"
+                        <Button x:Name="BtnDelAll" Content="全部删除" Width="70" Margin="5" Height="30"
                     Style="{StaticResource Collection2ButtonStyle}" Click="BtnDelAll_Click" />
-        </StackPanel>
-        <ListView Grid.Row="2" x:Name="RecentList" Margin="0,5,0,2" Background="Transparent" BorderThickness="0"
-                  ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="Recent_MouseDoubleClick">
-            <ListView.ContextMenu>
-                <ContextMenu Style="{DynamicResource DefaultContextMenu}">
-                    <MenuItem x:Name="ItemPlay" Header="播放" Click="ItemPlay_Click"
+                    </StackPanel>
+                    <ListView Grid.Row="1" x:Name="RecentList" Margin="0,5,0,2" Background="Transparent" BorderThickness="0"
+                              ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="Recent_MouseDoubleClick"
+                              ItemContainerStyle="{StaticResource GridView}">
+                        <ListView.ContextMenu>
+                            <ContextMenu Style="{DynamicResource DefaultContextMenu}">
+                                <MenuItem x:Name="ItemPlay" Header="播放" Click="ItemPlay_Click"
                               Style="{DynamicResource DefaultMenuItem}" />
-                    <!--<MenuItem x:Name="ItemNextPlay" Header="下一首播放" Click="ItemNextPlay_Click" />-->
-                    <Separator />
-                    <MenuItem x:Name="ItemCollect" Header="收藏" Click="ItemCollect_Click"
+                                <!--<MenuItem x:Name="ItemNextPlay" Header="下一首播放" Click="ItemNextPlay_Click" />-->
+                                <Separator />
+                                <MenuItem x:Name="ItemCollect" Header="收藏" Click="ItemCollect_Click"
                               Style="{DynamicResource DefaultMenuItem}" />
-                    <MenuItem x:Name="ItemExport" Header="导出" Click="ItemExport_Click"
+                                <MenuItem x:Name="ItemExport" Header="导出" Click="ItemExport_Click"
                               Style="{DynamicResource DefaultMenuItem}" />
-                    <Separator />
-                    <MenuItem x:Name="ItemSearchTitle" Header="搜索该标题" Click="ItemSearchTitle_Click"
+                                <Separator />
+                                <MenuItem x:Name="ItemSearchTitle" Header="搜索该标题" Click="ItemSearchTitle_Click"
                               Style="{DynamicResource DefaultMenuItem}" />
-                    <MenuItem x:Name="ItemSearchArtist" Header="搜索该艺术家" Click="ItemSearchArtist_Click"
+                                <MenuItem x:Name="ItemSearchArtist" Header="搜索该艺术家" Click="ItemSearchArtist_Click"
                               Style="{DynamicResource DefaultMenuItem}" />
-                    <MenuItem x:Name="ItemSearchSource" Header="搜索该来源" Click="ItemSearchSource_Click"
+                                <MenuItem x:Name="ItemSearchSource" Header="搜索该来源" Click="ItemSearchSource_Click"
                               Style="{DynamicResource DefaultMenuItem}" />
-                    <MenuItem x:Name="ItemSearchMapper" Header="搜索该作者" Click="ItemSearchMapper_Click"
+                                <MenuItem x:Name="ItemSearchMapper" Header="搜索该作者" Click="ItemSearchMapper_Click"
                               Style="{DynamicResource DefaultMenuItem}" />
-                    <Separator />
-                    <MenuItem x:Name="ItemDelete" Header="从最近播放中移除" Click="ItemDelete_Click"
+                                <Separator />
+                                <MenuItem x:Name="ItemDelete" Header="从最近播放中移除" Click="ItemDelete_Click"
                               Style="{DynamicResource DefaultMenuItem}">
-                     <!--<MenuItem.Icon>
+                                    <!--<MenuItem.Icon>
                             <Image Source="delect.jpg" Width="20" Height="20"  />
                         </MenuItem.Icon>-->
-                    </MenuItem>
-                    <Separator/>
-                    <MenuItem x:Name="ItemSet" Header="打开成绩页" Click="ItemSet_Click"  Style="{DynamicResource DefaultMenuItem}" />
-                    <MenuItem x:Name="ItemFolder" Header="打开所在目录" Click="ItemFolder_Click"  Style="{DynamicResource DefaultMenuItem}" />
-                </ContextMenu>
-            </ListView.ContextMenu>
-            <ListView.DataContext>
-                <models:BeatmapViewModel />
-            </ListView.DataContext>
-            <ListView.Resources>
-                <DataTemplate DataType="{x:Type models:BeatmapViewModel}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="55" />
-                            <ColumnDefinition Width="315" />
-                            <ColumnDefinition Width="215" />
-                            <ColumnDefinition Width="110" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Label VerticalAlignment="Center" Margin="15,7,15,7" Grid.Column="0" Content="{Binding Id}" />
-                        <Label VerticalAlignment="Center" Grid.Column="1" Content="{Binding AutoTitle}" />
-                        <Label VerticalAlignment="Center" Grid.Column="2" Content="{Binding AutoArtist}"
-                               Foreground="#FF9C9C9C" />
-                        <Label x:Name="LblCreator" VerticalAlignment="Center" Grid.Column="3"
-                               Content="{Binding AutoCreator}" MouseDoubleClick="LblCreator_MouseDoubleClick"
-                               Foreground="#FF1672CD" Cursor="Hand" />
-                        <Label x:Name="LblVersion" VerticalAlignment="Center" Grid.Column="4"
-                               Content="{Binding AutoVersion}" Foreground="#FF9C9C9C" />
-                    </Grid>
-                </DataTemplate>
-            </ListView.Resources>
-        </ListView>
+                                </MenuItem>
+                                <Separator/>
+                                <MenuItem x:Name="ItemSet" Header="打开成绩页" Click="ItemSet_Click"  Style="{DynamicResource DefaultMenuItem}" />
+                                <MenuItem x:Name="ItemFolder" Header="打开所在目录" Click="ItemFolder_Click"  Style="{DynamicResource DefaultMenuItem}" />
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                        <ListView.DataContext>
+                            <models:BeatmapViewModel />
+                        </ListView.DataContext>
+                        <ListView.Resources>
+                            <DataTemplate x:Key="IdDt">
+                                <Label VerticalAlignment="Center" Margin="15,7,15,7" Content="{Binding Id}" />
+                            </DataTemplate>
+                            <DataTemplate x:Key="TitleDt">
+                                <Label VerticalAlignment="Center" Content="{Binding AutoTitle}" />
+                            </DataTemplate>
+                            <DataTemplate x:Key="ArtistDt">
+                                <Label VerticalAlignment="Center" Content="{Binding AutoArtist}" Foreground="#FF9C9C9C" />
+                            </DataTemplate>
+                            <DataTemplate x:Key="CreatorDt">
+                                <Label VerticalAlignment="Center" Content="{Binding AutoCreator}" />
+                            </DataTemplate>
+                            <DataTemplate x:Key="VersionDt">
+                                <Label VerticalAlignment="Center" Content="{Binding AutoVersion}" Foreground="#FF9C9C9C" />
+                            </DataTemplate>
+                        </ListView.Resources>
+                        <ListView.View>
+                            <GridView ColumnHeaderContainerStyle="{StaticResource MyHeaderStyle}">
+                                <GridViewColumn Width="40" CellTemplate="{StaticResource IdDt}"></GridViewColumn>
+                                <GridViewColumn Header="标题" Width="300" CellTemplate="{StaticResource TitleDt}"></GridViewColumn>
+                                <GridViewColumn Header="艺术家" Width="200" CellTemplate="{StaticResource ArtistDt}"></GridViewColumn>
+                                <GridViewColumn Header="作者" Width="100" CellTemplate="{StaticResource CreatorDt}"></GridViewColumn>
+                                <GridViewColumn Header="难度" Width="150" CellTemplate="{StaticResource VersionDt}"></GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
     </Grid>
 </Page>

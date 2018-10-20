@@ -7,8 +7,8 @@
         xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d" Style="{StaticResource MainWindowStyle}"
         Title="osu! 畅听" Width="960" Height="720" MinWidth="640" MinHeight="88"
-        Loaded="Window_Loaded" Closing="Window_Closing" SizeChanged="Window_SizeChanged"
-        Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico">
+        Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
+        Loaded="Window_Loaded" Closing="Window_Closing" SizeChanged="Window_SizeChanged">
 
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
@@ -17,11 +17,14 @@
             <RowDefinition Height="Auto" MinHeight="48" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="1" Background="White">
-            <Image x:Name="BlurScene" Margin="1" Stretch="UniformToFill" Opacity="1">
-                <Image.Effect>
-                    <BlurEffect Radius="75" />
-                </Image.Effect>
-            </Image>
+            <Grid Margin="1">
+                <Image x:Name="BlurScene" Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center"
+                       VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality">
+                    <Image.Effect>
+                        <BlurEffect Radius="25" />
+                    </Image.Effect>
+                </Image>
+            </Grid>
             <Rectangle Fill="#FFFFFF" Opacity="0.666667" />
             <DockPanel Width="Auto" Height="Auto">
                 <Grid>
@@ -100,15 +103,27 @@
                 </Grid>
             </DockPanel>
         </Grid>
-        <Grid Grid.Row="2" Background="White">
+        <Grid x:Name="FullMode" Grid.Row="1" Background="White" Visibility="Hidden" Margin="1">
+            <Grid>
+                <Image Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding Source, ElementName=BlurScene}" />
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="2" Background="White" MouseDown="Grid_MouseDown">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Image x:Name="Thumb" Margin="1" MaxHeight="46" MaxWidth="61.333333"
-                   Source="{Binding Source, ElementName=BlurScene}" />
+             <!--Source="{Binding Source, ElementName=BlurScene}"-->
+            <Grid Margin="1" MaxHeight="46" MaxWidth="61.333333">
+                <Button Style="{StaticResource ImageButtonStyle}" Click="ImageButton_Click" Cursor="Hand">
+                    <Image x:Name="Thumb" RenderOptions.BitmapScalingMode="HighQuality"
+                           Source="{Binding Source, ElementName=BlurScene}" Stretch="UniformToFill"
+                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Button>
+            </Grid>
             <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
                 <Button x:Name="BtnPlay" Style="{StaticResource PlayButtonStyle}" Click="BtnPlay_Click" />
                 <Button x:Name="BtnNext" Style="{StaticResource NextButtonStyle}" Click="BtnNext_Click" />
@@ -138,8 +153,10 @@
                     <Button x:Name="BtnMode" Content="播放模式" Click="BtnMode_Click" />
                     <Button x:Name="BtnLike" Style="{StaticResource FavButtonStyle}" Click="BtnLike_Click" />
                     <Button x:Name="BtnVolume" Style="{StaticResource VolumeButtonStyle}" Click="BtnVolume_Click" />
+                    <Button x:Name="BtnMax" Content="退出mini" Click="BtnMax_Click"  Visibility="Collapsed"/>
                 </StackPanel>
             </Grid>
+            <Border x:Name="BorderMini" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="#40dc498d" BorderThickness="1" Visibility="Hidden"/>
         </Grid>
         <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True">
             <Frame Name="FramePop" NavigationUIVisibility="Hidden"></Frame>

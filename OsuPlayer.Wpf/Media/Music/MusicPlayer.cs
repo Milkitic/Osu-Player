@@ -31,7 +31,7 @@ namespace Milkitic.OsuPlayer.Media.Music
             FileInfo fi = new FileInfo(filePath);
             if (!fi.Exists)
                 throw new FileNotFoundException("找不到音乐文件…", fi.FullName);
-            _device = new WaveOutEvent { DesiredLatency = 80 };
+            _device = new WaveOutEvent { DesiredLatency = App.Config.Play.DesiredLatency };
             _device.PlaybackStopped += (sender, args) =>
             {
                 PlayerStatus = PlayerStatus.Finished;

@@ -18,6 +18,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Collection = Milkitic.OsuPlayer.Data.Collection;
 
@@ -44,6 +45,7 @@ namespace Milkitic.OsuPlayer
 
         public bool ForceExit = false;
         private WindowState _lastState;
+        private bool _miniMode = false;
 
         //local player control
         private CancellationTokenSource _cts = new CancellationTokenSource();
@@ -58,7 +60,7 @@ namespace Milkitic.OsuPlayer
             LyricWindow = new LyricWindow();
             LyricWindow.Show();
             OverallKeyHook = new OverallKeyHook(this);
-            TryBindHotKeys();
+            TryBindHotkeys();
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -81,6 +83,14 @@ namespace Milkitic.OsuPlayer
             {
                 NewVersionWindow newVersionWindow = new NewVersionWindow(App.Updater.NewRelease, this);
                 newVersionWindow.ShowDialog();
+            }
+
+            var helper = new WindowInteropHelper(this);
+            if (helper.Handle != null)
+            {
+                var source = HwndSource.FromHwnd(helper.Handle);
+                if (source != null)
+                    source.AddHook(HwndMessageHook);
             }
         }
 
@@ -207,6 +217,14 @@ namespace Milkitic.OsuPlayer
                 if (ConfigWindow.IsInitialized)
                     ConfigWindow.Focus();
             }
+        }
+
+        private void ImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (FullMode.Visibility == Visibility.Hidden)
+                FullMode.Visibility = Visibility.Visible;
+            else if (FullMode.Visibility == Visibility.Visible)
+                FullMode.Visibility = Visibility.Hidden;
         }
 
         /// <summary>
@@ -666,7 +684,7 @@ namespace Milkitic.OsuPlayer
 
         #endregion
 
-        private void TryBindHotKeys()
+        private void TryBindHotkeys()
         {
             var page = new Pages.Settings.HotKeyPage(this);
             OverallKeyHook.AddKeyHook(page.PlayPause.Name, () => { BtnPlay_Click(null, null); });
@@ -719,6 +737,53 @@ namespace Milkitic.OsuPlayer
             if (WindowState == WindowState.Minimized)
                 return;
             _lastState = WindowState;
+        }
+
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+                this.DragMove();
+        }
+
+        private const int WmExitSizeMove = 0x232;
+        private IntPtr HwndMessageHook(IntPtr wnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            switch (msg)
+            {
+                case WmExitSizeMove:
+                    if (Height == MinHeight && !_miniMode)
+                    {
+                        _miniMode = true;
+                        MinHeight = 48;
+                        Height = MinHeight;
+                        MinWidth = 580;
+                        Width = MinWidth;
+                        this.WindowStyle = WindowStyle.None;
+                        ResizeMode = ResizeMode.NoResize;
+                        BtnMax.Visibility = Visibility.Visible;
+                        Topmost = true;
+                        BorderMini.Visibility = Visibility.Visible;
+                        Thumb.Visibility = Visibility.Collapsed;
+                    }
+                    handled = true;
+                    break;
+            }
+            return IntPtr.Zero;
+        }
+          
+        private void BtnMax_Click(object sender, RoutedEventArgs e)
+        {
+            MinHeight = 88;
+            Height = 720;
+            MinWidth = 640;
+            Width = 960;
+            this.WindowStyle = WindowStyle.SingleBorderWindow;
+            ResizeMode = ResizeMode.CanResize;
+            BtnMax.Visibility = Visibility.Collapsed;
+            Topmost = false;
+            _miniMode = false;
+            BorderMini.Visibility = Visibility.Hidden;
+            Thumb.Visibility = Visibility.Visible;
         }
     }
 

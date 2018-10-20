@@ -60,8 +60,6 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void RecentList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (e.OriginalSource is TextBlock)
-                return;
             PlaySelected();
         }
 

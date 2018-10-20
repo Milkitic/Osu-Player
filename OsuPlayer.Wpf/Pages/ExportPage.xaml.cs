@@ -6,6 +6,7 @@ using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,18 +26,40 @@ namespace Milkitic.OsuPlayer.Pages
         public static readonly ConcurrentQueue<BeatmapEntry> TaskQueue = new ConcurrentQueue<BeatmapEntry>();
         public static Task ExportTask;
         public static bool Overlap = true;
+        private IEnumerable<BeatmapEntry> _entries;
 
         public ExportPage(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
             InitializeComponent();
-            Update();
+            UpdateList();
         }
 
-        private void Update()
+        private void UpdateList()
         {
             var maps = (List<MapInfo>)DbOperator.GetExportedMaps();
-            ExportList.DataContext = App.Beatmaps.GetMapListFromDb(maps).Transform(false).ToList();
+            List<(MapIdentity MapIdentity, string path, string time, string size)> list =
+                new List<(MapIdentity, string, string, string)>();
+            foreach (var map in maps)
+            {
+                var fi = new FileInfo(map.ExportFile);
+                list.Add(!fi.Exists
+                    ? (map.GetIdentity(), map.ExportFile, "已从目录移除", "已从目录移除")
+                    : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), Util.CountSize(fi.Length)));
+            }
+
+            _entries = App.Beatmaps.GetMapListFromDb(maps);
+            var viewModels = _entries.Transform(false).ToList();
+            for (var i = 0; i < viewModels.Count; i++)
+            {
+                var sb = list.First(k => k.MapIdentity.Equals(viewModels[i].GetIdentity()));
+                viewModels[i].Id = i.ToString("00");
+                viewModels[i].ExportFile = sb.path;
+                viewModels[i].FileSize = sb.size;
+                viewModels[i].ExportTime = sb.time;
+            }
+
+            ExportList.DataContext = viewModels;
         }
 
         private void ExportList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -45,6 +68,60 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void ItemDelete_Click(object sender, RoutedEventArgs e)
         {
+            var maps = GetSelectItems();
+            if (maps == null) return;
+            foreach (var (map, viewModel) in maps)
+            {
+                if (File.Exists(viewModel.ExportFile))
+                {
+                    File.Delete(viewModel.ExportFile);
+                    var di = new FileInfo(viewModel.ExportFile).Directory;
+                    if (di.Exists && di.GetFiles().Length == 0)
+                        di.Delete();
+                }
+
+                DbOperator.AddMapExport(map.GetIdentity(), null);
+            }
+
+            UpdateList();
+        }
+
+        private void ItemOpenFolder_Click(object sender, RoutedEventArgs e)
+        {
+            var map = GetSelectItem(out var viewModel);
+            if (map == null) return;
+            Process.Start("Explorer", "/select," + viewModel.ExportFile);
+        }
+
+        private void ItemRexport_Click(object sender, RoutedEventArgs e)
+        {
+            var maps = GetSelectItems();
+            if (maps == null) return;
+            foreach (var (map, _) in maps)
+                QueueEntry(map);
+            while (ExportTask != null && !ExportTask.IsCanceled && !ExportTask.IsCompleted) ;
+
+            UpdateList();
+        }
+
+        private List<(BeatmapEntry entry, BeatmapViewModel viewModel)> GetSelectItems()
+        {
+            if (ExportList.SelectedItem == null)
+                return null;
+            return (from BeatmapViewModel selectedItem in ExportList.SelectedItems
+                    select (_entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
+                        .FirstOrDefault(k => k.Version == selectedItem.Version), selectedItem)).ToList();
+        }
+
+        private BeatmapEntry GetSelectItem(out BeatmapViewModel viewModel)
+        {
+            viewModel = null;
+            if (ExportList.SelectedItem == null)
+                return null;
+            var selectedItem = (BeatmapViewModel)ExportList.SelectedItem;
+            viewModel = selectedItem;
+            return _entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
+                .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
 
         public static void QueueEntries(IEnumerable<BeatmapEntry> entries)
@@ -85,6 +162,7 @@ namespace Milkitic.OsuPlayer.Pages
 
             var artist = MetaSelect.GetUnicode(entry.Artist, entry.ArtistUnicode);
             var title = MetaSelect.GetUnicode(entry.Title, entry.TitleUnicode);
+            var artistOri = MetaSelect.GetOriginal(entry.Artist, entry.ArtistUnicode);
             string escapedMp3, escapedBg;
             switch (App.Config.Export.NamingStyle)
             {
@@ -113,16 +191,24 @@ namespace Milkitic.OsuPlayer.Pages
                     break;
                 case SortStyle.Artist:
                     {
-                        var f = Escape(artist);
-                        exportMp3Folder = Path.Combine(Domain.MusicPath, string.IsNullOrEmpty(f) ? "未知艺术家" : f);
-                        exportBgFolder = Path.Combine(Domain.BackgroundPath, string.IsNullOrEmpty(f) ? "未知艺术家" : f);
+                        var art = Escape(artist);
+                        var oriArt = Escape(artistOri);
+                        var oArt = Escape(entry.Artist);
+                        var tArt = Escape(entry.ArtistUnicode);
+                        if (!string.IsNullOrEmpty(tArt) && Directory.Exists(Path.Combine(Domain.MusicPath, tArt)))
+                            exportMp3Folder = Path.Combine(Domain.MusicPath, tArt);
+                        else if (!string.IsNullOrEmpty(oArt) && Directory.Exists(Path.Combine(Domain.MusicPath, oArt)))
+                            exportMp3Folder = Path.Combine(Domain.MusicPath, oArt);
+                        else
+                            exportMp3Folder = Path.Combine(Domain.MusicPath, string.IsNullOrEmpty(art) ? "未知艺术家" : art);
+                        exportBgFolder = Path.Combine(Domain.BackgroundPath, string.IsNullOrEmpty(art) ? "未知艺术家" : art);
                         break;
                     }
                 case SortStyle.Mapper:
                     {
-                        var f = Escape(entry.Creator);
-                        exportMp3Folder = Path.Combine(Domain.MusicPath, string.IsNullOrEmpty(f) ? "未知作者" : f);
-                        exportBgFolder = Path.Combine(Domain.BackgroundPath, string.IsNullOrEmpty(f) ? "未知作者" : f);
+                        var c = Escape(entry.Creator);
+                        exportMp3Folder = Path.Combine(Domain.MusicPath, string.IsNullOrEmpty(c) ? "未知作者" : c);
+                        exportBgFolder = Path.Combine(Domain.BackgroundPath, string.IsNullOrEmpty(c) ? "未知作者" : c);
                         break;
                     }
                 case SortStyle.Source:
@@ -144,7 +230,7 @@ namespace Milkitic.OsuPlayer.Pages
             if (bgFile.Exists)
                 Export(bgFile, exportBgFolder, validBgName);
             if (mp3File.Exists || bgFile.Exists)
-                DbOperator.AddMapExport(entry.GetIdentity(), validMp3Name + mp3File.Extension);
+                DbOperator.AddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, validMp3Name + mp3File.Extension));
         }
 
         private static void Export(FileInfo originFile, string outputDir, string outputFile)
@@ -187,7 +273,7 @@ namespace Milkitic.OsuPlayer.Pages
 
         private static string Escape(string source)
         {
-            return source.Replace(@"\", "").Replace(@"/", "").Replace(@":", "").Replace(@"*", "").Replace(@"?", "")
+            return source?.Replace(@"\", "").Replace(@"/", "").Replace(@":", "").Replace(@"*", "").Replace(@"?", "")
                 .Replace("\"", "").Replace(@"<", "").Replace(@">", "").Replace(@"|", "");
         }
     }

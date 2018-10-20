@@ -34,7 +34,8 @@
         </TextBlock>
 
         <ListView x:Name="ResultList" Margin="0,20,0,2" Grid.Row="1" Background="Transparent" BorderThickness="0"
-                  ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="ResultList_MouseDoubleClick">
+                  ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="ResultList_MouseDoubleClick"
+                  ItemContainerStyle="{StaticResource GridView}">
             <ListView.ContextMenu>
                 <ContextMenu Style="{StaticResource DefaultContextMenu}">
                     <MenuItem x:Name="ItemPlay" Header="播放..." Click="ItemPlay_Click"
@@ -62,23 +63,41 @@
                 <models:BeatmapViewModel />
             </ListView.DataContext>
             <ListView.Resources>
-                <DataTemplate DataType="{x:Type models:BeatmapViewModel}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="315" />
-                            <ColumnDefinition Width="215" />
-                            <ColumnDefinition Width="110" />
-                        </Grid.ColumnDefinitions>
-                        <Label VerticalAlignment="Center" Margin="15,15,0,15" Grid.Column="0"
-                               Content="{Binding AutoTitleSource}" />
-                        <Label VerticalAlignment="Center" Grid.Column="1" Content="{Binding AutoArtist}"
-                               Foreground="#FF9C9C9C" />
-                        <Label x:Name="LblCreator" VerticalAlignment="Center" Grid.Column="2"
-                               Content="{Binding AutoCreator}" MouseDoubleClick="LblCreator_MouseDoubleClick"
-                               Foreground="#FF1672CD" Cursor="Hand" />
-                    </Grid>
+                <DataTemplate x:Key="TitleSourceDt">
+                    <StackPanel>
+                        <Label VerticalAlignment="Center" Margin="15,15,0,15" Content="{Binding AutoTitle}"/>
+                        <Label x:Name="LblSource" VerticalAlignment="Center" Margin="25,-11,0,15" Content="{Binding SongSource}"
+                               FontStyle="Italic" Foreground="#FF9C9C9C">
+                            <Label.Style>
+                                <Style TargetType="{x:Type Label}">
+                                    <Style.Triggers>
+                                        <Trigger Property="Content" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Trigger>
+                                        <Trigger Property="Content" Value="">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Label.Style>
+
+                        </Label>
+                    </StackPanel>
+                </DataTemplate>
+                <DataTemplate x:Key="ArtistDt">
+                    <Label VerticalAlignment="Center" Content="{Binding AutoArtist}" Foreground="#FF9C9C9C" />
+                </DataTemplate>
+                <DataTemplate x:Key="CreatorDt">
+                    <Label x:Name="LblCreator" VerticalAlignment="Center" Content="{Binding AutoCreator}" />
                 </DataTemplate>
             </ListView.Resources>
+            <ListView.View>
+                <GridView ColumnHeaderContainerStyle="{StaticResource MyHeaderStyle}">
+                    <GridViewColumn Header="标题" Width="300" CellTemplate="{StaticResource TitleSourceDt}"></GridViewColumn>
+                    <GridViewColumn Header="艺术家" Width="200" CellTemplate="{StaticResource ArtistDt}"></GridViewColumn>
+                    <GridViewColumn Header="作者" Width="100" CellTemplate="{StaticResource CreatorDt}"></GridViewColumn>
+                </GridView>
+            </ListView.View>
         </ListView>
     </Grid>
 </Page>

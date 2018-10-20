@@ -76,6 +76,16 @@
 
         </Style>
 
+        <!-- Image button style -->
+        <Style TargetType="{x:Type Button}" x:Key="ImageButtonStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <ContentPresenter/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <!-- Navigation button style -->
         <Style x:Key="NavigationButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="#E8E8F0" />
@@ -491,19 +501,150 @@
             </Setter>
         </Style>
 
-        <Style TargetType="{x:Type ListViewItem}">
-            <Setter Property="Background" Value="#88EEEEF5"/>
-            <Setter Property="BorderThickness" Value="0" />
+        <!--List View-->
+        <Style x:Key="MyHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                        <Border Background="#fafafa" BorderThickness="1,1,0,1" BorderBrush="#e1e1e2" Width="{TemplateBinding Width}">
+                            <TextBlock Padding="5" Text="{TemplateBinding Content}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <!--<Setter Property="Background" Value="#fafafa"/>-->
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="MinWidth" Value="50"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                                <Grid>
+                                    <Border Background="#ebeced" BorderThickness="1,1,0,1" BorderBrush="#e1e1e2">
+                                        <TextBlock Padding="5" Text="{TemplateBinding Content}" />
+                                    </Border>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="HiddenHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+        <Style TargetType="{x:Type ListViewItem}" x:Key="GridView">
+            <Style.Resources>
+                <!--ItemDefault Template-->
+                <ControlTemplate x:Key="ItemDefault" TargetType="{x:Type ListViewItem}">
+                    <Border Background="#80fafafa" x:Name="SelectedItem">
+                        <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                              Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                    </Border>
+                </ControlTemplate>
+                <!--ItemDefault2 Template-->
+                <ControlTemplate x:Key="ItemDefault2" TargetType="{x:Type ListViewItem}">
+                    <Border Background="#80f5f5f7" x:Name="SelectedItem">
+                        <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                              Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                    </Border>
+                </ControlTemplate>
+                <!--ItemSelectedActived Template-->
+                <ControlTemplate x:Key="ItemSelectedActive" 
+                                 TargetType="{x:Type ListViewItem}">
+                    <Border Background="#b0e3e3e5" x:Name="SelectedItem">
+                        <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                              Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                    </Border>
+                </ControlTemplate>
+                <!--ItemSelected Template-->
+                <ControlTemplate x:Key="ItemSelected" 
+                                 TargetType="{x:Type ListViewItem}">
+                    <Border Background="#b0e3e3e5" x:Name="SelectedItem">
+                        <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                              Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                    </Border>
+                </ControlTemplate>
+                <!--ItemMouseMove Template-->
+                <ControlTemplate x:Key="ItemMouseOver" TargetType="{x:Type ListViewItem}">
+                    <Border Background="#80ebeced" x:Name="SelectedItem">
+                        <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                              Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                    </Border>
+                </ControlTemplate>
+            </Style.Resources>
+            <Setter Property="Template" Value="{StaticResource ItemDefault}" />
             <Style.Triggers>
                 <Trigger Property="ListBox.AlternationIndex" Value="1">
-                    <Setter Property="Background"  Value="#88E0E0EF"/>
+                    <Setter Property="Template" Value="{StaticResource ItemDefault2}"/>
                 </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Template"
+                            Value="{StaticResource ItemMouseOver}" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Template"
+                            Value="{StaticResource ItemSelected}" />
+                </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsSelected" Value="true" />
+                        <Condition Property="Selector.IsSelectionActive" Value="true" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Template"
+                            Value="{StaticResource ItemSelectedActive}" />
+                </MultiTrigger>
             </Style.Triggers>
         </Style>
         <Style TargetType="{x:Type ListView}">
             <Setter Property="AlternationCount" Value="2"/>
         </Style>
 
+        <!--Tab Item-->
+        <SolidColorBrush x:Key="TabItemDisabledBackground" Color="#F4F4F4"/>
+        <SolidColorBrush x:Key="TabItemDisabledBorderBrush" Color="#FFC9C7BA"/>
+        <Style x:Key="PinkTabItem"  TargetType="{x:Type TabItem}">
+            <!--<Setter Property="FocusVisualStyle" Value="{x:null}"/>-->
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Grid SnapsToDevicePixels="True" Height="40" MinWidth="110">
+                            <Path Margin="0 0 0 -12" x:Name="PATH" Visibility="Collapsed"
+                                  Data="M0.5,0.5 L109.5,0.5 109.5,39.5 64,40 57,51 49,40 0.5,39.5 z" Fill="#dc498d"
+                                  Height="51.5" Stretch="Fill" Stroke="Transparent" Width="110" />
+                            <Border x:Name="Bd" Background="#40dfe9f6">
+                                <ContentPresenter Margin="5,0" x:Name="Content" ContentSource="Header"
+                                                  HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                  RecognizesAccessKey="True"
+                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                  VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                  />
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected" Value="true"/>
+                                    <Condition Property="TabStripPlacement" Value="Top"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Visibility" Value="visible" TargetName="PATH"/>
+                                <Setter Property="Foreground" Value="White"></Setter>
+                                <Setter Property="Background" Value="#dc498d" TargetName="Bd"/>
+                            </MultiTrigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource TabItemDisabledBackground}"/>
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource TabItemDisabledBorderBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--StatusIcon-->
         <SolidColorBrush x:Key="MenuBorderBrush" Color="#40000000" />
         <SolidColorBrush x:Key="MenuBackground" Color="#FEFEFF" />
         <SolidColorBrush x:Key="MenuForeground" Color="#505050" />
@@ -513,7 +654,6 @@
             <Setter Property="MenuItem.Height" Value="30"/>
             <Setter Property="MenuItem.Header" Value="{Binding Ticker}"/>
         </Style>
-
         <Style x:Key="DefaultContextMenu" TargetType="{x:Type ContextMenu}">
             <Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="RenderOptions.ClearTypeHint" Value="Enabled" />

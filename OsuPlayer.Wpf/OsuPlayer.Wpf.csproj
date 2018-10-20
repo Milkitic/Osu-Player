@@ -255,6 +255,7 @@
     <Compile Include="Media\Storyboard\Timing.cs" />
     <Compile Include="Media\Storyboard\Util\LogUtil.cs" />
     <Compile Include="Media\Storyboard\Util\TextureLoader.cs" />
+    <Compile Include="Utils\RedirectHandler.cs" />
     <Compile Include="Utils\Util.cs" />
     <Compile Include="UpdateWindow.xaml.cs">
       <DependentUpon>UpdateWindow.xaml</DependentUpon>

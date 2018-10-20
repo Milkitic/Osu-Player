@@ -139,6 +139,10 @@ namespace Milkitic.OsuPlayer.Data
 
             public bool Equals(BeatmapViewModel x, BeatmapViewModel y)
             {
+                if (x == null && y == null)
+                    return true;
+                if (x == null || y == null)
+                    return false;
                 if (x.AutoArtist != y.AutoArtist) return false;
                 if (x.AutoTitleSource != y.AutoTitleSource) return false;
                 if (x.Creator != y.Creator) return false;
@@ -152,8 +156,13 @@ namespace Milkitic.OsuPlayer.Data
 
             public int GetHashCode(BeatmapViewModel obj)
             {
-                return obj.GetHashCode();
+                return obj.FolderName.GetHashCode();
             }
+
+            //public int GetHashCode(BeatmapViewModel obj)
+            //{
+            //    return obj.GetHashCode();
+            //}
         }
     }
 }

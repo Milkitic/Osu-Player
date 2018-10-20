@@ -1,12 +1,11 @@
 ﻿using Milkitic.OsuPlayer.Utils;
 using osu.Shared;
+using System;
 
 namespace Milkitic.OsuPlayer
 {
-    public struct BeatmapViewModel
+    public class BeatmapViewModel
     {
-        public string Id { get; set; }
-
         public string Artist { get; set; }
         public string ArtistUnicode { get; set; }
         public string Title { get; set; }
@@ -20,6 +19,9 @@ namespace Milkitic.OsuPlayer
         public int BeatmapId { get; set; }
         public string FolderName { get; set; }
         public string BeatmapFileName { get; set; }
+
+        //Extended
+        public string Id { get; set; }
         public string AutoTitleSource =>
             (MetaSelect.GetUnicode(Title, TitleUnicode) +
              (string.IsNullOrEmpty(SongSource) ? "" : $"\r\n\r\n —— {SongSource}")).Replace("_", "__");
@@ -27,5 +29,8 @@ namespace Milkitic.OsuPlayer
         public string AutoArtist => MetaSelect.GetUnicode(Artist, ArtistUnicode).Replace("_", "__");
         public string AutoCreator => Creator.Replace("_", "__");
         public string AutoVersion => Version.Replace("_", "__");
+        public string FileSize { get; set; }
+        public string ExportTime { get; set; }
+        public string ExportFile { get; set; }
     }
 }

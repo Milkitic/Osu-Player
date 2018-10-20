@@ -68,16 +68,8 @@ namespace Milkitic.OsuPlayer.Pages
             });
         }
 
-        private void LblCreator_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            var label = (Label)sender;
-            Process.Start($"https://osu.ppy.sh/u/{((string)label.Content).Replace("__", "_")}");
-        }
-
         private void ResultList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (e.OriginalSource is TextBlock)
-                return;
             PlaySelectedDefault();
         }
 

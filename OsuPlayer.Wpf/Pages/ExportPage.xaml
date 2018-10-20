@@ -5,19 +5,30 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:beatmaps="clr-namespace:osu_database_reader.Components.Beatmaps;assembly=osu-database-reader"
       xmlns:models="clr-namespace:Milkitic.OsuPlayer"
+      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+      xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ExportPage">
 
     <Grid>
-        <TabControl>
-            <TabItem Header="已导出">
-                <Grid Background="#FFE5E5E5">
-                    <ListView x:Name="ExportList" Margin="0,20,0,2" Background="Transparent" BorderThickness="0"
-                              ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="ExportList_MouseDoubleClick">
+        <TabControl Background="Transparent" BorderThickness="0">
+            <TabItem Style="{StaticResource PinkTabItem}">
+                <TabItem.Header>
+                    <TextBlock Text="已导出" Cursor="Hand" FontSize="16" Padding="26,10"/>
+                </TabItem.Header>
+                <Grid Background="Transparent">
+                    <ListView x:Name="ExportList" Margin="0,10,0,2" Background="#80FFFFFF" BorderThickness="0"
+                              MouseDoubleClick="ExportList_MouseDoubleClick" ItemsSource="{Binding Mode=OneWay}" 
+                              ItemContainerStyle="{StaticResource GridView}">
                         <ListView.ContextMenu>
                             <ContextMenu Style="{StaticResource DefaultContextMenu}">
-                                <MenuItem x:Name="ItemDelete" Header="删除" Click="ItemDelete_Click"
+                                <MenuItem x:Name="ItemOpenFolder" Header="打开文件所在目录" Click="ItemOpenFolder_Click"
+                                          Style="{DynamicResource DefaultMenuItem}" />
+                                <Separator />
+                                <MenuItem x:Name="ItemRexport" Header="重新导出" Click="ItemRexport_Click"
+                                          Style="{DynamicResource DefaultMenuItem}" />
+                                <MenuItem x:Name="ItemDelete" Header="删除导出文件" Click="ItemDelete_Click"
                                           Style="{DynamicResource DefaultMenuItem}" />
                             </ContextMenu>
                         </ListView.ContextMenu>
@@ -25,31 +36,42 @@
                             <models:BeatmapViewModel />
                         </ListView.DataContext>
                         <ListView.Resources>
-                            <DataTemplate DataType="{x:Type models:BeatmapViewModel}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="55" />
-                                        <ColumnDefinition Width="260" />
-                                        <ColumnDefinition Width="180" />
-                                        <ColumnDefinition Width="110" />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <Label VerticalAlignment="Center" Margin="15,7,15,7" Grid.Column="0"
-                                           Content="{Binding Id}" />
-                                    <Label VerticalAlignment="Center" Grid.Column="1" Content="{Binding AutoTitle}" />
-                                    <Label VerticalAlignment="Center" Grid.Column="2" Content="{Binding AutoArtist}"
-                                           Foreground="#FF9C9C9C" />
-                                    <Label VerticalAlignment="Center" Grid.Column="3" Content="{Binding SongSource}"
-                                           Foreground="#FF9C9C9C" />
-                                </Grid>
+                            <DataTemplate x:Key="IdDt">
+                                <Label VerticalAlignment="Center" Margin="0,3" Content="{Binding Id, Mode=OneWay}" />
+                            </DataTemplate>
+                            <DataTemplate x:Key="TitleDt">
+                                <Label VerticalAlignment="Center" Content="{Binding AutoTitle, Mode=OneWay}" />
+                            </DataTemplate>
+                            <DataTemplate x:Key="ArtistDt">
+                                <Label VerticalAlignment="Center" Content="{Binding AutoArtist, Mode=OneWay}"
+                                       Foreground="#FF9C9C9C" />
+                            </DataTemplate>
+                            <DataTemplate x:Key="SizeDt">
+                                <Label VerticalAlignment="Center" Content="{Binding FileSize, Mode=OneWay}" Foreground="#FF9C9C9C" />
+                            </DataTemplate>
+                            <DataTemplate x:Key="TimeDt">
+                                <Label VerticalAlignment="Center" x:Name="CheckBocHasJob"
+                                       Content="{Binding ExportTime, Mode=OneWay}" />
                             </DataTemplate>
                         </ListView.Resources>
+                        <ListView.View>
+                            <GridView ColumnHeaderContainerStyle="{StaticResource MyHeaderStyle}">
+                                <GridViewColumn Width="40" CellTemplate="{StaticResource IdDt}"></GridViewColumn>
+                                <GridViewColumn Header="标题" Width="300" CellTemplate="{StaticResource TitleDt}"></GridViewColumn>
+                                <GridViewColumn Header="艺术家" Width="200" CellTemplate="{StaticResource ArtistDt}"></GridViewColumn>
+                                <GridViewColumn Header="大小" Width="100" CellTemplate="{StaticResource SizeDt}"></GridViewColumn>
+                                <GridViewColumn Header="导出时间" Width="150" CellTemplate="{StaticResource TimeDt}"></GridViewColumn>
+                            </GridView>
+                        </ListView.View>
                     </ListView>
                 </Grid>
 
             </TabItem>
-            <TabItem Header="正在进行">
-                <Grid Background="#FFE5E5E5" />
+            <TabItem Style="{StaticResource PinkTabItem}">
+                <TabItem.Header>
+                    <TextBlock Text="正在进行" FontSize="16" Cursor="Hand" Padding="18,10"/>
+                </TabItem.Header>
+                <Grid Background="Transparent" />
             </TabItem>
         </TabControl>
 

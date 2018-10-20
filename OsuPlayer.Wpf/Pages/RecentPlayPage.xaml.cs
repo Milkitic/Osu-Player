@@ -44,27 +44,15 @@ namespace Milkitic.OsuPlayer.Pages
                 k.GetIdentity().Equals(App.PlayerList.NowIdentity));
             RecentList.SelectedItem = item;
         }
-
-        private void LblCreator_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
+        
         private void Recent_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (e.OriginalSource is TextBlock)
-                return;
-            PlaySelected();
+             PlaySelected();
         }
 
         private void ItemPlay_Click(object sender, RoutedEventArgs e)
         {
             PlaySelected();
-        }
-
-        private void ItemNextPlay_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private void ItemDelete_Click(object sender, RoutedEventArgs e)
