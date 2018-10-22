@@ -21,7 +21,7 @@ namespace Milkitic.OsuPlayer.Pages
     {
         private MainWindow ParentWindow { get; set; }
         private readonly Collection _collection;
-        public IEnumerable<BeatmapViewModel> ViewModels;
+        public List<BeatmapViewModel> ViewModels;
         private IEnumerable<BeatmapEntry> _entries;
 
         public CollectionPage(MainWindow mainWindow, Collection collection)
@@ -33,7 +33,7 @@ namespace Milkitic.OsuPlayer.Pages
 
             if (collection.Locked)
                 BtnDelCol.Visibility = Visibility.Collapsed;
-            LblTitle.Content = _collection.Name;
+            //LblTitle.Content = _collection.Name;
 
             var item = ViewModels.FirstOrDefault(k =>
                 k.GetIdentity().Equals(App.PlayerList.NowIdentity));
@@ -42,10 +42,15 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void UpdateList()
         {
+            CollectionInfo.DataContext = _collection;
             var infos = (List<MapInfo>)DbOperator.GetMapsFromCollection(_collection);
             _entries = App.Beatmaps.GetMapListFromDb(infos, false);
-            ViewModels = _entries.Transform(true);
-            MapList.DataContext = ViewModels.ToList();
+            ViewModels = _entries.Transform(true).ToList();
+            for (var i = 0; i < ViewModels.Count; i++)
+                ViewModels[i].Id = i.ToString("00");
+
+            MapList.DataContext = ViewModels;
+            ListCount.Content = ViewModels.Count();
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)

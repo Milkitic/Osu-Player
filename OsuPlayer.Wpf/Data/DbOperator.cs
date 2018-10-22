@@ -126,6 +126,22 @@ namespace Milkitic.OsuPlayer.Data
             }
         }
 
+        public static Collection GetCollectionById(string id)
+        {
+            using (ApplicationDbContext context = new ApplicationDbContext())
+            {
+                try
+                {
+                    return context.Collections.FirstOrDefault(k => id.Contains(k.Id));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(@"Failed: " + ex);
+                    throw;
+                }
+            }
+        }
+
         public static IEnumerable<Collection> GetCollectionsByMap(MapInfo map)
         {
             using (ApplicationDbContext context = new ApplicationDbContext())
@@ -150,7 +166,8 @@ namespace Milkitic.OsuPlayer.Data
             {
                 try
                 {
-                    applicationDbContext.Collections.Add(new Collection(Guid.NewGuid().ToString(), name, locked, 0));
+                    var newOne = new Collection(Guid.NewGuid().ToString(), name, locked, 0) {CreateTime = DateTime.Now};
+                    applicationDbContext.Collections.Add(newOne);
                     applicationDbContext.SaveChanges();
                 }
                 catch (Exception ex)
@@ -180,11 +197,43 @@ namespace Milkitic.OsuPlayer.Data
             }
         }
 
+        public static void UpdateCollection(Collection collection)
+        {
+            using (ApplicationDbContext context = new ApplicationDbContext())
+            {
+                try
+                {
+                    Collection col = context.Collections.FirstOrDefault(k =>
+                         k.Id == collection.Id);
+                    if (col == null)
+                    {
+                        var newOne = new Collection(Guid.NewGuid().ToString(), collection.Name, false, 0,
+                            collection.ImagePath, collection.Description)
+                        {
+                            CreateTime = DateTime.Now
+                        };
+                        context.Collections.Add(newOne);
+                    }
+                    else
+                    {
+                        col.Description = collection.Description;
+                        col.ImagePath = collection.ImagePath;
+                        col.Index = collection.Index;
+                        col.Name = collection.Name;
+                    }
+
+                    context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(@"Failed: " + ex);
+                    throw;
+                }
+            }
+        }
+
         public static void UpdateMap(MapIdentity id, int offset = 0)
         {
-            //if (!Directory.Exists(Path.Combine(Domain.OsuSongPath, id.FolderName)))
-            //    throw new DirectoryNotFoundException(id.FolderName);
-
             using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try

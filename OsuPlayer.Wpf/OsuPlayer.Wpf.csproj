@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Milkitic.OsuPlayer</RootNamespace>
     <AssemblyName>OsuPlayer</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -42,6 +42,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -51,6 +52,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -58,6 +60,15 @@
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ffme.common, Version=4.0.270.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FFME.Windows.4.0.270\lib\net461\ffme.common.dll</HintPath>
+    </Reference>
+    <Reference Include="ffme.win, Version=2018.9.23.40367, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FFME.Windows.4.0.270\lib\net461\ffme.win.dll</HintPath>
+    </Reference>
+    <Reference Include="FFmpeg.AutoGen, Version=4.0.0.4, Culture=neutral, PublicKeyToken=9b7632533a381715, processorArchitecture=MSIL">
+      <HintPath>..\packages\FFmpeg.AutoGen.4.0.0.4\lib\net45\FFmpeg.AutoGen.dll</HintPath>
     </Reference>
     <Reference Include="Gma.System.MouseKeyHook, Version=5.6.130.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MouseKeyHook.5.6.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
@@ -139,6 +150,8 @@
     <Compile Include="ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converter\DateTimeConverter.cs" />
+    <Compile Include="Converter\BackgroundConverter.cs" />
     <Compile Include="Data\ModelsContexts.cs" />
     <Compile Include="Data\DbOperator.cs" />
     <Compile Include="Domain.cs" />
@@ -414,19 +427,8 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\osu_texture.png" />
+    <Resource Include="Resources\font.ttc" />
     <None Include="Resources\pure.db" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\btn_fav.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\btn_faved.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\btn_volume.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\btn_volume2.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\osuPlayer.ico" />
@@ -442,6 +444,42 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\heart.png" />
+    <Resource Include="Resources\heart_disable.png" />
+    <Resource Include="Resources\volume.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\gear.png" />
+    <Resource Include="Resources\gear_s.png" />
+    <Resource Include="Resources\heart_disable_s.png" />
+    <Resource Include="Resources\heart_s.png" />
+    <Resource Include="Resources\mode_loop.png" />
+    <Resource Include="Resources\mode_loop_s.png" />
+    <Resource Include="Resources\mode_normal.png" />
+    <Resource Include="Resources\mode_normal_s.png" />
+    <Resource Include="Resources\mode_random.png" />
+    <Resource Include="Resources\mode_random_loop.png" />
+    <Resource Include="Resources\mode_random_loop_s.png" />
+    <Resource Include="Resources\mode_random_s.png" />
+    <Resource Include="Resources\mode_single.png" />
+    <Resource Include="Resources\mode_single_loop.png" />
+    <Resource Include="Resources\mode_single_loop_s.png" />
+    <Resource Include="Resources\mode_single_s.png" />
+    <Resource Include="Resources\volume_s.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\exit_s.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ctxt_next_s.png" />
+    <Resource Include="Resources\ctxt_pause_s.png" />
+    <Resource Include="Resources\ctxt_play_s.png" />
+    <Resource Include="Resources\ctxt_prev_s.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\fullscreen.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.109.1\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.109.1\build\net451\System.Data.SQLite.Core.targets')" />

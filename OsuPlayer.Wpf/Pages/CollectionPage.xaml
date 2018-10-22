@@ -4,10 +4,14 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:osuPlayer="clr-namespace:Milkitic.OsuPlayer"
+      xmlns:data="clr-namespace:Milkitic.OsuPlayer.Data"
+      xmlns:cvt="clr-namespace:Milkitic.OsuPlayer.Converter"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="CollectionPage" Unloaded="Page_Unloaded" IsHitTestVisible="True" Focusable="False">
-
+    <Page.Resources>
+        <cvt:DateTimeConverter x:Key="CvtDate"/>
+    </Page.Resources>
     <Grid>
         <TabControl Background="Transparent" BorderThickness="0">
             <TabItem Style="{StaticResource PinkTabItem}">
@@ -19,29 +23,70 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Grid>
+                    <Grid x:Name="CollectionInfo">
+                        <Grid.DataContext>
+                            <data:Collection />
+                        </Grid.DataContext>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <Image MinWidth="150" MinHeight="150" Margin="10"></Image>
+                        <Grid Width="150" Height="150" Margin="10">
+                            <Image x:Name="CollectionThumb" RenderOptions.BitmapScalingMode="HighQuality"
+                                   Source="{Binding Path=ImagePath}" Stretch="UniformToFill"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
                         <StackPanel Grid.Column="1" Margin="10">
-                            <StackPanel Orientation="Horizontal" >
-                                <Label x:Name="LblTitle" FontSize="22" Content="Collection Title" VerticalAlignment="Center" />
+                            <StackPanel Orientation="Horizontal">
+                                <Label x:Name="LblTitle" FontSize="22" Content="{Binding Path=Name}" VerticalAlignment="Center" />
                                 <Button Content="编辑信息" Width="70" Margin="5" Height="30" Style="{StaticResource CollectionButtonStyle}" />
                                 <Button x:Name="BtnDelCol" Content="删除收藏" Width="70" Margin="5" Height="30"  Style="{StaticResource CollectionButtonStyle}" Click="BtnDelCol_Click"/>
                             </StackPanel>
-                            <Label Content="创建时间：1996-09-20"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="创建时间："/>
+                                <Label Content="{Binding Path=CreateTime, Converter={StaticResource CvtDate}}"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Button Content="播放全部" Width="70" Margin="5" Height="30" Style="{StaticResource Collection2ButtonStyle}"/>
                                 <Button x:Name="BtnExportAll" Content="导出全部" Width="70" Margin="5" Height="30" Style="{StaticResource Collection2ButtonStyle}" Click="BtnExportAll_Click" />
                             </StackPanel>
-                            <Label Content="简介：添加简介"></Label>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="简介："></Label>
+                                <Label x:Name="LblDescription" Content="{Binding Path=Description}">
+                                    <Label.Style>
+                                        <Style TargetType="{x:Type Label}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=Description}" Value="">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=Description}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Label.Style>
+                                </Label>
+                                <Label x:Name="LblAdd" Content="添加简介">
+                                    <Label.Style>
+                                        <Style TargetType="{x:Type Label}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=Description}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=Description}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Label.Style>
+                                </Label>
+                            </StackPanel>
                         </StackPanel>
                         <StackPanel Grid.Column="2" Margin="10 10 20 10" >
                             <Label Content="歌曲数" HorizontalAlignment="Right"/>
-                            <Label Content="50" HorizontalAlignment="Right" FontWeight="Bold" Margin="0 -5 0 0"/>
+                            <Label x:Name="ListCount" Content="0" HorizontalAlignment="Right" FontWeight="Bold" Margin="0 -5 0 0"/>
                         </StackPanel>
 
                     </Grid>
@@ -72,7 +117,8 @@
                         </ListView.DataContext>
                         <ListView.Resources>
                             <DataTemplate x:Key="IdDt">
-                                <Label VerticalAlignment="Center" Margin="15,7,15,7" Content="{Binding Id, Mode=OneWay}"/>
+                                <Label VerticalAlignment="Center" Margin="0,7,0,7"
+                                       Content="{Binding Id, Mode=OneWay}" Foreground="#FF9C9C9C" />
                             </DataTemplate>
                             <DataTemplate x:Key="TitleDt">
                                 <Label VerticalAlignment="Center" Content="{Binding AutoTitle, Mode=OneWay}"/>

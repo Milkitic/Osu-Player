@@ -50,12 +50,14 @@ namespace Milkitic.OsuPlayer.Data
     {
         public Collection() { }
 
-        public Collection(string id, string name, bool locked, int index)
+        public Collection(string id, string name, bool locked, int index, string imagePath = null, string description = null)
         {
             Id = id;
             Name = name;
             LockedInt = locked ? 1 : 0;
             Index = index;
+            ImagePath = imagePath;
+            Description = description;
         }
 
         [Required, Column("id")]
@@ -66,6 +68,12 @@ namespace Milkitic.OsuPlayer.Data
         public int LockedInt { get; set; }
         [Column("index")]
         public int Index { get; set; }
+        [Column("imagePath")]
+        public string ImagePath { get; set; }
+        [Column("description")]
+        public string Description { get; set; }
+        [Required, Column("createTime")]
+        public DateTime CreateTime { get; set; }
 
         public bool Locked => LockedInt == 1;
     }

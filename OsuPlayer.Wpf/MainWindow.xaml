@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:data="clr-namespace:Milkitic.OsuPlayer.Data"
         xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
         mc:Ignorable="d" Style="{StaticResource MainWindowStyle}"
         Title="osu! 畅听" Width="960" Height="720" MinWidth="640" MinHeight="88"
         Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
@@ -103,20 +104,31 @@
                 </Grid>
             </DockPanel>
         </Grid>
-        <Grid x:Name="FullMode" Grid.Row="1" Background="White" Visibility="Hidden" Margin="1">
+        <Grid x:Name="FullMode" Grid.Row="1" Background="White" Margin="1" Visibility="Hidden">
             <Grid>
                 <Image Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center" VerticalAlignment="Center"
                    RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding Source, ElementName=BlurScene}" />
+                <Grid x:Name="VideoElementBorder" Background="#E0000000" Visibility="Hidden">
+                    <ffme:MediaElement x:Name="VideoElement" IsMuted="True" LoadedBehavior="Manual"
+                                       MediaOpened="VideoElement_MediaOpened" MediaFailed="VideoElement_MediaFailed"/>
+                </Grid>
             </Grid>
         </Grid>
-        <Grid Grid.Row="2" Background="White" MouseDown="Grid_MouseDown">
+        <Grid Grid.Row="2" Background="White" MouseDown="Grid_MouseDown" x:Name="ToolControl">
+            <Grid.Resources>
+                <ImageBrush x:Key="Loop" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop.png"/>
+                <ImageBrush x:Key="Fav" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_disable.png"/>
+                <ImageBrush x:Key="Faved" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart.png"/>
+                <ImageBrush x:Key="Volume" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/volume.png"/>
+                <ImageBrush x:Key="Fullscreen" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/fullscreen.png"/>
+            </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-             <!--Source="{Binding Source, ElementName=BlurScene}"-->
+            <!--Source="{Binding Source, ElementName=BlurScene}"-->
             <Grid Margin="1" MaxHeight="46" MaxWidth="61.333333">
                 <Button Style="{StaticResource ImageButtonStyle}" Click="ImageButton_Click" Cursor="Hand">
                     <Image x:Name="Thumb" RenderOptions.BitmapScalingMode="HighQuality"
@@ -125,8 +137,10 @@
                 </Button>
             </Grid>
             <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
+                <Button x:Name="BtnPrev" Style="{StaticResource PrevButtonStyle}" Click="BtnPrev_Click" />
                 <Button x:Name="BtnPlay" Style="{StaticResource PlayButtonStyle}" Click="BtnPlay_Click" />
                 <Button x:Name="BtnNext" Style="{StaticResource NextButtonStyle}" Click="BtnNext_Click" />
+                <Button x:Name="BtnOpen" Style="{StaticResource OpenButtonStyle}" Click="BtnOpen_Click" />
             </StackPanel>
             <Grid Grid.Column="2" Background="White">
                 <Grid.RowDefinitions>
@@ -138,7 +152,7 @@
                     <Label Content="-" Foreground="#858585" Margin="-5,0,-5,0" />
                     <Label x:Name="LblArtist" Content="Artist" Foreground="#AAA" />
                 </StackPanel>
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3" HorizontalAlignment="Right">
+                <StackPanel x:Name="LblProgress" Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3" HorizontalAlignment="Right">
                     <Label x:Name="LblNow" Content="00:00" Foreground="#777" />
                     <Label Content="/" Foreground="#858585" Margin="-5,0,-5,0" />
                     <Label x:Name="LblTotal" Content="00:00" Foreground="#AAA" />
@@ -150,10 +164,14 @@
             </Grid>
             <Grid Grid.Column="3">
                 <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
-                    <Button x:Name="BtnMode" Content="播放模式" Click="BtnMode_Click" />
-                    <Button x:Name="BtnLike" Style="{StaticResource FavButtonStyle}" Click="BtnLike_Click" />
-                    <Button x:Name="BtnVolume" Style="{StaticResource VolumeButtonStyle}" Click="BtnVolume_Click" />
-                    <Button x:Name="BtnMax" Content="退出mini" Click="BtnMax_Click"  Visibility="Collapsed"/>
+                    <Button x:Name="BtnMode" Style="{StaticResource SmallTextureButtonStyle}"
+                            Background="{StaticResource Loop}" Click="BtnMode_Click" />
+                    <Button x:Name="BtnLike" Style="{StaticResource SmallTextureButtonStyle}" 
+                            Background="{StaticResource Fav}" Click="BtnLike_Click" />
+                    <Button x:Name="BtnVolume" Style="{StaticResource SmallTextureButtonStyle}" 
+                            Background="{StaticResource Volume}" Click="BtnVolume_Click" />
+                    <Button x:Name="BtnMax" Style="{StaticResource SmallTextureButtonStyle}" 
+                            Background="{StaticResource Fullscreen}" Click="BtnMax_Click" Visibility="Collapsed" Margin="5"/>
                 </StackPanel>
             </Grid>
             <Border x:Name="BorderMini" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="#40dc498d" BorderThickness="1" Visibility="Hidden"/>
@@ -230,18 +248,40 @@
             <ToolTip x:Key="TrayToolTip" />
             <!--<Popup x:Key="TrayStatusPopup"></Popup>-->
             <ContextMenu x:Key="TrayMenu" Style="{StaticResource DefaultContextMenu}">
-                <MenuItem Header="播放" Style="{DynamicResource DefaultMenuItem}" />
-                <MenuItem Header="上一首" Style="{DynamicResource DefaultMenuItem}" />
-                <MenuItem Header="下一首" Style="{DynamicResource DefaultMenuItem}" />
+                <MenuItem Header="播放" Style="{DynamicResource DefaultMenuItem}">
+                    <MenuItem.Icon>
+                        <Image Width="24" Height="24" Source="{StaticResource PlayS}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="上一首" Style="{DynamicResource DefaultMenuItem}" >
+                    <MenuItem.Icon>
+                        <Image Width="24" Height="24" Source="{StaticResource PrevS}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="下一首" Style="{DynamicResource DefaultMenuItem}" >
+                    <MenuItem.Icon>
+                        <Image Width="24" Height="24" Source="{StaticResource NextS}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="循环模式" Style="{DynamicResource DefaultMenuItem}" />
                 <MenuItem Header="打开歌词" Style="{DynamicResource DefaultMenuItem}" />
                 <MenuItem Header="关闭歌词" Style="{DynamicResource DefaultMenuItem}" />
                 <Separator />
                 <MenuItem x:Name="MenuConfig" Header="设置" Style="{DynamicResource DefaultMenuItem}"
-                          Click="MenuConfig_Click" />
+                          Click="MenuConfig_Click" >
+                    <MenuItem.Icon>
+                        <Image Width="24" Height="24" Source="{StaticResource GearS}">
+
+                        </Image>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem x:Name="MenuExit" Header="退出" Style="{DynamicResource DefaultMenuItem}"
-                          Click="MenuExit_Click" />
+                          Click="MenuExit_Click" >
+                    <MenuItem.Icon>
+                        <Image Width="24" Height="24" Source="{StaticResource ExitS}" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </ContextMenu>
         </Grid.Resources>
     </Grid>

@@ -1,12 +1,16 @@
 ﻿<Application x:Class="Milkitic.OsuPlayer.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converter="clr-namespace:Milkitic.OsuPlayer.Converter"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <BitmapImage x:Key="TextrueSource1" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/osu_texture.png"/>
-        <BitmapImage x:Key="Fav" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/btn_fav.png"/>
-        <BitmapImage x:Key="Faved" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/btn_faved.png"/>
-        <BitmapImage x:Key="Volume" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/btn_volume2.png"/>
+      <BitmapImage x:Key="GearS" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/gear_s.png"/>
+        <BitmapImage x:Key="ExitS" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/exit_s.png"/>
+        <BitmapImage x:Key="PlayS" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/ctxt_play_s.png"/>
+        <BitmapImage x:Key="PauseS" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/ctxt_pause_s.png"/>
+        <BitmapImage x:Key="PrevS" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/ctxt_prev_s.png"/>
+        <BitmapImage x:Key="NextS" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/ctxt_next_s.png"/>
 
         <LinearGradientBrush x:Key="SliderBackground"  StartPoint="0,0" EndPoint="0,1">
             <GradientStop Offset="0" Color="#FFFC59A3"/>
@@ -81,7 +85,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <ContentPresenter/>
+                        <ContentPresenter />
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -181,11 +185,44 @@
             <Setter Property="Height" Value="32" />
             <Setter Property="Margin" Value="8" />
         </Style>
+        <Style x:Key="SmallTextureButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Margin" Value="8" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid Name="SB" Width="{TemplateBinding Width}"   
+                              Height="{TemplateBinding Height}" ClipToBounds="True" Background="{TemplateBinding Background}">
+                            <Grid.Effect>
+                                <DropShadowEffect BlurRadius="3" ShadowDepth="1" Color="Black" Opacity="0.1"/>
+                            </Grid.Effect>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="SB" Property="Opacity" Value="0.7"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="SB" Property="Opacity" Value="1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <!-- Base button style -->
         <Style x:Key="BaseButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource TextureButtonStyle}">
             <Setter Property="Effect">
                 <Setter.Value>
                     <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="#CD1E5D" Opacity="0.2"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- Base button style2 -->
+        <Style x:Key="BaseButtonStyle2" TargetType="{x:Type Button}" BasedOn="{StaticResource TextureButtonStyle}">
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="#5d9cec" Opacity="0.2"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -261,6 +298,47 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <!-- Prev button style -->
+        <Style x:Key="PrevButtonStyle" TargetType="{x:Type Button}"  BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid Width="{TemplateBinding Width}"   
+                              Height="{TemplateBinding Height}" ClipToBounds="True">
+                            <Ellipse x:Name="ButtonEllipse" Width="Auto" Height="Auto" StrokeThickness="2" Stroke="White" >
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="{DynamicResource TextrueSource1}" Stretch="None"/>
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <Line x:Name="ButtonLine" StrokeThickness="2" Stroke="White" Opacity="0.9" >
+                                <Line.X1>10</Line.X1>
+                                <Line.Y1>9</Line.Y1>
+                                <Line.X2>10</Line.X2>
+                                <Line.Y2>19</Line.Y2>
+                            </Line>
+                            <Polygon x:Name="ButtonPolygon" Points="19,8 10,14 19,20"  Stroke="White"  StrokeThickness="0">
+                                <Polygon.Fill>
+                                    <SolidColorBrush Color="White" Opacity="0.9" />
+                                </Polygon.Fill>
+                            </Polygon>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonEllipse" Property="Opacity" Value="0.9"></Setter>
+                                <Setter TargetName="ButtonPolygon" Property="Opacity" Value="1"></Setter>
+                                <Setter TargetName="ButtonLine" Property="Opacity" Value="1"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonPolygon" Property="Opacity" Value="0.8" />
+                                <Setter TargetName="ButtonLine" Property="Opacity" Value="0.8" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <!-- Next button style -->
         <Style x:Key="NextButtonStyle" TargetType="{x:Type Button}"  BasedOn="{StaticResource BaseButtonStyle}">
             <Setter Property="Width" Value="28" />
@@ -275,11 +353,11 @@
                                     <ImageBrush ImageSource="{DynamicResource TextrueSource1}" Stretch="None"/>
                                 </Ellipse.Fill>
                             </Ellipse>
-                            <Line x:Name="ButtonLine" StrokeThickness="1" Stroke="White" Opacity="0.9" >
-                                <Line.X1>19</Line.X1>
-                                <Line.Y1>7</Line.Y1>
-                                <Line.X2>19</Line.X2>
-                                <Line.Y2>21</Line.Y2>
+                            <Line x:Name="ButtonLine" StrokeThickness="2" Stroke="White" Opacity="0.9" >
+                                <Line.X1>18</Line.X1>
+                                <Line.Y1>9</Line.Y1>
+                                <Line.X2>18</Line.X2>
+                                <Line.Y2>19</Line.Y2>
                             </Line>
                             <Polygon x:Name="ButtonPolygon" Points="9,8 18,14 9,20"  Stroke="White"  StrokeThickness="0">
                                 <Polygon.Fill>
@@ -302,75 +380,37 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <!-- Fav button style -->
-        <Style x:Key="FavButtonStyle" TargetType="{x:Type Button}"  BasedOn="{StaticResource TextureButtonStyle}">
-            <Setter Property="Width" Value="24" />
-            <Setter Property="Height" Value="24" />
+        <!-- Open button style -->
+        <Style x:Key="OpenButtonStyle" TargetType="{x:Type Button}"  BasedOn="{StaticResource BaseButtonStyle2}">
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Height" Value="28" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Grid Name="SB" Width="{TemplateBinding Width}"   
+                        <Grid Width="{TemplateBinding Width}"   
                               Height="{TemplateBinding Height}" ClipToBounds="True">
-                            <Grid.Background>
-                                <ImageBrush ImageSource="{DynamicResource Fav}" Stretch="Uniform"/>
-                            </Grid.Background>
+                            <Ellipse x:Name="ButtonEllipse" Width="Auto" Height="Auto" StrokeThickness="2" Stroke="White" Fill="#5d9cec" />
+                            <Line x:Name="ButtonLine" StrokeThickness="2" Stroke="White" Opacity="0.9" >
+                                <Line.X1>8</Line.X1>
+                                <Line.Y1>19</Line.Y1>
+                                <Line.X2>20</Line.X2>
+                                <Line.Y2>19</Line.Y2>
+                            </Line>
+                            <Polygon x:Name="ButtonPolygon" Points="8,16 14,7 20,16"  Stroke="White"  StrokeThickness="0">
+                                <Polygon.Fill>
+                                    <SolidColorBrush Color="White" Opacity="0.9" />
+                                </Polygon.Fill>
+                            </Polygon>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="SB" Property="Opacity" Value="0.7"></Setter>
+                                <Setter TargetName="ButtonEllipse" Property="Opacity" Value="0.9"></Setter>
+                                <Setter TargetName="ButtonPolygon" Property="Opacity" Value="1"></Setter>
+                                <Setter TargetName="ButtonLine" Property="Opacity" Value="1"></Setter>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="SB" Property="Opacity" Value="1" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <!-- Faved button style -->
-        <Style x:Key="FavedButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource TextureButtonStyle}">
-            <Setter Property="Width" Value="24" />
-            <Setter Property="Height" Value="24" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Grid Name="SB" Width="{TemplateBinding Width}"   
-                              Height="{TemplateBinding Height}" ClipToBounds="True">
-                            <Grid.Background>
-                                <ImageBrush ImageSource="{DynamicResource Faved}" Stretch="Uniform"/>
-                            </Grid.Background>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="SB" Property="Opacity" Value="0.7"></Setter>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="SB" Property="Opacity" Value="1" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <!-- Volume button style -->
-        <Style x:Key="VolumeButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource TextureButtonStyle}">
-            <Setter Property="Width" Value="24" />
-            <Setter Property="Height" Value="24" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Grid Name="SB" Width="{TemplateBinding Width}"   
-                              Height="{TemplateBinding Height}" ClipToBounds="True">
-                            <Grid.Background>
-                                <ImageBrush ImageSource="{DynamicResource Volume}" Stretch="Uniform"/>
-                            </Grid.Background>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="SB" Property="Opacity" Value="0.7"></Setter>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="SB" Property="Opacity" Value="1" />
+                                <Setter TargetName="ButtonPolygon" Property="Opacity" Value="0.8" />
+                                <Setter TargetName="ButtonLine" Property="Opacity" Value="0.8" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -650,9 +690,59 @@
         <SolidColorBrush x:Key="MenuForeground" Color="#505050" />
         <DropShadowEffect x:Key="DefaultDropShadow" BlurRadius="4" ShadowDepth="0" Opacity="0.25" ></DropShadowEffect>
         <Style x:Key="DefaultMenuItem">
-            <Setter Property="MenuItem.Margin" Value="0"/>
-            <Setter Property="MenuItem.Height" Value="30"/>
-            <Setter Property="MenuItem.Header" Value="{Binding Ticker}"/>
+            <Setter Property="MenuItem.Margin" Value="0" />
+            <Setter Property="MenuItem.Height" Value="30" />
+            <Setter Property="MenuItem.Header" Value="{Binding Ticker}" />
+            <Setter Property="MenuItem.Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type MenuItem}">
+                        <Border Margin="1" MinWidth="80" CornerRadius="5">
+                            <Border.Background>
+                                <SolidColorBrush x:Name="MyAnimatedBrushBackground" Color="Transparent" />
+                            </Border.Background>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text=" " />
+                                <ContentPresenter ContentSource="Icon" HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" Width="26" Height="26"/>
+                                <TextBlock Text="   " />
+                                <ContentPresenter ContentSource="Header" HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True" />
+                                </MultiTrigger.Conditions>
+                                <MultiTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                                          Storyboard.TargetName="MyAnimatedBrushBackground"
+                                                                          Storyboard.TargetProperty="Color">
+                                                <LinearColorKeyFrame Value="Transparent" KeyTime="00:00:00.0000000" />
+                                                <LinearColorKeyFrame Value="#7E9C9C9C" KeyTime="00:00:00.1000000" />
+                                            </ColorAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiTrigger.EnterActions>
+                                <MultiTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                                          Storyboard.TargetName="MyAnimatedBrushBackground"
+                                                                          Storyboard.TargetProperty="Color">
+                                                <LinearColorKeyFrame Value="#7E9C9C9C" KeyTime="00:00:00.0000000" />
+                                                <LinearColorKeyFrame Value="Transparent" KeyTime="00:00:00.1000000" />
+                                            </ColorAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiTrigger.ExitActions>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style x:Key="DefaultContextMenu" TargetType="{x:Type ContextMenu}">
             <Setter Property="SnapsToDevicePixels" Value="True" />

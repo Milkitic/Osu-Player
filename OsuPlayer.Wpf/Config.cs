@@ -41,7 +41,7 @@ namespace Milkitic.OsuPlayer
 
     public class PlayControl
     {
-        public int GeneralOffset { get; set; } = 0;
+        public int GeneralOffset { get; set; } = 75;
         public bool ReplacePlayList { get; set; } = true;
         public bool AutoPlay { get; set; } = false;
         public bool Memory { get; set; } = true;

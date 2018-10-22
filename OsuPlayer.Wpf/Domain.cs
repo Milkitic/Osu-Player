@@ -15,6 +15,7 @@ namespace Milkitic.OsuPlayer
         public static string ResourcePath => Path.Combine(CurrentPath, "Resource");
         public static string MusicPath => Path.Combine(CurrentPath, "Music");
         public static string BackgroundPath => Path.Combine(CurrentPath, "Background");
+        public static string PluginPath => Path.Combine(CurrentPath, "Plugins");
 
         public static string OsuPath =>
             App.UseDbMode ? new FileInfo(App.Config.General.DbPath).Directory.FullName : null;

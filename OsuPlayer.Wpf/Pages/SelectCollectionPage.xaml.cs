@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Milkitic.OsuLib;
+using Milkitic.OsuPlayer.Data;
+using osu_database_reader.Components.Beatmaps;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milkitic.OsuPlayer.Data;
-using osu_database_reader.Components.Beatmaps;
 using Collection = Milkitic.OsuPlayer.Data.Collection;
 
 namespace Milkitic.OsuPlayer.Pages
@@ -53,7 +55,21 @@ namespace Milkitic.OsuPlayer.Pages
             if (CollectionList.SelectedItem == null)
                 return;
             Collection col = (Collection)CollectionList.SelectedItem;
-             DbOperator.AddMapToCollection(_entry, col);
+            if (string.IsNullOrEmpty(col.ImagePath))
+            {
+                OsuFile osuFile =
+                    new OsuFile(Path.Combine(Domain.OsuSongPath, _entry.FolderName, _entry.BeatmapFileName));
+                if (osuFile.Events.BackgroundInfo != null)
+                {
+                    var imgPath = Path.Combine(Domain.OsuSongPath, _entry.FolderName, osuFile.Events.BackgroundInfo.Filename);
+                    if (File.Exists(imgPath))
+                    {
+                        col.ImagePath = imgPath;
+                        DbOperator.UpdateCollection(col);
+                    }
+                }
+            }
+            DbOperator.AddMapToCollection(_entry, col);
             Dispose();
         }
     }

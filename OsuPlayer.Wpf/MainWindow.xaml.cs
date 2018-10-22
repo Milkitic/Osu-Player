@@ -19,6 +19,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Collection = Milkitic.OsuPlayer.Data.Collection;
 
@@ -52,6 +53,7 @@ namespace Milkitic.OsuPlayer
         private Task _statusTask;
         private bool _scrollLock;
         private PlayerStatus _tmpStatus = PlayerStatus.Stopped;
+        private double _videoOffset;
 
         public MainWindow()
         {
@@ -61,6 +63,7 @@ namespace Milkitic.OsuPlayer
             LyricWindow.Show();
             OverallKeyHook = new OverallKeyHook(this);
             TryBindHotkeys();
+            Unosquare.FFME.MediaElement.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg");
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -78,19 +81,15 @@ namespace Milkitic.OsuPlayer
                 PlayNewFile(App.Config.CurrentPath, play);
             }
 
+            var helper = new WindowInteropHelper(this);
+            var source = HwndSource.FromHwnd(helper.Handle);
+            source?.AddHook(HwndMessageHook);
+
             bool? sb = await App.Updater.CheckUpdateAsync();
             if (sb.HasValue && sb.Value)
             {
                 NewVersionWindow newVersionWindow = new NewVersionWindow(App.Updater.NewRelease, this);
                 newVersionWindow.ShowDialog();
-            }
-
-            var helper = new WindowInteropHelper(this);
-            if (helper.Handle != null)
-            {
-                var source = HwndSource.FromHwnd(helper.Handle);
-                if (source != null)
-                    source.AddHook(HwndMessageHook);
             }
         }
 
@@ -199,7 +198,7 @@ namespace Milkitic.OsuPlayer
             if (CollectionList.SelectedItem == null)
                 return;
             var collection = (Collection)CollectionList.SelectedItem;
-            MainFrame.Navigate(new CollectionPage(this, collection));
+            MainFrame.Navigate(new CollectionPage(this, DbOperator.GetCollectionById(collection.Id)));
         }
 
         /// <summary>
@@ -230,11 +229,11 @@ namespace Milkitic.OsuPlayer
         /// <summary>
         /// Play next song in playlist.
         /// </summary>
-        public void BtnPlay_Click(object sender, RoutedEventArgs e)
+        public async void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
             if (App.HitsoundPlayer == null)
             {
-                PlayNewFile(LoadFile());
+                BtnOpen_Click(sender, e);
                 return;
             }
 
@@ -242,20 +241,32 @@ namespace Milkitic.OsuPlayer
             {
                 case PlayerStatus.Playing:
                     App.HitsoundPlayer.Pause();
+                    if (VideoElement.Source != null) await VideoElement.Pause();
                     App.StoryboardProvider?.StoryboardTiming.Pause();
                     break;
                 case PlayerStatus.Ready:
                 case PlayerStatus.Stopped:
                 case PlayerStatus.Paused:
                     App.HitsoundPlayer.Play();
+                    if (VideoElement.Source != null) await VideoElement.Play();
                     App.StoryboardProvider?.StoryboardTiming.Start();
                     break;
             }
         }
 
+        private void BtnOpen_Click(object sender, RoutedEventArgs e)
+        {
+            PlayNewFile(LoadFile());
+        }
+
+        private void BtnPrev_Click(object sender, RoutedEventArgs e)
+        {
+            PlayNext(true, false);
+        }
+
         public void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            PlayNext(true);
+            PlayNext(true, true);
         }
 
         private void BtnMode_Click(object sender, RoutedEventArgs e)
@@ -358,11 +369,15 @@ namespace Milkitic.OsuPlayer
                 switch (App.HitsoundPlayer.PlayerStatus)
                 {
                     case PlayerStatus.Playing:
+                        if (VideoElement.Source != null)
+                            VideoElement.Position = new TimeSpan(0, 0, 0, 0, (int)(PlayProgress.Value + _videoOffset));
                         App.HitsoundPlayer.SetTime((int)PlayProgress.Value);
                         App.StoryboardProvider?.StoryboardTiming.SetTiming((int)PlayProgress.Value, true);
                         break;
                     case PlayerStatus.Paused:
                     case PlayerStatus.Stopped:
+                        if (VideoElement.Source != null)
+                            VideoElement.Position = new TimeSpan(0, 0, 0, 0, (int)(PlayProgress.Value + _videoOffset));
                         App.HitsoundPlayer.SetTime((int)PlayProgress.Value, false);
                         App.StoryboardProvider?.StoryboardTiming.SetTiming((int)PlayProgress.Value, false);
                         break;
@@ -425,7 +440,7 @@ namespace Milkitic.OsuPlayer
         /// <summary>
         /// Play a new file by file path.
         /// </summary>
-        private void PlayNewFile(string path, bool play)
+        private async void PlayNewFile(string path, bool play)
         {
             if (path == null) return;
             if (File.Exists(path))
@@ -453,9 +468,9 @@ namespace Milkitic.OsuPlayer
                     var map = DbOperator.GetMapFromDb(App.PlayerList.NowIdentity);
                     var album = DbOperator.GetCollectionsByMap(map);
                     bool faved = album != null && album.Any(k => k.Locked);
-                    BtnLike.Style = faved
-                        ? (Style)FindResource("FavedButtonStyle")
-                        : (Style)FindResource("FavButtonStyle");
+                    BtnLike.Background = faved
+                        ? (Brush)ToolControl.FindResource("Faved")
+                        : (Brush)ToolControl.FindResource("Fav");
                     App.HitsoundPlayer.SingleOffset = DbOperator.GetMapFromDb(App.PlayerList.NowIdentity).Offset;
                     Offset.Value = App.HitsoundPlayer.SingleOffset;
 
@@ -468,6 +483,32 @@ namespace Milkitic.OsuPlayer
                     /* Set Storyboard */
                     if (false) App.StoryboardProvider.LoadStoryboard(dir, App.HitsoundPlayer.Osufile);
 #endif
+
+                    await VideoElement.Stop();
+                    VideoElement.Position = new TimeSpan(0);
+                    /* Set Video */
+                    var videoName = App.HitsoundPlayer.Osufile.Events.VideoInfo?.Filename;
+                    if (videoName == null)
+                    {
+                        VideoElement.Source = null;
+                        VideoElementBorder.Visibility = Visibility.Hidden;
+                    }
+                    else
+                    {
+                        var vPath = Path.Combine(dir, videoName);
+                        if (File.Exists(vPath))
+                        {
+                            VideoElement.Source = new Uri(vPath);
+                            _videoOffset = -App.HitsoundPlayer.Osufile.Events.VideoInfo.Offset;
+                            VideoElement.Position = new TimeSpan(0, 0, 0, 0, (int)_videoOffset);
+                        }
+                        else
+                        {
+                            VideoElement.Source = null;
+                            VideoElementBorder.Visibility = Visibility.Hidden;
+                        }
+                    }
+
                     /* Set Background */
                     if (App.HitsoundPlayer.Osufile.Events.BackgroundInfo != null)
                     {
@@ -492,7 +533,15 @@ namespace Milkitic.OsuPlayer
                                     k.GetIdentity().Equals(App.PlayerList.NowIdentity));
                             break;
                     }
-                    if (play) App.HitsoundPlayer.Play();
+
+                    if (play)
+                    {
+                        if (VideoElement.Source != null)
+                        {
+                            await VideoElement.Play();
+                        }
+                        App.HitsoundPlayer.Play();
+                    }
                     App.Config.CurrentPath = path;
                     App.SaveConfig();
 
@@ -504,7 +553,7 @@ namespace Milkitic.OsuPlayer
                     PageBox.Show(Title, @"铺面读取时发生问题：" + ex.Message, () =>
                     {
                         if (App.HitsoundPlayer == null) return;
-                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false);
+                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
                     });
                 }
                 catch (BadOsuFormatException ex)
@@ -512,7 +561,7 @@ namespace Milkitic.OsuPlayer
                     PageBox.Show(Title, @"铺面读取时发生问题：" + ex.Message, () =>
                     {
                         if (App.HitsoundPlayer == null) return;
-                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false);
+                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
                     });
                 }
                 catch (VersionNotSupportedException ex)
@@ -520,7 +569,7 @@ namespace Milkitic.OsuPlayer
                     PageBox.Show(Title, @"铺面读取时发生问题：" + ex.Message, () =>
                     {
                         if (App.HitsoundPlayer == null) return;
-                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false);
+                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
                     });
                 }
                 catch (Exception ex)
@@ -528,7 +577,7 @@ namespace Milkitic.OsuPlayer
                     PageBox.Show(Title, @"发生未处理的异常问题：" + (ex.InnerException ?? ex), () =>
                     {
                         if (App.HitsoundPlayer == null) return;
-                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false);
+                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
                     });
                 }
             }
@@ -544,15 +593,17 @@ namespace Milkitic.OsuPlayer
         {
             PlayNewFile(path, true);
         }
+
         /// <summary>
         /// Play next song in list if list exist.
         /// </summary>
         /// <param name="isManual">Whether it is called by user (Click next button manually)
         /// or called by application (A song finshed).</param>
-        private void PlayNext(bool isManual)
+        /// <param name="isNext"></param>
+        private void PlayNext(bool isManual, bool isNext)
         {
             if (App.HitsoundPlayer == null) return;
-            var result = App.PlayerList.PlayTo(true, isManual, out var entry);
+            var result = App.PlayerList.PlayTo(isNext, isManual, out var entry);
             switch (result)
             {
                 case PlayerList.ChangeType.Keep:
@@ -642,7 +693,7 @@ namespace Milkitic.OsuPlayer
                             }));
                             break;
                         case PlayerStatus.Finished:
-                            Dispatcher.BeginInvoke(new Action(() => { PlayNext(false); }));
+                            Dispatcher.BeginInvoke(new Action(() => { PlayNext(false, true); }));
                             break;
                         case PlayerStatus.Stopped:
                         case PlayerStatus.Paused:
@@ -751,7 +802,7 @@ namespace Milkitic.OsuPlayer
             switch (msg)
             {
                 case WmExitSizeMove:
-                    if (Height == MinHeight && !_miniMode)
+                    if (Height <= MinHeight && !_miniMode)
                     {
                         _miniMode = true;
                         MinHeight = 48;
@@ -763,14 +814,22 @@ namespace Milkitic.OsuPlayer
                         BtnMax.Visibility = Visibility.Visible;
                         Topmost = true;
                         BorderMini.Visibility = Visibility.Visible;
+                        BtnOpen.Visibility = Visibility.Collapsed;
                         Thumb.Visibility = Visibility.Collapsed;
+                        BtnPrev.Margin = new Thickness(5);
+                        BtnPlay.Margin = new Thickness(5);
+                        BtnNext.Margin = new Thickness(5);
+                        BtnMode.Margin = new Thickness(5);
+                        BtnLike.Margin = new Thickness(5);
+                        BtnVolume.Margin = new Thickness(5);
+                        LblProgress.Visibility = Visibility.Hidden;
                     }
                     handled = true;
                     break;
             }
             return IntPtr.Zero;
         }
-          
+
         private void BtnMax_Click(object sender, RoutedEventArgs e)
         {
             MinHeight = 88;
@@ -780,11 +839,31 @@ namespace Milkitic.OsuPlayer
             this.WindowStyle = WindowStyle.SingleBorderWindow;
             ResizeMode = ResizeMode.CanResize;
             BtnMax.Visibility = Visibility.Collapsed;
+            BtnOpen.Visibility = Visibility.Visible;
             Topmost = false;
-            _miniMode = false;
             BorderMini.Visibility = Visibility.Hidden;
             Thumb.Visibility = Visibility.Visible;
+            BtnPrev.Margin = new Thickness(8);
+            BtnPlay.Margin = new Thickness(8);
+            BtnNext.Margin = new Thickness(8);
+            BtnMode.Margin = new Thickness(8);
+            BtnLike.Margin = new Thickness(8);
+            BtnVolume.Margin = new Thickness(8);
+            LblProgress.Visibility = Visibility.Visible;
+            _miniMode = false;
         }
+        private async void VideoElement_MediaOpened(object sender, RoutedEventArgs e)
+        {
+            VideoElementBorder.Visibility = Visibility.Visible;
+            await VideoElement.Play();
+        }
+
+        private void VideoElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            VideoElementBorder.Visibility = Visibility.Hidden;
+            PageBox.Show("不支持的视频格式", e.ErrorException.ToString(), () => { });
+        }
+
     }
 
     public class PageParts
