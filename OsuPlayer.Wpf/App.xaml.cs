@@ -47,6 +47,11 @@ namespace Milkitic.OsuPlayer
 
         static App()
         {
+            dynamic a = "123";
+            a = 123;
+            a = new[] { 123 };
+            Console.WriteLine(a[0]);
+            Console.ReadLine();
             try
             {
                 if (!LoadConfig())
@@ -97,9 +102,6 @@ namespace Milkitic.OsuPlayer
         {
             if (!File.Exists(Path.Combine(Domain.CurrentPath, "player.db")))
                 Util.ExportResource("pure", Path.Combine(Domain.CurrentPath, "player.db"));
-          //  var olds = ConfigurationManager.ConnectionStrings["sqlite"].ConnectionString.Split('=');
-          //  Util.UpdateConnectionStringsConfig("sqlite", $"{olds[0]}={Path.Combine(Domain.CurrentPath, olds[1])}");
-            Console.WriteLine(ConfigurationManager.ConnectionStrings["sqlite"].ConnectionString);
 
             var defCol = DbOperator.GetCollections().Where(k => k.Locked);
             if (!defCol.Any()) DbOperator.AddCollection("最喜爱的", true);

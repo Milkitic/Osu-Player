@@ -1,12 +1,12 @@
-﻿using Microsoft.Win32;
+﻿using DMSkin.WPF;
+using Microsoft.Win32;
 using Milkitic.OsuLib;
-using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media;
 using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Pages;
-using Milkitic.OsuPlayer.Utils;
+using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace Milkitic.OsuPlayer
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : DMSkinSimpleWindow
     {
         public PageParts Pages => new PageParts
         {
@@ -47,6 +47,7 @@ namespace Milkitic.OsuPlayer
         public bool ForceExit = false;
         private WindowState _lastState;
         private bool _miniMode = false;
+        public bool FullMode => FullModeArea.Visibility == Visibility.Visible;
 
         //local player control
         private CancellationTokenSource _cts = new CancellationTokenSource();
@@ -220,10 +221,10 @@ namespace Milkitic.OsuPlayer
 
         private void ImageButton_Click(object sender, RoutedEventArgs e)
         {
-            if (FullMode.Visibility == Visibility.Hidden)
-                FullMode.Visibility = Visibility.Visible;
-            else if (FullMode.Visibility == Visibility.Visible)
-                FullMode.Visibility = Visibility.Hidden;
+            if (FullModeArea.Visibility == Visibility.Hidden)
+                FullModeArea.Visibility = Visibility.Visible;
+            else if (FullModeArea.Visibility == Visibility.Visible)
+                FullModeArea.Visibility = Visibility.Hidden;
         }
 
         /// <summary>
@@ -280,14 +281,31 @@ namespace Milkitic.OsuPlayer
         private void BtnLike_Click(object sender, RoutedEventArgs e)
         {
             if (!ValidateDb()) return;
-            var entry = App.Beatmaps.GetBeatmapsetsByFolder(App.PlayerList.NowIdentity.FolderName)
-                .FirstOrDefault(k => k.Version == App.PlayerList.NowIdentity.Version);
+            var entry = App.Beatmaps.GetBeatmapByIdentity(App.PlayerList.CurrentIdentity);
+            //var entry = App.PlayerList?.CurrentInfo.Entry;
             if (entry == null)
             {
                 PageBox.Show(Title, "该图不存在于该osu!db中。", delegate { });
                 return;
             }
-            FramePop.Navigate(new SelectCollectionPage(this, entry));
+            if (!_miniMode)
+                FramePop.Navigate(new SelectCollectionPage(this, entry));
+            else
+            {
+                var collection = DbOperator.GetCollections().First(k => k.Locked);
+                if (App.PlayerList.CurrentInfo.IsFaved)
+                {
+                    DbOperator.RemoveMapFromCollection(entry, collection);
+                    App.PlayerList.CurrentInfo.IsFaved = false;
+                }
+                else
+                {
+                    SelectCollectionPage.AddToCollection(collection, entry);
+                    App.PlayerList.CurrentInfo.IsFaved = true;
+                }
+            }
+
+            SetFaved(App.PlayerList.CurrentInfo.Identity);
         }
 
         private bool ValidateDb()
@@ -418,7 +436,7 @@ namespace Milkitic.OsuPlayer
         {
             if (App.HitsoundPlayer == null) return;
             App.HitsoundPlayer.SingleOffset = (int)Offset.Value;
-            DbOperator.UpdateMap(App.PlayerList.NowIdentity, App.HitsoundPlayer.SingleOffset);
+            DbOperator.UpdateMap(App.PlayerList.CurrentInfo.Identity, App.HitsoundPlayer.SingleOffset);
         }
 
         #region Player
@@ -461,51 +479,80 @@ namespace Milkitic.OsuPlayer
                     _cts = new CancellationTokenSource();
 
                     /* Set Meta */
-                    App.PlayerList.NowIdentity = new MapIdentity(fi.Directory.Name, App.HitsoundPlayer.Osufile.Metadata.Version);
+                    MapIdentity nowIdentity = new MapIdentity(fi.Directory.Name, App.HitsoundPlayer.Osufile.Metadata.Version); ;
+                    MapInfo mapInfo = DbOperator.GetMapFromDb(nowIdentity);
+                    BeatmapEntry entry = App.PlayerList.Entries.GetBeatmapByIdentity(nowIdentity);
+                    OsuFile osuFile = App.HitsoundPlayer.Osufile;
+
                     LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle();
                     LblArtist.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist();
                     ((ToolTip)NotifyIcon.TrayToolTip).Content = (string)LblArtist.Content + " - " + (string)LblTitle.Content;
-                    var map = DbOperator.GetMapFromDb(App.PlayerList.NowIdentity);
-                    var album = DbOperator.GetCollectionsByMap(map);
-                    bool faved = album != null && album.Any(k => k.Locked);
-                    BtnLike.Background = faved
-                        ? (Brush)ToolControl.FindResource("Faved")
-                        : (Brush)ToolControl.FindResource("Fav");
-                    App.HitsoundPlayer.SingleOffset = DbOperator.GetMapFromDb(App.PlayerList.NowIdentity).Offset;
+                    bool isFaved = SetFaved(nowIdentity);
+                    App.HitsoundPlayer.SingleOffset = mapInfo.Offset;
                     Offset.Value = App.HitsoundPlayer.SingleOffset;
+
+                    App.PlayerList.CurrentInfo =
+                        new CurrentInfo(osuFile.Metadata.Artist,
+                            osuFile.Metadata.ArtistUnicode,
+                            osuFile.Metadata.Title,
+                            osuFile.Metadata.TitleUnicode,
+                            osuFile.Metadata.Creator,
+                            osuFile.Metadata.Source,
+                            osuFile.Metadata.TagList,
+                            osuFile.Metadata.BeatmapID,
+                            osuFile.Metadata.BeatmapSetID,
+                            entry?.DiffStarRatingStandard[Mods.None] ?? 0,
+                            osuFile.Difficulty.HPDrainRate,
+                            osuFile.Difficulty.CircleSize,
+                            osuFile.Difficulty.ApproachRate,
+                            osuFile.Difficulty.OverallDifficulty,
+                            App.MusicPlayer?.Duration ?? 0,
+                            nowIdentity,
+                            mapInfo,
+                            entry,
+                            isFaved);
 
                     /* Set Lyric */
                     SetLyric();
 
                     /* Set Progress */
-                    PlayProgress.Value = App.HitsoundPlayer.SingleOffset;
+                    //PlayProgress.Value = App.HitsoundPlayer.SingleOffset;
+                    PlayProgress.Maximum = App.HitsoundPlayer.Duration;
+                    PlayProgress.Value = 0;
+                    LblTotal.Content = new TimeSpan(0, 0, 0, 0, App.HitsoundPlayer.Duration).ToString(@"mm\:ss");
+                    LblNow.Content = new TimeSpan(0, 0, 0, 0, App.HitsoundPlayer.PlayTime).ToString(@"mm\:ss");
 #if DEBUG
                     /* Set Storyboard */
                     if (false) App.StoryboardProvider.LoadStoryboard(dir, App.HitsoundPlayer.Osufile);
 #endif
-
-                    await VideoElement.Stop();
-                    VideoElement.Position = new TimeSpan(0);
-                    /* Set Video */
-                    var videoName = App.HitsoundPlayer.Osufile.Events.VideoInfo?.Filename;
-                    if (videoName == null)
+                    if (VideoElement != null)
                     {
-                        VideoElement.Source = null;
-                        VideoElementBorder.Visibility = Visibility.Hidden;
+                        await VideoElement.Stop();
+                        VideoElement.Position = new TimeSpan(0);
                     }
-                    else
+                    /* Set Video */
+                    if (FullMode && !_miniMode)
                     {
-                        var vPath = Path.Combine(dir, videoName);
-                        if (File.Exists(vPath))
-                        {
-                            VideoElement.Source = new Uri(vPath);
-                            _videoOffset = -App.HitsoundPlayer.Osufile.Events.VideoInfo.Offset;
-                            VideoElement.Position = new TimeSpan(0, 0, 0, 0, (int)_videoOffset);
-                        }
-                        else
+                        var videoName = App.HitsoundPlayer.Osufile.Events.VideoInfo?.Filename;
+                        if (videoName == null)
                         {
                             VideoElement.Source = null;
                             VideoElementBorder.Visibility = Visibility.Hidden;
+                        }
+                        else
+                        {
+                            var vPath = Path.Combine(dir, videoName);
+                            if (File.Exists(vPath))
+                            {
+                                VideoElement.Source = new Uri(vPath);
+                                _videoOffset = -App.HitsoundPlayer.Osufile.Events.VideoInfo.Offset;
+                                VideoElement.Position = new TimeSpan(0, 0, 0, 0, (int)_videoOffset);
+                            }
+                            else
+                            {
+                                VideoElement.Source = null;
+                                VideoElementBorder.Visibility = Visibility.Hidden;
+                            }
                         }
                     }
 
@@ -524,19 +571,19 @@ namespace Milkitic.OsuPlayer
                     {
                         case RecentPlayPage recentPlayPage:
                             var item = recentPlayPage.ViewModels.FirstOrDefault(k =>
-                                k.GetIdentity().Equals(App.PlayerList.NowIdentity));
+                                k.GetIdentity().Equals(nowIdentity));
                             recentPlayPage.RecentList.SelectedItem = item;
                             break;
                         case CollectionPage collectionPage:
                             collectionPage.MapList.SelectedItem =
                                 collectionPage.ViewModels.FirstOrDefault(k =>
-                                    k.GetIdentity().Equals(App.PlayerList.NowIdentity));
+                                    k.GetIdentity().Equals(nowIdentity));
                             break;
                     }
 
                     if (play)
                     {
-                        if (VideoElement.Source != null)
+                        if (FullMode && !_miniMode && VideoElement?.Source != null)
                         {
                             await VideoElement.Play();
                         }
@@ -546,7 +593,7 @@ namespace Milkitic.OsuPlayer
                     App.SaveConfig();
 
                     RunSurfaceUpdate();
-                    DbOperator.UpdateMap(App.PlayerList.NowIdentity);
+                    DbOperator.UpdateMap(nowIdentity);
                 }
                 catch (MultiTimingSectionException ex)
                 {
@@ -579,6 +626,7 @@ namespace Milkitic.OsuPlayer
                         if (App.HitsoundPlayer == null) return;
                         if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
                     });
+                    Console.WriteLine(ex);
                 }
             }
             else
@@ -587,6 +635,17 @@ namespace Milkitic.OsuPlayer
                         App.Beatmaps == null ? "" : " ，可能是db没有及时更新。请关闭此播放器或osu后重试"),
                     () => { });
             }
+        }
+
+        private bool SetFaved(MapIdentity identity)
+        {
+            var map = DbOperator.GetMapFromDb(identity);
+            var album = DbOperator.GetCollectionsByMap(map);
+            bool faved = album != null && album.Any(k => k.Locked);
+            BtnLike.Background = faved
+                     ? (_miniMode ? (Brush)ToolControl.FindResource("FavedS") : (Brush)ToolControl.FindResource("Faved"))
+                     : (_miniMode ? (Brush)ToolControl.FindResource("FavS") : (Brush)ToolControl.FindResource("Fav"));
+            return faved;
         }
 
         public void PlayNewFile(string path)
@@ -672,7 +731,7 @@ namespace Milkitic.OsuPlayer
         /// </summary>
         private void UpdateSurface()
         {
-            const int interval = 10;
+            const int interval = 50;
             while (!_cts.IsCancellationRequested)
             {
                 if (App.HitsoundPlayer == null)
@@ -804,25 +863,7 @@ namespace Milkitic.OsuPlayer
                 case WmExitSizeMove:
                     if (Height <= MinHeight && !_miniMode)
                     {
-                        _miniMode = true;
-                        MinHeight = 48;
-                        Height = MinHeight;
-                        MinWidth = 580;
-                        Width = MinWidth;
-                        this.WindowStyle = WindowStyle.None;
-                        ResizeMode = ResizeMode.NoResize;
-                        BtnMax.Visibility = Visibility.Visible;
-                        Topmost = true;
-                        BorderMini.Visibility = Visibility.Visible;
-                        BtnOpen.Visibility = Visibility.Collapsed;
-                        Thumb.Visibility = Visibility.Collapsed;
-                        BtnPrev.Margin = new Thickness(5);
-                        BtnPlay.Margin = new Thickness(5);
-                        BtnNext.Margin = new Thickness(5);
-                        BtnMode.Margin = new Thickness(5);
-                        BtnLike.Margin = new Thickness(5);
-                        BtnVolume.Margin = new Thickness(5);
-                        LblProgress.Visibility = Visibility.Hidden;
+                        ToMiniMode();
                     }
                     handled = true;
                     break;
@@ -832,26 +873,89 @@ namespace Milkitic.OsuPlayer
 
         private void BtnMax_Click(object sender, RoutedEventArgs e)
         {
-            MinHeight = 88;
-            Height = 720;
-            MinWidth = 640;
-            Width = 960;
-            this.WindowStyle = WindowStyle.SingleBorderWindow;
-            ResizeMode = ResizeMode.CanResize;
-            BtnMax.Visibility = Visibility.Collapsed;
-            BtnOpen.Visibility = Visibility.Visible;
-            Topmost = false;
-            BorderMini.Visibility = Visibility.Hidden;
-            Thumb.Visibility = Visibility.Visible;
+            ToNormalMode();
+        }
+
+        private void ToMiniMode()
+        {
+            _miniMode = true;
+            Topmost = true;
+            MinHeight = 48 + 38 + 2;
+            Height = MinHeight;
+            MinWidth = 360 + 38;
+            Width = MinWidth;
+            BtnPrev.Margin = new Thickness(5);
+            BtnPlay.Margin = new Thickness(5);
+            BtnNext.Margin = new Thickness(5);
+            BtnMode.Margin = new Thickness(2);
+            BtnLike.Margin = new Thickness(2);
+            BtnVolume.Margin = new Thickness(2);
+            LblArtist.Margin = new Thickness(0, -2, 0, -2);
+            LblTitle.Margin = new Thickness(0, -2, 0, -2);
+
+            BtnLike.Width = BtnLike.Height = 18;
+            BtnVolume.Width = BtnVolume.Height = 18;
+            BtnMode.Width = BtnMode.Height = 18;
+
+            LblMeta.Orientation = Orientation.Vertical;
+            FuncPanel.Orientation = Orientation.Vertical;
+
+            BtnMax.Visibility = Visibility.Visible;
+            BorderMini.Visibility = Visibility.Visible;
+            // modoules
+            BtnOpen.Visibility = Visibility.Collapsed;
+            Thumb.Visibility = Visibility.Collapsed;
+            Grip.Visibility = Visibility.Collapsed;
+            LblProgress.Visibility = Visibility.Collapsed;
+            LblSeperate.Visibility = Visibility.Collapsed;
+            PlayProgress.Visibility = Visibility.Collapsed;
+            //area
+            TitleBarArea.Visibility = Visibility.Collapsed;
+
+            SetFaved(App.PlayerList.CurrentInfo.Identity);
+        }
+
+        private void ToNormalMode()
+        {
+            MinHeight = 100 + 38;
+            Height = 720 + 38;
+            MinWidth = 640 + 38;
+            Width = 960 + 38;
             BtnPrev.Margin = new Thickness(8);
             BtnPlay.Margin = new Thickness(8);
             BtnNext.Margin = new Thickness(8);
             BtnMode.Margin = new Thickness(8);
             BtnLike.Margin = new Thickness(8);
             BtnVolume.Margin = new Thickness(8);
+            LblArtist.Margin = new Thickness(0);
+            LblTitle.Margin = new Thickness(0);
+
+            BtnLike.Width = BtnLike.Height = 24;
+            BtnVolume.Width = BtnVolume.Height = 24;
+            BtnMode.Width = BtnMode.Height = 24;
+
+            LblMeta.Orientation = Orientation.Horizontal;
+            FuncPanel.Orientation = Orientation.Horizontal;
+
+            BtnMax.Visibility = Visibility.Collapsed;
+            BorderMini.Visibility = Visibility.Hidden;
+
+            // modoules
+            BtnOpen.Visibility = Visibility.Visible;
+            Thumb.Visibility = Visibility.Visible;
+            Grip.Visibility = Visibility.Visible;
             LblProgress.Visibility = Visibility.Visible;
+            LblSeperate.Visibility = Visibility.Visible;
+            PlayProgress.Visibility = Visibility.Visible;
+            //area
+            TitleBarArea.Visibility = Visibility.Visible;
+
+            SetFaved(App.PlayerList.CurrentInfo.Identity);
+
+            Topmost = false;
             _miniMode = false;
         }
+
         private async void VideoElement_MediaOpened(object sender, RoutedEventArgs e)
         {
             VideoElementBorder.Visibility = Visibility.Visible;
@@ -864,6 +968,10 @@ namespace Milkitic.OsuPlayer
             PageBox.Show("不支持的视频格式", e.ErrorException.ToString(), () => { });
         }
 
+        private void BtnMini_Click(object sender, RoutedEventArgs e)
+        {
+            ToMiniMode();
+        }
     }
 
     public class PageParts

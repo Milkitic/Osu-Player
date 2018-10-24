@@ -1,239 +1,364 @@
-﻿<Window x:Class="Milkitic.OsuPlayer.MainWindow"
+﻿<dmSkin:DMSkinSimpleWindow x:Class="Milkitic.OsuPlayer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:dmSkin="clr-namespace:DMSkin.WPF;assembly=DMSkin.WPF" 
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:data="clr-namespace:Milkitic.OsuPlayer.Data"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
-        mc:Ignorable="d" Style="{StaticResource MainWindowStyle}"
-        Title="osu! 畅听" Width="960" Height="720" MinWidth="640" MinHeight="88"
+        xmlns:controls="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+        mc:Ignorable="d"
+        Width="998" Height="759" MinWidth="678" MinHeight="138"
         Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
-        Loaded="Window_Loaded" Closing="Window_Closing" SizeChanged="Window_SizeChanged">
-
-    <Grid x:Name="MainGrid">
+        Loaded="Window_Loaded" Closing="Window_Closing" SizeChanged="Window_SizeChanged"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip"
+        DMWindowShadowColor="#FF000000"
+        DMWindowShadowSize="20"
+                           DMWindowShadowOpacity="0.5">
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="{StaticResource TextrueSource1}" Viewport="0,0,500,500" ViewportUnits="Absolute" TileMode="Tile" />
+        </Grid.Background>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto"/>
             <RowDefinition />
-            <RowDefinition Height="Auto" MinHeight="48" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="1" Background="White">
-            <Grid Margin="1">
-                <Image x:Name="BlurScene" Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center"
-                       VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality">
-                    <Image.Effect>
-                        <BlurEffect Radius="25" />
-                    </Image.Effect>
-                </Image>
-            </Grid>
-            <Rectangle Fill="#FFFFFF" Opacity="0.666667" />
-            <DockPanel Width="Auto" Height="Auto">
-                <Grid>
-                    <GroupBox Background="#99EFEFF8">
-                        <Grid Width="150">
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+        <Grid x:Name="TitleBarArea" Grid.Row="0" Height="50">
+
+            <Image Source="{StaticResource TitleLogo}" Height="32" HorizontalAlignment="Left" Margin="8,0,0,0"/>
+            <StackPanel
+                    Height="{Binding DMSystemButtonSize}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal" Margin="0,0,5,0">
+                <controls:DMSystemButton
+                        x:Name="BtnSettings"
+                        DMSystemButtonForeground="#E0EEEEEE"
+                        DMSystemButtonHoverForeground="#FFFFFF"
+                        Icon="{StaticResource Gear}"
+                        DMSystemButtonSize="40"
+                        Click="BtnSettings_Click"/>
+                <controls:DMSystemButton
+                        DMSystemButtonForeground="#E0EEEEEE"
+                        DMSystemButtonHoverForeground="#FFFFFF"
+                        Icon="{StaticResource Mini}"
+                        DMSystemButtonSize="40"
+                        Click="BtnMini_Click"/>
+                <controls:DMSystemMinButton
+                        DMSystemButtonForeground="#E0EEEEEE"
+                        DMSystemButtonHoverForeground="#FFFFFF"
+                        DMSystemButtonSize="40" />
+                <controls:DMSystemMaxButton
+                        DMSystemButtonForeground="#E0EEEEEE"
+                        DMSystemButtonHoverForeground="#FFFFFF"
+                        DMSystemButtonSize="40" />
+                <controls:DMSystemCloseButton
+                        DMSystemButtonForeground="#E0EEEEEE"
+                        DMSystemButtonHoverForeground="#FFFFFF"
+                        DMSystemButtonSize="40" />
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1" x:Name="MainGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="auto" MinHeight="48" />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" BorderThickness="1,0,1,0">
+                <Border.BorderBrush>
+                    <LinearGradientBrush EndPoint="0,1">
+                        <GradientStop Offset="0" Color="#dc498d"/>
+                        <GradientStop Offset="1" Color="White"/>
+                    </LinearGradientBrush>
+                </Border.BorderBrush>
+            </Border>
+            <Grid x:Name="MainArea" Grid.Row="0" Margin="0,0,1,0">
+                <DockPanel x:Name="Navigation" Width="Auto" Height="Auto">
+                    <DockPanel.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="10" Opacity="0.24" />
+                    </DockPanel.Effect>
+                    <Grid Width="170">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0">
+                            <Label Style="{StaticResource NavigationLabelStyle}">
+                                <TextBlock Margin="5,0,0,0">库</TextBlock>
+                            </Label>
                             <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <StackPanel Grid.Row="0">
-                                    <Label Style="{StaticResource NavigationLabelStyle}">库</Label>
-                                    <Button x:Name="BtnSearch" Grid.Row="0" Height="40" Click="BtnSearch_Click"
-                                            Content="搜索"
-                                            Style="{StaticResource NavigationButtonStyle}" />
-                                    <Button x:Name="BtnFind" Grid.Row="1" Height="40" Click="BtnFind_Click"
+                                <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left" Margin="20,0,0,0">
+                                    <Path Fill="White" Data="{StaticResource Search}" />
+                                </Viewbox>
+                                <Button x:Name="BtnSearch" Height="40" Click="BtnSearch_Click"
+                                        Content="搜索" 
+                                        Style="{StaticResource NavigationButtonStyle}">
+                                </Button>
+                            </Grid>
+                            <Grid>
+                                <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left" Margin="20,0,0,0">
+                                    <Canvas Width="1000" Height="1000">
+                                        <Path Fill="White" Data="{StaticResource Compass1}" />
+                                        <Path Fill="White" Data="{StaticResource Compass2}" />
+                                    </Canvas>
+                                </Viewbox>
+                                <Button x:Name="BtnFind" Height="40" Click="BtnFind_Click"
                                             Content="发现"
                                             Style="{StaticResource NavigationButtonStyle}" />
-                                    <Button x:Name="Storyboard" Grid.Row="1" Height="40" Click="Storyboard_Click"
+                            </Grid>
+                            <Grid>
+                                <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left" Margin="20,0,0,0">
+                                    <Canvas Width="1000" Height="1000">
+                                        <Canvas.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000"/>
+                                                <TranslateTransform X="0.000000" Y="496.000000"/>
+                                            </TransformGroup>
+                                        </Canvas.RenderTransform>
+                                        <Path Fill="{Binding ElementName=Storyboard,Path=Foreground}" Data="{StaticResource Film}" />
+                                    </Canvas>
+                                </Viewbox>
+                                <Button x:Name="Storyboard" Height="40" Click="Storyboard_Click"
                                             Content="故事板"
                                             Style="{StaticResource NavigationButtonStyle}" />
-                                </StackPanel>
-                                <StackPanel Grid.Row="1">
-                                    <Label Style="{StaticResource NavigationLabelStyle}">我的</Label>
-                                    <Button x:Name="BtnRecent" Grid.Row="1" Height="40" Click="BtnRecent_Click"
+                            </Grid>
+
+                        </StackPanel>
+                        <StackPanel Grid.Row="1">
+                            <Label Style="{StaticResource NavigationLabelStyle}">
+                                <TextBlock Margin="5,0,0,0">我的</TextBlock>
+                            </Label>
+                            <Grid>
+                                <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left" Margin="20,0,0,0">
+                                    <Path Fill="White" Data="{StaticResource History}" />
+                                </Viewbox>
+                                <Button x:Name="BtnRecent" Grid.Row="1" Height="40" Click="BtnRecent_Click"
                                             Content="最近播放"
                                             Style="{StaticResource NavigationButtonStyle}" />
-                                    <Button x:Name="BtnExport" Grid.Row="0" Height="40" Click="BtnExport_Click"
+                            </Grid>
+                            <Grid>
+                                <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left" Margin="20,0,0,0">
+                                    <Canvas Width="1000" Height="1000">
+                                        <Canvas.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000"/>
+                                                <TranslateTransform X="0.000000" Y="496.000000"/>
+                                            </TransformGroup>
+                                        </Canvas.RenderTransform>
+                                        <Path Fill="{Binding ElementName=BtnExport,Path=Foreground}" Data="{StaticResource Export}" />
+                                    </Canvas>
+                                </Viewbox>
+                                <Button x:Name="BtnExport" Grid.Row="0" Height="40" Click="BtnExport_Click"
                                             Content="导出管理"
                                             Style="{StaticResource NavigationButtonStyle}" />
-                                </StackPanel>
-                                <StackPanel Grid.Row="2">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Label Style="{StaticResource NavigationLabelStyle}" VerticalAlignment="Center">收藏夹</Label>
-                                        <Button x:Name="BtnAddCollection" Content="+" Width="20" Height="20"
-                                                Margin="5,10,0,0" Style="{StaticResource Collection2ButtonStyle}"
-                                                Click="BtnAddCollection_Click" />
-                                    </StackPanel>
-                                    <ListView x:Name="CollectionList" Margin="5" Background="Transparent"
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2">
+                            <Grid>
+                                <Label Style="{StaticResource NavigationLabelStyle}" VerticalAlignment="Center">
+                                    <TextBlock Margin="5,0,0,0">收藏夹</TextBlock>
+                                </Label>
+                                <Button x:Name="BtnAddCollection" Content="+" Width="20" Height="20"
+                                                Margin="5,10,5,0" Style="{StaticResource Collection2ButtonStyle}"
+                                                Click="BtnAddCollection_Click" HorizontalAlignment="Right" />
+                            </Grid>
+                            <ListView x:Name="CollectionList" Margin="5" Background="Transparent"
                                               BorderThickness="0"
                                               ItemsSource="{Binding Mode=OneWay}"
                                               MouseDoubleClick="CollectionList_MouseDoubleClick">
-                                        <ListView.DataContext>
-                                            <data:Collection />
-                                        </ListView.DataContext>
-                                        <ListView.Resources>
-                                            <DataTemplate DataType="{x:Type data:Collection}">
-                                                <Grid>
-                                                    <Label x:Name="LblVersion" VerticalAlignment="Center"
+                                <ListView.DataContext>
+                                    <data:Collection />
+                                </ListView.DataContext>
+                                <ListView.Resources>
+                                    <DataTemplate DataType="{x:Type data:Collection}">
+                                        <Grid>
+                                            <Label x:Name="LblVersion" VerticalAlignment="Center"
                                                            Foreground="#333333" Height="30">
-                                                        <TextBlock Text="{Binding Name}" />
-                                                    </Label>
-                                                </Grid>
-                                            </DataTemplate>
-                                            <Style TargetType="{x:Type ListViewItem}">
-                                                <Setter Property="BorderThickness" Value="0" />
-                                            </Style>
-                                        </ListView.Resources>
-                                    </ListView>
-
-                                </StackPanel>
-                            </Grid>
-                            <Button x:Name="BtnSettings" Grid.Row="1"
-                                    Style="{StaticResource CollectionButtonStyle}" Click="BtnSettings_Click"
-                                    Content="设置" />
+                                                <TextBlock Text="{Binding Name}" />
+                                            </Label>
+                                        </Grid>
+                                    </DataTemplate>
+                                    <Style TargetType="{x:Type ListViewItem}">
+                                        <Setter Property="BorderThickness" Value="0" />
+                                    </Style>
+                                </ListView.Resources>
+                            </ListView>
+                        </StackPanel>
+                    </Grid>
+                    <Grid>
+                        <Grid x:Name="BgArea" Margin="0">
+                            <Image x:Name="BlurScene" Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality">
+                                <Image.Effect>
+                                    <BlurEffect Radius="25" />
+                                </Image.Effect>
+                            </Image>
+                            <Rectangle x:Name="WhiteCover" Fill="#FFFFFF" Opacity="0.666667" />
+                            <Grid.Style>
+                                <Style TargetType="{x:Type Grid}">
+                                    <Setter Property="Background" Value="DeepPink"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Source, ElementName=BlurScene}" Value="{x:Null}">
+                                            <Setter Property="Background" Value="White"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Source, ElementName=BlurScene}" Value="">
+                                            <Setter Property="Background" Value="White"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
                         </Grid>
-                    </GroupBox>
-                </Grid>
+                        <Frame Name="MainFrame" NavigationUIVisibility="Hidden"></Frame>
+                    </Grid>
+                </DockPanel>
+
+            </Grid>
+            <Grid x:Name="FullModeArea" Grid.Row="0" Background="White" Margin="1,0,1,0" Visibility="Hidden">
                 <Grid>
-                    <Frame Name="MainFrame" NavigationUIVisibility="Hidden"></Frame>
-                </Grid>
-            </DockPanel>
-        </Grid>
-        <Grid x:Name="FullMode" Grid.Row="1" Background="White" Margin="1" Visibility="Hidden">
-            <Grid>
-                <Image Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    <Image Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center" VerticalAlignment="Center"
                    RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding Source, ElementName=BlurScene}" />
-                <Grid x:Name="VideoElementBorder" Background="#E0000000" Visibility="Hidden">
-                    <ffme:MediaElement x:Name="VideoElement" IsMuted="True" LoadedBehavior="Manual"
+                    <Grid x:Name="VideoElementBorder" Background="#E0000000" Visibility="Hidden">
+                        <ffme:MediaElement x:Name="VideoElement" IsMuted="True" LoadedBehavior="Manual"
                                        MediaOpened="VideoElement_MediaOpened" MediaFailed="VideoElement_MediaFailed"/>
+                    </Grid>
                 </Grid>
             </Grid>
-        </Grid>
-        <Grid Grid.Row="2" Background="White" MouseDown="Grid_MouseDown" x:Name="ToolControl">
-            <Grid.Resources>
-                <ImageBrush x:Key="Loop" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop.png"/>
-                <ImageBrush x:Key="Fav" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_disable.png"/>
-                <ImageBrush x:Key="Faved" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart.png"/>
-                <ImageBrush x:Key="Volume" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/volume.png"/>
-                <ImageBrush x:Key="Fullscreen" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/fullscreen.png"/>
-            </Grid.Resources>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <!--Source="{Binding Source, ElementName=BlurScene}"-->
-            <Grid Margin="1" MaxHeight="46" MaxWidth="61.333333">
-                <Button Style="{StaticResource ImageButtonStyle}" Click="ImageButton_Click" Cursor="Hand">
-                    <Image x:Name="Thumb" RenderOptions.BitmapScalingMode="HighQuality"
+            <Grid x:Name="ToolControl" Grid.Row="1" Background="White" MouseDown="Grid_MouseDown">
+                <Grid.Resources>
+                    <ImageBrush x:Key="Loop" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop.png"/>
+                    <ImageBrush x:Key="LoopS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop_s.png"/>
+                    <ImageBrush x:Key="Fav" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_disable.png"/>
+                    <ImageBrush x:Key="FavS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_disable_s.png"/>
+                    <ImageBrush x:Key="Faved" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart.png"/>
+                    <ImageBrush x:Key="FavedS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_s.png"/>
+                    <ImageBrush x:Key="Volume" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/volume.png"/>
+                    <ImageBrush x:Key="VolumeS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/volume_s.png"/>
+                    <ImageBrush x:Key="FullscreenS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/fullscreen_s.png"/>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <!--Source="{Binding Source, ElementName=BlurScene}"-->
+                <Grid Margin="1" MaxHeight="46" MaxWidth="61.333333">
+                    <Button Style="{StaticResource ImageButtonStyle}" Click="ImageButton_Click" Cursor="Hand">
+                        <Image x:Name="Thumb" RenderOptions.BitmapScalingMode="HighQuality"
                            Source="{Binding Source, ElementName=BlurScene}" Stretch="UniformToFill"
                            VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                </Button>
-            </Grid>
-            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
-                <Button x:Name="BtnPrev" Style="{StaticResource PrevButtonStyle}" Click="BtnPrev_Click" />
-                <Button x:Name="BtnPlay" Style="{StaticResource PlayButtonStyle}" Click="BtnPlay_Click" />
-                <Button x:Name="BtnNext" Style="{StaticResource NextButtonStyle}" Click="BtnNext_Click" />
-                <Button x:Name="BtnOpen" Style="{StaticResource OpenButtonStyle}" Click="BtnOpen_Click" />
-            </StackPanel>
-            <Grid Grid.Column="2" Background="White">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3">
-                    <Label x:Name="LblTitle" Content="Title" Foreground="#777" />
-                    <Label Content="-" Foreground="#858585" Margin="-5,0,-5,0" />
-                    <Label x:Name="LblArtist" Content="Artist" Foreground="#AAA" />
+                    </Button>
+                </Grid>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
+                    <Button x:Name="BtnPrev" Style="{StaticResource PrevButtonStyle}" Click="BtnPrev_Click" />
+                    <Button x:Name="BtnPlay" Style="{StaticResource PlayButtonStyle}" Click="BtnPlay_Click" />
+                    <Button x:Name="BtnNext" Style="{StaticResource NextButtonStyle}" Click="BtnNext_Click" />
+                    <Button x:Name="BtnOpen" Style="{StaticResource OpenButtonStyle}" Click="BtnOpen_Click" />
                 </StackPanel>
-                <StackPanel x:Name="LblProgress" Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3" HorizontalAlignment="Right">
-                    <Label x:Name="LblNow" Content="00:00" Foreground="#777" />
-                    <Label Content="/" Foreground="#858585" Margin="-5,0,-5,0" />
-                    <Label x:Name="LblTotal" Content="00:00" Foreground="#AAA" />
-                </StackPanel>
-                <Slider x:Name="PlayProgress" Grid.Row="1" Margin="3"
+                <Grid Grid.Column="2" Background="White">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <StackPanel x:Name="LblMeta" Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3">
+                        <Label x:Name="LblTitle" Content="Title" Foreground="#777" />
+                        <Label x:Name="LblSeperate" Content="-" Foreground="#858585" Margin="-5,0,-5,0" />
+                        <Label x:Name="LblArtist" Content="Artist" Foreground="#AAA" />
+                    </StackPanel>
+                    <StackPanel x:Name="LblProgress" Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3" HorizontalAlignment="Right">
+                        <Label x:Name="LblNow" Content="00:00" Foreground="#777" />
+                        <Label Content="/" Foreground="#858585" Margin="-5,0,-5,0" />
+                        <Label x:Name="LblTotal" Content="00:00" Foreground="#AAA" />
+                    </StackPanel>
+                    <Slider x:Name="PlayProgress" Grid.Row="1" Margin="3"
                         Style="{StaticResource HorizontalSliderPinkStyle}"
                         Thumb.DragStarted="PlayProgress_DragStarted"
                         Thumb.DragCompleted="PlayProgress_DragCompleted" />
-            </Grid>
-            <Grid Grid.Column="3">
-                <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
-                    <Button x:Name="BtnMode" Style="{StaticResource SmallTextureButtonStyle}"
-                            Background="{StaticResource Loop}" Click="BtnMode_Click" />
-                    <Button x:Name="BtnLike" Style="{StaticResource SmallTextureButtonStyle}" 
-                            Background="{StaticResource Fav}" Click="BtnLike_Click" />
-                    <Button x:Name="BtnVolume" Style="{StaticResource SmallTextureButtonStyle}" 
+                </Grid>
+                <Grid Grid.Column="3">
+                    <StackPanel x:Name="FuncPanel" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="BtnMode" Style="{StaticResource SmallTextureButtonStyle}"
+                                    Background="{StaticResource Loop}" Click="BtnMode_Click" />
+                            <Button x:Name="BtnLike" Style="{StaticResource SmallTextureButtonStyle}" 
+                                    Background="{StaticResource Fav}" Click="BtnLike_Click" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="BtnVolume" Style="{StaticResource SmallTextureButtonStyle}" 
                             Background="{StaticResource Volume}" Click="BtnVolume_Click" />
-                    <Button x:Name="BtnMax" Style="{StaticResource SmallTextureButtonStyle}" 
-                            Background="{StaticResource Fullscreen}" Click="BtnMax_Click" Visibility="Collapsed" Margin="5"/>
-                </StackPanel>
+                            <Button x:Name="BtnMax" Style="{StaticResource SmallTextureButtonStyle}" Width="18" Height="18"
+                            Background="{StaticResource FullscreenS}" Click="BtnMax_Click" Visibility="Collapsed" Margin="2"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+                <Border x:Name="BorderMini" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="#40dc498d" BorderThickness="1" Visibility="Hidden"/>
             </Grid>
-            <Border x:Name="BorderMini" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="#40dc498d" BorderThickness="1" Visibility="Hidden"/>
-        </Grid>
-        <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True">
-            <Frame Name="FramePop" NavigationUIVisibility="Hidden"></Frame>
-        </Grid>
-        <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Pop" PopupAnimation="Fade" Height="100"
+            <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True">
+                <Frame Name="FramePop" NavigationUIVisibility="Hidden"></Frame>
+            </Grid>
+            <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Pop" PopupAnimation="Fade" Height="100"
                PlacementTarget="{Binding ElementName=BtnVolume}" Placement="Top" AllowsTransparency="True"
                StaysOpen="False"
                LostFocus="Popup_LostFocus">
-            <Border Background="White" HorizontalAlignment="Center" BorderBrush="#cccccc" BorderThickness="1">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0">
-                        <Slider x:Name="MasterVolume" Orientation="Vertical" Margin="10,5"
+                <Border Background="White" HorizontalAlignment="Center" BorderBrush="#cccccc" BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <Slider x:Name="MasterVolume" Orientation="Vertical" Margin="10,5"
                                 Style="{StaticResource VerticalSliderPinkStyle}" Maximum="100"
                                 Thumb.DragDelta="MasterVolume_DragDelta" Height="70" />
-                        <Label Content="主" Margin="0,-5,0,0" HorizontalAlignment="Center" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="1">
-                        <Slider x:Name="MusicVolume" Orientation="Vertical" Margin="10,5"
+                            <Label Content="主" Margin="0,-5,0,0" HorizontalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <Slider x:Name="MusicVolume" Orientation="Vertical" Margin="10,5"
                                 Style="{StaticResource VerticalSliderPinkStyle}" Maximum="100"
                                 Thumb.DragDelta="MusicVolume_DragDelta" Height="70" />
-                        <Label Content="音" Margin="0,-5,0,0" HorizontalAlignment="Center" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="2">
-                        <Slider x:Name="HitsoundVolume" Orientation="Vertical" Margin="10,5"
+                            <Label Content="音" Margin="0,-5,0,0" HorizontalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <Slider x:Name="HitsoundVolume" Orientation="Vertical" Margin="10,5"
                                 Style="{StaticResource VerticalSliderPinkStyle}" Maximum="100"
                                 Thumb.DragDelta="HitsoundVolume_DragDelta" Height="70" />
-                        <Label Content="声" Margin="0,-5,0,0" HorizontalAlignment="Center" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="3">
-                        <Slider x:Name="Offset" Orientation="Vertical" Margin="10,5"
+                            <Label Content="声" Margin="0,-5,0,0" HorizontalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="3">
+                            <Slider x:Name="Offset" Orientation="Vertical" Margin="10,5"
                                 Style="{StaticResource VerticalSliderPinkStyle}" Maximum="200"
                                 Thumb.DragDelta="Offset_DragDelta" Height="70" Minimum="-200"
                                 AutoToolTipPlacement="BottomRight" />
-                        <Label Content="单曲偏移" Margin="0,-5,0,0" HorizontalAlignment="Center" />
-                    </StackPanel>
-                </Grid>
-            </Border>
-        </Popup>
-        <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="PopMode" PopupAnimation="Fade"
+                            <Label Content="单曲偏移" Margin="0,-5,0,0" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Popup>
+            <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="PopMode" PopupAnimation="Fade"
                PlacementTarget="{Binding ElementName=BtnMode}" Placement="Top" AllowsTransparency="True"
                StaysOpen="False"
                LostFocus="Popup_LostFocus">
-            <Border Background="White" HorizontalAlignment="Center" BorderBrush="#cccccc" BorderThickness="1">
-                <StackPanel>
-                    <RadioButton x:Name="Single" Content="单曲播放" Checked="PlayMode_CheckChanged"/>
-                    <RadioButton x:Name="SingleLoop" Content="单曲循环" Checked="PlayMode_CheckChanged"/>
-                    <RadioButton x:Name="Normal" Content="顺序播放" Checked="PlayMode_CheckChanged"/>
-                    <RadioButton x:Name="Random" Content="随机播放" Checked="PlayMode_CheckChanged"/>
-                    <RadioButton x:Name="Loop" Content="循环列表" Checked="PlayMode_CheckChanged"/>
-                    <RadioButton x:Name="LoopRandom" Content="随机循环" Checked="PlayMode_CheckChanged"/>
-                </StackPanel>
-            </Border>
-        </Popup>
+                <Border Background="White" HorizontalAlignment="Center" BorderBrush="#cccccc" BorderThickness="1">
+                    <StackPanel>
+                        <RadioButton x:Name="Single" Content="单曲播放" Checked="PlayMode_CheckChanged"/>
+                        <RadioButton x:Name="SingleLoop" Content="单曲循环" Checked="PlayMode_CheckChanged"/>
+                        <RadioButton x:Name="Normal" Content="顺序播放" Checked="PlayMode_CheckChanged"/>
+                        <RadioButton x:Name="Random" Content="随机播放" Checked="PlayMode_CheckChanged"/>
+                        <RadioButton x:Name="Loop" Content="循环列表" Checked="PlayMode_CheckChanged"/>
+                        <RadioButton x:Name="LoopRandom" Content="随机循环" Checked="PlayMode_CheckChanged"/>
+                    </StackPanel>
+                </Border>
+            </Popup>
+        </Grid>
+        <ResizeGrip Grid.Row="1" x:Name="Grip"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch" />
         <tb:TaskbarIcon Grid.Row="0" x:Name="NotifyIcon"
                         Visibility="Visible"
                         IconSource="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
@@ -241,13 +366,11 @@
                         MenuActivation="LeftOrRightClick"
                         TrayToolTip="{DynamicResource TrayToolTip}"
                         TrayMouseDoubleClick="NotifyIcon_TrayMouseDoubleClick" />
-        <!--ToolTipText=""-->
-        <!--PopupActivation="DoubleClick"-->
-        <!--TrayPopup="{DynamicResource TrayStatusPopup}"-->
         <Grid.Resources>
             <ToolTip x:Key="TrayToolTip" />
             <!--<Popup x:Key="TrayStatusPopup"></Popup>-->
             <ContextMenu x:Key="TrayMenu" Style="{StaticResource DefaultContextMenu}">
+                <!--<ContextMenu x:Key="TrayMenu">-->
                 <MenuItem Header="播放" Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
                         <Image Width="24" Height="24" Source="{StaticResource PlayS}" />
@@ -285,4 +408,5 @@
             </ContextMenu>
         </Grid.Resources>
     </Grid>
-</Window>
+</dmSkin:DMSkinSimpleWindow>
+

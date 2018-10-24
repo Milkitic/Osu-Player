@@ -55,13 +55,20 @@ namespace Milkitic.OsuPlayer.Pages
             if (CollectionList.SelectedItem == null)
                 return;
             Collection col = (Collection)CollectionList.SelectedItem;
+            var entry = _entry;
+            AddToCollection(col, entry);
+            Dispose();
+        }
+
+        public static void AddToCollection(Collection col, BeatmapEntry entry)
+        {
             if (string.IsNullOrEmpty(col.ImagePath))
             {
                 OsuFile osuFile =
-                    new OsuFile(Path.Combine(Domain.OsuSongPath, _entry.FolderName, _entry.BeatmapFileName));
+                    new OsuFile(Path.Combine(Domain.OsuSongPath, entry.FolderName, entry.BeatmapFileName));
                 if (osuFile.Events.BackgroundInfo != null)
                 {
-                    var imgPath = Path.Combine(Domain.OsuSongPath, _entry.FolderName, osuFile.Events.BackgroundInfo.Filename);
+                    var imgPath = Path.Combine(Domain.OsuSongPath, entry.FolderName, osuFile.Events.BackgroundInfo.Filename);
                     if (File.Exists(imgPath))
                     {
                         col.ImagePath = imgPath;
@@ -69,8 +76,7 @@ namespace Milkitic.OsuPlayer.Pages
                     }
                 }
             }
-            DbOperator.AddMapToCollection(_entry, col);
-            Dispose();
+            DbOperator.AddMapToCollection(entry, col);
         }
     }
 }

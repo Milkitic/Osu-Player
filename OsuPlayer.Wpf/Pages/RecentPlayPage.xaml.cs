@@ -41,7 +41,7 @@ namespace Milkitic.OsuPlayer.Pages
         {
             UpdateList();
             var item = ViewModels.FirstOrDefault(k =>
-                k.GetIdentity().Equals(App.PlayerList.NowIdentity));
+                k.GetIdentity().Equals(App.PlayerList.CurrentInfo.Identity));
             RecentList.SelectedItem = item;
         }
         

@@ -1,0 +1,103 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Milkitic.OsuPlayer">
+    <!--List View-->
+    <Style x:Key="MyHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                    <Border Background="#fafafa" BorderThickness="1,1,0,1" BorderBrush="#e1e1e2" Width="{TemplateBinding Width}">
+                        <TextBlock Padding="5" Text="{TemplateBinding Content}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <!--<Setter Property="Background" Value="#fafafa"/>-->
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="MinWidth" Value="50"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                            <Grid>
+                                <Border Background="#ebeced" BorderThickness="1,1,0,1" BorderBrush="#e1e1e2">
+                                    <TextBlock Padding="5" Text="{TemplateBinding Content}" />
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="HiddenHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+        <Setter Property="Visibility" Value="Collapsed"/>
+    </Style>
+    <Style TargetType="{x:Type ListViewItem}" x:Key="GridView">
+        <Style.Resources>
+            <!--ItemDefault Template-->
+            <ControlTemplate x:Key="ItemDefault" TargetType="{x:Type ListViewItem}">
+                <Border Background="#80fafafa" x:Name="SelectedItem">
+                    <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                              Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                </Border>
+            </ControlTemplate>
+            <!--ItemDefault2 Template-->
+            <ControlTemplate x:Key="ItemDefault2" TargetType="{x:Type ListViewItem}">
+                <Border Background="#80f5f5f7" x:Name="SelectedItem">
+                    <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                              Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                </Border>
+            </ControlTemplate>
+            <!--ItemSelectedActived Template-->
+            <ControlTemplate x:Key="ItemSelectedActive" 
+                                 TargetType="{x:Type ListViewItem}">
+                <Border Background="#b0e3e3e5" x:Name="SelectedItem">
+                    <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                              Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                </Border>
+            </ControlTemplate>
+            <!--ItemSelected Template-->
+            <ControlTemplate x:Key="ItemSelected" 
+                                 TargetType="{x:Type ListViewItem}">
+                <Border Background="#b0e3e3e5" x:Name="SelectedItem">
+                    <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                              Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                </Border>
+            </ControlTemplate>
+            <!--ItemMouseMove Template-->
+            <ControlTemplate x:Key="ItemMouseOver" TargetType="{x:Type ListViewItem}">
+                <Border Background="#80ebeced" x:Name="SelectedItem">
+                    <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                              Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                </Border>
+            </ControlTemplate>
+        </Style.Resources>
+        <Setter Property="Template" Value="{StaticResource ItemDefault}" />
+        <Style.Triggers>
+            <Trigger Property="ListBox.AlternationIndex" Value="1">
+                <Setter Property="Template" Value="{StaticResource ItemDefault2}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Template"
+                            Value="{StaticResource ItemMouseOver}" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Template"
+                            Value="{StaticResource ItemSelected}" />
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsSelected" Value="true" />
+                    <Condition Property="Selector.IsSelectionActive" Value="true" />
+                </MultiTrigger.Conditions>
+                <Setter Property="Template"
+                            Value="{StaticResource ItemSelectedActive}" />
+            </MultiTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="{x:Type ListView}">
+        <Setter Property="AlternationCount" Value="2"/>
+    </Style>
+</ResourceDictionary>

@@ -15,8 +15,9 @@ namespace Milkitic.OsuPlayer
         public PlayListMode PlayListMode { get; set; }
         public List<BeatmapEntry> Entries { get; set; } = new List<BeatmapEntry>();
         public List<int> Indexes { get; set; } = new List<int>();
-        public MapIdentity NowIdentity { get; set; }
-
+        //public MapIdentity NowIdentity { get; set; }
+        public CurrentInfo CurrentInfo { get; set; }
+        public MapIdentity CurrentIdentity => CurrentInfo?.Identity ?? default;
         public int Pointer
         {
             get => _pointer;
@@ -67,7 +68,7 @@ namespace Milkitic.OsuPlayer
                         break;
                 }
             Pointer = 0;
-            if (!finishList) RedirectPointer();
+            if (!finishList && CurrentInfo != null) RedirectPointer();
 
             App.Config.CurrentList = Entries.Select(k => k.GetIdentity()).ToList();
             App.SaveConfig();
@@ -77,7 +78,7 @@ namespace Milkitic.OsuPlayer
         {
             for (int i = 0; i < Entries.Count; i++)
             {
-                if (Entries[i].GetIdentity().Equals(NowIdentity))
+                if (Entries[i].GetIdentity().Equals(CurrentInfo.Identity))
                 {
                     for (int j = 0; j < Indexes.Count; j++)
                     {

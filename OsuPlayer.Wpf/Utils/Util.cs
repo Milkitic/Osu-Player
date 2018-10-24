@@ -6,25 +6,6 @@ namespace Milkitic.OsuPlayer.Utils
 {
     public static class Util
     {
-        public static void UpdateConnectionStringsConfig(string key, string conString)
-        {
-            ConnectionStringSettings mySettings = new ConnectionStringSettings(key, conString)
-            {
-                ProviderName = "System.Data.SQLite.EF6"
-            };
-            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            if (ConfigurationManager.ConnectionStrings[key] != null)
-            {
-                config.ConnectionStrings.ConnectionStrings.Remove(key);
-            }
-            // 将新的连接串添加到配置文件中. 
-            config.ConnectionStrings.ConnectionStrings.Add(mySettings);
-            // 保存对配置文件所作的更改 
-            config.Save(ConfigurationSaveMode.Modified);
-            // 强制重新载入配置文件的ConnectionStrings配置节  
-            ConfigurationManager.RefreshSection("connectionStrings");
-        }
-
         /// <summary>
         /// Copy resource to folder
         /// </summary>

@@ -36,7 +36,7 @@ namespace Milkitic.OsuPlayer.Pages
             //LblTitle.Content = _collection.Name;
 
             var item = ViewModels.FirstOrDefault(k =>
-                k.GetIdentity().Equals(App.PlayerList.NowIdentity));
+                k.GetIdentity().Equals(App.PlayerList.CurrentInfo.Identity));
             MapList.SelectedItem = item;
         }
 
