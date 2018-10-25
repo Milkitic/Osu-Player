@@ -501,7 +501,11 @@ namespace Milkitic.OsuPlayer
                             osuFile.Metadata.TagList,
                             osuFile.Metadata.BeatmapID,
                             osuFile.Metadata.BeatmapSetID,
-                            entry?.DiffStarRatingStandard[Mods.None] ?? 0,
+                            entry != null
+                                ? (entry.DiffStarRatingStandard.ContainsKey(Mods.None)
+                                    ? entry.DiffStarRatingStandard[Mods.None]
+                                    : 0)
+                                : 0,
                             osuFile.Difficulty.HPDrainRate,
                             osuFile.Difficulty.CircleSize,
                             osuFile.Difficulty.ApproachRate,
@@ -971,6 +975,27 @@ namespace Milkitic.OsuPlayer
         private void BtnMini_Click(object sender, RoutedEventArgs e)
         {
             ToMiniMode();
+        }
+
+        private void Mod_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            PlayMod mod;
+            if (ModNone.IsChecked == true)
+                mod = PlayMod.None;
+            else if (ModDt.IsChecked == true)
+                mod = PlayMod.DoubleTime;
+            else if (ModHt.IsChecked == true)
+                mod = PlayMod.HalfTime;
+            else if (ModNc.IsChecked == true)
+                mod = PlayMod.NightCore;
+            else if (ModDc.IsChecked == true)
+                mod = PlayMod.DayCore;
+            else
+                throw new ArgumentOutOfRangeException();
+
+            App.Config.Play.PlayMod = mod;
+            App.MusicPlayer.SetPlayMod(mod);
+            App.HitsoundPlayer.SetPlayMod(mod, App.HitsoundPlayer.PlayerStatus == PlayerStatus.Playing);
         }
     }
 

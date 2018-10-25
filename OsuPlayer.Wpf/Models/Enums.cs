@@ -9,4 +9,9 @@
     {
         RecentList, Collection
     }
+
+    public enum PlayMod
+    {
+        None, DoubleTime, NightCore, HalfTime, DayCore, Custom
+    }
 }

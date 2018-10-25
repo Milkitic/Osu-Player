@@ -190,6 +190,11 @@
     <Compile Include="LyricWindow.xaml.cs">
       <DependentUpon>LyricWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Media\Music\MusicPlayer.cs" />
+    <Compile Include="Media\Music\SampleProviders\MyAudioFileReader.cs" />
+    <Compile Include="Media\Music\SoundTouch\SoundTouchApi.cs" />
+    <Compile Include="Media\Music\TimeStretchProfile.cs" />
+    <Compile Include="Media\Music\WaveProviders\CusBufferedWaveProvider.cs" />
     <Compile Include="Models\CurrentInfo.cs" />
     <Compile Include="Models\Github\Release.cs" />
     <Compile Include="Models\ViewModels.cs" />
@@ -284,8 +289,6 @@
     <Compile Include="Media\Music\HitsoundPlayer.cs" />
     <Compile Include="Utils\Downloader.cs" />
     <Compile Include="Utils\MetaSelect.cs" />
-    <Compile Include="Media\Music\MusicPlayer.cs" />
-    <Compile Include="Media\Music\MyAudioFileReader.cs" />
     <Compile Include="Media\Music\WavePlayer.cs" />
     <Compile Include="Utils\KeyConverter.cs" />
     <Compile Include="Utils\Updater.cs" />
@@ -536,6 +539,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\search.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="plugins\SoundTouch.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.109.1\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.109.1\build\net451\System.Data.SQLite.Core.targets')" />

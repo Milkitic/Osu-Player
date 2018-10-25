@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Milkitic.OsuLib;
+using Milkitic.OsuLib.Enums;
+using Milkitic.OsuLib.Model.Raw;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,14 +9,12 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Milkitic.OsuLib;
-using Milkitic.OsuLib.Enums;
-using Milkitic.OsuLib.Model.Raw;
 
 namespace Milkitic.OsuPlayer.Media.Music
 {
     public class HitsoundPlayer : IPlayer, IDisposable
     {
+        private static bool UseSoundTouch => App.Config.Play.UsePlayerV2;
         public PlayerStatus PlayerStatus
         {
             get => _playerStatus;
@@ -23,11 +24,11 @@ namespace Milkitic.OsuPlayer.Media.Music
                 _playerStatus = value;
             }
         }
-    
+
         public int Duration { get; }
         public int PlayTime
         {
-            get => (int)_sw.ElapsedMilliseconds + _controlOffset;
+            get => (int)(_sw.ElapsedMilliseconds * _multiplier + _controlOffset);
             private set
             {
                 _controlOffset = value;
@@ -46,9 +47,10 @@ namespace Milkitic.OsuPlayer.Media.Music
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private int _controlOffset;
         private Task _playingTask, _offsetTask;
-
+        private float _multiplier = 1f;
         private readonly Stopwatch _sw = new Stopwatch();
         private PlayerStatus _playerStatus;
+        private PlayMod _mod;
         public OsuFile Osufile { get; private set; }
 
         public HitsoundPlayer(string filePath, OsuFile osuFile)
@@ -72,22 +74,49 @@ namespace Milkitic.OsuPlayer.Media.Music
             App.MusicPlayer = new MusicPlayer(musicInfo.FullName);
             Duration = (int)Math.Ceiling(Math.Max(_hitsoundList.Max(k => k.Offset), App.MusicPlayer.Duration));
             PlayerStatus = PlayerStatus.Ready;
+            SetPlayMod(App.Config.Play.PlayMod, false);
+        }
+
+        public void SetPlayMod(PlayMod mod, bool play)
+        {
+            _mod = mod;
+            switch (mod)
+            {
+                case PlayMod.None:
+                    SetTime(PlayTime, play);
+                    _multiplier = 1f;
+                    break;
+                case PlayMod.DoubleTime:
+                case PlayMod.NightCore:
+                    SetTime(PlayTime, play);
+                    _multiplier = 1.5f;
+                    break;
+                case PlayMod.HalfTime:
+                case PlayMod.DayCore:
+                    SetTime(PlayTime, play);
+                    _multiplier = 0.75f;
+                    break;
+            }
         }
 
         public void Play()
         {
             StartTask();
             App.MusicPlayer.Play();
-            DynamicOffset();
+            if (_mod == PlayMod.None)
+            {
+                DynamicOffset();
+            }
             _playingTask = new Task(PlayHitsound);
             _playingTask.Start();
+
             PlayerStatus = PlayerStatus.Playing;
         }
 
         private void PlayHitsound()
         {
             _sw.Restart();
-            while (_hsQueue.Count > 0 || App.MusicPlayer.PlayerStatus != PlayerStatus.Finished)
+            while ((_hsQueue.Count > 0 && _mod == PlayMod.None) || App.MusicPlayer.PlayerStatus != PlayerStatus.Finished)
             {
                 if (_cts.Token.IsCancellationRequested)
                 {
@@ -96,11 +125,14 @@ namespace Milkitic.OsuPlayer.Media.Music
                 }
 
                 // Loop
-                while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= PlayTime)
+                if (_mod == PlayMod.None)
                 {
-                    if (!_hsQueue.TryDequeue(out var hs)) continue;
+                    while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= PlayTime)
+                    {
+                        if (!_hsQueue.TryDequeue(out var hs)) continue;
 
-                    foreach (var path in hs.FilePaths) Task.Run(() => WavePlayer.PlayFile(path, hs.Volume));
+                        foreach (var path in hs.FilePaths) Task.Run(() => WavePlayer.PlayFile(path, hs.Volume));
+                    }
                 }
 
                 Thread.Sleep(1);
@@ -131,8 +163,9 @@ namespace Milkitic.OsuPlayer.Media.Music
         public void SetTime(int ms, bool play = true)
         {
             Pause();
-            PlayTime = ms;
-            Requeue(ms);
+            int offsetMs = ms;
+            PlayTime = offsetMs;
+            Requeue(offsetMs);
             if (play)
             {
                 App.MusicPlayer.SetTime(ms);
@@ -156,11 +189,11 @@ namespace Milkitic.OsuPlayer.Media.Music
                         if (playerMs != preMs)
                         {
                             preMs = playerMs;
-                            var d = playerMs - (_sw.ElapsedMilliseconds + _controlOffset + SingleOffset);
+                            var d = playerMs - (PlayTime + SingleOffset + (UseSoundTouch ? 480 : 0));
                             var r = App.Config.Play.GeneralOffset - d;
                             if (Math.Abs(r) > 5)
                             {
-                                //Console.WriteLine($@"music: {Core.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
+                                Console.WriteLine($@"music: {App.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
                                 _controlOffset -= (int)(r / 2f);
                             }
                         }
@@ -294,7 +327,6 @@ namespace Milkitic.OsuPlayer.Media.Music
         }
 
         #endregion Load
-
 
     }
 }

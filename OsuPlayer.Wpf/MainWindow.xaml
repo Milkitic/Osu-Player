@@ -280,6 +280,13 @@
                 <Grid Grid.Column="3">
                     <StackPanel x:Name="FuncPanel" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
+                            <WrapPanel Orientation="Horizontal" Width="100" Visibility="Collapsed">
+                                <RadioButton x:Name="ModNone" Content="none" Checked="Mod_CheckChanged"/>
+                                <RadioButton x:Name="ModDt" Content="dt" Checked="Mod_CheckChanged"/>
+                                <RadioButton x:Name="ModHt" Content="ht" Checked="Mod_CheckChanged"/>
+                                <RadioButton x:Name="ModNc" Content="nc" Checked="Mod_CheckChanged"/>
+                                <RadioButton x:Name="ModDc" Content="dc" Checked="Mod_CheckChanged"/>
+                            </WrapPanel>
                             <Button x:Name="BtnMode" Style="{StaticResource SmallTextureButtonStyle}"
                                     Background="{StaticResource Loop}" Click="BtnMode_Click" />
                             <Button x:Name="BtnLike" Style="{StaticResource SmallTextureButtonStyle}" 

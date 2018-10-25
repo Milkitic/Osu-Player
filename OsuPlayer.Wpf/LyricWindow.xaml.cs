@@ -118,7 +118,7 @@ namespace Milkitic.OsuPlayer
                 while (!_cts.Token.IsCancellationRequested)
                 {
                     Thread.Sleep(50);
-                    var sb = _lyricList.Where(t => t.StartTime < App.MusicPlayer.PlayTime).ToArray();
+                    var sb = _lyricList.Where(t => t.StartTime < App.HitsoundPlayer?.PlayTime).ToArray();
                     if (sb.Length < 1)
                         continue;
                     int maxTime = sb.Max(t => t.StartTime);
