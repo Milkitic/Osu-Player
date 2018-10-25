@@ -47,11 +47,6 @@ namespace Milkitic.OsuPlayer
 
         static App()
         {
-            dynamic a = "123";
-            a = 123;
-            a = new[] { 123 };
-            Console.WriteLine(a[0]);
-            Console.ReadLine();
             try
             {
                 if (!LoadConfig())
