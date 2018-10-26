@@ -195,10 +195,17 @@
                                     <BlurEffect Radius="25" />
                                 </Image.Effect>
                             </Image>
-                            <Rectangle x:Name="WhiteCover" Fill="#FFFFFF" Opacity="0.666667" />
+                            <Rectangle x:Name="WhiteCover" Fill="#FFFFFF" Opacity="0.3333333" />
                             <Grid.Style>
                                 <Style TargetType="{x:Type Grid}">
-                                    <Setter Property="Background" Value="DeepPink"/>
+                                    <Setter Property="Background" >
+                                        <Setter.Value>
+                                            <LinearGradientBrush EndPoint="0,1">
+                                                <GradientStop Offset="0" Color="#dc498d"/>
+                                                <GradientStop Offset="1" Color="White"/>
+                                            </LinearGradientBrush>
+                                        </Setter.Value>
+                                    </Setter>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Source, ElementName=BlurScene}" Value="{x:Null}">
                                             <Setter Property="Background" Value="White"/>
@@ -225,7 +232,7 @@
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid x:Name="ToolControl" Grid.Row="1" Background="White" MouseDown="Grid_MouseDown">
+            <Grid x:Name="ToolControl" Grid.Row="1" Background="White">
                 <Grid.Resources>
                     <ImageBrush x:Key="Loop" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop.png"/>
                     <ImageBrush x:Key="LoopS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop_s.png"/>
@@ -245,7 +252,7 @@
                 </Grid.ColumnDefinitions>
                 <!--Source="{Binding Source, ElementName=BlurScene}"-->
                 <Grid Margin="1" MaxHeight="46" MaxWidth="61.333333">
-                    <Button Style="{StaticResource ImageButtonStyle}" Click="ImageButton_Click" Cursor="Hand">
+                    <Button Style="{StaticResource ImageButtonStyle}" Click="ThumbButton_Click" Cursor="Hand">
                         <Image x:Name="Thumb" RenderOptions.BitmapScalingMode="HighQuality"
                            Source="{Binding Source, ElementName=BlurScene}" Stretch="UniformToFill"
                            VerticalAlignment="Center" HorizontalAlignment="Center"/>

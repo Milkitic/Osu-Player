@@ -161,6 +161,8 @@
     <Compile Include="Data\ModelsContexts.cs" />
     <Compile Include="Data\DbOperator.cs" />
     <Compile Include="Domain.cs" />
+    <Compile Include="MainWindow.Player.cs" />
+    <Compile Include="MainWindow.Surface.cs" />
     <Compile Include="Media\Enums.cs" />
     <Compile Include="Media\IPlayer.cs" />
     <Compile Include="Media\Lyric\LyricProvider.cs" />
@@ -452,6 +454,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Compile Include="MainWindow.Event.cs" />
     <None Include="Media\Lyric\readme.md" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

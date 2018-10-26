@@ -10,10 +10,8 @@ namespace Milkitic.OsuPlayer
 {
     public class CurrentInfo
     {
-        public CurrentInfo()
-        {
-            
-        }
+        public CurrentInfo() { }
+
         public CurrentInfo(string artist, string artistUnicode, string title, string titleUnicode, string creator,
             string source, List<string> tags, int beatmapId, int beatmapsetId, double stars, double hp, double cs, double ar,
             double od, long songLength, MapIdentity identity, MapInfo mapInfo, BeatmapEntry entry, bool isFaved)
