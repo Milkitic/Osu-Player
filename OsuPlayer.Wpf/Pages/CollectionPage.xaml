@@ -17,7 +17,7 @@
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem Style="{StaticResource PinkTabItem}">
                 <TabItem.Header>
-                    <TextBlock Canvas.ZIndex="99" Text="我的收藏" Cursor="Hand" FontSize="16" Padding="18,10"/>
+                    <TextBlock Text="我的收藏" Cursor="Hand" FontSize="16" Padding="18,10"/>
                 </TabItem.Header>
                 <Grid x:Name="FrameGrid" Margin="0,10,0,0">
                     <Grid.RowDefinitions>
@@ -39,8 +39,11 @@
                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
                         <StackPanel Grid.Column="1" Margin="10">
-                            <StackPanel Orientation="Horizontal">
-                                <Label x:Name="LblTitle" FontSize="22" Content="{Binding Path=Name}" VerticalAlignment="Center" />
+                            <WrapPanel Orientation="Horizontal">
+                                <Label x:Name="LblTitle" FontSize="22" VerticalAlignment="Center" >
+                                    <TextBlock TextWrapping="Wrap"
+                                               Text="{Binding Path=Name}" />
+                                </Label>
                                 <dms:DMButton Margin="5" Height="28" Width="28"
                                               CornerRadius="50"
                                               BorderThickness="1"
@@ -67,7 +70,7 @@
                                         </Canvas>
                                     </Viewbox>
                                 </dms:DMButton>
-                            </StackPanel>
+                            </WrapPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label Content="创建时间："/>
                                 <Label Content="{Binding Path=CreateTime, Converter={StaticResource CvtDate}}"/>
@@ -147,61 +150,113 @@
                             <Label Content="歌曲数" HorizontalAlignment="Right"/>
                             <Label x:Name="ListCount" Content="0" HorizontalAlignment="Right" FontWeight="Bold" Margin="0 -5 0 0"/>
                         </StackPanel>
-
                     </Grid>
-
-                    <ListView Grid.Row="1" x:Name="MapList" Margin="0,10,0,0" Background="#40FFFFFF" BorderThickness="0"
-                  ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="RecentList_MouseDoubleClick"
-                  ItemContainerStyle="{StaticResource GridView}">
-                        <ListView.ContextMenu>
-                            <ContextMenu Style="{StaticResource DefaultContextMenu}">
-                                <MenuItem x:Name="ItemPlay" Header="播放" Click="ItemPlay_Click" Style="{DynamicResource DefaultMenuItem}"  />
-                                <Separator/>
-                                <MenuItem x:Name="ItemCollect" Header="收藏..." Click="ItemCollect_Click" Style="{DynamicResource DefaultMenuItem}"  />
-                                <MenuItem x:Name="ItemExport" Header="导出" Click="ItemExport_Click" Style="{DynamicResource DefaultMenuItem}"  />
-                                <Separator/>
-                                <MenuItem x:Name="ItemSearchTitle" Header="搜索该标题" Click="ItemSearchTitle_Click"  Style="{DynamicResource DefaultMenuItem}" />
-                                <MenuItem x:Name="ItemSearchArtist" Header="搜索该艺术家" Click="ItemSearchArtist_Click" Style="{DynamicResource DefaultMenuItem}"  />
-                                <MenuItem x:Name="ItemSearchSource" Header="搜索该来源" Click="ItemSearchSource_Click"  Style="{DynamicResource DefaultMenuItem}" />
-                                <MenuItem x:Name="ItemSearchMapper" Header="搜索该作者" Click="ItemSearchMapper_Click" Style="{DynamicResource DefaultMenuItem}"  />
-                                <Separator/>
-                                <MenuItem x:Name="ItemDelete" Header="从收藏夹中移除" Click="ItemDelete_Click"  Style="{DynamicResource DefaultMenuItem}" />
-                                <Separator/>
-                                <MenuItem x:Name="ItemSet" Header="打开成绩页" Click="ItemSet_Click"  Style="{DynamicResource DefaultMenuItem}" />
-                                <MenuItem x:Name="ItemFolder" Header="打开所在目录" Click="ItemFolder_Click"  Style="{DynamicResource DefaultMenuItem}" />
-                            </ContextMenu>
-                        </ListView.ContextMenu>
-                        <ListView.DataContext>
-                            <osuPlayer:BeatmapViewModel/>
-                        </ListView.DataContext>
-                        <ListView.Resources>
-                            <DataTemplate x:Key="IdDt">
-                                <Label VerticalAlignment="Center" Margin="0,3,0,3"
+                    <TabControl Grid.Row="1" Margin="0,10,0,0"
+                                Style="{StaticResource ListTabControlStyle}">
+                        <TabItem Style="{StaticResource ListTabItem}">
+                            <TabItem.Header>
+                                <TextBlock Text="歌曲列表" Cursor="Hand" FontSize="15" Padding="3"/>
+                            </TabItem.Header>
+                            <Grid>
+                                <dms:DMTextBox Margin="0,-30,40,0"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Top"
+                                               Width="180"
+                                               Height="26"
+                                               BorderBrush="#DCDFE6"
+                                               BorderThickness="1"
+                                               Hint="搜索收藏夹音乐"
+                                               Icon="{StaticResource Icon_Serach}"
+                                               SelectedColor="#40303030"
+                                               Background="White"
+                                               ShowIcon="True" 
+                                               CornerRadius="13" />
+                                <ListView x:Name="MapList" BorderThickness="0"
+                                      ItemsSource="{Binding Mode=OneWay}"
+                                      MouseDoubleClick="RecentList_MouseDoubleClick"
+                                      ItemContainerStyle="{StaticResource GridView}"
+                                      Background="#40FFFFFF">
+                                    <ListView.ContextMenu>
+                                        <ContextMenu Style="{StaticResource DefaultContextMenu}">
+                                            <MenuItem x:Name="ItemPlay" Header="播放" Click="ItemPlay_Click"
+                                                  Style="{DynamicResource DefaultMenuItem}" />
+                                            <Separator/>
+                                            <MenuItem x:Name="ItemCollect" Header="收藏..."
+                                                  Click="ItemCollect_Click"
+                                                  Style="{DynamicResource DefaultMenuItem}" />
+                                            <MenuItem x:Name="ItemExport" Header="导出" 
+                                                  Click="ItemExport_Click"
+                                                  Style="{DynamicResource DefaultMenuItem}" />
+                                            <Separator />
+                                            <MenuItem x:Name="ItemSearchTitle" Header="搜索该标题" 
+                                                  Click="ItemSearchTitle_Click"
+                                                  Style="{DynamicResource DefaultMenuItem}" />
+                                            <MenuItem x:Name="ItemSearchArtist" Header="搜索该艺术家"
+                                                  Click="ItemSearchArtist_Click"
+                                                  Style="{DynamicResource DefaultMenuItem}" />
+                                            <MenuItem x:Name="ItemSearchSource" Header="搜索该来源"
+                                                  Click="ItemSearchSource_Click"
+                                                  Style="{DynamicResource DefaultMenuItem}" />
+                                            <MenuItem x:Name="ItemSearchMapper" Header="搜索该作者"
+                                                  Click="ItemSearchMapper_Click"
+                                                  Style="{DynamicResource DefaultMenuItem}" />
+                                            <Separator />
+                                            <MenuItem x:Name="ItemDelete" Header="从收藏夹中移除" 
+                                                  Click="ItemDelete_Click"
+                                                  Style="{DynamicResource DefaultMenuItem}" />
+                                            <Separator />
+                                            <MenuItem x:Name="ItemSet" Header="打开成绩页"
+                                                  Click="ItemSet_Click"
+                                                  Style="{DynamicResource DefaultMenuItem}" />
+                                            <MenuItem x:Name="ItemFolder" Header="打开所在目录"
+                                                  Click="ItemFolder_Click"
+                                                  Style="{DynamicResource DefaultMenuItem}" />
+                                        </ContextMenu>
+                                    </ListView.ContextMenu>
+                                    <ListView.DataContext>
+                                        <osuPlayer:BeatmapViewModel/>
+                                    </ListView.DataContext>
+                                    <ListView.Resources>
+                                        <DataTemplate x:Key="IdDt">
+                                            <Label VerticalAlignment="Center" Margin="0,3,0,3"
                                        Content="{Binding Id, Mode=OneWay}" Foreground="#FF9C9C9C" />
-                            </DataTemplate>
-                            <DataTemplate x:Key="TitleDt">
-                                <Label VerticalAlignment="Center" Content="{Binding AutoTitle, Mode=OneWay}"/>
-                            </DataTemplate>
-                            <DataTemplate x:Key="ArtistDt">
-                                <Label VerticalAlignment="Center" Content="{Binding AutoArtist, Mode=OneWay}" Foreground="#FF9C9C9C"/>
-                            </DataTemplate>
-                            <DataTemplate x:Key="CreatorDt">
-                                <Label VerticalAlignment="Center" Content="{Binding AutoCreator, Mode=OneWay}" />
-                            </DataTemplate>
-                            <DataTemplate x:Key="VersionDt">
-                                <Label VerticalAlignment="Center" Content="{Binding AutoVersion}" Foreground="#FF9C9C9C" />
-                            </DataTemplate>
-                        </ListView.Resources>
-                        <ListView.View>
-                            <GridView ColumnHeaderContainerStyle="{StaticResource MyHeaderStyle}">
-                                <GridViewColumn Width="40" CellTemplate="{StaticResource IdDt}"/>
-                                <GridViewColumn Header="标题" Width="300" CellTemplate="{StaticResource TitleDt}"/>
-                                <GridViewColumn Header="艺术家" Width="200" CellTemplate="{StaticResource ArtistDt}"/>
-                                <GridViewColumn Header="作者" Width="100" CellTemplate="{StaticResource CreatorDt}" />
-                                <GridViewColumn Header="难度" Width="150" CellTemplate="{StaticResource VersionDt}" />
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
+                                        </DataTemplate>
+                                        <DataTemplate x:Key="TitleDt">
+                                            <Label VerticalAlignment="Center" Content="{Binding AutoTitle, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                        <DataTemplate x:Key="ArtistDt">
+                                            <Label VerticalAlignment="Center" Content="{Binding AutoArtist, Mode=OneWay}" Foreground="#FF9C9C9C"/>
+                                        </DataTemplate>
+                                        <DataTemplate x:Key="CreatorDt">
+                                            <Label VerticalAlignment="Center" Content="{Binding AutoCreator, Mode=OneWay}" />
+                                        </DataTemplate>
+                                        <DataTemplate x:Key="VersionDt">
+                                            <Label VerticalAlignment="Center" Content="{Binding AutoVersion}" Foreground="#FF9C9C9C" />
+                                        </DataTemplate>
+                                    </ListView.Resources>
+                                    <ListView.View>
+                                        <GridView ColumnHeaderContainerStyle="{StaticResource MyHeaderStyle}">
+                                            <GridViewColumn Width="40" CellTemplate="{StaticResource IdDt}"/>
+                                            <GridViewColumn Header="标题" Width="300" CellTemplate="{StaticResource TitleDt}"/>
+                                            <GridViewColumn Header="艺术家" Width="200" CellTemplate="{StaticResource ArtistDt}"/>
+                                            <GridViewColumn Header="作者" Width="100" CellTemplate="{StaticResource CreatorDt}" />
+                                            <GridViewColumn Header="难度" Width="150" CellTemplate="{StaticResource VersionDt}" />
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
+                        </TabItem>
+                        <TabItem FontSize="15px" Style="{StaticResource ListTabItem}" Visibility="Collapsed">
+                            <TabItem.Header>
+                                <TextBlock Text="评论" Cursor="Hand" FontSize="15" Padding="3"/>
+                            </TabItem.Header>
+                        </TabItem>
+                        <TabItem FontSize="15px" Style="{StaticResource ListTabItem}" Visibility="Collapsed">
+                            <TabItem.Header>
+                                <TextBlock Text="收藏者" Cursor="Hand" FontSize="15" Padding="3"/>
+                            </TabItem.Header>
+                        </TabItem>
+                    </TabControl>
                 </Grid>
             </TabItem>
         </TabControl>

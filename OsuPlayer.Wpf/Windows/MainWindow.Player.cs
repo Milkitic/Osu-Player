@@ -1,12 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using Milkitic.OsuLib;
 using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
@@ -15,6 +7,14 @@ using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Pages;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace Milkitic.OsuPlayer.Windows
 {
@@ -39,6 +39,8 @@ namespace Milkitic.OsuPlayer.Windows
         {
             PlayNewFile(path, true);
         }
+
+        private StoryboardWindow _sbWindow;
 
         /// <summary>
         /// Play a new file by file path.
@@ -115,7 +117,17 @@ namespace Milkitic.OsuPlayer.Windows
                     LblNow.Content = new TimeSpan(0, 0, 0, 0, App.HitsoundPlayer.PlayTime).ToString(@"mm\:ss");
 #if DEBUG
                     /* Set Storyboard */
-                    if (false) App.StoryboardProvider.LoadStoryboard(dir, App.HitsoundPlayer.Osufile);
+                    if (true)
+                    {
+                        if (_sbWindow == null || _sbWindow.IsClosed)
+                        {
+                            _sbWindow = new StoryboardWindow();
+                            _sbWindow.Show();
+                            App.StoryboardProvider = new Media.Storyboard.StoryboardProvider(_sbWindow);
+                        }
+                   
+                        App.StoryboardProvider.LoadStoryboard(dir, App.HitsoundPlayer.Osufile);
+                    }
 #endif
                     /* Set Video */
                     if (VideoElement != null)

@@ -194,11 +194,20 @@
                                         <ListView.Resources>
                                             <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
                                                 <Grid>
-                                                    <ToggleButton x:Name="BtnCollection" VerticalAlignment="Center" 
-                                                          Height="40" Style="{StaticResource NavigationButtonStyle}" Margin="-5,0,0,1"
-                                                          Content="{Binding Name}" Tag="{Binding Id}" Click="BtnCollection_Click"
-                                                          Unchecked="BtnNavigate_Unchecked"
-                                                          Checked="BtnNavigate_Checked" />
+                                                    <ToggleButton x:Name="BtnCollection" VerticalAlignment="Center"
+                                                                  MinHeight="26"
+                                                                  Style="{StaticResource NavigationButtonStyle}"
+                                                                  Margin="-5,0,0,1"
+                                                                  Tag="{Binding Id}" Click="BtnCollection_Click"
+                                                                  Unchecked="BtnNavigate_Unchecked"
+                                                                  Checked="BtnNavigate_Checked">
+                                                        <Label MaxWidth="120" HorizontalAlignment="Left"
+                                                               Margin="0,7"
+                                                               Foreground="{Binding ElementName=BtnCollection, Path=Foreground}"
+                                                               FontSize="13px">
+                                                            <TextBlock TextWrapping="Wrap" Text="{Binding Name}"></TextBlock>
+                                                        </Label>
+                                                    </ToggleButton>
                                                 </Grid>
                                             </ControlTemplate>
                                             <Style TargetType="{x:Type ListViewItem}">

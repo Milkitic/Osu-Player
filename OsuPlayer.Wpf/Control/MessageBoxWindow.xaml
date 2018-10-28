@@ -78,7 +78,7 @@
                    VerticalContentAlignment="Center"
                    Content="MSG" />
         </Grid>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,0,10,10">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,0,10,10">
             <dms:DMButton x:Name="BtnOk"
                           Margin="5,0"
                           VerticalAlignment="Top"

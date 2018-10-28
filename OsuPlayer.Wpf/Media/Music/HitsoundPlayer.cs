@@ -193,7 +193,7 @@ namespace Milkitic.OsuPlayer.Media.Music
                             var r = App.Config.Play.GeneralOffset - d;
                             if (Math.Abs(r) > 5)
                             {
-                                Console.WriteLine($@"music: {App.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
+                                //Console.WriteLine($@"music: {App.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
                                 _controlOffset -= (int)(r / 2f);
                             }
                         }

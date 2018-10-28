@@ -134,11 +134,14 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Layer
         {
             _cts.Cancel();
             if (_task != null) Task.WaitAll(_task);
-
-            foreach (var instance in _instances)
-                instance.Dispose();
+            if (_instances != null)
+            {
+                foreach (var instance in _instances)
+                    instance.Dispose();
+            }
             _instances = null;
 
+            if (_renderList != null)
             for (var i = 0; i < _renderList.Length; i++)
             {
                 _renderList[i].Elment = null;

@@ -1,13 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Interop;
-using Milkitic.OsuPlayer.Control;
+﻿using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media;
 using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Pages;
+using System;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls.Primitives;
+using System.Windows.Interop;
 
 namespace Milkitic.OsuPlayer.Windows
 {
@@ -67,6 +67,7 @@ namespace Milkitic.OsuPlayer.Windows
             WavePlayer.MasteringVoice?.Dispose();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
+            _sbWindow?.Close();
             if (ConfigWindow == null || ConfigWindow.IsClosed) return;
             if (ConfigWindow.IsInitialized)
                 ConfigWindow.Close();
