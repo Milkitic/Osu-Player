@@ -46,7 +46,7 @@ namespace Milkitic.OsuPlayer.Data
         public static BeatmapEntry GetBeatmapByIdentity(this IEnumerable<BeatmapEntry> list,
             MapIdentity identity)
         {
-            return list.FirstOrDefault(k => k.FolderName == identity.FolderName && k.Version == identity.Version);
+            return list.Where(k => k != null).FirstOrDefault(k => k.FolderName == identity.FolderName && k.Version == identity.Version);
         }
         public static IEnumerable<BeatmapEntry> GetBeatmapByIdentities(this IEnumerable<BeatmapEntry> list,
             IEnumerable<MapIdentity> identities)
@@ -58,12 +58,30 @@ namespace Milkitic.OsuPlayer.Data
         {
             var ok = list.GroupBy(k => k.GameMode).ToDictionary(k => k.Key, k => k);
             if (ok.ContainsKey(GameMode.Standard))
-                return ok[GameMode.Standard].OrderBy(k => k.DiffStarRatingStandard[Mods.None]).Last();
+            {
+                if (ok[GameMode.Standard].All(k => k.DiffStarRatingStandard.ContainsKey(Mods.None)))
+                    return ok[GameMode.Standard].OrderBy(k => k.DiffStarRatingStandard[Mods.None]).Last();
+            }
             if (ok.ContainsKey(GameMode.Mania))
-                return ok[GameMode.Mania].OrderBy(k => k.DiffStarRatingMania[Mods.None]).Last();
+            {
+                if (ok[GameMode.Mania].All(k => k.DiffStarRatingMania.ContainsKey(Mods.None)))
+                    return ok[GameMode.Mania].OrderBy(k => k.DiffStarRatingMania[Mods.None]).Last();
+            }
+
             if (ok.ContainsKey(GameMode.CatchTheBeat))
-                return ok[GameMode.CatchTheBeat].OrderBy(k => k.DiffStarRatingCtB[Mods.None]).Last();
-            return ok[GameMode.Taiko].OrderBy(k => k.DiffStarRatingTaiko[Mods.None]).Last();
+            {
+                if (ok[GameMode.CatchTheBeat].All(k => k.DiffStarRatingCtB.ContainsKey(Mods.None)))
+                    return ok[GameMode.CatchTheBeat].OrderBy(k => k.DiffStarRatingCtB[Mods.None]).Last();
+            }
+            if (ok.ContainsKey(GameMode.Taiko))
+            {
+                if (ok[GameMode.Taiko].All(k => k.DiffStarRatingTaiko.ContainsKey(Mods.None)))
+                    return ok[GameMode.Taiko].OrderBy(k => k.DiffStarRatingTaiko[Mods.None]).Last();
+            }
+
+            Console.WriteLine(@"Get highest difficulty failed.");
+            Random rnd = new Random();
+            return list.ToList()[rnd.Next(list.Count())];
         }
         public static IEnumerable<BeatmapEntry> GetRecentListFromDb(
             this IEnumerable<BeatmapEntry> list)

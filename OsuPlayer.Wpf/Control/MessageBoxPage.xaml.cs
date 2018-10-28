@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Milkitic.OsuPlayer.Control
 {
@@ -61,6 +62,36 @@ namespace Milkitic.OsuPlayer.Control
                 DialogResult = null;
                 IsClosed = true;
             }
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            BtnOk.Focus();
+        }
+        Point pos = new Point();
+        private void DockPanel_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            pos = e.GetPosition(null);
+            BoxGrid.CaptureMouse();
+        }
+
+        private void DockPanel_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                double dx = (e.GetPosition(null).X - pos.X) * 2 + BoxGrid.Margin.Left;
+                double dy = (e.GetPosition(null).Y - pos.Y) *2 + BoxGrid.Margin.Top;
+                BoxGrid.Margin = new Thickness(dx, dy, 0, 0);
+                double dx1 = (e.GetPosition(null).X - pos.X) *2 + Parallel.Margin.Left;
+                double dy1 = (e.GetPosition(null).Y - pos.Y) *2 + Parallel.Margin.Top;
+                Parallel.Margin = new Thickness(dx, dy, 0, 0);
+                pos = e.GetPosition(null);
+            }
+        }
+
+        private void DockPanel_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            BoxGrid.ReleaseMouseCapture();
         }
     }
 }

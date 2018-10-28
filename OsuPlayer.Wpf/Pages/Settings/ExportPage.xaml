@@ -4,47 +4,61 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:Milkitic.OsuPlayer.Pages.Settings"
+      xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ExportPage" Loaded="Page_Loaded">
 
     <Grid>
-        <ScrollViewer>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="导出目录：" HorizontalAlignment="Left" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
-                    <Label Style="{StaticResource ConfigLabelStyle}" Content="音乐目录：" VerticalContentAlignment="Center" />
-                    <Label x:Name="LblMp3Path" Style="{StaticResource ConfigLabel2Style}" Content="D:\asdf\asdf"
+                    <Label Style="{StaticResource ConfigLabelStyle}" Content="音乐目录：" 
                            VerticalContentAlignment="Center" />
-                    <Button x:Name="BtnMp3Path" Content="..." Width="20" Style="{StaticResource ConfigButtonStyle}"
-                            Click="BtnMp3Path_Click" />
+                    <Label x:Name="LblMp3Path" Style="{StaticResource ConfigLabel2Style}" Margin="-5,0,5,0"
+                           Content="D:\asdf\asdf"
+                           VerticalContentAlignment="Center" />
+                    <dms:DMButton x:Name="BtnMp3Path" Content="..." Width="25" Height="25" CornerRadius="100"
+                                  Background="#E3E3E3" Foreground="Black"
+                                  Click="BtnMp3Path_Click" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
-                    <Label Style="{StaticResource ConfigLabelStyle}" Content="背景目录：" VerticalContentAlignment="Center" />
-                    <Label x:Name="LblBgPath" Style="{StaticResource ConfigLabel2Style}" Content="D:\asdf\asdf"
+                    <Label Style="{StaticResource ConfigLabelStyle}" Content="背景目录：" 
                            VerticalContentAlignment="Center" />
-                    <Button x:Name="BtnBgPath" Content="..." Width="20" Style="{StaticResource ConfigButtonStyle}"
+                    <Label x:Name="LblBgPath" Style="{StaticResource ConfigLabel2Style}" Margin="-5,0,5,0"
+                           Content="D:\asdf\asdf"
+                           VerticalContentAlignment="Center" />
+                    <dms:DMButton x:Name="BtnBgPath" Content="..." Width="25" Height="25" CornerRadius="100"
+                            Background="#E3E3E3" Foreground="Black"
                             Click="BtnBgPath_Click" />
                 </StackPanel>
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="文件命名格式：" HorizontalAlignment="Left" />
                 <StackPanel HorizontalAlignment="Left">
-                    <RadioButton x:Name="RadioT" Style="{StaticResource ConfigRadioStyle}" Content="标题"
-                                 HorizontalAlignment="Left" Checked="Naming_CheckChanged" />
-                    <RadioButton x:Name="RadioAt" Style="{StaticResource ConfigRadioStyle}" Content="艺术家 - 标题"
-                                 HorizontalAlignment="Left" Checked="Naming_CheckChanged" />
-                    <RadioButton x:Name="RadioTa" Style="{StaticResource ConfigRadioStyle}" Content="标题 - 艺术家"
-                                 HorizontalAlignment="Left" Checked="Naming_CheckChanged" />
+                    <dms:DMRadioButton x:Name="RadioT" IconColor="#FF1E9FFF" Margin="8,0"
+                                       Content="标题"
+                                       HorizontalAlignment="Left" Checked="Naming_CheckChanged" />
+                    <dms:DMRadioButton x:Name="RadioAt" IconColor="#FF1E9FFF" Margin="8,0"
+                                       Content="艺术家 - 标题"
+                                       HorizontalAlignment="Left" Checked="Naming_CheckChanged" />
+                    <dms:DMRadioButton x:Name="RadioTa" IconColor="#FF1E9FFF" Margin="8,0"
+                                       Content="标题 - 艺术家"
+                                       HorizontalAlignment="Left" Checked="Naming_CheckChanged" />
                 </StackPanel>
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="目录分类：" HorizontalAlignment="Left" />
                 <StackPanel HorizontalAlignment="Left">
-                    <RadioButton x:Name="SortNone" Style="{StaticResource ConfigRadioStyle}" Content="不分目录"
-                                 HorizontalAlignment="Left" Checked="Sort_CheckChanged" />
-                    <RadioButton x:Name="SortArtist" Style="{StaticResource ConfigRadioStyle}"
-                                 Content="按艺术家（Artist）分目录" HorizontalAlignment="Left" Checked="Sort_CheckChanged" />
-                    <RadioButton x:Name="SortMapper" Style="{StaticResource ConfigRadioStyle}" Content="按作者（Mapper）分目录"
-                                 HorizontalAlignment="Left" Checked="Sort_CheckChanged" />
-                    <RadioButton x:Name="SortSource" Style="{StaticResource ConfigRadioStyle}" Content="按来源（Source）分目录"
-                                 HorizontalAlignment="Left" Checked="Sort_CheckChanged" />
+                    <dms:DMRadioButton x:Name="SortNone" IconColor="#FF1E9FFF" Margin="8,0"
+                                       Content="不分目录"
+                                       HorizontalAlignment="Left" Checked="Sort_CheckChanged" />
+                    <dms:DMRadioButton x:Name="SortArtist" IconColor="#FF1E9FFF" Margin="8,0"
+                                       Content="按艺术家（Artist）分目录" 
+                                       HorizontalAlignment="Left" Checked="Sort_CheckChanged" />
+                    <dms:DMRadioButton x:Name="SortMapper" IconColor="#FF1E9FFF" Margin="8,0"
+                                       Content="按作者（Mapper）分目录"
+                                       HorizontalAlignment="Left" Checked="Sort_CheckChanged" />
+                    <dms:DMRadioButton x:Name="SortSource" IconColor="#FF1E9FFF" Margin="8,0" 
+                                       Content="按来源（Source）分目录"
+                                       HorizontalAlignment="Left" Checked="Sort_CheckChanged" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

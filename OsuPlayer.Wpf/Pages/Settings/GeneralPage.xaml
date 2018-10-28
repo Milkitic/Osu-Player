@@ -4,31 +4,42 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:Milkitic.OsuPlayer.Pages.Settings"
+      xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="GeneralPage" Loaded="Page_Loaded">
 
     <Grid>
-        <ScrollViewer>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="启动：" HorizontalAlignment="Left" />
-                <CheckBox x:Name="RunOnStartup" Style="{StaticResource ConfigCheckStyle}" Content="开机自动运行"
-                          HorizontalAlignment="Left" Checked="RunOnStartup_CheckChanged"
-                          Unchecked="RunOnStartup_CheckChanged" />
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="osu!db位置：" HorizontalAlignment="Left" />
+                <dms:DMCheckBox IconColor="#FF1E9FFF" Margin="8,0"
+                                x:Name="RunOnStartup" Content="开机自动运行"
+                                HorizontalAlignment="Left" Checked="RunOnStartup_CheckChanged"
+                                Unchecked="RunOnStartup_CheckChanged" />
+                <Label Style="{StaticResource ConfigTitleStyle}"
+                       Content="osu!db位置：" HorizontalAlignment="Left" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <Label x:Name="LblDbPath" Style="{StaticResource ConfigLabel2Style}"
+                           Margin="4,0"
                            Content="C:\asdf\asdf\adsf\fsad\sfda\osu.db" />
-                    <Button x:Name="Browse" Content="..." Width="20" Style="{StaticResource ConfigButtonStyle}" Click="Browse_Click" />
+                    <dms:DMButton Width="25" Height="25" CornerRadius="100"
+                                  Background="#E3E3E3" Foreground="Black"
+                                  x:Name="Browse" Content="..." 
+                                  Click="Browse_Click" />
                 </StackPanel>
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="关闭窗体：" HorizontalAlignment="Left" />
                 <StackPanel HorizontalAlignment="Left">
-                    <RadioButton x:Name="RadioMinimum" Style="{StaticResource ConfigRadioStyle}" Content="最小化到系统托盘"
-                                 HorizontalAlignment="Left" Checked="Radio_CheckChanged" />
-                    <RadioButton x:Name="RadioExit" Style="{StaticResource ConfigRadioStyle}" Content="退出程序"
-                                 HorizontalAlignment="Left" Checked="Radio_CheckChanged" />
-                    <CheckBox x:Name="AsDefault" Style="{StaticResource ConfigCheckStyle}" Content="设置默认选项"
-                              HorizontalAlignment="Left" Checked="AsDefault_CheckChanged" Unchecked="AsDefault_CheckChanged" />
+                    <dms:DMRadioButton IconColor="#FF1E9FFF" Margin="8,0"
+                                       x:Name="RadioMinimum" Content="最小化到系统托盘"
+                                       HorizontalAlignment="Left" Checked="Radio_CheckChanged" />
+                    <dms:DMRadioButton IconColor="#FF1E9FFF" Margin="8,0"
+                                       x:Name="RadioExit"  Content="退出程序"
+                                       HorizontalAlignment="Left" Checked="Radio_CheckChanged" />
+                    <dms:DMCheckBox IconColor="#FF1E9FFF" Margin="8,0"
+                                    x:Name="AsDefault"  Content="设置默认选项"
+                                    HorizontalAlignment="Left" Checked="AsDefault_CheckChanged"
+                                    Unchecked="AsDefault_CheckChanged" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

@@ -4,16 +4,17 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Controls;
+using System.Windows;
 using System.Windows.Data;
+using Unosquare.FFME;
 
 namespace Milkitic.OsuPlayer.Converter
 {
-    public class BackgroundConverter : IValueConverter
+    public class VideoBackConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return value is MediaElement media && media.Source != null ? Visibility.Visible : Visibility.Hidden;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

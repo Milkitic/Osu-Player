@@ -6,6 +6,7 @@
       xmlns:osuPlayer="clr-namespace:Milkitic.OsuPlayer"
       xmlns:data="clr-namespace:Milkitic.OsuPlayer.Data"
       xmlns:cvt="clr-namespace:Milkitic.OsuPlayer.Converter"
+      xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="CollectionPage" Unloaded="Page_Unloaded" IsHitTestVisible="True" Focusable="False">
@@ -13,17 +14,17 @@
         <cvt:DateTimeConverter x:Key="CvtDate"/>
     </Page.Resources>
     <Grid>
-        <TabControl Background="Transparent" BorderThickness="0">
+        <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem Style="{StaticResource PinkTabItem}">
                 <TabItem.Header>
-                    <TextBlock Text="我的收藏" Cursor="Hand" FontSize="16" Padding="18,10"/>
+                    <TextBlock Canvas.ZIndex="99" Text="我的收藏" Cursor="Hand" FontSize="16" Padding="18,10"/>
                 </TabItem.Header>
-                <Grid Margin="0,10,0,0">
+                <Grid x:Name="FrameGrid" Margin="0,10,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Grid x:Name="CollectionInfo">
+                    <Grid x:Name="CollectionInfoGrid" Margin="5">
                         <Grid.DataContext>
                             <data:Collection />
                         </Grid.DataContext>
@@ -32,7 +33,7 @@
                             <ColumnDefinition/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <Grid Width="150" Height="150" Margin="10">
+                        <Grid Width="192" Height="192" Margin="10">
                             <Image x:Name="CollectionThumb" RenderOptions.BitmapScalingMode="HighQuality"
                                    Source="{Binding Path=ImagePath}" Stretch="UniformToFill"
                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -40,19 +41,77 @@
                         <StackPanel Grid.Column="1" Margin="10">
                             <StackPanel Orientation="Horizontal">
                                 <Label x:Name="LblTitle" FontSize="22" Content="{Binding Path=Name}" VerticalAlignment="Center" />
-                                <Button Content="编辑信息" Width="70" Margin="5" Height="30" Style="{StaticResource CollectionButtonStyle}" />
-                                <Button x:Name="BtnDelCol" Content="删除收藏" Width="70" Margin="5" Height="30"  Style="{StaticResource CollectionButtonStyle}" Click="BtnDelCol_Click"/>
+                                <dms:DMButton Margin="5" Height="28" Width="28"
+                                              CornerRadius="50"
+                                              BorderThickness="1"
+                                              BorderBrush="#80FAFAFB"
+                                              Background="#FAFAFB"
+                                              Cursor="Hand">
+                                    <Viewbox Stretch="Uniform" Width="16" Height="16" Margin="1,0,0,0">
+                                        <Canvas Width="1000" Height="1000">
+                                            <Path Fill="#303030" Data="{StaticResource Edit1}" />
+                                            <Path Fill="#303030" Data="{StaticResource Edit2}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </dms:DMButton>
+                                <dms:DMButton x:Name="BtnDelCol" Width="28" Margin="5" Height="28" 
+                                              CornerRadius="50"
+                                              BorderThickness="1"
+                                              BorderBrush="#80ff4d40"
+                                              Background="#ff4d40"
+                                              Cursor="Hand"
+                                              Click="BtnDelCol_Click">
+                                    <Viewbox Stretch="Uniform" Width="16" Height="16">
+                                        <Canvas Width="1000" Height="1000">
+                                            <Path Fill="White" Data="{StaticResource Delete}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </dms:DMButton>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label Content="创建时间："/>
                                 <Label Content="{Binding Path=CreateTime, Converter={StaticResource CvtDate}}"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <Button Content="播放全部" Width="70" Margin="5" Height="30" Style="{StaticResource Collection2ButtonStyle}"/>
-                                <Button x:Name="BtnExportAll" Content="导出全部" Width="70" Margin="5" Height="30" Style="{StaticResource Collection2ButtonStyle}" Click="BtnExportAll_Click" />
+                                <dms:DMButton Margin="5" Height="28"
+                                              CornerRadius="5"
+                                              BorderThickness="1"
+                                              Background="#5d9cec"
+                                              BorderBrush="Transparent"
+                                              Foreground="White"
+                                              Cursor="Hand">
+                                    <StackPanel Orientation="Horizontal" Margin="10,0">
+                                        <Viewbox Stretch="Uniform" Width="16" Height="16">
+                                            <Canvas Width="1000" Height="1000">
+                                                <Canvas.RenderTransform>
+                                                    <TransformGroup>
+                                                        <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000"/>
+                                                        <TranslateTransform X="0.000000" Y="385.000000"/>
+                                                    </TransformGroup>
+                                                </Canvas.RenderTransform>
+                                                <Path Fill="White" Data="{StaticResource Play}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                        <Label Foreground="White" Content="全部播放" />
+                                    </StackPanel>
+                                </dms:DMButton>
+                                <dms:DMButton x:Name="BtnExportAll" Width="auto" Margin="5" Height="28"
+                                              Click="BtnExportAll_Click" CornerRadius="5"
+                                              BorderThickness="1"
+                                              Cursor="Hand" Background="#FAFAFB">
+                                    <StackPanel Orientation="Horizontal" Margin="10,0">
+                                        <Viewbox Stretch="Uniform" Width="16" Height="16">
+                                            <Canvas Width="1000" Height="1000">
+                                                <Path Fill="#303030" Data="{StaticResource Export1}"/>
+                                                <Path Fill="#303030" Data="{StaticResource Export2}"/>
+                                            </Canvas>
+                                        </Viewbox>
+                                        <Label Content="全部导出" />
+                                    </StackPanel>
+                                </dms:DMButton>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <Label Content="简介："></Label>
+                                <Label Content="简介："/>
                                 <Label x:Name="LblDescription" Content="{Binding Path=Description}">
                                     <Label.Style>
                                         <Style TargetType="{x:Type Label}">
@@ -67,7 +126,7 @@
                                         </Style>
                                     </Label.Style>
                                 </Label>
-                                <Label x:Name="LblAdd" Content="添加简介">
+                                <Label x:Name="LblAdd" Content="暂无" Foreground="#939393">
                                     <Label.Style>
                                         <Style TargetType="{x:Type Label}">
                                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -91,7 +150,7 @@
 
                     </Grid>
 
-                    <ListView Grid.Row="1" x:Name="MapList" Margin="0,30,0,2" Background="#40FFFFFF" BorderThickness="0"
+                    <ListView Grid.Row="1" x:Name="MapList" Margin="0,30,0,0" Background="#40FFFFFF" BorderThickness="0"
                   ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="RecentList_MouseDoubleClick"
                   ItemContainerStyle="{StaticResource GridView}">
                         <ListView.ContextMenu>

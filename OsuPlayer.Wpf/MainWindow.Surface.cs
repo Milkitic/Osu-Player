@@ -176,7 +176,7 @@ namespace Milkitic.OsuPlayer
         {
             MinHeight = 100 + 38;
             Height = 720 + 38;
-            MinWidth = 640 + 38;
+            MinWidth = 840 + 38;
             Width = 960 + 38;
             BtnPrev.Margin = new Thickness(8);
             BtnPlay.Margin = new Thickness(8);

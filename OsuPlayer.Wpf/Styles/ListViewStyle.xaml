@@ -38,14 +38,14 @@
         <Style.Resources>
             <!--ItemDefault Template-->
             <ControlTemplate x:Key="ItemDefault" TargetType="{x:Type ListViewItem}">
-                <Border Background="#80fafafa" x:Name="SelectedItem">
+                <Border Background="#b0fafafa" x:Name="SelectedItem" Margin="0,0,0,-1">
                     <GridViewRowPresenter Content="{TemplateBinding Content}"
                                               Columns="{TemplateBinding GridView.ColumnCollection}"/>
                 </Border>
             </ControlTemplate>
             <!--ItemDefault2 Template-->
             <ControlTemplate x:Key="ItemDefault2" TargetType="{x:Type ListViewItem}">
-                <Border Background="#80f5f5f7" x:Name="SelectedItem">
+                <Border Background="#b0f5f5f7" x:Name="SelectedItem" Margin="0,0,0,-1">
                     <GridViewRowPresenter Content="{TemplateBinding Content}"
                                               Columns="{TemplateBinding GridView.ColumnCollection}"/>
                 </Border>
@@ -53,7 +53,7 @@
             <!--ItemSelectedActived Template-->
             <ControlTemplate x:Key="ItemSelectedActive" 
                                  TargetType="{x:Type ListViewItem}">
-                <Border Background="#b0e3e3e5" x:Name="SelectedItem">
+                <Border Background="#b0e3e3e5" x:Name="SelectedItem" Margin="0,0,0,-1">
                     <GridViewRowPresenter Content="{TemplateBinding Content}"
                                               Columns="{TemplateBinding GridView.ColumnCollection}"/>
                 </Border>
@@ -61,14 +61,15 @@
             <!--ItemSelected Template-->
             <ControlTemplate x:Key="ItemSelected" 
                                  TargetType="{x:Type ListViewItem}">
-                <Border Background="#b0e3e3e5" x:Name="SelectedItem">
+                <Border Background="#f0e3e3e5" x:Name="SelectedItem" Margin="0,0,0,-1">
                     <GridViewRowPresenter Content="{TemplateBinding Content}"
-                                              Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                                          Columns="{TemplateBinding GridView.ColumnCollection}"
+                                          />
                 </Border>
             </ControlTemplate>
             <!--ItemMouseMove Template-->
             <ControlTemplate x:Key="ItemMouseOver" TargetType="{x:Type ListViewItem}">
-                <Border Background="#80ebeced" x:Name="SelectedItem">
+                <Border Background="#d0ebeced" x:Name="SelectedItem" Margin="0,0,0,-1">
                     <GridViewRowPresenter Content="{TemplateBinding Content}"
                                               Columns="{TemplateBinding GridView.ColumnCollection}"/>
                 </Border>

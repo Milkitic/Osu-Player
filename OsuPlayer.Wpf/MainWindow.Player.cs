@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using Milkitic.OsuLib;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media;
@@ -15,6 +6,16 @@ using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Pages;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace Milkitic.OsuPlayer
 {
@@ -31,9 +32,10 @@ namespace Milkitic.OsuPlayer
                 Filter = @"Osu Files(*.osu)|*.osu"
             };
             var result = openFileDialog.ShowDialog();
+            var ext = new FileInfo(openFileDialog.FileName).Extension;
             return (result.HasValue && result.Value) ? openFileDialog.FileName : null;
         }
-        
+
         public void PlayNewFile(string path)
         {
             PlayNewFile(path, true);
@@ -113,37 +115,36 @@ namespace Milkitic.OsuPlayer
                     /* Set Storyboard */
                     if (false) App.StoryboardProvider.LoadStoryboard(dir, App.HitsoundPlayer.Osufile);
 #endif
+                    /* Set Video */
                     if (VideoElement != null)
                     {
-                        await VideoElement.Stop();
-                        VideoElement.Position = new TimeSpan(0);
-                    }
-                    /* Set Video */
-                    if (FullMode && !_miniMode)
-                    {
-                        var videoName = App.HitsoundPlayer.Osufile.Events.VideoInfo?.Filename;
-                        if (videoName == null)
+                        await ClearVideoElement();
+
+                        if (FullMode && !_miniMode)
                         {
-                            VideoElement.Source = null;
-                            VideoElementBorder.Visibility = System.Windows.Visibility.Hidden;
-                        }
-                        else
-                        {
-                            var vPath = Path.Combine(dir, videoName);
-                            if (File.Exists(vPath))
-                            {
-                                VideoElement.Source = new Uri(vPath);
-                                _videoOffset = -App.HitsoundPlayer.Osufile.Events.VideoInfo.Offset;
-                                VideoElement.Position = new TimeSpan(0, 0, 0, 0, (int)_videoOffset);
-                            }
-                            else
+                            var videoName = App.HitsoundPlayer.Osufile.Events.VideoInfo?.Filename;
+                            if (videoName == null)
                             {
                                 VideoElement.Source = null;
                                 VideoElementBorder.Visibility = System.Windows.Visibility.Hidden;
                             }
+                            else
+                            {
+                                var vPath = Path.Combine(dir, videoName);
+                                if (File.Exists(vPath))
+                                {
+                                    VideoElement.Source = new Uri(vPath);
+                                    _videoOffset = -App.HitsoundPlayer.Osufile.Events.VideoInfo.Offset;
+                                    VideoElement.Position = new TimeSpan(0, 0, 0, 0, (int)_videoOffset);
+                                }
+                                else
+                                {
+                                    VideoElement.Source = null;
+                                    VideoElementBorder.Visibility = System.Windows.Visibility.Hidden;
+                                }
+                            }
                         }
                     }
-
                     /* Set Background */
                     if (App.HitsoundPlayer.Osufile.Events.BackgroundInfo != null)
                     {
@@ -224,7 +225,26 @@ namespace Milkitic.OsuPlayer
                     () => { });
             }
         }
-        
+
+        private async Task ClearVideoElement()
+        {
+            await VideoElement.Stop();
+            VideoElement.Position = new TimeSpan(0);
+            VideoElement.Source = null;
+            VideoElement.Dispose();
+            VideoElement = null;
+            VideoElementBorder.Visibility = Visibility.Hidden;
+            VideoElement = new Unosquare.FFME.MediaElement
+            {
+                IsMuted = true,
+                LoadedBehavior = MediaState.Manual,
+                Visibility = System.Windows.Visibility.Visible
+            };
+            VideoElement.MediaOpened += VideoElement_MediaOpened;
+            VideoElement.MediaFailed += VideoElement_MediaFailed;
+            VideoElementBorder.Children.Add(VideoElement);
+        }
+
         /// <summary>
         /// Play next song in list if list exist.
         /// </summary>

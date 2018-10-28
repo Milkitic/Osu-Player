@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Milkitic.OsuPlayer.Media.Storyboard;
+using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using Milkitic.OsuPlayer.Media.Storyboard;
 
 namespace Milkitic.OsuPlayer
 {
@@ -15,6 +15,8 @@ namespace Milkitic.OsuPlayer
         {
             InitializeComponent();
         }
+
+        public bool IsClosed { get; set; }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -44,6 +46,12 @@ namespace Milkitic.OsuPlayer
                 this.DragMove();
             if (e.RightButton == MouseButtonState.Pressed)
                 this.Hide();
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            App.StoryboardProvider.Dispose();
+            IsClosed = true;
         }
     }
 }

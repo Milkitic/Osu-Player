@@ -1,4 +1,5 @@
 ﻿using Milkitic.OsuPlayer.Data;
+using Milkitic.OsuPlayer.Media;
 using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Pages;
 using System;
@@ -10,7 +11,6 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
-using Milkitic.OsuPlayer.Media;
 
 namespace Milkitic.OsuPlayer
 {
@@ -45,7 +45,7 @@ namespace Milkitic.OsuPlayer
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Clear things.
         /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -87,13 +87,16 @@ namespace Milkitic.OsuPlayer
 
         #region Navigation events
 
+        private bool _ischanging = false;
+
         /// <summary>
         /// Navigate search page.
         /// </summary>
         private void BtnSearch_Click(object sender, RoutedEventArgs e)
         {
             if (!ValidateDb()) return;
-            MainFrame.Navigate(Pages.SearchPage);
+            if (MainFrame.Content?.GetType() != typeof(SearchPage))
+                MainFrame.Navigate(Pages.SearchPage);
             //MainFrame.Navigate(new Uri("Pages/SearchPage.xaml", UriKind.Relative), this);
         }
 
@@ -126,7 +129,8 @@ namespace Milkitic.OsuPlayer
         private void BtnRecent_Click(object sender, RoutedEventArgs e)
         {
             if (!ValidateDb()) return;
-            MainFrame.Navigate(Pages.RecentPlayPage);
+            if (MainFrame.Content?.GetType() != typeof(RecentPlayPage))
+                MainFrame.Navigate(Pages.RecentPlayPage);
         }
 
         /// <summary>
@@ -135,7 +139,8 @@ namespace Milkitic.OsuPlayer
         private void BtnExport_Click(object sender, RoutedEventArgs e)
         {
             if (!ValidateDb()) return;
-            MainFrame.Navigate(Pages.ExportPage);
+            if (MainFrame.Content?.GetType() != typeof(ExportPage))
+                MainFrame.Navigate(Pages.ExportPage);
         }
 
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
@@ -146,13 +151,35 @@ namespace Milkitic.OsuPlayer
         /// <summary>
         /// Navigate collection page.
         /// </summary>
-        private void CollectionList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void BtnCollection_Click(object sender, RoutedEventArgs e)
         {
-            if (!ValidateDb()) return;
-            if (CollectionList.SelectedItem == null)
-                return;
-            var collection = (Collection)CollectionList.SelectedItem;
-            MainFrame.Navigate(new CollectionPage(this, DbOperator.GetCollectionById(collection.Id)));
+            var btn = (ToggleButton)sender;
+            var colId = (string)btn.Tag;
+            if (MainFrame.Content?.GetType() != typeof(CollectionPage))
+                MainFrame.Navigate(new CollectionPage(this, DbOperator.GetCollectionById(colId)));
+            if (MainFrame.Content?.GetType() == typeof(CollectionPage))
+            {
+                var sb = (CollectionPage)MainFrame.Content;
+                if (sb.Id != colId)
+                    MainFrame.Navigate(new CollectionPage(this, DbOperator.GetCollectionById(colId)));
+            }
+        }
+
+        private void BtnNavigate_Checked(object sender, RoutedEventArgs e)
+        {
+            if (_ischanging) return;
+            _ischanging = true;
+            var btn = (ToggleButton)sender;
+            _optionContainer.Switch(btn);
+            _ischanging = false;
+        }
+
+        private void BtnNavigate_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (_ischanging) return;
+            _ischanging = true;
+            ((ToggleButton)sender).IsChecked = true;
+            _ischanging = false;
         }
 
         #endregion Navigation events
@@ -181,7 +208,7 @@ namespace Milkitic.OsuPlayer
             ToMiniMode();
         }
 
-		#endregion Title events
+        #endregion Title events
 
         #region Play control events
 
@@ -354,7 +381,7 @@ namespace Milkitic.OsuPlayer
             _scrollLock = false;
         }
 
-		private void Mod_CheckChanged(object sender, RoutedEventArgs e)
+        private void Mod_CheckChanged(object sender, RoutedEventArgs e)
         {
             PlayMod mod;
             if (ModNone.IsChecked == true)

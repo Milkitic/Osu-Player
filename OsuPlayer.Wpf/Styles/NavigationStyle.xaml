@@ -2,24 +2,24 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Milkitic.OsuPlayer">
 
-    <!-- Navigation text block style -->
+    <!-- Navigation text block style --><!--
     <Style x:Key="NavigationTextBlockStyle" TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="#FEFEFEFE"/>
         <Setter Property="FontSize" Value="13px"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <!-- Sets the glass opacity to 1, therefore, the glass "appears" when user mouses over it. -->
+                --><!-- Sets the glass opacity to 1, therefore, the glass "appears" when user mouses over it. --><!--
                 <Setter Property="Foreground" Value="Black"/>
             </Trigger>
         </Style.Triggers>
-    </Style>
+    </Style>-->
     <!-- Navigation button style -->
-    <Style x:Key="NavigationButtonStyle" TargetType="{x:Type Button}">
+    <Style x:Key="NavigationButtonStyle" TargetType="{x:Type ToggleButton}">
         <Setter Property="Foreground" Value="#FEFEFEFE" />
         <Setter Property="Background" Value="#F8F8F8" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
                     <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" ClipToBounds="True">
                         <Rectangle x:Name="innerRectangle" HorizontalAlignment="Stretch"
                                    VerticalAlignment="Stretch" Fill="{TemplateBinding Background}" StrokeThickness="0" Opacity="0" />
@@ -33,6 +33,9 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Rectangle.Opacity" Value="1" TargetName="innerRectangle" />
                         </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Rectangle.Opacity" Value="1" TargetName="innerRectangle" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -40,6 +43,9 @@
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="Black"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Foreground" Value="Black" />
             </Trigger>
         </Style.Triggers>
     </Style>

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Milkitic.OsuLib.Enums;
+using System.Collections.Generic;
 using System.Linq;
-using Milkitic.OsuLib.Enums;
 
 namespace Milkitic.OsuPlayer.Media
 {

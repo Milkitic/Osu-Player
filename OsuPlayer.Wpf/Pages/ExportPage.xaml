@@ -12,7 +12,7 @@
       Title="ExportPage">
 
     <Grid>
-        <TabControl Background="Transparent" BorderThickness="0">
+        <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem Style="{StaticResource PinkTabItem}">
                 <TabItem.Header>
                     <TextBlock Text="已导出" Cursor="Hand" FontSize="16" Padding="26,10"/>

@@ -4,19 +4,21 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:Milkitic.OsuPlayer.Pages.Settings"
+      xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="PlayPage" Loaded="Page_Loaded">
 
     <Grid>
-        <ScrollViewer>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="全局音效延迟" HorizontalAlignment="Left" />
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                    <Slider x:Name="SliderOffset" Style="{StaticResource ConfigSliderStyle}" Width="300" Minimum="-200"
+                    <Slider x:Name="SliderOffset" Style="{StaticResource DMOpacitySlider}" 
+                            Width="300" Minimum="-200" Margin="8,0"
                             Maximum="200" ValueChanged="SliderOffset_ValueChanged" />
-                    <TextBox x:Name="BoxOffset" Width="35" Style="{StaticResource ConfigTextBoxStyle}"
-                             TextChanged="BoxOffset_TextChanged" />
+                    <dms:DMTextBox x:Name="BoxOffset" Width="35" BorderBrush="#33999999" Background="White" TextAlignment="Center"
+                                   CornerRadius="2" TextChanged="BoxOffset_TextChanged" />
                 </StackPanel>
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="播放列表：" HorizontalAlignment="Left" Visibility="Collapsed" />
                 <StackPanel HorizontalAlignment="Left">
@@ -26,19 +28,23 @@
                                  Content="播放单曲时，仅把此单曲添加到播放列表" Checked="RadioInsert_Checked" Visibility="Collapsed" />
                 </StackPanel>
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="自动播放：" HorizontalAlignment="Left" />
-                <CheckBox x:Name="ChkAutoPlay" Style="{StaticResource ConfigCheckStyle}" Content="程序启动时自动播放"
-                          HorizontalAlignment="Left" Checked="ChkAutoPlay_CheckChanged"
-                          Unchecked="ChkAutoPlay_CheckChanged" />
+                <dms:DMCheckBox x:Name="ChkAutoPlay" IconColor="#FF1E9FFF" Margin="8,0"
+                                Content="程序启动时自动播放" HorizontalAlignment="Left"
+                                Checked="ChkAutoPlay_CheckChanged"
+                                Unchecked="ChkAutoPlay_CheckChanged" />
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="播放进度：" HorizontalAlignment="Left" />
-                <CheckBox x:Name="ChkMemory" Style="{StaticResource ConfigCheckStyle}" Content="程序启动时恢复上次播放"
-                          HorizontalAlignment="Left" Checked="ChkMemory_CheckChanged"
-                          Unchecked="ChkMemory_CheckChanged" />
+                <dms:DMCheckBox x:Name="ChkMemory" IconColor="#FF1E9FFF" Margin="8,0"
+                                Content="程序启动时恢复上次播放" HorizontalAlignment="Left"
+                                Checked="ChkMemory_CheckChanged"
+                                Unchecked="ChkMemory_CheckChanged" />
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="音频延迟（实验性）：" HorizontalAlignment="Left" />
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                    <Slider x:Name="SliderLatency" Style="{StaticResource ConfigSliderStyle}" Width="300" Minimum="0"
+                    <Slider x:Name="SliderLatency" Style="{StaticResource DMOpacitySlider}"
+                            Width="300" Minimum="0" Margin="8,0"
                             Maximum="200" ValueChanged="SliderLatency_ValueChanged" />
-                    <TextBox x:Name="BoxLatency" Width="35" Style="{StaticResource ConfigTextBoxStyle}"
-                             TextChanged="BoxLatency_TextChanged" />
+                    <dms:DMTextBox x:Name="BoxLatency" Width="35" BorderBrush="#33999999" TextAlignment="Center"
+                                   Background="White" 
+                                   TextChanged="BoxLatency_TextChanged" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

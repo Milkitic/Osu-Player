@@ -4,5 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="StoryboardWindow" Width="640" Height="360" Loaded="Window_Loaded" WindowStyle="None"
-        ResizeMode="NoResize" MouseDown="Window_MouseDown" Background="White" ShowInTaskbar="False" IsTabStop="False" IsHitTestVisible="False" Focusable="False" />
+        Title="StoryboardWindow" Width="640" Height="360" WindowStyle="None" ResizeMode="NoResize"
+        MouseDown="Window_MouseDown" Background="White" ShowInTaskbar="False" IsTabStop="False"
+        IsHitTestVisible="False" Focusable="False"
+        Loaded="Window_Loaded" Closed="Window_Closed"/>

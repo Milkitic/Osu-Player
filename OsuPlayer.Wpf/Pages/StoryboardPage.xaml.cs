@@ -20,7 +20,7 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (_sbWindow == null)
+            if (_sbWindow == null || _sbWindow.IsClosed)
             {
                 _sbWindow = new StoryboardWindow();
                 _mainWindow.Deactivated += MainWindow_Deactivated;
@@ -28,8 +28,8 @@ namespace Milkitic.OsuPlayer.Pages
                 _mainWindow.Closing += MainWindow_Closing;
                 _mainWindow.LocationChanged += _mainWindow_LocationChanged;
             }
-            _sbWindow.Show();
             ReLocate();
+            _sbWindow.Show();
         }
 
         private void _mainWindow_LocationChanged(object sender, EventArgs e)
@@ -42,13 +42,15 @@ namespace Milkitic.OsuPlayer.Pages
             Window window = Window.GetWindow(SbScene);
             if (window == null) return;
             Point point = SbScene.TransformToAncestor(window).Transform(new Point(0, 0));
-            _sbWindow.Left = window.Left + point.X + 8;
-            _sbWindow.Top = window.Top + point.Y + 31;
+            //_sbWindow.Left = window.Left + point.X + 8;
+            //_sbWindow.Top = window.Top + point.Y + 31;
+            _sbWindow.Left = window.Left + point.X;
+            _sbWindow.Top = window.Top + point.Y;
         }
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _sbWindow.Close();
+            _sbWindow?.Close();
         }
 
         private void MainWindow_Activated(object sender, EventArgs e)
@@ -59,6 +61,11 @@ namespace Milkitic.OsuPlayer.Pages
         private void MainWindow_Deactivated(object sender, EventArgs e)
         {
             _sbWindow.Topmost = false;
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _sbWindow?.Close();
         }
     }
 }

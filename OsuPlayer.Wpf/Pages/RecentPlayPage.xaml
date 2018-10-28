@@ -9,10 +9,10 @@
       Title="RecentPlayPage" Loaded="Page_Loaded">
 
     <Grid>
-        <TabControl Background="Transparent" BorderThickness="0">
+        <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem Style="{StaticResource PinkTabItem}">
                 <TabItem.Header>
-                    <TextBlock x:Name="LblTitle" Text="最近播放" Cursor="Hand" FontSize="16" Padding="26,10"/>
+                    <TextBlock x:Name="LblTitle" Text="最近播放" Cursor="Hand" FontSize="16" Padding="18,10"/>
                 </TabItem.Header>
                 <Grid Margin="0,10,0,0">
                     <Grid.RowDefinitions>

@@ -4,41 +4,49 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:Milkitic.OsuPlayer.Pages.Settings"
+      xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="LyricPage" Loaded="Page_Loaded">
 
     <Grid>
-        <ScrollViewer>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="桌面歌词：" HorizontalAlignment="Left" />
-                <CheckBox x:Name="EnableLyric" Style="{StaticResource ConfigCheckStyle}" Content="启用桌面歌词"
-                          HorizontalAlignment="Left" Checked="EnableLyric_CheckChanged"
-                          Unchecked="EnableLyric_CheckChanged" />
+                <dms:DMCheckBox x:Name="EnableLyric" IconColor="#FF1E9FFF" Margin="8,0"
+                                Content="启用桌面歌词"
+                                HorizontalAlignment="Left" Checked="EnableLyric_CheckChanged"
+                                Unchecked="EnableLyric_CheckChanged" />
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="源：" HorizontalAlignment="Left" />
                 <StackPanel HorizontalAlignment="Left">
-                    <RadioButton x:Name="SourceAuto" Style="{StaticResource ConfigRadioStyle}" Content="自动"
-                                 Checked="Source_CheckChanged" />
-                    <RadioButton x:Name="SourceNetease" Style="{StaticResource ConfigRadioStyle}" Content="网易云音乐"
-                                 Checked="Source_CheckChanged" />
-                    <RadioButton x:Name="SourceKugou" Style="{StaticResource ConfigRadioStyle}" Content="酷狗音乐"
-                                 Checked="Source_CheckChanged" />
-                    <RadioButton x:Name="SourceQqMusic" Style="{StaticResource ConfigRadioStyle}" Content="QQ音乐"
-                                 Checked="Source_CheckChanged" />
+                    <dms:DMRadioButton x:Name="SourceAuto" IconColor="#FF1E9FFF" Margin="8,0"
+                                       Content="自动"
+                                       Checked="Source_CheckChanged" />
+                    <dms:DMRadioButton x:Name="SourceNetease"  IconColor="#FF1E9FFF" Margin="8,0"
+                                       Content="网易云音乐"
+                                       Checked="Source_CheckChanged" />
+                    <dms:DMRadioButton x:Name="SourceKugou" IconColor="#FF1E9FFF" Margin="8,0"
+                                       Content="酷狗音乐"
+                                       Checked="Source_CheckChanged" />
+                    <dms:DMRadioButton x:Name="SourceQqMusic"  IconColor="#FF1E9FFF" Margin="8,0"
+                                       Content="QQ音乐"
+                                       Checked="Source_CheckChanged" />
                 </StackPanel>
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="翻译：" HorizontalAlignment="Left" />
                 <StackPanel HorizontalAlignment="Left">
-                    <RadioButton x:Name="ShowAll" Style="{StaticResource ConfigRadioStyle}" Content="显示全部歌词"
-                                 Checked="Show_CheckChanged" />
-                    <RadioButton x:Name="ShowOrigin" Style="{StaticResource ConfigRadioStyle}"
-                                 Content="偏好源歌词（仅Netease源有效）" Checked="Show_CheckChanged" />
-                    <RadioButton x:Name="ShowTrans" Style="{StaticResource ConfigRadioStyle}"
-                                 Content="偏好翻译歌词（仅Netease源有效）" Checked="Show_CheckChanged" />
+                    <dms:DMRadioButton x:Name="ShowAll" IconColor="#FF1E9FFF" Margin="8,0"
+                                       Content="显示全部歌词"
+                                       Checked="Show_CheckChanged" />
+                    <dms:DMRadioButton x:Name="ShowOrigin"  IconColor="#FF1E9FFF" Margin="8,0"
+                                       Content="偏好源歌词（仅Netease源有效）" Checked="Show_CheckChanged" />
+                    <dms:DMRadioButton x:Name="ShowTrans"  IconColor="#FF1E9FFF" Margin="8,0"
+                                       Content="偏好翻译歌词（仅Netease源有效）" Checked="Show_CheckChanged" />
                 </StackPanel>
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="匹配：" HorizontalAlignment="Left" />
-                <CheckBox x:Name="StrictMode" Style="{StaticResource ConfigCheckStyle}" Content="启用严格匹配"
-                          HorizontalAlignment="Left" Checked="StrictMode_CheckChanged"
-                          Unchecked="StrictMode_CheckChanged" />
+                <dms:DMCheckBox x:Name="StrictMode"  IconColor="#FF1E9FFF" Margin="8,0"
+                                Content="启用严格匹配" HorizontalAlignment="Left" 
+                                Checked="StrictMode_CheckChanged"
+                                Unchecked="StrictMode_CheckChanged" />
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="缓存：" HorizontalAlignment="Left"
                        Visibility="Collapsed" />
                 <CheckBox x:Name="EnableCache" Style="{StaticResource ConfigCheckStyle}" Content="启用歌词缓存，离线也可使用"

@@ -20,10 +20,10 @@ namespace Milkitic.OsuPlayer.Pages
     public partial class CollectionPage : Page
     {
         private MainWindow ParentWindow { get; set; }
+        public string Id => _collection.Id;
         private readonly Collection _collection;
         public List<BeatmapViewModel> ViewModels;
         private IEnumerable<BeatmapEntry> _entries;
-
         public CollectionPage(MainWindow mainWindow, Collection collection)
         {
             ParentWindow = mainWindow;
@@ -42,12 +42,12 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void UpdateList()
         {
-            CollectionInfo.DataContext = _collection;
+            CollectionInfoGrid.DataContext = _collection;
             var infos = (List<MapInfo>)DbOperator.GetMapsFromCollection(_collection);
             _entries = App.Beatmaps.GetMapListFromDb(infos, false);
             ViewModels = _entries.Transform(true).ToList();
             for (var i = 0; i < ViewModels.Count; i++)
-                ViewModels[i].Id = i.ToString("00");
+                ViewModels[i].Id = (i + 1).ToString("00");
 
             MapList.DataContext = ViewModels;
             ListCount.Content = ViewModels.Count();

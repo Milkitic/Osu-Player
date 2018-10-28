@@ -1,42 +1,69 @@
-﻿<Window x:Class="Milkitic.OsuPlayer.ConfigWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Milkitic.OsuPlayer"
-        mc:Ignorable="d"
-        Title="播放器设置" Height="400" MinWidth="600" Loaded="Window_Loaded" SizeToContent="Width" ResizeMode="NoResize"
-        Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico">
-    <Grid>
-        <DockPanel Width="Auto" Height="Auto">
-            <Grid>
-                <GroupBox Background="#99EFEFF8" Width="150">
-                    <StackPanel>
-                        <Label Style="{StaticResource NavigationLabelStyle}">设置</Label>
-                        <Button x:Name="BtnGeneral" Height="40" Click="BtnGeneral_Click"
-                                            Content="常规"
-                                            Style="{StaticResource NavigationButtonStyle}" />
-                        <Button x:Name="BtnPlay" Height="40" Click="BtnPlay_Click"
-                                            Content="播放"
-                                            Style="{StaticResource NavigationButtonStyle}" />
-                        <Button x:Name="BtnHotkey" Height="40" Click="BtnHotkey_Click"
-                                            Content="热键"
-                                            Style="{StaticResource NavigationButtonStyle}" />
-                        <Button x:Name="BtnLyric" Height="40" Click="BtnLyric_Click"
-                                        Content="歌词"
-                                        Style="{StaticResource NavigationButtonStyle}" />
-                        <Button x:Name="BtnExport" Height="40" Click="BtnExport_Click"
-                                        Content="导出设置"
-                                        Style="{StaticResource NavigationButtonStyle}" />
-                        <Button x:Name="BtnAbout" Height="40" Click="BtnAbout_Click"
-                                        Content="关于"
-                                        Style="{StaticResource NavigationButtonStyle}" />
-                    </StackPanel>
-                </GroupBox>
+﻿<dms:DMSkinSimpleWindow x:Class="Milkitic.OsuPlayer.ConfigWindow"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        xmlns:local="clr-namespace:Milkitic.OsuPlayer"
+                        xmlns:dms="clr-namespace:DMSkin.WPF;assembly=DMSkin.WPF"
+                        xmlns:controls="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+                        mc:Ignorable="d"
+                        Title="播放器设置" Height="400" MinWidth="600" Loaded="Window_Loaded" SizeToContent="Width"
+                        ResizeMode="NoResize"
+                        Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
+                        DMWindowShadowColor="#FF000000"
+                        DMWindowShadowSize="20"
+                        DMWindowShadowOpacity="0.5" x:Name="CfgWindow" WindowStartupLocation="CenterScreen">
+    <Grid Background="#323232">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid x:Name="TitleBarArea" Grid.Row="0" Height="32">
+            <Label Content="{Binding Title,ElementName=CfgWindow}" Foreground="White" Margin="8,0,0,0"
+                   VerticalContentAlignment="Center" />
+            <StackPanel
+                Height="{Binding DMSystemButtonSize}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <controls:DMSystemCloseButton
+                    DMSystemButtonForeground="#E0EEEEEE"
+                    DMSystemButtonHoverForeground="#FFFFFF"
+                    DMSystemButtonSize="32" />
+            </StackPanel>
+        </Grid>
+        <DockPanel Grid.Row="1" Width="Auto" Height="Auto">
+            <Grid Width="150">
+                <StackPanel>
+                    <Label Style="{StaticResource NavigationLabelStyle}">
+                        <TextBlock Margin="5,0,0,0">设置</TextBlock>
+                    </Label>
+                    <ToggleButton x:Name="BtnGeneral" Height="40" Click="BtnGeneral_Click"
+                                  Content="常规" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
+                                  Style="{StaticResource NavigationButtonStyle}" />
+                    <ToggleButton x:Name="BtnPlay" Height="40" Click="BtnPlay_Click"
+                                  Content="播放" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
+                                  Style="{StaticResource NavigationButtonStyle}" />
+                    <ToggleButton x:Name="BtnHotkey" Height="40" Click="BtnHotkey_Click"
+                                  Content="热键" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
+                                  Style="{StaticResource NavigationButtonStyle}" />
+                    <ToggleButton x:Name="BtnLyric" Height="40" Click="BtnLyric_Click"
+                                  Content="歌词" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
+                                  Style="{StaticResource NavigationButtonStyle}" />
+                    <ToggleButton x:Name="BtnExport" Height="40" Click="BtnExport_Click"
+                                  Content="导出设置" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
+                                  Style="{StaticResource NavigationButtonStyle}" />
+                    <ToggleButton x:Name="BtnAbout" Height="40" Click="BtnAbout_Click"
+                                  Content="关于" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
+                                  Style="{StaticResource NavigationButtonStyle}" />
+                </StackPanel>
             </Grid>
-            <Grid>
+            <Grid Background="#FEFEFE">
                 <Frame Name="MainFrame" NavigationUIVisibility="Hidden"></Frame>
             </Grid>
         </DockPanel>
     </Grid>
-</Window>
+</dms:DMSkinSimpleWindow>
+
+
+

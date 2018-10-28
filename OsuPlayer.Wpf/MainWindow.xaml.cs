@@ -1,7 +1,9 @@
 ﻿using DMSkin.WPF;
 using Milkitic.OsuPlayer.Control;
+using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media;
 using Milkitic.OsuPlayer.Pages;
+using Milkitic.OsuPlayer.Utils;
 using System;
 using System.IO;
 using System.Threading;
@@ -34,10 +36,12 @@ namespace Milkitic.OsuPlayer
         public readonly LyricWindow LyricWindow;
         public ConfigWindow ConfigWindow;
         public readonly OverallKeyHook OverallKeyHook;
-
         public bool ForceExit = false;
+
         private WindowState _lastState;
         private bool _miniMode = false;
+        private readonly OptionContainer _optionContainer = new OptionContainer();
+
         public bool FullMode => FullModeArea.Visibility == Visibility.Visible;
 
         //local player control

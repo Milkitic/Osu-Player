@@ -62,7 +62,10 @@ namespace Milkitic.OsuPlayer.Media.Music
         {
             FileInfo fi = new FileInfo(filePath);
             if (!fi.Exists)
-                throw new FileNotFoundException("找不到音乐文件…", fi.FullName);
+            {
+                //throw new FileNotFoundException("找不到音乐文件…", fi.FullName);
+                filePath = Path.Combine(Domain.DefaultPath, "blank.wav");
+            }
 
             _reader = new MyAudioFileReader(filePath);
             //if (UseSoundTouch)
@@ -164,6 +167,7 @@ namespace Milkitic.OsuPlayer.Media.Music
 
         public void SetTime(int ms, bool play = true)
         {
+            if (ms < 0) ms = 0;
             var span = new TimeSpan(0, 0, 0, 0, ms);
             _reader.CurrentTime = span >= _reader.TotalTime ? _reader.TotalTime - new TimeSpan(0, 0, 0, 0, 1) : span;
             PlayerStatus = PlayerStatus.Playing;
