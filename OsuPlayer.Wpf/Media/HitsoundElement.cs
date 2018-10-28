@@ -100,6 +100,8 @@ namespace Milkitic.OsuPlayer.Media
                 string track = (Track > 1 ? Track.ToString() : "");
                 return DefaultFileNames.ToArray().Select(s =>
                 {
+                    if (s == CustomFile)
+                        return s;
                     var splitted = s.Split('.');
                     return splitted.Length == 1 ? s : $"{splitted[0]}{track}.{splitted[1]}";
                 }).ToArray();
