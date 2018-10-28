@@ -69,7 +69,7 @@ namespace Milkitic.OsuPlayer.Media.Music
 
             _reader = new MyAudioFileReader(filePath);
             //if (UseSoundTouch)
-                _device = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, Latency);
+            _device = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, Latency);
             //else
             //    _device = new WaveOutEvent { DesiredLatency = App.Config.Play.DesiredLatency };
             _device.PlaybackStopped += (sender, args) => { PlayerStatus = PlayerStatus.Finished; };
@@ -100,7 +100,7 @@ namespace Milkitic.OsuPlayer.Media.Music
                 {
                     if (PlayerStatus != PlayerStatus.NotInitialized && _reader != null)
                     {
-                        _reader.Volume = 1f;
+                        _reader.Volume = 1f * App.Config.Volume.Music * App.Config.Volume.Main;
                         PlayTime = (int)_reader?.CurrentTime.TotalMilliseconds;
                         if (PlayTime >= (int)_reader?.TotalTime.TotalMilliseconds)
                             PlayerStatus = PlayerStatus.Finished;

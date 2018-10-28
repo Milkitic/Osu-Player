@@ -426,6 +426,7 @@ namespace Milkitic.OsuPlayer
         private void MasterVolume_DragDelta(object sender, DragDeltaEventArgs e)
         {
             App.Config.Volume.Main = (float)(MasterVolume.Value / 100);
+            App.SaveConfig();
         }
 
         /// <summary>
@@ -434,6 +435,7 @@ namespace Milkitic.OsuPlayer
         private void MusicVolume_DragDelta(object sender, DragDeltaEventArgs e)
         {
             App.Config.Volume.Music = (float)(MusicVolume.Value / 100);
+            App.SaveConfig();
         }
 
         /// <summary>
@@ -442,6 +444,7 @@ namespace Milkitic.OsuPlayer
         private void HitsoundVolume_DragDelta(object sender, DragDeltaEventArgs e)
         {
             App.Config.Volume.Hitsound = (float)(HitsoundVolume.Value / 100);
+            App.SaveConfig();
         }
 
         /// <summary>
