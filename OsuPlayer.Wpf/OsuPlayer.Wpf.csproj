@@ -153,7 +153,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Config.cs" />
-    <Compile Include="ConfigWindow.xaml.cs">
+    <Compile Include="Windows\ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\MessageBoxWindow.xaml.cs">
@@ -166,8 +166,8 @@
     <Compile Include="Data\ModelsContexts.cs" />
     <Compile Include="Data\DbOperator.cs" />
     <Compile Include="Domain.cs" />
-    <Compile Include="MainWindow.Player.cs" />
-    <Compile Include="MainWindow.Surface.cs" />
+    <Compile Include="Windows\MainWindow.Player.cs" />
+    <Compile Include="Windows\MainWindow.Surface.cs" />
     <Compile Include="Media\Enums.cs" />
     <Compile Include="Media\IPlayer.cs" />
     <Compile Include="Media\Lyric\LyricProvider.cs" />
@@ -194,7 +194,7 @@
     <Compile Include="Media\Lyric\SourcePrivoder\QQMusic\QQMusicSourceProvider.cs" />
     <Compile Include="Media\Lyric\SourcePrivoder\Settings.cs" />
     <Compile Include="Media\Lyric\SourcePrivoder\Utils.cs" />
-    <Compile Include="LyricWindow.xaml.cs">
+    <Compile Include="Windows\LyricWindow.xaml.cs">
       <DependentUpon>LyricWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Media\Music\MusicPlayer.cs" />
@@ -209,7 +209,7 @@
     <Compile Include="Media\HitsoundElement.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\MapIndentity.cs" />
-    <Compile Include="NewVersionWindow.xaml.cs">
+    <Compile Include="Windows\NewVersionWindow.xaml.cs">
       <DependentUpon>NewVersionWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="OverallKeyHook.cs" />
@@ -297,7 +297,8 @@
     <Compile Include="Utils\KeyConverter.cs" />
     <Compile Include="Utils\Updater.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
-    <Page Include="ConfigWindow.xaml">
+    <Compile Include="Windows\WindowBase.cs" />
+    <Page Include="Windows\ConfigWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -305,11 +306,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LyricWindow.xaml">
+    <Page Include="Windows\LyricWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -317,11 +318,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="NewVersionWindow.xaml">
+    <Page Include="Windows\NewVersionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -456,7 +457,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="MainWindow.Event.cs" />
+    <Compile Include="Windows\MainWindow.Event.cs" />
     <None Include="Media\Lyric\readme.md" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

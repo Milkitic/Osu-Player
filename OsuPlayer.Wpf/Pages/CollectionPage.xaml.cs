@@ -11,6 +11,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milkitic.OsuPlayer.Windows;
 using Collection = Milkitic.OsuPlayer.Data.Collection;
 
 namespace Milkitic.OsuPlayer.Pages

@@ -1,4 +1,12 @@
-﻿using Microsoft.Win32;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using Microsoft.Win32;
 using Milkitic.OsuLib;
 using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
@@ -7,18 +15,8 @@ using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Pages;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 
-namespace Milkitic.OsuPlayer
+namespace Milkitic.OsuPlayer.Windows
 {
     partial class MainWindow
     {
@@ -194,7 +192,7 @@ namespace Milkitic.OsuPlayer
                 catch (MultiTimingSectionException ex)
                 {
                     var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
-                        MessageBoxImage.Error);
+                        MessageBoxImage.Warning);
                     if (result == MessageBoxResult.OK)
                     {
                         if (App.HitsoundPlayer == null) return;
@@ -204,7 +202,7 @@ namespace Milkitic.OsuPlayer
                 catch (BadOsuFormatException ex)
                 {
                     var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
-                        MessageBoxImage.Error);
+                        MessageBoxImage.Warning);
                     if (result == MessageBoxResult.OK)
                     {
                         if (App.HitsoundPlayer == null) return;
@@ -213,7 +211,8 @@ namespace Milkitic.OsuPlayer
                 }
                 catch (VersionNotSupportedException ex)
                 {
-                    var result = MsgBox.Show(this, Title, @"铺面读取时发生问题：" + ex.Message);
+                    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
                     if (result == MessageBoxResult.OK)
                     {
                         if (App.HitsoundPlayer == null) return;
@@ -222,7 +221,8 @@ namespace Milkitic.OsuPlayer
                 }
                 catch (Exception ex)
                 {
-                    var result = MsgBox.Show(this, Title, @"发生未处理的异常问题：" + (ex.InnerException ?? ex));
+                    var result = MsgBox.Show(this, @"发生未处理的异常问题：" + (ex.InnerException ?? ex), Title,
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                     if (result == MessageBoxResult.OK)
                     {
                         if (App.HitsoundPlayer == null) return;
@@ -234,8 +234,10 @@ namespace Milkitic.OsuPlayer
             }
             else
             {
-                MsgBox.Show(this, Title, string.Format(@"所选文件不存在{0}。",
-                    App.Beatmaps == null ? "" : " ，可能是db没有及时更新。请关闭此播放器或osu后重试"));
+                MsgBox.Show(this, string.Format(@"所选文件不存在{0}。", App.Beatmaps == null
+                        ? ""
+                        : " ，可能是db没有及时更新。请关闭此播放器或osu后重试"),
+                    Title, MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 

@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milkitic.OsuPlayer.Windows;
 using Path = System.IO.Path;
 
 namespace Milkitic.OsuPlayer.Pages

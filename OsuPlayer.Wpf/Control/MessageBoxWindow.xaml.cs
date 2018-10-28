@@ -66,20 +66,23 @@ namespace Milkitic.OsuPlayer.Control
             {
                 case MessageBoxImage.None:
                     TitleBarArea.Background = new SolidColorBrush(Color.FromRgb(240, 240, 240));
-                    ImgIcon.Visibility = Visibility.Collapsed;
                     BtnClose.DMSystemButtonForeground = new SolidColorBrush(Color.FromArgb(224, 128, 128, 128));
                     LblTitle.Foreground = new SolidColorBrush(Color.FromRgb(48, 48, 48));
                     break;
                 case MessageBoxImage.Error:
+                    ErrorIcon.Visibility = Visibility.Visible;
                     TitleBarArea.Background = new SolidColorBrush(Color.FromRgb(242, 51, 63));
                     break;
                 case MessageBoxImage.Question:
+                    QuestionIcon.Visibility = Visibility.Visible;
                     TitleBarArea.Background = new SolidColorBrush(Color.FromRgb(75, 154, 254));
                     break;
                 case MessageBoxImage.Exclamation:
+                    WarnIcon.Visibility = Visibility.Visible;
                     TitleBarArea.Background = new SolidColorBrush(Color.FromRgb(255, 170, 53));
                     break;
                 case MessageBoxImage.Information:
+                    InfoIcon.Visibility = Visibility.Visible;
                     TitleBarArea.Background = new SolidColorBrush(Color.FromRgb(78, 192, 69));
                     break;
             }

@@ -1,16 +1,15 @@
-﻿using Milkitic.OsuPlayer.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media;
 
-namespace Milkitic.OsuPlayer
+namespace Milkitic.OsuPlayer.Windows
 {
     partial class MainWindow
     {

@@ -1,4 +1,4 @@
-﻿<dms:DMSkinSimpleWindow x:Class="Milkitic.OsuPlayer.ConfigWindow"
+﻿<windows:EffectWindowBase x:Class="Milkitic.OsuPlayer.Windows.ConfigWindow"
                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,6 +6,7 @@
                         xmlns:local="clr-namespace:Milkitic.OsuPlayer"
                         xmlns:dms="clr-namespace:DMSkin.WPF;assembly=DMSkin.WPF"
                         xmlns:controls="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+                        xmlns:windows="clr-namespace:Milkitic.OsuPlayer.Windows"
                         mc:Ignorable="d"
                         Title="播放器设置" Height="400" MinWidth="600" Loaded="Window_Loaded" SizeToContent="Width"
                         ResizeMode="NoResize"
@@ -62,8 +63,14 @@
                 <Frame Name="MainFrame" NavigationUIVisibility="Hidden"></Frame>
             </Grid>
         </DockPanel>
+        <Border x:Name="MsgBoxCover" Grid.Row="1" Background="#80FFFFFF"
+                Visibility="Hidden" />
     </Grid>
-</dms:DMSkinSimpleWindow>
+</windows:EffectWindowBase>
+
+
+
+
 
 
 

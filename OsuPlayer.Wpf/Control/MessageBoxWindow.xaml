@@ -7,7 +7,7 @@
                         xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
                         xmlns:wpf="clr-namespace:DMSkin.WPF;assembly=DMSkin.WPF"
                         mc:Ignorable="d"
-                        Title="MessageBoxWindow" Height="180" MinWidth="280" Width="280"
+                        Title="MessageBoxWindow" Height="200" MinWidth="280" Width="280"
                         x:Name="MsgBoxWindow" SizeToContent="WidthAndHeight"
                         WindowStartupLocation="CenterScreen">
     <Grid Background="White">
@@ -36,12 +36,41 @@
                     Click="DMSystemCloseButton_Click"/>
             </StackPanel>
         </Grid>
-        <Grid Grid.Row="1" Margin="15">
+        <Grid Grid.Row="1" Margin="30,15">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Image x:Name="ImgIcon" Width="48" Height="48" Margin="5" />
+            <Viewbox x:Name="InfoIcon" Stretch="Uniform" Width="48" Height="48" Margin="5" Grid.Column="0"
+                     Visibility="Collapsed">
+                <Canvas Width="1000" Height="1000">
+                    <Canvas.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000"/>
+                            <TranslateTransform X="0.000000" Y="511.000000"/>
+                        </TransformGroup>
+                    </Canvas.RenderTransform>
+                    <Path Fill="#4EC045" Data="{StaticResource InfoIcon}" />
+                </Canvas>
+            </Viewbox>
+            <Viewbox x:Name="WarnIcon" Stretch="Uniform" Width="48" Height="48" Margin="5" Grid.Column="0"
+                     Visibility="Collapsed">
+                <Canvas Width="1000" Height="1000">
+                    <Path Fill="#FFAA35" Data="{StaticResource WarnIcon}" />
+                </Canvas>
+            </Viewbox>
+            <Viewbox x:Name="ErrorIcon" Stretch="Uniform" Width="48" Height="48" Margin="5" Grid.Column="0"
+                     Visibility="Collapsed">
+                <Canvas Width="1000" Height="1000">
+                    <Path Fill="#F2333F" Data="{StaticResource ErrorIcon}" />
+                </Canvas>
+            </Viewbox>
+            <Viewbox x:Name="QuestionIcon" Stretch="Uniform" Width="48" Height="48" Margin="5" Grid.Column="0"
+                     Visibility="Collapsed">
+                <Canvas Width="1000" Height="1000">
+                    <Path Fill="#4B9AFE" Data="{StaticResource QuestionIcon}" />
+                </Canvas>
+            </Viewbox>
             <Label x:Name="LblMessage"
                    Grid.Column="1"
                    Margin="10"
@@ -49,31 +78,81 @@
                    VerticalContentAlignment="Center"
                    Content="MSG" />
         </Grid>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,5,10,10">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,0,10,10">
             <dms:DMButton x:Name="BtnOk"
-                          Margin="5" Width="75" Height="30"
+                          Margin="5,0"
                           VerticalAlignment="Top"
                           HorizontalAlignment="Center"
-                          Content="确定"
-                          Click="BtnOk_Click" />
+                          Click="BtnOk_Click"
+                          CornerRadius="5"
+                          Background="#FAFAFB"
+                          Cursor="Hand">
+                <StackPanel Margin="7,5,3,5" Orientation="Horizontal">
+                    <Viewbox Stretch="Uniform" Width="20" Height="20">
+                        <Canvas Width="1000" Height="1000">
+                            <Path Fill="#303030" Data="{StaticResource Cycle}" />
+                            <Path Fill="#303030" Data="{StaticResource Yes}" />
+                        </Canvas>
+                    </Viewbox>
+                    <Label Foreground="#303030" Content="确定" HorizontalContentAlignment="Center"/>
+                </StackPanel>
+            </dms:DMButton>
             <dms:DMButton x:Name="BtnYes"
-                          Margin="5" Width="75" Height="30"
+                          Margin="5,0"
                           VerticalAlignment="Top"
                           HorizontalAlignment="Center"
-                          Content="是"
-                          Click="BtnYes_Click" />
+                          Click="BtnYes_Click"
+                          CornerRadius="25"
+                          Background="#FAFAFB"
+                          Cursor="Hand">
+                <StackPanel Margin="5" Orientation="Horizontal">
+                    <Viewbox Stretch="Uniform" Width="25" Height="25">
+                        <Canvas Width="1000" Height="1000">
+                            <Path Fill="#4EC045" Data="{StaticResource Yes2}" />
+                        </Canvas>
+                    </Viewbox>
+                </StackPanel>
+            </dms:DMButton>
             <dms:DMButton x:Name="BtnNo"
-                          Margin="5" Width="75" Height="30"
+                          Margin="5,0"
                           VerticalAlignment="Top"
                           HorizontalAlignment="Center"
-                          Content="否"
-                          Click="BtnNo_Click" />
+                          Click="BtnNo_Click"
+                          CornerRadius="25"
+                          Background="#FAFAFB"
+                          Cursor="Hand">
+                <StackPanel Margin="5" Orientation="Horizontal">
+                    <Viewbox Stretch="Uniform" Width="25" Height="25">
+                        <Canvas Width="1000" Height="1000">
+                            <Path Fill="#F2333F" Data="{StaticResource No2}" />
+                        </Canvas>
+                    </Viewbox>
+                </StackPanel>
+            </dms:DMButton>
             <dms:DMButton x:Name="BtnCancel"
-                          Margin="5" Width="75" Height="30"
+                          Margin="5,0"
                           VerticalAlignment="Top"
                           HorizontalAlignment="Center"
-                          Content="取消"
-                          Click="BtnCancel_Click" />
+                          Click="BtnCancel_Click"
+                          CornerRadius="5"
+                          Background="#EAEAEB"
+                          Cursor="Hand">
+                <StackPanel Margin="7,5,3,5" Orientation="Horizontal">
+                    <Viewbox Stretch="Uniform" Width="20" Height="20">
+                        <Canvas Width="1000" Height="1000">
+                            <Canvas.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000"/>
+                                    <TranslateTransform X="0.000000" Y="511.000000"/>
+                                </TransformGroup>
+                            </Canvas.RenderTransform>
+                            <Path Fill="#303030" Data="{StaticResource Cycle2}" />
+                            <Path Fill="#303030" Data="{StaticResource No}" />
+                        </Canvas>
+                    </Viewbox>
+                    <Label Foreground="#303030" Content="取消" HorizontalContentAlignment="Center"/>
+                </StackPanel>
+            </dms:DMButton>
         </StackPanel>
     </Grid>
 </wpf:DMSkinSimpleWindow>

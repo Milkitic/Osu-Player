@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Milkitic.OsuLib;
+using Milkitic.OsuPlayer.Media.Lyric.Model;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -12,19 +14,17 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Milkitic.OsuLib;
-using Milkitic.OsuPlayer.Media.Lyric.Model;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
 using Pen = System.Drawing.Pen;
 
-namespace Milkitic.OsuPlayer
+namespace Milkitic.OsuPlayer.Windows
 {
     /// <summary>
     /// LyricWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class LyricWindow : Window
+    public partial class LyricWindow : WindowBase
     {
         public bool IsHide { get; set; }
 
@@ -59,7 +59,7 @@ namespace Milkitic.OsuPlayer
             this.MouseLeave += LyricWindow_MouseLeave;
             //this.Loaded += (sender, e) =>
             //{
-            
+
             //};
 
         }

@@ -1,44 +1,24 @@
-﻿using DMSkin.WPF;
-using Milkitic.OsuPlayer.Pages.Settings;
+﻿using Milkitic.OsuPlayer.Pages.Settings;
 using Milkitic.OsuPlayer.Utils;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
-namespace Milkitic.OsuPlayer
+namespace Milkitic.OsuPlayer.Windows
 {
     /// <summary>
     /// ConfigWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class ConfigWindow : DMSkinSimpleWindow
+    public partial class ConfigWindow : EffectWindowBase
     {
         private readonly MainWindow _mainWindow;
         private readonly OptionContainer _optionContainer = new OptionContainer();
         private bool _ischanging;
 
-        public bool IsClosed { get; private set; }
-
         public ConfigWindow(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
             InitializeComponent();
-        }
-
-        protected override void OnClosed(EventArgs e)
-        {
-            base.OnClosed(e);
-            IsClosed = true;
         }
 
         private void BtnGeneral_Click(object sender, RoutedEventArgs e)

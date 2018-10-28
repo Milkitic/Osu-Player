@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Milkitic.OsuPlayer.Control
 {
@@ -55,13 +56,30 @@ namespace Milkitic.OsuPlayer.Control
             try
             {
                 messageBox = new MessageBoxWindow(messageBoxText, caption, button, icon);
+                Border cover = null;
                 if (owner != null)
                 {
-                    messageBox.Owner = owner;
-                    messageBox.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    cover = (Border)owner.FindName("MsgBoxCover");
+                    if (cover != null)
+                        cover.Visibility = Visibility.Visible;
+                    dynamic dynOwner = owner;
+                    try
+                    {
+                        if (!dynOwner.IsClosed)
+                        {
+                            messageBox.Owner = owner;
+                            messageBox.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
                 }
 
                 messageBox.ShowDialog();
+                if (cover != null)
+                    cover.Visibility = Visibility.Hidden;
                 return messageBox.MessageBoxResult;
             }
             finally

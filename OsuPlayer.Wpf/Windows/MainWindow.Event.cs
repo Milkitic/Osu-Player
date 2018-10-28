@@ -1,19 +1,15 @@
-﻿using Milkitic.OsuPlayer.Control;
+﻿using System;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls.Primitives;
+using System.Windows.Interop;
+using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media;
 using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Pages;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Interop;
 
-namespace Milkitic.OsuPlayer
+namespace Milkitic.OsuPlayer.Windows
 {
     partial class MainWindow
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using Milkitic.OsuPlayer.Windows;
 
 namespace Milkitic.OsuPlayer.Pages
 {

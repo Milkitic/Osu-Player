@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Milkitic.OsuPlayer.Windows;
 
 namespace Milkitic.OsuPlayer.Pages.Settings
 {

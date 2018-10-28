@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using Milkitic.OsuPlayer.Windows;
 
 namespace Milkitic.OsuPlayer.Pages
 {
