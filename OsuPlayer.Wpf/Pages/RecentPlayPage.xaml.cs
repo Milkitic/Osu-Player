@@ -18,16 +18,14 @@ namespace Milkitic.OsuPlayer.Pages
     /// </summary>
     public partial class RecentPlayPage : Page
     {
-        private PageBox _pageBox;
         private IEnumerable<BeatmapEntry> _entries;
         public IEnumerable<BeatmapViewModel> ViewModels;
-        public MainWindow ParentWindow { get; set; }
+        private readonly MainWindow _mainWindow;
 
         public RecentPlayPage(MainWindow mainWindow)
         {
-            ParentWindow = mainWindow;
+            _mainWindow = mainWindow;
             InitializeComponent();
-            _pageBox = new PageBox(mainWindow.MainGrid, "_recent");
         }
 
         public void UpdateList()
@@ -44,10 +42,10 @@ namespace Milkitic.OsuPlayer.Pages
                 k.GetIdentity().Equals(App.PlayerList.CurrentInfo.Identity));
             RecentList.SelectedItem = item;
         }
-        
+
         private void Recent_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-             PlaySelected();
+            PlaySelected();
         }
 
         private void ItemPlay_Click(object sender, RoutedEventArgs e)
@@ -67,21 +65,22 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void BtnDelAll_Click(object sender, RoutedEventArgs e)
         {
-            _pageBox.Show("提示", "真的要删除全部吗？", () =>
+            var result = MsgBox.Show(_mainWindow, "真的要删除全部吗？", _mainWindow.Title, MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
             {
                 DbOperator.ClearRecent();
                 UpdateList();
-            });
+            }
         }
 
         private void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void ItemCollect_Click(object sender, RoutedEventArgs e)
         {
-            ParentWindow.FramePop.Navigate(new SelectCollectionPage(ParentWindow, GetSelected()));
+            _mainWindow.FramePop.Navigate(new SelectCollectionPage(_mainWindow, GetSelected()));
         }
 
         private void ItemExport_Click(object sender, RoutedEventArgs e)
@@ -95,21 +94,21 @@ namespace Milkitic.OsuPlayer.Pages
         {
             var map = GetSelected();
             if (map == null) return;
-            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow, map.SongSource));
+            _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow, map.SongSource));
         }
 
         private void ItemSearchMapper_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
             if (map == null) return;
-            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow, map.Creator));
+            _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow, map.Creator));
         }
 
         private void ItemSearchArtist_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
             if (map == null) return;
-            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow,
+            _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow,
                 MetaSelect.GetUnicode(map.Artist, map.ArtistUnicode)));
         }
 
@@ -117,7 +116,7 @@ namespace Milkitic.OsuPlayer.Pages
         {
             var map = GetSelected();
             if (map == null) return;
-            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow,
+            _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow,
                 MetaSelect.GetUnicode(map.Title, map.TitleUnicode)));
         }
 
@@ -138,7 +137,7 @@ namespace Milkitic.OsuPlayer.Pages
             var map = GetSelected();
             if (map == null) return;
 
-            ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
+            _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                 map.BeatmapFileName));
             App.PlayerList.RefreshPlayList(PlayerList.FreshType.None, PlayListMode.RecentList);
         }
@@ -151,5 +150,5 @@ namespace Milkitic.OsuPlayer.Pages
             return _entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
-        }
+    }
 }

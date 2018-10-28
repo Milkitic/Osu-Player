@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Milkitic.OsuPlayer.Control;
 using osu_database_reader.BinaryFiles;
 using System;
 using System.Collections.Generic;
@@ -24,10 +25,12 @@ namespace Milkitic.OsuPlayer.Pages.Settings
     public partial class GeneralPage : Page
     {
         private readonly MainWindow _mainWindow;
+        private readonly ConfigWindow _configWindow;
 
-        public GeneralPage(MainWindow mainWindow)
+        public GeneralPage(MainWindow mainWindow, ConfigWindow configWindow)
         {
             _mainWindow = mainWindow;
+            _configWindow = configWindow;
             InitializeComponent();
         }
 
@@ -93,7 +96,7 @@ namespace Milkitic.OsuPlayer.Pages.Settings
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MsgBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 App.Config.General.DbPath = prevPath;
                 App.BeatmapDb = new Lazy<OsuDb>(App.ReadDb);
             }

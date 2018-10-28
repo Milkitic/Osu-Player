@@ -32,7 +32,6 @@ namespace Milkitic.OsuPlayer
             ExportPage = new ExportPage(this),
         };
 
-        public readonly PageBox PageBox;
         public readonly LyricWindow LyricWindow;
         public ConfigWindow ConfigWindow;
         public readonly OverallKeyHook OverallKeyHook;
@@ -54,7 +53,6 @@ namespace Milkitic.OsuPlayer
         public MainWindow()
         {
             InitializeComponent();
-            PageBox = new PageBox(MainGrid, "_main");
             LyricWindow = new LyricWindow();
             LyricWindow.Show();
             OverallKeyHook = new OverallKeyHook(this);
@@ -66,9 +64,8 @@ namespace Milkitic.OsuPlayer
         {
             if (App.UseDbMode)
                 return true;
-            PageBox.Show(Title, "你尚未初始化osu!db，因此该功能不可用。", delegate { });
+            MsgBox.Show(this, "你尚未初始化osu!db，因此该功能不可用。", Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
             return false;
-
         }
 
         private void TryBindHotkeys()
@@ -101,6 +98,7 @@ namespace Milkitic.OsuPlayer
         }
 
         private const int WmExitSizeMove = 0x232;
+
         private IntPtr HwndMessageHook(IntPtr wnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             switch (msg)
@@ -110,9 +108,11 @@ namespace Milkitic.OsuPlayer
                     {
                         ToMiniMode();
                     }
+
                     handled = true;
                     break;
             }
+
             return IntPtr.Zero;
         }
     }

@@ -44,7 +44,7 @@ namespace Milkitic.OsuPlayer
         private void BtnGeneral_Click(object sender, RoutedEventArgs e)
         {
             if (MainFrame.Content?.GetType() != typeof(GeneralPage))
-                MainFrame.Navigate(new GeneralPage(_mainWindow));
+                MainFrame.Navigate(new GeneralPage(_mainWindow, this));
         }
 
         private void BtnHotkey_Click(object sender, RoutedEventArgs e)
@@ -68,7 +68,7 @@ namespace Milkitic.OsuPlayer
         private void BtnAbout_Click(object sender, RoutedEventArgs e)
         {
             if (MainFrame.Content?.GetType() != typeof(AboutPage))
-                MainFrame.Navigate(new AboutPage(_mainWindow));
+                MainFrame.Navigate(new AboutPage(_mainWindow, this));
         }
 
         private void BtnPlay_Click(object sender, RoutedEventArgs e)

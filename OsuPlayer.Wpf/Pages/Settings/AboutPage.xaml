@@ -31,7 +31,7 @@
                                   BorderThickness="0" Cursor="Hand"
                                   Margin="8"
                                   Content="检查更新"
-                        HorizontalAlignment="Left" Click="CheckUpdate_Click" />
+                                  HorizontalAlignment="Left" Click="CheckUpdate_Click" />
                     <Label x:Name="NewVersion" VerticalAlignment="Center" Visibility="Collapsed">
                         <dms:DMLinkButton Click="NewVersion_Click" 
                                           Foreground="#FF1E9FFF"

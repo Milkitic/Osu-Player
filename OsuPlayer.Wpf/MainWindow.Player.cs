@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using Milkitic.OsuLib;
+using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media;
 using Milkitic.OsuPlayer.Media.Music;
@@ -65,14 +66,17 @@ namespace Milkitic.OsuPlayer
                     _cts = new CancellationTokenSource();
 
                     /* Set Meta */
-                    MapIdentity nowIdentity = new MapIdentity(fi.Directory.Name, App.HitsoundPlayer.Osufile.Metadata.Version); ;
+                    MapIdentity nowIdentity =
+                        new MapIdentity(fi.Directory.Name, App.HitsoundPlayer.Osufile.Metadata.Version);
+                    ;
                     MapInfo mapInfo = DbOperator.GetMapFromDb(nowIdentity);
                     BeatmapEntry entry = App.PlayerList.Entries.GetBeatmapByIdentity(nowIdentity);
                     OsuFile osuFile = App.HitsoundPlayer.Osufile;
 
                     LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle();
                     LblArtist.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist();
-                    ((ToolTip)NotifyIcon.TrayToolTip).Content = (string)LblArtist.Content + " - " + (string)LblTitle.Content;
+                    ((ToolTip)NotifyIcon.TrayToolTip).Content =
+                        (string)LblArtist.Content + " - " + (string)LblTitle.Content;
                     bool isFaved = SetFaved(nowIdentity);
                     App.HitsoundPlayer.SingleOffset = mapInfo.Offset;
                     Offset.Value = App.HitsoundPlayer.SingleOffset;
@@ -145,6 +149,7 @@ namespace Milkitic.OsuPlayer
                             }
                         }
                     }
+
                     /* Set Background */
                     if (App.HitsoundPlayer.Osufile.Events.BackgroundInfo != null)
                     {
@@ -176,8 +181,10 @@ namespace Milkitic.OsuPlayer
                         {
                             await VideoElement.Play();
                         }
+
                         App.HitsoundPlayer.Play();
                     }
+
                     App.Config.CurrentPath = path;
                     App.SaveConfig();
 
@@ -186,43 +193,49 @@ namespace Milkitic.OsuPlayer
                 }
                 catch (MultiTimingSectionException ex)
                 {
-                    PageBox.Show(Title, @"铺面读取时发生问题：" + ex.Message, () =>
+                    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    if (result == MessageBoxResult.OK)
                     {
                         if (App.HitsoundPlayer == null) return;
                         if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
-                    });
+                    }
                 }
                 catch (BadOsuFormatException ex)
                 {
-                    PageBox.Show(Title, @"铺面读取时发生问题：" + ex.Message, () =>
+                    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    if (result == MessageBoxResult.OK)
                     {
                         if (App.HitsoundPlayer == null) return;
                         if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
-                    });
+                    }
                 }
                 catch (VersionNotSupportedException ex)
                 {
-                    PageBox.Show(Title, @"铺面读取时发生问题：" + ex.Message, () =>
+                    var result = MsgBox.Show(this, Title, @"铺面读取时发生问题：" + ex.Message);
+                    if (result == MessageBoxResult.OK)
                     {
                         if (App.HitsoundPlayer == null) return;
                         if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
-                    });
+                    }
                 }
                 catch (Exception ex)
                 {
-                    PageBox.Show(Title, @"发生未处理的异常问题：" + (ex.InnerException ?? ex), () =>
+                    var result = MsgBox.Show(this, Title, @"发生未处理的异常问题：" + (ex.InnerException ?? ex));
+                    if (result == MessageBoxResult.OK)
                     {
                         if (App.HitsoundPlayer == null) return;
                         if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
-                    });
+                    }
+
                     Console.WriteLine(ex);
                 }
             }
             else
             {
-                PageBox.Show(Title, string.Format(@"所选文件不存在{0}。",
-                        App.Beatmaps == null ? "" : " ，可能是db没有及时更新。请关闭此播放器或osu后重试"),
-                    () => { });
+                MsgBox.Show(this, Title, string.Format(@"所选文件不存在{0}。",
+                    App.Beatmaps == null ? "" : " ，可能是db没有及时更新。请关闭此播放器或osu后重试"));
             }
         }
 

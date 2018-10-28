@@ -1,4 +1,5 @@
-﻿using Milkitic.OsuPlayer.Utils;
+﻿using Milkitic.OsuPlayer.Control;
+using Milkitic.OsuPlayer.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Path = System.IO.Path;
+
 namespace Milkitic.OsuPlayer
 {
     /// <summary>
@@ -50,7 +52,7 @@ namespace Milkitic.OsuPlayer
             }
             catch (Exception ex)
             {
-                MessageBox.Show("更新出错，请重启软件重试：" + ex.Message, "更新出错", MessageBoxButton.OK, MessageBoxImage.Error);
+                MsgBox.Show(this, "更新出错，请重启软件重试：" + ex.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -75,7 +77,6 @@ namespace Milkitic.OsuPlayer
             Process.Start(_savePath);
             Dispatcher.BeginInvoke(new Action(Close));
         }
-
 
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

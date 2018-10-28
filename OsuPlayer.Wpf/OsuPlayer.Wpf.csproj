@@ -156,6 +156,10 @@
     <Compile Include="ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Control\MessageBoxWindow.xaml.cs">
+      <DependentUpon>MessageBoxWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Control\MsgBox.cs" />
     <Compile Include="Converter\DateTimeConverter.cs" />
     <Compile Include="Converter\NavigationColorConverter.cs" />
     <Compile Include="Converter\VideoBackConverter.cs" />
@@ -205,7 +209,6 @@
     <Compile Include="Media\HitsoundElement.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\MapIndentity.cs" />
-    <Compile Include="Control\PageBox.cs" />
     <Compile Include="NewVersionWindow.xaml.cs">
       <DependentUpon>NewVersionWindow.xaml</DependentUpon>
     </Compile>
@@ -240,9 +243,6 @@
     </Compile>
     <Compile Include="Pages\CollectionPage.xaml.cs">
       <DependentUpon>CollectionPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Control\MessageBoxPage.xaml.cs">
-      <DependentUpon>MessageBoxPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\ExportPage.xaml.cs">
       <DependentUpon>ExportPage.xaml</DependentUpon>
@@ -301,6 +301,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Control\MessageBoxWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="LyricWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -330,10 +334,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\CollectionPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Control\MessageBoxPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

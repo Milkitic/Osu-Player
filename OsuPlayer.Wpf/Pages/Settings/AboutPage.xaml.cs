@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Milkitic.OsuPlayer.Control;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -22,12 +23,14 @@ namespace Milkitic.OsuPlayer.Pages.Settings
     public partial class AboutPage : Page
     {
         private readonly MainWindow _mainWindow;
+        private readonly ConfigWindow _configWindow;
         private readonly string _dtFormat = "g";
         private NewVersionWindow _newVersionWindow;
 
-        public AboutPage(MainWindow mainWindow)
+        public AboutPage(MainWindow mainWindow, ConfigWindow configWindow)
         {
             _mainWindow = mainWindow;
+            _configWindow = configWindow;
             InitializeComponent();
         }
 
@@ -64,7 +67,7 @@ namespace Milkitic.OsuPlayer.Pages.Settings
             CheckUpdate.IsEnabled = true;
             if (b == null)
             {
-                MessageBox.Show("出错");
+                MsgBox.Show(_configWindow, "检查更新时出错。", _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -78,7 +81,8 @@ namespace Milkitic.OsuPlayer.Pages.Settings
             }
             else
             {
-                MessageBox.Show("已是最新");
+                MsgBox.Show(_configWindow, "已是最新版本。", _configWindow.Title, MessageBoxButton.OK,
+                    MessageBoxImage.Information);
             }
         }
 

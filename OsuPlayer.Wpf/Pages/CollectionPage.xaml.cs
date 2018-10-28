@@ -1,4 +1,5 @@
 ﻿using Milkitic.OsuPlayer;
+using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Utils;
 using osu_database_reader.Components.Beatmaps;
@@ -19,14 +20,15 @@ namespace Milkitic.OsuPlayer.Pages
     /// </summary>
     public partial class CollectionPage : Page
     {
-        private MainWindow ParentWindow { get; set; }
+        private readonly MainWindow _mainWindow;
         public string Id => _collection.Id;
         private readonly Collection _collection;
         public List<BeatmapViewModel> ViewModels;
         private IEnumerable<BeatmapEntry> _entries;
+
         public CollectionPage(MainWindow mainWindow, Collection collection)
         {
-            ParentWindow = mainWindow;
+            _mainWindow = mainWindow;
             _collection = collection;
             InitializeComponent();
             UpdateList();
@@ -85,12 +87,14 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void BtnDelCol_Click(object sender, RoutedEventArgs e)
         {
-            ParentWindow.PageBox.Show("提示", "确认删除收藏夹？", () =>
+            var result = MsgBox.Show(_mainWindow, "确认删除收藏夹？", _mainWindow.Title, MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
             {
                 DbOperator.RemoveCollection(_collection);
-                ParentWindow.MainFrame.Navigate(ParentWindow.Pages.RecentPlayPage);
-                ParentWindow.UpdateCollections();
-            });
+                _mainWindow.MainFrame.Navigate(_mainWindow.Pages.RecentPlayPage);
+                _mainWindow.UpdateCollections();
+            }
         }
 
         private void BtnExportAll_Click(object sender, RoutedEventArgs e)
@@ -102,21 +106,21 @@ namespace Milkitic.OsuPlayer.Pages
         {
             var map = GetSelected();
             if (map == null) return;
-            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow, map.Creator));
+            _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow, map.Creator));
         }
 
         private void ItemSearchSource_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
             if (map == null) return;
-            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow, map.SongSource));
+            _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow, map.SongSource));
         }
 
         private void ItemSearchArtist_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
             if (map == null) return;
-            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow,
+            _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow,
                 MetaSelect.GetUnicode(map.Artist, map.ArtistUnicode)));
         }
 
@@ -124,7 +128,7 @@ namespace Milkitic.OsuPlayer.Pages
         {
             var map = GetSelected();
             if (map == null) return;
-            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow,
+            _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow,
                 MetaSelect.GetUnicode(map.Title, map.TitleUnicode)));
         }
 
@@ -137,7 +141,7 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void ItemCollect_Click(object sender, RoutedEventArgs e)
         {
-            ParentWindow.FramePop.Navigate(new SelectCollectionPage(ParentWindow, GetSelected()));
+            _mainWindow.FramePop.Navigate(new SelectCollectionPage(_mainWindow, GetSelected()));
         }
 
         private void ItemSet_Click(object sender, RoutedEventArgs e)
@@ -160,7 +164,7 @@ namespace Milkitic.OsuPlayer.Pages
         {
             var map = GetSelected();
             if (map == null) return;
-            ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
+            _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                 map.BeatmapFileName));
             App.PlayerList.RefreshPlayList(PlayerList.FreshType.None, PlayListMode.Collection, _entries);
         }

@@ -1,4 +1,5 @@
-﻿using Milkitic.OsuPlayer.Data;
+﻿using Milkitic.OsuPlayer.Control;
+using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media;
 using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Pages;
@@ -82,7 +83,6 @@ namespace Milkitic.OsuPlayer
             _lastState = WindowState;
         }
 
-
         #endregion Window events
 
         #region Navigation events
@@ -106,7 +106,7 @@ namespace Milkitic.OsuPlayer
         private void BtnFind_Click(object sender, RoutedEventArgs e)
         {
             //MainFrame.Navigate(Pages.FindPage);
-            PageBox.Show(Title, "功能完善中，敬请期待~", delegate { });
+            MsgBox.Show(this, "功能完善中，敬请期待~", Title, MessageBoxButton.OK, MessageBoxImage.Information);
             //bool? b = await PageBox.ShowDialog(Title, "功能完善中，敬请期待~");
         }
 
@@ -278,9 +278,10 @@ namespace Milkitic.OsuPlayer
             //var entry = App.PlayerList?.CurrentInfo.Entry;
             if (entry == null)
             {
-                PageBox.Show(Title, "该图不存在于该osu!db中。", delegate { });
+                MsgBox.Show(this, "该图不存在于该osu!db中。", Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return;
             }
+
             if (!_miniMode)
                 FramePop.Navigate(new SelectCollectionPage(this, entry));
             else
@@ -419,7 +420,6 @@ namespace Milkitic.OsuPlayer
         /// Play progress control.
         /// While drag started, slider's updating should be paused.
         /// </summary>
-
         /// <summary>
         /// Master Volume Settings
         /// </summary>
@@ -490,7 +490,7 @@ namespace Milkitic.OsuPlayer
         private void VideoElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
             VideoElementBorder.Visibility = Visibility.Hidden;
-            PageBox.Show("不支持的视频格式", e.ErrorException.ToString(), () => { });
+            MsgBox.Show(this, e.ErrorException.ToString(), "不支持的视频格式", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         #endregion Video element events

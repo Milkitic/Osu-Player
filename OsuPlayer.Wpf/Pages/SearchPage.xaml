@@ -65,8 +65,8 @@
             <ListView.Resources>
                 <DataTemplate x:Key="TitleSourceDt">
                     <StackPanel>
-                        <Label VerticalAlignment="Center" Margin="15,15,0,15" Content="{Binding AutoTitle}"/>
-                        <Label x:Name="LblSource" VerticalAlignment="Center" Margin="25,-11,0,15" Content="{Binding SongSource}"
+                        <Label VerticalAlignment="Center" Margin="15,7,0,7" Content="{Binding AutoTitle}"/>
+                        <Label x:Name="LblSource" VerticalAlignment="Center" Margin="25,-11,0,7" Content="{Binding SongSource}"
                                FontStyle="Italic" Foreground="#FF9C9C9C">
                             <Label.Style>
                                 <Style TargetType="{x:Type Label}">
