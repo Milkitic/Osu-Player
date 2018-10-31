@@ -116,7 +116,7 @@ namespace Milkitic.OsuPlayer.Windows
 #if DEBUG
             MainFrame.Navigate(Pages.StoryboardPage);
 #else
-            PageBox.Show(Title, "功能完善中，敬请期待~", delegate { });
+            MsgBox.Show(this, "功能完善中，敬请期待~", Title, MessageBoxButton.OK, MessageBoxImage.Information);
 #endif
         }
 

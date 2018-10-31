@@ -20,7 +20,7 @@ namespace Milkitic.OsuPlayer.Pages
     public partial class RecentPlayPage : Page
     {
         private IEnumerable<BeatmapEntry> _entries;
-        public IEnumerable<BeatmapViewModel> ViewModels;
+        public IEnumerable<BeatmapDataModel> ViewModels;
         private readonly MainWindow _mainWindow;
 
         public RecentPlayPage(MainWindow mainWindow)
@@ -58,7 +58,7 @@ namespace Milkitic.OsuPlayer.Pages
         {
             if (RecentList.SelectedItem == null)
                 return;
-            var searchInfo = (BeatmapViewModel)RecentList.SelectedItem;
+            var searchInfo = (BeatmapDataModel)RecentList.SelectedItem;
             DbOperator.RemoveFromRecent(searchInfo.GetIdentity());
             UpdateList();
             App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
@@ -147,7 +147,7 @@ namespace Milkitic.OsuPlayer.Pages
         {
             if (RecentList.SelectedItem == null)
                 return null;
-            var selectedItem = (BeatmapViewModel)RecentList.SelectedItem;
+            var selectedItem = (BeatmapDataModel)RecentList.SelectedItem;
             return _entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }

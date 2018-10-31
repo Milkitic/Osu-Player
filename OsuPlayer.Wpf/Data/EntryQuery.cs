@@ -126,9 +126,9 @@ namespace Milkitic.OsuPlayer.Data
             }
         }
 
-        public static IEnumerable<BeatmapViewModel> Transform(this IEnumerable<BeatmapEntry> list, bool multiVersions)
+        public static IEnumerable<BeatmapDataModel> Transform(this IEnumerable<BeatmapEntry> list, bool multiVersions)
         {
-            return list.Select((entry, i) => new BeatmapViewModel
+            return list.Select((entry, i) => new BeatmapDataModel
             {
                 Id = multiVersions ? (i + 1).ToString("00") : "",
                 Artist = entry.Artist,
@@ -146,7 +146,7 @@ namespace Milkitic.OsuPlayer.Data
             }).Distinct(new Comparer(multiVersions)).ToList();
         }
 
-        public class Comparer : IEqualityComparer<BeatmapViewModel>
+        public class Comparer : IEqualityComparer<BeatmapDataModel>
         {
             private readonly bool _multiVersions;
 
@@ -155,7 +155,7 @@ namespace Milkitic.OsuPlayer.Data
                 _multiVersions = multiVersions;
             }
 
-            public bool Equals(BeatmapViewModel x, BeatmapViewModel y)
+            public bool Equals(BeatmapDataModel x, BeatmapDataModel y)
             {
                 if (x == null && y == null)
                     return true;
@@ -172,7 +172,7 @@ namespace Milkitic.OsuPlayer.Data
                 return true;
             }
 
-            public int GetHashCode(BeatmapViewModel obj)
+            public int GetHashCode(BeatmapDataModel obj)
             {
                 return obj.FolderName.GetHashCode();
             }

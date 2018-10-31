@@ -6,8 +6,10 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
-                    <Border Background="#fafafa" BorderThickness="1,1,0,1" BorderBrush="#e1e1e2" Width="{TemplateBinding Width}">
-                        <TextBlock Padding="5" Text="{TemplateBinding Content}" />
+                    <Border Background="#fafafa" BorderThickness="1,1,0,1" BorderBrush="#e1e1e2"
+                            Width="{TemplateBinding Width}"
+                            Height="30">
+                        <TextBlock Padding="5" Text="{TemplateBinding Content}" VerticalAlignment="Center"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -21,8 +23,9 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
                             <Grid>
-                                <Border Background="#ebeced" BorderThickness="1,1,0,1" BorderBrush="#e1e1e2">
-                                    <TextBlock Padding="5" Text="{TemplateBinding Content}" />
+                                <Border Background="#ebeced" BorderThickness="1,1,0,1" BorderBrush="#e1e1e2"
+                                        Height="30">
+                                    <TextBlock Padding="5" Text="{TemplateBinding Content}" VerticalAlignment="Center"/>
                                 </Border>
                             </Grid>
                         </ControlTemplate>

@@ -60,7 +60,7 @@
                             </ContextMenu>
                         </ListView.ContextMenu>
                         <ListView.DataContext>
-                            <models:BeatmapViewModel />
+                            <models:BeatmapDataModel />
                         </ListView.DataContext>
                         <ListView.Resources>
                             <DataTemplate x:Key="IdDt">

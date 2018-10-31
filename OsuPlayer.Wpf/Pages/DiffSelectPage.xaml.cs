@@ -26,7 +26,7 @@ namespace Milkitic.OsuPlayer.Pages
         private readonly MainWindow _mainWindow;
         public Action Callback { private get; set; }
 
-        public BeatmapViewModel SelectedMap;
+        public BeatmapDataModel SelectedMap;
         //private IEnumerable<BeatmapEntry> _entries;
 
         public DiffSelectPage(MainWindow mainWindow, IEnumerable<BeatmapEntry> entries)
@@ -41,7 +41,7 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void BtnNowPlay_Click(object sender, RoutedEventArgs e)
         {
-            SelectedMap = (BeatmapViewModel)DiffList.SelectedItem;
+            SelectedMap = (BeatmapDataModel)DiffList.SelectedItem;
             Callback?.Invoke();
             Dispose();
         }

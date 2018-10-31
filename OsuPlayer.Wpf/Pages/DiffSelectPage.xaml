@@ -31,10 +31,10 @@
             <ListView Grid.Row="1" x:Name="DiffList" Margin="5" Background="Transparent" BorderThickness="0"
                       ItemsSource="{Binding Mode=OneWay}">
                 <ListView.DataContext>
-                    <osuPlayer:BeatmapViewModel/>
+                    <osuPlayer:BeatmapDataModel/>
                 </ListView.DataContext>
                 <ListView.Resources>
-                    <DataTemplate DataType="{x:Type osuPlayer:BeatmapViewModel}">
+                    <DataTemplate DataType="{x:Type osuPlayer:BeatmapDataModel}">
                         <Grid>
                             <Label x:Name="LblVersion" VerticalAlignment="Center" Content="{Binding Version}"
                                    Foreground="#333333" />

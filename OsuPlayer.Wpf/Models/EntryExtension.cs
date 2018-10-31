@@ -7,8 +7,8 @@ namespace Milkitic.OsuPlayer
     {
         public static MapIdentity GetIdentity(this BeatmapEntry entry) => entry != null ?
             new MapIdentity(entry.FolderName, entry.Version) : default;
-        public static MapIdentity GetIdentity(this BeatmapViewModel viewModel) =>
-            new MapIdentity(viewModel.FolderName, viewModel.Version);
+        public static MapIdentity GetIdentity(this BeatmapDataModel dataModel) =>
+            new MapIdentity(dataModel.FolderName, dataModel.Version);
         public static MapIdentity GetIdentity(this MapInfo viewModel) =>
             new MapIdentity(viewModel.FolderName, viewModel.Version);
     }

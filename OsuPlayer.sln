@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsbLib", "..\库\OsbLib\Osb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Wpf", "OsuPlayer.Wpf\OsuPlayer.Wpf.csproj", "{02773E4B-21FC-47DB-A7C1-BD096F325136}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApi", "WpfApi\WpfApi.csproj", "{028E6F4E-D538-4B83-904C-C94C2F1E3C83}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{02773E4B-21FC-47DB-A7C1-BD096F325136}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02773E4B-21FC-47DB-A7C1-BD096F325136}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02773E4B-21FC-47DB-A7C1-BD096F325136}.Release|Any CPU.Build.0 = Release|Any CPU
+		{028E6F4E-D538-4B83-904C-C94C2F1E3C83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{028E6F4E-D538-4B83-904C-C94C2F1E3C83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{028E6F4E-D538-4B83-904C-C94C2F1E3C83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{028E6F4E-D538-4B83-904C-C94C2F1E3C83}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

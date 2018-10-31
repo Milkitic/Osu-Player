@@ -106,7 +106,7 @@
                                                 Data="{StaticResource Search}" />
                                         </Viewbox>
                                     </Grid>
-                                    <Grid>
+                                    <Grid Visibility="Collapsed">
                                         <ToggleButton x:Name="BtnFind" Height="40" Click="BtnFind_Click"
                                               Content="发现"
                                               Style="{StaticResource NavigationButtonStyle}"
@@ -123,10 +123,10 @@
                                     </Grid>
                                     <Grid>
                                         <ToggleButton x:Name="BtnSb" Height="40" Click="Storyboard_Click"
-                                              Content="故事板"
-                                              Style="{StaticResource NavigationButtonStyle}" 
-                                              Unchecked="BtnNavigate_Unchecked"
-                                              Checked="BtnNavigate_Checked" />
+                                                      Content="故事板"
+                                                      Style="{StaticResource NavigationButtonStyle}"
+                                                      Unchecked="BtnNavigate_Unchecked"
+                                                      Checked="BtnNavigate_Checked" />
                                         <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left" Margin="20,0,0,0">
                                             <Canvas Width="1000" Height="1000">
                                                 <Canvas.RenderTransform>
@@ -228,7 +228,7 @@
                                     <BlurEffect Radius="100" />
                                 </Image.Effect>
                             </Image>
-                            <Rectangle x:Name="WhiteCover" Fill="#FFFFFF" Opacity="0.75" />
+                            <Rectangle x:Name="WhiteCover" Fill="#FFFFFF" Opacity="0.833333333" />
                             <Grid.Style>
                                 <Style TargetType="{x:Type Grid}">
                                     <Setter Property="Background" >

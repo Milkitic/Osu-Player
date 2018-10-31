@@ -2,10 +2,13 @@
 using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Utils;
+using Milkitic.OsuPlayer.ViewModels;
+using Milkitic.OsuPlayer.Windows;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -13,7 +16,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milkitic.OsuPlayer.Windows;
 using Path = System.IO.Path;
 
 namespace Milkitic.OsuPlayer.Pages
@@ -23,16 +25,20 @@ namespace Milkitic.OsuPlayer.Pages
     /// </summary>
     public partial class ExportPage : Page
     {
+        //Page view model
+        public ExportPageViewModel ViewModel { get; }
+
         private readonly MainWindow _mainWindow;
         public static readonly ConcurrentQueue<BeatmapEntry> TaskQueue = new ConcurrentQueue<BeatmapEntry>();
         public static Task ExportTask;
         public static bool Overlap = true;
-        private IEnumerable<BeatmapEntry> _entries;
 
         public ExportPage(MainWindow mainWindow)
         {
-            _mainWindow = mainWindow;
             InitializeComponent();
+            _mainWindow = mainWindow;
+            ViewModel = (ExportPageViewModel)DataContext;
+            ViewModel.ExportPath = App.Config.Export.MusicPath;
             UpdateList();
         }
 
@@ -49,8 +55,8 @@ namespace Milkitic.OsuPlayer.Pages
                     : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), Util.CountSize(fi.Length)));
             }
 
-            _entries = App.Beatmaps.GetMapListFromDb(maps);
-            var viewModels = _entries.Transform(false).ToList();
+            ViewModel.Entries = App.Beatmaps.GetMapListFromDb(maps);
+            var viewModels = ViewModel.Entries.Transform(false).ToList();
             for (var i = 0; i < viewModels.Count; i++)
             {
                 var sb = list.First(k => k.MapIdentity.Equals(viewModels[i].GetIdentity()));
@@ -60,11 +66,7 @@ namespace Milkitic.OsuPlayer.Pages
                 viewModels[i].ExportTime = sb.time;
             }
 
-            ExportList.DataContext = viewModels;
-        }
-
-        private void ExportList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
+            ViewModel.DataModelList = new ObservableCollection<BeatmapDataModel>(viewModels);
         }
 
         private void ItemDelete_Click(object sender, RoutedEventArgs e)
@@ -105,23 +107,23 @@ namespace Milkitic.OsuPlayer.Pages
             UpdateList();
         }
 
-        private List<(BeatmapEntry entry, BeatmapViewModel viewModel)> GetSelectItems()
+        private List<(BeatmapEntry entry, BeatmapDataModel viewModel)> GetSelectItems()
         {
             if (ExportList.SelectedItem == null)
                 return null;
-            return (from BeatmapViewModel selectedItem in ExportList.SelectedItems
-                    select (_entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
+            return (from BeatmapDataModel selectedItem in ExportList.SelectedItems
+                    select (ViewModel.Entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
                         .FirstOrDefault(k => k.Version == selectedItem.Version), selectedItem)).ToList();
         }
 
-        private BeatmapEntry GetSelectItem(out BeatmapViewModel viewModel)
+        private BeatmapEntry GetSelectItem(out BeatmapDataModel dataModel)
         {
-            viewModel = null;
+            dataModel = null;
             if (ExportList.SelectedItem == null)
                 return null;
-            var selectedItem = (BeatmapViewModel)ExportList.SelectedItem;
-            viewModel = selectedItem;
-            return _entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
+            var selectedItem = (BeatmapDataModel)ExportList.SelectedItem;
+            dataModel = selectedItem;
+            return ViewModel.Entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
 
@@ -276,6 +278,18 @@ namespace Milkitic.OsuPlayer.Pages
         {
             return source?.Replace(@"\", "").Replace(@"/", "").Replace(@":", "").Replace(@"*", "").Replace(@"?", "")
                 .Replace("\"", "").Replace(@"<", "").Replace(@">", "").Replace(@"|", "");
+        }
+
+        void OpenCmdExecuted(object target, ExecutedRoutedEventArgs e)
+        {
+            string command, targetobj;
+            command = ((RoutedCommand)e.Command).Name;
+            targetobj = ((FrameworkElement)target).Name;
+            MessageBox.Show("The " + command + " command has been invoked on target object " + targetobj);
+        }
+        void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
         }
     }
 }

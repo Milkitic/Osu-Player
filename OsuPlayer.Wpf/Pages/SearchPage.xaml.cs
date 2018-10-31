@@ -1,5 +1,6 @@
 ﻿using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Utils;
+using Milkitic.OsuPlayer.Windows;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milkitic.OsuPlayer.Windows;
 
 namespace Milkitic.OsuPlayer.Pages
 {
@@ -33,6 +33,11 @@ namespace Milkitic.OsuPlayer.Pages
         public SearchPage(MainWindow mainWindow, string searchKey) : this(mainWindow)
         {
             SearchBox.Text = searchKey;
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            await PlayListQueryAsync();
         }
 
         private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -58,9 +63,11 @@ namespace Milkitic.OsuPlayer.Pages
                 _querySw.Stop();
                 _queryLock = false;
                 string keyword = null;
-                Dispatcher.Invoke(() => { keyword = SearchBox.Text; });
-                IEnumerable<BeatmapViewModel> sorted =
-                     EntryQuery.GetListByKeyword(keyword, App.Beatmaps).SortBy(sortMode).Transform(false);
+                Dispatcher.Invoke(() => { keyword = SearchBox.Text.Trim(); });
+
+                var sorted = string.IsNullOrEmpty(keyword)
+                    ? App.Beatmaps.SortBy(sortMode).Transform(false)
+                    : EntryQuery.GetListByKeyword(keyword, App.Beatmaps).SortBy(sortMode).Transform(false);
 
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
@@ -78,7 +85,7 @@ namespace Milkitic.OsuPlayer.Pages
         {
             if (ResultList.SelectedItem == null)
                 return;
-            var ok = (BeatmapViewModel)ResultList.SelectedItem;
+            var ok = (BeatmapDataModel)ResultList.SelectedItem;
             var page = new DiffSelectPage(ParentWindow,
                 App.Beatmaps.GetBeatmapsetsByFolder(ok.GetIdentity().FolderName));
             page.Callback = () =>
@@ -89,11 +96,6 @@ namespace Milkitic.OsuPlayer.Pages
                 ParentWindow.FramePop.Navigate(null);
             };
             ParentWindow.FramePop.Navigate(page);
-        }
-
-        private void ItemNextPlay_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private void ItemSearchMapper_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -137,7 +139,7 @@ namespace Milkitic.OsuPlayer.Pages
         {
             if (ResultList.SelectedItem == null)
                 return;
-            var ok = (BeatmapViewModel)ResultList.SelectedItem;
+            var ok = (BeatmapDataModel)ResultList.SelectedItem;
             var page = new DiffSelectPage(ParentWindow,
                 App.Beatmaps.GetBeatmapsetsByFolder(ok.GetIdentity().FolderName));
             page.Callback = () =>
@@ -174,10 +176,11 @@ namespace Milkitic.OsuPlayer.Pages
         {
             if (ResultList.SelectedItem == null)
                 return null;
-            var map = App.Beatmaps.GetBeatmapsetsByFolder(((BeatmapViewModel)ResultList.SelectedItem).FolderName)
+            var map = App.Beatmaps.GetBeatmapsetsByFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
                 .GetHighestDiff();
             return map;
         }
+
     }
 }
 

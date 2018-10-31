@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Milkitic.OsuPlayer.Windows;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using Milkitic.OsuPlayer.Windows;
 
 namespace Milkitic.OsuPlayer.Pages
 {
@@ -21,6 +21,16 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            LoadSbWindow();
+        }
+
+        private void _mainWindow_LocationChanged(object sender, EventArgs e)
+        {
+            ReLocate();
+        }
+
+        private void LoadSbWindow()
+        {
             if (_sbWindow == null || _sbWindow.IsClosed)
             {
                 _sbWindow = new StoryboardWindow();
@@ -31,11 +41,6 @@ namespace Milkitic.OsuPlayer.Pages
             }
             ReLocate();
             _sbWindow.Show();
-        }
-
-        private void _mainWindow_LocationChanged(object sender, EventArgs e)
-        {
-            ReLocate();
         }
 
         private void ReLocate()
@@ -56,11 +61,13 @@ namespace Milkitic.OsuPlayer.Pages
 
         private void MainWindow_Activated(object sender, EventArgs e)
         {
+            if (_sbWindow == null) return;
             _sbWindow.Topmost = true;
         }
 
         private void MainWindow_Deactivated(object sender, EventArgs e)
         {
+            if (_sbWindow == null) return;
             _sbWindow.Topmost = false;
         }
 

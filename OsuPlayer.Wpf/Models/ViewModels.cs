@@ -4,7 +4,7 @@ using System;
 
 namespace Milkitic.OsuPlayer
 {
-    public class BeatmapViewModel
+    public class BeatmapDataModel
     {
         public string Artist { get; set; }
         public string ArtistUnicode { get; set; }

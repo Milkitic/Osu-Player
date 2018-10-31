@@ -2,6 +2,7 @@
 using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Utils;
+using Milkitic.OsuPlayer.Windows;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milkitic.OsuPlayer.Windows;
 using Collection = Milkitic.OsuPlayer.Data.Collection;
 
 namespace Milkitic.OsuPlayer.Pages
@@ -24,7 +24,7 @@ namespace Milkitic.OsuPlayer.Pages
         private readonly MainWindow _mainWindow;
         public string Id => _collection.Id;
         private readonly Collection _collection;
-        public List<BeatmapViewModel> ViewModels;
+        public List<BeatmapDataModel> ViewModels;
         private IEnumerable<BeatmapEntry> _entries;
 
         public CollectionPage(MainWindow mainWindow, Collection collection)
@@ -43,17 +43,35 @@ namespace Milkitic.OsuPlayer.Pages
             MapList.SelectedItem = item;
         }
 
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var keyword = SearchBox.Text.Trim();
+            if (string.IsNullOrEmpty(keyword))
+                UpdateList();
+            else
+            {
+                var query = EntryQuery.GetListByKeyword(keyword, _entries);
+                UpdateView(query);
+            }
+
+        }
+
         private void UpdateList()
         {
             CollectionInfoGrid.DataContext = _collection;
             var infos = (List<MapInfo>)DbOperator.GetMapsFromCollection(_collection);
             _entries = App.Beatmaps.GetMapListFromDb(infos, false);
-            ViewModels = _entries.Transform(true).ToList();
+            UpdateView(_entries);
+        }
+
+        private void UpdateView(IEnumerable<BeatmapEntry> entries)
+        {
+            ViewModels = entries.Transform(true).ToList();
             for (var i = 0; i < ViewModels.Count; i++)
                 ViewModels[i].Id = (i + 1).ToString("00");
 
             MapList.DataContext = ViewModels;
-            ListCount.Content = ViewModels.Count();
+            ListCount.Content = ViewModels.Count;
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -80,7 +98,7 @@ namespace Milkitic.OsuPlayer.Pages
         {
             if (MapList.SelectedItem == null)
                 return;
-            var searchInfo = (BeatmapViewModel)MapList.SelectedItem;
+            var searchInfo = (BeatmapDataModel)MapList.SelectedItem;
             DbOperator.RemoveMapFromCollection(searchInfo.GetIdentity(), _collection);
             UpdateList();
             App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
@@ -149,7 +167,7 @@ namespace Milkitic.OsuPlayer.Pages
         {
             if (MapList.SelectedItem == null)
                 return;
-            var searchInfo = (BeatmapViewModel)MapList.SelectedItem;
+            var searchInfo = (BeatmapDataModel)MapList.SelectedItem;
             Process.Start($"https://osu.ppy.sh/b/{searchInfo.BeatmapId}");
         }
 
@@ -157,7 +175,7 @@ namespace Milkitic.OsuPlayer.Pages
         {
             if (MapList.SelectedItem == null)
                 return;
-            var searchInfo = (BeatmapViewModel)MapList.SelectedItem;
+            var searchInfo = (BeatmapDataModel)MapList.SelectedItem;
             Process.Start(Path.Combine(Domain.OsuSongPath, searchInfo.FolderName));
         }
 
@@ -174,7 +192,7 @@ namespace Milkitic.OsuPlayer.Pages
         {
             if (MapList.SelectedItem == null)
                 return null;
-            var selectedItem = (BeatmapViewModel)MapList.SelectedItem;
+            var selectedItem = (BeatmapDataModel)MapList.SelectedItem;
             return _entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }

@@ -24,133 +24,142 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Grid x:Name="CollectionInfoGrid" Margin="5">
-                        <Grid.DataContext>
-                            <data:Collection />
-                        </Grid.DataContext>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid Width="192" Height="192" Margin="10">
-                            <Image x:Name="CollectionThumb" RenderOptions.BitmapScalingMode="HighQuality"
-                                   Source="{Binding Path=ImagePath}" Stretch="UniformToFill"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Border Background="#EAF9F7F8" CornerRadius="10" Margin="5" 
+                            BorderBrush="#20daa3ce" BorderThickness="1">
+                        <Grid x:Name="CollectionInfoGrid">
+                            <Grid.DataContext>
+                                <data:Collection />
+                            </Grid.DataContext>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Width="192" Height="192" Margin="10">
+                                <Image x:Name="CollectionThumb" RenderOptions.BitmapScalingMode="HighQuality"
+                                       Source="{Binding Path=ImagePath}" Stretch="UniformToFill"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Grid>
+                            <StackPanel Grid.Column="1" Margin="10">
+                                <WrapPanel Orientation="Horizontal">
+                                    <Label x:Name="LblTitle" FontSize="22" VerticalAlignment="Center">
+                                        <TextBlock TextWrapping="Wrap"
+                                                   Text="{Binding Path=Name}" />
+                                    </Label>
+                                    <dms:DMButton Margin="5" Height="28" Width="28"
+                                                  CornerRadius="50"
+                                                  BorderThickness="1"
+                                                  BorderBrush="#80FAFAFB"
+                                                  Background="#FAFAFB"
+                                                  Cursor="Hand">
+                                        <Viewbox Stretch="Uniform" Width="16" Height="16" Margin="1,0,0,0">
+                                            <Canvas Width="1000" Height="1000">
+                                                <Path Fill="#303030" Data="{StaticResource Edit1}" />
+                                                <Path Fill="#303030" Data="{StaticResource Edit2}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </dms:DMButton>
+                                    <dms:DMButton x:Name="BtnDelCol" Width="28" Margin="5" Height="28"
+                                                  CornerRadius="50"
+                                                  BorderThickness="1"
+                                                  BorderBrush="#80ff4d40"
+                                                  Background="#ff4d40"
+                                                  Cursor="Hand"
+                                                  Click="BtnDelCol_Click">
+                                        <Viewbox Stretch="Uniform" Width="16" Height="16">
+                                            <Canvas Width="1000" Height="1000">
+                                                <Path Fill="White" Data="{StaticResource Delete}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </dms:DMButton>
+                                </WrapPanel>
+                                <StackPanel Orientation="Horizontal" Margin="5">
+                                    <Label Foreground="#303030"
+                                           Content="创建时间：" />
+                                    <Label Foreground="#303030"
+                                           Content="{Binding Path=CreateTime, Converter={StaticResource CvtDate}}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <dms:DMButton Margin="5" Height="28"
+                                                  CornerRadius="5"
+                                                  BorderThickness="1"
+                                                  Background="#5d9cec"
+                                                  BorderBrush="Transparent"
+                                                  Foreground="White"
+                                                  Cursor="Hand">
+                                        <StackPanel Orientation="Horizontal" Margin="10,0">
+                                            <Viewbox Stretch="Uniform" Width="16" Height="16">
+                                                <Canvas Width="1000" Height="1000">
+                                                    <Canvas.RenderTransform>
+                                                        <TransformGroup>
+                                                            <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000" />
+                                                            <TranslateTransform X="0.000000" Y="385.000000" />
+                                                        </TransformGroup>
+                                                    </Canvas.RenderTransform>
+                                                    <Path Fill="White" Data="{StaticResource Play}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <Label Foreground="White" Content="全部播放" />
+                                        </StackPanel>
+                                    </dms:DMButton>
+                                    <dms:DMButton x:Name="BtnExportAll" Width="auto" Margin="5" Height="28"
+                                                  Click="BtnExportAll_Click" CornerRadius="5"
+                                                  BorderThickness="1"
+                                                  Cursor="Hand" Background="#FAFAFB">
+                                        <StackPanel Orientation="Horizontal" Margin="10,0">
+                                            <Viewbox Stretch="Uniform" Width="16" Height="16">
+                                                <Canvas Width="1000" Height="1000">
+                                                    <Path Fill="#303030" Data="{StaticResource Export1}" />
+                                                    <Path Fill="#303030" Data="{StaticResource Export2}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <Label Content="全部导出" />
+                                        </StackPanel>
+                                    </dms:DMButton>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="5">
+                                    <Label Content="简介：" Foreground="#303030" />
+                                    <Label x:Name="LblDescription" Content="{Binding Path=Description}">
+                                        <Label.Style>
+                                            <Style TargetType="{x:Type Label}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Path=Description}" Value="">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Path=Description}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Label.Style>
+                                    </Label>
+                                    <Label x:Name="LblAdd" Content="暂无" Foreground="#939393">
+                                        <Label.Style>
+                                            <Style TargetType="{x:Type Label}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Path=Description}" Value="">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Path=Description}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Label.Style>
+                                    </Label>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Margin="10 10 20 10">
+                                <Label Foreground="#7A7A7A"
+                                       HorizontalAlignment="Right" Content="歌曲数" />
+                                <Label x:Name="ListCount"
+                                       Foreground="#7A7A7A" FontWeight="Bold"
+                                       HorizontalAlignment="Right" Margin="0 -5 0 0" 
+                                       Content="0" />
+                            </StackPanel>
                         </Grid>
-                        <StackPanel Grid.Column="1" Margin="10">
-                            <WrapPanel Orientation="Horizontal">
-                                <Label x:Name="LblTitle" FontSize="22" VerticalAlignment="Center" >
-                                    <TextBlock TextWrapping="Wrap"
-                                               Text="{Binding Path=Name}" />
-                                </Label>
-                                <dms:DMButton Margin="5" Height="28" Width="28"
-                                              CornerRadius="50"
-                                              BorderThickness="1"
-                                              BorderBrush="#80FAFAFB"
-                                              Background="#FAFAFB"
-                                              Cursor="Hand">
-                                    <Viewbox Stretch="Uniform" Width="16" Height="16" Margin="1,0,0,0">
-                                        <Canvas Width="1000" Height="1000">
-                                            <Path Fill="#303030" Data="{StaticResource Edit1}" />
-                                            <Path Fill="#303030" Data="{StaticResource Edit2}" />
-                                        </Canvas>
-                                    </Viewbox>
-                                </dms:DMButton>
-                                <dms:DMButton x:Name="BtnDelCol" Width="28" Margin="5" Height="28" 
-                                              CornerRadius="50"
-                                              BorderThickness="1"
-                                              BorderBrush="#80ff4d40"
-                                              Background="#ff4d40"
-                                              Cursor="Hand"
-                                              Click="BtnDelCol_Click">
-                                    <Viewbox Stretch="Uniform" Width="16" Height="16">
-                                        <Canvas Width="1000" Height="1000">
-                                            <Path Fill="White" Data="{StaticResource Delete}" />
-                                        </Canvas>
-                                    </Viewbox>
-                                </dms:DMButton>
-                            </WrapPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="创建时间："/>
-                                <Label Content="{Binding Path=CreateTime, Converter={StaticResource CvtDate}}"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <dms:DMButton Margin="5" Height="28"
-                                              CornerRadius="5"
-                                              BorderThickness="1"
-                                              Background="#5d9cec"
-                                              BorderBrush="Transparent"
-                                              Foreground="White"
-                                              Cursor="Hand">
-                                    <StackPanel Orientation="Horizontal" Margin="10,0">
-                                        <Viewbox Stretch="Uniform" Width="16" Height="16">
-                                            <Canvas Width="1000" Height="1000">
-                                                <Canvas.RenderTransform>
-                                                    <TransformGroup>
-                                                        <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000"/>
-                                                        <TranslateTransform X="0.000000" Y="385.000000"/>
-                                                    </TransformGroup>
-                                                </Canvas.RenderTransform>
-                                                <Path Fill="White" Data="{StaticResource Play}" />
-                                            </Canvas>
-                                        </Viewbox>
-                                        <Label Foreground="White" Content="全部播放" />
-                                    </StackPanel>
-                                </dms:DMButton>
-                                <dms:DMButton x:Name="BtnExportAll" Width="auto" Margin="5" Height="28"
-                                              Click="BtnExportAll_Click" CornerRadius="5"
-                                              BorderThickness="1"
-                                              Cursor="Hand" Background="#FAFAFB">
-                                    <StackPanel Orientation="Horizontal" Margin="10,0">
-                                        <Viewbox Stretch="Uniform" Width="16" Height="16">
-                                            <Canvas Width="1000" Height="1000">
-                                                <Path Fill="#303030" Data="{StaticResource Export1}"/>
-                                                <Path Fill="#303030" Data="{StaticResource Export2}"/>
-                                            </Canvas>
-                                        </Viewbox>
-                                        <Label Content="全部导出" />
-                                    </StackPanel>
-                                </dms:DMButton>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="简介："/>
-                                <Label x:Name="LblDescription" Content="{Binding Path=Description}">
-                                    <Label.Style>
-                                        <Style TargetType="{x:Type Label}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Path=Description}" Value="">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Path=Description}" Value="{x:Null}">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Label.Style>
-                                </Label>
-                                <Label x:Name="LblAdd" Content="暂无" Foreground="#939393">
-                                    <Label.Style>
-                                        <Style TargetType="{x:Type Label}">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Path=Description}" Value="">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Path=Description}" Value="{x:Null}">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Label.Style>
-                                </Label>
-                            </StackPanel>
-                        </StackPanel>
-                        <StackPanel Grid.Column="2" Margin="10 10 20 10" >
-                            <Label Content="歌曲数" HorizontalAlignment="Right"/>
-                            <Label x:Name="ListCount" Content="0" HorizontalAlignment="Right" FontWeight="Bold" Margin="0 -5 0 0"/>
-                        </StackPanel>
-                    </Grid>
+                    </Border>
                     <TabControl Grid.Row="1" Margin="0,10,0,0"
                                 Style="{StaticResource ListTabControlStyle}">
                         <TabItem Style="{StaticResource ListTabItem}">
@@ -158,7 +167,8 @@
                                 <TextBlock Text="歌曲列表" Cursor="Hand" FontSize="15" Padding="3"/>
                             </TabItem.Header>
                             <Grid>
-                                <dms:DMTextBox Margin="0,-30,40,0"
+                                <dms:DMTextBox x:Name="SearchBox"
+                                               Margin="0,-30,40,0"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Top"
                                                Width="180"
@@ -170,12 +180,13 @@
                                                SelectedColor="#40303030"
                                                Background="White"
                                                ShowIcon="True" 
-                                               CornerRadius="13" />
+                                               CornerRadius="13" 
+                                               TextChanged="SearchBox_TextChanged"/>
                                 <ListView x:Name="MapList" BorderThickness="0"
-                                      ItemsSource="{Binding Mode=OneWay}"
-                                      MouseDoubleClick="RecentList_MouseDoubleClick"
-                                      ItemContainerStyle="{StaticResource GridView}"
-                                      Background="#40FFFFFF">
+                                          ItemsSource="{Binding Mode=OneWay}"
+                                          MouseDoubleClick="RecentList_MouseDoubleClick"
+                                          ItemContainerStyle="{StaticResource GridView}"
+                                          Background="#40FFFFFF">
                                     <ListView.ContextMenu>
                                         <ContextMenu Style="{StaticResource DefaultContextMenu}">
                                             <MenuItem x:Name="ItemPlay" Header="播放" Click="ItemPlay_Click"
@@ -214,24 +225,32 @@
                                         </ContextMenu>
                                     </ListView.ContextMenu>
                                     <ListView.DataContext>
-                                        <osuPlayer:BeatmapViewModel/>
+                                        <osuPlayer:BeatmapDataModel/>
                                     </ListView.DataContext>
                                     <ListView.Resources>
                                         <DataTemplate x:Key="IdDt">
-                                            <Label VerticalAlignment="Center" Margin="0,3,0,3"
-                                       Content="{Binding Id, Mode=OneWay}" Foreground="#FF9C9C9C" />
+                                            <Label VerticalAlignment="Center"
+                                                   Margin="0,3,0,3"
+                                                   Content="{Binding Id, Mode=OneWay}" 
+                                                   Foreground="#FF9C9C9C" />
                                         </DataTemplate>
                                         <DataTemplate x:Key="TitleDt">
-                                            <Label VerticalAlignment="Center" Content="{Binding AutoTitle, Mode=OneWay}"/>
+                                            <Label VerticalAlignment="Center" 
+                                                   Content="{Binding AutoTitle, Mode=OneWay}"/>
                                         </DataTemplate>
                                         <DataTemplate x:Key="ArtistDt">
-                                            <Label VerticalAlignment="Center" Content="{Binding AutoArtist, Mode=OneWay}" Foreground="#FF9C9C9C"/>
+                                            <Label VerticalAlignment="Center"
+                                                   Content="{Binding AutoArtist, Mode=OneWay}"
+                                                   Foreground="#FF9C9C9C" />
                                         </DataTemplate>
                                         <DataTemplate x:Key="CreatorDt">
-                                            <Label VerticalAlignment="Center" Content="{Binding AutoCreator, Mode=OneWay}" />
+                                            <Label VerticalAlignment="Center" 
+                                                   Content="{Binding AutoCreator, Mode=OneWay}" />
                                         </DataTemplate>
                                         <DataTemplate x:Key="VersionDt">
-                                            <Label VerticalAlignment="Center" Content="{Binding AutoVersion}" Foreground="#FF9C9C9C" />
+                                            <Label VerticalAlignment="Center" 
+                                                   Content="{Binding AutoVersion}"
+                                                   Foreground="#FF9C9C9C" />
                                         </DataTemplate>
                                     </ListView.Resources>
                                     <ListView.View>

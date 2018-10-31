@@ -31,7 +31,6 @@ namespace Milkitic.OsuPlayer.Windows
                 Filter = @"Osu Files(*.osu)|*.osu"
             };
             var result = openFileDialog.ShowDialog();
-            var ext = new FileInfo(openFileDialog.FileName).Extension;
             return (result.HasValue && result.Value) ? openFileDialog.FileName : null;
         }
 
@@ -117,7 +116,7 @@ namespace Milkitic.OsuPlayer.Windows
                     LblNow.Content = new TimeSpan(0, 0, 0, 0, App.HitsoundPlayer.PlayTime).ToString(@"mm\:ss");
 #if DEBUG
                     /* Set Storyboard */
-                    if (true)
+                    if (false)
                     {
                         if (_sbWindow == null || _sbWindow.IsClosed)
                         {

@@ -9,7 +9,7 @@
 
     <Grid>
         <Grid x:Name="SbScene" HorizontalAlignment="Left" VerticalAlignment="Top" Width="640" Height="360"
-              Background="Black" Margin="20,20,0,0">
+              Background="Black" Margin="20,20,0,0" Visibility="Hidden">
 
         </Grid>
     </Grid>
