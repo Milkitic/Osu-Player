@@ -164,7 +164,7 @@
                                 Style="{StaticResource ListTabControlStyle}">
                         <TabItem Style="{StaticResource ListTabItem}">
                             <TabItem.Header>
-                                <TextBlock Text="歌曲列表" Cursor="Hand" FontSize="15" Padding="3"/>
+                                <TextBlock Text="音乐列表" Cursor="Hand" FontSize="15" Padding="3"/>
                             </TabItem.Header>
                             <Grid>
                                 <dms:DMTextBox x:Name="SearchBox"

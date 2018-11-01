@@ -37,6 +37,8 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid x:Name="TitleBarArea" Grid.Row="0" Height="50" Background="Transparent" Canvas.ZIndex="0">
+            <Button PreviewMouseDoubleClick="Button_MouseDoubleClick" Background="Transparent" Opacity="0"
+                    PreviewMouseDown="Button_MouseDown"/>
             <Image Source="{StaticResource TitleLogo}" Height="32" HorizontalAlignment="Left" Margin="8,0,0,0"/>
             <StackPanel
                 Height="{Binding DMSystemButtonSize}"
@@ -60,7 +62,7 @@
                     DMSystemButtonForeground="#E0EEEEEE"
                     DMSystemButtonHoverForeground="#FFFFFF"
                     DMSystemButtonSize="40" />
-                <dms:DMSystemMaxButton
+                <dms:DMSystemMaxButton x:Name="MaxWindowButton"
                     DMSystemButtonForeground="#E0EEEEEE"
                     DMSystemButtonHoverForeground="#FFFFFF"
                     DMSystemButtonSize="40" />

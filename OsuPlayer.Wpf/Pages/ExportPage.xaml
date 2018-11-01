@@ -38,7 +38,6 @@
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="0,0,0,1" BorderBrush="#10303030" />
                         <dms:DMButton Grid.Column="0" x:Name="BtnExportAll" Width="auto" Margin="5" Height="28"
                                       CornerRadius="5"
                                       BorderThickness="1"

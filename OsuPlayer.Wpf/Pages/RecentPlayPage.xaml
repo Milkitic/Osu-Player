@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:models="clr-namespace:Milkitic.OsuPlayer"
+      xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="RecentPlayPage" Loaded="Page_Loaded">
@@ -12,20 +13,56 @@
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem Style="{StaticResource PinkTabItem}">
                 <TabItem.Header>
-                    <TextBlock x:Name="LblTitle" Text="最近播放" Cursor="Hand" FontSize="16" Padding="18,10"/>
+                    <TextBlock Text="音乐" Cursor="Hand" FontSize="16" Padding="18,10"/>
                 </TabItem.Header>
-                <Grid Margin="0,10,0,0">
+                <Grid Margin="0,0,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,0">
-                        <Button x:Name="BtnPlayAll" Content="全部播放" Width="70" Margin="5" Height="30"
-                    Style="{StaticResource Collection2ButtonStyle}" Click="BtnPlayAll_Click" />
-                        <Button x:Name="BtnDelAll" Content="全部删除" Width="70" Margin="5" Height="30"
-                    Style="{StaticResource Collection2ButtonStyle}" Click="BtnDelAll_Click" />
+                    <Border BorderBrush="#20CF2010" BorderThickness="0,1,0,0" Margin="0,-2,0,0"></Border>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
+                        <dms:DMButton x:Name="BtnPlayAll"
+                                      Margin="5" Height="28"
+                                      CornerRadius="5" 
+                                      BorderThickness="1"
+                                      Background="#5d9cec"
+                                      BorderBrush="Transparent"
+                                      Foreground="White"
+                                      Cursor="Hand"
+                                      Click="BtnPlayAll_Click">
+                            <StackPanel Orientation="Horizontal" Margin="10,0">
+                                <Viewbox Stretch="Uniform" Width="16" Height="16">
+                                    <Canvas Width="1000" Height="1000">
+                                        <Canvas.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000" />
+                                                <TranslateTransform X="0.000000" Y="385.000000" />
+                                            </TransformGroup>
+                                        </Canvas.RenderTransform>
+                                        <Path Fill="White" Data="{StaticResource Play}" />
+                                    </Canvas>
+                                </Viewbox>
+                                <Label Foreground="White" Content="全部播放" />
+                            </StackPanel>
+                        </dms:DMButton>
+                        <dms:DMButton x:Name="BtnDelAll" 
+                                      Margin="5" Height="28"
+                                      CornerRadius="5"
+                                      BorderThickness="1"
+                                      Cursor="Hand" Background="#FAFAFB"
+                                      Click="BtnDelAll_Click" >
+                            <StackPanel Orientation="Horizontal" Margin="10,0">
+                                <Viewbox Stretch="Uniform" Width="16" Height="16">
+                                    <Canvas Width="1000" Height="1000">
+                                        <Path Fill="#303030" Data="{StaticResource Delete}" />
+                                    </Canvas>
+                                </Viewbox>
+                                <Label Content="全部删除" />
+                            </StackPanel>
+                        </dms:DMButton>
                     </StackPanel>
-                    <ListView Grid.Row="1" x:Name="RecentList" Margin="0,5,0,2" Background="Transparent" BorderThickness="0"
+                    <ListView Grid.Row="1" x:Name="RecentList" Background="Transparent" BorderThickness="0"
                               ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="Recent_MouseDoubleClick"
                               ItemContainerStyle="{StaticResource GridView}">
                         <ListView.ContextMenu>
@@ -90,6 +127,11 @@
                         </ListView.View>
                     </ListView>
                 </Grid>
+            </TabItem>
+            <TabItem Style="{StaticResource PinkTabItem}" Visibility="Collapsed">
+                <TabItem.Header>
+                    <TextBlock Text="故事板" Cursor="Hand" FontSize="16" Padding="18,10"/>
+                </TabItem.Header>
             </TabItem>
         </TabControl>
 
