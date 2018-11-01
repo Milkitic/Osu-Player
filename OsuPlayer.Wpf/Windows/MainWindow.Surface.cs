@@ -20,7 +20,7 @@ namespace Milkitic.OsuPlayer.Windows
         {
             var list = (List<Collection>)DbOperator.GetCollections();
             list.Reverse();
-            CollectionList.DataContext = list;
+            ViewModel.Collection = list;
         }
 
         private bool SetFaved(MapIdentity identity)

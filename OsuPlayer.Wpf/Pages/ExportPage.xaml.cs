@@ -26,12 +26,27 @@ namespace Milkitic.OsuPlayer.Pages
     public partial class ExportPage : Page
     {
         //Page view model
-        public ExportPageViewModel ViewModel { get; }
-
+        private static bool _hasTaskSuccess;
         private readonly MainWindow _mainWindow;
+
+        public ExportPageViewModel ViewModel { get; }
         public static readonly ConcurrentQueue<BeatmapEntry> TaskQueue = new ConcurrentQueue<BeatmapEntry>();
         public static Task ExportTask;
         public static bool Overlap = true;
+
+        public static bool HasTaskSuccess
+        {
+            get
+            {
+                bool flag = _hasTaskSuccess;
+                _hasTaskSuccess = false;
+                return flag;
+            }
+            private set => _hasTaskSuccess = value;
+        }
+
+        public static bool IsTaskBusy => 
+            ExportTask != null && !ExportTask.IsCanceled && !ExportTask.IsCompleted && !ExportTask.IsFaulted;
 
         public ExportPage(MainWindow mainWindow)
         {
@@ -39,92 +54,6 @@ namespace Milkitic.OsuPlayer.Pages
             _mainWindow = mainWindow;
             ViewModel = (ExportPageViewModel)DataContext;
             ViewModel.ExportPath = App.Config.Export.MusicPath;
-            UpdateList();
-        }
-
-        private void UpdateList()
-        {
-            var maps = (List<MapInfo>)DbOperator.GetExportedMaps();
-            List<(MapIdentity MapIdentity, string path, string time, string size)> list =
-                new List<(MapIdentity, string, string, string)>();
-            foreach (var map in maps)
-            {
-                var fi = new FileInfo(map.ExportFile);
-                list.Add(!fi.Exists
-                    ? (map.GetIdentity(), map.ExportFile, "已从目录移除", "已从目录移除")
-                    : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), Util.CountSize(fi.Length)));
-            }
-
-            ViewModel.Entries = App.Beatmaps.GetMapListFromDb(maps);
-            var viewModels = ViewModel.Entries.Transform(false).ToList();
-            for (var i = 0; i < viewModels.Count; i++)
-            {
-                var sb = list.First(k => k.MapIdentity.Equals(viewModels[i].GetIdentity()));
-                viewModels[i].Id = i.ToString("00");
-                viewModels[i].ExportFile = sb.path;
-                viewModels[i].FileSize = sb.size;
-                viewModels[i].ExportTime = sb.time;
-            }
-
-            ViewModel.DataModelList = new ObservableCollection<BeatmapDataModel>(viewModels);
-        }
-
-        private void ItemDelete_Click(object sender, RoutedEventArgs e)
-        {
-            var maps = GetSelectItems();
-            if (maps == null) return;
-            foreach (var (map, viewModel) in maps)
-            {
-                if (File.Exists(viewModel.ExportFile))
-                {
-                    File.Delete(viewModel.ExportFile);
-                    var di = new FileInfo(viewModel.ExportFile).Directory;
-                    if (di.Exists && di.GetFiles().Length == 0)
-                        di.Delete();
-                }
-
-                DbOperator.AddMapExport(map.GetIdentity(), null);
-            }
-
-            UpdateList();
-        }
-
-        private void ItemOpenFolder_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelectItem(out var viewModel);
-            if (map == null) return;
-            Process.Start("Explorer", "/select," + viewModel.ExportFile);
-        }
-
-        private void ItemRexport_Click(object sender, RoutedEventArgs e)
-        {
-            var maps = GetSelectItems();
-            if (maps == null) return;
-            foreach (var (map, _) in maps)
-                QueueEntry(map);
-            while (ExportTask != null && !ExportTask.IsCanceled && !ExportTask.IsCompleted) ;
-
-            UpdateList();
-        }
-
-        private List<(BeatmapEntry entry, BeatmapDataModel viewModel)> GetSelectItems()
-        {
-            if (ExportList.SelectedItem == null)
-                return null;
-            return (from BeatmapDataModel selectedItem in ExportList.SelectedItems
-                    select (ViewModel.Entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
-                        .FirstOrDefault(k => k.Version == selectedItem.Version), selectedItem)).ToList();
-        }
-
-        private BeatmapEntry GetSelectItem(out BeatmapDataModel dataModel)
-        {
-            dataModel = null;
-            if (ExportList.SelectedItem == null)
-                return null;
-            var selectedItem = (BeatmapDataModel)ExportList.SelectedItem;
-            dataModel = selectedItem;
-            return ViewModel.Entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
-                .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
 
         public static void QueueEntries(IEnumerable<BeatmapEntry> entries)
@@ -152,6 +81,7 @@ namespace Milkitic.OsuPlayer.Pages
                     if (!TaskQueue.TryDequeue(out var entry))
                         continue;
                     CopyFile(entry);
+                    HasTaskSuccess = true;
                 }
             });
         }

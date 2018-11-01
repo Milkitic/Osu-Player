@@ -2,6 +2,7 @@
 using Milkitic.OsuPlayer;
 using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
+using Milkitic.OsuPlayer.L18N;
 using Milkitic.OsuPlayer.Media.Lyric;
 using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Auto;
 using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
@@ -32,6 +33,7 @@ namespace Milkitic.OsuPlayer
     public partial class App : Application
     {
         public static Config Config { get; set; }
+        public static UiMetadata UiMetadata { get; set; } = new UiMetadata();
         public static bool UseDbMode => Config.General.DbPath != null;
 
         public static Lazy<OsuDb> BeatmapDb { get; set; } = new Lazy<OsuDb>(ReadDb);
@@ -46,7 +48,8 @@ namespace Milkitic.OsuPlayer
         public static readonly PlayerList PlayerList = new PlayerList();
         public static readonly Updater Updater = new Updater();
 
-        static App()
+        [STAThread]
+        public static void Main()
         {
             try
             {
@@ -67,6 +70,10 @@ namespace Milkitic.OsuPlayer
                     $@"{DateTime.Now}===================={Environment.NewLine}{e}{Environment.NewLine}");
                 Environment.Exit(1);
             }
+
+            App app = new App();
+            app.InitializeComponent();
+            app.Run();
         }
 
         public static void ReloadLyricProvider()
@@ -244,8 +251,13 @@ namespace Milkitic.OsuPlayer
         {
             if (string.IsNullOrEmpty(Config.General.DbPath))
                 return null;
+            //var copied = Path.Combine(Domain.CurrentPath, "osu.db");
+            //File.Copy(Config.General.DbPath, copied, true);
             var db = new OsuDb();
-            db.ReadFromStream(new SerializationReader(new FileStream(Config.General.DbPath, FileMode.Open)));
+            using (FileStream fs = new FileStream(Config.General.DbPath, FileMode.Open))
+            {
+                db.ReadFromStream(new SerializationReader(fs));
+            }
             return db;
         }
     }

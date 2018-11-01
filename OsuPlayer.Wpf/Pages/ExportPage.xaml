@@ -9,12 +9,18 @@
       xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib"
       xmlns:viewModels="clr-namespace:Milkitic.OsuPlayer.ViewModels"
       xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+      xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ExportPage">
     <Page.DataContext>
         <viewModels:ExportPageViewModel />
     </Page.DataContext>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding UpdateList}" CommandParameter="10" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem Style="{StaticResource PinkTabItem}">
@@ -23,31 +29,66 @@
                 </TabItem.Header>
                 <Grid Background="Transparent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="{Binding UiStrExportPath}" Margin="0,0,-10,0"/>
-                            <Label Content=": " Margin="0,0,-10,0"/>
-                            <Label Content="{Binding ExportPath}" />
+                    <!--<Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="#10303030"/>-->
+                    <Grid Grid.Row="0" Margin="10">
+                       <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="0,0,0,1" BorderBrush="#10303030" />
+                        <dms:DMButton Grid.Column="0" x:Name="BtnExportAll" Width="auto" Margin="5" Height="28"
+                                      CornerRadius="5"
+                                      BorderThickness="1"
+                                      Command="{Binding ItemFolderCommand}"
+                                      CommandParameter="{Binding ExportPath}"
+                                      Cursor="Hand" Background="#FAFAFB">
+                            <StackPanel Orientation="Horizontal" Margin="10,0">
+                                <Viewbox Stretch="Uniform" Width="16" Height="16">
+                                    <Canvas Width="1000" Height="1000">
+                                        <Path Fill="#303030">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M102.5 919.2c-51 0-92.5-41.5-92.5-92.5V173.3c0-51 41.5-92.5 92.5-92.5h287.1c47.7 0 87.3 35.8 92 83.2l0.3 4.5c2.1 20.4 19.2 35.8 39.8 35.8h375.8c51 0 92.5 41.5 92.5 92.5v530c0 51-41.5 92.5-92.5 92.5H102.5z M80.3 809.4c0 22 17.9 40 40 40h758.6c22.1 0 40-18 40-40V388.7H80.3V809.4z M918.7 317.9c0-24.6-8.8-45.5-39.8-45.5H521.7c-46.4 0-85.1-33.8-91.6-79.3l-0.8-8.4c-2.1-20.4-19.2-35.8-39.8-35.8H120.3c-22.1 0-40 18-40 40v129H918.7z" FillRule="NonZero"/>
+                                            </Path.Data>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                                <Label Content="打开目录" />
+                            </StackPanel>
+                        </dms:DMButton>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Content="{Binding UiStrExportPath}"
+                                   Foreground="#303030"
+                                   Margin="0,0,-10,0"/>
+                            <Label Content=": " Foreground="#303030" Margin="0,0,-10,0"/>
+                            <Label Content="{Binding ExportPath}" Foreground="#303030" />
                         </StackPanel>
                     </Grid>
-                    <ListView Grid.Row="1" x:Name="ExportList" Margin="0,10,0,2" Background="#80FFFFFF" BorderThickness="0"
+                    <ListView Grid.Row="1" x:Name="ExportList"
+                              Margin="0,0,0,0"
+                              Background="#80FFFFFF" BorderThickness="0"
                               ItemsSource="{Binding DataModelList, Mode=OneWay}" 
                               ItemContainerStyle="{StaticResource GridView}">
                         <ListView.ContextMenu>
                             <ContextMenu Style="{StaticResource DefaultContextMenu}" x:Name="Menu">
-                                <MenuItem x:Name="ItemOpenFolder" Header="打开文件所在目录"
-                                          Command="{Binding OpenFolderCommand}"
+                                <MenuItem x:Name="ItemOpenFolder" Header="{Binding UiStrOpenFolder}"
+                                          Command="{Binding ItemFolderCommand}"
                                           CommandParameter="{Binding Path=PlacementTarget.SelectedItem,
                                             RelativeSource= {RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"
                                           Style="{DynamicResource DefaultMenuItem}">
                                 </MenuItem>
                                 <Separator />
-                                <MenuItem x:Name="ItemRexport" Header="重新导出" Click="ItemRexport_Click"
+                                <MenuItem x:Name="ItemRexport" Header="{Binding UiStrExportAgain}" 
+                                          Command="{Binding ItemReExportCommand}"
+                                          CommandParameter="{Binding Path=PlacementTarget,
+                                            RelativeSource= {RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"
                                           Style="{DynamicResource DefaultMenuItem}" />
-                                <MenuItem x:Name="ItemDelete" Header="删除导出文件" Click="ItemDelete_Click"
+                                <MenuItem x:Name="ItemDelete" Header="{Binding UiStrDeleteExported}"
+                                          Command="{Binding ItemDeleteCommand}"
+                                          CommandParameter="{Binding Path=PlacementTarget,
+                                            RelativeSource= {RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"
                                           Style="{DynamicResource DefaultMenuItem}" />
                             </ContextMenu>
                         </ListView.ContextMenu>
@@ -73,11 +114,15 @@
                         </ListView.Resources>
                         <ListView.View>
                             <GridView ColumnHeaderContainerStyle="{StaticResource MyHeaderStyle}">
-                                <GridViewColumn Width="40" CellTemplate="{StaticResource IdDt}"></GridViewColumn>
-                                <GridViewColumn Header="{Binding UiStrTitle}" Width="300" CellTemplate="{StaticResource TitleDt}"></GridViewColumn>
-                                <GridViewColumn Header="{Binding UiStrArtist}" Width="200" CellTemplate="{StaticResource ArtistDt}"></GridViewColumn>
-                                <GridViewColumn Header="{Binding UiStrFileSize}" Width="100" CellTemplate="{StaticResource SizeDt}"></GridViewColumn>
-                                <GridViewColumn Header="{Binding UiStrExportTime}" Width="150" CellTemplate="{StaticResource TimeDt}"></GridViewColumn>
+                                <GridViewColumn Width="40" CellTemplate="{StaticResource IdDt}" />
+                                <GridViewColumn Header="{Binding UiStrTitle}" Width="300"
+                                                CellTemplate="{StaticResource TitleDt}" />
+                                <GridViewColumn Header="{Binding UiStrArtist}" Width="200"
+                                                CellTemplate="{StaticResource ArtistDt}" />
+                                <GridViewColumn Header="{Binding UiStrFileSize}" Width="100"
+                                                CellTemplate="{StaticResource SizeDt}" />
+                                <GridViewColumn Header="{Binding UiStrExportTime}" Width="150"
+                                                CellTemplate="{StaticResource TimeDt}" />
                             </GridView>
                         </ListView.View>
                     </ListView>

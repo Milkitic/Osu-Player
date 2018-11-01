@@ -2,6 +2,7 @@
 using Milkitic.OsuPlayer.Media;
 using Milkitic.OsuPlayer.Pages;
 using Milkitic.OsuPlayer.Utils;
+using Milkitic.OsuPlayer.ViewModels;
 using System;
 using System.IO;
 using System.Threading;
@@ -23,6 +24,7 @@ namespace Milkitic.OsuPlayer.Windows
             StoryboardPage = new StoryboardPage(this),
             ExportPage = new ExportPage(this),
         };
+        public MainWindowViewModel ViewModel { get; }
 
         public readonly LyricWindow LyricWindow;
         public ConfigWindow ConfigWindow;
@@ -45,6 +47,7 @@ namespace Milkitic.OsuPlayer.Windows
         public MainWindow()
         {
             InitializeComponent();
+            ViewModel = (MainWindowViewModel)DataContext;
             LyricWindow = new LyricWindow();
             LyricWindow.Show();
             OverallKeyHook = new OverallKeyHook(this);

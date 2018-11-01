@@ -152,12 +152,14 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
+    <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </ApplicationDefinition>
+    </Page>
     <Compile Include="Config.cs" />
     <Compile Include="Converter\TabConverter.cs" />
+    <Compile Include="L18N\UiMetadata.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Windows\ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
     </Compile>
@@ -167,7 +169,7 @@
     <Compile Include="Control\MsgBox.cs" />
     <Compile Include="Converter\DateTimeConverter.cs" />
     <Compile Include="Converter\NavigationColorConverter.cs" />
-    <Compile Include="Converter\VideoBackConverter.cs" />
+    <Compile Include="Converter\MainWindowConverters.cs" />
     <Compile Include="Data\ModelsContexts.cs" />
     <Compile Include="Data\DbOperator.cs" />
     <Compile Include="Domain.cs" />
