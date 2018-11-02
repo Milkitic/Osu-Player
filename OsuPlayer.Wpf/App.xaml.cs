@@ -22,6 +22,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -51,6 +52,21 @@ namespace Milkitic.OsuPlayer
         [STAThread]
         public static void Main()
         {
+            AppDomain.CurrentDomain.AppendPrivatePath(@"bin");
+            var dllDirectory = Path.Combine(Domain.CurrentPath, "bin");
+            if (!Directory.Exists(dllDirectory))
+                Directory.CreateDirectory(dllDirectory);
+            foreach (var item in new DirectoryInfo(Domain.CurrentPath).EnumerateFiles())
+            {
+                if (item.Extension.ToLower() == ".dll")
+                {
+                    var newFile = Path.Combine(dllDirectory, item.Name);
+                    if (File.Exists(newFile))
+                        File.Delete(newFile);
+                    item.MoveTo(newFile);
+                }
+            }
+
             try
             {
                 if (!LoadConfig())
@@ -64,7 +80,7 @@ namespace Milkitic.OsuPlayer
             }
             catch (Exception e)
             {
-                MsgBox.Show($"发生严重错误，即将退出。。。详情请查看error.log。{Environment.NewLine}{e.Message}", "Osu Player",
+                MessageBox.Show($"发生严重错误，即将退出。。。详情请查看error.log。{Environment.NewLine}{e.Message}", "Osu Player",
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 File.AppendAllText("error.log",
                     $@"{DateTime.Now}===================={Environment.NewLine}{e}{Environment.NewLine}");
@@ -125,7 +141,7 @@ namespace Milkitic.OsuPlayer
                 }
                 catch (JsonException e)
                 {
-                    var result = MsgBox.Show(@"载入配置文件时失败，用默认配置覆盖继续打开吗？\r\n" + e.Message,
+                    var result = MessageBox.Show(@"载入配置文件时失败，用默认配置覆盖继续打开吗？\r\n" + e.Message,
                         "Osu Player", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
@@ -157,14 +173,14 @@ namespace Milkitic.OsuPlayer
                     var result = BrowserDb(out var chosedPath);
                     if (!result.HasValue || !result.Value)
                     {
-                        MsgBox.Show(@"你尚未初始化osu!db，因此部分功能将不可用。", "Osu Player", MessageBoxButton.OK,
+                        MessageBox.Show(@"你尚未初始化osu!db，因此部分功能将不可用。", "Osu Player", MessageBoxButton.OK,
                             MessageBoxImage.Warning);
                         return;
                     }
 
                     if (!File.Exists(chosedPath))
                     {
-                        MsgBox.Show(@"指定文件不存在。", "Osu Player", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(@"指定文件不存在。", "Osu Player", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 

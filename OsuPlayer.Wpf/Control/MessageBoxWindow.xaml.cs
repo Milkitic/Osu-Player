@@ -20,6 +20,7 @@ namespace Milkitic.OsuPlayer.Control
     /// </summary>
     public partial class MessageBoxWindow : DMSkinSimpleWindow
     {
+        private MessageBoxImage _icon;
         public MessageBoxResult MessageBoxResult { get; set; }
 
         public MessageBoxWindow(string messageBoxText)
@@ -62,6 +63,7 @@ namespace Milkitic.OsuPlayer.Control
         public MessageBoxWindow(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon)
             : this(messageBoxText, caption, button)
         {
+            _icon = icon;
             switch (icon)
             {
                 case MessageBoxImage.None:
@@ -115,6 +117,25 @@ namespace Milkitic.OsuPlayer.Control
         private void DMSystemCloseButton_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult = MessageBoxResult.Cancel;
+        }
+
+        private void MsgBoxWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            switch (_icon)
+            {
+                case MessageBoxImage.Hand:
+                    System.Media.SystemSounds.Hand.Play();
+                    break;
+                case MessageBoxImage.Question:
+                    System.Media.SystemSounds.Question.Play();
+                    break;
+                case MessageBoxImage.Exclamation:
+                    System.Media.SystemSounds.Exclamation.Play();
+                    break;
+                case MessageBoxImage.Asterisk:
+                    System.Media.SystemSounds.Asterisk.Play();
+                    break;
+            }
         }
     }
 }

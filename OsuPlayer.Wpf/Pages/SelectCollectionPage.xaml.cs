@@ -1,13 +1,15 @@
 ﻿using Milkitic.OsuLib;
 using Milkitic.OsuPlayer.Data;
+using Milkitic.OsuPlayer.ViewModels;
+using Milkitic.OsuPlayer.Windows;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milkitic.OsuPlayer.Windows;
 using Collection = Milkitic.OsuPlayer.Data.Collection;
 
 namespace Milkitic.OsuPlayer.Pages
@@ -17,14 +19,17 @@ namespace Milkitic.OsuPlayer.Pages
     /// </summary>
     public partial class SelectCollectionPage : Page
     {
+        public SelectCollectionPageViewModel ViewModel { get; set; }
+
         private readonly MainWindow _mainWindow;
         private readonly BeatmapEntry _entry;
 
         public SelectCollectionPage(MainWindow mainWindow, BeatmapEntry entry)
         {
+            InitializeComponent();
+            ViewModel = (SelectCollectionPageViewModel)DataContext;
             _mainWindow = mainWindow;
             _entry = entry;
-            InitializeComponent();
             RefreshList();
         }
 
@@ -46,9 +51,7 @@ namespace Milkitic.OsuPlayer.Pages
 
         public void RefreshList()
         {
-            var list = (List<Collection>)DbOperator.GetCollections();
-            list.Reverse();
-            CollectionList.DataContext = list;
+            ViewModel.Collections = DbOperator.GetCollections().OrderByDescending(k => k.CreateTime).ToList();
         }
 
         private void CollectionList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -78,6 +81,15 @@ namespace Milkitic.OsuPlayer.Pages
                 }
             }
             DbOperator.AddMapToCollection(entry, col);
+        }
+
+        private void BtnCollection_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = (Button)sender;
+            var colId = (string)btn.Tag;
+            var col = DbOperator.GetCollectionById(colId);
+            AddToCollection(col, _entry);
+            Dispose();
         }
     }
 }

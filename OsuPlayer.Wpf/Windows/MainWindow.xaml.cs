@@ -119,7 +119,8 @@ namespace Milkitic.OsuPlayer.Windows
 
         private void Button_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            this.DragMove();
+            if (e.LeftButton == MouseButtonState.Pressed)
+                this.DragMove();
         }
     }
 

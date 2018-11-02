@@ -27,7 +27,8 @@
         <converter:NavigationWidthConverter x:Key="CvtNavigationWidth"/>
         <converter:IconMarginConverter x:Key="CvtIconMargin"/>
         <converter:TitleVisibleConverter x:Key="CvtTitleVisible"/>
-    </windows:EffectWindowBase.Resources>
+        <converter:MiniEnabledConverter x:Key="CvtMiniEnabled"/>
+   </windows:EffectWindowBase.Resources>
     <Grid>
         <Grid.Background>
             <ImageBrush ImageSource="{StaticResource TextrueSource1}" Viewport="0,0,500,500" ViewportUnits="Absolute" TileMode="Tile" />
@@ -36,41 +37,10 @@
             <RowDefinition Height="auto"/>
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Grid x:Name="TitleBarArea" Grid.Row="0" Height="50" Background="Transparent" Canvas.ZIndex="0">
+        <Grid x:Name="TitleBarAreaBack" Grid.Row="0" Height="50">
+            <Image Source="{StaticResource TitleLogo}" Height="32" HorizontalAlignment="Left" Margin="8,0,0,0"/>
             <Button PreviewMouseDoubleClick="Button_MouseDoubleClick" Background="Transparent" Opacity="0"
                     PreviewMouseDown="Button_MouseDown"/>
-            <Image Source="{StaticResource TitleLogo}" Height="32" HorizontalAlignment="Left" Margin="8,0,0,0"/>
-            <StackPanel
-                Height="{Binding DMSystemButtonSize}"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Orientation="Horizontal" Margin="0,0,5,0">
-                <dms:DMSystemButton
-                    x:Name="BtnSettings"
-                    DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="#FFFFFF"
-                    Icon="{StaticResource Gear}"
-                    DMSystemButtonSize="40"
-                    Click="BtnSettings_Click"/>
-                <dms:DMSystemButton
-                    DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="#FFFFFF"
-                    Icon="{StaticResource Mini}"
-                    DMSystemButtonSize="40"
-                    Click="BtnMini_Click"/>
-                <dms:DMSystemMinButton
-                    DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="#FFFFFF"
-                    DMSystemButtonSize="40" />
-                <dms:DMSystemMaxButton x:Name="MaxWindowButton"
-                    DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="#FFFFFF"
-                    DMSystemButtonSize="40" />
-                <dms:DMSystemCloseButton
-                    DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="#FFFFFF"
-                    DMSystemButtonSize="40" />
-            </StackPanel>
         </Grid>
         <Grid Grid.Row="1" x:Name="MainGrid">
             <Grid.RowDefinitions>
@@ -360,7 +330,6 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <!--Source="{Binding Source, ElementName=BlurScene}"-->
                 <Grid Margin="1" MaxHeight="46" MaxWidth="61.333333">
                     <Button Style="{StaticResource ImageButtonStyle}" Click="ThumbButton_Click" Cursor="Hand">
                         <Image x:Name="Thumb" RenderOptions.BitmapScalingMode="HighQuality"
@@ -389,7 +358,7 @@
                         <Label Content="/" Foreground="#858585" Margin="-5,0,-5,0" />
                         <Label x:Name="LblTotal" Content="00:00" Foreground="#AAA" />
                     </StackPanel>
-                    <Slider x:Name="PlayProgress" Grid.Row="1" Margin="3"
+                    <Slider x:Name="PlayProgress" Grid.Row="1" Margin="3" Value="2"
                         Style="{StaticResource HorizontalSliderPinkStyle}"
                         Thumb.DragStarted="PlayProgress_DragStarted"
                         Thumb.DragCompleted="PlayProgress_DragCompleted" />
@@ -419,11 +388,6 @@
                 </Grid>
                 <Border x:Name="BorderMini" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="#40dc498d" BorderThickness="1" Visibility="Hidden"/>
             </Grid>
-            <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True">
-                <Frame Name="FramePop" NavigationUIVisibility="Hidden"></Frame>
-            </Grid>
-            <Border x:Name="MsgBoxCover" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Background="#80FFFFFF"
-                    Visibility="Hidden" />
             <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Pop" PopupAnimation="Fade" Height="100"
                PlacementTarget="{Binding ElementName=BtnVolume}" Placement="Top" AllowsTransparency="True"
                StaysOpen="False"
@@ -479,6 +443,47 @@
                     </StackPanel>
                 </Border>
             </Popup>
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True">
+            <Frame Name="FramePop" NavigationUIVisibility="Hidden" />
+        </Grid>
+        <Border x:Name="MsgBoxCover" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Background="#80FFFFFF"
+                Visibility="Hidden" />
+        <Grid x:Name="TitleBarArea" Grid.Row="0" Height="50">
+            <StackPanel
+                Height="{Binding DMSystemButtonSize}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Orientation="Horizontal" Margin="0,0,5,0">
+                <dms:DMSystemButton
+                    x:Name="BtnSettings"
+                    DMSystemButtonForeground="#E0EEEEEE"
+                    DMSystemButtonHoverForeground="#FFFFFF"
+                    Icon="{StaticResource Gear}"
+                    DMSystemButtonSize="40"
+                    Click="BtnSettings_Click"/>
+                <dms:DMSystemButton
+                    DMSystemButtonForeground="#E0EEEEEE"
+                    DMSystemButtonHoverForeground="#FFFFFF"
+                    Icon="{StaticResource Mini}"
+                    DMSystemButtonSize="40"
+                    Click="BtnMini_Click"
+                    IsEnabled="{Binding Content, ElementName=FramePop,Converter={StaticResource CvtMiniEnabled}}">
+
+                </dms:DMSystemButton>
+                <dms:DMSystemMinButton
+                    DMSystemButtonForeground="#E0EEEEEE"
+                    DMSystemButtonHoverForeground="#FFFFFF"
+                    DMSystemButtonSize="40" />
+                <dms:DMSystemMaxButton 
+                    DMSystemButtonForeground="#E0EEEEEE"
+                    DMSystemButtonHoverForeground="#FFFFFF"
+                    DMSystemButtonSize="40" />
+                <dms:DMSystemCloseButton
+                    DMSystemButtonForeground="#E0EEEEEE"
+                    DMSystemButtonHoverForeground="#FFFFFF"
+                    DMSystemButtonSize="40" />
+            </StackPanel>
         </Grid>
         <ResizeGrip Grid.Row="1" x:Name="Grip"
                     HorizontalAlignment="Right"

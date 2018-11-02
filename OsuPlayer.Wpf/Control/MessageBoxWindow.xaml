@@ -9,7 +9,8 @@
                         mc:Ignorable="d"
                         Title="MessageBoxWindow" Height="200" MinWidth="280" Width="280"
                         x:Name="MsgBoxWindow" SizeToContent="WidthAndHeight"
-                        WindowStartupLocation="CenterScreen">
+                        WindowStartupLocation="CenterScreen"
+                        Loaded="MsgBoxWindow_Loaded">
     <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
