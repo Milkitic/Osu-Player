@@ -128,21 +128,48 @@ namespace Milkitic.OsuPlayer.Data
 
         public static IEnumerable<BeatmapDataModel> Transform(this IEnumerable<BeatmapEntry> list, bool multiVersions)
         {
-            return list.Select((entry, i) => new BeatmapDataModel
+            return list.Select((entry, i) =>
             {
-                Id = multiVersions ? (i + 1).ToString("00") : "",
-                Artist = entry.Artist,
-                ArtistUnicode = entry.ArtistUnicode,
-                BeatmapId = entry.BeatmapId,
-                Creator = entry.Creator,
-                FolderName = entry.FolderName,
-                GameMode = entry.GameMode,
-                SongSource = entry.SongSource,
-                SongTags = entry.SongTags,
-                Title = entry.Title,
-                TitleUnicode = entry.TitleUnicode,
-                Version = entry.Version,
-                BeatmapFileName = entry.BeatmapFileName,
+                var model = new BeatmapDataModel
+                {
+                    Id = multiVersions ? (i + 1).ToString("00") : "",
+                    Artist = entry.Artist,
+                    ArtistUnicode = entry.ArtistUnicode,
+                    BeatmapId = entry.BeatmapId,
+                    Creator = entry.Creator,
+                    FolderName = entry.FolderName,
+                    GameMode = entry.GameMode,
+                    SongSource = entry.SongSource,
+                    SongTags = entry.SongTags,
+                    Title = entry.Title,
+                    TitleUnicode = entry.TitleUnicode,
+                    Version = entry.Version,
+                    BeatmapFileName = entry.BeatmapFileName,
+                };
+                try
+                {
+                    switch (entry.GameMode)
+                    {
+                        case GameMode.Standard:
+                            model.Stars = Math.Round(entry.DiffStarRatingStandard[Mods.None], 2);
+                            break;
+                        case GameMode.Taiko:
+                            model.Stars = Math.Round(entry.DiffStarRatingTaiko[Mods.None], 2);
+                            break;
+                        case GameMode.CatchTheBeat:
+                            model.Stars = Math.Round(entry.DiffStarRatingCtB[Mods.None], 2);
+                            break;
+                        case GameMode.Mania:
+                            model.Stars = Math.Round(entry.DiffStarRatingMania[Mods.None], 2);
+                            break;
+                    }
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+
+                return model;
             }).Distinct(new Comparer(multiVersions)).ToList();
         }
 

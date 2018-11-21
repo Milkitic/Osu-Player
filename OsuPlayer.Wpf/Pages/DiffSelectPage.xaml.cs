@@ -1,4 +1,6 @@
 ﻿using Milkitic.OsuPlayer.Data;
+using Milkitic.OsuPlayer.ViewModels;
+using Milkitic.OsuPlayer.Windows;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using Milkitic.OsuPlayer.Windows;
 
 namespace Milkitic.OsuPlayer.Pages
 {
@@ -24,31 +25,25 @@ namespace Milkitic.OsuPlayer.Pages
     public partial class DiffSelectPage : Page
     {
         private readonly MainWindow _mainWindow;
-        public Action Callback { private get; set; }
+        private Action _callback;
 
-        public BeatmapDataModel SelectedMap;
-        //private IEnumerable<BeatmapEntry> _entries;
+        public Action Callback
+        {
+            private get { return ViewModel.Callback; }
+            set { ViewModel.Callback = value; }
+        }
+
+        public BeatmapDataModel SelectedMap => ViewModel.SelectedMap;
+        public DiffSelectPageViewModel ViewModel { get; set; }
 
         public DiffSelectPage(MainWindow mainWindow, IEnumerable<BeatmapEntry> entries)
         {
             InitializeComponent();
 
+            ViewModel = (DiffSelectPageViewModel)DataContext;
             _mainWindow = mainWindow;
-            var viewModel = entries.Transform(true);
-            DiffList.DataContext = viewModel;
-            //_entries = entries;
-        }
-
-        private void BtnNowPlay_Click(object sender, RoutedEventArgs e)
-        {
-            SelectedMap = (BeatmapDataModel)DiffList.SelectedItem;
-            Callback?.Invoke();
-            Dispose();
-        }
-
-        private void BtnNextPlay_Click(object sender, RoutedEventArgs e)
-        {
-
+            ViewModel.Entries = entries;
+            ViewModel.DataModels = ViewModel.Entries.Transform(true);
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)

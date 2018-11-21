@@ -125,6 +125,9 @@
     <Reference Include="System.Data.SQLite.EF6, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.EF6.1.0.109.0\lib\net451\System.Data.SQLite.EF6.dll</HintPath>
     </Reference>
+    <Reference Include="System.Data.SQLite.EF6.Migrations, Version=1.0.104.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.EF6.Migrations.1.0.104\lib\System.Data.SQLite.EF6.Migrations.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.SQLite.Linq, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.Linq.1.0.109.0\lib\net451\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
@@ -157,10 +160,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Config.cs" />
+    <Compile Include="Converter\SingleParameterConverter.cs" />
     <Compile Include="Converter\TabConverter.cs" />
     <Compile Include="L18N\UiMetadata.cs" />
+    <Compile Include="Migrations\MigrationConfiguration.cs" />
+    <Compile Include="ViewModels\CollectionViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\SelectCollectionPageViewModel.cs" />
+    <Compile Include="ViewModels\DiffSelectPageViewModel.cs" />
     <Compile Include="Windows\ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
     </Compile>
@@ -171,7 +178,7 @@
     <Compile Include="Converter\DateTimeConverter.cs" />
     <Compile Include="Converter\NavigationColorConverter.cs" />
     <Compile Include="Converter\MainWindowConverters.cs" />
-    <Compile Include="Data\ModelsContexts.cs" />
+    <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\DbOperator.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="Windows\MainWindow.Player.cs" />
@@ -464,6 +471,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Windows\MainWindow.Event.cs" />
     <None Include="Media\Lyric\readme.md" />
@@ -493,7 +501,6 @@
   <ItemGroup>
     <Resource Include="Resources\osu_texture.png" />
     <Resource Include="Resources\font.ttc" />
-    <None Include="Resources\pure.db" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\osuPlayer.ico" />

@@ -12,6 +12,7 @@ namespace Milkitic.OsuPlayer.Converter
     {
         public static double Multiplier { get; set; } = 0.7;
     }
+
     public class TabHeaderLineX1Converter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

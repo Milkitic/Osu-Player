@@ -5,6 +5,7 @@ using Milkitic.OsuPlayer.Windows;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -28,8 +29,9 @@ namespace Milkitic.OsuPlayer.Pages
         {
             InitializeComponent();
             ViewModel = (SelectCollectionPageViewModel)DataContext;
-            _mainWindow = mainWindow;
             _entry = entry;
+            ViewModel.Entry = entry;
+            _mainWindow = mainWindow;
             RefreshList();
         }
 
@@ -51,17 +53,8 @@ namespace Milkitic.OsuPlayer.Pages
 
         public void RefreshList()
         {
-            ViewModel.Collections = DbOperator.GetCollections().OrderByDescending(k => k.CreateTime).ToList();
-        }
-
-        private void CollectionList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (CollectionList.SelectedItem == null)
-                return;
-            Collection col = (Collection)CollectionList.SelectedItem;
-            var entry = _entry;
-            AddToCollection(col, entry);
-            Dispose();
+            ViewModel.Collections = new ObservableCollection<CollectionViewModel>(
+                CollectionViewModel.CopyFrom(DbOperator.GetCollections().OrderByDescending(k => k.CreateTime)));
         }
 
         public static void AddToCollection(Collection col, BeatmapEntry entry)
@@ -81,15 +74,6 @@ namespace Milkitic.OsuPlayer.Pages
                 }
             }
             DbOperator.AddMapToCollection(entry, col);
-        }
-
-        private void BtnCollection_Click(object sender, RoutedEventArgs e)
-        {
-            var btn = (Button)sender;
-            var colId = (string)btn.Tag;
-            var col = DbOperator.GetCollectionById(colId);
-            AddToCollection(col, _entry);
-            Dispose();
         }
     }
 }

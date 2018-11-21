@@ -5,10 +5,14 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Milkitic.OsuPlayer.Pages"
       xmlns:osuPlayer="clr-namespace:Milkitic.OsuPlayer"
+      xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+      xmlns:viewModels="clr-namespace:Milkitic.OsuPlayer.ViewModels"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="DiffSelectPage">
-
+    <Page.DataContext>
+        <viewModels:DiffSelectPageViewModel />
+    </Page.DataContext>
     <Grid Background="#80FFFFFF">
         <Border x:Name="Parallel" Background="White" Width="{Binding ActualWidth, ElementName=BoxGrid}"
                 Height="{Binding ActualHeight, ElementName=BoxGrid}" HorizontalAlignment="Center"
@@ -21,44 +25,84 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <DockPanel Height="30">
-                <Label Content="选择难度" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
+            <DockPanel Height="35" Background="#F0F0F0">
+                <Label HorizontalAlignment="Left" Content="选择难度" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
+                <dms:DMSystemButton DMSystemButtonForeground="#303030"
+                                    DMSystemButtonHoverForeground="#000000"
+                                    DMSystemButtonSize="25"
+                                    Icon="{StaticResource No}"
+                                    IconHeight="10"
+                                    IconWidth="10"
+                                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Margin="0,0,5,0"
+                                    Click="BtnClose_Click"
+                                    Cursor="Hand" />
             </DockPanel>
-            <Button Grid.Row="0" Content="X" Height="25" HorizontalAlignment="Right" VerticalAlignment="Center"
-                    Width="25" Margin="0,0,5,0" Click="BtnClose_Click" />
             <ListView Grid.Row="1" x:Name="DiffList" Margin="5" Background="Transparent" BorderThickness="0"
-                      ItemsSource="{Binding Mode=OneWay}">
-                <ListView.DataContext>
-                    <osuPlayer:BeatmapDataModel/>
-                </ListView.DataContext>
+                      ItemsSource="{Binding DataModels,Mode=OneWay}">
                 <ListView.Resources>
-                    <DataTemplate DataType="{x:Type osuPlayer:BeatmapDataModel}">
+                    <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListViewItem}">
                         <Grid>
-                            <Label x:Name="LblVersion" VerticalAlignment="Center" Content="{Binding Version}"
-                                   Foreground="#333333" />
+                            <dms:DMButton x:Name="BtnCollection"
+                                          MinHeight="26"
+                                          Margin="0,0,0,2"
+                                          Height="58"
+                                          BorderThickness="0"
+                                          Cursor="Hand"
+                                          Background="#FAFAFB"
+                                          Command="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Page}},Path=DataContext.SelectCommand}"
+                                          CommandParameter="{Binding Version}"
+                                          Click="BtnClose_Click"
+                                          HorizontalContentAlignment="Left">
+                                <Grid HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="58"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0"
+                                           Foreground="#9A9A9A"
+                                           VerticalAlignment="Center">
+                                        <TextBlock TextWrapping="Wrap"
+                                                   Text="{Binding GameMode}">
+                                        </TextBlock>
+                                    </Label>
+                                    <Grid Grid.Column="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Row="0"
+                                               MaxWidth="236"
+                                               Foreground="#303030"
+                                               VerticalAlignment="Center">
+                                            <TextBlock TextWrapping="Wrap"
+                                                       Text="{Binding Version}">
+                                            </TextBlock>
+                                        </Label>
+                                        <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                            <Label Foreground="#303030"
+                                                   VerticalAlignment="Center"
+                                                   Content="{Binding Stars}" />
+                                            <Label Margin="-5,0,0,0"
+                                                   Foreground="#303030"
+                                                   VerticalAlignment="Center"
+                                                   Content="Stars" />
+                                        </StackPanel>
+
+                                    </Grid>
+
+                                </Grid>
+
+                            </dms:DMButton>
                         </Grid>
-                    </DataTemplate>
+                    </ControlTemplate>
                     <Style TargetType="{x:Type ListViewItem}">
-                        <Setter Property="BorderBrush" Value="#DDDDDD"/>
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="Template" Value="{StaticResource NormalButton}" />
                     </Style>
                 </ListView.Resources>
             </ListView>
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="BtnOk" Content="确定" Height="25" Width="70" Margin="5,5" Click="BtnNowPlay_Click" >
-                    <Button.Style>
-                        <Style TargetType="{x:Type Button}">
-                            <Setter Property="IsEnabled" Value="True"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SelectedItem, ElementName=DiffList}" Value="{x:Null}">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-            </StackPanel>
         </Grid>
     </Grid>
 </Page>

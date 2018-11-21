@@ -19,6 +19,7 @@ namespace Milkitic.OsuPlayer
         public int BeatmapId { get; set; }
         public string FolderName { get; set; }
         public string BeatmapFileName { get; set; }
+        public double Stars { get; set; }
 
         //Extended
         public string Id { get; set; }

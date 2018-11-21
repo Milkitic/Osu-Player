@@ -6,6 +6,7 @@ using System.Data.Entity.ModelConfiguration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Milkitic.OsuPlayer.Migrations;
 
 namespace Milkitic.OsuPlayer.Data
 {
@@ -104,20 +105,26 @@ namespace Milkitic.OsuPlayer.Data
 
     public class ApplicationDbContext : DbContext
     {
+        static ApplicationDbContext()
+        {
+            Database.SetInitializer(
+                new MigrateDatabaseToLatestVersion<ApplicationDbContext, MigrationConfiguration>(true));
+        }
+
         public DbSet<MapInfo> MapInfos { get; set; }
         public DbSet<Collection> Collections { get; set; }
         public DbSet<CollectionRelation> Relations { get; set; }
 
         public ApplicationDbContext() : base("name=sqlite")
         {
-            Database.Initialize(false);
+            //Database.Initialize(false);
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Conventions
-                .Remove<System.Data.Entity.ModelConfiguration.Conventions.PluralizingTableNameConvention>();
-            base.OnModelCreating(modelBuilder);
+            //modelBuilder.Conventions
+            //    .Remove<System.Data.Entity.ModelConfiguration.Conventions.PluralizingTableNameConvention>();
+            //base.OnModelCreating(modelBuilder);
         }
     }
 }

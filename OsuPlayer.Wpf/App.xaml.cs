@@ -52,23 +52,23 @@ namespace Milkitic.OsuPlayer
         [STAThread]
         public static void Main()
         {
-            AppDomain.CurrentDomain.AppendPrivatePath(@"bin");
-            var dllDirectory = Path.Combine(Domain.CurrentPath, "bin");
-            if (!Directory.Exists(dllDirectory))
-                Directory.CreateDirectory(dllDirectory);
-            foreach (var item in new DirectoryInfo(Domain.CurrentPath).EnumerateFiles())
-            {
-                if (item.Extension.ToLower() == ".dll")
-                {
-                    var newFile = Path.Combine(dllDirectory, item.Name);
-                    if (File.Exists(newFile))
-                        File.Delete(newFile);
-                    item.MoveTo(newFile);
-                }
-            }
-
             try
             {
+                //var dllDirectory = Path.Combine(Domain.CurrentPath, "bin");
+                //if (!Directory.Exists(dllDirectory))
+                //    Directory.CreateDirectory(dllDirectory);
+                //foreach (var item in new DirectoryInfo(Domain.CurrentPath).EnumerateFiles())
+                //{
+                //    if (item.Extension.ToLower() == ".dll")
+                //    {
+                //        var newFile = Path.Combine(dllDirectory, item.Name);
+                //        if (File.Exists(newFile))
+                //            File.Delete(newFile);
+                //        item.MoveTo(newFile);
+                //    }
+                //}
+                //AppDomain.CurrentDomain.AppendPrivatePath(@"bin");
+
                 if (!LoadConfig())
                     Environment.Exit(0);
                 CreateDirectories();
@@ -119,9 +119,6 @@ namespace Milkitic.OsuPlayer
 
         private static void InitLocalDb()
         {
-            if (!File.Exists(Path.Combine(Domain.CurrentPath, "player.db")))
-                Util.ExportResource("pure", Path.Combine(Domain.CurrentPath, "player.db"));
-
             var defCol = DbOperator.GetCollections().Where(k => k.Locked);
             if (!defCol.Any()) DbOperator.AddCollection("最喜爱的", true);
         }

@@ -1,23 +1,30 @@
-﻿using Milkitic.OsuPlayer.Data;
-using Milkitic.WpfApi;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Milkitic.WpfApi;
+using System.Collections.ObjectModel;
+using osu_database_reader.Components.Beatmaps;
 
 namespace Milkitic.OsuPlayer.ViewModels
 {
     public class SelectCollectionPageViewModel : ViewModelBase
     {
-        private List<Collection> _collections;
+        private ObservableCollection<CollectionViewModel> _collections;
+        private BeatmapEntry _entry;
 
-        public List<Collection> Collections
+        public ObservableCollection<CollectionViewModel> Collections
         {
             get => _collections;
             set
             {
                 _collections = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public BeatmapEntry Entry
+        {
+            get => _entry;
+            set
+            {
+                _entry = value;
                 OnPropertyChanged();
             }
         }

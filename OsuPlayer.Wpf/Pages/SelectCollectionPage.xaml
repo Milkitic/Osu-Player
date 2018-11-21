@@ -21,26 +21,24 @@
             </Border.Effect>
         </Border>
         <Grid x:Name="BoxGrid" Width="300" Height="350" Background="White">
-
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
 
             </Grid.RowDefinitions>
             <DockPanel Height="35" Background="#F0F0F0">
-                <Label Content="添加至收藏" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
+                <Label HorizontalAlignment="Left" Content="添加至收藏" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
+                <dms:DMSystemButton DMSystemButtonForeground="#303030"
+                                    DMSystemButtonHoverForeground="#000000"
+                                    DMSystemButtonSize="25"
+                                    Icon="{StaticResource No}"
+                                    IconHeight="10"
+                                    IconWidth="10"
+                                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Margin="0,0,5,0"
+                                    Click="BtnClose_Click"
+                                    Cursor="Hand" />
             </DockPanel>
-            <dms:DMSystemButton Grid.Row="0"
-                                DMSystemButtonForeground="#303030"
-                                DMSystemButtonHoverForeground="#000000"
-                                DMSystemButtonSize="25"
-                                Icon="{StaticResource No}"
-                                IconHeight="10"
-                                IconWidth="10"
-                                HorizontalAlignment="Right" VerticalAlignment="Center"
-                                Margin="0,0,5,0"
-                                Click="BtnClose_Click"
-                                Cursor="Hand" />
             <Grid Grid.Row="1" Margin="0,5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -84,7 +82,7 @@
                 <ListView Grid.Row="1" x:Name="CollectionList" Margin="0,0,1,0" Background="Transparent" BorderThickness="0"
                           ItemsSource="{Binding Collections, Mode=OneWay}">
                     <ListView.Resources>
-                        <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
+                        <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListViewItem}">
                             <Grid>
                                 <dms:DMButton x:Name="BtnCollection"
                                               MinHeight="26"
@@ -93,7 +91,9 @@
                                               BorderThickness="0"
                                               Cursor="Hand"
                                               Background="#FAFAFB"
-                                              Tag="{Binding Id}" Click="BtnCollection_Click"
+                                              Command="{Binding SelectCommand}"
+                                              CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Page}},Path=DataContext.Entry}"
+                                              Click="BtnClose_Click"
                                               HorizontalContentAlignment="Left">
                                     <Grid HorizontalAlignment="Left">
                                         <Grid.ColumnDefinitions>
@@ -130,7 +130,7 @@
 
         </Grid>
         <Grid>
-            <Frame Name="FramePop" NavigationUIVisibility="Hidden"></Frame>
+            <Frame Name="FramePop" NavigationUIVisibility="Hidden" Visibility="Collapsed"/>
         </Grid>
     </Grid>
 </Page>
