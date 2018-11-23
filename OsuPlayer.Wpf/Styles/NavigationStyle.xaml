@@ -49,6 +49,41 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+    <Style x:Key="PopupButtonStyle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="Foreground" Value="#FEFEFEFE" />
+        <Setter Property="Background" Value="#F8F8F8" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" ClipToBounds="True">
+                        <Rectangle x:Name="innerRectangle" HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Stretch" Fill="{TemplateBinding Background}" StrokeThickness="0" Opacity="0" />
+                        <DockPanel Name="myContentPresenterDockPanel">
+                            <ContentPresenter x:Name="myContentPresenter" HorizontalAlignment="Center"
+                                              Content="{TemplateBinding Content}" VerticalAlignment="Center" 
+                                              TextBlock.Foreground="{TemplateBinding Foreground}" TextBlock.FontSize="13px"/>
+                        </DockPanel>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Rectangle.Opacity" Value="1" TargetName="innerRectangle" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Rectangle.Opacity" Value="1" TargetName="innerRectangle" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="Black"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Foreground" Value="Black" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
     <!-- Navigation label style -->
     <Style x:Key="NavigationLabelStyle" TargetType="{x:Type Label}">
         <Setter Property="FontSize" Value="16px" />

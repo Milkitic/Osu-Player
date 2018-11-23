@@ -66,7 +66,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
                     <Grid>
-                        <Ellipse Width="15" Height="15" Fill="#FC59A3" Stroke="#FFFFFF" StrokeThickness="2" >
+                        <Ellipse Width="15" Height="15" Fill="#FC59A3" Stroke="#FFFFFF" StrokeThickness="2" Cursor="Hand" >
                             <Ellipse.Effect>
                                 <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="#FC59A3" Opacity="0.2"/>
                             </Ellipse.Effect>
@@ -117,6 +117,129 @@
                             </Track.IncreaseRepeatButton>
                             <Track.Thumb>
                                 <Thumb Style="{StaticResource SliderThumbStyle}"/>
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Horizontal white slider repeat style1 -->
+    <Style x:Key="HorizontalWhiteSliderRepeatButton" TargetType="RepeatButton">
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Border Background="#b0ffffff" Height="4" CornerRadius="2" >
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="#b0b0b0" Opacity="0.2"/>
+                        </Border.Effect>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!-- Horizontal white slider repeat style2 -->
+    <Style x:Key="HorizontalWhiteSliderRepeatButton1" TargetType="RepeatButton">
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Border Background="#f0f0f0" Height="3" CornerRadius="2"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!-- Vertical white slider repeat style1 -->
+    <Style x:Key="VerticalWhiteSliderRepeatButton" TargetType="RepeatButton">
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Border Background="#b0ffffff" Width="4" CornerRadius="2" >
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="#b0b0b0" Opacity="0.2"/>
+                        </Border.Effect>
+                    </Border>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!-- Vertical white slider repeat style2 -->
+    <Style x:Key="VerticalWhiteSliderRepeatButton1" TargetType="RepeatButton">
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Border Background="#f0f0f0" Width="3" CornerRadius="2"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!-- Slider white thumb -->
+    <Style x:Key="SliderWhiteThumbStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Margin" Value="-5" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Grid>
+                        <Ellipse Width="11" Height="11" Fill="#FC59A3" Stroke="#FFFFFF" StrokeThickness="3" Cursor="Hand">
+                            <Ellipse.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="White" Opacity="0.2"/>
+                            </Ellipse.Effect>
+                        </Ellipse>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!-- Horizontal slider white style -->
+    <Style x:Key="HorizontalSliderWhiteStyle" TargetType="Slider">
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Slider">
+                    <Grid>
+                        <!--<Border Grid.Column="0" Height="10" BorderBrush="Gray" BorderThickness="1" CornerRadius="3">-->
+                        <Track Name="PART_Track">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Style="{StaticResource HorizontalWhiteSliderRepeatButton}" Command="Slider.DecreaseLarge"/>
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Style="{StaticResource HorizontalWhiteSliderRepeatButton1}" Command="Slider.IncreaseLarge"/>
+                            </Track.IncreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource SliderWhiteThumbStyle}"/>
+                            </Track.Thumb>
+                        </Track>
+                        <!--</Border>-->
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--Vertical slider white style -->
+    <Style x:Key="VerticalSliderWhiteStyle" TargetType="Slider">
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Slider">
+                    <Grid>
+                        <Track Name="PART_Track">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Style="{StaticResource VerticalWhiteSliderRepeatButton}" Command="Slider.DecreaseLarge"/>
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Style="{StaticResource VerticalWhiteSliderRepeatButton1}" Command="Slider.IncreaseLarge"/>
+                            </Track.IncreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource SliderWhiteThumbStyle}"/>
                             </Track.Thumb>
                         </Track>
                     </Grid>

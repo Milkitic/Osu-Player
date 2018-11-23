@@ -160,15 +160,17 @@ namespace Milkitic.OsuPlayer.Windows
             BorderMini.Visibility = Visibility.Visible;
             // modoules
             BtnOpen.Visibility = Visibility.Collapsed;
-            Thumb.Visibility = Visibility.Collapsed;
+            ThumbArea.Visibility = Visibility.Collapsed;
             Grip.Visibility = Visibility.Collapsed;
             LblProgress.Visibility = Visibility.Collapsed;
             LblSeperate.Visibility = Visibility.Collapsed;
             PlayProgress.Visibility = Visibility.Collapsed;
             //area
             TitleBarArea.Visibility = Visibility.Collapsed;
+            TitleBarAreaBack.Visibility = Visibility.Collapsed;
 
             SetFaved(App.PlayerList.CurrentInfo.Identity);
+            SetPlayMode(App.PlayerList.PlayerMode);
         }
 
         private void ToNormalMode()
@@ -198,15 +200,17 @@ namespace Milkitic.OsuPlayer.Windows
 
             // modoules
             BtnOpen.Visibility = Visibility.Visible;
-            Thumb.Visibility = Visibility.Visible;
+            ThumbArea.Visibility = Visibility.Visible;
             Grip.Visibility = Visibility.Visible;
             LblProgress.Visibility = Visibility.Visible;
             LblSeperate.Visibility = Visibility.Visible;
             PlayProgress.Visibility = Visibility.Visible;
             //area
             TitleBarArea.Visibility = Visibility.Visible;
+            TitleBarAreaBack.Visibility = Visibility.Visible;
 
             SetFaved(App.PlayerList.CurrentInfo.Identity);
+            SetPlayMode(App.PlayerList.PlayerMode);
 
             Topmost = false;
             _miniMode = false;

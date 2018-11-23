@@ -5,9 +5,12 @@ using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Pages;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
+using System.Windows.Media;
 
 namespace Milkitic.OsuPlayer.Windows
 {
@@ -29,6 +32,8 @@ namespace Milkitic.OsuPlayer.Windows
                 bool play = App.Config.Play.AutoPlay;
                 PlayNewFile(App.Config.CurrentPath, play);
             }
+
+            SetPlayMode(App.Config.Play.PlayListMode);
 
             var helper = new WindowInteropHelper(this);
             var source = HwndSource.FromHwnd(helper.Handle);
@@ -214,7 +219,43 @@ namespace Milkitic.OsuPlayer.Windows
             if (FullModeArea.Visibility == Visibility.Hidden)
                 FullModeArea.Visibility = Visibility.Visible;
             else if (FullModeArea.Visibility == Visibility.Visible)
+            {
+                if (ResizableArea.Margin == new Thickness(5))
+                    SetFullScr();
+                else
+                    SetFullScrMini();
+            }
+        }
+
+        private void SetFullScrMini()
+        {
+            ResizableArea.BorderBrush = new SolidColorBrush(Color.FromArgb(64, 0, 0, 0));
+            ResizableArea.BorderThickness = new Thickness(1);
+            ResizableArea.HorizontalAlignment = HorizontalAlignment.Right;
+            ResizableArea.VerticalAlignment = VerticalAlignment.Bottom;
+            ResizableArea.Width = 318;
+            ResizableArea.Height = 180;
+            ResizableArea.Margin = new Thickness(5);
+        }
+
+        private void BtnHideFullScr_Click(object sender, RoutedEventArgs e)
+        {
+            if (FullModeArea.Visibility == Visibility.Visible)
+            {
+                SetFullScr();
                 FullModeArea.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void SetFullScr()
+        {
+            ResizableArea.ClearValue(Border.BorderBrushProperty);
+            ResizableArea.ClearValue(Border.BorderThicknessProperty);
+            ResizableArea.ClearValue(Border.HorizontalAlignmentProperty);
+            ResizableArea.ClearValue(Border.VerticalAlignmentProperty);
+            ResizableArea.ClearValue(Border.WidthProperty);
+            ResizableArea.ClearValue(Border.HeightProperty);
+            ResizableArea.ClearValue(Border.MarginProperty);
         }
 
         /// <summary>
@@ -304,40 +345,91 @@ namespace Milkitic.OsuPlayer.Windows
             Pop.IsOpen = true;
         }
 
-        private void PlayMode_CheckChanged(object sender, RoutedEventArgs e)
+        private void PlayMode_Checked(object sender, RoutedEventArgs e)
         {
-            if (Single.IsChecked == true)
+            if (_ischanging) return;
+            _ischanging = true;
+            var btn = (ToggleButton)sender;
+            _modeOptionContainer.Switch(btn);
+            _ischanging = false;
+        }
+
+        private void PlayMode_UnChecked(object sender, RoutedEventArgs e)
+        {
+            if (_ischanging) return;
+            _ischanging = true;
+            ((ToggleButton)sender).IsChecked = true;
+            _ischanging = false;
+        }
+        private void PlayMode_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = (ToggleButton)sender;
+            PlayerMode playmode;
+            switch (btn.Name)
             {
-                BtnMode.Content = "单曲播放";
-                App.PlayerList.PlayerMode = PlayerMode.Single;
-            }
-            else if (SingleLoop.IsChecked == true)
-            {
-                BtnMode.Content = "单曲循环";
-                App.PlayerList.PlayerMode = PlayerMode.SingleLoop;
-            }
-            else if (Normal.IsChecked == true)
-            {
-                BtnMode.Content = "顺序播放";
-                App.PlayerList.PlayerMode = PlayerMode.Normal;
-            }
-            else if (Random.IsChecked == true)
-            {
-                BtnMode.Content = "随机播放";
-                App.PlayerList.PlayerMode = PlayerMode.Random;
-            }
-            else if (Loop.IsChecked == true)
-            {
-                BtnMode.Content = "循环列表";
-                App.PlayerList.PlayerMode = PlayerMode.Loop;
-            }
-            else if (LoopRandom.IsChecked == true)
-            {
-                BtnMode.Content = "随机循环";
-                App.PlayerList.PlayerMode = PlayerMode.LoopRandom;
+                case "Single":
+                    BtnMode.Content = "单曲播放";
+                    playmode = PlayerMode.Single;
+                    break;
+                case "SingleLoop":
+                    BtnMode.Content = "单曲循环";
+                    playmode = PlayerMode.SingleLoop;
+                    break;
+                case "Normal":
+                    BtnMode.Content = "顺序播放";
+                    playmode = PlayerMode.Normal;
+                    break;
+                case "Random":
+                    BtnMode.Content = "随机播放";
+                    playmode = PlayerMode.Random;
+                    break;
+                case "Loop":
+                    BtnMode.Content = "循环列表";
+                    playmode = PlayerMode.Loop;
+                    break;
+                default:
+                case "LoopRandom":
+                    BtnMode.Content = "随机循环";
+                    playmode = PlayerMode.LoopRandom;
+                    break;
             }
 
+            SetPlayMode(playmode);
+            PopMode.IsOpen = false;
+        }
+
+        private void SetPlayMode(PlayerMode playmode)
+        {
+            switch (playmode)
+            {
+                case PlayerMode.Normal:
+                    Normal.IsChecked = true;
+                    break;
+                case PlayerMode.Random:
+                    Random.IsChecked = true;
+                    break;
+                case PlayerMode.Loop:
+                    Loop.IsChecked = true;
+                    break;
+                case PlayerMode.LoopRandom:
+                    LoopRandom.IsChecked = true;
+                    break;
+                case PlayerMode.Single:
+                    Single.IsChecked = true;
+                    break;
+                case PlayerMode.SingleLoop:
+                    SingleLoop.IsChecked = true;
+                    break;
+            }
+
+            string flag = _miniMode ? "S" : "";
+            BtnMode.Background = (ImageBrush)ToolControl.FindResource(playmode + flag);
+            if (playmode == App.PlayerList.PlayerMode)
+                return;
+            App.PlayerList.PlayerMode = playmode;
             App.PlayerList.RefreshPlayList(PlayerList.FreshType.IndexOnly);
+            App.Config.Play.PlayListMode = playmode;
+            App.SaveConfig();
         }
 
         private void BtnMax_Click(object sender, RoutedEventArgs e)
@@ -405,15 +497,6 @@ namespace Milkitic.OsuPlayer.Windows
         #region Popup events
 
         /// <summary>
-        /// While popup lost focus, we should hide it.
-        /// </summary>
-        private void Popup_LostFocus(object sender, RoutedEventArgs e)
-        {
-            Pop.IsOpen = false;
-            PopMode.IsOpen = false;
-        }
-
-        /// <summary>
         /// Play progress control.
         /// While drag started, slider's updating should be paused.
         /// </summary>
@@ -477,6 +560,19 @@ namespace Milkitic.OsuPlayer.Windows
             BtnSettings_Click(sender, e);
         }
 
+
+        private void MenuHideLyric_Click(object sender, RoutedEventArgs e)
+        {
+            App.Config.Lyric.EnableLyric = false;
+            LyricWindow.Hide();
+        }
+
+        private void MenuOpenLyric_Click(object sender, RoutedEventArgs e)
+        {
+            App.Config.Lyric.EnableLyric = true;
+            LyricWindow.Show();
+        }
+
         #endregion Notification events
 
         #region Video element events
@@ -494,5 +590,7 @@ namespace Milkitic.OsuPlayer.Windows
         }
 
         #endregion Video element events
+
+
     }
 }

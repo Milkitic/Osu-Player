@@ -52,44 +52,61 @@ namespace Milkitic.OsuPlayer
         [STAThread]
         public static void Main()
         {
-            try
-            {
-                //var dllDirectory = Path.Combine(Domain.CurrentPath, "bin");
-                //if (!Directory.Exists(dllDirectory))
-                //    Directory.CreateDirectory(dllDirectory);
-                //foreach (var item in new DirectoryInfo(Domain.CurrentPath).EnumerateFiles())
-                //{
-                //    if (item.Extension.ToLower() == ".dll")
-                //    {
-                //        var newFile = Path.Combine(dllDirectory, item.Name);
-                //        if (File.Exists(newFile))
-                //            File.Delete(newFile);
-                //        item.MoveTo(newFile);
-                //    }
-                //}
-                //AppDomain.CurrentDomain.AppendPrivatePath(@"bin");
+            AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
+            //Migrate();
 
-                if (!LoadConfig())
-                    Environment.Exit(0);
-                CreateDirectories();
-                InitLocalDb();
-                LoadOsuDb();
-                SaveConfig();
-                ReloadLyricProvider();
-                RedirectHandler.Redirect();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show($"发生严重错误，即将退出。。。详情请查看error.log。{Environment.NewLine}{e.Message}", "Osu Player",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-                File.AppendAllText("error.log",
-                    $@"{DateTime.Now}===================={Environment.NewLine}{e}{Environment.NewLine}");
-                Environment.Exit(1);
-            }
+            AppDomain.CurrentDomain.AppendPrivatePath(@"bin");
 
+            if (!LoadConfig())
+                Environment.Exit(0);
+            CreateDirectories();
+            InitLocalDb();
+            LoadOsuDb();
+            SaveConfig();
+            ReloadLyricProvider();
+            RedirectHandler.Redirect();
+            SetAlignment();
             App app = new App();
             app.InitializeComponent();
             app.Run();
+        }
+        public static void SetAlignment()
+        {
+            //获取系统是以Left-handed（true）还是Right-handed（false）
+            var ifLeft = SystemParameters.MenuDropAlignment;
+
+            if (ifLeft)
+            {
+                // change to false
+                var t = typeof(SystemParameters);
+                var field = t.GetField("_menuDropAlignment", BindingFlags.NonPublic | BindingFlags.Static);
+                field.SetValue(null, false);
+
+                ifLeft = SystemParameters.MenuDropAlignment;
+            }
+        }
+
+        private static void Migrate()
+        {
+            var path = Path.Combine(Domain.CurrentPath, "migrate.bat");
+            if (File.Exists(path))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = path,
+                    Arguments = Process.GetCurrentProcess().Id.ToString(),
+                    CreateNoWindow = true
+                });
+                Environment.Exit(0);
+            }
+        }
+
+        private static void OnCurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            if (!e.IsTerminating) return;
+            MessageBox.Show(string.Format("发生严重错误，即将退出。。。详情请查看error.log。{0}{1}", Environment.NewLine, (e.ExceptionObject as Exception)?.Message), "Osu Player", MessageBoxButton.OK, MessageBoxImage.Error);
+            File.AppendAllText("error.log", string.Format(@"===================={0}===================={1}{2}{3}{4}", DateTime.Now, Environment.NewLine, e.ExceptionObject, Environment.NewLine, Environment.NewLine));
+            Environment.Exit(1);
         }
 
         public static void ReloadLyricProvider()

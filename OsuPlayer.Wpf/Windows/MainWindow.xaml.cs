@@ -35,6 +35,7 @@ namespace Milkitic.OsuPlayer.Windows
         private WindowState _lastState;
         private bool _miniMode = false;
         private readonly OptionContainer _optionContainer = new OptionContainer();
+        private readonly OptionContainer _modeOptionContainer = new OptionContainer();
 
         public bool FullMode => FullModeArea.Visibility == Visibility.Visible;
 
@@ -121,6 +122,11 @@ namespace Milkitic.OsuPlayer.Windows
         {
             if (e.LeftButton == MouseButtonState.Pressed)
                 this.DragMove();
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 

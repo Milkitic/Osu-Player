@@ -28,7 +28,7 @@
         <converter:IconMarginConverter x:Key="CvtIconMargin"/>
         <converter:TitleVisibleConverter x:Key="CvtTitleVisible"/>
         <converter:MiniEnabledConverter x:Key="CvtMiniEnabled"/>
-   </windows:EffectWindowBase.Resources>
+    </windows:EffectWindowBase.Resources>
     <Grid>
         <Grid.Background>
             <ImageBrush ImageSource="{StaticResource TextrueSource1}" Viewport="0,0,500,500" ViewportUnits="Absolute" TileMode="Tile" />
@@ -231,7 +231,6 @@
                                                     </Path>
                                                 </Canvas>
                                             </Viewbox>
-
                                         </dms:DMButton>
                                     </Grid>
                                     <ListView x:Name="CollectionList" Margin="0,0,-1,0" Background="Transparent"
@@ -302,20 +301,44 @@
                 </DockPanel>
 
             </Grid>
-            <Grid x:Name="FullModeArea" Grid.Row="0" Background="White" Margin="1,0,1,0" Visibility="Hidden">
-                <Grid>
-                    <Image Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+            <Grid x:Name="FullModeArea" Grid.Row="0" Margin="1,0,1,0" Visibility="Hidden">
+                <Border x:Name="ResizableArea">
+                    <Grid>
+                        <Image Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center" VerticalAlignment="Center"
                            RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding Source, ElementName=BlurScene}" />
-                    <Grid x:Name="VideoElementBorder" Background="#E0000000">
-                        <ffme:MediaElement x:Name="VideoElement" IsMuted="True" LoadedBehavior="Manual"
+                        <Grid x:Name="VideoElementBorder" Background="#E0000000">
+                            <ffme:MediaElement x:Name="VideoElement" IsMuted="True" LoadedBehavior="Manual"
                                            MediaOpened="VideoElement_MediaOpened" MediaFailed="VideoElement_MediaFailed"/>
+                        </Grid>
+                        <Border Background="#20f0f0f0"
+                                HorizontalAlignment="Right" VerticalAlignment="Top"
+                                Margin="5"
+                                Cursor="Hand">
+                            <dms:DMSystemButton DMSystemButtonForeground="#505050"
+                                                DMSystemButtonHoverColor="#80f0f0f0"
+                                                DMSystemButtonHoverForeground="#303030"
+                                                DMSystemButtonSize="25"
+                                                Icon="{StaticResource No}"
+                                                IconHeight="14" IconWidth="14"
+                                                Click="BtnHideFullScr_Click"/>
+                        </Border>
                     </Grid>
-                </Grid>
+                </Border>
             </Grid>
             <Grid x:Name="ToolControl" Grid.Row="1" Background="White">
                 <Grid.Resources>
                     <ImageBrush x:Key="Loop" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop.png"/>
+                    <ImageBrush x:Key="Normal" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_normal.png"/>
+                    <ImageBrush x:Key="Random" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random.png"/>
+                    <ImageBrush x:Key="LoopRandom" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random_loop.png"/>
+                    <ImageBrush x:Key="Single" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single.png"/>
+                    <ImageBrush x:Key="SingleLoop" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single_loop.png"/>
                     <ImageBrush x:Key="LoopS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop_s.png"/>
+                    <ImageBrush x:Key="NormalS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_normal_s.png"/>
+                    <ImageBrush x:Key="RandomS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random_s.png"/>
+                    <ImageBrush x:Key="LoopRandomS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random_loop_s.png"/>
+                    <ImageBrush x:Key="SingleS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single_s.png"/>
+                    <ImageBrush x:Key="SingleLoopS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single_loop_s.png"/>
                     <ImageBrush x:Key="Fav" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_disable.png"/>
                     <ImageBrush x:Key="FavS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_disable_s.png"/>
                     <ImageBrush x:Key="Faved" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart.png"/>
@@ -331,10 +354,45 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid Margin="1" MaxHeight="46" MaxWidth="61.333333">
-                    <Button Style="{StaticResource ImageButtonStyle}" Click="ThumbButton_Click" Cursor="Hand">
+                    <Button x:Name="ThumbArea" Click="ThumbButton_Click" Cursor="Hand">
                         <Image x:Name="Thumb" RenderOptions.BitmapScalingMode="HighQuality"
-                           Source="{Binding Source, ElementName=BlurScene}" Stretch="UniformToFill"
-                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                               Source="{Binding Source, ElementName=BlurScene}" Stretch="UniformToFill"
+                               VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Grid>
+                                                <ContentPresenter />
+                                                <Border x:Name="FullScr" Opacity="0" Background="#40000000">
+                                                    <Viewbox Stretch="Uniform"
+                                                         Width="30" Height="30">
+                                                        <Canvas Width="1000" Height="1000">
+                                                            <Canvas.RenderTransform>
+                                                                <TranslateTransform X="0" Y="0"/>
+                                                            </Canvas.RenderTransform>
+                                                            <Canvas>
+                                                                <Path Fill="#f0f0f0f0">
+                                                                    <Path.Data>
+                                                                        <PathGeometry Figures="M602.1 500l226.5 226.5l91.9-91.9c11.5-12.1 29.4-15.3 44.7-8.9c14.7 6.4 24.9 21.1 24.9 37.6v285.8c0 22.3-18.5 40.8-40.8 40.8H663.3c-16.6 0-31.3-10.2-37.6-25.5c-6.4-14.7-3.2-32.5 8.9-44l91.9-91.9L500 602.1L273.5 828.6l91.9 91.9c12.1 11.5 15.3 29.4 8.9 44c-6.4 15.3-21.1 25.5-37.6 25.5H50.8C28.5 990 10 971.5 10 949.2V663.3c0-16.6 10.2-31.3 25.5-37.6c14.7-6.4 32.5-3.2 44 8.9l91.9 91.9L397.9 500L171.4 273.5l-91.9 91.9c-7.7 7.7-17.9 12.1-28.7 12.1c-5.1 0-10.8-1.3-15.3-3.2C20.2 367.9 10 353.3 10 336.7V50.8C10 28.5 28.5 10 50.8 10h285.8c16.6 0 31.3 10.2 37.6 25.5c6.4 14.7 3.2 32.5-8.9 44l-91.9 91.9L500 397.9l226.5-226.5l-91.9-91.9c-12.1-11.5-15.3-29.3-8.9-44c6.4-15.3 21.1-25.5 37.6-25.5h285.8c22.3 0 40.8 18.5 40.8 40.8v285.8c0 16.6-10.2 31.3-24.9 37.6c-5.1 1.9-10.8 3.2-16 3.2c-10.8 0-21.1-4.5-28.7-12.1l-91.9-91.9L602.1 500z" FillRule="NonZero"/>
+                                                                    </Path.Data>
+                                                                </Path>
+                                                            </Canvas>
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </Border>
+                                            </Grid>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="FullScr" Property="Opacity" Value="1"></Setter>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
                     </Button>
                 </Grid>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
@@ -358,7 +416,7 @@
                         <Label Content="/" Foreground="#858585" Margin="-5,0,-5,0" />
                         <Label x:Name="LblTotal" Content="00:00" Foreground="#AAA" />
                     </StackPanel>
-                    <Slider x:Name="PlayProgress" Grid.Row="1" Margin="3" Value="2"
+                    <Slider x:Name="PlayProgress" Grid.Row="1" Margin="3"
                         Style="{StaticResource HorizontalSliderPinkStyle}"
                         Thumb.DragStarted="PlayProgress_DragStarted"
                         Thumb.DragCompleted="PlayProgress_DragCompleted" />
@@ -388,60 +446,107 @@
                 </Grid>
                 <Border x:Name="BorderMini" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="#40dc498d" BorderThickness="1" Visibility="Hidden"/>
             </Grid>
-            <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Pop" PopupAnimation="Fade" Height="100"
+            <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Pop" PopupAnimation="Fade"
+                   Width="150" HorizontalOffset="-63"
                PlacementTarget="{Binding ElementName=BtnVolume}" Placement="Top" AllowsTransparency="True"
-               StaysOpen="False"
-               LostFocus="Popup_LostFocus">
-                <Border Background="White" HorizontalAlignment="Center" BorderBrush="#cccccc" BorderThickness="1">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <Slider x:Name="MasterVolume" Orientation="Vertical" Margin="10,5"
-                                Style="{StaticResource VerticalSliderPinkStyle}" Maximum="100"
-                                Thumb.DragDelta="MasterVolume_DragDelta" Height="70" />
-                            <Label Content="主" Margin="0,-5,0,0" HorizontalAlignment="Center" />
-                        </StackPanel>
-                        <StackPanel Grid.Column="1">
-                            <Slider x:Name="MusicVolume" Orientation="Vertical" Margin="10,5"
-                                Style="{StaticResource VerticalSliderPinkStyle}" Maximum="100"
-                                Thumb.DragDelta="MusicVolume_DragDelta" Height="70" />
-                            <Label Content="音" Margin="0,-5,0,0" HorizontalAlignment="Center" />
-                        </StackPanel>
-                        <StackPanel Grid.Column="2">
-                            <Slider x:Name="HitsoundVolume" Orientation="Vertical" Margin="10,5"
-                                Style="{StaticResource VerticalSliderPinkStyle}" Maximum="100"
-                                Thumb.DragDelta="HitsoundVolume_DragDelta" Height="70" />
-                            <Label Content="声" Margin="0,-5,0,0" HorizontalAlignment="Center" />
-                        </StackPanel>
-                        <StackPanel Grid.Column="3">
-                            <Slider x:Name="Offset" Orientation="Vertical" Margin="10,5"
-                                Style="{StaticResource VerticalSliderPinkStyle}" Maximum="200"
-                                Thumb.DragDelta="Offset_DragDelta" Height="70" Minimum="-200"
-                                AutoToolTipPlacement="BottomRight" />
-                            <Label Content="单曲偏移" Margin="0,-5,0,0" HorizontalAlignment="Center" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
+               StaysOpen="False">
+                <Grid Margin="5">
+                    <Border BorderBrush="#cccccc" BorderThickness="1">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="#000000" Opacity="1"/>
+                        </Border.Effect>
+                    </Border>
+                    <Border>
+                        <Border.Background>
+                            <ImageBrush ImageSource="{StaticResource TextrueSource1}" Viewport="0,0,500,500"
+                                        ViewportUnits="Absolute" TileMode="Tile" />
+                        </Border.Background>
+                        <Grid Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <Slider x:Name="MasterVolume" Orientation="Vertical" HorizontalAlignment="Center" Margin="10,5"
+                                            Maximum="100" Style="{StaticResource VerticalSliderWhiteStyle}"
+                                            Thumb.DragDelta="MasterVolume_DragDelta" Height="70" />
+                                    <Label Content="主音量" Margin="0,-5,0,0" HorizontalAlignment="Center" Foreground="White" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <Slider x:Name="MusicVolume" Orientation="Vertical" HorizontalAlignment="Center" Margin="10,5"
+                                            Maximum="100" Style="{StaticResource VerticalSliderWhiteStyle}"
+                                            Thumb.DragDelta="MusicVolume_DragDelta" Height="70" />
+                                    <Label Content="音乐" Margin="0,-5,0,0" HorizontalAlignment="Center" Foreground="White" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <Slider x:Name="HitsoundVolume" Orientation="Vertical" HorizontalAlignment="Center" Margin="10,5"
+                                            Maximum="100" Style="{StaticResource VerticalSliderWhiteStyle}"
+                                            Thumb.DragDelta="HitsoundVolume_DragDelta" Height="70" />
+                                    <Label Content="音效" Margin="0,-5,0,0" HorizontalAlignment="Center" Foreground="White" />
+                                </StackPanel>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <StackPanel>
+                                    <Slider x:Name="Offset" Orientation="Horizontal" Margin="10,5"
+                                            Maximum="200" Style="{StaticResource HorizontalSliderWhiteStyle}"
+                                            Thumb.DragDelta="Offset_DragDelta" Minimum="-200"
+                                            AutoToolTipPlacement="BottomRight" />
+                                    <Label Content="单曲偏移" Margin="0,-5,0,0" HorizontalAlignment="Center" Foreground="White" />
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
             </Popup>
             <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="PopMode" PopupAnimation="Fade"
+                   HorizontalOffset="-27"
                PlacementTarget="{Binding ElementName=BtnMode}" Placement="Top" AllowsTransparency="True"
-               StaysOpen="False"
-               LostFocus="Popup_LostFocus">
-                <Border Background="White" HorizontalAlignment="Center" BorderBrush="#cccccc" BorderThickness="1">
-                    <StackPanel>
-                        <RadioButton x:Name="Single" Content="单曲播放" Checked="PlayMode_CheckChanged"/>
-                        <RadioButton x:Name="SingleLoop" Content="单曲循环" Checked="PlayMode_CheckChanged"/>
-                        <RadioButton x:Name="Normal" Content="顺序播放" Checked="PlayMode_CheckChanged"/>
-                        <RadioButton x:Name="Random" Content="随机播放" Checked="PlayMode_CheckChanged"/>
-                        <RadioButton x:Name="Loop" Content="循环列表" Checked="PlayMode_CheckChanged"/>
-                        <RadioButton x:Name="LoopRandom" Content="随机循环" Checked="PlayMode_CheckChanged"/>
-                    </StackPanel>
-                </Border>
+               StaysOpen="False">
+                <Grid Margin="5">
+                    <Border BorderBrush="#cccccc" BorderThickness="1">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="#000000" Opacity="0.5"/>
+                        </Border.Effect>
+                    </Border>
+                    <Border HorizontalAlignment="Center" BorderBrush="#cccccc" BorderThickness="1">
+                        <Border.Background>
+                            <ImageBrush ImageSource="{StaticResource TextrueSource1}" Viewport="0,0,500,500"
+                                        ViewportUnits="Absolute" TileMode="Tile" />
+                        </Border.Background>
+                        <StackPanel Width="75">
+                            <ToggleButton x:Name="Single" Content="单曲播放" Height="25"
+                                          Checked="PlayMode_Checked" Unchecked="PlayMode_UnChecked"
+                                          Click="PlayMode_Click"
+                                          Style="{StaticResource PopupButtonStyle}" />
+                            <ToggleButton x:Name="SingleLoop" Content="单曲循环" Height="25"
+                                          Checked="PlayMode_Checked" Unchecked="PlayMode_UnChecked"
+                                          Click="PlayMode_Click"
+                                          Style="{StaticResource PopupButtonStyle}" />
+                            <ToggleButton x:Name="Normal" Content="顺序播放" Height="25"
+                                          Checked="PlayMode_Checked" Unchecked="PlayMode_UnChecked"
+                                          Click="PlayMode_Click"
+                                          Style="{StaticResource PopupButtonStyle}" />
+                            <ToggleButton x:Name="Random" Content="随机播放" Height="25"
+                                          Checked="PlayMode_Checked" Unchecked="PlayMode_UnChecked"
+                                          Click="PlayMode_Click"
+                                          Style="{StaticResource PopupButtonStyle}" />
+                            <ToggleButton x:Name="Loop" Content="循环列表" Height="25"
+                                          Checked="PlayMode_Checked" Unchecked="PlayMode_UnChecked"
+                                          Click="PlayMode_Click"
+                                          Style="{StaticResource PopupButtonStyle}" />
+                            <ToggleButton x:Name="LoopRandom" Content="随机循环" Height="25"
+                                          Checked="PlayMode_Checked" Unchecked="PlayMode_UnChecked"
+                                          Click="PlayMode_Click"
+                                          Style="{StaticResource PopupButtonStyle}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
             </Popup>
         </Grid>
         <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True">
@@ -502,44 +607,112 @@
             <!--<Popup x:Key="TrayStatusPopup"></Popup>-->
             <ContextMenu x:Key="TrayMenu" Style="{StaticResource DefaultContextMenu}">
                 <!--<ContextMenu x:Key="TrayMenu">-->
-                <MenuItem Header="播放" Style="{DynamicResource DefaultMenuItem}">
+                <MenuItem Header="播放" Style="{DynamicResource DefaultMenuItem}"
+                          Click="BtnPlay_Click">
                     <MenuItem.Icon>
-                        <Image Width="24" Height="24" Source="{StaticResource PlayS}" />
+                        <Viewbox Stretch="Uniform" Width="16" Height="16">
+                            <Canvas Width="1000" Height="1000">
+                                <Canvas.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Canvas.RenderTransform>
+                                <Canvas>
+                                    <Path Fill="#FC59A3">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M853.2 597.5L253.5 973.4l-0.5-0.7c-4.3 2.7-8.8 5.1-13.4 7.2c-0.1 0.1-0.3 0.1-0.5 0.3c-4.5 2-9.2 3.8-14 5.2c-0.3 0.1-0.7 0.1-1 0.3c-2.1 0.6-4.2 1.1-6.3 1.5c-0.4 0.1-0.7 0.2-1.1 0.3c-2.4 0.6-4.8 1-7.2 1.3c-0.4 0.1-0.8 0.1-1.2 0.1c-2 0.3-4 0.6-6.1 0.7c-0.6 0.1-1.3 0.1-1.9 0.1c-2.4 0.1-4.9 0.3-7.4 0.3C130.4 990 91 923.3 91 860.9l0 0l0 0l0-720.9l0 0C91 77.6 130.4 10 192.8 10c23.7 0 45.6 7.3 63.8 19.7l595.6 372.2c34 19.5 56.8 56.1 56.8 98.1C909 541.6 886.6 577.9 853.2 597.5z" FillRule="NonZero"/>
+                                        </Path.Data>
+                                    </Path>
+                                </Canvas>
+                            </Canvas>
+                        </Viewbox>
+
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="上一首" Style="{DynamicResource DefaultMenuItem}" >
+                <MenuItem Header="上一首" Style="{DynamicResource DefaultMenuItem}"
+                          Click="BtnPrev_Click">
                     <MenuItem.Icon>
-                        <Image Width="24" Height="24" Source="{StaticResource PrevS}" />
+                        <Viewbox Stretch="Uniform" Width="16" Height="16">
+                            <Canvas Width="1000" Height="1000">
+                                <Canvas.RenderTransform>
+                                    <RotateTransform Angle="180" CenterX="500" CenterY="500"/>
+                                </Canvas.RenderTransform>
+                                <Canvas>
+                                    <Path Fill="#FC59A3">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M905.9 16.1h-52.6c-24.7 0-44.8 20-44.8 44.8v361.9c-5.1-4.3-10.8-8.3-17-12.2L176.2 29.3C106.4-13.9 49.3 17.9 49.3 100v801.4c0 82.1 56.4 112.8 125.3 68.3l618.5-399.4c5.6-3.6 10.8-7.4 15.5-11.4v380.4c0 24.7 20 44.8 44.8 44.8h52.6c24.7 0 44.8-20 44.8-44.8V60.9C950.7 36.2 930.6 16.1 905.9 16.1z" FillRule="NonZero"/>
+                                        </Path.Data>
+                                    </Path>
+                                </Canvas>
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="下一首" Style="{DynamicResource DefaultMenuItem}" >
+                <MenuItem Header="下一首" Style="{DynamicResource DefaultMenuItem}"
+                          Click="BtnNext_Click">
                     <MenuItem.Icon>
-                        <Image Width="24" Height="24" Source="{StaticResource NextS}" />
+                        <Viewbox Stretch="Uniform" Width="16" Height="16">
+                            <Canvas Width="1000" Height="1000">
+                                <Canvas.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Canvas.RenderTransform>
+                                <Canvas>
+                                    <Path Fill="#FC59A3">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M905.9 16.1h-52.6c-24.7 0-44.8 20-44.8 44.8v361.9c-5.1-4.3-10.8-8.3-17-12.2L176.2 29.3C106.4-13.9 49.3 17.9 49.3 100v801.4c0 82.1 56.4 112.8 125.3 68.3l618.5-399.4c5.6-3.6 10.8-7.4 15.5-11.4v380.4c0 24.7 20 44.8 44.8 44.8h52.6c24.7 0 44.8-20 44.8-44.8V60.9C950.7 36.2 930.6 16.1 905.9 16.1z" FillRule="NonZero"/>
+                                        </Path.Data>
+                                    </Path>
+                                </Canvas>
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="循环模式" Style="{DynamicResource DefaultMenuItem}" />
-                <MenuItem Header="打开歌词" Style="{DynamicResource DefaultMenuItem}" />
-                <MenuItem Header="关闭歌词" Style="{DynamicResource DefaultMenuItem}" />
+                <!--<Button Content="循环模式" Style="{DynamicResource DefaultMenuItem}"/>-->
+                <MenuItem Header="打开歌词" Style="{DynamicResource DefaultMenuItem}" Click="MenuOpenLyric_Click" />
+                <MenuItem Header="关闭歌词" Style="{DynamicResource DefaultMenuItem}" Click="MenuHideLyric_Click" />
                 <Separator />
                 <MenuItem x:Name="MenuConfig" Header="设置" Style="{DynamicResource DefaultMenuItem}"
                           Click="MenuConfig_Click" >
                     <MenuItem.Icon>
-                        <Image Width="24" Height="24" Source="{StaticResource GearS}">
-
-                        </Image>
+                        <Viewbox Stretch="Uniform" Width="16" Height="16" Margin="-3,-2,0,0">
+                            <Canvas Width="240" Height="237">
+                                <Canvas.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Canvas.RenderTransform>
+                                <Canvas>
+                                    <Path Fill="#303030" Data="{StaticResource Gear}" />
+                                </Canvas>
+                            </Canvas>
+                        </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
                 <MenuItem x:Name="MenuExit" Header="退出" Style="{DynamicResource DefaultMenuItem}"
                           Click="MenuExit_Click" >
                     <MenuItem.Icon>
-                        <Image Width="24" Height="24" Source="{StaticResource ExitS}" />
+                        <Viewbox Stretch="Uniform" Width="16" Height="16">
+                            <Canvas Width="1000" Height="1000">
+                                <Canvas.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Canvas.RenderTransform>
+                                <Canvas>
+                                    <Path Fill="#7a7a7a">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M981.1 474.5L817.7 270.3c-7.9-9.9-19.7-15.3-31.9-15.3c-4.5 0-9.1 0.8-13.5 2.3C756 263 745 278.5 745 295.8v122.5H418.3c-45.1 0-81.7 36.6-81.7 81.7c0 45.1 36.6 81.7 81.7 81.7H745v122.5c0 17.3 11 32.8 27.3 38.5c4.4 1.6 9 2.3 13.5 2.3c12.2 0 24-5.4 31.9-15.3l163.3-204.2C993 510.6 993 489.4 981.1 474.5z M581.7 826.7H255v0c-0.2 0-0.4 0-0.6 0c-44.8 0-81-36.6-81-81.7V255h0c0-0.2 0-0.4 0-0.6c0-44.8 36.6-81 81.7-81h326.7c45.1 0 81.7-36.6 81.7-81.7c0-45.1-36.6-81.7-81.7-81.7H173.3C83.1 10 10 83.1 10 173.3v653.3C10 916.9 83.1 990 173.3 990h408.3c45.1 0 81.7-36.6 81.7-81.7C663.3 863.2 626.8 826.7 581.7 826.7z" FillRule="NonZero"/>
+                                        </Path.Data>
+                                    </Path>
+                                </Canvas>
+                            </Canvas>
+                        </Viewbox>
+
                     </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>
         </Grid.Resources>
     </Grid>
 </windows:EffectWindowBase>
+
+
+
+
 
 
 

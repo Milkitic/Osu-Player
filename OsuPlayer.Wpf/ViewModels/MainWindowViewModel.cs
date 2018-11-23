@@ -16,6 +16,7 @@ namespace Milkitic.OsuPlayer.ViewModels
     {
         private bool _isNavigationCollapsed;
         private List<Collection> _collection;
+        private PlayListMode _playListMode;
 
         public bool IsNavigationCollapsed
         {
@@ -33,6 +34,16 @@ namespace Milkitic.OsuPlayer.ViewModels
             set
             {
                 _collection = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public PlayListMode PlayListMode
+        {
+            get => _playListMode;
+            set
+            {
+                _playListMode = value;
                 OnPropertyChanged();
             }
         }

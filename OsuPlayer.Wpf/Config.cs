@@ -1,4 +1,5 @@
-﻿using Milkitic.OsuPlayer.Media.Lyric;
+﻿using Milkitic.OsuPlayer.Media;
+using Milkitic.OsuPlayer.Media.Lyric;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -48,6 +49,7 @@ namespace Milkitic.OsuPlayer
         public bool AutoPlay { get; set; } = false;
         public bool Memory { get; set; } = true;
         public int DesiredLatency { get; set; } = 5;
+        public PlayerMode PlayListMode { get; set; } = PlayerMode.Normal;
     }
 
     public class HotKey
