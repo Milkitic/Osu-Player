@@ -11,13 +11,17 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
+using Image = System.Drawing.Image;
 using Pen = System.Drawing.Pen;
+using Size = System.Windows.Size;
 
 namespace Milkitic.OsuPlayer.Windows
 {
@@ -26,20 +30,22 @@ namespace Milkitic.OsuPlayer.Windows
     /// </summary>
     public partial class LyricWindow : WindowBase
     {
+        private readonly MainWindow _mainWindow;
+
         public bool IsHide { get; set; }
 
         private List<Sentence> _lyricList;
         private CancellationTokenSource _cts;
         private Task _playingTask;
         private FontFamily _fontFamily;
-        private bool _hoverd;
         private bool _pressed;
 
         private readonly Stopwatch _sw = new Stopwatch();
         private CancellationTokenSource _hoverCts = new CancellationTokenSource();
 
-        public LyricWindow()
+        public LyricWindow(MainWindow mainWindow)
         {
+            _mainWindow = mainWindow;
             InitializeComponent();
 
             FileInfo fi = new FileInfo(Path.Combine(Domain.ResourcePath, "font.ttc"));
@@ -53,7 +59,7 @@ namespace Milkitic.OsuPlayer.Windows
 
             CompositionTarget.Rendering += OnRendering;
             Left = 0;
-            Top = SystemParameters.WorkArea.Height - Height - 10;
+            Top = SystemParameters.WorkArea.Height - Height - 20;
             Width = SystemParameters.PrimaryScreenWidth;
             this.MouseMove += LyricWindow_MouseMove;
             this.MouseLeave += LyricWindow_MouseLeave;
@@ -68,8 +74,9 @@ namespace Milkitic.OsuPlayer.Windows
         {
             _hoverCts?.Cancel();
             _sw.Reset();
-            _hoverd = true;
             ToolBar.Visibility = Visibility.Visible;
+            ShadowBar.Visibility = Visibility.Visible;
+            StrokeBar.Visibility = Visibility.Visible;
         }
 
         private void LyricWindow_MouseLeave(object sender, MouseEventArgs e)
@@ -85,10 +92,11 @@ namespace Milkitic.OsuPlayer.Windows
                     Thread.Sleep(20);
                 }
 
-                _hoverd = false;
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
                     ToolBar.Visibility = Visibility.Hidden;
+                    ShadowBar.Visibility = Visibility.Hidden;
+                    StrokeBar.Visibility = Visibility.Hidden;
                 }));
 
             }, _hoverCts.Token);
@@ -114,33 +122,106 @@ namespace Milkitic.OsuPlayer.Windows
             _playingTask = Task.Run(() =>
             {
                 int oldTime = -1;
-                bool oldhover = false;
                 while (!_cts.Token.IsCancellationRequested)
                 {
                     Thread.Sleep(50);
-                    var sb = _lyricList.Where(t => t.StartTime < App.HitsoundPlayer?.PlayTime).ToArray();
-                    if (sb.Length < 1)
+                    var validLyrics = _lyricList.Where(t => t.StartTime <= App.HitsoundPlayer?.PlayTime).ToArray();
+                    if (validLyrics.Length < 1)
                         continue;
-                    int maxTime = sb.Max(t => t.StartTime);
-                    if (oldTime == maxTime && oldhover == _hoverd)
+                    int maxTime = validLyrics.Max(t => t.StartTime);
+                    if (oldTime == maxTime)
                         continue;
-                    oldhover = _hoverd;
-                    oldTime = maxTime;
                     var current = _lyricList.First(t => t.StartTime == maxTime);
+                    var predictLyrics = _lyricList.Where(t => t.StartTime > maxTime);
+                    Sentence? next = null;
+                    if (predictLyrics.Any())
+                        next = _lyricList.First(t => t.StartTime > maxTime);
                     Console.WriteLine(current.Content);
-                    DrawLyric(_lyricList.IndexOf(current));
+
+                    var size = DrawLyric(_lyricList.IndexOf(current));
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        BeginTranslate(size, maxTime, next?.StartTime ?? -1);
+                    }));
                     _pressed = false;
+                    oldTime = maxTime;
                 }
             }, _cts.Token);
         }
 
-        private void DrawLyric(int index)
+        //动画定义
+        private Storyboard _myStoryboard;
+
+        private void BeginTranslate(Size size, int nowTime, int nextTime)
+        {
+            _myStoryboard?.Stop();
+            _myStoryboard?.Remove();
+            LyricBar.ClearValue(Border.MarginProperty);
+            double viewWidth = 600, width = size.Width;
+            if (width <= viewWidth) return;
+            else Console.WriteLine($@"{size.Width}>{viewWidth}");
+
+            //const double minInterval = 0.5;
+            //if (nextTime - nowTime < minInterval) return;
+            var interval = nextTime == -1 ? 4000 : (nextTime - nowTime);
+            double startTime = interval / 5 > 3000 ? 3000 : interval / 5;
+            double duration;
+            if (nextTime == -1) duration = 3000;
+            else
+            {
+                if (nextTime - nowTime < 10000)
+                {
+                    if (interval - startTime < 1000)
+                    {
+                        duration = interval - startTime;
+                    }
+                    else
+                    {
+                        duration = interval - startTime - 1000;
+                    }
+                }
+                else
+                {
+                    duration = 10000 - startTime - 1000;
+                }
+            }
+
+            Console.WriteLine($@"{0}->{viewWidth - width}, start: {startTime}, duration: {duration}");
+            ThicknessAnimation defaultAnimation = new ThicknessAnimation
+            {
+                From = new Thickness(0),
+                To = new Thickness(0),
+                BeginTime = TimeSpan.FromMilliseconds(0),
+                Duration = new Duration(TimeSpan.FromMilliseconds(startTime))
+            };
+            ThicknessAnimation translateAnimation = new ThicknessAnimation
+            {
+                From = new Thickness(0),
+                To = new Thickness(viewWidth - width, 0, 0, 0),
+                BeginTime = TimeSpan.FromMilliseconds(startTime),
+                Duration = new Duration(TimeSpan.FromMilliseconds(duration))
+            };
+
+            Storyboard.SetTarget(defaultAnimation, LyricBar);
+            Storyboard.SetTarget(translateAnimation, LyricBar);
+
+            Storyboard.SetTargetProperty(defaultAnimation, new PropertyPath(Border.MarginProperty));
+            Storyboard.SetTargetProperty(translateAnimation, new PropertyPath(Border.MarginProperty));
+
+            _myStoryboard = new Storyboard();
+            _myStoryboard.Children.Add(defaultAnimation);
+            _myStoryboard.Children.Add(translateAnimation);
+
+            _myStoryboard.Begin();
+        }
+
+        private Size DrawLyric(int index)
         {
             string content = _lyricList[index].Content;
             Bitmap bmp = new Bitmap(1, 1);
             SizeF size;
             using (Graphics g = Graphics.FromImage(bmp))
-            using (Font f = new Font(_fontFamily, 40))
+            using (Font f = new Font(_fontFamily, 32))
             {
                 size = g.MeasureString(content, f);
             }
@@ -152,21 +233,21 @@ namespace Milkitic.OsuPlayer.Windows
             bmp = new Bitmap(width + 5, height + 5);
             using (StringFormat format = StringFormat.GenericTypographic)
             using (Graphics g = Graphics.FromImage(bmp))
-            using (Brush bBg = new SolidBrush(Color.FromArgb(48, 0, 176, 255)))
-            using (Pen pBg = new Pen(Color.FromArgb(192, 0, 176, 255), 3))
+            //using (Brush bBg = new SolidBrush(Color.FromArgb(48, 0, 176, 255)))
+            //using (Pen pBg = new Pen(Color.FromArgb(192, 0, 176, 255), 3))
             using (Brush b = new TextureBrush(
                     Image.FromFile(Path.Combine(Domain.ResourcePath, "texture", "2.png"))))
             //using (Pen p = new Pen(Color.Red))
             using (Pen p2 = new Pen(Color.FromArgb(255, 255, 255), 6))
-            using (Font f = new Font(_fontFamily, 40))
+            using (Font f = new Font(_fontFamily, 32))
             {
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 g.TextRenderingHint = TextRenderingHint.AntiAlias;
-                if (_hoverd)
-                {
-                    g.DrawRectangle(pBg, 0, 0, bmp.Width - 1, bmp.Height - 1);
-                    g.FillRectangle(bBg, 0, 0, bmp.Width - 1, bmp.Height - 1);
-                }
+                //if (_hoverd)
+                //{
+                //    g.DrawRectangle(pBg, 0, 0, bmp.Width - 1, bmp.Height - 1);
+                //    g.FillRectangle(bBg, 0, 0, bmp.Width - 1, bmp.Height - 1);
+                //}
                 Rectangle rect = new Rectangle(16, 5, bmp.Width - 1, bmp.Height - 1);
                 float dpi = g.DpiY;
                 using (GraphicsPath gp = GetStringPath(content, dpi, rect, f, format))
@@ -189,6 +270,8 @@ namespace Milkitic.OsuPlayer.Windows
                     ImgLyric.Source = wpfImage;
                 }
             }));
+
+            return new Size(width + 5, height + 5);
         }
 
         private static GraphicsPath GetStringPath(string s, float dpi, RectangleF rect, Font font, StringFormat format)
@@ -259,5 +342,26 @@ namespace Milkitic.OsuPlayer.Windows
             StopWork();
             Close();
         }
+
+        private void BtnLock_Click(object sender, RoutedEventArgs e)
+        {
+            SetPenetrate();
+        }
+
+        private void BtnPrev_Click(object sender, RoutedEventArgs e)
+        {
+            _mainWindow.BtnPrev_Click(sender, e);
+        }
+
+        private void BtnPlay_Click(object sender, RoutedEventArgs e)
+        {
+            _mainWindow.BtnPlay_Click(sender, e);
+        }
+
+        private void BtnNext_Click(object sender, RoutedEventArgs e)
+        {
+            _mainWindow.BtnNext_Click(sender, e);
+        }
+
     }
 }

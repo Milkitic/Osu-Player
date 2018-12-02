@@ -135,12 +135,12 @@
                                             </Canvas>
                                         </Viewbox>
                                     </Grid>
-                                    <Grid>
+                                    <Grid Visibility="Collapsed">
                                         <ToggleButton x:Name="BtnSb" Height="40" Click="Storyboard_Click"
                                                       Content="故事板"
                                                       Style="{StaticResource NavigationButtonStyle}"
                                                       Unchecked="BtnNavigate_Unchecked"
-                                                      Checked="BtnNavigate_Checked" />
+                                                      Checked="BtnNavigate_Checked"  />
                                         <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
                                                  Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
                                             <Canvas Width="1000" Height="1000">

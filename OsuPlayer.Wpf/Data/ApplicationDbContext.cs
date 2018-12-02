@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Milkitic.OsuPlayer.Migrations;
+using Milkitic.WpfApi;
 
 namespace Milkitic.OsuPlayer.Data
 {
@@ -47,8 +48,11 @@ namespace Milkitic.OsuPlayer.Data
 
 
     [Table("collection")]
-    public class Collection
+    public class Collection : ViewModelBase
     {
+        private string _imagePath;
+        private string _description;
+        private string _name;
         public Collection() { }
 
         public Collection(string id, string name, bool locked, int index, string imagePath = null, string description = null)
@@ -63,16 +67,45 @@ namespace Milkitic.OsuPlayer.Data
 
         [Required, Column("id")]
         public string Id { get; set; }
+
         [Required, Column("name")]
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                OnPropertyChanged();
+            }
+        }
+
         [Column("locked")]
         public int LockedInt { get; set; }
         [Column("index")]
         public int Index { get; set; }
+
         [Column("imagePath")]
-        public string ImagePath { get; set; }
+        public string ImagePath
+        {
+            get => _imagePath;
+            set
+            {
+                _imagePath = value;
+                OnPropertyChanged();
+            }
+        }
+
         [Column("description")]
-        public string Description { get; set; }
+        public string Description
+        {
+            get => _description;
+            set
+            {
+                _description = value;
+                OnPropertyChanged();
+            }
+        }
+
         [Required, Column("createTime")]
         public DateTime CreateTime { get; set; }
 

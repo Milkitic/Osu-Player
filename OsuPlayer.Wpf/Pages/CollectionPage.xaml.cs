@@ -196,5 +196,10 @@ namespace Milkitic.OsuPlayer.Pages
             return _entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
+
+        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            _mainWindow.FramePop.Navigate(new EditCollectionPage(_mainWindow, _collection));
+        }
     }
 }

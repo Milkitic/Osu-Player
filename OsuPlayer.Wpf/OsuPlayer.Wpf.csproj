@@ -164,7 +164,11 @@
     <Compile Include="Converter\TabConverter.cs" />
     <Compile Include="L18N\UiMetadata.cs" />
     <Compile Include="Migrations\MigrationConfiguration.cs" />
+    <Compile Include="Pages\EditCollectionPage.xaml.cs">
+      <DependentUpon>EditCollectionPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\CollectionViewModel.cs" />
+    <Compile Include="ViewModels\EditCollectionPageViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\SelectCollectionPageViewModel.cs" />
     <Compile Include="ViewModels\DiffSelectPageViewModel.cs" />
@@ -181,6 +185,7 @@
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\DbOperator.cs" />
     <Compile Include="Domain.cs" />
+    <Compile Include="Windows\LyricWindow.xaml.WinApi.cs" />
     <Compile Include="Windows\MainWindow.Player.cs" />
     <Compile Include="Windows\MainWindow.Surface.cs" />
     <Compile Include="Media\Enums.cs" />
@@ -313,6 +318,10 @@
     <Compile Include="Utils\Updater.cs" />
     <Compile Include="ViewModels\ExportPageViewModel.cs" />
     <Compile Include="Windows\WindowBase.cs" />
+    <Page Include="Pages\EditCollectionPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Windows\ConfigWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

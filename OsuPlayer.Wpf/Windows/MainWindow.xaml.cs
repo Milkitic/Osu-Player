@@ -50,7 +50,7 @@ namespace Milkitic.OsuPlayer.Windows
         {
             InitializeComponent();
             ViewModel = (MainWindowViewModel)DataContext;
-            LyricWindow = new LyricWindow();
+            LyricWindow = new LyricWindow(this);
             LyricWindow.Show();
             OverallKeyHook = new OverallKeyHook(this);
             TryBindHotkeys();

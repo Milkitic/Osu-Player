@@ -4,50 +4,69 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Milkitic.OsuPlayer.Pages"
+      xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ClosingPage">
 
     <Grid Background="#80FFFFFF">
-        <Border x:Name="Parallel" Background="White" Width="{Binding ActualWidth, ElementName=BoxGrid}"
+        <Border x:Name="Parallel" Background="Blue" Width="{Binding ActualWidth, ElementName=BoxGrid}"
                 Height="{Binding ActualHeight, ElementName=BoxGrid}" HorizontalAlignment="Center"
                 VerticalAlignment="Center">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="10" ShadowDepth="0" Color="#000000" Opacity="0.3" />
             </Border.Effect>
         </Border>
-        <Grid x:Name="BoxGrid" Width="280" Height="170" Background="White">
+        <Grid x:Name="BoxGrid" Width="280" Height="175" Background="White">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <DockPanel Height="30">
-                <Label Content="关闭确认" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
+            <DockPanel Height="35" Background="#F0F0F0">
+                <Label HorizontalAlignment="Left" Content="关闭确认" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
+                <dms:DMSystemButton DMSystemButtonForeground="#303030"
+                                    DMSystemButtonHoverForeground="#000000"
+                                    DMSystemButtonSize="25"
+                                    Icon="{StaticResource No}"
+                                    IconHeight="10"
+                                    IconWidth="10"
+                                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Margin="0,0,5,0"
+                                    Click="BtnClose_Click"
+                                    Cursor="Hand" />
             </DockPanel>
-            <Button Grid.Row="0" Content="X" Height="26" HorizontalAlignment="Left" VerticalAlignment="Center"
-                    Width="25" Margin="250,2,0,2" Click="BtnClose_Click" />
-            <StackPanel Grid.Row="1" Margin="10">
-                <RadioButton x:Name="RadioMinimum" Style="{StaticResource ConfigRadioStyle}" Content="最小化到系统托盘"
-                             HorizontalAlignment="Left" IsChecked="True" />
-                <RadioButton x:Name="RadioExit" Style="{StaticResource ConfigRadioStyle}" Content="退出程序"
-                             HorizontalAlignment="Left" />
-                <CheckBox x:Name="AsDefault" Style="{StaticResource ConfigCheckStyle}" Content="设置默认选项" Margin="0,10,0,0"
-                          HorizontalAlignment="Left" />
-            </StackPanel>
-            <Button Grid.Row="2" x:Name="BtnNew" Content="确定" HorizontalAlignment="Center" Margin="0,10,0,0"
-                    VerticalAlignment="Top" Width="75" Height="30" Click="BtnOk_Click" >
-                <Button.Style>
-                    <Style TargetType="{x:Type Button}">
-                        <Setter Property="IsEnabled" Value="True"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Text, ElementName=CollectionName}" Value="">
-                                <Setter Property="IsEnabled" Value="False"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
+            <Grid Grid.Row="1" Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Margin="10">
+                        <dms:DMRadioButton x:Name="RadioMinimum" 
+                                           Content="最小化到系统托盘"
+                                           IconColor="#FF1E9FFF"
+                                           HorizontalAlignment="Left" IsChecked="True" />
+                        <dms:DMRadioButton x:Name="RadioExit"
+                                           Content="退出程序"
+                                           IconColor="#FF1E9FFF"
+                                           HorizontalAlignment="Left" />
+                        <dms:DMCheckBox x:Name="AsDefault"
+                                        Content="设置默认选项" Margin="0,10,0,0"
+                                        HorizontalAlignment="Left"
+                                        IconColor="#FF1E9FFF"/>
+                    </StackPanel>
+                <dms:DMButton Grid.Row="1" x:Name="BtnNew" Content="确定"
+                                  HorizontalAlignment="Center" Margin="0,5,0,0"
+                                  VerticalAlignment="Top" 
+                                  Width="75" Height="28"
+                                  CornerRadius="5"
+                                  BorderThickness="1"
+                                  Background="#FAFAFB"
+                                  Foreground="#303030"
+                                  Cursor="Hand"
+                                  Click="BtnOk_Click" >
+                </dms:DMButton>
+               
+            </Grid>
         </Grid>
     </Grid>
 </Page>

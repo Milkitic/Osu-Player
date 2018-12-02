@@ -71,7 +71,7 @@
                               Style="{DynamicResource DefaultMenuItem}" />
                                 <!--<MenuItem x:Name="ItemNextPlay" Header="下一首播放" Click="ItemNextPlay_Click" />-->
                                 <Separator />
-                                <MenuItem x:Name="ItemCollect" Header="收藏" Click="ItemCollect_Click"
+                                <MenuItem x:Name="ItemCollect" Header="收藏..." Click="ItemCollect_Click"
                               Style="{DynamicResource DefaultMenuItem}" />
                                 <MenuItem x:Name="ItemExport" Header="导出" Click="ItemExport_Click"
                               Style="{DynamicResource DefaultMenuItem}" />

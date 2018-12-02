@@ -51,7 +51,8 @@
                                                   BorderThickness="1"
                                                   BorderBrush="#80FAFAFB"
                                                   Background="#FAFAFB"
-                                                  Cursor="Hand">
+                                                  Cursor="Hand"
+                                                  Click="BtnEdit_Click">
                                         <Viewbox Stretch="Uniform" Width="16" Height="16" Margin="1,0,0,0">
                                             <Canvas Width="1000" Height="1000">
                                                 <Path Fill="#303030" Data="{StaticResource Edit1}" />

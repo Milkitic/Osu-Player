@@ -291,7 +291,7 @@ namespace Milkitic.OsuPlayer.Windows
             PlayNewFile(LoadFile());
         }
 
-        private void BtnPrev_Click(object sender, RoutedEventArgs e)
+        public void BtnPrev_Click(object sender, RoutedEventArgs e)
         {
             PlayNext(true, false);
         }
