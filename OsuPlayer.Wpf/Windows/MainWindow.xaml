@@ -28,6 +28,9 @@
         <converter:IconMarginConverter x:Key="CvtIconMargin"/>
         <converter:TitleVisibleConverter x:Key="CvtTitleVisible"/>
         <converter:MiniEnabledConverter x:Key="CvtMiniEnabled"/>
+        <converter:LyricWindowShownConverter x:Key="CvtLyricWindowShown"/>
+        <converter:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked"/>
+        <converter:VideoShowConverter x:Key="CvtVideoShow"/>
     </windows:EffectWindowBase.Resources>
     <Grid>
         <Grid.Background>
@@ -301,7 +304,8 @@
                 </DockPanel>
 
             </Grid>
-            <Grid x:Name="FullModeArea" Grid.Row="0" Margin="1,0,1,0" Visibility="Hidden">
+            <Grid x:Name="FullModeArea" Grid.Row="0" Margin="1,0,1,0"
+                  Visibility="{Binding EnableVideo,Converter={StaticResource CvtVideoShow}}">
                 <Border x:Name="ResizableArea">
                     <Grid>
                         <Image Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -666,8 +670,12 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <!--<Button Content="循环模式" Style="{DynamicResource DefaultMenuItem}"/>-->
-                <MenuItem Header="打开歌词" Style="{DynamicResource DefaultMenuItem}" Click="MenuOpenLyric_Click" />
-                <MenuItem Header="关闭歌词" Style="{DynamicResource DefaultMenuItem}" Click="MenuHideLyric_Click" />
+                <MenuItem Header="{Binding IsLyricWindowShown,Converter={StaticResource CvtLyricWindowShown},ConverterParameter=string}"
+                          Style="{DynamicResource DefaultMenuItem}" Click="MenuOpenHideLyric_Click" />
+                <MenuItem Header="{Binding IsLyricWindowLocked,Converter={StaticResource CvtLyricWindowLocked}}"
+                          Style="{DynamicResource DefaultMenuItem}" 
+                          IsEnabled="{Binding IsLyricWindowShown,Converter={StaticResource CvtLyricWindowShown},ConverterParameter=bool}"
+                          Click="MenuLockLyric_Click" />
                 <Separator />
                 <MenuItem x:Name="MenuConfig" Header="设置" Style="{DynamicResource DefaultMenuItem}"
                           Click="MenuConfig_Click" >

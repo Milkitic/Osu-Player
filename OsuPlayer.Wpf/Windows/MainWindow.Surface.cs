@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Milkitic.OsuPlayer.Data;
+using Milkitic.OsuPlayer.Media;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -6,8 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Media;
 
 namespace Milkitic.OsuPlayer.Windows
 {
@@ -29,8 +29,12 @@ namespace Milkitic.OsuPlayer.Windows
             var album = DbOperator.GetCollectionsByMap(map);
             bool faved = album != null && album.Any(k => k.Locked);
             BtnLike.Background = faved
-                ? (_miniMode ? (Brush)ToolControl.FindResource("FavedS") : (Brush)ToolControl.FindResource("Faved"))
-                : (_miniMode ? (Brush)ToolControl.FindResource("FavS") : (Brush)ToolControl.FindResource("Fav"));
+                ? (ViewModel.IsMiniMode
+                    ? (Brush)ToolControl.FindResource("FavedS")
+                    : (Brush)ToolControl.FindResource("Faved"))
+                : (ViewModel.IsMiniMode
+                    ? (Brush)ToolControl.FindResource("FavS")
+                    : (Brush)ToolControl.FindResource("Fav"));
             return faved;
         }
 
@@ -88,6 +92,9 @@ namespace Milkitic.OsuPlayer.Windows
                         case PlayerStatus.Playing:
                             Dispatcher.BeginInvoke(new Action(() =>
                             {
+                                ViewModel.IsPlaying = true;
+                                ((ContentPresenter)LyricWindow.BtnPlay.Content).Content =
+                                    LyricWindow.MainGrid.FindResource("PauseButton");
                                 BtnPlay.Style = (Style)FindResource("PauseButtonStyle");
                             }));
                             break;
@@ -100,6 +107,9 @@ namespace Milkitic.OsuPlayer.Windows
                             {
                                 if (App.HitsoundPlayer == null) return;
                                 var playTime = Math.Min(App.HitsoundPlayer.PlayTime, PlayProgress.Maximum);
+                                ViewModel.IsPlaying = false;
+                                ((ContentPresenter)LyricWindow.BtnPlay.Content).Content =
+                                    LyricWindow.MainGrid.FindResource("PlayButton");
                                 BtnPlay.Style = (Style)FindResource("PlayButtonStyle");
                                 PlayProgress.Value = playTime < 0 ? 0 : playTime;
                                 LblTotal.Content =
@@ -134,12 +144,12 @@ namespace Milkitic.OsuPlayer.Windows
 
         private void ToMiniMode()
         {
-            _miniMode = true;
-            Topmost = true;
+            ViewModel.IsMiniMode = true;
             MinHeight = 48 + 38 + 2;
             Height = MinHeight;
             MinWidth = 360 + 38;
             Width = MinWidth;
+            Topmost = true;
             BtnPrev.Margin = new Thickness(5);
             BtnPlay.Margin = new Thickness(5);
             BtnNext.Margin = new Thickness(5);
@@ -168,6 +178,7 @@ namespace Milkitic.OsuPlayer.Windows
             //area
             TitleBarArea.Visibility = Visibility.Collapsed;
             TitleBarAreaBack.Visibility = Visibility.Collapsed;
+            MainFrame.Visibility = Visibility.Collapsed;
 
             SetFaved(App.PlayerList.CurrentInfo.Identity);
             SetPlayMode(App.PlayerList.PlayerMode);
@@ -175,6 +186,7 @@ namespace Milkitic.OsuPlayer.Windows
 
         private void ToNormalMode()
         {
+            ViewModel.IsMiniMode = false;
             MinHeight = 100 + 38;
             Height = 720 + 38;
             MinWidth = 840 + 38;
@@ -208,12 +220,12 @@ namespace Milkitic.OsuPlayer.Windows
             //area
             TitleBarArea.Visibility = Visibility.Visible;
             TitleBarAreaBack.Visibility = Visibility.Visible;
+            MainFrame.Visibility = Visibility.Visible;
 
             SetFaved(App.PlayerList.CurrentInfo.Identity);
             SetPlayMode(App.PlayerList.PlayerMode);
 
             Topmost = false;
-            _miniMode = false;
         }
     }
 }

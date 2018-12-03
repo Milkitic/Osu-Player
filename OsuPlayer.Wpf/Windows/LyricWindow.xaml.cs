@@ -16,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using Milkitic.OsuPlayer.ViewModels;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
@@ -33,6 +34,7 @@ namespace Milkitic.OsuPlayer.Windows
         private readonly MainWindow _mainWindow;
 
         public bool IsHide { get; set; }
+        public MainWindowViewModel ViewModel { get; set; }
 
         private List<Sentence> _lyricList;
         private CancellationTokenSource _cts;
@@ -46,6 +48,8 @@ namespace Milkitic.OsuPlayer.Windows
         public LyricWindow(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
+            DataContext = _mainWindow.ViewModel;
+            ViewModel = _mainWindow.ViewModel;
             InitializeComponent();
 
             FileInfo fi = new FileInfo(Path.Combine(Domain.ResourcePath, "font.ttc"));
@@ -92,14 +96,16 @@ namespace Milkitic.OsuPlayer.Windows
                     Thread.Sleep(20);
                 }
 
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    ToolBar.Visibility = Visibility.Hidden;
-                    ShadowBar.Visibility = Visibility.Hidden;
-                    StrokeBar.Visibility = Visibility.Hidden;
-                }));
+                Dispatcher.BeginInvoke(new Action(HideFrame));
 
             }, _hoverCts.Token);
+        }
+
+        private void HideFrame()
+        {
+            ToolBar.Visibility = Visibility.Hidden;
+            ShadowBar.Visibility = Visibility.Hidden;
+            StrokeBar.Visibility = Visibility.Hidden;
         }
 
         private void OnRendering(object sender, EventArgs e)
@@ -328,12 +334,14 @@ namespace Milkitic.OsuPlayer.Windows
         public new void Show()
         {
             IsHide = false;
+            _mainWindow.ViewModel.IsLyricWindowShown = true;
             base.Show();
         }
 
         public new void Hide()
         {
             IsHide = true;
+            _mainWindow.ViewModel.IsLyricWindowShown = false; 
             base.Hide();
         }
 
@@ -345,7 +353,7 @@ namespace Milkitic.OsuPlayer.Windows
 
         private void BtnLock_Click(object sender, RoutedEventArgs e)
         {
-            SetPenetrate();
+            IsLocked = true;
         }
 
         private void BtnPrev_Click(object sender, RoutedEventArgs e)

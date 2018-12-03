@@ -216,9 +216,9 @@ namespace Milkitic.OsuPlayer.Windows
 
         private void ThumbButton_Click(object sender, RoutedEventArgs e)
         {
-            if (FullModeArea.Visibility == Visibility.Hidden)
-                FullModeArea.Visibility = Visibility.Visible;
-            else if (FullModeArea.Visibility == Visibility.Visible)
+            if (!ViewModel.EnableVideo)
+                ViewModel.EnableVideo = true;
+            else if (ViewModel.EnableVideo)
             {
                 if (ResizableArea.Margin == new Thickness(5))
                     SetFullScr();
@@ -240,10 +240,15 @@ namespace Milkitic.OsuPlayer.Windows
 
         private void BtnHideFullScr_Click(object sender, RoutedEventArgs e)
         {
-            if (FullModeArea.Visibility == Visibility.Visible)
+            //if (FullModeArea.Visibility == Visibility.Visible)
+            //{
+            //    SetFullScr();
+            //    FullModeArea.Visibility = Visibility.Hidden;
+            //}
+            if (ViewModel.EnableVideo)
             {
                 SetFullScr();
-                FullModeArea.Visibility = Visibility.Hidden;
+                ViewModel.EnableVideo = false;
             }
         }
 
@@ -263,6 +268,8 @@ namespace Milkitic.OsuPlayer.Windows
         /// </summary>
         public async void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
+            _videoPlay = true;
+            _forcePaused = false;
             if (App.HitsoundPlayer == null)
             {
                 BtnOpen_Click(sender, e);
@@ -272,16 +279,14 @@ namespace Milkitic.OsuPlayer.Windows
             switch (App.HitsoundPlayer.PlayerStatus)
             {
                 case PlayerStatus.Playing:
-                    App.HitsoundPlayer.Pause();
-                    if (VideoElement.Source != null) await VideoElement.Pause();
-                    App.StoryboardProvider?.StoryboardTiming.Pause();
+                    if (VideoElement?.Source != null) await VideoElement.Pause();
+                    PauseMedia();
                     break;
                 case PlayerStatus.Ready:
                 case PlayerStatus.Stopped:
                 case PlayerStatus.Paused:
-                    App.HitsoundPlayer.Play();
-                    if (VideoElement.Source != null) await VideoElement.Play();
-                    App.StoryboardProvider?.StoryboardTiming.Start();
+                    if (VideoElement?.Source != null) await VideoElement.Play();
+                    PlayMedia();
                     break;
             }
         }
@@ -320,7 +325,7 @@ namespace Milkitic.OsuPlayer.Windows
                 return;
             }
 
-            if (!_miniMode)
+            if (!ViewModel.IsMiniMode)
                 FramePop.Navigate(new SelectCollectionPage(this, entry));
             else
             {
@@ -422,7 +427,7 @@ namespace Milkitic.OsuPlayer.Windows
                     break;
             }
 
-            string flag = _miniMode ? "S" : "";
+            string flag = ViewModel.IsMiniMode ? "S" : "";
             BtnMode.Background = (ImageBrush)ToolControl.FindResource(playmode + flag);
             if (playmode == App.PlayerList.PlayerMode)
                 return;
@@ -446,7 +451,7 @@ namespace Milkitic.OsuPlayer.Windows
         /// Play progress control.
         /// While drag started, slider's updating should be recoverd.
         /// </summary>
-        private void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
+        private async void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
         {
             if (App.HitsoundPlayer != null)
             {
@@ -454,14 +459,23 @@ namespace Milkitic.OsuPlayer.Windows
                 {
                     case PlayerStatus.Playing:
                         if (VideoElement.Source != null)
-                            VideoElement.Position = new TimeSpan(0, 0, 0, 0, (int)(PlayProgress.Value + _videoOffset));
-                        App.HitsoundPlayer.SetTime((int)PlayProgress.Value);
-                        App.StoryboardProvider?.StoryboardTiming.SetTiming((int)PlayProgress.Value, true);
+                        {
+                            App.HitsoundPlayer.SetTime((int)PlayProgress.Value, false);
+                            App.StoryboardProvider?.StoryboardTiming.SetTiming((int)PlayProgress.Value, false);
+                            _forcePaused = false;
+                            await VideoJumpTo((int)PlayProgress.Value);
+                        }
+                        else
+                        {
+                            App.HitsoundPlayer.SetTime((int)PlayProgress.Value);
+                            App.StoryboardProvider?.StoryboardTiming.SetTiming((int)PlayProgress.Value, true);
+                        }
                         break;
                     case PlayerStatus.Paused:
                     case PlayerStatus.Stopped:
+                        _forcePaused = true;
                         if (VideoElement.Source != null)
-                            VideoElement.Position = new TimeSpan(0, 0, 0, 0, (int)(PlayProgress.Value + _videoOffset));
+                            await VideoJumpTo((int)PlayProgress.Value);
                         App.HitsoundPlayer.SetTime((int)PlayProgress.Value, false);
                         App.StoryboardProvider?.StoryboardTiming.SetTiming((int)PlayProgress.Value, false);
                         break;
@@ -561,16 +575,23 @@ namespace Milkitic.OsuPlayer.Windows
         }
 
 
-        private void MenuHideLyric_Click(object sender, RoutedEventArgs e)
+        private void MenuOpenHideLyric_Click(object sender, RoutedEventArgs e)
         {
-            App.Config.Lyric.EnableLyric = false;
-            LyricWindow.Hide();
+            if (ViewModel.IsLyricWindowShown)
+            {
+                App.Config.Lyric.EnableLyric = false;
+                LyricWindow.Hide();
+            }
+            else
+            {
+                App.Config.Lyric.EnableLyric = true;
+                LyricWindow.Show();
+            }
         }
 
-        private void MenuOpenLyric_Click(object sender, RoutedEventArgs e)
+        private void MenuLockLyric_Click(object sender, RoutedEventArgs e)
         {
-            App.Config.Lyric.EnableLyric = true;
-            LyricWindow.Show();
+            LyricWindow.IsLocked = !LyricWindow.IsLocked;
         }
 
         #endregion Notification events
@@ -580,13 +601,19 @@ namespace Milkitic.OsuPlayer.Windows
         private async void VideoElement_MediaOpened(object sender, RoutedEventArgs e)
         {
             VideoElementBorder.Visibility = Visibility.Visible;
+            if (!_videoPlay) return;
+            await Task.Run(() => _waitAction?.Invoke());
             await VideoElement.Play();
+            VideoElement.Position = _position;
         }
 
-        private void VideoElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+        private async void VideoElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
             VideoElementBorder.Visibility = Visibility.Hidden;
-            MsgBox.Show(this, e.ErrorException.ToString(), "不支持的视频格式", MessageBoxButton.OK, MessageBoxImage.Error);
+            //MsgBox.Show(this, e.ErrorException.ToString(), "不支持的视频格式", MessageBoxButton.OK, MessageBoxImage.Error);
+            if (!_videoPlay) return;
+            await ClearVideoElement(false);
+            PlayMedia();
         }
 
         #endregion Video element events

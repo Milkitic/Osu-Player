@@ -12,6 +12,7 @@ namespace Milkitic.OsuPlayer.Windows
     partial class LyricWindow
     {
         private uint _oldGwlEx;
+        private bool _isLocked;
         private const uint WS_EX_LAYERED = 0x80000;
         private const int WS_EX_TRANSPARENT = 0x20;
         private const int GWL_EXSTYLE = (-20);
@@ -23,7 +24,28 @@ namespace Milkitic.OsuPlayer.Windows
         private static extern uint GetWindowLong(IntPtr hwnd, int nIndex);
 
         private IntPtr Handle { get; set; }
-        public bool IsLocked { get; private set; }
+
+        public bool IsLocked
+        {
+            get => _isLocked;
+            set
+            {
+                _isLocked = value;
+                _mainWindow.ViewModel.IsLyricWindowLocked = value;
+                if (_isLocked)
+                {
+                    SetPenetrate();
+                    ImgLyric.Opacity = 0.9;
+                    //ShowAnimation();
+                    HideFrame();
+                }
+                else
+                {
+                    ReleasePenetrate();
+                    ImgLyric.Opacity = 1;
+                }
+            }
+        }
 
         private void WindowBase_Loaded(object sender, RoutedEventArgs e)
         {
@@ -34,13 +56,11 @@ namespace Milkitic.OsuPlayer.Windows
         private void SetPenetrate()
         {
             uint newGwlEx = SetWindowLong(this.Handle, GWL_EXSTYLE, WS_EX_TRANSPARENT | WS_EX_LAYERED);
-            IsLocked = true;
         }
 
         private void ReleasePenetrate()
         {
             uint newGwlEx = SetWindowLong(this.Handle, GWL_EXSTYLE, _oldGwlEx);
-            IsLocked = false;
         }
     }
 }

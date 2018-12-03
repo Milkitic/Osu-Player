@@ -125,14 +125,14 @@ namespace Milkitic.OsuPlayer
             {
                 if (PlayerMode == PlayerMode.Single)
                 {
-                    entry = null;
+                    entry = Entries.First(k => k.GetIdentity().Equals(CurrentIdentity));
                     Pointer--;
                     return ChangeType.Stop;
                 }
 
                 if (PlayerMode == PlayerMode.SingleLoop)
                 {
-                    entry = null;
+                    entry = Entries.First(k => k.GetIdentity().Equals(CurrentIdentity));
                     Pointer--;
                     return ChangeType.Keep;
                 }

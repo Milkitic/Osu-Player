@@ -5,11 +5,49 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:Milkitic.OsuPlayer.Windows"
         xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+        xmlns:viewModels="clr-namespace:Milkitic.OsuPlayer.ViewModels"
+        xmlns:converter="clr-namespace:Milkitic.OsuPlayer.Converter"
+        xmlns:osuPlayer="clr-namespace:Milkitic.OsuPlayer"
         mc:Ignorable="d"
         Title="LyricWindow" Height="90" WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False"
         Background="Transparent" AllowsTransparency="True" BorderBrush="Black" SizeToContent="Height" Topmost="True"
                     Loaded="WindowBase_Loaded">
-    <Grid>
+    <windows:WindowBase.DataContext>
+        <viewModels:MainWindowViewModel />
+    </windows:WindowBase.DataContext>
+    <Grid x:Name="MainGrid">
+        <Grid.Resources>
+            <converter:PlayingConverter x:Key="CvtPlaying"/>
+            <Viewbox x:Key="PlayButton" Stretch="Uniform" Width="20" Height="20">
+                <Canvas Width="1000" Height="1000">
+                    <Canvas.RenderTransform>
+                        <TranslateTransform X="0" Y="0"/>
+                    </Canvas.RenderTransform>
+                    <Canvas>
+                        <Path Fill="#f0f0f0">
+                            <Path.Data>
+                                <PathGeometry Figures="M853.2 597.5L253.5 973.4l-0.5-0.7c-4.3 2.7-8.8 5.1-13.4 7.2c-0.1 0.1-0.3 0.1-0.5 0.3c-4.5 2-9.2 3.8-14 5.2c-0.3 0.1-0.7 0.1-1 0.3c-2.1 0.6-4.2 1.1-6.3 1.5c-0.4 0.1-0.7 0.2-1.1 0.3c-2.4 0.6-4.8 1-7.2 1.3c-0.4 0.1-0.8 0.1-1.2 0.1c-2 0.3-4 0.6-6.1 0.7c-0.6 0.1-1.3 0.1-1.9 0.1c-2.4 0.1-4.9 0.3-7.4 0.3C130.4 990 91 923.3 91 860.9l0 0l0 0l0-720.9l0 0C91 77.6 130.4 10 192.8 10c23.7 0 45.6 7.3 63.8 19.7l595.6 372.2c34 19.5 56.8 56.1 56.8 98.1C909 541.6 886.6 577.9 853.2 597.5z" FillRule="NonZero"/>
+                            </Path.Data>
+                        </Path>
+                    </Canvas>
+                </Canvas>
+            </Viewbox>
+            <Viewbox x:Key="PauseButton" Stretch="Uniform" Width="20" Height="20">
+                <Canvas Width="1000" Height="1000">
+                    <Path Fill="#f0f0f0">
+                        <Path.Data>
+                            <PathGeometry Figures="M806.3 10c-4.2 0-159 0-163.3 0c-27 0-48.8 21.9-48.8 48.8c0 4.2 0 878.1 0 882.3c0 27 21.9 48.8 48.8 48.8c4.2 0 159 0 163.3 0c27 0 48.8-21.9 48.8-48.8c0-4.2 0-878.1 0-882.3C855.2 31.9 833.3 10 806.3 10z" FillRule="NonZero"/>
+                        </Path.Data>
+                    </Path>
+                    <Path Fill="#f0f0f0">
+                        <Path.Data>
+                            <PathGeometry Figures="M356.9 10c-4.2 0-159 0-163.3 0c-27 0-48.8 21.9-48.8 48.8c0 4.2 0 878.1 0 882.3c0 27 21.9 48.8 48.8 48.8c4.2 0 159 0 163.3 0c27 0 48.8-21.9 48.8-48.8c0-4.2 0-878.1 0-882.3C405.8 31.9 383.9 10 356.9 10z" FillRule="NonZero"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+            </Viewbox>
+
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition />
@@ -39,20 +77,16 @@
                 <dms:DMButton x:Name="BtnPlay" Click="BtnPlay_Click" Margin="5"
                               BorderThickness="0" BorderBrush="Transparent"
                               Background="Transparent" Cursor="Hand">
-                    <Viewbox Stretch="Uniform" Width="20" Height="20">
-                        <Canvas Width="1000" Height="1000">
-                            <Canvas.RenderTransform>
-                                <TranslateTransform X="0" Y="0"/>
-                            </Canvas.RenderTransform>
-                            <Canvas>
-                                <Path Fill="#f0f0f0">
-                                    <Path.Data>
-                                        <PathGeometry Figures="M853.2 597.5L253.5 973.4l-0.5-0.7c-4.3 2.7-8.8 5.1-13.4 7.2c-0.1 0.1-0.3 0.1-0.5 0.3c-4.5 2-9.2 3.8-14 5.2c-0.3 0.1-0.7 0.1-1 0.3c-2.1 0.6-4.2 1.1-6.3 1.5c-0.4 0.1-0.7 0.2-1.1 0.3c-2.4 0.6-4.8 1-7.2 1.3c-0.4 0.1-0.8 0.1-1.2 0.1c-2 0.3-4 0.6-6.1 0.7c-0.6 0.1-1.3 0.1-1.9 0.1c-2.4 0.1-4.9 0.3-7.4 0.3C130.4 990 91 923.3 91 860.9l0 0l0 0l0-720.9l0 0C91 77.6 130.4 10 192.8 10c23.7 0 45.6 7.3 63.8 19.7l595.6 372.2c34 19.5 56.8 56.1 56.8 98.1C909 541.6 886.6 577.9 853.2 597.5z" FillRule="NonZero"/>
-                                    </Path.Data>
-                                </Path>
-                            </Canvas>
-                        </Canvas>
-                    </Viewbox>
+                    <ContentPresenter>
+                        <ContentPresenter.Content>
+                            <MultiBinding Converter="{StaticResource CvtPlaying}"
+                                          ConverterParameter="{x:Static osuPlayer:RandomSeed.RandomNumber}">
+                                <Binding Path="IsPlaying" />
+                                <Binding RelativeSource="{RelativeSource AncestorType=Window}" 
+                                          />
+                            </MultiBinding>
+                        </ContentPresenter.Content>
+                    </ContentPresenter>
                 </dms:DMButton>
                 <dms:DMButton x:Name="BtnNext" Click="BtnNext_Click" Margin="5"
                               BorderThickness="0" BorderBrush="Transparent"

@@ -98,8 +98,13 @@ namespace Milkitic.OsuPlayer.Pages
         {
             if (MapList.SelectedItem == null)
                 return;
-            var searchInfo = (BeatmapDataModel)MapList.SelectedItem;
-            DbOperator.RemoveMapFromCollection(searchInfo.GetIdentity(), _collection);
+            var selected = MapList.SelectedItems;
+            var entries = ConvertToEntries(selected.Cast<BeatmapDataModel>());
+            foreach (var entry in entries)
+            {
+                DbOperator.RemoveMapFromCollection(entry.GetIdentity(), _collection);
+            }
+            //var dataModel = (BeatmapDataModel)MapList.SelectedItem;
             UpdateList();
             App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
         }
@@ -200,6 +205,17 @@ namespace Milkitic.OsuPlayer.Pages
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
             _mainWindow.FramePop.Navigate(new EditCollectionPage(_mainWindow, _collection));
+        }
+
+        private BeatmapEntry ConvertToEntry(BeatmapDataModel dataModel)
+        {
+            return _entries.GetBeatmapsetsByFolder(dataModel.FolderName)
+                .FirstOrDefault(k => k.Version == dataModel.Version);
+        }
+
+        private IEnumerable<BeatmapEntry> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)
+        {
+            return dataModels.Select(ConvertToEntry);
         }
     }
 }

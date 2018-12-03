@@ -101,6 +101,9 @@ namespace Milkitic.OsuPlayer.Media.Music
 
         public void Play()
         {
+            if (_playingTask != null && !_playingTask.IsCanceled && !_playingTask.IsCompleted &&
+                !_playingTask.IsFaulted)
+                return;
             StartTask();
             App.MusicPlayer.Play();
             if (_mod == PlayMod.None)

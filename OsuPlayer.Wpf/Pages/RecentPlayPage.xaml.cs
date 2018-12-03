@@ -58,8 +58,13 @@ namespace Milkitic.OsuPlayer.Pages
         {
             if (RecentList.SelectedItem == null)
                 return;
-            var searchInfo = (BeatmapDataModel)RecentList.SelectedItem;
-            DbOperator.RemoveFromRecent(searchInfo.GetIdentity());
+            var selected = RecentList.SelectedItems;
+            var entries = ConvertToEntries(selected.Cast<BeatmapDataModel>());
+            //var searchInfo = (BeatmapDataModel)RecentList.SelectedItem;
+            foreach (var entry in entries)
+            {
+                DbOperator.RemoveFromRecent(entry.GetIdentity());
+            }
             UpdateList();
             App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
         }
@@ -150,6 +155,17 @@ namespace Milkitic.OsuPlayer.Pages
             var selectedItem = (BeatmapDataModel)RecentList.SelectedItem;
             return _entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
+        }
+
+        private BeatmapEntry ConvertToEntry(BeatmapDataModel dataModel)
+        {
+            return _entries.GetBeatmapsetsByFolder(dataModel.FolderName)
+                .FirstOrDefault(k => k.Version == dataModel.Version);
+        }
+
+        private IEnumerable<BeatmapEntry> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)
+        {
+            return dataModels.Select(ConvertToEntry);
         }
     }
 }

@@ -82,4 +82,54 @@ namespace Milkitic.OsuPlayer.Converter
             throw new NotImplementedException();
         }
     }
+
+    public class LyricWindowShownConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var shown = (bool)value;
+            if (System.Convert.ToString(parameter) == "string")
+            {
+                return shown ? "关闭桌面歌词" : "打开桌面歌词";
+            }
+            else if (System.Convert.ToString(parameter) == "bool")
+            {
+                return shown;
+            }
+            else return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class LyricWindowLockedConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var locked = (bool)value;
+            return locked ? "解锁歌词" : "锁定歌词";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class VideoShowConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var show = (bool)value;
+            return show ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

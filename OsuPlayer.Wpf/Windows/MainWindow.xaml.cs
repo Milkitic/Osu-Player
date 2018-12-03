@@ -33,12 +33,9 @@ namespace Milkitic.OsuPlayer.Windows
         public bool ForceExit = false;
 
         private WindowState _lastState;
-        private bool _miniMode = false;
         private readonly OptionContainer _optionContainer = new OptionContainer();
         private readonly OptionContainer _modeOptionContainer = new OptionContainer();
-
-        public bool FullMode => FullModeArea.Visibility == Visibility.Visible;
-
+        
         //local player control
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private Task _statusTask;
@@ -101,7 +98,7 @@ namespace Milkitic.OsuPlayer.Windows
             switch (msg)
             {
                 case WmExitSizeMove:
-                    if (Height <= MinHeight && !_miniMode)
+                    if (Height <= MinHeight && !ViewModel.IsMiniMode)
                     {
                         ToMiniMode();
                     }
