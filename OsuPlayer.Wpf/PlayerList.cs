@@ -50,7 +50,8 @@ namespace Milkitic.OsuPlayer
                         break;
                     default:
                     case PlayListMode.Collection:
-                        Entries = entries.ToList();
+                        if (entries != null)
+                            Entries = entries.ToList();
                         break;
                 }
 

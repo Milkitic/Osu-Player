@@ -88,10 +88,10 @@ namespace Milkitic.OsuPlayer.Pages
             var ok = (BeatmapDataModel)ResultList.SelectedItem;
             var page = new DiffSelectPage(ParentWindow,
                 App.Beatmaps.GetBeatmapsetsByFolder(ok.GetIdentity().FolderName));
-            page.Callback = () =>
+            page.Callback = async () =>
             {
-                ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, page.SelectedMap.FolderName,
-                    page.SelectedMap.BeatmapFileName));
+                await ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, page.SelectedMap.FolderName,
+                      page.SelectedMap.BeatmapFileName));
                 App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
                 ParentWindow.FramePop.Navigate(null);
             };
@@ -163,11 +163,11 @@ namespace Milkitic.OsuPlayer.Pages
             Process.Start(Path.Combine(Domain.OsuSongPath, map.FolderName));
         }
 
-        private void PlaySelectedDefault()
+        private async void PlaySelectedDefault()
         {
             var map = GetSelectedDefault();
             if (map == null) return;
-            ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
+            await ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                 map.BeatmapFileName));
             App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
         }

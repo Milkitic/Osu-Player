@@ -38,9 +38,10 @@ namespace Milkitic.OsuPlayer.Pages
                 BtnDelCol.Visibility = Visibility.Collapsed;
             //LblTitle.Content = _collection.Name;
 
-            var item = ViewModels.FirstOrDefault(k =>
-                k.GetIdentity().Equals(App.PlayerList.CurrentInfo.Identity));
-            MapList.SelectedItem = item;
+            var item = ViewModels?.FirstOrDefault(k =>
+                k.GetIdentity().Equals(App.PlayerList?.CurrentInfo?.Identity));
+            if (item != null)
+                MapList.SelectedItem = item;
         }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -184,12 +185,12 @@ namespace Milkitic.OsuPlayer.Pages
             Process.Start(Path.Combine(Domain.OsuSongPath, searchInfo.FolderName));
         }
 
-        private void PlaySelected()
+        private async void PlaySelected()
         {
             var map = GetSelected();
             if (map == null) return;
-            _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
-                map.BeatmapFileName));
+            await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
+                 map.BeatmapFileName));
             App.PlayerList.RefreshPlayList(PlayerList.FreshType.None, PlayListMode.Collection, _entries);
         }
 

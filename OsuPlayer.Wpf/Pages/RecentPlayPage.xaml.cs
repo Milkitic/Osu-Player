@@ -2,6 +2,7 @@
 using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Utils;
+using Milkitic.OsuPlayer.Windows;
 using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +11,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milkitic.OsuPlayer.Windows;
 
 namespace Milkitic.OsuPlayer.Pages
 {
@@ -138,13 +138,13 @@ namespace Milkitic.OsuPlayer.Pages
             Process.Start(Path.Combine(Domain.OsuSongPath, map.FolderName));
         }
 
-        private void PlaySelected()
+        private async void PlaySelected()
         {
             var map = GetSelected();
             if (map == null) return;
 
-            _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
-                map.BeatmapFileName));
+            await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
+                   map.BeatmapFileName));
             App.PlayerList.RefreshPlayList(PlayerList.FreshType.None, PlayListMode.RecentList);
         }
 

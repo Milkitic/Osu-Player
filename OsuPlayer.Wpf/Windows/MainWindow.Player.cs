@@ -34,9 +34,9 @@ namespace Milkitic.OsuPlayer.Windows
             return (result.HasValue && result.Value) ? openFileDialog.FileName : null;
         }
 
-        public void PlayNewFile(string path)
+        public async Task PlayNewFile(string path)
         {
-            PlayNewFile(path, true);
+            await PlayNewFile(path, true);
         }
 
         private StoryboardWindow _sbWindow;
@@ -49,7 +49,7 @@ namespace Milkitic.OsuPlayer.Windows
         /// <summary>
         /// Play a new file by file path.
         /// </summary>
-        private async void PlayNewFile(string path, bool play)
+        private async Task PlayNewFile(string path, bool play)
         {
             if (path == null) return;
             if (File.Exists(path))
@@ -72,9 +72,10 @@ namespace Milkitic.OsuPlayer.Windows
                     /* Set Meta */
                     MapIdentity nowIdentity =
                         new MapIdentity(fi.Directory.Name, App.HitsoundPlayer.Osufile.Metadata.Version);
-                    ;
+
                     MapInfo mapInfo = DbOperator.GetMapFromDb(nowIdentity);
-                    BeatmapEntry entry = App.PlayerList.Entries.GetBeatmapByIdentity(nowIdentity);
+                    //BeatmapEntry entry = App.PlayerList.Entries.GetBeatmapByIdentity(nowIdentity);
+                    BeatmapEntry entry = App.Beatmaps.GetBeatmapByIdentity(nowIdentity);
                     OsuFile osuFile = App.HitsoundPlayer.Osufile;
 
                     LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle();
@@ -211,6 +212,8 @@ namespace Milkitic.OsuPlayer.Windows
                             App.HitsoundPlayer.Play();
                     }
 
+                    //if (!App.PlayerList.Entries.Any(k => k.GetIdentity().Equals(nowIdentity)))
+                    //    App.PlayerList.Entries.Add(entry);
                     App.Config.CurrentPath = path;
                     App.SaveConfig();
 
@@ -387,7 +390,7 @@ namespace Milkitic.OsuPlayer.Windows
                 default:
                     var path = Path.Combine(new FileInfo(App.Config.General.DbPath).Directory.FullName, "Songs",
                         entry.FolderName, entry.BeatmapFileName);
-                    PlayNewFile(path);
+                    await PlayNewFile(path);
                     break;
             }
         }

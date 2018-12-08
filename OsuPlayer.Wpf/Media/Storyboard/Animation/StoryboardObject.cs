@@ -61,6 +61,19 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
             _element = element;
             _vSize = vSize;
             var path = Path.Combine(App.StoryboardProvider.Directory, element.ImagePath);
+            if (!File.Exists(path))
+            {
+                var pngPath = path + ".png";
+                if (File.Exists(pngPath))
+                {
+                    path = pngPath;
+                }
+                else
+                {
+                    path = path + ".jpg";
+                }
+            }
+
             if (File.Exists(path))
             {
                 TextureList = new[] { TextureLoader.LoadBitmap(target, path) };

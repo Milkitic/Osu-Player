@@ -30,10 +30,13 @@ namespace Milkitic.OsuPlayer.Windows
                 var entries = App.Beatmaps.GetBeatmapByIdentities(App.Config.CurrentList);
                 App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, entries: entries);
                 bool play = App.Config.Play.AutoPlay;
-                PlayNewFile(App.Config.CurrentPath, play);
+                await PlayNewFile(App.Config.CurrentPath, play);
             }
 
-            SetPlayMode(App.Config.Play.PlayListMode);
+            if (App.UseDbMode)
+            {
+                SetPlayMode(App.Config.Play.PlayListMode);
+            }
 
             var helper = new WindowInteropHelper(this);
             var source = HwndSource.FromHwnd(helper.Handle);
@@ -291,9 +294,10 @@ namespace Milkitic.OsuPlayer.Windows
             }
         }
 
-        private void BtnOpen_Click(object sender, RoutedEventArgs e)
+        private async void BtnOpen_Click(object sender, RoutedEventArgs e)
         {
-            PlayNewFile(LoadFile());
+            await PlayNewFile(LoadFile());
+            App.PlayerList.RefreshPlayList(PlayerList.FreshType.None);
         }
 
         public void BtnPrev_Click(object sender, RoutedEventArgs e)
