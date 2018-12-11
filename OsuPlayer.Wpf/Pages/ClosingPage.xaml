@@ -9,7 +9,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ClosingPage">
 
-    <Grid Background="#80FFFFFF">
+    <Grid Background="{StaticResource WhiteBrush80}">
         <Border x:Name="Parallel" Background="Blue" Width="{Binding ActualWidth, ElementName=BoxGrid}"
                 Height="{Binding ActualHeight, ElementName=BoxGrid}" HorizontalAlignment="Center"
                 VerticalAlignment="Center">
@@ -22,7 +22,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <DockPanel Height="35" Background="#F0F0F0">
+            <DockPanel Height="35" Background="{StaticResource ExtraLightBrush}">
                 <Label HorizontalAlignment="Left" Content="关闭确认" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
                 <dms:DMSystemButton DMSystemButtonForeground="#303030"
                                     DMSystemButtonHoverForeground="#000000"

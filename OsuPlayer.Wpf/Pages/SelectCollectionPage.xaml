@@ -12,7 +12,7 @@
     <Page.DataContext>
         <viewModels:SelectCollectionPageViewModel />
     </Page.DataContext>
-    <Grid Background="#80FFFFFF">
+    <Grid Background="{StaticResource WhiteBrush80}">
         <Border x:Name="Parallel" Background="White" Width="{Binding ActualWidth, ElementName=BoxGrid}"
                 Height="{Binding ActualHeight, ElementName=BoxGrid}" HorizontalAlignment="Center"
                 VerticalAlignment="Center">
@@ -26,7 +26,7 @@
                 <RowDefinition />
 
             </Grid.RowDefinitions>
-            <DockPanel Height="35" Background="#F0F0F0">
+            <DockPanel Height="35" Background="{StaticResource ExtraLightBrush}">
                 <Label HorizontalAlignment="Left" Content="添加至收藏" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
                 <dms:DMSystemButton DMSystemButtonForeground="#303030"
                                     DMSystemButtonHoverForeground="#000000"
@@ -100,7 +100,7 @@
                                             <ColumnDefinition Width="58"/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Background="#F0F0F0" Width="45" Height="45" Margin="0">
+                                        <Border Background="{StaticResource ExtraLightBrush}" Width="45" Height="45" Margin="0">
                                             <Image RenderOptions.BitmapScalingMode="HighQuality"
                                                    Source="{Binding ImagePath}" Stretch="UniformToFill"
                                                    VerticalAlignment="Center" HorizontalAlignment="Center"/>

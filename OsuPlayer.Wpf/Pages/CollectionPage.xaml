@@ -35,7 +35,7 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
-                            <Grid Width="192" Height="192" Margin="10" Background="#F0F0F0">
+                            <Grid Width="192" Height="192" Margin="10" Background="{StaticResource ExtraLightBrush}">
                                 <Image x:Name="CollectionThumb" RenderOptions.BitmapScalingMode="HighQuality"
                                        Source="{Binding Path=ImagePath}" Stretch="UniformToFill"
                                        HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -187,7 +187,7 @@
                                           ItemsSource="{Binding Mode=OneWay}"
                                           MouseDoubleClick="RecentList_MouseDoubleClick"
                                           ItemContainerStyle="{StaticResource GridView}"
-                                          Background="#40FFFFFF">
+                                          Background="{StaticResource WhiteBrush40}">
                                     <ListView.ContextMenu>
                                         <ContextMenu Style="{StaticResource DefaultContextMenu}">
                                             <MenuItem x:Name="ItemPlay" Header="播放" Click="ItemPlay_Click"

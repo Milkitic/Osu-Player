@@ -30,8 +30,8 @@ namespace Milkitic.OsuPlayer.Pages.Settings
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            LblMp3Path.Content = App.Config.Export.MusicPath;
-            LblBgPath.Content = App.Config.Export.BgPath;
+            LblMp3Path.Text = App.Config.Export.MusicPath;
+            LblBgPath.Text = App.Config.Export.BgPath;
             if (App.Config.Export.NamingStyle == NamingStyle.Title)
                 RadioT.IsChecked = true;
             else if (App.Config.Export.NamingStyle == NamingStyle.ArtistTitle)
@@ -58,7 +58,7 @@ namespace Milkitic.OsuPlayer.Pages.Settings
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK) return;
             App.Config.Export.MusicPath = dialog.SelectedPath;
-            LblMp3Path.Content = App.Config.Export.MusicPath;
+            LblMp3Path.Text = App.Config.Export.MusicPath;
             App.SaveConfig();
         }
 
@@ -72,7 +72,7 @@ namespace Milkitic.OsuPlayer.Pages.Settings
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK) return;
             App.Config.Export.BgPath = dialog.SelectedPath;
-            LblBgPath.Content = App.Config.Export.BgPath;
+            LblBgPath.Text = App.Config.Export.BgPath;
             App.SaveConfig();
         }
 

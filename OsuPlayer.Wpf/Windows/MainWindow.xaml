@@ -40,11 +40,11 @@
             <RowDefinition Height="auto"/>
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Grid x:Name="TitleBarAreaBack" Grid.Row="0" Height="50">
+        <DockPanel x:Name="TitleBarAreaBack" Grid.Row="0" Height="50">
             <Image Source="{StaticResource TitleLogo}" Height="32" HorizontalAlignment="Left" Margin="8,0,0,0"/>
             <Button PreviewMouseDoubleClick="Button_MouseDoubleClick" Background="Transparent" Opacity="0"
                     PreviewMouseDown="Button_MouseDown"/>
-        </Grid>
+        </DockPanel>
         <Grid Grid.Row="1" x:Name="MainGrid">
             <Grid.RowDefinitions>
                 <RowDefinition />
@@ -58,253 +58,280 @@
                     </LinearGradientBrush>
                 </Border.BorderBrush>
             </Border>
-            <Grid x:Name="MainArea" Grid.Row="0" Margin="0,0,1,0">
-                <DockPanel Width="Auto" Height="Auto">
-                    <DockPanel.Effect>
-                        <DropShadowEffect ShadowDepth="0" BlurRadius="10" Opacity="0.24" />
-                    </DockPanel.Effect>
-                    <Grid x:Name="Navigation"
+            <DockPanel x:Name="MainArea" Grid.Row="0" Margin="0,0,1,0" Width="Auto" Height="Auto">
+                <DockPanel.Effect>
+                    <DropShadowEffect ShadowDepth="0" BlurRadius="10" Opacity="0.24" />
+                </DockPanel.Effect>
+                <DockPanel x:Name="Navigation" Height="{Binding ElementName=MainArea,Path=ActualHeight}"
                         Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}">
-                        <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
-                            <Grid>
-                                <Grid.Resources>
-                                    <converter:NavigationColorConverter x:Key="CvtColor"/>
-                                </Grid.Resources>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <dms:DMButton Command="{Binding CollapseCommand}"
-                                              HorizontalAlignment="Left"
-                                              Width="30"
-                                              Height="{Binding ActualWidth, Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                                              Background="Transparent"
-                                              BorderThickness="0"
-                                              Margin="8,0,0,0"
-                                              Cursor="Hand">
-                                    <Viewbox Stretch="Uniform" Width="20" Height="20">
+                    <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto"
+                                  Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}">
+                        <Grid>
+                            <Grid.Resources>
+                                <converter:NavigationColorConverter x:Key="CvtColor" />
+                            </Grid.Resources>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <dms:DMButton Command="{Binding CollapseCommand}"
+                                          HorizontalAlignment="Left"
+                                          Width="30"
+                                          Height="{Binding ActualWidth, Mode=OneWay, RelativeSource={RelativeSource Self}}"
+                                          Background="Transparent"
+                                          BorderThickness="0"
+                                          Margin="8,0,0,0"
+                                          Cursor="Hand">
+                                <Viewbox Stretch="Uniform" Width="20" Height="20">
+                                    <Canvas Width="1000" Height="1000">
+                                        <Path Fill="White">
+                                            <Path.Data>
+                                                <PathGeometry
+                                                    Figures="M935.6 255H64.4C31.8 255 10 233.2 10 200.6c0-32.7 21.8-54.4 54.4-54.4h871.1c32.7 0 54.4 21.8 54.4 54.4C990 233.2 968.2 255 935.6 255z"
+                                                    FillRule="NonZero" />
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="White">
+                                            <Path.Data>
+                                                <PathGeometry
+                                                    Figures="M935.6 853.9H64.4c-32.7 0-54.4-21.8-54.4-54.4c0-32.7 21.8-54.4 54.4-54.4h871.1c32.7 0 54.4 21.8 54.4 54.4C990 832.1 968.2 853.9 935.6 853.9z"
+                                                    FillRule="NonZero" />
+                                            </Path.Data>
+                                        </Path>
+                                        <Path Fill="White">
+                                            <Path.Data>
+                                                <PathGeometry
+                                                    Figures="M935.6 554.4H64.4C31.8 554.4 10 532.7 10 500c0-32.7 21.8-54.4 54.4-54.4h871.1c32.7 0 54.4 21.8 54.4 54.4C990 532.7 968.2 554.4 935.6 554.4z"
+                                                    FillRule="NonZero" />
+                                            </Path.Data>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </dms:DMButton>
+                            <StackPanel Grid.Row="1"
+                                        Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}">
+                                <Label Style="{StaticResource NavigationLabelStyle}"
+                                       Visibility="{Binding IsNavigationCollapsed,Converter={StaticResource CvtTitleVisible}}"
+                                       Height="30">
+                                    <TextBlock Margin="5,0,0,0">库</TextBlock>
+                                </Label>
+                                <Canvas Height="40">
+                                    <ToggleButton x:Name="BtnSearch"
+                                                  Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}"
+                                                  Height="40" Click="BtnSearch_Click"
+                                                  Content="搜索"
+                                                  Style="{StaticResource NavigationButtonStyle}"
+                                                  Unchecked="BtnNavigate_Unchecked"
+                                                  Checked="BtnNavigate_Checked" />
+                                    <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
+                                             Canvas.Top="10"
+                                             Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
+                                        <Path
+                                            Fill="{Binding ElementName=BtnSearch,Path=Foreground,Converter={StaticResource CvtColor}}"
+                                            Data="{StaticResource Search}" />
+                                    </Viewbox>
+                                </Canvas>
+                                <Canvas Height="40" Visibility="Collapsed">
+                                    <ToggleButton x:Name="BtnFind"
+                                                  Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}"
+                                                  Height="40" Click="BtnFind_Click"
+                                                  Content="发现"
+                                                  Style="{StaticResource NavigationButtonStyle}"
+                                                  Unchecked="BtnNavigate_Unchecked"
+                                                  Checked="BtnNavigate_Checked" />
+                                    <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
+                                             Canvas.Top="10"
+                                             Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
                                         <Canvas Width="1000" Height="1000">
-                                            <Path Fill="White">
-                                                <Path.Data>
-                                                    <PathGeometry Figures="M935.6 255H64.4C31.8 255 10 233.2 10 200.6c0-32.7 21.8-54.4 54.4-54.4h871.1c32.7 0 54.4 21.8 54.4 54.4C990 233.2 968.2 255 935.6 255z" FillRule="NonZero"/>
-                                                </Path.Data>
-                                            </Path>
-                                            <Path Fill="White">
-                                                <Path.Data>
-                                                    <PathGeometry Figures="M935.6 853.9H64.4c-32.7 0-54.4-21.8-54.4-54.4c0-32.7 21.8-54.4 54.4-54.4h871.1c32.7 0 54.4 21.8 54.4 54.4C990 832.1 968.2 853.9 935.6 853.9z" FillRule="NonZero"/>
-                                                </Path.Data>
-                                            </Path>
-                                            <Path Fill="White">
-                                                <Path.Data>
-                                                    <PathGeometry Figures="M935.6 554.4H64.4C31.8 554.4 10 532.7 10 500c0-32.7 21.8-54.4 54.4-54.4h871.1c32.7 0 54.4 21.8 54.4 54.4C990 532.7 968.2 554.4 935.6 554.4z" FillRule="NonZero"/>
-                                                </Path.Data>
-                                            </Path>
+                                            <Path
+                                                Fill="{Binding ElementName=BtnFind,Path=Foreground,Converter={StaticResource CvtColor}}"
+                                                Data="{StaticResource Compass1}" />
+                                            <Path
+                                                Fill="{Binding ElementName=BtnFind,Path=Foreground,Converter={StaticResource CvtColor}}"
+                                                Data="{StaticResource Compass2}" />
                                         </Canvas>
                                     </Viewbox>
-                                </dms:DMButton>
-                                <StackPanel Grid.Row="1">
-                                    <Label Style="{StaticResource NavigationLabelStyle}"
-                                           Visibility="{Binding IsNavigationCollapsed,Converter={StaticResource CvtTitleVisible}}">
-                                        <TextBlock Margin="5,0,0,0">库</TextBlock>
-                                    </Label>
-                                    <Grid>
-                                        <ToggleButton x:Name="BtnSearch" Height="40" Click="BtnSearch_Click"
-                                              Content="搜索" 
-                                              Style="{StaticResource NavigationButtonStyle}"
-                                              Unchecked="BtnNavigate_Unchecked"
-                                              Checked="BtnNavigate_Checked" />
-                                        <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
-                                                 Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
+                                </Canvas>
+                                <Canvas Height="40" Visibility="Collapsed">
+                                    <ToggleButton x:Name="BtnSb"
+                                                  Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}"
+                                                  Height="40" Click="Storyboard_Click"
+                                                  Content="故事板"
+                                                  Style="{StaticResource NavigationButtonStyle}"
+                                                  Unchecked="BtnNavigate_Unchecked"
+                                                  Checked="BtnNavigate_Checked" />
+                                    <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
+                                             Canvas.Top="10"
+                                             Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
+                                        <Canvas Width="1000" Height="1000">
+                                            <Canvas.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000" />
+                                                    <TranslateTransform X="0.000000" Y="496.000000" />
+                                                </TransformGroup>
+                                            </Canvas.RenderTransform>
                                             <Path
-                                                Fill="{Binding ElementName=BtnSearch,Path=Foreground,Converter={StaticResource CvtColor}}"
-                                                Data="{StaticResource Search}" />
-                                        </Viewbox>
-                                    </Grid>
-                                    <Grid Visibility="Collapsed">
-                                        <ToggleButton x:Name="BtnFind" Height="40" Click="BtnFind_Click"
-                                              Content="发现"
-                                              Style="{StaticResource NavigationButtonStyle}"
-                                              Unchecked="BtnNavigate_Unchecked"
-                                              Checked="BtnNavigate_Checked" />
-                                        <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
-                                                 Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
-                                            <Canvas Width="1000" Height="1000">
-                                                <Path Fill="{Binding ElementName=BtnFind,Path=Foreground,Converter={StaticResource CvtColor}}"
-                                              Data="{StaticResource Compass1}" />
-                                                <Path Fill="{Binding ElementName=BtnFind,Path=Foreground,Converter={StaticResource CvtColor}}"
-                                              Data="{StaticResource Compass2}" />
-                                            </Canvas>
-                                        </Viewbox>
-                                    </Grid>
-                                    <Grid Visibility="Collapsed">
-                                        <ToggleButton x:Name="BtnSb" Height="40" Click="Storyboard_Click"
-                                                      Content="故事板"
-                                                      Style="{StaticResource NavigationButtonStyle}"
-                                                      Unchecked="BtnNavigate_Unchecked"
-                                                      Checked="BtnNavigate_Checked"  />
-                                        <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
-                                                 Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
-                                            <Canvas Width="1000" Height="1000">
-                                                <Canvas.RenderTransform>
-                                                    <TransformGroup>
-                                                        <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000"/>
-                                                        <TranslateTransform X="0.000000" Y="496.000000"/>
-                                                    </TransformGroup>
-                                                </Canvas.RenderTransform>
-                                                <Path Fill="{Binding ElementName=BtnSb,Path=Foreground,Converter={StaticResource CvtColor}}"
-                                              Data="{StaticResource Film}" />
-                                            </Canvas>
-                                        </Viewbox>
-                                    </Grid>
-                                </StackPanel>
-                                <StackPanel Grid.Row="2">
+                                                Fill="{Binding ElementName=BtnSb,Path=Foreground,Converter={StaticResource CvtColor}}"
+                                                Data="{StaticResource Film}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </Canvas>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2">
+                                <Label Style="{StaticResource NavigationLabelStyle}"
+                                       Visibility="{Binding IsNavigationCollapsed,Converter={StaticResource CvtTitleVisible}}"
+                                       Height="30">
+                                    <TextBlock Margin="5,0,0,0">我的</TextBlock>
+                                </Label>
+                                <Canvas Height="40">
+                                    <ToggleButton x:Name="BtnRecent"
+                                                  Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}"
+                                                  Height="40" Click="BtnRecent_Click"
+                                                  Content="最近播放"
+                                                  Style="{StaticResource NavigationButtonStyle}"
+                                                  Unchecked="BtnNavigate_Unchecked"
+                                                  Checked="BtnNavigate_Checked" />
+                                    <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
+                                             Canvas.Top="10"
+                                             Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
+                                        <Path
+                                            Fill="{Binding ElementName=BtnRecent,Path=Foreground,Converter={StaticResource CvtColor}}"
+                                            Data="{StaticResource History}" />
+                                    </Viewbox>
+                                </Canvas>
+                                <Canvas Height="40">
+                                    <ToggleButton x:Name="BtnExport"
+                                                  Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}"
+                                                  Height="40" Click="BtnExport_Click"
+                                                  Content="导出管理"
+                                                  Style="{StaticResource NavigationButtonStyle}"
+                                                  Unchecked="BtnNavigate_Unchecked"
+                                                  Checked="BtnNavigate_Checked" />
+                                    <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
+                                             Canvas.Top="10"
+                                             Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
+                                        <Canvas Width="1000" Height="1000">
+                                            <Canvas.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000" />
+                                                    <TranslateTransform X="0.000000" Y="496.000000" />
+                                                </TransformGroup>
+                                            </Canvas.RenderTransform>
+                                            <Path
+                                                Fill="{Binding ElementName=BtnExport,Path=Foreground,Converter={StaticResource CvtColor}}"
+                                                Data="{StaticResource Export}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </Canvas>
+                            </StackPanel>
+                            <StackPanel Grid.Row="3">
+                                <Canvas Height="40"
+                                    Visibility="{Binding IsNavigationCollapsed,Converter={StaticResource CvtTitleVisible}}">
                                     <Label Style="{StaticResource NavigationLabelStyle}"
-                                           Visibility="{Binding IsNavigationCollapsed,Converter={StaticResource CvtTitleVisible}}">
-                                        <TextBlock Margin="5,0,0,0">我的</TextBlock>
+                                           Height="30">
+                                        <TextBlock Margin="5,0,0,0">收藏夹</TextBlock>
                                     </Label>
-                                    <Grid>
-                                        <ToggleButton x:Name="BtnRecent" Height="40" Click="BtnRecent_Click"
-                                              Content="最近播放"
-                                              Style="{StaticResource NavigationButtonStyle}" 
-                                              Unchecked="BtnNavigate_Unchecked"
-                                              Checked="BtnNavigate_Checked" />
-                                        <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
-                                                 Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
-                                            <Path Fill="{Binding ElementName=BtnRecent,Path=Foreground,Converter={StaticResource CvtColor}}"
-                                          Data="{StaticResource History}" />
-                                        </Viewbox>
-                                    </Grid>
-                                    <Grid>
-                                        <ToggleButton x:Name="BtnExport" Grid.Row="0" Height="40" Click="BtnExport_Click"
-                                              Content="导出管理"
-                                              Style="{StaticResource NavigationButtonStyle}" 
-                                              Unchecked="BtnNavigate_Unchecked"
-                                              Checked="BtnNavigate_Checked" />
-                                        <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
-                                                 Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
+                                    <dms:DMButton x:Name="BtnAddCollection"
+                                                  Width="20" Height="20"
+                                                  Canvas.Right="5" Canvas.Top="15"
+                                                  Click="BtnAddCollection_Click"
+                                                  BorderThickness="0"
+                                                  Background="Transparent"
+                                                  Cursor="Hand"
+                                                  HorizontalAlignment="Right">
+                                        <Viewbox Stretch="Uniform">
                                             <Canvas Width="1000" Height="1000">
                                                 <Canvas.RenderTransform>
                                                     <TransformGroup>
-                                                        <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000"/>
-                                                        <TranslateTransform X="0.000000" Y="496.000000"/>
+                                                        <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000" />
+                                                        <TranslateTransform X="0.000000" Y="511.000000" />
                                                     </TransformGroup>
                                                 </Canvas.RenderTransform>
-                                                <Path Fill="{Binding ElementName=BtnExport,Path=Foreground,Converter={StaticResource CvtColor}}"
-                                              Data="{StaticResource Export}" />
+                                                <Path Fill="{StaticResource ExtraLightBrush}">
+                                                    <Path.Data>
+                                                        <PathGeometry
+                                                            Figures="M4553.8 4991c-1176.2-110.4-2251.6-627.8-3073.2-1472.7C889.6 2906 471 2167.7 263.7 1363.6c-395.3-1521.1-67.8-3081 906.8-4315.3c145.3-184.1 579.4-620.1 757.7-759.6c955.3-747.9 2073.4-1120 3236-1073.5c1085.1 42.6 2044.3 395.3 2906.6 1073.5c174.4 137.6 612.3 575.5 749.9 749.9c976.6 1242.1 1308 2790.3 922.3 4301.7c-168.6 658.8-474.7 1267.3-922.3 1840.8c-139.5 178.3-575.5 612.3-759.6 757.7c-773.2 610.4-1658.7 963-2645 1054.1C5173.9 5014.3 4796 5014.3 4553.8 4991z M5319.2 3772.2c1472.7-139.5 2701.2-1112.3 3166.2-2509.3c253.8-759.6 253.8-1546.3 0-2305.9c-368.2-1110.3-1222.7-1964.9-2333-2333c-759.6-253.8-1546.3-253.8-2305.9 0c-1253.7 416.6-2183.8 1463-2449.3 2759.3c-164.7 800.3-46.5 1654.8 331.4 2393.1c352.7 691.8 899.1 1242.1 1585 1594.7c389.5 201.5 811.9 335.2 1201.4 379.8c100.8 11.6 211.2 25.2 242.2 29.1C4883.2 3793.5 5115.8 3789.6 5319.2 3772.2z"
+                                                            FillRule="NonZero" />
+                                                    </Path.Data>
+                                                </Path>
+                                                <Path Fill="{StaticResource ExtraLightBrush}">
+                                                    <Path.Data>
+                                                        <PathGeometry
+                                                            Figures="M4896.8 2549.5c-197.7-31-377.9-170.5-465.1-362.3c-40.7-87.2-42.6-122.1-48.4-773.2l-5.8-682.1l-672.4-5.8c-786.7-7.7-796.4-9.7-974.7-188c-126-126-176.3-250-176.3-428.2c0-240.3 131.8-449.6 348.8-556.1l110.5-54.3l682.1-5.8l682.1-5.8l5.8-682.1l5.8-682.1l54.3-110.4c106.6-217 315.9-348.8 556.1-348.8c178.3 0 302.3 50.4 428.2 176.3c178.3 178.3 180.2 188 187.9 974.7l5.8 672.4l672.4 5.8c786.7 7.8 796.4 9.7 974.7 188c126 126 176.3 250 176.3 428.2c0 296.5-197.7 538.7-484.4 598.8c-62 13.6-346.9 21.3-720.8 21.3h-618.1l-5.8 684l-5.8 682.1l-54.3 110.5C5433.6 2456.5 5170 2592.1 4896.8 2549.5z"
+                                                            FillRule="NonZero" />
+                                                    </Path.Data>
+                                                </Path>
                                             </Canvas>
                                         </Viewbox>
-                                    </Grid>
-                                </StackPanel>
-                                <StackPanel Grid.Row="3">
-                                    <Grid Visibility="{Binding IsNavigationCollapsed,Converter={StaticResource CvtTitleVisible}}">
-                                        <Label Style="{StaticResource NavigationLabelStyle}" VerticalAlignment="Center">
-                                            <TextBlock Margin="5,0,0,0">收藏夹</TextBlock>
-                                        </Label>
-                                        <dms:DMButton x:Name="BtnAddCollection" 
-                                                      Width="20" Height="20"
-                                                      Margin="5,10,5,0"
-                                                      Click="BtnAddCollection_Click"
-                                                      BorderThickness="0"
-                                                      Background="Transparent"
-                                                      Cursor="Hand"
-                                                      HorizontalAlignment="Right">
-                                            <Viewbox Stretch="Uniform">
-                                                <Canvas Width="1000" Height="1000">
-                                                    <Canvas.RenderTransform>
-                                                        <TransformGroup>
-                                                            <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000" />
-                                                            <TranslateTransform X="0.000000" Y="511.000000" />
-                                                        </TransformGroup>
-                                                    </Canvas.RenderTransform>
-                                                    <Path Fill="#F0F0F0">
-                                                        <Path.Data>
-                                                            <PathGeometry
-                                                                Figures="M4553.8 4991c-1176.2-110.4-2251.6-627.8-3073.2-1472.7C889.6 2906 471 2167.7 263.7 1363.6c-395.3-1521.1-67.8-3081 906.8-4315.3c145.3-184.1 579.4-620.1 757.7-759.6c955.3-747.9 2073.4-1120 3236-1073.5c1085.1 42.6 2044.3 395.3 2906.6 1073.5c174.4 137.6 612.3 575.5 749.9 749.9c976.6 1242.1 1308 2790.3 922.3 4301.7c-168.6 658.8-474.7 1267.3-922.3 1840.8c-139.5 178.3-575.5 612.3-759.6 757.7c-773.2 610.4-1658.7 963-2645 1054.1C5173.9 5014.3 4796 5014.3 4553.8 4991z M5319.2 3772.2c1472.7-139.5 2701.2-1112.3 3166.2-2509.3c253.8-759.6 253.8-1546.3 0-2305.9c-368.2-1110.3-1222.7-1964.9-2333-2333c-759.6-253.8-1546.3-253.8-2305.9 0c-1253.7 416.6-2183.8 1463-2449.3 2759.3c-164.7 800.3-46.5 1654.8 331.4 2393.1c352.7 691.8 899.1 1242.1 1585 1594.7c389.5 201.5 811.9 335.2 1201.4 379.8c100.8 11.6 211.2 25.2 242.2 29.1C4883.2 3793.5 5115.8 3789.6 5319.2 3772.2z"
-                                                                FillRule="NonZero" />
-                                                        </Path.Data>
-                                                    </Path>
-                                                    <Path Fill="#F0F0F0">
-                                                        <Path.Data>
-                                                            <PathGeometry
-                                                                Figures="M4896.8 2549.5c-197.7-31-377.9-170.5-465.1-362.3c-40.7-87.2-42.6-122.1-48.4-773.2l-5.8-682.1l-672.4-5.8c-786.7-7.7-796.4-9.7-974.7-188c-126-126-176.3-250-176.3-428.2c0-240.3 131.8-449.6 348.8-556.1l110.5-54.3l682.1-5.8l682.1-5.8l5.8-682.1l5.8-682.1l54.3-110.4c106.6-217 315.9-348.8 556.1-348.8c178.3 0 302.3 50.4 428.2 176.3c178.3 178.3 180.2 188 187.9 974.7l5.8 672.4l672.4 5.8c786.7 7.8 796.4 9.7 974.7 188c126 126 176.3 250 176.3 428.2c0 296.5-197.7 538.7-484.4 598.8c-62 13.6-346.9 21.3-720.8 21.3h-618.1l-5.8 684l-5.8 682.1l-54.3 110.5C5433.6 2456.5 5170 2592.1 4896.8 2549.5z"
-                                                                FillRule="NonZero" />
-                                                        </Path.Data>
-                                                    </Path>
-                                                </Canvas>
-                                            </Viewbox>
-                                        </dms:DMButton>
-                                    </Grid>
-                                    <ListView x:Name="CollectionList" Margin="0,0,-1,0" Background="Transparent"
-                                              Visibility="{Binding IsNavigationCollapsed,Converter={StaticResource CvtTitleVisible}}"
-                                              BorderThickness="0"
-                                              ItemsSource="{Binding Collection, Mode=OneWay}">
-                                        <ListView.Resources>
-                                            <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
-                                                <Grid>
-                                                    <ToggleButton x:Name="BtnCollection" VerticalAlignment="Center"
-                                                                  MinHeight="26"
-                                                                  Style="{StaticResource NavigationButtonStyle}"
-                                                                  Margin="-5,0,0,1"
-                                                                  Tag="{Binding Id}" Click="BtnCollection_Click"
-                                                                  Unchecked="BtnNavigate_Unchecked"
-                                                                  Checked="BtnNavigate_Checked">
-                                                        <Label MaxWidth="120" HorizontalAlignment="Left"
-                                                               Margin="0,7"
-                                                               Foreground="{Binding ElementName=BtnCollection, Path=Foreground}"
-                                                               FontSize="13px">
-                                                            <TextBlock TextWrapping="Wrap" Text="{Binding Name}"></TextBlock>
-                                                        </Label>
-                                                    </ToggleButton>
-                                                </Grid>
-                                            </ControlTemplate>
-                                            <Style TargetType="{x:Type ListViewItem}">
-                                                <Setter Property="BorderThickness" Value="0" />
-                                                <Setter Property="Template" Value="{StaticResource NormalButton}" />
-                                            </Style>
-                                        </ListView.Resources>
-                                    </ListView>
-                                </StackPanel>
-                            </Grid>
-                        </ScrollViewer>
-                    </Grid>
-                    <Grid>
-                        <Grid x:Name="BgArea" Margin="0">
-                            <Image x:Name="BlurScene" Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center"
-                                   VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality">
-                                <Image.Effect>
-                                    <BlurEffect Radius="100" />
-                                </Image.Effect>
-                            </Image>
-                            <Rectangle x:Name="WhiteCover" Fill="#FFFFFF" Opacity="0.833333333" />
-                            <Grid.Style>
-                                <Style TargetType="{x:Type Grid}">
-                                    <Setter Property="Background" >
-                                        <Setter.Value>
-                                            <LinearGradientBrush EndPoint="0,1">
-                                                <GradientStop Offset="0" Color="#dc498d"/>
-                                                <GradientStop Offset="1" Color="White"/>
-                                            </LinearGradientBrush>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Source, ElementName=BlurScene}" Value="{x:Null}">
-                                            <Setter Property="Background" Value="White"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Source, ElementName=BlurScene}" Value="">
-                                            <Setter Property="Background" Value="White"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Grid.Style>
+                                    </dms:DMButton>
+                                </Canvas>
+                                <ListView x:Name="CollectionList" Margin="0,0,-1,0" Background="Transparent"
+                                          Visibility="{Binding IsNavigationCollapsed,Converter={StaticResource CvtTitleVisible}}"
+                                          BorderThickness="0"
+                                          ItemsSource="{Binding Collection, Mode=OneWay}">
+                                    <ListView.Resources>
+                                        <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
+                                            <ToggleButton x:Name="BtnCollection" VerticalAlignment="Center"
+                                                          Height="35"
+                                                          Style="{StaticResource NavigationButtonStyle}"
+                                                          Margin="-5,0,0,1"
+                                                          Tag="{Binding Id}" Click="BtnCollection_Click"
+                                                          Unchecked="BtnNavigate_Unchecked"
+                                                          Checked="BtnNavigate_Checked">
+                                                <Label MaxWidth="120" HorizontalAlignment="Left"
+                                                       Margin="0,-7"
+                                                       Foreground="{Binding ElementName=BtnCollection, Path=Foreground}"
+                                                       FontSize="13px" Content="{Binding Name}">
+                                                </Label>
+                                            </ToggleButton>
+                                        </ControlTemplate>
+                                        <Style TargetType="{x:Type ListViewItem}">
+                                            <Setter Property="BorderThickness" Value="0" />
+                                            <Setter Property="Template" Value="{StaticResource NormalButton}" />
+                                        </Style>
+                                    </ListView.Resources>
+                                </ListView>
+                            </StackPanel>
                         </Grid>
-                        <Frame Name="MainFrame" NavigationUIVisibility="Hidden"></Frame>
-                    </Grid>
+                    </ScrollViewer>
                 </DockPanel>
-
-            </Grid>
+                <Grid>
+                    <Grid x:Name="BgArea" Margin="0">
+                        <Image x:Name="BlurScene" Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center"
+                               VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality">
+                            <Image.Effect>
+                                <BlurEffect Radius="100" />
+                            </Image.Effect>
+                        </Image>
+                        <Rectangle x:Name="WhiteCover" Fill="{StaticResource WhiteBrush}" Opacity="0.833333333" />
+                        <Grid.Style>
+                            <Style TargetType="{x:Type Grid}">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush EndPoint="0,1">
+                                            <GradientStop Offset="0" Color="#dc498d" />
+                                            <GradientStop Offset="1" Color="White" />
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Source, ElementName=BlurScene}" Value="{x:Null}">
+                                        <Setter Property="Background" Value="White" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Source, ElementName=BlurScene}" Value="">
+                                        <Setter Property="Background" Value="White" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                    </Grid>
+                    <Frame Name="MainFrame" NavigationUIVisibility="Hidden"></Frame>
+                </Grid>
+            </DockPanel>
             <Grid x:Name="FullModeArea" Grid.Row="0" Margin="1,0,1,0"
+                  Opacity="0"
                   Visibility="{Binding EnableVideo,Converter={StaticResource CvtVideoShow}}">
                 <Border x:Name="ResizableArea">
                     <Grid>
@@ -314,12 +341,12 @@
                             <ffme:MediaElement x:Name="VideoElement" IsMuted="True" LoadedBehavior="Manual"
                                            MediaOpened="VideoElement_MediaOpened" MediaFailed="VideoElement_MediaFailed"/>
                         </Grid>
-                        <Border Background="#20f0f0f0"
+                        <Border Background="{StaticResource ExtraLightBrush20}"
                                 HorizontalAlignment="Right" VerticalAlignment="Top"
                                 Margin="5"
                                 Cursor="Hand">
                             <dms:DMSystemButton DMSystemButtonForeground="#505050"
-                                                DMSystemButtonHoverColor="#80f0f0f0"
+                                                DMSystemButtonHoverColor="{StaticResource ExtraLightBrush80}"
                                                 DMSystemButtonHoverForeground="#303030"
                                                 DMSystemButtonSize="25"
                                                 Icon="{StaticResource No}"
@@ -377,7 +404,7 @@
                                                                 <TranslateTransform X="0" Y="0"/>
                                                             </Canvas.RenderTransform>
                                                             <Canvas>
-                                                                <Path Fill="#f0f0f0f0">
+                                                                <Path Fill="{StaticResource ExtraLightBrushF0}">
                                                                     <Path.Data>
                                                                         <PathGeometry Figures="M602.1 500l226.5 226.5l91.9-91.9c11.5-12.1 29.4-15.3 44.7-8.9c14.7 6.4 24.9 21.1 24.9 37.6v285.8c0 22.3-18.5 40.8-40.8 40.8H663.3c-16.6 0-31.3-10.2-37.6-25.5c-6.4-14.7-3.2-32.5 8.9-44l91.9-91.9L500 602.1L273.5 828.6l91.9 91.9c12.1 11.5 15.3 29.4 8.9 44c-6.4 15.3-21.1 25.5-37.6 25.5H50.8C28.5 990 10 971.5 10 949.2V663.3c0-16.6 10.2-31.3 25.5-37.6c14.7-6.4 32.5-3.2 44 8.9l91.9 91.9L397.9 500L171.4 273.5l-91.9 91.9c-7.7 7.7-17.9 12.1-28.7 12.1c-5.1 0-10.8-1.3-15.3-3.2C20.2 367.9 10 353.3 10 336.7V50.8C10 28.5 28.5 10 50.8 10h285.8c16.6 0 31.3 10.2 37.6 25.5c6.4 14.7 3.2 32.5-8.9 44l-91.9 91.9L500 397.9l226.5-226.5l-91.9-91.9c-12.1-11.5-15.3-29.3-8.9-44c6.4-15.3 21.1-25.5 37.6-25.5h285.8c22.3 0 40.8 18.5 40.8 40.8v285.8c0 16.6-10.2 31.3-24.9 37.6c-5.1 1.9-10.8 3.2-16 3.2c-10.8 0-21.1-4.5-28.7-12.1l-91.9-91.9L602.1 500z" FillRule="NonZero"/>
                                                                     </Path.Data>
@@ -556,44 +583,41 @@
         <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True">
             <Frame Name="FramePop" NavigationUIVisibility="Hidden" />
         </Grid>
-        <Border x:Name="MsgBoxCover" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Background="#80FFFFFF"
+        <Border x:Name="MsgBoxCover" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Background="{StaticResource WhiteBrush80}"
                 Visibility="Hidden" />
-        <Grid x:Name="TitleBarArea" Grid.Row="0" Height="50">
-            <StackPanel
-                Height="{Binding DMSystemButtonSize}"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Orientation="Horizontal" Margin="0,0,5,0">
+        <DockPanel x:Name="TitleBarArea" Grid.Row="0" Height="50">
+            <Canvas HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Width="200" Height="40" Margin="0,0,5,0">
                 <dms:DMSystemButton
                     x:Name="BtnSettings"
                     DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="#FFFFFF"
+                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
                     Icon="{StaticResource Gear}"
                     DMSystemButtonSize="40"
                     Click="BtnSettings_Click"/>
                 <dms:DMSystemButton
                     DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="#FFFFFF"
+                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
                     Icon="{StaticResource Mini}"
-                    DMSystemButtonSize="40"
+                    DMSystemButtonSize="40" Canvas.Left="40"
                     Click="BtnMini_Click"
                     IsEnabled="{Binding Content, ElementName=FramePop,Converter={StaticResource CvtMiniEnabled}}">
-
                 </dms:DMSystemButton>
                 <dms:DMSystemMinButton
                     DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="#FFFFFF"
-                    DMSystemButtonSize="40" />
+                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
+                    DMSystemButtonSize="40" Canvas.Left="80" />
                 <dms:DMSystemMaxButton 
                     DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="#FFFFFF"
-                    DMSystemButtonSize="40" />
+                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
+                    DMSystemButtonSize="40" Canvas.Left="120" />
                 <dms:DMSystemCloseButton
                     DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="#FFFFFF"
-                    DMSystemButtonSize="40" />
-            </StackPanel>
-        </Grid>
+                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
+                    DMSystemButtonSize="40" Canvas.Left="160" />
+            </Canvas>
+        </DockPanel>
         <ResizeGrip Grid.Row="1" x:Name="Grip"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
@@ -620,7 +644,7 @@
                                     <TranslateTransform X="0" Y="0"/>
                                 </Canvas.RenderTransform>
                                 <Canvas>
-                                    <Path Fill="#FC59A3">
+                                    <Path Fill="{StaticResource PinkBrushOsu}">
                                         <Path.Data>
                                             <PathGeometry Figures="M853.2 597.5L253.5 973.4l-0.5-0.7c-4.3 2.7-8.8 5.1-13.4 7.2c-0.1 0.1-0.3 0.1-0.5 0.3c-4.5 2-9.2 3.8-14 5.2c-0.3 0.1-0.7 0.1-1 0.3c-2.1 0.6-4.2 1.1-6.3 1.5c-0.4 0.1-0.7 0.2-1.1 0.3c-2.4 0.6-4.8 1-7.2 1.3c-0.4 0.1-0.8 0.1-1.2 0.1c-2 0.3-4 0.6-6.1 0.7c-0.6 0.1-1.3 0.1-1.9 0.1c-2.4 0.1-4.9 0.3-7.4 0.3C130.4 990 91 923.3 91 860.9l0 0l0 0l0-720.9l0 0C91 77.6 130.4 10 192.8 10c23.7 0 45.6 7.3 63.8 19.7l595.6 372.2c34 19.5 56.8 56.1 56.8 98.1C909 541.6 886.6 577.9 853.2 597.5z" FillRule="NonZero"/>
                                         </Path.Data>
@@ -640,7 +664,7 @@
                                     <RotateTransform Angle="180" CenterX="500" CenterY="500"/>
                                 </Canvas.RenderTransform>
                                 <Canvas>
-                                    <Path Fill="#FC59A3">
+                                    <Path Fill="{StaticResource PinkBrushOsu}">
                                         <Path.Data>
                                             <PathGeometry Figures="M905.9 16.1h-52.6c-24.7 0-44.8 20-44.8 44.8v361.9c-5.1-4.3-10.8-8.3-17-12.2L176.2 29.3C106.4-13.9 49.3 17.9 49.3 100v801.4c0 82.1 56.4 112.8 125.3 68.3l618.5-399.4c5.6-3.6 10.8-7.4 15.5-11.4v380.4c0 24.7 20 44.8 44.8 44.8h52.6c24.7 0 44.8-20 44.8-44.8V60.9C950.7 36.2 930.6 16.1 905.9 16.1z" FillRule="NonZero"/>
                                         </Path.Data>
@@ -659,7 +683,7 @@
                                     <TranslateTransform X="0" Y="0"/>
                                 </Canvas.RenderTransform>
                                 <Canvas>
-                                    <Path Fill="#FC59A3">
+                                    <Path Fill="{StaticResource PinkBrushOsu}">
                                         <Path.Data>
                                             <PathGeometry Figures="M905.9 16.1h-52.6c-24.7 0-44.8 20-44.8 44.8v361.9c-5.1-4.3-10.8-8.3-17-12.2L176.2 29.3C106.4-13.9 49.3 17.9 49.3 100v801.4c0 82.1 56.4 112.8 125.3 68.3l618.5-399.4c5.6-3.6 10.8-7.4 15.5-11.4v380.4c0 24.7 20 44.8 44.8 44.8h52.6c24.7 0 44.8-20 44.8-44.8V60.9C950.7 36.2 930.6 16.1 905.9 16.1z" FillRule="NonZero"/>
                                         </Path.Data>

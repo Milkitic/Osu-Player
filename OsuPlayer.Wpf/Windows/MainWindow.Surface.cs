@@ -75,7 +75,7 @@ namespace Milkitic.OsuPlayer.Windows
         /// </summary>
         private void UpdateSurface()
         {
-            const int interval = 50;
+            const int interval = 500;
             while (!_cts.IsCancellationRequested)
             {
                 if (App.HitsoundPlayer == null)

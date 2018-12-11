@@ -72,6 +72,7 @@ namespace Milkitic.OsuPlayer.Media.Music
             _device = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, Latency);
             //else
             //    _device = new WaveOutEvent { DesiredLatency = App.Config.Play.DesiredLatency };
+            //_device = new WaveOutEvent { DesiredLatency = 70 };
             _device.PlaybackStopped += (sender, args) => { PlayerStatus = PlayerStatus.Finished; };
 
             if (UseSoundTouch)

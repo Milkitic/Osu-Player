@@ -12,42 +12,54 @@
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="桌面歌词：" HorizontalAlignment="Left" />
+                <Label Style="{StaticResource ConfigTitleStyle}" Content="桌面歌词："
+                       HorizontalAlignment="Left" Height="26" />
                 <dms:DMCheckBox x:Name="EnableLyric" IconColor="#FF1E9FFF" Margin="8,0"
                                 Content="启用桌面歌词"
                                 HorizontalAlignment="Left" Checked="EnableLyric_CheckChanged"
                                 Unchecked="EnableLyric_CheckChanged" />
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="源：" HorizontalAlignment="Left" />
-                <StackPanel HorizontalAlignment="Left">
+                <Label Style="{StaticResource ConfigTitleStyle}" Content="源："
+                       HorizontalAlignment="Left" Height="26" />
+                <Canvas HorizontalAlignment="Left" Height="100">
                     <dms:DMRadioButton x:Name="SourceAuto" IconColor="#FF1E9FFF" Margin="8,0"
                                        Content="自动"
-                                       Checked="Source_CheckChanged" />
+                                       Checked="Source_CheckChanged"
+                                       Height="25" />
                     <dms:DMRadioButton x:Name="SourceNetease"  IconColor="#FF1E9FFF" Margin="8,0"
                                        Content="网易云音乐"
-                                       Checked="Source_CheckChanged" />
+                                       Checked="Source_CheckChanged"
+                                       Canvas.Top="25" Height="25"/>
                     <dms:DMRadioButton x:Name="SourceKugou" IconColor="#FF1E9FFF" Margin="8,0"
                                        Content="酷狗音乐"
-                                       Checked="Source_CheckChanged" />
+                                       Checked="Source_CheckChanged"
+                                       Canvas.Top="50" Height="25"/>
                     <dms:DMRadioButton x:Name="SourceQqMusic"  IconColor="#FF1E9FFF" Margin="8,0"
                                        Content="QQ音乐"
-                                       Checked="Source_CheckChanged" />
-                </StackPanel>
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="翻译：" HorizontalAlignment="Left" />
-                <StackPanel HorizontalAlignment="Left">
+                                       Checked="Source_CheckChanged"
+                                       Canvas.Top="75" Height="25"/>
+                </Canvas>
+                <Label Style="{StaticResource ConfigTitleStyle}" Content="翻译："
+                       HorizontalAlignment="Left" Height="26" />
+                <Canvas HorizontalAlignment="Left" Height="75">
                     <dms:DMRadioButton x:Name="ShowAll" IconColor="#FF1E9FFF" Margin="8,0"
                                        Content="显示全部歌词"
-                                       Checked="Show_CheckChanged" />
+                                       Checked="Show_CheckChanged"
+                                       Height="25" />
                     <dms:DMRadioButton x:Name="ShowOrigin"  IconColor="#FF1E9FFF" Margin="8,0"
-                                       Content="偏好源歌词（仅Netease源有效）" Checked="Show_CheckChanged" />
+                                       Content="偏好源歌词（仅Netease源有效）" Checked="Show_CheckChanged"
+                                       Canvas.Top="25" Height="25"/>
                     <dms:DMRadioButton x:Name="ShowTrans"  IconColor="#FF1E9FFF" Margin="8,0"
-                                       Content="偏好翻译歌词（仅Netease源有效）" Checked="Show_CheckChanged" />
-                </StackPanel>
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="匹配：" HorizontalAlignment="Left" />
+                                       Content="偏好翻译歌词（仅Netease源有效）" Checked="Show_CheckChanged" 
+                                       Canvas.Top="50" Height="25" />
+                </Canvas>
+                <Label Style="{StaticResource ConfigTitleStyle}" Content="匹配："
+                       HorizontalAlignment="Left" Height="26" />
                 <dms:DMCheckBox x:Name="StrictMode"  IconColor="#FF1E9FFF" Margin="8,0"
                                 Content="启用严格匹配" HorizontalAlignment="Left" 
                                 Checked="StrictMode_CheckChanged"
                                 Unchecked="StrictMode_CheckChanged" />
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="缓存：" HorizontalAlignment="Left"
+                <Label Style="{StaticResource ConfigTitleStyle}" Content="缓存："
+                       HorizontalAlignment="Left" Height="26"
                        Visibility="Collapsed" />
                 <CheckBox x:Name="EnableCache" Style="{StaticResource ConfigCheckStyle}" Content="启用歌词缓存，离线也可使用"
                           HorizontalAlignment="Left" Visibility="Collapsed" Checked="EnableCache_CheckChanged"

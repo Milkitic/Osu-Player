@@ -86,12 +86,13 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Grid Name="SB" Width="{TemplateBinding Width}"   
-                              Height="{TemplateBinding Height}" ClipToBounds="True" Background="{TemplateBinding Background}">
-                        <Grid.Effect>
+                    <Canvas Name="SB" ClipToBounds="True"
+                            Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
+                            Background="{TemplateBinding Background}">
+                        <Canvas.Effect>
                             <DropShadowEffect BlurRadius="3" ShadowDepth="1" Color="Black" Opacity="0.1"/>
-                        </Grid.Effect>
-                    </Grid>
+                        </Canvas.Effect>
+                    </Canvas>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="SB" Property="Opacity" Value="0.7"></Setter>

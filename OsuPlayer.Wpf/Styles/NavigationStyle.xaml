@@ -20,15 +20,15 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" ClipToBounds="True">
+                    <Canvas Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" ClipToBounds="True">
                         <Rectangle x:Name="innerRectangle" HorizontalAlignment="Stretch"
-                                   VerticalAlignment="Stretch" Fill="{TemplateBinding Background}" StrokeThickness="0" Opacity="0" />
-                        <DockPanel Name="myContentPresenterDockPanel">
-                            <ContentPresenter x:Name="myContentPresenter" Margin="50,0,0,0"
-                                              Content="{TemplateBinding Content}" VerticalAlignment="Center" 
-                                              TextBlock.Foreground="{TemplateBinding Foreground}" TextBlock.FontSize="13px"/>
-                        </DockPanel>
-                    </Grid>
+                                   VerticalAlignment="Stretch" Fill="{TemplateBinding Background}" StrokeThickness="0" Opacity="0" 
+                                   Width="179" Height="40"/>
+                        <ContentPresenter x:Name="myContentPresenter"
+                                          Canvas.Left="50" Canvas.Top="12"
+                                          Content="{TemplateBinding Content}"
+                                          TextBlock.Foreground="{TemplateBinding Foreground}" TextBlock.FontSize="13px"/>
+                    </Canvas>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Rectangle.Opacity" Value="1" TargetName="innerRectangle" />
@@ -92,7 +92,7 @@
         <Setter Property="Background" >
             <Setter.Value>
                 <LinearGradientBrush>
-                    <GradientStop Offset="0" Color="#20ffffff"/>
+                    <GradientStop Offset="0" Color="{StaticResource WhiteColor20}"/>
                     <GradientStop Offset="1" Color="Transparent"/>
                 </LinearGradientBrush>
             </Setter.Value>

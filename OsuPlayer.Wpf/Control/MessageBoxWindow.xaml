@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
        
         <Grid x:Name="TitleBarArea" Grid.Row="0" Height="35">
-            <Border Background="#50ffffff"/>
+            <Border Background="{StaticResource WhiteBrush50}"/>
             <Label x:Name="LblTitle"
                    Margin="8,0,0,0"
                    VerticalContentAlignment="Center"
@@ -34,7 +34,7 @@
                 <dms:DMSystemCloseButton
                     x:Name="BtnClose"
                     DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="#FFFFFF"
+                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
                     DMSystemButtonSize="25"
                     Cursor="Hand"
                     IconHeight="10"

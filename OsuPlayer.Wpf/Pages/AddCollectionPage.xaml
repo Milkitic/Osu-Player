@@ -11,7 +11,7 @@
     <Page.Resources>
         <converter:SingleParameterConverter x:Key="CvtSingle"/>
     </Page.Resources>
-    <Grid Background="#80FFFFFF">
+    <Grid Background="{StaticResource WhiteBrush80}">
         <Border x:Name="Parallel" Background="White" Width="{Binding ActualWidth, ElementName=BoxGrid}"
                 Height="{Binding ActualHeight, ElementName=BoxGrid}" HorizontalAlignment="Center"
                 VerticalAlignment="Center">
@@ -25,7 +25,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <DockPanel Height="35" Background="#F0F0F0">
+            <DockPanel Height="35" Background="{StaticResource ExtraLightBrush}">
                 <Label HorizontalAlignment="Left" Content="新建收藏夹" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
                 <dms:DMSystemButton DMSystemButtonForeground="#303030"
                                     DMSystemButtonHoverForeground="#000000"

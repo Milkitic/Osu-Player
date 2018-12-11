@@ -14,7 +14,7 @@
         <viewModels:EditCollectionPageViewModel />
     </Page.DataContext>
 
-    <Grid Background="#80FFFFFF">
+    <Grid Background="{StaticResource WhiteBrush80}">
         <Border x:Name="Parallel" Background="White" Width="{Binding ActualWidth, ElementName=BoxGrid}"
                 Height="{Binding ActualHeight, ElementName=BoxGrid}" HorizontalAlignment="Center"
                 VerticalAlignment="Center">
@@ -28,7 +28,7 @@
                 <RowDefinition Height="auto"/>
 
             </Grid.RowDefinitions>
-            <DockPanel Height="35" Background="#F0F0F0">
+            <DockPanel Height="35" Background="{StaticResource ExtraLightBrush}">
                 <Label HorizontalAlignment="Left" Content="编辑收藏夹" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
                 <dms:DMSystemButton DMSystemButtonForeground="#303030"
                                     DMSystemButtonHoverForeground="#000000"
@@ -70,7 +70,7 @@
                                         <ControlTemplate TargetType="{x:Type TextBox}">
                                             <Border x:Name="border" Width="Auto" Height="Auto" BorderThickness="1" BorderBrush="#ffa0a0a0"
                                                     CornerRadius="2">
-                                                <Grid x:Name="grid" Background="#FFFFFF" Margin="3,0">
+                                                <Grid x:Name="grid" Background="{StaticResource WhiteBrush}" Margin="3,0">
                                                     <ScrollViewer x:Name="PART_ContentHost"
                                                                   VerticalAlignment="Center"/>
                                                 </Grid>
@@ -95,7 +95,7 @@
                                         <ControlTemplate TargetType="{x:Type TextBox}">
                                             <Border x:Name="border" Width="Auto" Height="Auto" BorderThickness="1" BorderBrush="#ffa0a0a0"
                                                     CornerRadius="2">
-                                                <Grid x:Name="grid" Background="#FFFFFF" Margin="3,6">
+                                                <Grid x:Name="grid" Background="{StaticResource WhiteBrush}" Margin="3,6">
                                                     <ScrollViewer x:Name="PART_ContentHost"/>
                                                 </Grid>
                                             </Border>
@@ -117,7 +117,7 @@
                 </Grid>
                 <Grid Grid.Column="1" Grid.Row="0">
                     <StackPanel Margin="5,0,0,0">
-                        <Grid Width="192" Height="192" Margin="5,5,5,10" Background="#F0F0F0">
+                        <Grid Width="192" Height="192" Margin="5,5,5,10" Background="{StaticResource ExtraLightBrush}">
                             <Image x:Name="CollectionThumb" RenderOptions.BitmapScalingMode="HighQuality"
                                Source="{Binding Path=CoverPath,Mode=TwoWay}" Stretch="UniformToFill"
                                HorizontalAlignment="Center" VerticalAlignment="Center" />

@@ -20,9 +20,12 @@
                 <Label Style="{StaticResource ConfigTitleStyle}"
                        Content="osu!db位置：" HorizontalAlignment="Left" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
-                    <Label x:Name="LblDbPath" Style="{StaticResource ConfigLabel2Style}"
-                           Margin="4,0"
-                           Content="C:\asdf\asdf\adsf\fsad\sfda\osu.db" />
+                    <dms:DMTextBox x:Name="LblDbPath" Margin="5,0"
+                                   Text="D:\asdf\asdf" Width="250" Height="27"
+                                   VerticalContentAlignment="Center" 
+                                   Background="White" BorderBrush="#33999999"
+                                   CornerRadius="5"
+                                   IsReadOnly="True"/>
                     <dms:DMButton Width="25" Height="25" CornerRadius="100"
                                   Background="#E3E3E3" Foreground="Black"
                                   x:Name="Browse" Content="..." 

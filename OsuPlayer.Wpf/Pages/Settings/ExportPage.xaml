@@ -16,9 +16,12 @@
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <Label Style="{StaticResource ConfigLabelStyle}" Content="音乐目录：" 
                            VerticalContentAlignment="Center" />
-                    <Label x:Name="LblMp3Path" Style="{StaticResource ConfigLabel2Style}" Margin="-5,0,5,0"
-                           Content="D:\asdf\asdf"
-                           VerticalContentAlignment="Center" />
+                    <dms:DMTextBox x:Name="LblMp3Path" Margin="-5,0,5,0"
+                                   Text="D:\asdf\asdf" Width="250" Height="27"
+                                   VerticalContentAlignment="Center" 
+                                   Background="White" BorderBrush="#33999999"
+                                   CornerRadius="5"
+                                   IsReadOnly="True"/>
                     <dms:DMButton x:Name="BtnMp3Path" Content="..." Width="25" Height="25" CornerRadius="100"
                                   Background="#E3E3E3" Foreground="Black"
                                   Click="BtnMp3Path_Click" />
@@ -26,9 +29,12 @@
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <Label Style="{StaticResource ConfigLabelStyle}" Content="背景目录：" 
                            VerticalContentAlignment="Center" />
-                    <Label x:Name="LblBgPath" Style="{StaticResource ConfigLabel2Style}" Margin="-5,0,5,0"
-                           Content="D:\asdf\asdf"
-                           VerticalContentAlignment="Center" />
+                    <dms:DMTextBox x:Name="LblBgPath" Margin="-5,0,5,0"
+                                   Text="D:\asdf\asdf" Width="250" Height="27"
+                                   VerticalContentAlignment="Center" 
+                                   Background="White" BorderBrush="#33999999"
+                                   CornerRadius="5"
+                                   IsReadOnly="True"/>
                     <dms:DMButton x:Name="BtnBgPath" Content="..." Width="25" Height="25" CornerRadius="100"
                             Background="#E3E3E3" Foreground="Black"
                             Click="BtnBgPath_Click" />

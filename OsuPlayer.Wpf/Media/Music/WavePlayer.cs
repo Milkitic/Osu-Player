@@ -112,6 +112,7 @@ namespace Milkitic.OsuPlayer.Media.Music
             _sourceVoice?.DestroyVoice();
             _sourceVoice?.Dispose();
             _buffer.Stream.Dispose();
+            _stream?.Dispose();
         }
     }
 }

@@ -29,41 +29,48 @@
                 Orientation="Horizontal">
                 <controls:DMSystemCloseButton
                     DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="#FFFFFF"
+                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
                     DMSystemButtonSize="32" />
             </StackPanel>
         </Grid>
         <DockPanel Grid.Row="1" Width="Auto" Height="Auto">
-            <Grid Width="150">
-                <StackPanel>
-                    <Label Style="{StaticResource NavigationLabelStyle}">
-                        <TextBlock Margin="5,0,0,0">设置</TextBlock>
-                    </Label>
-                    <ToggleButton x:Name="BtnGeneral" Height="40" Click="BtnGeneral_Click"
-                                  Content="常规" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
-                                  Style="{StaticResource NavigationButtonStyle}" />
-                    <ToggleButton x:Name="BtnPlay" Height="40" Click="BtnPlay_Click"
-                                  Content="播放" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
-                                  Style="{StaticResource NavigationButtonStyle}" />
-                    <ToggleButton x:Name="BtnHotkey" Height="40" Click="BtnHotkey_Click"
-                                  Content="热键" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
-                                  Style="{StaticResource NavigationButtonStyle}" />
-                    <ToggleButton x:Name="BtnLyric" Height="40" Click="BtnLyric_Click"
-                                  Content="歌词" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
-                                  Style="{StaticResource NavigationButtonStyle}" />
-                    <ToggleButton x:Name="BtnExport" Height="40" Click="BtnExport_Click"
-                                  Content="导出设置" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
-                                  Style="{StaticResource NavigationButtonStyle}" />
-                    <ToggleButton x:Name="BtnAbout" Height="40" Click="BtnAbout_Click"
-                                  Content="关于" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
-                                  Style="{StaticResource NavigationButtonStyle}" />
-                </StackPanel>
-            </Grid>
-            <Grid Background="#FEFEFE">
-                <Frame Name="MainFrame" NavigationUIVisibility="Hidden"></Frame>
-            </Grid>
+            <Canvas Width="150">
+                <Label Style="{StaticResource NavigationLabelStyle}"
+                       Width="150" Height="30">
+                    <TextBlock Margin="5,0,0,0">设置</TextBlock>
+                </Label>
+                <ToggleButton x:Name="BtnGeneral" Click="BtnGeneral_Click"
+                              Canvas.Top="40" Width="150" Height="40"
+                              Content="常规" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
+                              Style="{StaticResource NavigationButtonStyle}" />
+                <ToggleButton x:Name="BtnPlay" Click="BtnPlay_Click"
+                              Canvas.Top="81" Width="150" Height="40"
+                              Content="播放" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
+                              Style="{StaticResource NavigationButtonStyle}" />
+                <ToggleButton x:Name="BtnHotkey" Click="BtnHotkey_Click"
+                              Canvas.Top="122" Width="150" Height="40"
+                              Content="热键" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
+                              Style="{StaticResource NavigationButtonStyle}" />
+                <ToggleButton x:Name="BtnLyric" Click="BtnLyric_Click"
+                              Canvas.Top="163" Width="150" Height="40"
+                              Content="歌词" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
+                              Style="{StaticResource NavigationButtonStyle}" />
+                <ToggleButton x:Name="BtnExport" Click="BtnExport_Click"
+                              Canvas.Top="204" Width="150" Height="40"
+                              Content="导出设置" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
+                              Style="{StaticResource NavigationButtonStyle}" />
+                <ToggleButton x:Name="BtnAbout" Click="BtnAbout_Click"
+                              Canvas.Top="245" Width="150" Height="40"
+                              Content="关于" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
+                              Style="{StaticResource NavigationButtonStyle}" />
+            </Canvas>
+            <DockPanel x:Name="MainCanvas" Background="#FEFEFE">
+                <Frame Name="MainFrame" NavigationUIVisibility="Hidden" 
+                       Width="{Binding ElementName=MainCanvas,Path=ActualWidth}"
+                       Height="{Binding ElementName=MainCanvas,Path=ActualHeight}" />
+            </DockPanel>
         </DockPanel>
-        <Border x:Name="MsgBoxCover" Grid.Row="1" Background="#80FFFFFF"
+        <Border x:Name="MsgBoxCover" Grid.Row="1" Background="{StaticResource WhiteBrush80}"
                 Visibility="Hidden" />
     </Grid>
 </windows:EffectWindowBase>

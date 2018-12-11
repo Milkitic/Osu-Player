@@ -55,7 +55,7 @@ namespace Milkitic.OsuPlayer.Pages.Settings
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             RunOnStartup.IsChecked = App.Config.General.RunOnStartup;
-            LblDbPath.Content = App.Config.General.DbPath;
+            LblDbPath.Text = App.Config.General.DbPath;
             if (App.Config.General.ExitWhenClosed.HasValue)
             {
                 if (App.Config.General.ExitWhenClosed.Value)
@@ -92,7 +92,7 @@ namespace Milkitic.OsuPlayer.Pages.Settings
             try
             {
                 _ = App.BeatmapDb.Value;
-                LblDbPath.Content = chosedPath;
+                LblDbPath.Text = chosedPath;
                 App.SaveConfig();
             }
             catch (Exception ex)

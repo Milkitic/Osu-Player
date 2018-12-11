@@ -24,7 +24,7 @@
                         <TranslateTransform X="0" Y="0"/>
                     </Canvas.RenderTransform>
                     <Canvas>
-                        <Path Fill="#f0f0f0">
+                        <Path Fill="{StaticResource ExtraLightBrush}">
                             <Path.Data>
                                 <PathGeometry Figures="M853.2 597.5L253.5 973.4l-0.5-0.7c-4.3 2.7-8.8 5.1-13.4 7.2c-0.1 0.1-0.3 0.1-0.5 0.3c-4.5 2-9.2 3.8-14 5.2c-0.3 0.1-0.7 0.1-1 0.3c-2.1 0.6-4.2 1.1-6.3 1.5c-0.4 0.1-0.7 0.2-1.1 0.3c-2.4 0.6-4.8 1-7.2 1.3c-0.4 0.1-0.8 0.1-1.2 0.1c-2 0.3-4 0.6-6.1 0.7c-0.6 0.1-1.3 0.1-1.9 0.1c-2.4 0.1-4.9 0.3-7.4 0.3C130.4 990 91 923.3 91 860.9l0 0l0 0l0-720.9l0 0C91 77.6 130.4 10 192.8 10c23.7 0 45.6 7.3 63.8 19.7l595.6 372.2c34 19.5 56.8 56.1 56.8 98.1C909 541.6 886.6 577.9 853.2 597.5z" FillRule="NonZero"/>
                             </Path.Data>
@@ -34,12 +34,12 @@
             </Viewbox>
             <Viewbox x:Key="PauseButton" Stretch="Uniform" Width="20" Height="20">
                 <Canvas Width="1000" Height="1000">
-                    <Path Fill="#f0f0f0">
+                    <Path Fill="{StaticResource ExtraLightBrush}">
                         <Path.Data>
                             <PathGeometry Figures="M806.3 10c-4.2 0-159 0-163.3 0c-27 0-48.8 21.9-48.8 48.8c0 4.2 0 878.1 0 882.3c0 27 21.9 48.8 48.8 48.8c4.2 0 159 0 163.3 0c27 0 48.8-21.9 48.8-48.8c0-4.2 0-878.1 0-882.3C855.2 31.9 833.3 10 806.3 10z" FillRule="NonZero"/>
                         </Path.Data>
                     </Path>
-                    <Path Fill="#f0f0f0">
+                    <Path Fill="{StaticResource ExtraLightBrush}">
                         <Path.Data>
                             <PathGeometry Figures="M356.9 10c-4.2 0-159 0-163.3 0c-27 0-48.8 21.9-48.8 48.8c0 4.2 0 878.1 0 882.3c0 27 21.9 48.8 48.8 48.8c4.2 0 159 0 163.3 0c27 0 48.8-21.9 48.8-48.8c0-4.2 0-878.1 0-882.3C405.8 31.9 383.9 10 356.9 10z" FillRule="NonZero"/>
                         </Path.Data>
@@ -65,7 +65,7 @@
                                 <RotateTransform Angle="180" CenterX="500" CenterY="500"/>
                             </Canvas.RenderTransform>
                             <Canvas>
-                                <Path Fill="#f0f0f0">
+                                <Path Fill="{StaticResource ExtraLightBrush}">
                                     <Path.Data>
                                         <PathGeometry Figures="M905.9 16.1h-52.6c-24.7 0-44.8 20-44.8 44.8v361.9c-5.1-4.3-10.8-8.3-17-12.2L176.2 29.3C106.4-13.9 49.3 17.9 49.3 100v801.4c0 82.1 56.4 112.8 125.3 68.3l618.5-399.4c5.6-3.6 10.8-7.4 15.5-11.4v380.4c0 24.7 20 44.8 44.8 44.8h52.6c24.7 0 44.8-20 44.8-44.8V60.9C950.7 36.2 930.6 16.1 905.9 16.1z" FillRule="NonZero"/>
                                     </Path.Data>
@@ -97,7 +97,7 @@
                                 <TranslateTransform X="0" Y="0"/>
                             </Canvas.RenderTransform>
                             <Canvas>
-                                <Path Fill="#f0f0f0">
+                                <Path Fill="{StaticResource ExtraLightBrush}">
                                     <Path.Data>
                                         <PathGeometry Figures="M905.9 16.1h-52.6c-24.7 0-44.8 20-44.8 44.8v361.9c-5.1-4.3-10.8-8.3-17-12.2L176.2 29.3C106.4-13.9 49.3 17.9 49.3 100v801.4c0 82.1 56.4 112.8 125.3 68.3l618.5-399.4c5.6-3.6 10.8-7.4 15.5-11.4v380.4c0 24.7 20 44.8 44.8 44.8h52.6c24.7 0 44.8-20 44.8-44.8V60.9C950.7 36.2 930.6 16.1 905.9 16.1z" FillRule="NonZero"/>
                                     </Path.Data>
@@ -111,7 +111,7 @@
                               Background="Transparent" Cursor="Hand">
                     <Viewbox Stretch="Uniform" Width="20" Height="20">
                         <Canvas Width="1000" Height="1000">
-                            <Path Fill="#f0f0f0">
+                            <Path Fill="{StaticResource ExtraLightBrush}">
                                 <Path.Data>
                                     <PathGeometry Figures="M818.5 445.7h-78.9V261.9C701.3 12.1 500.9 10 500.9 10C275.8 28.7 260.4 247.4 260.4 247.4v198.3h-78.9c-18.9 0-34.2 14.4-34.2 32.2v479.8c0 17.8 15.3 32.3 34.2 32.3h637c18.9 0 34.2-14.4 34.2-32.3V477.9C852.7 460.1 837.4 445.7 818.5 445.7z M373.3 256.8C402.5 114.8 500 137.5 500 137.5c113.9 2 122.1 111 122.1 111v197.2H373.3V256.8z" FillRule="NonZero"/>
                                 </Path.Data>
@@ -128,7 +128,7 @@
                             <Canvas.RenderTransform>
                                 <TranslateTransform X="-2500" Y="2500"/>
                             </Canvas.RenderTransform>
-                            <Path Data="{StaticResource No}" Fill="#f0f0f0"/>
+                            <Path Data="{StaticResource No}" Fill="{StaticResource ExtraLightBrush}"/>
                         </Canvas>
                     </Viewbox>
                 </dms:DMButton>
