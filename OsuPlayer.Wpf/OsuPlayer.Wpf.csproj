@@ -57,6 +57,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DMSkin.WPF, Version=2.5.0.9, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DMSkin.WPF.2.5.0.9\lib\net40\DMSkin.WPF.dll</HintPath>
@@ -485,6 +488,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Windows\MainWindow.Event.cs" />
+    <None Include="app.manifest" />
     <None Include="Media\Lyric\readme.md" />
     <None Include="migrate.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
