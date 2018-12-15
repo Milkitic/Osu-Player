@@ -60,6 +60,6 @@ namespace Milkitic.OsuPlayer.Converter
         Type TargetType { get; set; }
 
         object Convert();
-        object NagativeConvert();
+        object NegativeConvert();
     }
 }

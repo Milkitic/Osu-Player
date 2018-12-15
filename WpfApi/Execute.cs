@@ -1,32 +1,49 @@
 ﻿using System;
+using System.Threading;
 using System.Windows.Threading;
 
 namespace Milkitic.WpfApi
 {
     public static class Execute
     {
-        private static Action<Action> _executor = action => action();
-
-        /// <summary>
-        /// 初始化UI调度器
-        /// </summary>
-        public static void InitializeWithDispatcher()
+        private static void InnerExecute(Action action, Dispatcher dispatcher, bool waitForThread)
         {
-            var dispatcher = Dispatcher.CurrentDispatcher;
-            _executor = action =>
+            if (dispatcher == null)
             {
-                if (dispatcher.CheckAccess())
-                    action();
-                else dispatcher.BeginInvoke(action);
-            };
+                dispatcher = Dispatcher.CurrentDispatcher;
+            }
+
+            if (dispatcher.CheckAccess())
+            {
+                action.Invoke();
+            }
+            else
+            {
+                if (waitForThread)
+                    dispatcher.Invoke(action);
+                else
+                    dispatcher.BeginInvoke(action);
+            }
         }
 
-        /// <summary>
-        /// UI线程中执行方法
-        /// </summary>
         public static void OnUiThread(this Action action)
         {
-            _executor(action);
+            InnerExecute(action, null, true);
+        }
+
+        public static void CallUiThread(this Action action)
+        {
+            InnerExecute(action, null, false);
+        }
+
+        public static void OnUiThread(this Action action, SynchronizationContext uiContext)
+        {
+            uiContext.Send(obj => { action.Invoke(); }, null);
+        }
+
+        public static void OnUiThread(this Action action, Dispatcher dispatcher)
+        {
+            InnerExecute(action, dispatcher, false);
         }
     }
 }
