@@ -6,14 +6,14 @@ namespace Milkitic.WpfApi
 {
     public static class Execute
     {
-        private static void InnerExecute(Action action, Dispatcher dispatcher, bool waitForThread)
+        private static void InnerExecute(Action action, Dispatcher dispatcher, bool waitForThread, bool force)
         {
             if (dispatcher == null)
             {
                 dispatcher = Dispatcher.CurrentDispatcher;
             }
 
-            if (dispatcher.CheckAccess())
+            if (dispatcher.CheckAccess() && !force)
             {
                 action.Invoke();
             }
@@ -26,15 +26,16 @@ namespace Milkitic.WpfApi
             }
         }
 
-        public static void OnUiThread(this Action action)
+        public static void OnUiThread(this Action action, bool force = false)
         {
-            InnerExecute(action, null, true);
+            InnerExecute(action, null, true, force);
         }
 
-        public static void CallUiThread(this Action action)
+        public static void CallUiThread(this Action action, bool force = false)
         {
-            InnerExecute(action, null, false);
+            InnerExecute(action, null, false, force);
         }
+
 
         public static void OnUiThread(this Action action, SynchronizationContext uiContext)
         {
@@ -43,7 +44,7 @@ namespace Milkitic.WpfApi
 
         public static void OnUiThread(this Action action, Dispatcher dispatcher)
         {
-            InnerExecute(action, dispatcher, false);
+            InnerExecute(action, dispatcher, false, false);
         }
     }
 }

@@ -55,7 +55,7 @@ namespace Milkitic.OsuPlayer
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
             //Migrate();
 
-            AppDomain.CurrentDomain.AppendPrivatePath(@"bin");
+            //AppDomain.CurrentDomain.AppendPrivatePath(@"bin");
 
             if (!LoadConfig())
                 Environment.Exit(0);
