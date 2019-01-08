@@ -166,7 +166,7 @@
     <Compile Include="Converter\PlayingConverter.cs" />
     <Compile Include="Converter\SingleParameterConverter.cs" />
     <Compile Include="Converter\TabConverter.cs" />
-    <Compile Include="L18N\UiMetadata.cs" />
+    <Compile Include="I18N\UiMetadata.cs" />
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Pages\EditCollectionPage.xaml.cs">
       <DependentUpon>EditCollectionPage.xaml</DependentUpon>
