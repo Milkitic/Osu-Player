@@ -1,16 +1,14 @@
-﻿using Milkitic.OsuLib;
-using Milkitic.OsuPlayer.Data;
+﻿using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.ViewModels;
 using Milkitic.OsuPlayer.Windows;
+using OSharp.Beatmap;
 using osu_database_reader.Components.Beatmaps;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using Collection = Milkitic.OsuPlayer.Data.Collection;
 
 namespace Milkitic.OsuPlayer.Pages

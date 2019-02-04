@@ -1,4 +1,4 @@
-﻿using Milkitic.OsbLib.Enums;
+﻿using OSharp.Storyboard.Events;
 using Gdip = System.Drawing;
 
 namespace Milkitic.OsuPlayer.Media.Storyboard.Animation

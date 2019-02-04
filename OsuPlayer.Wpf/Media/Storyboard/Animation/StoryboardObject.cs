@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Milkitic.OsuPlayer.Media.Storyboard.Util;
+using OSharp.Storyboard;
+using OSharp.Storyboard.Common;
+using OSharp.Storyboard.Events;
+using SharpDX;
+using System;
 using System.IO;
 using System.Linq;
-using Milkitic.OsbLib;
-using Milkitic.OsbLib.Enums;
-using Milkitic.OsbLib.Models;
-using Milkitic.OsbLib.Utils;
-using Milkitic.OsuPlayer.Media.Storyboard.Util;
-using SharpDX;
 using D2D = SharpDX.Direct2D1;
 using Gdip = System.Drawing;
 using Mathe = SharpDX.Mathematics.Interop;
@@ -89,40 +88,40 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
         protected void SetMinMax()
         {
             // 与bitmapObject不同，由于sb是纯静态的，所以可先判断出范围，为提高效率，这里先进行计算
-            if (_element.FadeList.Count > 0)
+            if (_element.FadeList.Any())
             {
                 FadeTime = new TimeRange
                 {
                     Min = (int)_element.FadeList.Min(k => k.StartTime),
                     Max = (int)_element.FadeList.Max(k => k.EndTime),
                 };
-                F.Source = _element.FadeList.First().F1;
-                F.Target = _element.FadeList.Last().F2;
+                F.Source = _element.FadeList.First().StartOpacity;
+                F.Target = _element.FadeList.Last().EndOpacity;
             }
-            if (_element.RotateList.Count > 0)
+            if (_element.RotateList.Any())
             {
                 RotateTime = new TimeRange
                 {
                     Min = (int)_element.RotateList.Min(k => k.StartTime),
                     Max = (int)_element.RotateList.Max(k => k.EndTime),
                 };
-                Rad.Source = _element.RotateList.First().R1;
-                Rad.Target = _element.RotateList.Last().R2;
+                Rad.Source = _element.RotateList.First().StartRotate;
+                Rad.Target = _element.RotateList.Last().EndRotate;
             }
 
-            if (_element.ScaleList.Count > 0)
+            if (_element.ScaleList.Any())
             {
                 VTime = new TimeRange
                 {
                     Min = (int)_element.ScaleList.Min(k => k.StartTime),
                     Max = (int)_element.ScaleList.Max(k => k.EndTime)
                 };
-                Vx.Source = _element.ScaleList.First().S1 * _vSize.Width;
-                Vy.Source = _element.ScaleList.First().S1 * _vSize.Width;
-                Vx.Target = _element.ScaleList.Last().S2 * _vSize.Height;
-                Vy.Target = _element.ScaleList.Last().S2 * _vSize.Height;
+                Vx.Source = _element.ScaleList.First().StartScale * _vSize.Width;
+                Vy.Source = _element.ScaleList.First().StartScale * _vSize.Width;
+                Vx.Target = _element.ScaleList.Last().EndScale * _vSize.Height;
+                Vy.Target = _element.ScaleList.Last().EndScale * _vSize.Height;
             }
-            if (_element.VectorList.Count > 0)
+            if (_element.VectorList.Any())
             {
                 if (!VTime.Equals(TimeRange.Default))
                 {
@@ -132,15 +131,15 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
                     if (tmpMin < VTime.Min)
                     {
                         VTime.Min = tmpMin;
-                        Vx.Source = _element.VectorList.First().Vx1 * _vSize.Width;
-                        Vy.Source = _element.VectorList.First().Vy1 * _vSize.Height;
+                        Vx.Source = _element.VectorList.First().StartScaleX * _vSize.Width;
+                        Vy.Source = _element.VectorList.First().StartScaleY * _vSize.Height;
                     }
 
                     if (tmpMax > VTime.Max)
                     {
                         VTime.Max = tmpMax;
-                        Vx.Target = _element.VectorList.Last().Vx2 * _vSize.Width;
-                        Vy.Target = _element.VectorList.Last().Vy2 * _vSize.Height;
+                        Vx.Target = _element.VectorList.Last().EndScaleX * _vSize.Width;
+                        Vy.Target = _element.VectorList.Last().EndScaleY * _vSize.Height;
                     }
                 }
                 else
@@ -150,26 +149,26 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
                         Min = (int)_element.VectorList.Min(k => k.StartTime),
                         Max = (int)_element.VectorList.Max(k => k.EndTime)
                     };
-                    Vx.Source = _element.VectorList.First().Vx1 * _vSize.Width;
-                    Vy.Source = _element.VectorList.First().Vy1 * _vSize.Height;
-                    Vx.Target = _element.VectorList.Last().Vx2 * _vSize.Width;
-                    Vy.Target = _element.VectorList.Last().Vy2 * _vSize.Height;
+                    Vx.Source = _element.VectorList.First().StartScaleX * _vSize.Width;
+                    Vy.Source = _element.VectorList.First().StartScaleY * _vSize.Height;
+                    Vx.Target = _element.VectorList.Last().EndScaleX * _vSize.Width;
+                    Vy.Target = _element.VectorList.Last().EndScaleY * _vSize.Height;
                 }
             }
 
-            if (_element.MoveList.Count > 0)
+            if (_element.MoveList.Any())
             {
                 MovTime = new TimeRange
                 {
                     Min = (int)_element.MoveList.Min(k => k.StartTime),
                     Max = (int)_element.MoveList.Max(k => k.EndTime)
                 };
-                X.Source = (_element.MoveList.First().X1 + 107) * _vSize.Width;
-                Y.Source = _element.MoveList.First().Y1 * _vSize.Height;
-                X.Target = (_element.MoveList.Last().X2 + 107) * _vSize.Width;
-                Y.Target = _element.MoveList.Last().Y2 * _vSize.Height;
+                X.Source = (_element.MoveList.First().StartX + 107) * _vSize.Width;
+                Y.Source = _element.MoveList.First().StartY * _vSize.Height;
+                X.Target = (_element.MoveList.Last().EndX + 107) * _vSize.Width;
+                Y.Target = _element.MoveList.Last().EndY * _vSize.Height;
             }
-            if (_element.MoveXList.Count > 0)
+            if (_element.MoveXList.Any())
             {
                 if (!MovTime.Equals(TimeRange.Default))
                 {
@@ -179,13 +178,13 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
                     if (tmpMin < MovTime.Min)
                     {
                         MovTime.Min = tmpMin;
-                        X.Source = (_element.MoveXList.First().X1 + 107) * _vSize.Width;
+                        X.Source = (_element.MoveXList.First().StartX + 107) * _vSize.Width;
                     }
 
                     if (tmpMax > MovTime.Max)
                     {
                         MovTime.Max = tmpMax;
-                        X.Target = (_element.MoveXList.Last().X2 + 107) * _vSize.Width;
+                        X.Target = (_element.MoveXList.Last().EndX + 107) * _vSize.Width;
                     }
                 }
                 else
@@ -195,11 +194,11 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
                         Min = (int)_element.MoveXList.Min(k => k.StartTime),
                         Max = (int)_element.MoveXList.Max(k => k.EndTime)
                     };
-                    X.Source = (_element.MoveXList.First().X1 + 107) * _vSize.Width;
-                    X.Target = (_element.MoveXList.Last().X2 + 107) * _vSize.Width;
+                    X.Source = (_element.MoveXList.First().StartX + 107) * _vSize.Width;
+                    X.Target = (_element.MoveXList.Last().EndX + 107) * _vSize.Width;
                 }
             }
-            if (_element.MoveYList.Count > 0)
+            if (_element.MoveYList.Any())
             {
                 if (!MovTime.Equals(TimeRange.Default))
                 {
@@ -209,13 +208,13 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
                     if (tmpMin <= MovTime.Min)
                     {
                         MovTime.Min = tmpMin;
-                        Y.Source = _element.MoveYList.First().Y1 * _vSize.Height;
+                        Y.Source = _element.MoveYList.First().StartY * _vSize.Height;
                     }
 
                     if (tmpMax >= MovTime.Max)
                     {
                         MovTime.Max = tmpMax;
-                        Y.Target = _element.MoveYList.Last().Y2 * _vSize.Height;
+                        Y.Target = _element.MoveYList.Last().EndY * _vSize.Height;
                     }
                 }
                 else
@@ -225,28 +224,28 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
                         Min = (int)_element.MoveYList.Min(k => k.StartTime),
                         Max = (int)_element.MoveYList.Max(k => k.EndTime)
                     };
-                    Y.Source = _element.MoveYList.First().Y1 * _vSize.Height;
-                    Y.Target = _element.MoveYList.Last().Y2 * _vSize.Height;
+                    Y.Source = _element.MoveYList.First().StartY * _vSize.Height;
+                    Y.Target = _element.MoveYList.Last().EndY * _vSize.Height;
                 }
             }
 
-            if (_element.ColorList.Count > 0)
+            if (_element.ColorList.Any())
             {
                 CTime = new TimeRange
                 {
                     Min = (int)_element.ColorList.Min(k => k.StartTime),
                     Max = (int)_element.ColorList.Max(k => k.EndTime)
                 };
-                R.Source = _element.ColorList.First().R1;
-                G.Source = _element.ColorList.First().G1;
-                B.Source = _element.ColorList.First().B1;
-                R.Target = _element.ColorList.Last().R2;
-                G.Target = _element.ColorList.Last().G2;
-                B.Target = _element.ColorList.Last().B2;
+                R.Source = _element.ColorList.First().StartR;
+                G.Source = _element.ColorList.First().StartG;
+                B.Source = _element.ColorList.First().StartB;
+                R.Target = _element.ColorList.Last().EndR;
+                G.Target = _element.ColorList.Last().EndG;
+                B.Target = _element.ColorList.Last().EndB;
 
             }
 
-            if (_element.ParameterList.Count > 0)
+            if (_element.ParameterList.Any())
             {
                 PTime = new TimeRange
                 {
@@ -292,13 +291,13 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
                 var flag = array.Length > 0 && array[0].StartTime == array[0].EndTime;
                 switch (kv.Key)
                 {
-                    case ParameterEnum.Horizontal:
+                    case ParameterType.Horizontal:
                         UseH = flag;
                         break;
-                    case ParameterEnum.Vertical:
+                    case ParameterType.Vertical:
                         UseV = flag;
                         break;
-                    case ParameterEnum.Additive:
+                    case ParameterType.Additive:
                         UseA = flag;
                         break;
                     default:
@@ -352,14 +351,14 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
             }
         }
 
-        public void Move(EasingType easingEnum, int startTime, int endTime, Gdip.PointF startPoint, Gdip.PointF endPoint)
+        public void Move(EasingType easingType, int startTime, int endTime, Gdip.PointF startPoint, Gdip.PointF endPoint)
         {
             float ms = _timing.Offset;
             if (!IsFinished && ms >= startTime && ms <= endTime)
             {
                 var t = (ms - startTime) / (endTime - startTime);
-                X.RealTime = startPoint.X + (float)easingEnum.Ease(t) * (endPoint.X - startPoint.X);
-                Y.RealTime = startPoint.Y + (float)easingEnum.Ease(t) * (endPoint.Y - startPoint.Y);
+                X.RealTime = startPoint.X + (float)easingType.Ease(t) * (endPoint.X - startPoint.X);
+                Y.RealTime = startPoint.Y + (float)easingType.Ease(t) * (endPoint.Y - startPoint.Y);
             }
 
             if (ms >= MovTime.Max)

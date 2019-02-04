@@ -1,10 +1,10 @@
 ﻿using Microsoft.Win32;
-using Milkitic.OsuLib;
 using Milkitic.OsuPlayer.Control;
 using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Media;
 using Milkitic.OsuPlayer.Media.Music;
 using Milkitic.OsuPlayer.Pages;
+using OSharp.Beatmap;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
 using System;
@@ -220,7 +220,7 @@ namespace Milkitic.OsuPlayer.Windows
                     RunSurfaceUpdate();
                     DbOperator.UpdateMap(nowIdentity);
                 }
-                catch (MultiTimingSectionException ex)
+                catch (RepeatTimingSectionException ex)
                 {
                     var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
                         MessageBoxImage.Warning);

@@ -1,17 +1,18 @@
 ﻿using Milkitic.OsuLib.Enums;
 using System.Collections.Generic;
 using System.Linq;
+using osu.Shared;
 
 namespace Milkitic.OsuPlayer
 {
     public class HitsoundElement
     {
-        public GameModeEnum GameMode { get; set; }
+        public GameMode GameMode { get; set; }
         public double Offset { get; set; }
         public float Volume { get; set; }
         public HitsoundType Hitsound { get; set; }
         public int Track { get; set; }
-        public SamplesetEnum LineSample { get; set; }
+        public TimingSampleset LineSample { get; set; }
         public SampleAdditonEnum Sample { get; set; }
         public SampleAdditonEnum Addition { get; set; }
         public string CustomFile { get; set; }

@@ -1,6 +1,5 @@
-﻿using Milkitic.OsuLib;
-using Milkitic.OsuLib.Enums;
-using Milkitic.OsuLib.Model.Raw;
+﻿using OSharp.Beatmap;
+using OSharp.Beatmap.Sections.HitObject;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -262,7 +261,7 @@ namespace Milkitic.OsuPlayer.Media.Music
 
             foreach (var obj in hitObjects)
             {
-                if (obj.ObjectType == ObjectType.Slider)
+                if (obj.ObjectType == HitObjectType.Slider)
                 {
                     foreach (var item in obj.SliderInfo.Edges)
                     {

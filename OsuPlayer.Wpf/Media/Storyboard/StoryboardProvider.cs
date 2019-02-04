@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Milkitic.OsuPlayer.Media.Storyboard.Layer;
+using Milkitic.OsuPlayer.Media.Storyboard.Render;
+using OSharp.Beatmap;
+using OSharp.Storyboard;
+using OSharp.Storyboard.Management;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using Milkitic.OsbLib;
-using Milkitic.OsbLib.Extension;
-using Milkitic.OsuLib;
-using Milkitic.OsuPlayer.Media.Storyboard.Layer;
-using Milkitic.OsuPlayer.Media.Storyboard.Render;
 
 namespace Milkitic.OsuPlayer.Media.Storyboard
 {
@@ -53,7 +53,7 @@ namespace Milkitic.OsuPlayer.Media.Storyboard
             if (File.Exists(osbFile))
             {
                 sw.Restart();
-                var osb = ElementGroup.Parse(osbFile);
+                var osb = ElementGroup.ParseFromFile(osbFile);
                 Console.WriteLine($@"Parse osb done in {sw.ElapsedMilliseconds} ms");
 
                 sw.Restart();
@@ -91,8 +91,8 @@ namespace Milkitic.OsuPlayer.Media.Storyboard
         private static void FillLayerList(ref List<Element> backEle, ref List<Element> foreEle, ElementGroup osb)
         {
             if (osb?.ElementList?.Count <= 0) return;
-            var back = osb.ElementList.Where(k => k.Layer == Milkitic.OsbLib.Enums.LayerType.Background && k.IsValid);
-            var fore = osb.ElementList.Where(k => k.Layer == Milkitic.OsbLib.Enums.LayerType.Foreground && k.IsValid);
+            var back = osb.ElementList.Where(k => k.Layer == LayerType.Background && k.IsWorthy);
+            var fore = osb.ElementList.Where(k => k.Layer == LayerType.Foreground && k.IsWorthy);
             if (back.Any())
             {
                 if (backEle == null) backEle = new List<Element>();

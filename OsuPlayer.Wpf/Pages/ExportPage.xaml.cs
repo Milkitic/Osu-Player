@@ -1,17 +1,13 @@
-﻿using Milkitic.OsuLib;
-using Milkitic.OsuPlayer;
-using Milkitic.OsuPlayer.Data;
+﻿using Milkitic.OsuPlayer.Data;
 using Milkitic.OsuPlayer.Utils;
 using Milkitic.OsuPlayer.ViewModels;
 using Milkitic.OsuPlayer.Windows;
+using OSharp.Beatmap;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -45,7 +41,7 @@ namespace Milkitic.OsuPlayer.Pages
             private set => _hasTaskSuccess = value;
         }
 
-        public static bool IsTaskBusy => 
+        public static bool IsTaskBusy =>
             ExportTask != null && !ExportTask.IsCanceled && !ExportTask.IsCompleted && !ExportTask.IsFaulted;
 
         public ExportPage(MainWindow mainWindow)

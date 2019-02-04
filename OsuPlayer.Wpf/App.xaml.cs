@@ -18,12 +18,10 @@ using osu_database_reader.BinaryFiles;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Milkitic.OsuPlayer

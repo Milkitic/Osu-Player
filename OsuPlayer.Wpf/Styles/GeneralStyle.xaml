@@ -96,11 +96,11 @@
     <SolidColorBrush x:Key="WhiteBrush80" Color="#80FFFFFF"></SolidColorBrush>
     <SolidColorBrush x:Key="WhiteBrush50" Color="#50FFFFFF"></SolidColorBrush>
     <SolidColorBrush x:Key="WhiteBrush40" Color="#40FFFFFF"></SolidColorBrush>
-    <SolidColorBrush x:Key="WhiteBrush20" Color="{StaticResource WhiteColor20}"></SolidColorBrush>
+    <SolidColorBrush x:Key="WhiteBrush20" Color="{StaticResource WhiteColor20}" />
     <SolidColorBrush x:Key="ExtraLightBrush" Color="#F0F0F0"></SolidColorBrush>
     <SolidColorBrush x:Key="ExtraLightBrushF0" Color="#F0F0F0F0"></SolidColorBrush>
     <SolidColorBrush x:Key="ExtraLightBrush80" Color="#80F0F0F0"></SolidColorBrush>
     <SolidColorBrush x:Key="ExtraLightBrush20" Color="#20F0F0F0"></SolidColorBrush>
 
-    <SolidColorBrush x:Key="PinkBrushOsu" Color="{StaticResource PinkColorOsu}"></SolidColorBrush>
+    <SolidColorBrush x:Key="PinkBrushOsu" Color="{StaticResource PinkColorOsu}" />
 </ResourceDictionary>

@@ -1,4 +1,6 @@
-﻿using Milkitic.OsuLib.Enums;
+﻿using OSharp.Beatmap.Sections.GamePlay;
+using OSharp.Beatmap.Sections.HitObject;
+using OSharp.Beatmap.Sections.Timing;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,14 +8,14 @@ namespace Milkitic.OsuPlayer.Media
 {
     public class HitsoundElement
     {
-        public GameModeEnum GameMode { get; set; }
+        public GameMode GameMode { get; set; }
         public double Offset { get; set; }
         public float Volume { get; set; }
         public HitsoundType Hitsound { get; set; }
         public int Track { get; set; }
-        public SamplesetEnum LineSample { get; set; }
-        public SampleAdditonEnum Sample { get; set; }
-        public SampleAdditonEnum Addition { get; set; }
+        public TimingSampleset LineSample { get; set; }
+        public ObjectSampleset Sample { get; set; }
+        public ObjectSampleset Addition { get; set; }
         public string CustomFile { get; set; }
         public string[] FilePaths { get; set; }
         public string[] DefaultFileNames
@@ -31,44 +33,44 @@ namespace Milkitic.OsuPlayer.Media
                 switch (LineSample)
                 {
 
-                    case SamplesetEnum.Soft:
+                    case TimingSampleset.Soft:
                         sample = "soft";
                         break;
-                    case SamplesetEnum.Drum:
+                    case TimingSampleset.Drum:
                         sample = "drum";
                         break;
                     default:
-                    case SamplesetEnum.None:
-                    case SamplesetEnum.Normal:
+                    case TimingSampleset.None:
+                    case TimingSampleset.Normal:
                         sample = "normal";
                         break;
                 }
                 switch (Sample)
                 {
-                    case SampleAdditonEnum.Soft:
+                    case ObjectSampleset.Soft:
                         sample = "soft";
                         break;
-                    case SampleAdditonEnum.Drum:
+                    case ObjectSampleset.Drum:
                         sample = "drum";
                         break;
-                    case SampleAdditonEnum.Normal:
+                    case ObjectSampleset.Normal:
                         sample = "normal";
                         break;
                 }
 
                 switch (Addition)
                 {
-                    case SampleAdditonEnum.Soft:
+                    case ObjectSampleset.Soft:
                         addition = "soft";
                         break;
-                    case SampleAdditonEnum.Drum:
+                    case ObjectSampleset.Drum:
                         addition = "drum";
                         break;
-                    case SampleAdditonEnum.Normal:
+                    case ObjectSampleset.Normal:
                         addition = "normal";
                         break;
                     default:
-                    case SampleAdditonEnum.Auto:
+                    case ObjectSampleset.Auto:
                         addition = sample;
                         break;
                 }
@@ -86,7 +88,7 @@ namespace Milkitic.OsuPlayer.Media
                     if ((Hitsound & HitsoundType.Normal) == HitsoundType.Normal ||
                         (Hitsound & HitsoundType.Normal) == 0)
                     {
-                        if (GameMode != GameModeEnum.Mania) tracks.Add($"{sample}-hitnormal.wav");
+                        if (GameMode != GameMode.Mania) tracks.Add($"{sample}-hitnormal.wav");
                     }
                 }
 

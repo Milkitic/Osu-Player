@@ -1,5 +1,6 @@
-﻿using Milkitic.OsuLib;
-using Milkitic.OsuPlayer.Media.Lyric.Model;
+﻿using Milkitic.OsuPlayer.Media.Lyric.Model;
+using Milkitic.OsuPlayer.ViewModels;
+using OSharp.Beatmap;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,7 +17,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using Milkitic.OsuPlayer.ViewModels;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
@@ -341,7 +341,7 @@ namespace Milkitic.OsuPlayer.Windows
         public new void Hide()
         {
             IsHide = true;
-            _mainWindow.ViewModel.IsLyricWindowShown = false; 
+            _mainWindow.ViewModel.IsLyricWindowShown = false;
             base.Hide();
         }
 

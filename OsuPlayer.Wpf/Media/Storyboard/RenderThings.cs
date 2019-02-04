@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Milkitic.OsbLib;
-using Milkitic.OsbLib.Models;
+﻿using OSharp.Storyboard;
+using OSharp.Storyboard.Events;
+using System.Collections.Generic;
 
 namespace Milkitic.OsuPlayer.Media.Storyboard
 {
@@ -8,6 +8,6 @@ namespace Milkitic.OsuPlayer.Media.Storyboard
     {
         public int Index;
         public Element Elment;
-        public IEnumerable<IEvent> Events;
+        public IEnumerable<ICommonEvent> Events;
     }
 }

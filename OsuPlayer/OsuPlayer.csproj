@@ -218,16 +218,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\库\OsbLib\OsbLib\OsbLib.csproj">
-      <Project>{39f7e783-f770-47d0-bfbb-49bc30443b3e}</Project>
-      <Name>OsbLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\库\OsuLib\Milkitic.OsuLib\OsuLib.csproj">
-      <Project>{c86d348d-a961-456b-9820-0bd9f069a9cb}</Project>
-      <Name>OsuLib</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

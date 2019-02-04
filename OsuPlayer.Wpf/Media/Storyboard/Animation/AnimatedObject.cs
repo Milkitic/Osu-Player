@@ -1,8 +1,8 @@
-﻿using System.IO;
-using Milkitic.OsbLib;
-using Milkitic.OsuPlayer.Media.Storyboard.Util;
+﻿using Milkitic.OsuPlayer.Media.Storyboard.Util;
+using OSharp.Storyboard;
 using SharpDX;
 using SharpDX.Direct2D1;
+using System.IO;
 
 namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
 {
@@ -13,11 +13,12 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
         public readonly bool Loop;
         public int PrevIndex = -1;
 
-        public AnimatedObject(AnimatedElement element, Timing timing, RenderTarget target, Size2F vSize) : base(element, timing, target, vSize)
+        public AnimatedObject(AnimatedElement element, Timing timing, RenderTarget target, Size2F vSize) 
+            : base(element, timing, target, vSize)
         {
             Times = element.FrameCount;
             Delay = element.FrameDelay;
-            Loop = element.LoopType == Milkitic.OsbLib.Enums.LoopType.LoopForever;
+            Loop = element.LoopType == LoopType.LoopForever;
 
             TextureList = new Bitmap[Times];
             for (var i = 0; i < Times; i++)

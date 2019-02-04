@@ -1,5 +1,4 @@
-﻿using Milkitic.OsbLib.Enums;
-using Gdip = System.Drawing;
+﻿using Gdip = System.Drawing;
 
 namespace OsbPlayerTest.Animation
 {

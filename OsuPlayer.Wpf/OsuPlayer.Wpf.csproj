@@ -503,13 +503,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\库\OsbLib\OsbLib\OsbLib.csproj">
-      <Project>{39f7e783-f770-47d0-bfbb-49bc30443b3e}</Project>
-      <Name>OsbLib</Name>
+    <ProjectReference Include="..\..\..\OSharp\OSharp.Beatmap\OSharp.Beatmap.csproj">
+      <Project>{0040102e-2eab-4593-b130-d3d95cb201e5}</Project>
+      <Name>OSharp.Beatmap</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\库\OsuLib\Milkitic.OsuLib\OsuLib.csproj">
-      <Project>{c86d348d-a961-456b-9820-0bd9f069a9cb}</Project>
-      <Name>OsuLib</Name>
+    <ProjectReference Include="..\..\..\OSharp\OSharp.Storyboard\OSharp.Storyboard.csproj">
+      <Project>{aefcaaac-94a8-48ab-89c9-58b7b55af6c8}</Project>
+      <Name>OSharp.Storyboard</Name>
     </ProjectReference>
     <ProjectReference Include="..\WpfApi\WpfApi.csproj">
       <Project>{028e6f4e-d538-4b83-904c-c94c2f1e3c83}</Project>

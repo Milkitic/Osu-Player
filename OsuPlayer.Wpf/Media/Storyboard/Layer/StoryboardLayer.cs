@@ -1,16 +1,14 @@
-﻿using System;
+﻿using Milkitic.OsuPlayer.Media.Storyboard.Animation;
+using OSharp.Storyboard;
+using OSharp.Storyboard.Events;
+using SharpDX;
+using SharpDX.Direct2D1;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Milkitic.OsbLib;
-using Milkitic.OsbLib.Enums;
-using Milkitic.OsbLib.Models;
-using Milkitic.OsbLib.Models.EventType;
-using Milkitic.OsuPlayer.Media.Storyboard.Animation;
-using SharpDX;
-using SharpDX.Direct2D1;
 
 namespace Milkitic.OsuPlayer.Media.Storyboard.Layer
 {
@@ -35,7 +33,7 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Layer
                 {
                     Index = i,
                     Elment = elements[i],
-                    Events = elements[i].EventList
+                    Events = elements[i].EventList.ToList()
                 };
 
             _timing = timing ?? new Timing(0, new Stopwatch());
@@ -68,57 +66,57 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Layer
                 if (_instances[i] == null)
                     continue;
                 _instances[i].StartDraw();
-                foreach (IEvent e in events)
+                foreach (ICommonEvent e in events)
                 {
                     switch (e.EventType)
                     {
-                        case EventEnum.Fade:
+                        case EventType.Fade:
                             _instances[i].Fade(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.End[0]);
                             break;
-                        case EventEnum.Move:
+                        case EventType.Move:
                             _instances[i].Move(e.Easing, (int)e.StartTime, (int)e.EndTime,
                                 new System.Drawing.PointF((e.Start[0] + 107) * _vSize.Width,
                                     e.Start[1] * _vSize.Height),
                                 new System.Drawing.PointF((e.End[0] + 107) * _vSize.Width, e.End[1] * _vSize.Height));
                             break;
-                        case EventEnum.MoveX:
+                        case EventType.MoveX:
                             _instances[i].MoveX(e.Easing, (int)e.StartTime, (int)e.EndTime,
                                 (e.Start[0] + 107) * _vSize.Width, (e.End[0] + 107) * _vSize.Width);
                             break;
-                        case EventEnum.MoveY:
+                        case EventType.MoveY:
                             _instances[i].MoveY(e.Easing, (int)e.StartTime, (int)e.EndTime,
                                 e.Start[0] * _vSize.Height, e.End[0] * _vSize.Height);
                             break;
-                        case EventEnum.Scale:
+                        case EventType.Scale:
                             _instances[i].ScaleVec(e.Easing, (int)e.StartTime, (int)e.EndTime,
                                 e.Start[0] * _vSize.Width, e.Start[0] * _vSize.Height, e.End[0] * _vSize.Width,
                                 e.End[0] * _vSize.Height);
                             break;
-                        case EventEnum.Vector:
+                        case EventType.Vector:
                             _instances[i].ScaleVec(e.Easing, (int)e.StartTime, (int)e.EndTime,
                                 e.Start[0] * _vSize.Width, e.Start[1] * _vSize.Height, e.End[0] * _vSize.Width,
                                 e.End[1] * _vSize.Height);
                             break;
-                        case EventEnum.Rotate:
+                        case EventType.Rotate:
                             _instances[i].Rotate(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.End[0]);
                             break;
-                        case EventEnum.Parameter:
+                        case EventType.Parameter:
                             var p = (Parameter)e;
                             switch (p.Type)
                             {
-                                case ParameterEnum.Horizontal:
+                                case ParameterType.Horizontal:
                                     _instances[i].FlipH((int)p.StartTime, (int)p.EndTime);
                                     break;
-                                case ParameterEnum.Vertical:
+                                case ParameterType.Vertical:
                                     _instances[i].FlipV((int)p.StartTime, (int)p.EndTime);
                                     break;
-                                case ParameterEnum.Additive:
+                                case ParameterType.Additive:
                                     _instances[i].Additive((int)p.StartTime, (int)p.EndTime);
                                     break;
                             }
 
                             break;
-                        case EventEnum.Color:
+                        case EventType.Color:
                             _instances[i].Color(e.Easing, (int)e.StartTime, (int)e.EndTime, e.Start[0], e.Start[1],
                                 e.Start[2],
                                 e.End[0], e.End[1], e.End[2]);
@@ -142,11 +140,11 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Layer
             _instances = null;
 
             if (_renderList != null)
-            for (var i = 0; i < _renderList.Length; i++)
-            {
-                _renderList[i].Elment = null;
-                _renderList[i].Events = null;
-            }
+                for (var i = 0; i < _renderList.Length; i++)
+                {
+                    _renderList[i].Elment = null;
+                    _renderList[i].Events = null;
+                }
             _renderList = null;
 
             _timing = null;
@@ -165,7 +163,7 @@ namespace Milkitic.OsuPlayer.Media.Storyboard.Layer
                 {
                     var ms = _timing.Offset;
                     _renderList = elements.Where(k =>
-                        !k.Elment.FadeoutList.InRange((int)ms, (updateDelay + delay),
+                        !k.Elment.ObsoleteList.ContainsTimingPoint(out _, (int)ms, updateDelay + delay,
                             -(updateDelay + delay)) && // todo: Maybe has some defects
                         ms >= k.Elment.MinTime - (updateDelay + delay) &&
                         ms <= k.Elment.MaxTime).ToArray();

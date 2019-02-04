@@ -66,7 +66,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
                     <Grid>
-                        <Ellipse Width="15" Height="15" Fill="{StaticResource PinkBrushOsu}" Stroke="{StaticResource WhiteBrush}" StrokeThickness="2" Cursor="Hand" >
+                        <Ellipse Width="15" Height="15" Fill="{StaticResource SliderBackground}" Stroke="{StaticResource WhiteBrush}" StrokeThickness="2" Cursor="Hand" >
                             <Ellipse.Effect>
                                 <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="{StaticResource PinkColorOsu}" Opacity="0.2"/>
                             </Ellipse.Effect>
