@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace Milkitic.OsuPlayer.Windows
+namespace Milky.OsuPlayer.Windows
 {
     /// <summary>
     /// NewVersionWindow.xaml 的交互逻辑

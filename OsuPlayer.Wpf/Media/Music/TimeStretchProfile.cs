@@ -1,4 +1,4 @@
-﻿namespace Milkitic.OsuPlayer.Media.Music
+﻿namespace Milky.OsuPlayer.Media.Music
 {
     public class TimeStretchProfile
     {

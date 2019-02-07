@@ -1,4 +1,4 @@
-﻿namespace Milkitic.OsuPlayer.Media
+﻿namespace Milky.OsuPlayer.Media
 {
     public interface IPlayer
     {

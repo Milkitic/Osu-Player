@@ -1,4 +1,4 @@
-﻿namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base
+﻿namespace Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base
 {
     public abstract class SearchSongResultBase
     {

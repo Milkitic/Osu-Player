@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard
+namespace Milky.OsuPlayer.Media.Storyboard
 {
     public class Timing
     {

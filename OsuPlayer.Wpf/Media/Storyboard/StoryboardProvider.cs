@@ -1,6 +1,4 @@
-﻿using Milkitic.OsuPlayer.Media.Storyboard.Layer;
-using Milkitic.OsuPlayer.Media.Storyboard.Render;
-using OSharp.Beatmap;
+﻿using OSharp.Beatmap;
 using OSharp.Storyboard;
 using OSharp.Storyboard.Management;
 using System;
@@ -9,8 +7,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using Milky.OsuPlayer.Media.Storyboard.Layer;
+using Milky.OsuPlayer.Media.Storyboard.Render;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard
+namespace Milky.OsuPlayer.Media.Storyboard
 {
     public class StoryboardProvider : IDisposable
     {
@@ -38,7 +38,8 @@ namespace Milkitic.OsuPlayer.Media.Storyboard
 
             Console.WriteLine(@"Parsing..");
             sw.Start();
-            string osbFile = Path.Combine(dir, osu.OsbFileName);
+            OsuFileAnalyzer analyzer = new OsuFileAnalyzer(osu);
+            string osbFile = Path.Combine(dir, analyzer.OsbFileName);
             if (osu.Events.ElementGroup != null)
             {
                 var osb = osu.Events.ElementGroup;
@@ -80,7 +81,7 @@ namespace Milkitic.OsuPlayer.Media.Storyboard
         public void LoadStoryboard(string osuPath)
         {
             var osuFile = new FileInfo(osuPath);
-            LoadStoryboard(osuFile.Directory.FullName, new OsuFile(osuPath));
+            LoadStoryboard(osuFile.Directory.FullName, OsuFile.ReadFromFile(osuPath));
         }
 
         private void ClearLayer()

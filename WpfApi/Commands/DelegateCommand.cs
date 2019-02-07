@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Milkitic.WpfApi.Commands
+namespace Milky.WpfApi.Commands
 {
     public class DelegateCommand : ICommand
     {

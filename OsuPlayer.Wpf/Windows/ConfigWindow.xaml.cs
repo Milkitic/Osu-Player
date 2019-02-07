@@ -1,10 +1,10 @@
-﻿using Milkitic.OsuPlayer.Pages.Settings;
-using Milkitic.OsuPlayer.Utils;
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using Milky.OsuPlayer.Pages.Settings;
+using Milky.OsuPlayer.Utils;
 
-namespace Milkitic.OsuPlayer.Windows
+namespace Milky.OsuPlayer.Windows
 {
     /// <summary>
     /// ConfigWindow.xaml 的交互逻辑

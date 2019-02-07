@@ -1,6 +1,4 @@
-﻿using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.ViewModels;
-using Milkitic.OsuPlayer.Windows;
+﻿using Milky.OsuPlayer.Data;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
@@ -16,8 +14,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using Milky.OsuPlayer.ViewModels;
+using Milky.OsuPlayer.Windows;
 
-namespace Milkitic.OsuPlayer.Pages
+namespace Milky.OsuPlayer.Pages
 {
     /// <summary>
     /// DiffSelectPage.xaml 的交互逻辑

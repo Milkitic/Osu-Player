@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Windows.Threading;
 
-namespace Milkitic.WpfApi
+namespace Milky.WpfApi
 {
     public static class Execute
     {

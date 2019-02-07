@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Milkitic.OsuPlayer">
+                    xmlns:local="clr-namespace:Milky.OsuPlayer">
     <BitmapImage x:Key="TitleLogo" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/title.png"/>
     <BitmapImage x:Key="TextrueSource1" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/osu_texture.png"/>
 

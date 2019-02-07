@@ -6,10 +6,10 @@ using System.Data.Entity.ModelConfiguration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Milkitic.OsuPlayer.Migrations;
-using Milkitic.WpfApi;
+using Milky.OsuPlayer.Migrations;
+using Milky.WpfApi;
 
-namespace Milkitic.OsuPlayer.Data
+namespace Milky.OsuPlayer.Data
 {
     [Table("map_info")]
     public class MapInfo

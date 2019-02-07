@@ -12,9 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Milkitic.OsuPlayer.Windows;
+using Milky.OsuPlayer.Windows;
 
-namespace Milkitic.OsuPlayer.Pages
+namespace Milky.OsuPlayer.Pages
 {
     /// <summary>
     /// ClosingPage.xaml 的交互逻辑

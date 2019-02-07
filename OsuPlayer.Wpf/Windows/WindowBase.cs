@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Milkitic.OsuPlayer.Windows
+namespace Milky.OsuPlayer.Windows
 {
     public class WindowBase : Window, IWindowBase
     {

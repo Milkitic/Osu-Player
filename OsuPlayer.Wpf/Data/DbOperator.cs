@@ -1,11 +1,11 @@
-﻿using Milkitic.OsuPlayer;
+﻿using Milky.OsuPlayer;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Milkitic.OsuPlayer.Data
+namespace Milky.OsuPlayer.Data
 {
     public static class DbOperator
     {

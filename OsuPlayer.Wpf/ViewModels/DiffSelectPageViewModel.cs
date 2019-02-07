@@ -1,7 +1,5 @@
-﻿using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Pages;
-using Milkitic.WpfApi;
-using Milkitic.WpfApi.Commands;
+﻿using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Pages;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
@@ -9,8 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Milky.WpfApi;
+using Milky.WpfApi.Commands;
 
-namespace Milkitic.OsuPlayer.ViewModels
+namespace Milky.OsuPlayer.ViewModels
 {
     public class DiffSelectPageViewModel : ViewModelBase
     {

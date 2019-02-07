@@ -3,7 +3,7 @@ using NAudio.Vorbis;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
-namespace Milkitic.OsuPlayer.Media.Music.SampleProviders
+namespace Milky.OsuPlayer.Media.Music.SampleProviders
 {
     /// <summary>
     /// From https://github.com/naudio/NAudio/blob/master/NAudio/Wave/WaveStreams/AudioFileReader.cs.

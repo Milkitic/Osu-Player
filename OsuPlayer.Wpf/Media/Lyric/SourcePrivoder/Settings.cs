@@ -1,4 +1,4 @@
-﻿namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder
+﻿namespace Milky.OsuPlayer.Media.Lyric.SourcePrivoder
 {
     internal static class Settings
     {

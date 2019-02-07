@@ -1,12 +1,12 @@
-﻿using Milkitic.OsuPlayer;
-using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Media;
-using Milkitic.OsuPlayer.Utils;
+﻿using Milky.OsuPlayer;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Utils;
 using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.Linq;
+using Milky.OsuPlayer.Media;
 
-namespace Milkitic.OsuPlayer
+namespace Milky.OsuPlayer
 {
     public class PlayerList
     {

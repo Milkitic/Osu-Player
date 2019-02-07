@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
-namespace Milkitic.OsuPlayer.Utils
+namespace Milky.OsuPlayer.Utils
 {
     public class OptionContainer
     {

@@ -1,7 +1,7 @@
-﻿using Milkitic.OsuPlayer.Data;
+﻿using Milky.OsuPlayer.Data;
 using osu_database_reader.Components.Beatmaps;
 
-namespace Milkitic.OsuPlayer
+namespace Milky.OsuPlayer
 {
     public static class EntryExtension
     {

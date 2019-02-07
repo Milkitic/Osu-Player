@@ -1,12 +1,12 @@
-﻿using Milkitic.OsuPlayer.Data;
-using Milkitic.WpfApi;
+﻿using Milky.OsuPlayer.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Milky.WpfApi;
 
-namespace Milkitic.OsuPlayer.ViewModels
+namespace Milky.OsuPlayer.ViewModels
 {
     public class EditCollectionPageViewModel : ViewModelBase
     {

@@ -1,9 +1,4 @@
 ﻿using Microsoft.Win32;
-using Milkitic.OsuPlayer.Control;
-using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Media;
-using Milkitic.OsuPlayer.Media.Music;
-using Milkitic.OsuPlayer.Pages;
 using OSharp.Beatmap;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
@@ -15,8 +10,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Media;
+using Milky.OsuPlayer.Media.Music;
+using Milky.OsuPlayer.Pages;
 
-namespace Milkitic.OsuPlayer.Windows
+namespace Milky.OsuPlayer.Windows
 {
     partial class MainWindow
     {
@@ -56,7 +56,7 @@ namespace Milkitic.OsuPlayer.Windows
             {
                 try
                 {
-                    var osu = new OsuFile(path);
+                    var osu = OsuFile.ReadFromFile(path);
                     var fi = new FileInfo(path);
                     if (!fi.Exists)
                         throw new FileNotFoundException("Cannot locate.", fi.FullName);
@@ -78,8 +78,8 @@ namespace Milkitic.OsuPlayer.Windows
                     BeatmapEntry entry = App.Beatmaps.GetBeatmapByIdentity(nowIdentity);
                     OsuFile osuFile = App.HitsoundPlayer.Osufile;
 
-                    LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle();
-                    LblArtist.Content = App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist();
+                    LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.TitleMeta.Unicode;
+                    LblArtist.Content = App.HitsoundPlayer.Osufile.Metadata.ArtistMeta.Unicode;
                     ((ToolTip)NotifyIcon.TrayToolTip).Content =
                         (string)LblArtist.Content + " - " + (string)LblTitle.Content;
                     bool isFaved = SetFaved(nowIdentity);
@@ -94,14 +94,14 @@ namespace Milkitic.OsuPlayer.Windows
                             osuFile.Metadata.Creator,
                             osuFile.Metadata.Source,
                             osuFile.Metadata.TagList,
-                            osuFile.Metadata.BeatmapID,
-                            osuFile.Metadata.BeatmapSetID,
+                            osuFile.Metadata.BeatmapId,
+                            osuFile.Metadata.BeatmapSetId,
                             entry != null
                                 ? (entry.DiffStarRatingStandard.ContainsKey(Mods.None)
                                     ? entry.DiffStarRatingStandard[Mods.None]
                                     : 0)
                                 : 0,
-                            osuFile.Difficulty.HPDrainRate,
+                            osuFile.Difficulty.HpDrainRate,
                             osuFile.Difficulty.CircleSize,
                             osuFile.Difficulty.ApproachRate,
                             osuFile.Difficulty.OverallDifficulty,

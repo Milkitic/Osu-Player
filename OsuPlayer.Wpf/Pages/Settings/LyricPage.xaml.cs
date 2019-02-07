@@ -1,4 +1,5 @@
-﻿using Milkitic.OsuPlayer.Media.Lyric;
+﻿using Milky.OsuPlayer.Media.Lyric;
+using Milky.OsuPlayer.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Milkitic.OsuPlayer.Windows;
 
-namespace Milkitic.OsuPlayer.Pages.Settings
+namespace Milky.OsuPlayer.Pages.Settings
 {
     /// <summary>
     /// LyricPage.xaml 的交互逻辑
@@ -41,11 +41,11 @@ namespace Milkitic.OsuPlayer.Pages.Settings
                 SourceKugou.IsChecked = true;
             else if (App.Config.Lyric.LyricSource == LyricSource.QqMusic)
                 SourceQqMusic.IsChecked = true;
-            if (App.Config.Lyric.ProvideType == LyricProvider.ProvideTypeEnum.PreferBoth)
+            if (App.Config.Lyric.ProvideType == LyricProvideType.PreferBoth)
                 ShowAll.IsChecked = true;
-            else if (App.Config.Lyric.ProvideType == LyricProvider.ProvideTypeEnum.Original)
+            else if (App.Config.Lyric.ProvideType == LyricProvideType.Original)
                 ShowOrigin.IsChecked = true;
-            else if (App.Config.Lyric.ProvideType == LyricProvider.ProvideTypeEnum.PreferTranslated)
+            else if (App.Config.Lyric.ProvideType == LyricProvideType.PreferTranslated)
                 ShowTrans.IsChecked = true;
             StrictMode.IsChecked = App.Config.Lyric.StrictMode;
             EnableCache.IsChecked = App.Config.Lyric.EnableCache;
@@ -88,11 +88,11 @@ namespace Milkitic.OsuPlayer.Pages.Settings
         {
             if (!_loaded) return;
             if (ShowAll.IsChecked.HasValue && ShowAll.IsChecked.Value)
-                App.Config.Lyric.ProvideType = LyricProvider.ProvideTypeEnum.PreferBoth;
+                App.Config.Lyric.ProvideType = LyricProvideType.PreferBoth;
             else if (ShowOrigin.IsChecked.HasValue && ShowOrigin.IsChecked.Value)
-                App.Config.Lyric.ProvideType = LyricProvider.ProvideTypeEnum.Original;
+                App.Config.Lyric.ProvideType = LyricProvideType.Original;
             else if (ShowTrans.IsChecked.HasValue && ShowTrans.IsChecked.Value)
-                App.Config.Lyric.ProvideType = LyricProvider.ProvideTypeEnum.PreferTranslated;
+                App.Config.Lyric.ProvideType = LyricProvideType.PreferTranslated;
             ReloadLyric();
             App.SaveConfig();
         }

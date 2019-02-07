@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Milkitic.OsuPlayer.Utils
+namespace Milky.OsuPlayer.Utils
 {
     public class Updater
     {

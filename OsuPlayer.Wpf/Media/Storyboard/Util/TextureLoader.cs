@@ -5,7 +5,7 @@ using D2D = SharpDX.Direct2D1;
 using DXIO = SharpDX.IO;
 using WIC = SharpDX.WIC;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard.Util
+namespace Milky.OsuPlayer.Media.Storyboard.Util
 {
     public static class TextureLoader
     {

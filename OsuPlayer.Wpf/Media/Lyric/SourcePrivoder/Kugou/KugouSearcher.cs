@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
 using Newtonsoft.Json.Linq;
 
-namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Kugou
+namespace Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Kugou
 {
     public class KugouSearchResultSong : SearchSongResultBase
     {

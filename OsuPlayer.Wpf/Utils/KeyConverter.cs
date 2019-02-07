@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 
-namespace Milkitic.OsuPlayer.Utils
+namespace Milky.OsuPlayer.Utils
 {
     static class KeyConverter
     {

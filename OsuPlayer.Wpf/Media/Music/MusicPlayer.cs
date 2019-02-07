@@ -1,13 +1,13 @@
-﻿using Milkitic.OsuPlayer.Media.Music.SampleProviders;
-using Milkitic.OsuPlayer.Media.Music.SoundTouch;
-using Milkitic.OsuPlayer.Media.Music.WaveProviders;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Media.Music.SampleProviders;
+using Milky.OsuPlayer.Media.Music.SoundTouch;
+using Milky.OsuPlayer.Media.Music.WaveProviders;
 
-namespace Milkitic.OsuPlayer.Media.Music
+namespace Milky.OsuPlayer.Media.Music
 {
     public class MusicPlayer : IPlayer, IDisposable
     {

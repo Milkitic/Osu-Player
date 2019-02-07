@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Milkitic.OsuPlayer.Media.Storyboard.Layer;
+using Milky.OsuPlayer.Media.Storyboard.Layer;
 using D2D = SharpDX.Direct2D1;
 using Mathe = SharpDX.Mathematics.Interop;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard.Render
+namespace Milky.OsuPlayer.Media.Storyboard.Render
 {
     public class RenderBase
     {

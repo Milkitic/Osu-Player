@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard
+namespace Milky.OsuPlayer.Media.Storyboard
 {
     public struct TimeRange
     {

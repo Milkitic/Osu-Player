@@ -1,4 +1,4 @@
-﻿namespace Milkitic.OsuPlayer.Media.Lyric.Model
+﻿namespace Milky.OsuPlayer.Media.Lyric.Model
 {
     public struct Info
     {

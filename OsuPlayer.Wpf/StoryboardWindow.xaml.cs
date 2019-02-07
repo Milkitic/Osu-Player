@@ -1,10 +1,10 @@
-﻿using Milkitic.OsuPlayer.Media.Storyboard;
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Milky.OsuPlayer.Media.Storyboard;
 
-namespace Milkitic.OsuPlayer
+namespace Milky.OsuPlayer
 {
     /// <summary>
     /// StoryboardWindow.xaml 的交互逻辑

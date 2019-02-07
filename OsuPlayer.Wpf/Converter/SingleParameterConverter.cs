@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace Milkitic.OsuPlayer.Converter
+namespace Milky.OsuPlayer.Converter
 {
     public class SingleParameterConverter : IValueConverter
     {

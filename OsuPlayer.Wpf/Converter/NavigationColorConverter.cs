@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Milkitic.OsuPlayer.Converter
+namespace Milky.OsuPlayer.Converter
 {
     public class NavigationColorConverter : IValueConverter
     {

@@ -1,11 +1,11 @@
-﻿using Milkitic.OsuPlayer.Media;
-using Milkitic.OsuPlayer.Media.Lyric;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Milky.OsuPlayer.Media;
+using Milky.OsuPlayer.Media.Lyric;
 
-namespace Milkitic.OsuPlayer
+namespace Milky.OsuPlayer
 {
     public class Config
     {
@@ -68,7 +68,7 @@ namespace Milkitic.OsuPlayer
     {
         public bool EnableLyric { get; set; } = true;
         public LyricSource LyricSource { get; set; } = LyricSource.Auto;
-        public LyricProvider.ProvideTypeEnum ProvideType { get; set; } = LyricProvider.ProvideTypeEnum.Original;
+        public LyricProvideType ProvideType { get; set; } = LyricProvideType.Original;
         public bool StrictMode { get; set; } = true;
         public bool EnableCache { get; set; } = true;
     }

@@ -1,6 +1,4 @@
-﻿using Milkitic.OsuPlayer.Control;
-using Milkitic.OsuPlayer.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,10 +13,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Milkitic.OsuPlayer.Windows;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.Windows;
 using Path = System.IO.Path;
 
-namespace Milkitic.OsuPlayer
+namespace Milky.OsuPlayer
 {
     /// <summary>
     /// UpdateWindow.xaml 的交互逻辑

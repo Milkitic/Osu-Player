@@ -1,9 +1,4 @@
-﻿using Milkitic.OsuPlayer.Control;
-using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Media;
-using Milkitic.OsuPlayer.Media.Music;
-using Milkitic.OsuPlayer.Pages;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,8 +6,13 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Media;
+using Milky.OsuPlayer.Media.Music;
+using Milky.OsuPlayer.Pages;
 
-namespace Milkitic.OsuPlayer.Windows
+namespace Milky.OsuPlayer.Windows
 {
     partial class MainWindow
     {

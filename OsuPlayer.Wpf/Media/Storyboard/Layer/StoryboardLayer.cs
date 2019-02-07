@@ -1,5 +1,4 @@
-﻿using Milkitic.OsuPlayer.Media.Storyboard.Animation;
-using OSharp.Storyboard;
+﻿using OSharp.Storyboard;
 using OSharp.Storyboard.Events;
 using SharpDX;
 using SharpDX.Direct2D1;
@@ -9,8 +8,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Media.Storyboard.Animation;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard.Layer
+namespace Milky.OsuPlayer.Media.Storyboard.Layer
 {
     public class StoryboardLayer : CustomLayer
     {

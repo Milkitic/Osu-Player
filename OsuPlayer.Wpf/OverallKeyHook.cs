@@ -1,14 +1,14 @@
 ﻿using Gma.System.MouseKeyHook;
-using Milkitic.OsuPlayer.Pages.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Milkitic.OsuPlayer.Windows;
+using Milky.OsuPlayer.Pages.Settings;
+using Milky.OsuPlayer.Windows;
 
-namespace Milkitic.OsuPlayer
+namespace Milky.OsuPlayer
 {
     public class OverallKeyHook : IDisposable
     {

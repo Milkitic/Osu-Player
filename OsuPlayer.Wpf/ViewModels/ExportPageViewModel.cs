@@ -1,9 +1,4 @@
-﻿using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Pages;
-using Milkitic.OsuPlayer.Utils;
-using Milkitic.WpfApi;
-using Milkitic.WpfApi.Commands;
-using osu_database_reader.Components.Beatmaps;
+﻿using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,8 +15,13 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.Utils;
+using Milky.WpfApi;
+using Milky.WpfApi.Commands;
 
-namespace Milkitic.OsuPlayer.ViewModels
+namespace Milky.OsuPlayer.ViewModels
 {
     public class ExportPageViewModel : ViewModelBase
     {

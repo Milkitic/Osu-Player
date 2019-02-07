@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
-using Milkitic.OsuPlayer.Windows;
+using Milky.OsuPlayer.Windows;
 
-namespace Milkitic.OsuPlayer.Pages
+namespace Milky.OsuPlayer.Pages
 {
     /// <summary>
     /// FindPage.xaml 的交互逻辑

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Milkitic.OsuPlayer
+namespace Milky.OsuPlayer
 {
     public static class RandomSeed
     {

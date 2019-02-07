@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Milkitic.OsuPlayer.Pages.Settings
+namespace Milky.OsuPlayer.Pages.Settings
 {
     /// <summary>
     /// PlayPage.xaml 的交互逻辑

@@ -1,5 +1,4 @@
-﻿using Milkitic.OsuPlayer.Control;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -14,9 +13,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Milkitic.OsuPlayer.Windows;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Windows;
 
-namespace Milkitic.OsuPlayer.Pages.Settings
+namespace Milky.OsuPlayer.Pages.Settings
 {
     /// <summary>
     /// AboutPage.xaml 的交互逻辑

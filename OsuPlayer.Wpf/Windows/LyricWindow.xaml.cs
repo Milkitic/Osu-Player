@@ -1,6 +1,4 @@
-﻿using Milkitic.OsuPlayer.Media.Lyric.Model;
-using Milkitic.OsuPlayer.ViewModels;
-using OSharp.Beatmap;
+﻿using OSharp.Beatmap;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,6 +15,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using Milky.OsuPlayer.Media.Lyric.Model;
+using Milky.OsuPlayer.ViewModels;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
@@ -24,7 +24,7 @@ using Image = System.Drawing.Image;
 using Pen = System.Drawing.Pen;
 using Size = System.Windows.Size;
 
-namespace Milkitic.OsuPlayer.Windows
+namespace Milky.OsuPlayer.Windows
 {
     /// <summary>
     /// LyricWindow.xaml 的交互逻辑
@@ -119,7 +119,7 @@ namespace Milkitic.OsuPlayer.Windows
 
             _lyricList = lyric?.LyricSentencs ?? new List<Sentence>();
             _lyricList.Insert(0,
-                new Sentence(osuFile.Metadata.GetUnicodeArtist() + " - " + osuFile.Metadata.GetUnicodeTitle(), 0));
+                new Sentence(osuFile.Metadata.ArtistMeta.Unicode + " - " + osuFile.Metadata.TitleMeta.Unicode, 0));
         }
 
         public void StartWork()

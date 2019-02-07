@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Milkitic.OsuPlayer.Control
+namespace Milky.OsuPlayer.Control
 {
     /// <summary>
     /// MessageBoxWindow.xaml 的交互逻辑

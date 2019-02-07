@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Milkitic.OsuPlayer.L18N
+namespace Milky.OsuPlayer.L18N
 {
     public class UiMetadata
     {

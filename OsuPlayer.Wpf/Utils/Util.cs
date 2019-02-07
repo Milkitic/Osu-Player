@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows;
 
-namespace Milkitic.OsuPlayer.Utils
+namespace Milky.OsuPlayer.Utils
 {
     public static class Util
     {

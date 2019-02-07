@@ -1,16 +1,16 @@
-﻿using Milkitic.OsuPlayer.Control;
-using Milkitic.OsuPlayer.Media;
-using Milkitic.OsuPlayer.Pages;
-using Milkitic.OsuPlayer.Utils;
-using Milkitic.OsuPlayer.ViewModels;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Media;
+using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.ViewModels;
 
-namespace Milkitic.OsuPlayer.Windows
+namespace Milky.OsuPlayer.Windows
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑

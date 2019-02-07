@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Milkitic.OsuPlayer.Media.Music.SoundTouch
+namespace Milky.OsuPlayer.Media.Music.SoundTouch
 {
     public class SoundTouchApi : IDisposable
     {

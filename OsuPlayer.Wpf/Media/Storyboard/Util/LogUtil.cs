@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard.Util
+namespace Milky.OsuPlayer.Media.Storyboard.Util
 {
     internal class LogUtil
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Milkitic.OsuPlayer.Media.Lyric.Model
+namespace Milky.OsuPlayer.Media.Lyric.Model
 {
     public struct Sentence : IEquatable<Sentence>, IComparable<Sentence>
     {

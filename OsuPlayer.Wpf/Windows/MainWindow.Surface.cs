@@ -1,6 +1,4 @@
-﻿using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Media;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,8 +6,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Media;
 
-namespace Milkitic.OsuPlayer.Windows
+namespace Milky.OsuPlayer.Windows
 {
     partial class MainWindow
     {
@@ -46,8 +46,8 @@ namespace Milkitic.OsuPlayer.Windows
         {
             if (!LyricWindow.IsVisible) return;
             if (App.HitsoundPlayer == null) return;
-            var lyric = App.LyricProvider.GetLyric(App.HitsoundPlayer.Osufile.Metadata.GetUnicodeArtist(),
-                App.HitsoundPlayer.Osufile.Metadata.GetUnicodeTitle(), App.MusicPlayer.Duration);
+            var lyric = App.LyricProvider.GetLyric(App.HitsoundPlayer.Osufile.Metadata.ArtistMeta.Unicode,
+                App.HitsoundPlayer.Osufile.Metadata.TitleMeta.Unicode, App.MusicPlayer.Duration);
             LyricWindow.SetNewLyric(lyric, App.HitsoundPlayer.Osufile);
             LyricWindow.StartWork();
         }

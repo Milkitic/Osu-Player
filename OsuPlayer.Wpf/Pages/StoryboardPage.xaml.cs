@@ -1,9 +1,9 @@
-﻿using Milkitic.OsuPlayer.Windows;
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Windows;
 
-namespace Milkitic.OsuPlayer.Pages
+namespace Milky.OsuPlayer.Pages
 {
     /// <summary>
     /// StoryboardPage.xaml 的交互逻辑

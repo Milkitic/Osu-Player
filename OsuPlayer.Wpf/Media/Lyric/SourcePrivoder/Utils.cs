@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder
+namespace Milky.OsuPlayer.Media.Lyric.SourcePrivoder
 {
     internal static class Utils
     {

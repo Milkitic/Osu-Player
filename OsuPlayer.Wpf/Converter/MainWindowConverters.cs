@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Data;
 using Unosquare.FFME;
 
-namespace Milkitic.OsuPlayer.Converter
+namespace Milky.OsuPlayer.Converter
 {
     public class IconMarginConverter : IValueConverter
     {

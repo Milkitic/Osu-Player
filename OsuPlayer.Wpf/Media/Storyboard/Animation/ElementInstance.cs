@@ -9,7 +9,7 @@ using Gdip = System.Drawing;
 using Mathe = SharpDX.Mathematics.Interop;
 using RectangleF = SharpDX.RectangleF;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
+namespace Milky.OsuPlayer.Media.Storyboard.Animation
 {
     internal sealed class ElementInstance : AnimatedInstance, IDisposable
     {

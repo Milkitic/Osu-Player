@@ -1,7 +1,7 @@
 ﻿using OSharp.Storyboard.Events;
 using Gdip = System.Drawing;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
+namespace Milky.OsuPlayer.Media.Storyboard.Animation
 {
     internal abstract class AnimatedInstance
     {

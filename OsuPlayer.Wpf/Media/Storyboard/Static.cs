@@ -1,4 +1,4 @@
-﻿namespace Milkitic.OsuPlayer.Media.Storyboard
+﻿namespace Milky.OsuPlayer.Media.Storyboard
 {
     public struct Static<T>
     {

@@ -1,7 +1,4 @@
-﻿using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.ViewModels;
-using Milkitic.OsuPlayer.Windows;
-using OSharp.Beatmap;
+﻿using OSharp.Beatmap;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.ObjectModel;
@@ -9,9 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Collection = Milkitic.OsuPlayer.Data.Collection;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.ViewModels;
+using Milky.OsuPlayer.Windows;
+using Collection = Milky.OsuPlayer.Data.Collection;
 
-namespace Milkitic.OsuPlayer.Pages
+namespace Milky.OsuPlayer.Pages
 {
     /// <summary>
     /// AddCollectionPage.xaml 的交互逻辑
@@ -55,12 +55,12 @@ namespace Milkitic.OsuPlayer.Pages
                 CollectionViewModel.CopyFrom(DbOperator.GetCollections().OrderByDescending(k => k.CreateTime)));
         }
 
-        public static void AddToCollection(Collection col, BeatmapEntry entry)
+        public static void AddToCollection(Data.Collection col, BeatmapEntry entry)
         {
             if (string.IsNullOrEmpty(col.ImagePath))
             {
                 OsuFile osuFile =
-                    new OsuFile(Path.Combine(Domain.OsuSongPath, entry.FolderName, entry.BeatmapFileName));
+                     OsuFile.ReadFromFile(Path.Combine(Domain.OsuSongPath, entry.FolderName, entry.BeatmapFileName));
                 if (osuFile.Events.BackgroundInfo != null)
                 {
                     var imgPath = Path.Combine(Domain.OsuSongPath, entry.FolderName, osuFile.Events.BackgroundInfo.Filename);

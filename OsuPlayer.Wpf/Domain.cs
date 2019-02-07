@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Milkitic.OsuPlayer
+namespace Milky.OsuPlayer
 {
     internal static class Domain
     {

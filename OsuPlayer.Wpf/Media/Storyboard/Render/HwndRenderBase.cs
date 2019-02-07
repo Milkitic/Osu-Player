@@ -5,7 +5,7 @@ using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 using Mathe = SharpDX.Mathematics.Interop;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard.Render
+namespace Milky.OsuPlayer.Media.Storyboard.Render
 {
     public sealed class HwndRenderBase : RenderBase
     {

@@ -1,6 +1,6 @@
 ﻿using SharpDX.Direct2D1;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard.Layer
+namespace Milky.OsuPlayer.Media.Storyboard.Layer
 {
     public abstract class CustomLayer
     {

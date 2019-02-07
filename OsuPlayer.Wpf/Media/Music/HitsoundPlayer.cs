@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Milkitic.OsuPlayer.Media.Music
+namespace Milky.OsuPlayer.Media.Music
 {
     public class HitsoundPlayer : IPlayer, IDisposable
     {
@@ -276,7 +276,7 @@ namespace Milkitic.OsuPlayer.Media.Music
                             Sample = item.EdgeSample,
                             Addition = item.EdgeAddition,
                             Track = currentLine.Track,
-                            LineSample = currentLine.SamplesetEnum,
+                            LineSample = currentLine.TimingSampleset,
                             CustomFile = obj.FileName,
                         };
                         SetFullPath(dirInfo, mapFiles, element);
@@ -299,7 +299,7 @@ namespace Milkitic.OsuPlayer.Media.Music
                         Sample = obj.SampleSet,
                         Addition = obj.AdditionSet,
                         Track = currentLine.Track,
-                        LineSample = currentLine.SamplesetEnum,
+                        LineSample = currentLine.TimingSampleset,
                         CustomFile = obj.FileName,
                     };
                     SetFullPath(dirInfo, mapFiles, element);

@@ -1,17 +1,17 @@
-﻿using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Pages;
-using Milkitic.WpfApi;
-using Milkitic.WpfApi.Commands;
-using osu_database_reader.Components.Beatmaps;
+﻿using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Collection = Milkitic.OsuPlayer.Data.Collection;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Pages;
+using Milky.WpfApi;
+using Milky.WpfApi.Commands;
+using Collection = Milky.OsuPlayer.Data.Collection;
 
-namespace Milkitic.OsuPlayer.ViewModels
+namespace Milky.OsuPlayer.ViewModels
 {
     public class CollectionViewModel : ViewModelBase
     {
@@ -36,7 +36,7 @@ namespace Milkitic.OsuPlayer.ViewModels
             }
         }
 
-        public static CollectionViewModel CopyFrom(Collection collection)
+        public static CollectionViewModel CopyFrom(Data.Collection collection)
             => new CollectionViewModel
             {
                 Id = collection.Id,
@@ -48,7 +48,7 @@ namespace Milkitic.OsuPlayer.ViewModels
                 Locked = collection.Locked
             };
 
-        public static IEnumerable<CollectionViewModel> CopyFrom(IEnumerable<Collection> collection)
+        public static IEnumerable<CollectionViewModel> CopyFrom(IEnumerable<Data.Collection> collection)
             => collection.Select(CopyFrom);
     }
 }

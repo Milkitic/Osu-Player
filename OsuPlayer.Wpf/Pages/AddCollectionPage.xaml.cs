@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Windows;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Windows;
 
-namespace Milkitic.OsuPlayer.Pages
+namespace Milky.OsuPlayer.Pages
 {
     /// <summary>
     /// AddCollectionPage.xaml 的交互逻辑

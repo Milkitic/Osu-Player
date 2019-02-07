@@ -1,8 +1,4 @@
-﻿using Milkitic.OsuPlayer;
-using Milkitic.OsuPlayer.Control;
-using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Utils;
-using Milkitic.OsuPlayer.Windows;
+﻿using Milky.OsuPlayer;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
@@ -12,9 +8,13 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Collection = Milkitic.OsuPlayer.Data.Collection;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.Windows;
+using Collection = Milky.OsuPlayer.Data.Collection;
 
-namespace Milkitic.OsuPlayer.Pages
+namespace Milky.OsuPlayer.Pages
 {
     /// <summary>
     /// CollectionPage.xaml 的交互逻辑
@@ -23,11 +23,11 @@ namespace Milkitic.OsuPlayer.Pages
     {
         private readonly MainWindow _mainWindow;
         public string Id => _collection.Id;
-        private readonly Collection _collection;
+        private readonly Data.Collection _collection;
         public List<BeatmapDataModel> ViewModels;
         private IEnumerable<BeatmapEntry> _entries;
 
-        public CollectionPage(MainWindow mainWindow, Collection collection)
+        public CollectionPage(MainWindow mainWindow, Data.Collection collection)
         {
             _mainWindow = mainWindow;
             _collection = collection;

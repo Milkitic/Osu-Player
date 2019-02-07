@@ -16,7 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MessageBox = System.Windows.MessageBox;
 
-namespace Milkitic.OsuPlayer.Pages.Settings
+namespace Milky.OsuPlayer.Pages.Settings
 {
     /// <summary>
     /// ExportPage.xaml 的交互逻辑

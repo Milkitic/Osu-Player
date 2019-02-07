@@ -1,8 +1,4 @@
-﻿using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Utils;
-using Milkitic.OsuPlayer.ViewModels;
-using Milkitic.OsuPlayer.Windows;
-using OSharp.Beatmap;
+﻿using OSharp.Beatmap;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Concurrent;
@@ -12,9 +8,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.ViewModels;
+using Milky.OsuPlayer.Windows;
 using Path = System.IO.Path;
 
-namespace Milkitic.OsuPlayer.Pages
+namespace Milky.OsuPlayer.Pages
 {
     /// <summary>
     /// ExportPage.xaml 的交互逻辑
@@ -86,8 +86,8 @@ namespace Milkitic.OsuPlayer.Pages
         {
             string folder = Path.Combine(Domain.OsuSongPath, entry.FolderName);
             FileInfo mp3File = new FileInfo(Path.Combine(folder, entry.AudioFileName));
-            var osufile = new OsuFile(Path.Combine(folder, entry.BeatmapFileName));
-            FileInfo bgFile = new FileInfo(Path.Combine(folder, osufile.Events.BackgroundInfo.Filename));
+            var osuFile = OsuFile.ReadFromFile(Path.Combine(folder, entry.BeatmapFileName));
+            FileInfo bgFile = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));
 
             var artist = MetaSelect.GetUnicode(entry.Artist, entry.ArtistUnicode);
             var title = MetaSelect.GetUnicode(entry.Title, entry.TitleUnicode);

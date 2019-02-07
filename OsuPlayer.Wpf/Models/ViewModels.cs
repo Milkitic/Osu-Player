@@ -1,8 +1,8 @@
-﻿using Milkitic.OsuPlayer.Utils;
-using osu.Shared;
+﻿using osu.Shared;
 using System;
+using Milky.OsuPlayer.Utils;
 
-namespace Milkitic.OsuPlayer
+namespace Milky.OsuPlayer
 {
     public class BeatmapDataModel
     {

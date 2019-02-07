@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Milkitic.OsuPlayer.Media.Lyric.Model
+namespace Milky.OsuPlayer.Media.Lyric.Model
 {
     public class Lyric
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using SharpDX.Multimedia;
 using SharpDX.XAudio2;
 
-namespace Milkitic.OsuPlayer.Media.Music
+namespace Milky.OsuPlayer.Media.Music
 {
     internal class WavePlayer : IDisposable
     {

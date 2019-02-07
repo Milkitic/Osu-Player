@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Milkitic.OsuPlayer.Control
+namespace Milky.OsuPlayer.Control
 {
     public static class MsgBox
     {

@@ -1,4 +1,4 @@
-﻿namespace Milkitic.OsuPlayer.Utils
+﻿namespace Milky.OsuPlayer.Utils
 {
     public static class MetaSelect
     {

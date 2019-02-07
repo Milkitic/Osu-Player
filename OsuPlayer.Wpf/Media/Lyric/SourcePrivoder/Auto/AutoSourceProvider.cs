@@ -1,11 +1,11 @@
-﻿using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Kugou;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Netease;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Kugou;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Netease;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic;
 
-namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Auto
+namespace Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Auto
 {
     public class AutoSourceProvider : SourceProviderBase
     {

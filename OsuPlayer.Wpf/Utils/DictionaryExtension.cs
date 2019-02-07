@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Milkitic.OsuPlayer.Utils
+namespace Milky.OsuPlayer.Utils
 {
     static class DictionaryExtension
     {

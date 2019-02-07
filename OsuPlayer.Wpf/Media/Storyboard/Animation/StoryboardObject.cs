@@ -1,16 +1,16 @@
-﻿using Milkitic.OsuPlayer.Media.Storyboard.Util;
-using OSharp.Storyboard;
+﻿using OSharp.Storyboard;
 using OSharp.Storyboard.Common;
 using OSharp.Storyboard.Events;
 using SharpDX;
 using System;
 using System.IO;
 using System.Linq;
+using Milky.OsuPlayer.Media.Storyboard.Util;
 using D2D = SharpDX.Direct2D1;
 using Gdip = System.Drawing;
 using Mathe = SharpDX.Mathematics.Interop;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
+namespace Milky.OsuPlayer.Media.Storyboard.Animation
 {
     public class StoryboardObject : IDisposable
     {

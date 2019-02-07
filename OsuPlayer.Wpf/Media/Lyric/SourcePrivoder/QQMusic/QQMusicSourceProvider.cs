@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
 
-namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic
+namespace Milky.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic
 {
     public class QqMusicSourceProvider
         : SourceProviderBase<Song, QqMusicSearch, QqMusicLyricDownloader, QqMusicLyricParser>

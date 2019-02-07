@@ -1,7 +1,4 @@
-﻿using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Utils;
-using Milkitic.OsuPlayer.Windows;
-using osu_database_reader.Components.Beatmaps;
+﻿using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,8 +9,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.Windows;
 
-namespace Milkitic.OsuPlayer.Pages
+namespace Milky.OsuPlayer.Pages
 {
     /// <summary>
     /// SearchPage.xaml 的交互逻辑

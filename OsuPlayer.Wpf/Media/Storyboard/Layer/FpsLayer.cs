@@ -6,7 +6,7 @@ using D2D = SharpDX.Direct2D1;
 using DW = SharpDX.DirectWrite;
 using Mathe = SharpDX.Mathematics.Interop;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard.Layer
+namespace Milky.OsuPlayer.Media.Storyboard.Layer
 {
     internal class FpsLayer : CustomLayer
     {

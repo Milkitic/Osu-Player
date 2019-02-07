@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSharp.Beatmap", "..\..\OSh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSharp.Storyboard", "..\..\OSharp\OSharp.Storyboard\OSharp.Storyboard.csproj", "{AEFCAAAC-94A8-48AB-89C9-58B7B55AF6C8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSharp.Common", "..\..\OSharp\OSharp.Common\OSharp.Common.csproj", "{7CC8C305-E319-4A56-BEB3-680077D4837C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{AEFCAAAC-94A8-48AB-89C9-58B7B55AF6C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEFCAAAC-94A8-48AB-89C9-58B7B55AF6C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEFCAAAC-94A8-48AB-89C9-58B7B55AF6C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CC8C305-E319-4A56-BEB3-680077D4837C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CC8C305-E319-4A56-BEB3-680077D4837C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CC8C305-E319-4A56-BEB3-680077D4837C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CC8C305-E319-4A56-BEB3-680077D4837C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

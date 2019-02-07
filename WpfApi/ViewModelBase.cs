@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
-namespace Milkitic.WpfApi
+namespace Milky.WpfApi
 {
     public class ViewModelBase : INotifyPropertyChanged
     {

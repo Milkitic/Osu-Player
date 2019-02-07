@@ -1,16 +1,16 @@
-﻿using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
-using System;
+﻿using System;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
 
-namespace Milkitic.OsuPlayer.Media.Lyric
+namespace Milky.OsuPlayer.Media.Lyric
 {
     public class LyricProvider
     {
-        public ProvideTypeEnum ProvideType { get; set; }
+        public LyricProvideType ProvideType { get; set; }
 
         private readonly SourceProviderBase _sourceProvider;
         private readonly bool _strictMode;
 
-        public LyricProvider(SourceProviderBase provider, ProvideTypeEnum provideType, bool strictMode)
+        public LyricProvider(SourceProviderBase provider, LyricProvideType provideType, bool strictMode)
         {
             _sourceProvider = provider;
             _strictMode = strictMode;
@@ -22,7 +22,7 @@ namespace Milkitic.OsuPlayer.Media.Lyric
             Model.Lyric lyric;
             switch (ProvideType)
             {
-                case ProvideTypeEnum.PreferBoth:
+                case LyricProvideType.PreferBoth:
                     var transLyrics = InnerGetLyric(artist, title, duration, true);
                     var rawLyrics = InnerGetLyric(artist, title, duration, false);
                     Console.WriteLine(@"翻译歌词: {0}, 原歌词: {1}.", transLyrics != null, rawLyrics != null);
@@ -30,7 +30,7 @@ namespace Milkitic.OsuPlayer.Media.Lyric
                     break;
                 default:
                     lyric = InnerGetLyric(artist, title, duration, false);
-                    if (ProvideType == ProvideTypeEnum.PreferTranslated)
+                    if (ProvideType == LyricProvideType.PreferTranslated)
                     {
                         var tmp = InnerGetLyric(artist, title, duration, true);
                         if (tmp != null)
@@ -63,10 +63,10 @@ namespace Milkitic.OsuPlayer.Media.Lyric
         {
             throw new NotImplementedException();
         }
+    }
 
-        public enum ProvideTypeEnum
-        {
-            Original, PreferTranslated, PreferBoth
-        }
+    public enum LyricProvideType
+    {
+        Original, PreferTranslated, PreferBoth
     }
 }

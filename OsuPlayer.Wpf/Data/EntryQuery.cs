@@ -1,12 +1,12 @@
-﻿using Milkitic.OsuPlayer;
-using Milkitic.OsuPlayer.Utils;
+﻿using Milky.OsuPlayer;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Milky.OsuPlayer.Utils;
 
-namespace Milkitic.OsuPlayer.Data
+namespace Milky.OsuPlayer.Data
 {
     internal static class EntryQuery
     {

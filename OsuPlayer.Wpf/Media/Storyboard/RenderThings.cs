@@ -2,7 +2,7 @@
 using OSharp.Storyboard.Events;
 using System.Collections.Generic;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard
+namespace Milky.OsuPlayer.Media.Storyboard
 {
     public struct RenderThings
     {

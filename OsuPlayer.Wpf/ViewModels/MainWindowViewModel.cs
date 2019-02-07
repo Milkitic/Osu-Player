@@ -1,7 +1,4 @@
-﻿using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.Windows;
-using Milkitic.WpfApi;
-using Milkitic.WpfApi.Commands;
+﻿using Milky.OsuPlayer.Windows;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,8 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Milky.OsuPlayer.Data;
+using Milky.WpfApi;
+using Milky.WpfApi.Commands;
 
-namespace Milkitic.OsuPlayer.ViewModels
+namespace Milky.OsuPlayer.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {

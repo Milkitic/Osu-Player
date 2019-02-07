@@ -1,10 +1,10 @@
-﻿using Milkitic.OsuPlayer.Media.Lyric.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Milky.OsuPlayer.Media.Lyric.Model;
 
-namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base
+namespace Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base
 {
     public abstract class SourceProviderBase
     {

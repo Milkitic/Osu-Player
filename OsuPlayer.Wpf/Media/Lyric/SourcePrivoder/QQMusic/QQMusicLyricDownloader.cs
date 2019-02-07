@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
 using Newtonsoft.Json.Linq;
 
-namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic
+namespace Milky.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic
 {
 
     public class QqMusicLyricDownloader : LyricDownloaderBase

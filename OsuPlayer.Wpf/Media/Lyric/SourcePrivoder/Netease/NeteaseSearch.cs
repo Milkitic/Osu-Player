@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
 using Newtonsoft.Json.Linq;
 
-namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Netease
+namespace Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Netease
 {
     public class NeteaseSearch : SongSearchBase<NeteaseSearch.Song>
     {

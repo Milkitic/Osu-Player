@@ -1,17 +1,6 @@
 ﻿using Microsoft.Win32;
-using Milkitic.OsuPlayer;
-using Milkitic.OsuPlayer.Control;
-using Milkitic.OsuPlayer.Data;
-using Milkitic.OsuPlayer.L18N;
-using Milkitic.OsuPlayer.Media.Lyric;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Auto;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Kugou;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Netease;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic;
-using Milkitic.OsuPlayer.Media.Music;
-using Milkitic.OsuPlayer.Media.Storyboard;
-using Milkitic.OsuPlayer.Utils;
+using Milky.OsuPlayer;
+using Milky.OsuPlayer.Control;
 using Newtonsoft.Json;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;
@@ -23,8 +12,19 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.L18N;
+using Milky.OsuPlayer.Media.Lyric;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Auto;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Kugou;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Netease;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic;
+using Milky.OsuPlayer.Media.Music;
+using Milky.OsuPlayer.Media.Storyboard;
+using Milky.OsuPlayer.Utils;
 
-namespace Milkitic.OsuPlayer
+namespace Milky.OsuPlayer
 {
     /// <summary>
     /// App.xaml 的交互逻辑
@@ -129,7 +129,7 @@ namespace Milkitic.OsuPlayer
                     throw new ArgumentOutOfRangeException();
             }
 
-            LyricProvider = new LyricProvider(provider, LyricProvider.ProvideTypeEnum.Original, strict);
+            LyricProvider = new LyricProvider(provider, LyricProvideType.Original, strict);
         }
 
         private static void InitLocalDb()

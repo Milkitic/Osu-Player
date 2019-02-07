@@ -1,10 +1,10 @@
-﻿using Milkitic.OsuPlayer.Media.Storyboard.Util;
-using OSharp.Storyboard;
+﻿using OSharp.Storyboard;
 using SharpDX;
 using SharpDX.Direct2D1;
 using System.IO;
+using Milky.OsuPlayer.Media.Storyboard.Util;
 
-namespace Milkitic.OsuPlayer.Media.Storyboard.Animation
+namespace Milky.OsuPlayer.Media.Storyboard.Animation
 {
     public sealed class AnimatedObject : StoryboardObject
     {

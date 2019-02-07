@@ -3,11 +3,12 @@ using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Data.SQLite.EF6.Migrations;
 using System.Linq;
+using Milky.OsuPlayer.Data;
 
-namespace Milkitic.OsuPlayer.Migrations
+namespace Milky.OsuPlayer.Migrations
 {
 
-    internal sealed class MigrationConfiguration : DbMigrationsConfiguration<Milkitic.OsuPlayer.Data.ApplicationDbContext>
+    internal sealed class MigrationConfiguration : DbMigrationsConfiguration<ApplicationDbContext>
     {
         public MigrationConfiguration()
         {
@@ -16,7 +17,7 @@ namespace Milkitic.OsuPlayer.Migrations
             SetSqlGenerator("System.Data.SQLite", new SQLiteMigrationSqlGenerator());
         }
 
-        protected override void Seed(Milkitic.OsuPlayer.Data.ApplicationDbContext context)
+        protected override void Seed(ApplicationDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 

@@ -4,7 +4,7 @@ using OSharp.Beatmap.Sections.Timing;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Milkitic.OsuPlayer.Media
+namespace Milky.OsuPlayer.Media
 {
     public class HitsoundElement
     {
@@ -13,9 +13,9 @@ namespace Milkitic.OsuPlayer.Media
         public float Volume { get; set; }
         public HitsoundType Hitsound { get; set; }
         public int Track { get; set; }
-        public TimingSampleset LineSample { get; set; }
-        public ObjectSampleset Sample { get; set; }
-        public ObjectSampleset Addition { get; set; }
+        public TimingSamplesetType LineSample { get; set; }
+        public ObjectSamplesetType Sample { get; set; }
+        public ObjectSamplesetType Addition { get; set; }
         public string CustomFile { get; set; }
         public string[] FilePaths { get; set; }
         public string[] DefaultFileNames
@@ -33,44 +33,44 @@ namespace Milkitic.OsuPlayer.Media
                 switch (LineSample)
                 {
 
-                    case TimingSampleset.Soft:
+                    case TimingSamplesetType.Soft:
                         sample = "soft";
                         break;
-                    case TimingSampleset.Drum:
+                    case TimingSamplesetType.Drum:
                         sample = "drum";
                         break;
                     default:
-                    case TimingSampleset.None:
-                    case TimingSampleset.Normal:
+                    case TimingSamplesetType.None:
+                    case TimingSamplesetType.Normal:
                         sample = "normal";
                         break;
                 }
                 switch (Sample)
                 {
-                    case ObjectSampleset.Soft:
+                    case ObjectSamplesetType.Soft:
                         sample = "soft";
                         break;
-                    case ObjectSampleset.Drum:
+                    case ObjectSamplesetType.Drum:
                         sample = "drum";
                         break;
-                    case ObjectSampleset.Normal:
+                    case ObjectSamplesetType.Normal:
                         sample = "normal";
                         break;
                 }
 
                 switch (Addition)
                 {
-                    case ObjectSampleset.Soft:
+                    case ObjectSamplesetType.Soft:
                         addition = "soft";
                         break;
-                    case ObjectSampleset.Drum:
+                    case ObjectSamplesetType.Drum:
                         addition = "drum";
                         break;
-                    case ObjectSampleset.Normal:
+                    case ObjectSamplesetType.Normal:
                         addition = "normal";
                         break;
                     default:
-                    case ObjectSampleset.Auto:
+                    case ObjectSamplesetType.Auto:
                         addition = sample;
                         break;
                 }

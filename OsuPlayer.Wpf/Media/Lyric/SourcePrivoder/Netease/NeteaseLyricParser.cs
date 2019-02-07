@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Milkitic.OsuPlayer.Media.Lyric.Model;
-using Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
+using Milky.OsuPlayer.Media.Lyric.Model;
+using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
 
-namespace Milkitic.OsuPlayer.Media.Lyric.SourcePrivoder.Netease
+namespace Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Netease
 {
     public class NeteaseLyricParser : LyricParserBase
     {

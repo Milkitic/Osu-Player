@@ -1,8 +1,8 @@
-﻿using Milkitic.WpfApi;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using Milky.WpfApi;
 using osu_database_reader.Components.Beatmaps;
 
-namespace Milkitic.OsuPlayer.ViewModels
+namespace Milky.OsuPlayer.ViewModels
 {
     public class SelectCollectionPageViewModel : ViewModelBase
     {

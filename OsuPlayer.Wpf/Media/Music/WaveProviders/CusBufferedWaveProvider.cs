@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using NAudio.Wave;
 
-namespace Milkitic.OsuPlayer.Media.Music.WaveProviders
+namespace Milky.OsuPlayer.Media.Music.WaveProviders
 {
     public class CusBufferedWaveProvider : IWaveProvider
     {

@@ -1,12 +1,12 @@
-﻿using Milkitic.OsuPlayer.Data;
-using osu_database_reader.Components.Beatmaps;
+﻿using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Data;
 
-namespace Milkitic.OsuPlayer
+namespace Milky.OsuPlayer
 {
     public class CurrentInfo
     {
