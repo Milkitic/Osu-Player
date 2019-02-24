@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Media;
+using Milky.OsuPlayer.Media.Music;
+using Milky.OsuPlayer.Pages;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -6,11 +11,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
-using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Media;
-using Milky.OsuPlayer.Media.Music;
-using Milky.OsuPlayer.Pages;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -43,7 +43,7 @@ namespace Milky.OsuPlayer.Windows
             source?.AddHook(HwndMessageHook);
 
             bool? sb = await App.Updater.CheckUpdateAsync();
-            if (sb.HasValue && sb.Value)
+            if (sb.HasValue && sb.Value && App.Updater.NewRelease.NewVerString != App.Config.IgnoredVer)
             {
                 NewVersionWindow newVersionWindow = new NewVersionWindow(App.Updater.NewRelease, this);
                 newVersionWindow.ShowDialog();

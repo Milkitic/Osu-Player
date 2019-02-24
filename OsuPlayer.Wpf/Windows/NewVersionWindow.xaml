@@ -1,14 +1,22 @@
-﻿<windows:WindowBase x:Class="Milky.OsuPlayer.Windows.NewVersionWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Milky.OsuPlayer"
-        xmlns:windows="clr-namespace:Milky.OsuPlayer.Windows"
-        mc:Ignorable="d"
-        Title="有可用更新" Height="320" Width="480"
-        Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico" ResizeMode="NoResize">
-    <Grid x:Name="MainGrid">
+﻿<windows:WindowBase
+    x:Class="Milky.OsuPlayer.Windows.NewVersionWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Milky.OsuPlayer"
+    xmlns:windows="clr-namespace:Milky.OsuPlayer.Windows"
+    xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+    mc:Ignorable="d"
+    Title="有可用更新" Height="320" Width="480"
+    Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico" ResizeMode="NoResize">
+    <windows:WindowBase.Background>
+        <LinearGradientBrush>
+            <GradientStop Offset="0" Color="  #303030" />
+            <GradientStop Offset="1" Color="  #202020" />
+        </LinearGradientBrush>
+    </windows:WindowBase.Background>
+    <Grid x:Name="MainGrid" Margin="2">
         <Grid.DataContext>
             <local:Release />
         </Grid.DataContext>
@@ -22,21 +30,70 @@
             <ColumnDefinition Width="auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Label Grid.Column="0" Grid.Row="0" Style="{StaticResource ConfigLabelStyle}" Content="当前版本：" />
-        <Label Grid.Column="1" Grid.Row="0" x:Name="CurrentVer" Style="{StaticResource ConfigLabel2Style}"
-               Content="{Binding NowVerString}" VerticalContentAlignment="Center" />
-        <Label Grid.Column="0" Grid.Row="1" Style="{StaticResource ConfigLabelStyle}" Content="新版本：" />
-        <Label Grid.Column="1" Grid.Row="1" x:Name="NewVer" Style="{StaticResource ConfigLabel2Style}"
-               Content="{Binding NewVerString}" VerticalContentAlignment="Center" />
-        <Label Grid.Column="0" Grid.Row="2" Style="{StaticResource ConfigLabelStyle}" Content="更新说明：" />
-        <TextBox Grid.Column="1" Grid.Row="2" x:Name="Body" Margin="5,5,5,0"
-                 Text="{Binding Body}" TextWrapping="Wrap" AcceptsReturn="True"
-                 VerticalScrollBarVisibility="Visible" />
-        <StackPanel Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal"
+        <Label Grid.Column="0" Grid.Row="0"
+               Content="当前版本："
+               HorizontalAlignment="Right"
+               Margin="5,6,0,3"
+               Foreground="#f0f0f0" />
+        <Label Grid.Column="1" Grid.Row="0"
+               x:Name="CurrentVer"
+               Style="{StaticResource ConfigLabel2Style}"
+               Content="{Binding NowVerString}"
+               VerticalContentAlignment="Center"
+               Foreground="{StaticResource ExtraLightBrush}" />
+        <Label Grid.Column="0" Grid.Row="1"
+               Content="新版本："
+               FontWeight="Bold"
+               HorizontalContentAlignment="Right"
+               Margin="5,3,0,3"
+               Foreground="{StaticResource ExtraLightBrush}" />
+        <Label Grid.Column="1" Grid.Row="1"
+               x:Name="NewVer"
+               Style="{StaticResource ConfigLabel2Style}"
+               Content="{Binding NewVerString}"
+               VerticalContentAlignment="Center"
+               FontWeight="Bold"
+               Foreground="{StaticResource ExtraLightBrush}" />
+        <Label Grid.Column="0" Grid.Row="2"
+               Content="更新说明："
+               HorizontalAlignment="Right"
+               Margin="5,3,0,3"
+               Foreground="#f0f0f0" />
+        <Border Grid.Column="1" Grid.Row="2"
+                Background="#F0F0F3">
+            <TextBox Grid.Column="1" Grid.Row="2"
+                     x:Name="Body"
+                     IsReadOnly="True"
+                     Margin="3"
+                     Text="{Binding Body}" TextWrapping="Wrap"
+                     AcceptsReturn="True"
+                     VerticalScrollBarVisibility="Auto"
+                     BorderThickness="0"
+                     Padding="0,5"
+                     Background="Transparent" />
+        </Border>
+        <StackPanel Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+                    Orientation="Horizontal"
                     HorizontalAlignment="Right">
-            <Button Style="{StaticResource CollectionButtonStyle}" Content="忽略此版本" Width="70" Height="25" Margin="0,5,5,5" />
-            <Button Style="{StaticResource CollectionButtonStyle}" Content="以后再说" Width="70" Height="25" Margin="0,5,5,5" />
-            <Button x:Name="BtnUpdate" Style="{StaticResource CollectionButtonStyle}" Content="现在更新" Width="70" Height="25" Margin="0,5,5,5" Click="BtnUpdate_Click" />
+            <dms:DMButton
+                Content="忽略此版本"
+                Width="70"
+                Height="25"
+                Margin="0,5,5,3"
+                Click="BtnIgnore_Click" />
+            <dms:DMButton
+                Content="以后再说"
+                Width="70"
+                Height="25"
+                Margin="0,5,5,3"
+                Click="BtnLater_Click" />
+            <dms:DMButton
+                x:Name="BtnUpdate"
+                Content="现在更新"
+                Width="70"
+                Height="25"
+                Margin="0,5,3,3"
+                Click="BtnUpdate_Click" />
         </StackPanel>
     </Grid>
 </windows:WindowBase>

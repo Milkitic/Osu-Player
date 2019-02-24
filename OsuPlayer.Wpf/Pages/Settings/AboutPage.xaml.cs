@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Windows;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -13,8 +15,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -64,9 +64,9 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             //todo: action
             CheckUpdate.IsEnabled = false;
-            var b = await App.Updater.CheckUpdateAsync();
+            var hasNew = await App.Updater.CheckUpdateAsync();
             CheckUpdate.IsEnabled = true;
-            if (b == null)
+            if (hasNew == null)
             {
                 MsgBox.Show(_configWindow, "检查更新时出错。", _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -75,7 +75,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             App.Config.LastUpdateCheck = DateTime.Now;
             GetLastUpdate();
             App.SaveConfig();
-            if (b.Value)
+            if (hasNew == true)
             {
                 NewVersion.Visibility = Visibility.Visible;
                 NewVersion_Click(sender, e);

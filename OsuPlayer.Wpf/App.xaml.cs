@@ -68,6 +68,7 @@ namespace Milky.OsuPlayer
             app.InitializeComponent();
             app.Run();
         }
+
         public static void SetAlignment()
         {
             //获取系统是以Left-handed（true）还是Right-handed（false）
@@ -78,7 +79,7 @@ namespace Milky.OsuPlayer
                 // change to false
                 var t = typeof(SystemParameters);
                 var field = t.GetField("_menuDropAlignment", BindingFlags.NonPublic | BindingFlags.Static);
-                field.SetValue(null, false);
+                field?.SetValue(null, false);
 
                 ifLeft = SystemParameters.MenuDropAlignment;
             }

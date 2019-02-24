@@ -18,6 +18,7 @@ namespace Milky.OsuPlayer
         public List<MapIdentity> CurrentList { get; set; } = new List<MapIdentity>();
         public string CurrentPath { get; set; }
         public DateTime? LastUpdateCheck { get; set; } = null;
+        public string IgnoredVer { get; set; } = null;
     }
 
     public class VolumeControl

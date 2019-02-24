@@ -25,5 +25,17 @@ namespace Milky.OsuPlayer.Windows
             updateWindow.Show();
             Close();
         }
+
+        private void BtnIgnore_Click(object sender, RoutedEventArgs e)
+        {
+            App.Config.IgnoredVer = _release.NewVerString;
+            App.SaveConfig();
+            Close();
+        }
+
+        private void BtnLater_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }
