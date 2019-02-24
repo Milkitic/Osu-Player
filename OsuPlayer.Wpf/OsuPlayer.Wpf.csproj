@@ -61,8 +61,11 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DMSkin.WPF, Version=2.5.0.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DMSkin.WPF.2.5.0.9\lib\net40\DMSkin.WPF.dll</HintPath>
+    <Reference Include="DMSkin.Core, Version=2.5.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DMSkin.Core.2.5.1.1\lib\net40\DMSkin.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DMSkin.WPF, Version=2.5.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DMSkin.WPF.2.5.1.1\lib\net40\DMSkin.WPF.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
@@ -76,8 +79,8 @@
     <Reference Include="ffme.win, Version=2018.9.23.40367, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FFME.Windows.4.0.270\lib\net461\ffme.win.dll</HintPath>
     </Reference>
-    <Reference Include="FFmpeg.AutoGen, Version=4.0.0.4, Culture=neutral, PublicKeyToken=9b7632533a381715, processorArchitecture=MSIL">
-      <HintPath>..\packages\FFmpeg.AutoGen.4.0.0.4\lib\net45\FFmpeg.AutoGen.dll</HintPath>
+    <Reference Include="FFmpeg.AutoGen, Version=4.1.0.2, Culture=neutral, PublicKeyToken=9b7632533a381715, processorArchitecture=MSIL">
+      <HintPath>..\packages\FFmpeg.AutoGen.4.1.0.2\lib\net45\FFmpeg.AutoGen.dll</HintPath>
     </Reference>
     <Reference Include="Gma.System.MouseKeyHook, Version=5.6.130.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MouseKeyHook.5.6.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
@@ -85,14 +88,14 @@
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
-    <Reference Include="NAudio, Version=1.8.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
+    <Reference Include="NAudio, Version=1.8.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.8.5\lib\net35\NAudio.dll</HintPath>
     </Reference>
     <Reference Include="NAudio.Vorbis, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NAudio.Vorbis.1.0.0.0\lib\net35\NAudio.Vorbis.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NVorbis, Version=0.8.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NVorbis.0.8.6\lib\net35\NVorbis.dll</HintPath>
@@ -128,8 +131,8 @@
     <Reference Include="System.Data.SQLite.EF6, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.EF6.1.0.109.0\lib\net451\System.Data.SQLite.EF6.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data.SQLite.EF6.Migrations, Version=1.0.104.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.EF6.Migrations.1.0.104\lib\System.Data.SQLite.EF6.Migrations.dll</HintPath>
+    <Reference Include="System.Data.SQLite.EF6.Migrations, Version=1.0.106.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.EF6.Migrations.1.0.106\lib\System.Data.SQLite.EF6.Migrations.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.SQLite.Linq, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.Linq.1.0.109.0\lib\net451\System.Data.SQLite.Linq.dll</HintPath>
@@ -491,9 +494,7 @@
     <Compile Include="Windows\MainWindow.Event.cs" />
     <None Include="app.manifest" />
     <None Include="Media\Lyric\readme.md" />
-    <None Include="migrate.bat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="migrate.bat" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
