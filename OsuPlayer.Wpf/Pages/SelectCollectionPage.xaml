@@ -130,7 +130,7 @@
 
         </Grid>
         <Grid>
-            <Frame Name="FramePop" NavigationUIVisibility="Hidden" Visibility="Collapsed"/>
+            <Frame Name="FramePop" NavigationUIVisibility="Hidden"/>
         </Grid>
     </Grid>
 </Page>
