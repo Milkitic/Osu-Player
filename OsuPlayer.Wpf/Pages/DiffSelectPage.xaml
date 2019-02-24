@@ -7,12 +7,16 @@
       xmlns:osuPlayer="clr-namespace:Milky.OsuPlayer"
       xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
       xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+      xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="DiffSelectPage">
     <Page.DataContext>
         <viewModels:DiffSelectPageViewModel />
     </Page.DataContext>
+    <Page.Resources>
+        <converter:VersionToStringConverter x:Key="VersionToStringConverter" />
+    </Page.Resources>
     <Grid Background="{StaticResource WhiteBrush80}">
         <Border x:Name="Parallel" Background="White" Width="{Binding ActualWidth, ElementName=BoxGrid}"
                 Height="{Binding ActualHeight, ElementName=BoxGrid}" HorizontalAlignment="Center"
@@ -62,9 +66,17 @@
                                     </Grid.ColumnDefinitions>
                                     <Label Grid.Column="0"
                                            Foreground="#9A9A9A"
-                                           VerticalAlignment="Center">
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center">
                                         <TextBlock TextWrapping="Wrap"
-                                                   Text="{Binding GameMode}">
+                                                   Text="{Binding GameMode, Converter={StaticResource VersionToStringConverter}}"
+                                                   FontWeight="Bold"
+                                                   FontSize="25">
+                                            <TextBlock.RenderTransform>
+                                                <RotateTransform Angle="-5" 
+                                                                 CenterX="5"
+                                                                 CenterY="5"/>
+                                            </TextBlock.RenderTransform>
                                         </TextBlock>
                                     </Label>
                                     <Grid Grid.Column="1">
@@ -77,7 +89,8 @@
                                                Foreground="#303030"
                                                VerticalAlignment="Center">
                                             <TextBlock TextWrapping="Wrap"
-                                                       Text="{Binding Version}">
+                                                       Text="{Binding Version}"
+                                                       FontWeight="Bold">
                                             </TextBlock>
                                         </Label>
                                         <StackPanel Grid.Row="1" Orientation="Horizontal">

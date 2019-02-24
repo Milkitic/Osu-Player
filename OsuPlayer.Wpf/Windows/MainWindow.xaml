@@ -331,7 +331,6 @@
                 </Grid>
             </DockPanel>
             <Grid x:Name="FullModeArea" Grid.Row="0" Margin="1,0,1,0"
-                  Opacity="0"
                   Visibility="{Binding EnableVideo,Converter={StaticResource CvtVideoShow}}">
                 <Border x:Name="ResizableArea">
                     <Grid>

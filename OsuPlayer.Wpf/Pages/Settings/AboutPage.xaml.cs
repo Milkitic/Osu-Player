@@ -94,5 +94,15 @@ namespace Milky.OsuPlayer.Pages.Settings
             _newVersionWindow = new NewVersionWindow(App.Updater.NewRelease, _mainWindow);
             _newVersionWindow.ShowDialog();
         }
+
+        private void LinkLicense_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://github.com/Milkitic/Osu-Player/blob/master/LICENSE");
+        }
+
+        private void LinkPrivacy_Click(object sender, RoutedEventArgs e)
+        {
+            MsgBox.Show("This software will NOT collect any user information.");
+        }
     }
 }
