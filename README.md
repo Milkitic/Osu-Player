@@ -3,8 +3,11 @@
 ![](https://img.shields.io/badge/license-GPL-blue.svg)
 
 **A multifunctional player for playing music, hitsound, video and storyboard for osuers!.**
+
 ![](http://puu.sh/CQWkb/7decbef183.png)
 ![](http://puu.sh/CQWkO/1ef95bc770.png)
+![](http://puu.sh/CQYlm/01e9c6417b.jpg)
+
 Now you can close osu! and open osu player after making a cup of tea, and sit down to enjoy your afternoon.
 
 ## Dependencies
