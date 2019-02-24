@@ -1,4 +1,6 @@
-﻿using OSharp.Beatmap;
+﻿using Milky.OsuPlayer.Media.Lyric.Model;
+using Milky.OsuPlayer.ViewModels;
+using OSharp.Beatmap;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,8 +17,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using Milky.OsuPlayer.Media.Lyric.Model;
-using Milky.OsuPlayer.ViewModels;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
@@ -52,7 +52,7 @@ namespace Milky.OsuPlayer.Windows
             ViewModel = _mainWindow.ViewModel;
             InitializeComponent();
 
-            FileInfo fi = new FileInfo(Path.Combine(Domain.ResourcePath, "font.ttc"));
+            FileInfo fi = new FileInfo(Path.Combine(Domain.ExternalPath, "font", "default.ttc"));
             if (!fi.Exists) _fontFamily = new FontFamily("等线");
             else
             {
@@ -119,7 +119,7 @@ namespace Milky.OsuPlayer.Windows
 
             _lyricList = lyric?.LyricSentencs ?? new List<Sentence>();
             _lyricList.Insert(0,
-                new Sentence(osuFile.Metadata.ArtistMeta.Unicode + " - " + osuFile.Metadata.TitleMeta.Unicode, 0));
+                new Sentence(osuFile.Metadata.ArtistMeta.ToUnicodeString() + " - " + osuFile.Metadata.TitleMeta.ToUnicodeString(), 0));
         }
 
         public void StartWork()
@@ -242,7 +242,7 @@ namespace Milky.OsuPlayer.Windows
             //using (Brush bBg = new SolidBrush(Color.FromArgb(48, 0, 176, 255)))
             //using (Pen pBg = new Pen(Color.FromArgb(192, 0, 176, 255), 3))
             using (Brush b = new TextureBrush(
-                    Image.FromFile(Path.Combine(Domain.ResourcePath, "texture", "2.png"))))
+                    Image.FromFile(Path.Combine(Domain.ExternalPath, "texture", "osu.png"))))
             //using (Pen p = new Pen(Color.Red))
             using (Pen p2 = new Pen(Color.FromArgb(255, 255, 255), 6))
             using (Font f = new Font(_fontFamily, 32))

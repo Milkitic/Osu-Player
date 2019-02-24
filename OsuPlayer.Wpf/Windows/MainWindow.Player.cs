@@ -78,8 +78,8 @@ namespace Milky.OsuPlayer.Windows
                     BeatmapEntry entry = App.Beatmaps.GetBeatmapByIdentity(nowIdentity);
                     OsuFile osuFile = App.HitsoundPlayer.Osufile;
 
-                    LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.TitleMeta.Unicode;
-                    LblArtist.Content = App.HitsoundPlayer.Osufile.Metadata.ArtistMeta.Unicode;
+                    LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.TitleMeta.ToUnicodeString();
+                    LblArtist.Content = App.HitsoundPlayer.Osufile.Metadata.ArtistMeta.ToUnicodeString();
                     ((ToolTip)NotifyIcon.TrayToolTip).Content =
                         (string)LblArtist.Content + " - " + (string)LblTitle.Content;
                     bool isFaved = SetFaved(nowIdentity);

@@ -12,10 +12,10 @@ namespace Milky.OsuPlayer
         public static string LyricCachePath => Path.Combine(CachePath, "_Lyric");
 
         public static string DefaultPath => Path.Combine(CurrentPath, "Default");
-        public static string ResourcePath => Path.Combine(CurrentPath, "Resource");
+        public static string ExternalPath => Path.Combine(CurrentPath, "External");
         public static string MusicPath => Path.Combine(CurrentPath, "Music");
         public static string BackgroundPath => Path.Combine(CurrentPath, "Background");
-        public static string PluginPath => Path.Combine(CurrentPath, "Plugins");
+        public static string PluginPath => Path.Combine(ExternalPath, "Plugins");
 
         public static string OsuPath =>
             App.UseDbMode ? new FileInfo(App.Config.General.DbPath).Directory.FullName : null;

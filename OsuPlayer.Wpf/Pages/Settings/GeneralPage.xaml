@@ -39,7 +39,7 @@
                     <dms:DMRadioButton IconColor="#FF1E9FFF" Margin="8,0"
                                        x:Name="RadioExit"  Content="退出程序"
                                        HorizontalAlignment="Left" Checked="Radio_CheckChanged" />
-                    <dms:DMCheckBox IconColor="#FF1E9FFF" Margin="8,0"
+                    <dms:DMCheckBox IconColor="#FF1E9FFF" Margin="8,10"
                                     x:Name="AsDefault"  Content="设置默认选项"
                                     HorizontalAlignment="Left" Checked="AsDefault_CheckChanged"
                                     Unchecked="AsDefault_CheckChanged" />

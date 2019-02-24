@@ -46,8 +46,8 @@ namespace Milky.OsuPlayer.Windows
         {
             if (!LyricWindow.IsVisible) return;
             if (App.HitsoundPlayer == null) return;
-            var lyric = App.LyricProvider.GetLyric(App.HitsoundPlayer.Osufile.Metadata.ArtistMeta.Unicode,
-                App.HitsoundPlayer.Osufile.Metadata.TitleMeta.Unicode, App.MusicPlayer.Duration);
+            var lyric = App.LyricProvider.GetLyric(App.HitsoundPlayer.Osufile.Metadata.ArtistMeta.ToUnicodeString(),
+                App.HitsoundPlayer.Osufile.Metadata.TitleMeta.ToUnicodeString(), App.MusicPlayer.Duration);
             LyricWindow.SetNewLyric(lyric, App.HitsoundPlayer.Osufile);
             LyricWindow.StartWork();
         }
