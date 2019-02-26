@@ -1,4 +1,10 @@
-﻿using osu_database_reader.Components.Beatmaps;
+﻿using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.Utils;
+using Milky.WpfApi;
+using Milky.WpfApi.Collections;
+using Milky.WpfApi.Commands;
+using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,18 +21,13 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Utils;
-using Milky.WpfApi;
-using Milky.WpfApi.Commands;
 
 namespace Milky.OsuPlayer.ViewModels
 {
     public class ExportPageViewModel : ViewModelBase
     {
         private string _exportPath;
-        private ObservableCollection<BeatmapDataModel> _dataModelList;
+        private NumberableObservableCollection<BeatmapDataModel> _dataModelList;
         private IEnumerable<BeatmapEntry> _entries;
 
         public string UiStrExported => App.UiMetadata.Exported;
@@ -40,7 +41,7 @@ namespace Milky.OsuPlayer.ViewModels
         public string UiStrExportAgain => App.UiMetadata.ExportAgain;
         public string UiStrOpenFolder => App.UiMetadata.OpenFileFolder;
 
-        public ObservableCollection<BeatmapDataModel> DataModelList
+        public NumberableObservableCollection<BeatmapDataModel> DataModelList
         {
             get => _dataModelList;
             set
@@ -174,17 +175,16 @@ namespace Milky.OsuPlayer.ViewModels
             }
 
             _entries = App.Beatmaps.GetMapListFromDb(maps);
-            var viewModels = _entries.Transform(false).ToList();
+            var viewModels = _entries.ToViewModel(false).ToList();
             for (var i = 0; i < viewModels.Count; i++)
             {
                 var sb = list.First(k => k.MapIdentity.Equals(viewModels[i].GetIdentity()));
-                viewModels[i].Id = (i + 1).ToString("00");
                 viewModels[i].ExportFile = sb.path;
                 viewModels[i].FileSize = sb.size;
                 viewModels[i].ExportTime = sb.time;
             }
 
-            DataModelList = new ObservableCollection<BeatmapDataModel>(viewModels);
+            DataModelList = new NumberableObservableCollection<BeatmapDataModel>(viewModels);
         }
     }
 }

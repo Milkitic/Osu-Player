@@ -1,4 +1,7 @@
 ﻿using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.ViewModels;
+using Milky.OsuPlayer.Windows;
+using Milky.WpfApi.Collections;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
@@ -14,8 +17,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -25,7 +26,6 @@ namespace Milky.OsuPlayer.Pages
     public partial class DiffSelectPage : Page
     {
         private readonly MainWindow _mainWindow;
-        private Action _callback;
 
         public Action Callback
         {
@@ -43,7 +43,7 @@ namespace Milky.OsuPlayer.Pages
             ViewModel = (DiffSelectPageViewModel)DataContext;
             _mainWindow = mainWindow;
             ViewModel.Entries = entries;
-            ViewModel.DataModels = ViewModel.Entries.Transform(true);
+            ViewModel.DataModels = new NumberableObservableCollection<BeatmapDataModel>(ViewModel.Entries.ToViewModel(true));
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)
@@ -54,7 +54,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void Dispose()
         {
-            GC.SuppressFinalize(this);
+         
         }
     }
 }

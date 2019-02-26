@@ -188,7 +188,7 @@ namespace Milky.OsuPlayer.Windows
                     switch (MainFrame.Content)
                     {
                         case RecentPlayPage recentPlayPage:
-                            var item = recentPlayPage.ViewModels.FirstOrDefault(k =>
+                            var item = recentPlayPage.DataModels.FirstOrDefault(k =>
                                 k.GetIdentity().Equals(nowIdentity));
                             recentPlayPage.RecentList.SelectedItem = item;
                             break;

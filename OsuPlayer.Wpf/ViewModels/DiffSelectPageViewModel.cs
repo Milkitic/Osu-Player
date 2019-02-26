@@ -8,15 +8,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Milky.WpfApi;
+using Milky.WpfApi.Collections;
 using Milky.WpfApi.Commands;
 
 namespace Milky.OsuPlayer.ViewModels
 {
     public class DiffSelectPageViewModel : ViewModelBase
     {
-        private IEnumerable<BeatmapDataModel> _dataModels;
+        private NumberableObservableCollection<BeatmapDataModel> _dataModels;
 
-        public IEnumerable<BeatmapDataModel> DataModels
+        public NumberableObservableCollection<BeatmapDataModel> DataModels
         {
             get => _dataModels;
             set

@@ -93,7 +93,7 @@
                         </ListView.ContextMenu>
                         <ListView.Resources>
                             <DataTemplate x:Key="IdDt">
-                                <Label VerticalAlignment="Center" Margin="0,3" Content="{Binding Id, Mode=OneWay}"/>
+                                <Label VerticalAlignment="Center" Margin="0,3" Content="{Binding Index, Mode=OneWay}"/>
                             </DataTemplate>
                             <DataTemplate x:Key="TitleDt">
                                 <Label VerticalAlignment="Center" Content="{Binding AutoTitle}" />

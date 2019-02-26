@@ -41,7 +41,6 @@ namespace Milky.OsuPlayer.Pages
         private void Dispose()
         {
             _mainWindow.FramePop.Navigate(null);
-            GC.SuppressFinalize(this);
         }
 
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)

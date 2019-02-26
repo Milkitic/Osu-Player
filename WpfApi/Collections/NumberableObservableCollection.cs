@@ -10,6 +10,11 @@ namespace Milky.WpfApi.Collections
 {
     public sealed class NumberableObservableCollection<T> : ObservableCollection<T> where T : NumberableModel
     {
+        public NumberableObservableCollection(IEnumerable<T> items) : this()
+        {
+            AddRange(items);
+        }
+
         public NumberableObservableCollection()
         {
             CollectionChanged += OnCollectionChanged;
@@ -38,6 +43,14 @@ namespace Milky.WpfApi.Collections
         ~NumberableObservableCollection()
         {
             CollectionChanged -= OnCollectionChanged;
+        }
+
+        public void AddRange(IEnumerable<T> items)
+        {
+            foreach (var beatmapDataModel in items)
+            {
+                Add(beatmapDataModel);
+            }
         }
     }
 }

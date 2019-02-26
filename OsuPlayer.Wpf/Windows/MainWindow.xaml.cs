@@ -88,7 +88,6 @@ namespace Milky.OsuPlayer.Windows
                 else
                     LyricWindow.Hide();
             });
-            GC.SuppressFinalize(page);
         }
 
         private const int WmExitSizeMove = 0x232;

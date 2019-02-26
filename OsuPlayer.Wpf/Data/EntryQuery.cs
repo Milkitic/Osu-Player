@@ -126,13 +126,12 @@ namespace Milky.OsuPlayer.Data
             }
         }
 
-        public static IEnumerable<BeatmapDataModel> Transform(this IEnumerable<BeatmapEntry> list, bool multiVersions)
+        public static IEnumerable<BeatmapDataModel> ToViewModel(this IEnumerable<BeatmapEntry> list, bool multiVersions)
         {
             return list.Select((entry, i) =>
             {
                 var model = new BeatmapDataModel
                 {
-                    Id = multiVersions ? (i + 1).ToString("00") : "",
                     Artist = entry.Artist,
                     ArtistUnicode = entry.ArtistUnicode,
                     BeatmapId = entry.BeatmapId,

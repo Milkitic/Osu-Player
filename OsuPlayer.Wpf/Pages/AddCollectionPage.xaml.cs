@@ -39,7 +39,6 @@ namespace Milky.OsuPlayer.Pages
             }
             else
                 _window.FramePop.Navigate(null);
-            GC.SuppressFinalize(this);
         }
 
         private void BtnNew_Click(object sender, RoutedEventArgs e)

@@ -234,7 +234,7 @@
     <Compile Include="Media\Music\WaveProviders\CusBufferedWaveProvider.cs" />
     <Compile Include="Models\CurrentInfo.cs" />
     <Compile Include="Models\Github\Release.cs" />
-    <Compile Include="Models\ViewModels.cs" />
+    <Compile Include="Models\BeatmapDataModel.cs" />
     <Compile Include="Models\EntryExtension.cs" />
     <Compile Include="Media\HitsoundElement.cs" />
     <Compile Include="Models\Enums.cs" />

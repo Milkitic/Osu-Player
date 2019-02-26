@@ -66,8 +66,8 @@ namespace Milky.OsuPlayer.Pages
                 Dispatcher.Invoke(() => { keyword = SearchBox.Text.Trim(); });
 
                 var sorted = string.IsNullOrEmpty(keyword)
-                    ? App.Beatmaps.SortBy(sortMode).Transform(false)
-                    : EntryQuery.GetListByKeyword(keyword, App.Beatmaps).SortBy(sortMode).Transform(false);
+                    ? App.Beatmaps.SortBy(sortMode).ToViewModel(false)
+                    : EntryQuery.GetListByKeyword(keyword, App.Beatmaps).SortBy(sortMode).ToViewModel(false);
 
                 Dispatcher.BeginInvoke(new Action(() =>
                 {

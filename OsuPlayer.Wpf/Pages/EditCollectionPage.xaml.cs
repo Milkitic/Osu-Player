@@ -42,7 +42,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void Dispose()
         {
-            GC.SuppressFinalize(this);
+         
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)

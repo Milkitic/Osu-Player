@@ -232,7 +232,7 @@
                                         <DataTemplate x:Key="IdDt">
                                             <Label VerticalAlignment="Center"
                                                    Margin="0,3,0,3"
-                                                   Content="{Binding Id, Mode=OneWay}" 
+                                                   Content="{Binding Index, Mode=OneWay}" 
                                                    Foreground="#FF9C9C9C" />
                                         </DataTemplate>
                                         <DataTemplate x:Key="TitleDt">

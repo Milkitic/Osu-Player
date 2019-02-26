@@ -1,4 +1,9 @@
 ﻿using Milky.OsuPlayer;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.Windows;
+using Milky.WpfApi.Collections;
 using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,10 +12,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -20,7 +21,7 @@ namespace Milky.OsuPlayer.Pages
     public partial class RecentPlayPage : Page
     {
         private IEnumerable<BeatmapEntry> _entries;
-        public IEnumerable<BeatmapDataModel> ViewModels;
+        public NumberableObservableCollection<BeatmapDataModel> DataModels;
         private readonly MainWindow _mainWindow;
 
         public RecentPlayPage(MainWindow mainWindow)
@@ -32,14 +33,14 @@ namespace Milky.OsuPlayer.Pages
         public void UpdateList()
         {
             _entries = App.Beatmaps.GetRecentListFromDb();
-            ViewModels = _entries.Transform(true);
-            RecentList.DataContext = ViewModels.ToList();
+            DataModels = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToViewModel(true));
+            RecentList.DataContext = DataModels.ToList();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             UpdateList();
-            var item = ViewModels.FirstOrDefault(k =>
+            var item = DataModels.FirstOrDefault(k =>
                 k.GetIdentity().Equals(App.PlayerList.CurrentInfo.Identity));
             RecentList.SelectedItem = item;
         }

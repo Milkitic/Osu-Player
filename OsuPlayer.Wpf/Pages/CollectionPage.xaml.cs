@@ -67,10 +67,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void UpdateView(IEnumerable<BeatmapEntry> entries)
         {
-            ViewModels = entries.Transform(true).ToList();
-            for (var i = 0; i < ViewModels.Count; i++)
-                ViewModels[i].Id = (i + 1).ToString("00");
-
+            ViewModels = entries.ToViewModel(true).ToList();
             MapList.DataContext = ViewModels;
             ListCount.Content = ViewModels.Count;
         }
@@ -82,7 +79,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void Dispose()
         {
-            GC.SuppressFinalize(this);
+           
         }
 
         private void RecentList_MouseDoubleClick(object sender, MouseButtonEventArgs e)

@@ -1,10 +1,10 @@
-﻿using osu.Shared;
-using System;
-using Milky.OsuPlayer.Utils;
+﻿using Milky.OsuPlayer.Utils;
+using Milky.WpfApi.Collections;
+using osu.Shared;
 
 namespace Milky.OsuPlayer
 {
-    public class BeatmapDataModel
+    public class BeatmapDataModel : NumberableModel
     {
         public string Artist { get; set; }
         public string ArtistUnicode { get; set; }
@@ -22,7 +22,6 @@ namespace Milky.OsuPlayer
         public double Stars { get; set; }
 
         //Extended
-        public string Id { get; set; }
         public string AutoTitleSource =>
             (MetaSelect.GetUnicode(Title, TitleUnicode) +
              (string.IsNullOrEmpty(SongSource) ? "" : $"\r\n\r\n —— {SongSource}")).Replace("_", "__");

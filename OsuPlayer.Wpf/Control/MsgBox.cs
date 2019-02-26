@@ -84,8 +84,7 @@ namespace Milky.OsuPlayer.Control
             }
             finally
             {
-                if (messageBox != null)
-                    GC.SuppressFinalize(messageBox);
+              
             }
         }
     }

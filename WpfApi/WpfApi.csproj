@@ -62,6 +62,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\NumberableModel.cs" />
+    <Compile Include="Collections\NumberableObservableCollection.cs" />
     <Compile Include="UiActionInvoker.cs" />
     <Compile Include="Commands\DelegateCommand.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
