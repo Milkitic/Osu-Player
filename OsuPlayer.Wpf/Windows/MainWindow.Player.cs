@@ -194,7 +194,7 @@ namespace Milky.OsuPlayer.Windows
                             break;
                         case CollectionPage collectionPage:
                             collectionPage.MapList.SelectedItem =
-                                collectionPage.ViewModels.FirstOrDefault(k =>
+                                collectionPage.ViewModel.Beatmaps.FirstOrDefault(k =>
                                     k.GetIdentity().Equals(nowIdentity));
                             break;
                     }

@@ -32,17 +32,12 @@ namespace Milky.WpfApi.Collections
             }
             else
             {
-                for (var i = 0; i < this.Count; i++)
+                for (var i = e.NewStartingIndex; i < this.Count; i++)
                 {
                     var item = this[i];
                     item.Index = i;
                 }
             }
-        }
-
-        ~NumberableObservableCollection()
-        {
-            CollectionChanged -= OnCollectionChanged;
         }
 
         public void AddRange(IEnumerable<T> items)
@@ -51,6 +46,11 @@ namespace Milky.WpfApi.Collections
             {
                 Add(beatmapDataModel);
             }
+        }
+
+        ~NumberableObservableCollection()
+        {
+            CollectionChanged -= OnCollectionChanged;
         }
     }
 }

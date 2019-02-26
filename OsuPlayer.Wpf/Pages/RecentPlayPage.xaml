@@ -101,7 +101,10 @@
                         </ListView.DataContext>
                         <ListView.Resources>
                             <DataTemplate x:Key="IdDt">
-                                <Label VerticalAlignment="Center" Margin="15,3,15,3" Content="{Binding Index}" />
+                                <Label VerticalAlignment="Center"
+                                       Margin="0,3,0,3"
+                                       Content="{Binding Index,Mode=OneWay,Converter={StaticResource IndexToStringConverter}}"
+                                       Foreground="#FF9C9C9C" />
                             </DataTemplate>
                             <DataTemplate x:Key="TitleDt">
                                 <Label VerticalAlignment="Center" Content="{Binding AutoTitle}" />

@@ -16,6 +16,7 @@
                 <ResourceDictionary Source="Styles/StatusIconStyle.xaml" />
                 <ResourceDictionary Source="Styles/TabStyle.xaml" />
 
+                <ResourceDictionary Source="Styles/ConverterDictionary.xaml" />
                 <!--  DMSKin内置转换器 配色  -->
                 <ResourceDictionary Source="pack://application:,,,/DMSkin.WPF;Component/Styles/DMSkin.xaml" />
                 <!--  DMSKin内置SVG图标  -->

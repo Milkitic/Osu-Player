@@ -166,6 +166,7 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Config.cs" />
+    <Compile Include="Converter\IndexToStringConverter.cs" />
     <Compile Include="Converter\PlayingConverter.cs" />
     <Compile Include="Converter\SingleParameterConverter.cs" />
     <Compile Include="Converter\TabConverter.cs" />
@@ -176,6 +177,7 @@
       <DependentUpon>EditCollectionPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="RandomSeed.cs" />
+    <Compile Include="ViewModels\CollectionPageViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModel.cs" />
     <Compile Include="ViewModels\EditCollectionPageViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -330,6 +332,10 @@
     <Page Include="Pages\EditCollectionPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\ConverterDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\ConfigWindow.xaml">
       <SubType>Designer</SubType>

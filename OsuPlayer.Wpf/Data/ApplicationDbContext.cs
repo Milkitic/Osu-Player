@@ -53,6 +53,8 @@ namespace Milky.OsuPlayer.Data
         private string _imagePath;
         private string _description;
         private string _name;
+        private DateTime _createTime;
+        private int _index;
         public Collection() { }
 
         public Collection(string id, string name, bool locked, int index, string imagePath = null, string description = null)
@@ -81,8 +83,17 @@ namespace Milky.OsuPlayer.Data
 
         [Column("locked")]
         public int LockedInt { get; set; }
+
         [Column("index")]
-        public int Index { get; set; }
+        public int Index
+        {
+            get => _index;
+            set
+            {
+                _index = value;
+                OnPropertyChanged();
+            }
+        }
 
         [Column("imagePath")]
         public string ImagePath
@@ -107,7 +118,15 @@ namespace Milky.OsuPlayer.Data
         }
 
         [Required, Column("createTime")]
-        public DateTime CreateTime { get; set; }
+        public DateTime CreateTime
+        {
+            get => _createTime;
+            set
+            {
+                _createTime = value;
+                OnPropertyChanged();
+            }
+        }
 
         public bool Locked => LockedInt == 1;
     }

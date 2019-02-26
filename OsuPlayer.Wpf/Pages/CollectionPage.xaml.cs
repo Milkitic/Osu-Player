@@ -1,17 +1,20 @@
 ﻿using Milky.OsuPlayer;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.ViewModels;
+using Milky.OsuPlayer.Windows;
+using Milky.WpfApi.Collections;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.Windows;
 using Collection = Milky.OsuPlayer.Data.Collection;
 
 namespace Milky.OsuPlayer.Pages
@@ -22,23 +25,27 @@ namespace Milky.OsuPlayer.Pages
     public partial class CollectionPage : Page
     {
         private readonly MainWindow _mainWindow;
-        public string Id => _collection.Id;
-        private readonly Data.Collection _collection;
-        public List<BeatmapDataModel> ViewModels;
         private IEnumerable<BeatmapEntry> _entries;
+        public CollectionPageViewModel ViewModel { get; set; }
+        public string Id { get; set; }
 
-        public CollectionPage(MainWindow mainWindow, Data.Collection collection)
+        public CollectionPage(MainWindow mainWindow, Data.Collection collectionInfo)
         {
-            _mainWindow = mainWindow;
-            _collection = collection;
             InitializeComponent();
-            UpdateList();
+            _mainWindow = mainWindow;
 
-            if (collection.Locked)
-                BtnDelCol.Visibility = Visibility.Collapsed;
+            ViewModel = (CollectionPageViewModel)this.DataContext;
+            ViewModel.CollectionInfo = collectionInfo;
+            var infos = (List<MapInfo>)DbOperator.GetMapsFromCollection(collectionInfo);
+            _entries = App.Beatmaps.GetMapListFromDb(infos, false);
+            ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToViewModel(true));
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
             //LblTitle.Content = _collection.Name;
 
-            var item = ViewModels?.FirstOrDefault(k =>
+            var item = ViewModel.Beatmaps?.FirstOrDefault(k =>
                 k.GetIdentity().Equals(App.PlayerList?.CurrentInfo?.Identity));
             if (item != null)
                 MapList.SelectedItem = item;
@@ -59,17 +66,16 @@ namespace Milky.OsuPlayer.Pages
 
         private void UpdateList()
         {
-            CollectionInfoGrid.DataContext = _collection;
-            var infos = (List<MapInfo>)DbOperator.GetMapsFromCollection(_collection);
-            _entries = App.Beatmaps.GetMapListFromDb(infos, false);
-            UpdateView(_entries);
+            //CollectionInfoGrid.DataContext = _collection;
+            //var infos = (List<MapInfo>)DbOperator.GetMapsFromCollection(_collection);
+            //_entries = App.Beatmaps.GetMapListFromDb(infos, false);
+            //UpdateView(_entries);
         }
 
         private void UpdateView(IEnumerable<BeatmapEntry> entries)
         {
-            ViewModels = entries.ToViewModel(true).ToList();
-            MapList.DataContext = ViewModels;
-            ListCount.Content = ViewModels.Count;
+            //ViewModel.Beatmaps = new ObservableCollection<BeatmapDataModel>(entries.ToViewModel(true));
+            //ListCount.Content = ViewModel.Beatmaps.Count;
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -79,7 +85,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void Dispose()
         {
-           
+
         }
 
         private void RecentList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -100,7 +106,7 @@ namespace Milky.OsuPlayer.Pages
             var entries = ConvertToEntries(selected.Cast<BeatmapDataModel>());
             foreach (var entry in entries)
             {
-                DbOperator.RemoveMapFromCollection(entry.GetIdentity(), _collection);
+                DbOperator.RemoveMapFromCollection(entry.GetIdentity(), ViewModel.CollectionInfo);
             }
             //var dataModel = (BeatmapDataModel)MapList.SelectedItem;
             UpdateList();
@@ -113,7 +119,7 @@ namespace Milky.OsuPlayer.Pages
                 MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
-                DbOperator.RemoveCollection(_collection);
+                DbOperator.RemoveCollection(ViewModel.CollectionInfo);
                 _mainWindow.MainFrame.Navigate(_mainWindow.Pages.RecentPlayPage);
                 _mainWindow.UpdateCollections();
             }
@@ -202,7 +208,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            _mainWindow.FramePop.Navigate(new EditCollectionPage(_mainWindow, _collection));
+            _mainWindow.FramePop.Navigate(new EditCollectionPage(_mainWindow, ViewModel.CollectionInfo));
         }
 
         private BeatmapEntry ConvertToEntry(BeatmapDataModel dataModel)

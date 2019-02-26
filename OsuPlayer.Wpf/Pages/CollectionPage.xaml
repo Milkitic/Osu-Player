@@ -7,12 +7,18 @@
       xmlns:data="clr-namespace:Milky.OsuPlayer.Data"
       xmlns:cvt="clr-namespace:Milky.OsuPlayer.Converter"
       xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+      xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="CollectionPage" Unloaded="Page_Unloaded" IsHitTestVisible="True" Focusable="False">
+      Title="CollectionPage" 
+      Loaded="Page_Loaded"
+      Unloaded="Page_Unloaded" IsHitTestVisible="True" Focusable="False">
     <Page.Resources>
         <cvt:DateTimeConverter x:Key="CvtDate"/>
-    </Page.Resources>
+   </Page.Resources>
+    <Page.DataContext>
+        <viewModels:CollectionPageViewModel/>
+    </Page.DataContext>
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem Style="{StaticResource PinkTabItem}">
@@ -27,9 +33,6 @@
                     <Border Background="#EAF9F7F8" CornerRadius="10" Margin="5" 
                             BorderBrush="#20daa3ce" BorderThickness="1">
                         <Grid x:Name="CollectionInfoGrid">
-                            <Grid.DataContext>
-                                <data:Collection />
-                            </Grid.DataContext>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition />
@@ -37,14 +40,14 @@
                             </Grid.ColumnDefinitions>
                             <Grid Width="192" Height="192" Margin="10" Background="{StaticResource ExtraLightBrush}">
                                 <Image x:Name="CollectionThumb" RenderOptions.BitmapScalingMode="HighQuality"
-                                       Source="{Binding Path=ImagePath}" Stretch="UniformToFill"
+                                       Source="{Binding Path=CollectionInfo.ImagePath}" Stretch="UniformToFill"
                                        HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Grid>
                             <StackPanel Grid.Column="1" Margin="10">
                                 <WrapPanel Orientation="Horizontal">
                                     <Label x:Name="LblTitle" FontSize="22" VerticalAlignment="Center">
                                         <TextBlock TextWrapping="Wrap"
-                                                   Text="{Binding Path=Name}" />
+                                                   Text="{Binding Path=CollectionInfo.Name}" />
                                     </Label>
                                     <dms:DMButton Margin="5" Height="28" Width="28"
                                                   CornerRadius="50"
@@ -78,7 +81,7 @@
                                     <Label Foreground="#303030"
                                            Content="创建时间：" />
                                     <Label Foreground="#303030"
-                                           Content="{Binding Path=CreateTime, Converter={StaticResource CvtDate}}" />
+                                           Content="{Binding Path=CollectionInfo.CreateTime, Converter={StaticResource CvtDate}}" />
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <dms:DMButton Margin="5" Height="28"
@@ -120,14 +123,14 @@
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="5">
                                     <Label Content="简介：" Foreground="#303030" />
-                                    <Label x:Name="LblDescription" Content="{Binding Path=Description}">
+                                    <Label x:Name="LblDescription" Content="{Binding Path=CollectionInfo.Description}">
                                         <Label.Style>
                                             <Style TargetType="{x:Type Label}">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Path=Description}" Value="">
+                                                    <DataTrigger Binding="{Binding Path=CollectionInfo.Description}" Value="">
                                                         <Setter Property="Visibility" Value="Collapsed" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Path=Description}" Value="{x:Null}">
+                                                    <DataTrigger Binding="{Binding Path=CollectionInfo.Description}" Value="{x:Null}">
                                                         <Setter Property="Visibility" Value="Collapsed" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -139,10 +142,10 @@
                                             <Style TargetType="{x:Type Label}">
                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Path=Description}" Value="">
+                                                    <DataTrigger Binding="{Binding Path=CollectionInfo.Description}" Value="">
                                                         <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Path=Description}" Value="{x:Null}">
+                                                    <DataTrigger Binding="{Binding Path=CollectionInfo.Description}" Value="{x:Null}">
                                                         <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -184,7 +187,7 @@
                                                CornerRadius="13" 
                                                TextChanged="SearchBox_TextChanged"/>
                                 <ListView x:Name="MapList" BorderThickness="0"
-                                          ItemsSource="{Binding Mode=OneWay}"
+                                          ItemsSource="{Binding Beatmaps}"
                                           MouseDoubleClick="RecentList_MouseDoubleClick"
                                           ItemContainerStyle="{StaticResource GridView}"
                                           Background="{StaticResource WhiteBrush40}">
@@ -225,14 +228,11 @@
                                                   Style="{DynamicResource DefaultMenuItem}" />
                                         </ContextMenu>
                                     </ListView.ContextMenu>
-                                    <ListView.DataContext>
-                                        <osuPlayer:BeatmapDataModel/>
-                                    </ListView.DataContext>
                                     <ListView.Resources>
                                         <DataTemplate x:Key="IdDt">
                                             <Label VerticalAlignment="Center"
                                                    Margin="0,3,0,3"
-                                                   Content="{Binding Index, Mode=OneWay}" 
+                                                   Content="{Binding Index,Mode=OneWay,Converter={StaticResource IndexToStringConverter}}" 
                                                    Foreground="#FF9C9C9C" />
                                         </DataTemplate>
                                         <DataTemplate x:Key="TitleDt">
