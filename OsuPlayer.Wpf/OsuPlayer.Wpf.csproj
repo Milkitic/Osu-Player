@@ -194,6 +194,7 @@
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\DbOperator.cs" />
     <Compile Include="Domain.cs" />
+    <Compile Include="Windows\EffectWindowBase.cs" />
     <Compile Include="Windows\LyricWindow.xaml.WinApi.cs" />
     <Compile Include="Windows\MainWindow.Player.cs" />
     <Compile Include="Windows\MainWindow.Surface.cs" />
@@ -326,7 +327,6 @@
     <Compile Include="Utils\KeyConverter.cs" />
     <Compile Include="Utils\Updater.cs" />
     <Compile Include="ViewModels\ExportPageViewModel.cs" />
-    <Compile Include="Windows\WindowBase.cs" />
     <Page Include="Pages\EditCollectionPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

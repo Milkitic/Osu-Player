@@ -55,9 +55,15 @@
                               Style="{DynamicResource DefaultMenuItem}" />
                     <MenuItem x:Name="ItemSearchMapper" Header="搜索该作者" Click="ItemSearchMapper_Click"
                               Style="{DynamicResource DefaultMenuItem}" />
-                    <Separator/>
-                    <MenuItem x:Name="ItemSet" Header="打开成绩页" Click="ItemSet_Click"  Style="{DynamicResource DefaultMenuItem}" />
-                    <MenuItem x:Name="ItemFolder" Header="打开所在目录" Click="ItemFolder_Click"  Style="{DynamicResource DefaultMenuItem}" />
+                    <Separator />
+                    <MenuItem x:Name="ItemSet"
+                              Header="打开成绩页"
+                              Click="ItemSet_Click"
+                              Style="{DynamicResource DefaultMenuItem}" />
+                    <MenuItem x:Name="ItemFolder"
+                              Header="打开所在目录"
+                              Click="ItemFolder_Click"
+                              Style="{DynamicResource DefaultMenuItem}" />
                 </ContextMenu>
             </ListView.ContextMenu>
             <ListView.DataContext>
@@ -66,22 +72,24 @@
             <ListView.Resources>
                 <DataTemplate x:Key="TitleSourceDt">
                     <StackPanel>
-                        <Label VerticalAlignment="Center" Margin="15,7,0,7" Content="{Binding AutoTitle}"/>
-                        <Label x:Name="LblSource" VerticalAlignment="Center" Margin="25,-11,0,7" Content="{Binding SongSource}"
+                        <Label VerticalAlignment="Center" Margin="15,7,0,7"
+                               Content="{Binding AutoTitle}" />
+                        <Label x:Name="LblSource" 
+                               VerticalAlignment="Center" Margin="25,-11,0,7"
+                               Content="{Binding SongSource}"
                                FontStyle="Italic" Foreground="#FF9C9C9C">
                             <Label.Style>
                                 <Style TargetType="{x:Type Label}">
                                     <Style.Triggers>
                                         <Trigger Property="Content" Value="{x:Null}">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Setter Property="Visibility" Value="Collapsed" />
                                         </Trigger>
                                         <Trigger Property="Content" Value="">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Setter Property="Visibility" Value="Collapsed" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
                             </Label.Style>
-
                         </Label>
                     </StackPanel>
                 </DataTemplate>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Milky.WpfApi;
+using System;
 using System.Windows;
 
 namespace Milky.OsuPlayer.Windows

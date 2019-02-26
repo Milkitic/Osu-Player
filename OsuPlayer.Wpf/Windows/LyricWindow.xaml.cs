@@ -1,5 +1,6 @@
 ﻿using Milky.OsuPlayer.Media.Lyric.Model;
 using Milky.OsuPlayer.ViewModels;
+using Milky.WpfApi;
 using OSharp.Beatmap;
 using System;
 using System.Collections.Generic;

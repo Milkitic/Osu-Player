@@ -1,4 +1,4 @@
-﻿<windows:WindowBase
+﻿<wpfApi:WindowBase
     x:Class="Milky.OsuPlayer.Windows.NewVersionWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,15 +7,16 @@
     xmlns:local="clr-namespace:Milky.OsuPlayer"
     xmlns:windows="clr-namespace:Milky.OsuPlayer.Windows"
     xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+    xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
     mc:Ignorable="d"
     Title="有可用更新" Height="320" Width="480"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico" ResizeMode="NoResize">
-    <windows:WindowBase.Background>
+    <wpfApi:WindowBase.Background>
         <LinearGradientBrush>
             <GradientStop Offset="0" Color="  #303030" />
             <GradientStop Offset="1" Color="  #202020" />
         </LinearGradientBrush>
-    </windows:WindowBase.Background>
+    </wpfApi:WindowBase.Background>
     <Grid x:Name="MainGrid" Margin="2">
         <Grid.DataContext>
             <local:Release />
@@ -96,5 +97,5 @@
                 Click="BtnUpdate_Click" />
         </StackPanel>
     </Grid>
-</windows:WindowBase>
+</wpfApi:WindowBase>
 
