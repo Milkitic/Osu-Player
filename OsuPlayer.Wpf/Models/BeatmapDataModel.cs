@@ -3,7 +3,7 @@ using Milky.WpfApi.Collections;
 using osu.Shared;
 using OSharp.Beatmap.MetaData;
 
-namespace Milky.OsuPlayer
+namespace Milky.OsuPlayer.Models
 {
     public class BeatmapDataModel : NumberableModel, IMapIdentifiable
     {

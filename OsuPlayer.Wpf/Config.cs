@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Milky.OsuPlayer.Media;
 using Milky.OsuPlayer.Media.Lyric;
+using Milky.OsuPlayer.Models;
 
 namespace Milky.OsuPlayer
 {

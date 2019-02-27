@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Models.Github;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using Path = System.IO.Path;

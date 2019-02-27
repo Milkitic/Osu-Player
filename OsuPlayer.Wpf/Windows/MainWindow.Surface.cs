@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.EF.Model;
 using Milky.OsuPlayer.Media;
+using Milky.OsuPlayer.Models;
 
 namespace Milky.OsuPlayer.Windows
 {

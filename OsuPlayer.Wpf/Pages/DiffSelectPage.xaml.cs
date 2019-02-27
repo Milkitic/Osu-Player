@@ -17,6 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using Milky.OsuPlayer.Models;
 
 namespace Milky.OsuPlayer.Pages
 {

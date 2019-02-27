@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:beatmaps="clr-namespace:osu_database_reader.Components.Beatmaps;assembly=osu-database-reader"
       xmlns:models="clr-namespace:Milky.OsuPlayer"
+      xmlns:models1="clr-namespace:Milky.OsuPlayer.Models"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SearchPage" KeepAlive="True"
@@ -67,7 +68,7 @@
                 </ContextMenu>
             </ListView.ContextMenu>
             <ListView.DataContext>
-                <models:BeatmapDataModel />
+                <models1:BeatmapDataModel />
             </ListView.DataContext>
             <ListView.Resources>
                 <DataTemplate x:Key="TitleSourceDt">

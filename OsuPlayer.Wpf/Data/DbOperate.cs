@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using Milky.OsuPlayer.Data.EF;
 using Milky.OsuPlayer.Data.EF.Model;
+using Milky.OsuPlayer.Models;
 using Collection = Milky.OsuPlayer.Data.EF.Model.Collection;
 
 namespace Milky.OsuPlayer.Data
@@ -31,19 +32,6 @@ namespace Milky.OsuPlayer.Data
 
         public static IEnumerable<MapInfo> GetRecent()
         {
-            #region
-            //    using (CollectionContext c1 = new CollectionContext())
-            //    using (RelationContext c2 = new RelationContext())
-            //    using (MapInfoContext c3 = new MapInfoContext())
-            //    {
-            //        c1.Collections.RemoveRange(c1.Collections);
-            //        c2.Relations.RemoveRange(c2.Relations);
-            //        c3.MapInfos.RemoveRange(c3.MapInfos);
-            //        c1.SaveChanges();
-            //        c2.SaveChanges();
-            //        c3.SaveChanges();
-            //    }
-            #endregion
             using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try

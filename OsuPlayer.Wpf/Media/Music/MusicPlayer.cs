@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Milky.OsuPlayer.Media.Music.SampleProviders;
 using Milky.OsuPlayer.Media.Music.SoundTouch;
 using Milky.OsuPlayer.Media.Music.WaveProviders;
+using Milky.OsuPlayer.Models;
 
 namespace Milky.OsuPlayer.Media.Music
 {

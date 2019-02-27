@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Models.Github;
 
 namespace Milky.OsuPlayer.Utils
 {

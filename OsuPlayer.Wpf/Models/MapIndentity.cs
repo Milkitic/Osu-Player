@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer
+﻿namespace Milky.OsuPlayer.Models
 {
     public struct MapIdentity
     {

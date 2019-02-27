@@ -1,13 +1,8 @@
-﻿using osu_database_reader.Components.Beatmaps;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Milky.OsuPlayer.Data;
+﻿using System.Collections.Generic;
 using Milky.OsuPlayer.Data.EF.Model;
+using osu_database_reader.Components.Beatmaps;
 
-namespace Milky.OsuPlayer
+namespace Milky.OsuPlayer.Models
 {
     public class CurrentInfo
     {

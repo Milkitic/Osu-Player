@@ -8,6 +8,7 @@
     xmlns:windows="clr-namespace:Milky.OsuPlayer.Windows"
     xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
+    xmlns:github="clr-namespace:Milky.OsuPlayer.Models.Github"
     mc:Ignorable="d"
     Title="有可用更新" Height="320" Width="480"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico" ResizeMode="NoResize">
@@ -19,7 +20,7 @@
     </wpfApi:WindowBase.Background>
     <Grid x:Name="MainGrid" Margin="2">
         <Grid.DataContext>
-            <local:Release />
+            <github:Release />
         </Grid.DataContext>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Data.EF.Model;
+using Milky.OsuPlayer.Models;
 
 namespace Milky.OsuPlayer.ViewModels
 {

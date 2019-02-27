@@ -13,7 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.L18N;
+using Milky.OsuPlayer.I18N;
 using Milky.OsuPlayer.Media.Lyric;
 using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Auto;
 using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base;

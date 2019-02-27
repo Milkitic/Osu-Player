@@ -1,8 +1,7 @@
-﻿using Milky.OsuPlayer.Data;
+﻿using osu_database_reader.Components.Beatmaps;
 using OSharp.Beatmap.MetaData;
-using osu_database_reader.Components.Beatmaps;
 
-namespace Milky.OsuPlayer
+namespace Milky.OsuPlayer.Models
 {
     public static class EntryExtension
     {

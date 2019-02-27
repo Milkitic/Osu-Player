@@ -15,6 +15,7 @@ using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.EF.Model;
 using Milky.OsuPlayer.Media;
 using Milky.OsuPlayer.Media.Music;
+using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.Pages;
 
 namespace Milky.OsuPlayer.Windows

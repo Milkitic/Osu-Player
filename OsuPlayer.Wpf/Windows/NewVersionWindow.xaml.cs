@@ -1,6 +1,7 @@
 ﻿using Milky.WpfApi;
 using System;
 using System.Windows;
+using Milky.OsuPlayer.Models.Github;
 
 namespace Milky.OsuPlayer.Windows
 {

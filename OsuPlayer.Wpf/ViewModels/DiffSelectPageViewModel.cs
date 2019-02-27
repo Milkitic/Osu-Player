@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Milky.OsuPlayer.Models;
 using Milky.WpfApi;
 using Milky.WpfApi.Collections;
 using Milky.WpfApi.Commands;

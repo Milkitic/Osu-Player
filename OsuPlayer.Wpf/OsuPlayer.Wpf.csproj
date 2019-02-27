@@ -171,6 +171,7 @@
     <Compile Include="Converter\SingleParameterConverter.cs" />
     <Compile Include="Converter\TabConverter.cs" />
     <Compile Include="Converter\VersionToStringConverter.cs" />
+    <Compile Include="Models\DataModelComparer.cs" />
     <Compile Include="Data\EF\Model\CollectionRelation.cs" />
     <Compile Include="Data\EF\Model\Collection.cs" />
     <Compile Include="Data\EF\Model\MapInfo.cs" />

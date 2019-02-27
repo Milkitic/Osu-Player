@@ -22,6 +22,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using Milky.OsuPlayer.Data.EF.Model;
+using Milky.OsuPlayer.Models;
 
 namespace Milky.OsuPlayer.ViewModels
 {

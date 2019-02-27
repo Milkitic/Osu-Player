@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 

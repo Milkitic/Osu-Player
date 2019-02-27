@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Milky.OsuPlayer.L18N
+﻿namespace Milky.OsuPlayer.I18N
 {
     public class UiMetadata
     {
