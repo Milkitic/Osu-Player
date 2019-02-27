@@ -43,7 +43,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnNew_Click(object sender, RoutedEventArgs e)
         {
-            DbOperator.AddCollection(CollectionName.Text);
+            DbOperate.AddCollection(CollectionName.Text);
             _window.UpdateCollections();
             Dispose();
             _page?.RefreshList();

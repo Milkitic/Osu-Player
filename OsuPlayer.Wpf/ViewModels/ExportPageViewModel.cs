@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Milky.OsuPlayer.Data.EF.Model;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -140,7 +141,7 @@ namespace Milky.OsuPlayer.ViewModels
                                 dir.Delete();
                         }
 
-                        DbOperator.AddMapExport(dataModel.GetIdentity(), null);
+                        DbOperate.AddMapExport(dataModel.GetIdentity(), null);
                     }
 
                     Execute.OnUiThread(InnerUpdate);
@@ -152,7 +153,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private BeatmapEntry ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _entries.GetBeatmapsetsByFolder(dataModel.FolderName)
+            return _entries.ByFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 
@@ -163,7 +164,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private void InnerUpdate()
         {
-            var maps = (List<MapInfo>)DbOperator.GetExportedMaps();
+            var maps = (List<MapInfo>)DbOperate.GetExportedMaps();
             List<(MapIdentity MapIdentity, string path, string time, string size)> list =
                 new List<(MapIdentity, string, string, string)>();
             foreach (var map in maps)

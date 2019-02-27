@@ -171,6 +171,9 @@
     <Compile Include="Converter\SingleParameterConverter.cs" />
     <Compile Include="Converter\TabConverter.cs" />
     <Compile Include="Converter\VersionToStringConverter.cs" />
+    <Compile Include="Data\EF\Model\CollectionRelation.cs" />
+    <Compile Include="Data\EF\Model\Collection.cs" />
+    <Compile Include="Data\EF\Model\MapInfo.cs" />
     <Compile Include="I18N\UiMetadata.cs" />
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Pages\EditCollectionPage.xaml.cs">
@@ -193,8 +196,8 @@
     <Compile Include="Converter\DateTimeConverter.cs" />
     <Compile Include="Converter\NavigationColorConverter.cs" />
     <Compile Include="Converter\MainWindowConverters.cs" />
-    <Compile Include="Data\ApplicationDbContext.cs" />
-    <Compile Include="Data\DbOperator.cs" />
+    <Compile Include="Data\EF\ApplicationDbContext.cs" />
+    <Compile Include="Data\DbOperate.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="Windows\EffectWindowBase.cs" />
     <Compile Include="Windows\LyricWindow.xaml.WinApi.cs" />
@@ -291,7 +294,7 @@
     <Compile Include="Pages\SearchPage.xaml.cs">
       <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Data\EntryQuery.cs" />
+    <Compile Include="Data\BeatmapEntryQuery.cs" />
     <Compile Include="Pages\StoryboardPage.xaml.cs">
       <DependentUpon>StoryboardPage.xaml</DependentUpon>
     </Compile>

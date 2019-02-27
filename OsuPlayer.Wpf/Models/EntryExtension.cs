@@ -1,4 +1,5 @@
 ﻿using Milky.OsuPlayer.Data;
+using OSharp.Beatmap.MetaData;
 using osu_database_reader.Components.Beatmaps;
 
 namespace Milky.OsuPlayer
@@ -7,9 +8,9 @@ namespace Milky.OsuPlayer
     {
         public static MapIdentity GetIdentity(this BeatmapEntry entry) => entry != null ?
             new MapIdentity(entry.FolderName, entry.Version) : default;
-        public static MapIdentity GetIdentity(this BeatmapDataModel dataModel) =>
-            new MapIdentity(dataModel.FolderName, dataModel.Version);
-        public static MapIdentity GetIdentity(this MapInfo viewModel) =>
-            new MapIdentity(viewModel.FolderName, viewModel.Version);
+        public static MapIdentity GetIdentity(this IMapIdentifiable entry) =>
+            entry != null
+                ? new MapIdentity(entry.FolderName, entry.Version)
+                : default;
     }
 }

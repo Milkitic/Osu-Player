@@ -15,7 +15,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Collection = Milky.OsuPlayer.Data.Collection;
+using Milky.OsuPlayer.Data.EF.Model;
+using Collection = Milky.OsuPlayer.Data.EF.Model.Collection;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -29,14 +30,14 @@ namespace Milky.OsuPlayer.Pages
         public CollectionPageViewModel ViewModel { get; set; }
         public string Id { get; set; }
 
-        public CollectionPage(MainWindow mainWindow, Data.Collection collectionInfo)
+        public CollectionPage(MainWindow mainWindow, Collection collectionInfo)
         {
             InitializeComponent();
             _mainWindow = mainWindow;
 
             ViewModel = (CollectionPageViewModel)this.DataContext;
             ViewModel.CollectionInfo = collectionInfo;
-            var infos = (List<MapInfo>)DbOperator.GetMapsFromCollection(collectionInfo);
+            var infos = (List<MapInfo>)DbOperate.GetMapsFromCollection(collectionInfo);
             _entries = App.Beatmaps.GetMapListFromDb(infos, false);
             ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToViewModel(true));
         }
@@ -58,7 +59,7 @@ namespace Milky.OsuPlayer.Pages
                 UpdateList();
             else
             {
-                var query = EntryQuery.GetListByKeyword(keyword, _entries);
+                var query = BeatmapEntryQuery.ByKeyword(_entries, keyword);
                 UpdateView(query);
             }
 
@@ -106,7 +107,7 @@ namespace Milky.OsuPlayer.Pages
             var entries = ConvertToEntries(selected.Cast<BeatmapDataModel>());
             foreach (var entry in entries)
             {
-                DbOperator.RemoveMapFromCollection(entry.GetIdentity(), ViewModel.CollectionInfo);
+                DbOperate.RemoveMapFromCollection(entry.GetIdentity(), ViewModel.CollectionInfo);
             }
             //var dataModel = (BeatmapDataModel)MapList.SelectedItem;
             UpdateList();
@@ -119,7 +120,7 @@ namespace Milky.OsuPlayer.Pages
                 MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
-                DbOperator.RemoveCollection(ViewModel.CollectionInfo);
+                DbOperate.RemoveCollection(ViewModel.CollectionInfo);
                 _mainWindow.MainFrame.Navigate(_mainWindow.Pages.RecentPlayPage);
                 _mainWindow.UpdateCollections();
             }
@@ -202,7 +203,7 @@ namespace Milky.OsuPlayer.Pages
             if (MapList.SelectedItem == null)
                 return null;
             var selectedItem = (BeatmapDataModel)MapList.SelectedItem;
-            return _entries.GetBeatmapsetsByFolder(selectedItem.FolderName)
+            return _entries.ByFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
 
@@ -213,7 +214,7 @@ namespace Milky.OsuPlayer.Pages
 
         private BeatmapEntry ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _entries.GetBeatmapsetsByFolder(dataModel.FolderName)
+            return _entries.ByFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 

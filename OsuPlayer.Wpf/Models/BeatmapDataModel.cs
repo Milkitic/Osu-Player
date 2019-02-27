@@ -1,10 +1,11 @@
 ﻿using Milky.OsuPlayer.Utils;
 using Milky.WpfApi.Collections;
 using osu.Shared;
+using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer
 {
-    public class BeatmapDataModel : NumberableModel
+    public class BeatmapDataModel : NumberableModel, IMapIdentifiable
     {
         public string Artist { get; set; }
         public string ArtistUnicode { get; set; }

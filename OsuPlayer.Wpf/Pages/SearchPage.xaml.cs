@@ -67,7 +67,7 @@ namespace Milky.OsuPlayer.Pages
 
                 var sorted = string.IsNullOrEmpty(keyword)
                     ? App.Beatmaps.SortBy(sortMode).ToViewModel(false)
-                    : EntryQuery.GetListByKeyword(keyword, App.Beatmaps).SortBy(sortMode).ToViewModel(false);
+                    : BeatmapEntryQuery.ByKeyword(App.Beatmaps, keyword).SortBy(sortMode).ToViewModel(false);
 
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
@@ -87,7 +87,7 @@ namespace Milky.OsuPlayer.Pages
                 return;
             var ok = (BeatmapDataModel)ResultList.SelectedItem;
             var page = new DiffSelectPage(ParentWindow,
-                App.Beatmaps.GetBeatmapsetsByFolder(ok.GetIdentity().FolderName));
+                App.Beatmaps.ByFolder(ok.GetIdentity().FolderName));
             page.Callback = async () =>
             {
                 await ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, page.SelectedMap.FolderName,
@@ -141,11 +141,11 @@ namespace Milky.OsuPlayer.Pages
                 return;
             var ok = (BeatmapDataModel)ResultList.SelectedItem;
             var page = new DiffSelectPage(ParentWindow,
-                App.Beatmaps.GetBeatmapsetsByFolder(ok.GetIdentity().FolderName));
+                App.Beatmaps.ByFolder(ok.GetIdentity().FolderName));
             page.Callback = () =>
             {
                 ParentWindow.FramePop.Navigate(new SelectCollectionPage(ParentWindow,
-                    App.Beatmaps.GetBeatmapsetsByFolder(page.SelectedMap.FolderName)
+                    App.Beatmaps.ByFolder(page.SelectedMap.FolderName)
                         .FirstOrDefault(k => k.Version == page.SelectedMap.Version)));
             };
             ParentWindow.FramePop.Navigate(page);
@@ -176,7 +176,7 @@ namespace Milky.OsuPlayer.Pages
         {
             if (ResultList.SelectedItem == null)
                 return null;
-            var map = App.Beatmaps.GetBeatmapsetsByFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
+            var map = App.Beatmaps.ByFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
                 .GetHighestDiff();
             return map;
         }

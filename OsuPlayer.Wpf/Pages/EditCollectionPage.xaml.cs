@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.EF.Model;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 
@@ -61,7 +62,7 @@ namespace Milky.OsuPlayer.Pages
             _collection.Description = ViewModel.Description;
             _collection.ImagePath = ViewModel.CoverPath;
 
-            DbOperator.UpdateCollection(_collection);
+            DbOperate.UpdateCollection(_collection);
             BtnClose_Click(sender, e);
         }
 

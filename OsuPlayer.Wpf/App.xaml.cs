@@ -135,8 +135,8 @@ namespace Milky.OsuPlayer
 
         private static void InitLocalDb()
         {
-            var defCol = DbOperator.GetCollections().Where(k => k.Locked);
-            if (!defCol.Any()) DbOperator.AddCollection("最喜爱的", true);
+            var defCol = DbOperate.GetCollections().Where(k => k.Locked);
+            if (!defCol.Any()) DbOperate.AddCollection("最喜爱的", true);
         }
 
         private static bool LoadConfig()

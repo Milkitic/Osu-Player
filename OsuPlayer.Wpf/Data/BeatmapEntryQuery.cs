@@ -1,16 +1,18 @@
 ﻿using Milky.OsuPlayer;
+using Milky.OsuPlayer.Utils;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.Data.EF.Model;
 
 namespace Milky.OsuPlayer.Data
 {
-    internal static class EntryQuery
+    internal static class BeatmapEntryQuery
     {
-        public static IEnumerable<BeatmapEntry> GetListByTitleArtist(string title, string artist, IEnumerable<BeatmapEntry> list)
+        public static IEnumerable<BeatmapEntry> ByTitleArtist(this IEnumerable<BeatmapEntry> list, string title,
+            string artist)
         {
             return list
                 .Where(k => k.Title != null && k.Title == title ||
@@ -19,36 +21,38 @@ namespace Milky.OsuPlayer.Data
                             k.ArtistUnicode != null && k.ArtistUnicode == artist);
         }
 
-        public static IEnumerable<BeatmapEntry> GetListByKeyword(string keyword, IEnumerable<BeatmapEntry> list)
+        public static IEnumerable<BeatmapEntry> ByKeyword(this IEnumerable<BeatmapEntry> list, string keywordStr)
         {
-            if (string.IsNullOrEmpty(keyword))
+            if (string.IsNullOrWhiteSpace(keywordStr))
                 return list;
-            string[] keywords = keyword.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            keywordStr = keywordStr.ToLower();
+            string[] keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
             return keywords.Aggregate(list,
                 (current, keywd) => current.Where(k =>
-                    k.Title != null && k.Title.ToLower().Contains(keywd.ToLower()) ||
+                    k.Title != null && k.Title.ToLower().Contains(keywd) ||
                     k.TitleUnicode != null && k.TitleUnicode.Contains(keywd) ||
-                    k.Artist != null && k.Artist.ToLower().Contains(keywd.ToLower()) ||
+                    k.Artist != null && k.Artist.ToLower().Contains(keywd) ||
                     k.ArtistUnicode != null && k.ArtistUnicode.Contains(keywd) ||
-                    k.SongTags != null && k.SongTags.ToLower().Contains(keywd.ToLower()) ||
-                    k.SongSource != null && k.SongSource.ToLower().Contains(keywd.ToLower()) ||
-                    k.Creator != null && k.Creator.ToLower().Contains(keywd.ToLower()) ||
-                    k.Version != null && k.Version.ToLower().Contains(keywd.ToLower())
+                    k.SongTags != null && k.SongTags.ToLower().Contains(keywd) ||
+                    k.SongSource != null && k.SongSource.ToLower().Contains(keywd) ||
+                    k.Creator != null && k.Creator.ToLower().Contains(keywd) ||
+                    k.Version != null && k.Version.ToLower().Contains(keywd)
                 ));
         }
 
-        public static IEnumerable<BeatmapEntry> GetBeatmapsetsByFolder(this IEnumerable<BeatmapEntry> list,
+        public static IEnumerable<BeatmapEntry> ByFolder(this IEnumerable<BeatmapEntry> list,
             string folder)
         {
             return list.Where(k => k.FolderName == folder);
         }
 
-        public static BeatmapEntry GetBeatmapByIdentity(this IEnumerable<BeatmapEntry> list,
+        public static BeatmapEntry ByIdentity(this IEnumerable<BeatmapEntry> list,
             MapIdentity identity)
         {
             return list.Where(k => k != null).FirstOrDefault(k => k.FolderName == identity.FolderName && k.Version == identity.Version);
         }
-        public static IEnumerable<BeatmapEntry> GetBeatmapByIdentities(this IEnumerable<BeatmapEntry> list,
+
+        public static IEnumerable<BeatmapEntry> ByIdentities(this IEnumerable<BeatmapEntry> list,
             IEnumerable<MapIdentity> identities)
         {
             return identities.Select(id => list.FirstOrDefault(k => k.FolderName == id.FolderName && k.Version == id.Version));
@@ -86,7 +90,7 @@ namespace Milky.OsuPlayer.Data
         public static IEnumerable<BeatmapEntry> GetRecentListFromDb(
             this IEnumerable<BeatmapEntry> list)
         {
-            var recent = DbOperator.GetRecent().ToList();
+            var recent = DbOperate.GetRecent().ToList();
             return list.GetMapListFromDb(recent);
         }
 

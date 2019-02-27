@@ -9,7 +9,7 @@ using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Pages;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
-using Collection = Milky.OsuPlayer.Data.Collection;
+using Collection = Milky.OsuPlayer.Data.EF.Model.Collection;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -30,13 +30,13 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(obj =>
                 {
                     var entry = (BeatmapEntry)obj;
-                    var col = DbOperator.GetCollectionById(Id);
+                    var col = DbOperate.GetCollectionById(Id);
                     SelectCollectionPage.AddToCollection(col, entry);
                 });
             }
         }
 
-        public static CollectionViewModel CopyFrom(Data.Collection collection)
+        public static CollectionViewModel CopyFrom(Collection collection)
             => new CollectionViewModel
             {
                 Id = collection.Id,
@@ -48,7 +48,7 @@ namespace Milky.OsuPlayer.ViewModels
                 Locked = collection.Locked
             };
 
-        public static IEnumerable<CollectionViewModel> CopyFrom(IEnumerable<Data.Collection> collection)
+        public static IEnumerable<CollectionViewModel> CopyFrom(IEnumerable<Collection> collection)
             => collection.Select(CopyFrom);
     }
 }

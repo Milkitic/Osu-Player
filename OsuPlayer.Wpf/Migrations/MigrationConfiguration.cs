@@ -4,6 +4,7 @@ using System.Data.Entity.Migrations;
 using System.Data.SQLite.EF6.Migrations;
 using System.Linq;
 using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.EF;
 
 namespace Milky.OsuPlayer.Migrations
 {

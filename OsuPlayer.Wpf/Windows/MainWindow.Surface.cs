@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.EF.Model;
 using Milky.OsuPlayer.Media;
 
 namespace Milky.OsuPlayer.Windows
@@ -18,15 +19,15 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         public void UpdateCollections()
         {
-            var list = (List<Collection>)DbOperator.GetCollections();
+            var list = (List<Collection>)DbOperate.GetCollections();
             list.Reverse();
             ViewModel.Collection = list;
         }
 
         private bool SetFaved(MapIdentity identity)
         {
-            var map = DbOperator.GetMapFromDb(identity);
-            var album = DbOperator.GetCollectionsByMap(map);
+            var map = DbOperate.GetMapFromDb(identity);
+            var album = DbOperate.GetCollectionsByMap(map);
             bool faved = album != null && album.Any(k => k.Locked);
             BtnLike.Background = faved
                 ? (ViewModel.IsMiniMode

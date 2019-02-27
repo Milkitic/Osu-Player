@@ -159,7 +159,7 @@ namespace Milky.OsuPlayer.Pages
             if (bgFile.Exists)
                 Export(bgFile, exportBgFolder, validBgName);
             if (mp3File.Exists || bgFile.Exists)
-                DbOperator.AddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, validMp3Name + mp3File.Extension));
+                DbOperate.AddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, validMp3Name + mp3File.Extension));
         }
 
         private static void Export(FileInfo originFile, string outputDir, string outputFile)

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.EF.Model;
 
 namespace Milky.OsuPlayer
 {

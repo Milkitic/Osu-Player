@@ -4,10 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Milky.OsuPlayer.Data.EF;
+using Milky.OsuPlayer.Data.EF.Model;
+using Collection = Milky.OsuPlayer.Data.EF.Model.Collection;
 
 namespace Milky.OsuPlayer.Data
 {
-    public static class DbOperator
+    public static class DbOperate
     {
 
         public static MapInfo GetMapFromDb(MapIdentity id)

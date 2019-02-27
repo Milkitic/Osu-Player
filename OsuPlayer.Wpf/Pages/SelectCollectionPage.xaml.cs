@@ -9,7 +9,7 @@ using System.Windows.Controls;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
-using Collection = Milky.OsuPlayer.Data.Collection;
+using Collection = Milky.OsuPlayer.Data.EF.Model.Collection;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -51,10 +51,10 @@ namespace Milky.OsuPlayer.Pages
         public void RefreshList()
         {
             ViewModel.Collections = new ObservableCollection<CollectionViewModel>(
-                CollectionViewModel.CopyFrom(DbOperator.GetCollections().OrderByDescending(k => k.CreateTime)));
+                CollectionViewModel.CopyFrom(DbOperate.GetCollections().OrderByDescending(k => k.CreateTime)));
         }
 
-        public static void AddToCollection(Data.Collection col, BeatmapEntry entry)
+        public static void AddToCollection(Collection col, BeatmapEntry entry)
         {
             if (string.IsNullOrEmpty(col.ImagePath))
             {
@@ -66,11 +66,11 @@ namespace Milky.OsuPlayer.Pages
                     if (File.Exists(imgPath))
                     {
                         col.ImagePath = imgPath;
-                        DbOperator.UpdateCollection(col);
+                        DbOperate.UpdateCollection(col);
                     }
                 }
             }
-            DbOperator.AddMapToCollection(entry, col);
+            DbOperate.AddMapToCollection(entry, col);
         }
     }
 }

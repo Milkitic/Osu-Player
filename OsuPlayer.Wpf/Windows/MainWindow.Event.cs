@@ -27,7 +27,7 @@ namespace Milky.OsuPlayer.Windows
             RunSurfaceUpdate();
             if (App.Config.CurrentPath != null && App.Config.Play.Memory)
             {
-                var entries = App.Beatmaps.GetBeatmapByIdentities(App.Config.CurrentList);
+                var entries = App.Beatmaps.ByIdentities(App.Config.CurrentList);
                 App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, entries: entries);
                 bool play = App.Config.Play.AutoPlay;
                 await PlayNewFile(App.Config.CurrentPath, play);
@@ -161,12 +161,12 @@ namespace Milky.OsuPlayer.Windows
             var btn = (ToggleButton)sender;
             var colId = (string)btn.Tag;
             if (MainFrame.Content?.GetType() != typeof(CollectionPage))
-                MainFrame.Navigate(new CollectionPage(this, DbOperator.GetCollectionById(colId)));
+                MainFrame.Navigate(new CollectionPage(this, DbOperate.GetCollectionById(colId)));
             if (MainFrame.Content?.GetType() == typeof(CollectionPage))
             {
                 var sb = (CollectionPage)MainFrame.Content;
                 if (sb.Id != colId)
-                    MainFrame.Navigate(new CollectionPage(this, DbOperator.GetCollectionById(colId)));
+                    MainFrame.Navigate(new CollectionPage(this, DbOperate.GetCollectionById(colId)));
             }
         }
 
@@ -321,7 +321,7 @@ namespace Milky.OsuPlayer.Windows
         private void BtnLike_Click(object sender, RoutedEventArgs e)
         {
             if (!ValidateDb()) return;
-            var entry = App.Beatmaps.GetBeatmapByIdentity(App.PlayerList.CurrentIdentity);
+            var entry = App.Beatmaps.ByIdentity(App.PlayerList.CurrentIdentity);
             //var entry = App.PlayerList?.CurrentInfo.Entry;
             if (entry == null)
             {
@@ -333,10 +333,10 @@ namespace Milky.OsuPlayer.Windows
                 FramePop.Navigate(new SelectCollectionPage(this, entry));
             else
             {
-                var collection = DbOperator.GetCollections().First(k => k.Locked);
+                var collection = DbOperate.GetCollections().First(k => k.Locked);
                 if (App.PlayerList.CurrentInfo.IsFaved)
                 {
-                    DbOperator.RemoveMapFromCollection(entry, collection);
+                    DbOperate.RemoveMapFromCollection(entry, collection);
                     App.PlayerList.CurrentInfo.IsFaved = false;
                 }
                 else
@@ -552,7 +552,7 @@ namespace Milky.OsuPlayer.Windows
         {
             if (App.HitsoundPlayer == null) return;
             App.HitsoundPlayer.SingleOffset = (int)Offset.Value;
-            DbOperator.UpdateMap(App.PlayerList.CurrentInfo.Identity, App.HitsoundPlayer.SingleOffset);
+            DbOperate.UpdateMap(App.PlayerList.CurrentInfo.Identity, App.HitsoundPlayer.SingleOffset);
         }
 
         #endregion Popup events

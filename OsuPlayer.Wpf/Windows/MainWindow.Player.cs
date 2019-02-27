@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.EF.Model;
 using Milky.OsuPlayer.Media;
 using Milky.OsuPlayer.Media.Music;
 using Milky.OsuPlayer.Pages;
@@ -73,9 +74,9 @@ namespace Milky.OsuPlayer.Windows
                     MapIdentity nowIdentity =
                         new MapIdentity(fi.Directory.Name, App.HitsoundPlayer.Osufile.Metadata.Version);
 
-                    MapInfo mapInfo = DbOperator.GetMapFromDb(nowIdentity);
+                    MapInfo mapInfo = DbOperate.GetMapFromDb(nowIdentity);
                     //BeatmapEntry entry = App.PlayerList.Entries.GetBeatmapByIdentity(nowIdentity);
-                    BeatmapEntry entry = App.Beatmaps.GetBeatmapByIdentity(nowIdentity);
+                    BeatmapEntry entry = App.Beatmaps.ByIdentity(nowIdentity);
                     OsuFile osuFile = App.HitsoundPlayer.Osufile;
 
                     LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.TitleMeta.ToUnicodeString();
@@ -218,7 +219,7 @@ namespace Milky.OsuPlayer.Windows
                     App.SaveConfig();
 
                     RunSurfaceUpdate();
-                    DbOperator.UpdateMap(nowIdentity);
+                    DbOperate.UpdateMap(nowIdentity);
                 }
                 catch (RepeatTimingSectionException ex)
                 {
