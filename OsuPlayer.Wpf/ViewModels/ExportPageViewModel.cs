@@ -1,4 +1,6 @@
 ﻿using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.EF.Model;
+using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Utils;
 using Milky.WpfApi;
@@ -21,8 +23,6 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using Milky.OsuPlayer.Data.EF.Model;
-using Milky.OsuPlayer.Models;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -176,8 +176,8 @@ namespace Milky.OsuPlayer.ViewModels
                     : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), Util.CountSize(fi.Length)));
             }
 
-            _entries = App.Beatmaps.GetMapListFromDb(maps);
-            var viewModels = _entries.ToViewModel(false).ToList();
+            _entries = maps.ToBeatmapEntries(App.Beatmaps);
+            var viewModels = _entries.ToDataModels(true).ToList();
             for (var i = 0; i < viewModels.Count; i++)
             {
                 var sb = list.First(k => k.MapIdentity.Equals(viewModels[i].GetIdentity()));

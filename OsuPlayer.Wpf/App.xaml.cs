@@ -1,17 +1,6 @@
 ﻿using Microsoft.Win32;
 using Milky.OsuPlayer;
 using Milky.OsuPlayer.Control;
-using Newtonsoft.Json;
-using osu.Shared.Serialization;
-using osu_database_reader.BinaryFiles;
-using osu_database_reader.Components.Beatmaps;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Windows;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.I18N;
 using Milky.OsuPlayer.Media.Lyric;
@@ -23,6 +12,18 @@ using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic;
 using Milky.OsuPlayer.Media.Music;
 using Milky.OsuPlayer.Media.Storyboard;
 using Milky.OsuPlayer.Utils;
+using Newtonsoft.Json;
+using osu.Shared.Serialization;
+using osu_database_reader.BinaryFiles;
+using osu_database_reader.Components.Beatmaps;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace Milky.OsuPlayer
 {
@@ -35,9 +36,8 @@ namespace Milky.OsuPlayer
         public static UiMetadata UiMetadata { get; set; } = new UiMetadata();
         public static bool UseDbMode => Config.General.DbPath != null;
 
-        public static Lazy<OsuDb> BeatmapDb { get; set; } = new Lazy<OsuDb>(ReadDb);
 
-        public static List<BeatmapEntry> Beatmaps => BeatmapDb.Value?.Beatmaps;
+        public static List<BeatmapEntry> Beatmaps => BeatmapEntryQuery.BeatmapDb?.Beatmaps;
 
         public static MusicPlayer MusicPlayer;
         public static HitsoundPlayer HitsoundPlayer;
@@ -50,7 +50,7 @@ namespace Milky.OsuPlayer
         [STAThread]
         public static void Main()
         {
-            AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
+            //AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
             //Migrate();
 
             //AppDomain.CurrentDomain.AppendPrivatePath(@"bin");
@@ -59,11 +59,11 @@ namespace Milky.OsuPlayer
                 Environment.Exit(0);
             CreateDirectories();
             InitLocalDb();
-            LoadOsuDb();
             SaveConfig();
             ReloadLyricProvider();
             RedirectHandler.Redirect();
             SetAlignment();
+            LoadOsuDbAsync().Wait();
             App app = new App();
             app.InitializeComponent();
             app.Run();
@@ -168,7 +168,7 @@ namespace Milky.OsuPlayer
             return true;
         }
 
-        private static void LoadOsuDb()
+        private static async Task LoadOsuDbAsync()
         {
             string dbPath = Config.General.DbPath;
             if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath))
@@ -203,6 +203,7 @@ namespace Milky.OsuPlayer
 
             if (dbPath == null) return;
             Config.General.DbPath = dbPath;
+            await BeatmapEntryQuery.LoadNewDbAsync(dbPath);
         }
 
         public static bool? BrowserDb(out string chosedPath)
@@ -274,20 +275,6 @@ namespace Milky.OsuPlayer
             {
                 return str;
             }
-        }
-
-        public static OsuDb ReadDb()
-        {
-            if (string.IsNullOrEmpty(Config.General.DbPath))
-                return null;
-            //var copied = Path.Combine(Domain.CurrentPath, "osu.db");
-            //File.Copy(Config.General.DbPath, copied, true);
-            var db = new OsuDb();
-            using (FileStream fs = new FileStream(Config.General.DbPath, FileMode.Open))
-            {
-                db.ReadFromStream(new SerializationReader(fs));
-            }
-            return db;
         }
     }
 }

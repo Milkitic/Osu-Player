@@ -1,7 +1,8 @@
-﻿using Milky.OsuPlayer.Utils;
+﻿using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Utils;
 using Milky.WpfApi.Collections;
+using OSharp.Beatmap;
 using osu.Shared;
-using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.Models
 {
@@ -24,10 +25,10 @@ namespace Milky.OsuPlayer.Models
 
         //Extended
         public string AutoTitleSource =>
-            (MetaSelect.GetUnicode(Title, TitleUnicode) +
+            (MetaString.GetUnicode(Title, TitleUnicode) +
              (string.IsNullOrEmpty(SongSource) ? "" : $"\r\n\r\n —— {SongSource}")).Replace("_", "__");
-        public string AutoTitle => MetaSelect.GetUnicode(Title, TitleUnicode).Replace("_", "__");
-        public string AutoArtist => MetaSelect.GetUnicode(Artist, ArtistUnicode).Replace("_", "__");
+        public string AutoTitle => MetaString.GetUnicode(Title, TitleUnicode) ?? "未知标题";
+        public string AutoArtist => MetaString.GetUnicode(Artist, ArtistUnicode) ?? "未知艺术家";
         public string AutoCreator => Creator.Replace("_", "__");
         public string AutoVersion => Version.Replace("_", "__");
         public string FileSize { get; set; }

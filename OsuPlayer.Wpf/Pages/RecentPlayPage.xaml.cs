@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Models;
+using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -34,7 +35,7 @@ namespace Milky.OsuPlayer.Pages
         public void UpdateList()
         {
             _entries = App.Beatmaps.GetRecentListFromDb();
-            DataModels = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToViewModel(true));
+            DataModels = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModels(false));
             RecentList.DataContext = DataModels.ToList();
         }
 
@@ -117,7 +118,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelected();
             if (map == null) return;
             _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow,
-                MetaSelect.GetUnicode(map.Artist, map.ArtistUnicode)));
+                MetaString.GetUnicode(map.Artist, map.ArtistUnicode)));
         }
 
         private void ItemSearchTitle_Click(object sender, RoutedEventArgs e)
@@ -125,7 +126,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelected();
             if (map == null) return;
             _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow,
-                MetaSelect.GetUnicode(map.Title, map.TitleUnicode)));
+                MetaString.GetUnicode(map.Title, map.TitleUnicode)));
         }
 
         private void ItemSet_Click(object sender, RoutedEventArgs e)

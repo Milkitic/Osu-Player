@@ -1,10 +1,13 @@
 ﻿using Milky.OsuPlayer;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.EF.Model;
+using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using Milky.WpfApi.Collections;
+using OSharp.Beatmap;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
@@ -15,8 +18,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Data.EF.Model;
-using Milky.OsuPlayer.Models;
 using Collection = Milky.OsuPlayer.Data.EF.Model.Collection;
 
 namespace Milky.OsuPlayer.Pages
@@ -39,8 +40,8 @@ namespace Milky.OsuPlayer.Pages
             ViewModel = (CollectionPageViewModel)this.DataContext;
             ViewModel.CollectionInfo = collectionInfo;
             var infos = (List<MapInfo>)DbOperate.GetMapsFromCollection(collectionInfo);
-            _entries = App.Beatmaps.GetMapListFromDb(infos, false);
-            ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToViewModel(true));
+            _entries = infos.ToBeatmapEntries(App.Beatmaps, false);
+            ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModels(false));
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -76,7 +77,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void UpdateView(IEnumerable<BeatmapEntry> entries)
         {
-            //ViewModel.Beatmaps = new ObservableCollection<BeatmapDataModel>(entries.ToViewModel(true));
+            //ViewModel.Beatmaps = new ObservableCollection<BeatmapDataModel>(entries.ToDataModels(false));
             //ListCount.Content = ViewModel.Beatmaps.Count;
         }
 
@@ -151,7 +152,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelected();
             if (map == null) return;
             _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow,
-                MetaSelect.GetUnicode(map.Artist, map.ArtistUnicode)));
+                MetaString.GetUnicode(map.Artist, map.ArtistUnicode)));
         }
 
         private void ItemSearchTitle_Click(object sender, RoutedEventArgs e)
@@ -159,7 +160,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelected();
             if (map == null) return;
             _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow,
-                MetaSelect.GetUnicode(map.Title, map.TitleUnicode)));
+                MetaString.GetUnicode(map.Title, map.TitleUnicode)));
         }
 
         private void ItemExport_Click(object sender, RoutedEventArgs e)

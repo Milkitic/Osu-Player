@@ -4,11 +4,11 @@ namespace Milky.OsuPlayer.Models
 {
     public class DataModelComparer : IEqualityComparer<BeatmapDataModel>
     {
-        private readonly bool _multiVersions;
+        private readonly bool _distinctByVersion;
 
-        public DataModelComparer(bool multiVersions)
+        public DataModelComparer(bool distinctByVersion)
         {
-            _multiVersions = multiVersions;
+            _distinctByVersion = distinctByVersion;
         }
 
         public bool Equals(BeatmapDataModel x, BeatmapDataModel y)
@@ -20,7 +20,7 @@ namespace Milky.OsuPlayer.Models
             if (x.AutoArtist != y.AutoArtist) return false;
             if (x.AutoTitleSource != y.AutoTitleSource) return false;
             if (x.Creator != y.Creator) return false;
-            if (_multiVersions)
+            if (!_distinctByVersion)
             {
                 if (x.Version != y.Version) return false;
             }

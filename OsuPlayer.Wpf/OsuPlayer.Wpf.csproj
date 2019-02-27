@@ -241,7 +241,7 @@
     <Compile Include="Models\CurrentInfo.cs" />
     <Compile Include="Models\Github\Release.cs" />
     <Compile Include="Models\BeatmapDataModel.cs" />
-    <Compile Include="Models\EntryExtension.cs" />
+    <Compile Include="Data\EntryExtension.cs" />
     <Compile Include="Media\HitsoundElement.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\MapIndentity.cs" />
@@ -328,7 +328,6 @@
     <Compile Include="Utils\DictionaryExtension.cs" />
     <Compile Include="Media\Music\HitsoundPlayer.cs" />
     <Compile Include="Utils\Downloader.cs" />
-    <Compile Include="Utils\MetaSelect.cs" />
     <Compile Include="Media\Music\WavePlayer.cs" />
     <Compile Include="Utils\KeyConverter.cs" />
     <Compile Include="Utils\Updater.cs" />

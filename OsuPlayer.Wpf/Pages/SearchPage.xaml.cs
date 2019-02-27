@@ -13,6 +13,7 @@ using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
+using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -67,8 +68,8 @@ namespace Milky.OsuPlayer.Pages
                 Dispatcher.Invoke(() => { keyword = SearchBox.Text.Trim(); });
 
                 var sorted = string.IsNullOrEmpty(keyword)
-                    ? App.Beatmaps.SortBy(sortMode).ToViewModel(false)
-                    : BeatmapEntryQuery.ByKeyword(App.Beatmaps, keyword).SortBy(sortMode).ToViewModel(false);
+                    ? App.Beatmaps.SortBy(sortMode).ToDataModels(true)
+                    : BeatmapEntryQuery.ByKeyword(App.Beatmaps, keyword).SortBy(sortMode).ToDataModels(true);
 
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
@@ -118,7 +119,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelectedDefault();
             if (map == null) return;
             ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow,
-                MetaSelect.GetUnicode(map.Artist, map.ArtistUnicode)));
+                MetaString.GetUnicode(map.Artist, map.ArtistUnicode)));
         }
 
         private void ItemSearchTitle_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -126,7 +127,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelectedDefault();
             if (map == null) return;
             ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow,
-                MetaSelect.GetUnicode(map.Title, map.TitleUnicode)));
+                MetaString.GetUnicode(map.Title, map.TitleUnicode)));
         }
 
         private void ItemExport_Click(object sender, System.Windows.RoutedEventArgs e)

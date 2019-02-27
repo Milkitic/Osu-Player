@@ -1,4 +1,7 @@
 ﻿using Microsoft.Win32;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Windows;
 using osu_database_reader.BinaryFiles;
 using System;
 using System.Collections.Generic;
@@ -15,8 +18,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -81,25 +82,18 @@ namespace Milky.OsuPlayer.Pages.Settings
             App.SaveConfig();
         }
 
-        private void Browse_Click(object sender, RoutedEventArgs e)
+        private async void Browse_Click(object sender, RoutedEventArgs e)
         {
-            var result = App.BrowserDb(out var chosedPath);
+            var result = App.BrowserDb(out var path);
             if (!result.HasValue || !result.Value)
                 return;
-            string prevPath = App.Config.General.DbPath;
-            App.Config.General.DbPath = chosedPath;
-            App.BeatmapDb = new Lazy<OsuDb>(App.ReadDb);
             try
             {
-                _ = App.BeatmapDb.Value;
-                LblDbPath.Text = chosedPath;
-                App.SaveConfig();
+                await BeatmapEntryQuery.LoadNewDbAsync(path);
             }
             catch (Exception ex)
             {
                 MsgBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
-                App.Config.General.DbPath = prevPath;
-                App.BeatmapDb = new Lazy<OsuDb>(App.ReadDb);
             }
         }
 

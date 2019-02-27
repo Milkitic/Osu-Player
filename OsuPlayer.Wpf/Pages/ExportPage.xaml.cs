@@ -90,9 +90,9 @@ namespace Milky.OsuPlayer.Pages
             var osuFile = OsuFile.ReadFromFile(Path.Combine(folder, entry.BeatmapFileName));
             FileInfo bgFile = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));
 
-            var artist = MetaSelect.GetUnicode(entry.Artist, entry.ArtistUnicode);
-            var title = MetaSelect.GetUnicode(entry.Title, entry.TitleUnicode);
-            var artistOri = MetaSelect.GetOriginal(entry.Artist, entry.ArtistUnicode);
+            var artist = MetaString.GetUnicode(entry.Artist, entry.ArtistUnicode);
+            var title = MetaString.GetUnicode(entry.Title, entry.TitleUnicode);
+            var artistOri = MetaString.GetOriginal(entry.Artist, entry.ArtistUnicode);
             string escapedMp3, escapedBg;
             switch (App.Config.Export.NamingStyle)
             {
