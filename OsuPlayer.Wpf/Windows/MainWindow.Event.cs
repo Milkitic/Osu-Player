@@ -28,7 +28,7 @@ namespace Milky.OsuPlayer.Windows
             RunSurfaceUpdate();
             if (App.Config.CurrentPath != null && App.Config.Play.Memory)
             {
-                var entries = App.Beatmaps.ByIdentities(App.Config.CurrentList);
+                var entries = App.Beatmaps.FilterByIdentities(App.Config.CurrentList);
                 App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, entries: entries);
                 bool play = App.Config.Play.AutoPlay;
                 await PlayNewFile(App.Config.CurrentPath, play);
@@ -322,7 +322,7 @@ namespace Milky.OsuPlayer.Windows
         private void BtnLike_Click(object sender, RoutedEventArgs e)
         {
             if (!ValidateDb()) return;
-            var entry = App.Beatmaps.ByIdentity(App.PlayerList.CurrentIdentity);
+            var entry = App.Beatmaps.FilterByIdentity(App.PlayerList.CurrentIdentity);
             //var entry = App.PlayerList?.CurrentInfo.Entry;
             if (entry == null)
             {

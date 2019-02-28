@@ -61,7 +61,7 @@ namespace Milky.OsuPlayer.Pages
                 UpdateList();
             else
             {
-                var query = BeatmapEntryQuery.ByKeyword(_entries, keyword);
+                var query = BeatmapEntryQuery.FilterByKeyword(_entries, keyword);
                 UpdateView(query);
             }
 
@@ -205,7 +205,7 @@ namespace Milky.OsuPlayer.Pages
             if (MapList.SelectedItem == null)
                 return null;
             var selectedItem = (BeatmapDataModel)MapList.SelectedItem;
-            return _entries.ByFolder(selectedItem.FolderName)
+            return _entries.FilterByFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
 
@@ -216,7 +216,7 @@ namespace Milky.OsuPlayer.Pages
 
         private BeatmapEntry ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _entries.ByFolder(dataModel.FolderName)
+            return _entries.FilterByFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 

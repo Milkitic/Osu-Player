@@ -23,7 +23,7 @@ namespace Milky.OsuPlayer.Data
 
         private static readonly ConcurrentRandom Random = new ConcurrentRandom();
 
-        public static IEnumerable<BeatmapEntry> ByTitleArtist(this IEnumerable<BeatmapEntry> list, string title,
+        public static IEnumerable<BeatmapEntry> FilterByTitleArtist(this IEnumerable<BeatmapEntry> list, string title,
             string artist)
         {
             return list
@@ -33,38 +33,37 @@ namespace Milky.OsuPlayer.Data
                             k.ArtistUnicode != null && k.ArtistUnicode == artist);
         }
 
-        public static IEnumerable<BeatmapEntry> ByKeyword(this IEnumerable<BeatmapEntry> list, string keywordStr)
+        public static IEnumerable<BeatmapEntry> FilterByKeyword(this IEnumerable<BeatmapEntry> list, string keywordStr)
         {
             if (string.IsNullOrWhiteSpace(keywordStr))
                 return list;
-            keywordStr = keywordStr.ToLower();
             string[] keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
             return keywords.Aggregate(list,
                 (current, keywd) => current.Where(k =>
-                    k.Title != null && k.Title.ToLower().Contains(keywd) ||
-                    k.TitleUnicode != null && k.TitleUnicode.Contains(keywd) ||
-                    k.Artist != null && k.Artist.ToLower().Contains(keywd) ||
-                    k.ArtistUnicode != null && k.ArtistUnicode.Contains(keywd) ||
-                    k.SongTags != null && k.SongTags.ToLower().Contains(keywd) ||
-                    k.SongSource != null && k.SongSource.ToLower().Contains(keywd) ||
-                    k.Creator != null && k.Creator.ToLower().Contains(keywd) ||
-                    k.Version != null && k.Version.ToLower().Contains(keywd)
+                    k.Title?.Contains(keywd, true) == true ||
+                    k.TitleUnicode?.Contains(keywd, true) == true ||
+                    k.Artist?.Contains(keywd, true) == true ||
+                    k.ArtistUnicode?.Contains(keywd, true) == true ||
+                    k.SongTags?.Contains(keywd, true) == true ||
+                    k.SongSource?.Contains(keywd, true) == true ||
+                    k.Creator?.Contains(keywd, true) == true ||
+                    k.Version?.Contains(keywd, true) == true
                 ));
         }
 
-        public static IEnumerable<BeatmapEntry> ByFolder(this IEnumerable<BeatmapEntry> list,
+        public static IEnumerable<BeatmapEntry> FilterByFolder(this IEnumerable<BeatmapEntry> list,
             string folder)
         {
             return list.Where(k => k.FolderName == folder);
         }
 
-        public static BeatmapEntry ByIdentity(this IEnumerable<BeatmapEntry> list,
+        public static BeatmapEntry FilterByIdentity(this IEnumerable<BeatmapEntry> list,
             MapIdentity identity)
         {
             return list.Where(k => k != null).FirstOrDefault(k => k.FolderName == identity.FolderName && k.Version == identity.Version);
         }
 
-        public static IEnumerable<BeatmapEntry> ByIdentities(this IEnumerable<BeatmapEntry> list,
+        public static IEnumerable<BeatmapEntry> FilterByIdentities(this IEnumerable<BeatmapEntry> list,
             IEnumerable<MapIdentity> identities)
         {
             return identities.Select(id => list.FirstOrDefault(k => k.FolderName == id.FolderName && k.Version == id.Version));
@@ -122,7 +121,7 @@ namespace Milky.OsuPlayer.Data
                         StringComparer.InvariantCulture);
             }
         }
-        
+
         public static async Task<bool> TryLoadNewDbAsync(string path)
         {
             try

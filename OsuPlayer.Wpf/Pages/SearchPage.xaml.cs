@@ -1,4 +1,10 @@
-﻿using osu_database_reader.Components.Beatmaps;
+﻿using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Models;
+using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.ViewModels;
+using Milky.OsuPlayer.Windows;
+using OSharp.Beatmap;
+using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,11 +15,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Models;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.Windows;
-using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -22,14 +23,15 @@ namespace Milky.OsuPlayer.Pages
     /// </summary>
     public partial class SearchPage : Page
     {
-        private readonly Stopwatch _querySw = new Stopwatch();
-        private bool _queryLock;
         public MainWindow ParentWindow { get; set; }
+
+        public SearchPageViewModel ViewModel { get; set; }
 
         public SearchPage(MainWindow mainWindow)
         {
             ParentWindow = mainWindow;
             InitializeComponent();
+            ViewModel = (SearchPageViewModel)DataContext;
         }
 
         public SearchPage(MainWindow mainWindow, string searchKey) : this(mainWindow)
@@ -39,43 +41,13 @@ namespace Milky.OsuPlayer.Pages
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            await PlayListQueryAsync();
+            await ViewModel.PlayListQueryAsync();
         }
 
         private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            await PlayListQueryAsync();
-        }
-
-        private async Task PlayListQueryAsync()
-        {
-            if (App.Beatmaps == null)
-                return;
-
-            //SortEnum sortEnum = (SortEnum)cbSortType.SelectedItem;
-            SortMode sortMode = SortMode.Artist;
-            _querySw.Restart();
-            if (_queryLock)
-                return;
-            _queryLock = true;
-            await Task.Run(() =>
-            {
-                while (_querySw.ElapsedMilliseconds < 300)
-                    Thread.Sleep(1);
-                _querySw.Stop();
-                _queryLock = false;
-                string keyword = null;
-                Dispatcher.Invoke(() => { keyword = SearchBox.Text.Trim(); });
-
-                var sorted = string.IsNullOrEmpty(keyword)
-                    ? App.Beatmaps.SortBy(sortMode).ToDataModels(true)
-                    : BeatmapEntryQuery.ByKeyword(App.Beatmaps, keyword).SortBy(sortMode).ToDataModels(true);
-
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    ResultList.DataContext = sorted;
-                }));
-            });
+            ViewModel.SearchText = ((TextBox)sender).Text;
+            await ViewModel.PlayListQueryAsync();
         }
 
         private void ResultList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -89,7 +61,7 @@ namespace Milky.OsuPlayer.Pages
                 return;
             var ok = (BeatmapDataModel)ResultList.SelectedItem;
             var page = new DiffSelectPage(ParentWindow,
-                App.Beatmaps.ByFolder(ok.GetIdentity().FolderName));
+                App.Beatmaps.FilterByFolder(ok.GetIdentity().FolderName));
             page.Callback = async () =>
             {
                 await ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, page.SelectedMap.FolderName,
@@ -143,11 +115,11 @@ namespace Milky.OsuPlayer.Pages
                 return;
             var ok = (BeatmapDataModel)ResultList.SelectedItem;
             var page = new DiffSelectPage(ParentWindow,
-                App.Beatmaps.ByFolder(ok.GetIdentity().FolderName));
+                App.Beatmaps.FilterByFolder(ok.GetIdentity().FolderName));
             page.Callback = () =>
             {
                 ParentWindow.FramePop.Navigate(new SelectCollectionPage(ParentWindow,
-                    App.Beatmaps.ByFolder(page.SelectedMap.FolderName)
+                    App.Beatmaps.FilterByFolder(page.SelectedMap.FolderName)
                         .FirstOrDefault(k => k.Version == page.SelectedMap.Version)));
             };
             ParentWindow.FramePop.Navigate(page);
@@ -178,7 +150,7 @@ namespace Milky.OsuPlayer.Pages
         {
             if (ResultList.SelectedItem == null)
                 return null;
-            var map = App.Beatmaps.ByFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
+            var map = App.Beatmaps.FilterByFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
                 .GetHighestDiff();
             return map;
         }

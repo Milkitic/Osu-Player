@@ -1,0 +1,22 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Milky.OsuPlayer">
+    <SolidColorBrush x:Key="WhiteBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="WhiteBrushB0" Color="#B0FFFFFF" />
+    <SolidColorBrush x:Key="WhiteBrush80" Color="#80FFFFFF" />
+    <SolidColorBrush x:Key="WhiteBrush50" Color="#50FFFFFF" />
+    <SolidColorBrush x:Key="WhiteBrush40" Color="#40FFFFFF" />
+    <SolidColorBrush x:Key="WhiteBrush20" Color="{StaticResource WhiteColor20}" />
+ 
+    <SolidColorBrush x:Key="ExtraLightBrush" Color="#F0F0F0" />
+    <SolidColorBrush x:Key="ExtraLightBrushF0" Color="#F0F0F0F0" />
+    <SolidColorBrush x:Key="ExtraLightBrush80" Color="#80F0F0F0" />
+    <SolidColorBrush x:Key="ExtraLightBrush20" Color="#20F0F0F0" />
+   
+    <SolidColorBrush x:Key="PinkBrushOsu" Color="{StaticResource PinkColorOsu}" />
+  
+    <SolidColorBrush x:Key="LightBrush" Color="#D0D0D0" />
+
+    <SolidColorBrush x:Key="GreyBrush" Color="#646464" />
+    <SolidColorBrush x:Key="DarkGreyBrush" Color="#323232" />
+</ResourceDictionary>

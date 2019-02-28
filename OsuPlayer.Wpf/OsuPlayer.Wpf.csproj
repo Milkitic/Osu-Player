@@ -166,11 +166,15 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Config.cs" />
+    <Compile Include="Converter\BooleanToCursorConverter.cs" />
+    <Compile Include="Converter\ButtonColorConverter.cs" />
     <Compile Include="Converter\IndexToStringConverter.cs" />
     <Compile Include="Converter\PlayingConverter.cs" />
     <Compile Include="Converter\SingleParameterConverter.cs" />
     <Compile Include="Converter\TabConverter.cs" />
+    <Compile Include="Converter\TrueToVisibleConverter.cs" />
     <Compile Include="Converter\VersionToStringConverter.cs" />
+    <Compile Include="IgnoreCaseComparer.cs" />
     <Compile Include="Models\DataModelComparer.cs" />
     <Compile Include="Data\EF\Model\CollectionRelation.cs" />
     <Compile Include="Data\EF\Model\Collection.cs" />
@@ -185,6 +189,7 @@
     <Compile Include="ViewModels\CollectionViewModel.cs" />
     <Compile Include="ViewModels\EditCollectionPageViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\SearchPageViewModel.cs" />
     <Compile Include="ViewModels\SelectCollectionPageViewModel.cs" />
     <Compile Include="ViewModels\DiffSelectPageViewModel.cs" />
     <Compile Include="Windows\ConfigWindow.xaml.cs">
@@ -336,7 +341,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Styles\BrushDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\ButtonDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles\ConverterDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\SvgDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

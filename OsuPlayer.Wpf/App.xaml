@@ -7,7 +7,10 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/GeneralStyle.xaml" />
+                <ResourceDictionary Source="Styles/BrushDictionary.xaml" />
+                <ResourceDictionary Source="Styles/SvgDictionary.xaml" />
                 <ResourceDictionary Source="Styles/ButtonStyle.xaml" />
+                <ResourceDictionary Source="Styles/ButtonDictionary.xaml" />
                 <ResourceDictionary Source="Styles/ConfigStyle.xaml" />
                 <ResourceDictionary Source="Styles/ContextMenuStyle.xaml" />
                 <ResourceDictionary Source="Styles/ListViewStyle.xaml" />

@@ -156,13 +156,13 @@ namespace Milky.OsuPlayer.Pages
             if (RecentList.SelectedItem == null)
                 return null;
             var selectedItem = (BeatmapDataModel)RecentList.SelectedItem;
-            return _entries.ByFolder(selectedItem.FolderName)
+            return _entries.FilterByFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
 
         private BeatmapEntry ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _entries.ByFolder(dataModel.FolderName)
+            return _entries.FilterByFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 

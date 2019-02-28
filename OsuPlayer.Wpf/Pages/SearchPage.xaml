@@ -6,18 +6,32 @@
       xmlns:beatmaps="clr-namespace:osu_database_reader.Components.Beatmaps;assembly=osu-database-reader"
       xmlns:models="clr-namespace:Milky.OsuPlayer"
       xmlns:models1="clr-namespace:Milky.OsuPlayer.Models"
+      xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+      xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
+      xmlns:converters="clr-namespace:Milky.WpfApi.Converters;assembly=WpfApi"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SearchPage" KeepAlive="True"
-      Loaded="Page_Loaded">
+      Loaded="Page_Loaded"
+      x:Name="CurrentPage">
+    <Page.Resources>
+        <converter:ButtonColorConverter x:Key="ButtonColorConverter" />
+        <converters:NegativeBooleanConverter x:Key="NegativeBooleanConverter" />
+        <converter:BooleanToCursorConverter x:Key="BooleanToCursorConverter" />
+        <converter:TrueToVisibleConverter x:Key="TrueToVisibleConverter" />
+    </Page.Resources>
+    <Page.DataContext>
+        <viewModels:SearchPageViewModel />
+    </Page.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Height="40" Margin="30,20,30,20" VerticalAlignment="Top" BorderThickness="1"
                 BorderBrush="#DDDDDD" Background="White" />
-        <TextBox x:Name="SearchBox" Grid.Row="0" FontSize="15px" Height="40" Text="" Foreground="#555555"
+        <TextBox x:Name="SearchBox" Grid.Row="0" FontSize="15px" Height="40" Foreground="#555555"
                  Margin="40,20,40,0"
                  VerticalAlignment="Top" VerticalContentAlignment="Center" BorderThickness="0" Background="Transparent"
                  TextChanged="SearchBox_TextChanged" />
@@ -36,7 +50,8 @@
         </TextBlock>
 
         <ListView x:Name="ResultList" Margin="0,20,0,2" Grid.Row="1" Background="Transparent" BorderThickness="0"
-                  ItemsSource="{Binding Mode=OneWay}" MouseDoubleClick="ResultList_MouseDoubleClick"
+                  ItemsSource="{Binding DisplayedMaps,Mode=OneWay}"
+                  MouseDoubleClick="ResultList_MouseDoubleClick"
                   ItemContainerStyle="{StaticResource GridView}">
             <ListView.ContextMenu>
                 <ContextMenu Style="{StaticResource DefaultContextMenu}">
@@ -67,9 +82,6 @@
                               Style="{DynamicResource DefaultMenuItem}" />
                 </ContextMenu>
             </ListView.ContextMenu>
-            <ListView.DataContext>
-                <models1:BeatmapDataModel />
-            </ListView.DataContext>
             <ListView.Resources>
                 <DataTemplate x:Key="TitleSourceDt">
                     <StackPanel>
@@ -103,11 +115,75 @@
             </ListView.Resources>
             <ListView.View>
                 <GridView ColumnHeaderContainerStyle="{StaticResource MyHeaderStyle}">
-                    <GridViewColumn Header="标题" Width="300" CellTemplate="{StaticResource TitleSourceDt}"></GridViewColumn>
-                    <GridViewColumn Header="艺术家" Width="200" CellTemplate="{StaticResource ArtistDt}"></GridViewColumn>
-                    <GridViewColumn Header="作者" Width="100" CellTemplate="{StaticResource CreatorDt}"></GridViewColumn>
+                    <GridViewColumn Header="标题" Width="300" CellTemplate="{StaticResource TitleSourceDt}" />
+                    <GridViewColumn Header="艺术家" Width="200" CellTemplate="{StaticResource ArtistDt}" />
+                    <GridViewColumn Header="作者" Width="100" CellTemplate="{StaticResource CreatorDt}" />
                 </GridView>
             </ListView.View>
         </ListView>
+        <StackPanel Margin="10"
+            Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Border Margin="2"
+                    BorderBrush="#d0d0d0"
+                    BorderThickness="1" CornerRadius="1"
+                    Width="26" Height="26">
+                <Button Padding="0" BorderThickness="0" Background="Transparent"
+                        Style="{StaticResource FlatButtonStyle}">
+                    <Viewbox Width="12" Height="12">
+                        <ContentControl Template="{StaticResource PageArrowLeftControl}" />
+                    </Viewbox>
+                </Button>
+            </Border>
+            <ListBox ItemsSource="{Binding Pages}" BorderThickness="0" Background="Transparent" Margin="0,0,-1,0"
+                     ClipToBounds="False">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.Resources>
+                    <ControlTemplate x:Key="PageTemplate">
+                        <Grid>
+                            <Border BorderBrush="#d0d0d0" BorderThickness="1" CornerRadius="1"
+                                    Width="26" Height="26"
+                                    Margin="2"
+                                    Visibility="{Binding IsActivated,Converter={StaticResource TrueToVisibleConverter}}"
+                                    Background="{Binding IsActivated,Converter={StaticResource ButtonColorConverter}}">
+                            </Border>
+                            <Border BorderBrush="Transparent" BorderThickness="1" CornerRadius="1"
+                                    Width="26" Height="26"
+                                    Margin="2">
+                                <Button x:Name="MainButton" BorderThickness="0" Background="Transparent"
+                                        Style="{StaticResource FlatButtonStyle}"
+                                        Command="{Binding DataContext.SwitchCommand, ElementName=CurrentPage}"
+                                        CommandParameter="{Binding Index}"
+                                        Cursor="{Binding IsActivated,Converter={StaticResource BooleanToCursorConverter}}"
+                                        IsEnabled="{Binding IsActivated,Converter={StaticResource NegativeBooleanConverter}}">
+                                    <TextBlock VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               Text="{Binding Index}"
+                                               Foreground="#646464" />
+                                </Button>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="Template" Value="{StaticResource PageTemplate}"/>
+                    </Style>
+                </ListBox.Resources>
+            </ListBox>
+            <Border Margin="2"
+                    BorderBrush="#d0d0d0"
+                    BorderThickness="1" CornerRadius="1"
+                    Width="26" Height="26">
+                <Button Padding="0" BorderThickness="0" Background="Transparent"
+                        Style="{StaticResource FlatButtonStyle}">
+                    <Viewbox Width="12" Height="12">
+                        <ContentControl Template="{StaticResource PageArrowRightControl}" />
+                    </Viewbox>
+                </Button>
+            </Border>
+        </StackPanel>
+
     </Grid>
 </Page>

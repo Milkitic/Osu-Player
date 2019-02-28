@@ -77,7 +77,7 @@ namespace Milky.OsuPlayer.Windows
 
                     MapInfo mapInfo = DbOperate.GetMapFromDb(nowIdentity);
                     //BeatmapEntry entry = App.PlayerList.Entries.GetBeatmapByIdentity(nowIdentity);
-                    BeatmapEntry entry = App.Beatmaps.ByIdentity(nowIdentity);
+                    BeatmapEntry entry = App.Beatmaps.FilterByIdentity(nowIdentity);
                     OsuFile osuFile = App.HitsoundPlayer.Osufile;
 
                     LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.TitleMeta.ToUnicodeString();

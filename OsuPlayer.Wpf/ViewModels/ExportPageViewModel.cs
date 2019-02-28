@@ -154,7 +154,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private BeatmapEntry ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _entries.ByFolder(dataModel.FolderName)
+            return _entries.FilterByFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 
