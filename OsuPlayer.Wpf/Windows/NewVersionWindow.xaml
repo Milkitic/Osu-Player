@@ -9,9 +9,11 @@
     xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
     xmlns:github="clr-namespace:Milky.OsuPlayer.Models.Github"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
     mc:Ignorable="d"
     Title="有可用更新" Height="320" Width="480"
-    Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico" ResizeMode="NoResize">
+    Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico" ResizeMode="NoResize"
+    Loaded="WindowBase_Loaded">
     <wpfApi:WindowBase.Background>
         <LinearGradientBrush>
             <GradientStop Offset="0" Color="  #303030" />

@@ -1,5 +1,6 @@
 ﻿using Milky.WpfApi;
 using System;
+using System.IO;
 using System.Windows;
 using Milky.OsuPlayer.Models.Github;
 
@@ -38,6 +39,11 @@ namespace Milky.OsuPlayer.Windows
         private void BtnLater_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void WindowBase_Loaded(object sender, RoutedEventArgs e)
+        {
+         
         }
     }
 }
