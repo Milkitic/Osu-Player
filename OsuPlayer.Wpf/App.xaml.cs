@@ -226,7 +226,7 @@ namespace Milky.OsuPlayer
 
         public static void SaveConfig()
         {
-            File.WriteAllText(Domain.ConfigFile, ConvertJsonString(JsonConvert.SerializeObject(Config)));
+            File.WriteAllText(Domain.ConfigFile, JsonConvert.SerializeObject(Config, Formatting.Indented));
         }
 
         /// <summary>
@@ -249,31 +249,6 @@ namespace Milky.OsuPlayer
                 {
                     Console.WriteLine(@"未创建：" + item.Name);
                 }
-            }
-        }
-
-        private static string ConvertJsonString(string str)
-        {
-            //格式化json字符串
-            JsonSerializer serializer = new JsonSerializer();
-            TextReader tr = new StringReader(str);
-            JsonTextReader jtr = new JsonTextReader(tr);
-            object obj = serializer.Deserialize(jtr);
-            if (obj != null)
-            {
-                StringWriter textWriter = new StringWriter();
-                JsonTextWriter jsonWriter = new JsonTextWriter(textWriter)
-                {
-                    Formatting = Formatting.Indented,
-                    Indentation = 4,
-                    IndentChar = ' '
-                };
-                serializer.Serialize(jsonWriter, obj);
-                return textWriter.ToString();
-            }
-            else
-            {
-                return str;
             }
         }
     }

@@ -61,7 +61,6 @@ namespace Milky.OsuPlayer.Utils
                     NewRelease = latest;
                     NewRelease.NewVerString = "v" + latestVer;
                     NewRelease.NowVerString = "v" + CurrentVersion;
-                    NewRelease.Body = NewRelease.HtmlUrl + Environment.NewLine + NewRelease.Body;
                     result = true;
                 }
                 catch

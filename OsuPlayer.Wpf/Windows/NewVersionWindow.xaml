@@ -11,10 +11,18 @@
     xmlns:github="clr-namespace:Milky.OsuPlayer.Models.Github"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
+    xmlns:md="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
     mc:Ignorable="d"
-    Title="有可用更新" Height="320" Width="480"
-    Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico" ResizeMode="NoResize"
+    Title="有可用更新" Height="600" Width="800" ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
+    Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
     Loaded="WindowBase_Loaded">
+    <wpfApi:WindowBase.DataContext>
+        <github:Release />
+    </wpfApi:WindowBase.DataContext>
+    <wpfApi:WindowBase.Resources>
+        <converter:MarkdownConverter x:Key="MarkdownConverter" />
+    </wpfApi:WindowBase.Resources>
     <wpfApi:WindowBase.Background>
         <LinearGradientBrush>
             <GradientStop Offset="0" Color="  #303030" />
@@ -22,84 +30,27 @@
         </LinearGradientBrush>
     </wpfApi:WindowBase.Background>
     <Grid x:Name="MainGrid" Margin="2">
-        <Grid.DataContext>
-            <github:Release />
-        </Grid.DataContext>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
-            <RowDefinition />
-            <RowDefinition Height="auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <Label Grid.Column="0" Grid.Row="0"
-               Content="当前版本："
-               HorizontalAlignment="Right"
-               Margin="5,6,0,3"
-               Foreground="#f0f0f0" />
-        <Label Grid.Column="1" Grid.Row="0"
-               x:Name="CurrentVer"
-               Style="{StaticResource ConfigLabel2Style}"
-               Content="{Binding NowVerString}"
-               VerticalContentAlignment="Center"
-               Foreground="{StaticResource ExtraLightBrush}" />
-        <Label Grid.Column="0" Grid.Row="1"
-               Content="新版本："
-               FontWeight="Bold"
-               HorizontalContentAlignment="Right"
-               Margin="5,3,0,3"
-               Foreground="{StaticResource ExtraLightBrush}" />
-        <Label Grid.Column="1" Grid.Row="1"
-               x:Name="NewVer"
-               Style="{StaticResource ConfigLabel2Style}"
-               Content="{Binding NewVerString}"
-               VerticalContentAlignment="Center"
-               FontWeight="Bold"
-               Foreground="{StaticResource ExtraLightBrush}" />
-        <Label Grid.Column="0" Grid.Row="2"
-               Content="更新说明："
-               HorizontalAlignment="Right"
-               Margin="5,3,0,3"
-               Foreground="#f0f0f0" />
-        <Border Grid.Column="1" Grid.Row="2"
-                Background="#F0F0F3">
-            <TextBox Grid.Column="1" Grid.Row="2"
-                     x:Name="Body"
-                     IsReadOnly="True"
-                     Margin="3"
-                     Text="{Binding Body}" TextWrapping="Wrap"
-                     AcceptsReturn="True"
-                     VerticalScrollBarVisibility="Auto"
-                     BorderThickness="0"
-                     Padding="0,5"
-                     Background="Transparent" />
+        <Border Grid.Row="0"
+                Background="#F0F0F3"
+                Margin="3">
+            <md:MarkdownViewer
+                x:Name="Viewer"
+                Margin="0"
+                FontSize="10"
+                Background="Transparent">
+                <md:MarkdownViewer.Markdown>
+                    <MultiBinding Converter="{StaticResource MarkdownConverter}">
+                        <Binding Path="Body" />
+                        <Binding Path="NowVerString" />
+                        <Binding Path="NewVerString" />
+                        <Binding Path="HtmlUrl" />
+                    </MultiBinding>
+                </md:MarkdownViewer.Markdown>
+                <FrameworkElement.CommandBindings>
+                    <CommandBinding Command="{x:Static md:Commands.Hyperlink}" Executed="OpenHyperlink" />
+                </FrameworkElement.CommandBindings>
+            </md:MarkdownViewer>
         </Border>
-        <StackPanel Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right">
-            <dms:DMButton
-                Content="忽略此版本"
-                Width="70"
-                Height="25"
-                Margin="0,5,5,3"
-                Click="BtnIgnore_Click" />
-            <dms:DMButton
-                Content="以后再说"
-                Width="70"
-                Height="25"
-                Margin="0,5,5,3"
-                Click="BtnLater_Click" />
-            <dms:DMButton
-                x:Name="BtnUpdate"
-                Content="现在更新"
-                Width="70"
-                Height="25"
-                Margin="0,5,3,3"
-                Click="BtnUpdate_Click" />
-        </StackPanel>
     </Grid>
 </wpfApi:WindowBase>
 

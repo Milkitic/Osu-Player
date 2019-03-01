@@ -1,6 +1,7 @@
 ﻿using Milky.OsuPlayer.Models.Github;
 using Milky.WpfApi;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,54 +24,32 @@ namespace Milky.OsuPlayer.Windows
             MainGrid.DataContext = _release;
         }
 
-        private void BtnUpdate_Click(object sender, RoutedEventArgs e)
-        {
-            UpdateWindow updateWindow = new UpdateWindow(_release, _mainWindow);
-            updateWindow.Show();
-            Close();
-        }
-
-        private void BtnIgnore_Click(object sender, RoutedEventArgs e)
-        {
-            App.Config.IgnoredVer = _release.NewVerString;
-            App.SaveConfig();
-            Close();
-        }
-
-        private void BtnLater_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
         private void WindowBase_Loaded(object sender, RoutedEventArgs e)
         {
 
         }
-    }
 
-    public static class BrowserBehavior
-    {
-        public static readonly DependencyProperty HtmlProperty = DependencyProperty.RegisterAttached(
-            "Html",
-            typeof(string),
-            typeof(BrowserBehavior),
-            new FrameworkPropertyMetadata(OnHtmlChanged));
-
-        [AttachedPropertyBrowsableForType(typeof(WebBrowser))]
-        public static string GetHtml(WebBrowser d)
+        private void OpenHyperlink(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
         {
-            return (string)d.GetValue(HtmlProperty);
-        }
-
-        public static void SetHtml(WebBrowser d, string value)
-        {
-            d.SetValue(HtmlProperty, value);
-        }
-
-        static void OnHtmlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is WebBrowser wb)
-                wb.NavigateToString((string)e.NewValue);
+            var p = e.Parameter.ToString();
+            if (p == "later")
+            {
+                Close();
+            }
+            else if (p == "ignore")
+            {
+                App.Config.IgnoredVer = _release.NewVerString;
+                App.SaveConfig();
+                Close();
+            }
+            else if (p == "update")
+            {
+                UpdateWindow updateWindow = new UpdateWindow(_release, _mainWindow);
+                updateWindow.Show();
+                Close();
+            }
+            else
+                Process.Start(p);
         }
     }
 }
