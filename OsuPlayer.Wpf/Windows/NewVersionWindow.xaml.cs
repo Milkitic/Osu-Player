@@ -1,8 +1,9 @@
-﻿using Milky.WpfApi;
+﻿using Milky.OsuPlayer.Models.Github;
+using Milky.WpfApi;
 using System;
 using System.IO;
 using System.Windows;
-using Milky.OsuPlayer.Models.Github;
+using System.Windows.Controls;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -43,7 +44,33 @@ namespace Milky.OsuPlayer.Windows
 
         private void WindowBase_Loaded(object sender, RoutedEventArgs e)
         {
-         
+
+        }
+    }
+
+    public static class BrowserBehavior
+    {
+        public static readonly DependencyProperty HtmlProperty = DependencyProperty.RegisterAttached(
+            "Html",
+            typeof(string),
+            typeof(BrowserBehavior),
+            new FrameworkPropertyMetadata(OnHtmlChanged));
+
+        [AttachedPropertyBrowsableForType(typeof(WebBrowser))]
+        public static string GetHtml(WebBrowser d)
+        {
+            return (string)d.GetValue(HtmlProperty);
+        }
+
+        public static void SetHtml(WebBrowser d, string value)
+        {
+            d.SetValue(HtmlProperty, value);
+        }
+
+        static void OnHtmlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is WebBrowser wb)
+                wb.NavigateToString((string)e.NewValue);
         }
     }
 }
