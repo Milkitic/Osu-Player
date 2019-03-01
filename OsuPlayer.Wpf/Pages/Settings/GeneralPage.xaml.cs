@@ -84,7 +84,7 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private async void Browse_Click(object sender, RoutedEventArgs e)
         {
-            var result = App.BrowserDb(out var path);
+            var result = App.BrowseDb(out var path);
             if (!result.HasValue || !result.Value)
                 return;
             try

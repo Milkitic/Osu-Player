@@ -1,4 +1,9 @@
-﻿using OSharp.Beatmap;
+﻿using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Models;
+using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.ViewModels;
+using Milky.OsuPlayer.Windows;
+using OSharp.Beatmap;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Concurrent;
@@ -8,11 +13,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Models;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer.Pages
@@ -217,6 +217,11 @@ namespace Milky.OsuPlayer.Pages
         void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            ViewModel.UpdateList.Execute(null);
         }
     }
 }

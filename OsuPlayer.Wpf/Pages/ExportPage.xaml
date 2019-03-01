@@ -12,15 +12,15 @@
       xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="ExportPage">
+      Title="ExportPage" Loaded="Page_Loaded">
     <Page.DataContext>
         <viewModels:ExportPageViewModel />
     </Page.DataContext>
-    <i:Interaction.Triggers>
+    <!--<i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding UpdateList}" CommandParameter="10" />
         </i:EventTrigger>
-    </i:Interaction.Triggers>
+    </i:Interaction.Triggers>-->
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem Style="{StaticResource PinkTabItem}">

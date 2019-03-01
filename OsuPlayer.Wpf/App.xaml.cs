@@ -50,10 +50,7 @@ namespace Milky.OsuPlayer
         [STAThread]
         public static void Main()
         {
-            //AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
-            //Migrate();
-
-            //AppDomain.CurrentDomain.AppendPrivatePath(@"bin");
+            AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
 
             if (!LoadConfig())
                 Environment.Exit(0);
@@ -82,21 +79,6 @@ namespace Milky.OsuPlayer
                 field?.SetValue(null, false);
 
                 ifLeft = SystemParameters.MenuDropAlignment;
-            }
-        }
-
-        private static void Migrate()
-        {
-            var path = Path.Combine(Domain.CurrentPath, "migrate.bat");
-            if (File.Exists(path))
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = path,
-                    Arguments = Process.GetCurrentProcess().Id.ToString(),
-                    CreateNoWindow = true
-                });
-                Environment.Exit(0);
             }
         }
 
@@ -183,7 +165,7 @@ namespace Milky.OsuPlayer
 
                 if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath))
                 {
-                    var result = BrowserDb(out var chosedPath);
+                    var result = BrowseDb(out var chosedPath);
                     if (!result.HasValue || !result.Value)
                     {
                         MessageBox.Show(@"你尚未初始化osu!db，因此部分功能将不可用。", "Osu Player", MessageBoxButton.OK,
@@ -199,14 +181,15 @@ namespace Milky.OsuPlayer
 
                     dbPath = chosedPath;
                 }
+
+                //if (dbPath == null) return;
+                Config.General.DbPath = dbPath;
             }
 
-            if (dbPath == null) return;
-            Config.General.DbPath = dbPath;
             await BeatmapEntryQuery.LoadNewDbAsync(dbPath);
         }
 
-        public static bool? BrowserDb(out string chosedPath)
+        public static bool? BrowseDb(out string chosedPath)
         {
             OpenFileDialog fbd = new OpenFileDialog
             {
