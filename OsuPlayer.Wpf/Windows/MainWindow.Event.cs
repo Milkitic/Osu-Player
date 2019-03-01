@@ -2,6 +2,7 @@
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Media;
 using Milky.OsuPlayer.Media.Music;
+using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.Pages;
 using System;
 using System.Linq;
@@ -11,7 +12,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
-using Milky.OsuPlayer.Models;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -76,7 +76,6 @@ namespace Milky.OsuPlayer.Windows
             WavePlayer.MasteringVoice?.Dispose();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
-            _sbWindow?.Close();
             if (ConfigWindow == null || ConfigWindow.IsClosed) return;
             if (ConfigWindow.IsInitialized)
                 ConfigWindow.Close();
@@ -122,11 +121,8 @@ namespace Milky.OsuPlayer.Windows
         private void Storyboard_Click(object sender, RoutedEventArgs e)
         {
             if (!ValidateDb()) return;
-#if DEBUG
+
             MainFrame.Navigate(Pages.StoryboardPage);
-#else
-            MsgBox.Show(this, "功能完善中，敬请期待~", Title, MessageBoxButton.OK, MessageBoxImage.Information);
-#endif
         }
 
         /// <summary>
@@ -466,14 +462,14 @@ namespace Milky.OsuPlayer.Windows
                         if (VideoElement.Source != null)
                         {
                             App.HitsoundPlayer.SetTime((int)PlayProgress.Value, false);
-                            App.StoryboardProvider?.StoryboardTiming.SetTiming((int)PlayProgress.Value, false);
+                            // Todo: Set Storyboard Progress
                             _forcePaused = false;
                             await VideoJumpTo((int)PlayProgress.Value);
                         }
                         else
                         {
                             App.HitsoundPlayer.SetTime((int)PlayProgress.Value);
-                            App.StoryboardProvider?.StoryboardTiming.SetTiming((int)PlayProgress.Value, true);
+                            // Todo: Set Storyboard Progress
                         }
                         break;
                     case PlayerStatus.Paused:
@@ -482,7 +478,7 @@ namespace Milky.OsuPlayer.Windows
                         if (VideoElement.Source != null)
                             await VideoJumpTo((int)PlayProgress.Value);
                         App.HitsoundPlayer.SetTime((int)PlayProgress.Value, false);
-                        App.StoryboardProvider?.StoryboardTiming.SetTiming((int)PlayProgress.Value, false);
+                        // Todo: Set Storyboard Progress
                         break;
                 }
             }

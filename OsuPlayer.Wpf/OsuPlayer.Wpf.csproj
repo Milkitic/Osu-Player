@@ -308,26 +308,6 @@
     <Compile Include="Pages\StoryboardPage.xaml.cs">
       <DependentUpon>StoryboardPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="StoryboardWindow.xaml.cs">
-      <DependentUpon>StoryboardWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Media\Storyboard\Animation\AnimatedInstance.cs" />
-    <Compile Include="Media\Storyboard\Animation\AnimatedObject.cs" />
-    <Compile Include="Media\Storyboard\Animation\ElementInstance.cs" />
-    <Compile Include="Media\Storyboard\Animation\StoryboardObject.cs" />
-    <Compile Include="Media\Storyboard\Layer\CoverLayer.cs" />
-    <Compile Include="Media\Storyboard\Layer\CustomLayer.cs" />
-    <Compile Include="Media\Storyboard\Layer\FpsLayer.cs" />
-    <Compile Include="Media\Storyboard\Layer\StoryboardLayer.cs" />
-    <Compile Include="Media\Storyboard\RenderThings.cs" />
-    <Compile Include="Media\Storyboard\Render\HwndRenderBase.cs" />
-    <Compile Include="Media\Storyboard\Render\RenderBase.cs" />
-    <Compile Include="Media\Storyboard\Static.cs" />
-    <Compile Include="Media\Storyboard\StoryboardProvider.cs" />
-    <Compile Include="Media\Storyboard\TimeRange.cs" />
-    <Compile Include="Media\Storyboard\Timing.cs" />
-    <Compile Include="Media\Storyboard\Util\LogUtil.cs" />
-    <Compile Include="Media\Storyboard\Util\TextureLoader.cs" />
     <Compile Include="Utils\OptionContainer.cs" />
     <Compile Include="Utils\RedirectHandler.cs" />
     <Compile Include="Utils\Util.cs" />
@@ -450,10 +430,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\StoryboardPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="StoryboardWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

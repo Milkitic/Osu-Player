@@ -1,4 +1,11 @@
 ﻿using Microsoft.Win32;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.EF.Model;
+using Milky.OsuPlayer.Media;
+using Milky.OsuPlayer.Media.Music;
+using Milky.OsuPlayer.Models;
+using Milky.OsuPlayer.Pages;
 using OSharp.Beatmap;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
@@ -10,13 +17,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.EF.Model;
-using Milky.OsuPlayer.Media;
-using Milky.OsuPlayer.Media.Music;
-using Milky.OsuPlayer.Models;
-using Milky.OsuPlayer.Pages;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -41,7 +41,6 @@ namespace Milky.OsuPlayer.Windows
             await PlayNewFile(path, true);
         }
 
-        private StoryboardWindow _sbWindow;
         private Action _waitAction;
         private MyCancellationTokenSource _waitActionCts;
         private TimeSpan _position;
@@ -122,20 +121,13 @@ namespace Milky.OsuPlayer.Windows
                     PlayProgress.Value = 0;
                     LblTotal.Content = new TimeSpan(0, 0, 0, 0, App.HitsoundPlayer.Duration).ToString(@"mm\:ss");
                     LblNow.Content = new TimeSpan(0, 0, 0, 0, App.HitsoundPlayer.PlayTime).ToString(@"mm\:ss");
-#if DEBUG
-                    /* Set Storyboard */
-                    if (false)
-                    {
-                        if (_sbWindow == null || _sbWindow.IsClosed)
-                        {
-                            _sbWindow = new StoryboardWindow();
-                            _sbWindow.Show();
-                            App.StoryboardProvider = new Media.Storyboard.StoryboardProvider(_sbWindow);
-                        }
 
-                        App.StoryboardProvider.LoadStoryboard(dir, App.HitsoundPlayer.Osufile);
+                    /* Set Storyboard */
+                    if (true)
+                    {
+                        // Todo: Set Storyboard
                     }
-#endif
+
                     /* Set Video */
                     bool showVideo = ViewModel.EnableVideo && !ViewModel.IsMiniMode;
                     if (VideoElement != null)
@@ -353,13 +345,13 @@ namespace Milky.OsuPlayer.Windows
         {
             if (_forcePaused) return;
             App.HitsoundPlayer.Play();
-            App.StoryboardProvider?.StoryboardTiming.Start();
+            // Todo: Set Storyboard
         }
 
         private void PauseMedia()
         {
             App.HitsoundPlayer.Pause();
-            App.StoryboardProvider?.StoryboardTiming.Pause();
+            // Todo: Set Storyboard
         }
 
         /// <summary>

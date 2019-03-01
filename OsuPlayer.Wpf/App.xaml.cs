@@ -10,7 +10,6 @@ using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Kugou;
 using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Netease;
 using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic;
 using Milky.OsuPlayer.Media.Music;
-using Milky.OsuPlayer.Media.Storyboard;
 using Milky.OsuPlayer.Utils;
 using Newtonsoft.Json;
 using osu.Shared.Serialization;
@@ -41,7 +40,6 @@ namespace Milky.OsuPlayer
 
         public static MusicPlayer MusicPlayer;
         public static HitsoundPlayer HitsoundPlayer;
-        public static StoryboardProvider StoryboardProvider;
 
         public static LyricProvider LyricProvider;
         public static readonly PlayerList PlayerList = new PlayerList();
