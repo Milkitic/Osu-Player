@@ -1,6 +1,4 @@
-﻿using System.Configuration;
-using System.IO;
-using System.Windows;
+﻿using System.IO;
 
 namespace Milky.OsuPlayer.Utils
 {

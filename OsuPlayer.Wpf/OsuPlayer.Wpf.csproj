@@ -159,7 +159,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Config.cs" />
     <Compile Include="Converter\BooleanToCursorConverter.cs" />
     <Compile Include="Converter\ButtonColorConverter.cs" />
     <Compile Include="Converter\IndexToStringConverter.cs" />
@@ -199,13 +198,10 @@
     <Compile Include="Converter\MainWindowConverters.cs" />
     <Compile Include="Data\EF\ApplicationDbContext.cs" />
     <Compile Include="Data\DbOperate.cs" />
-    <Compile Include="Domain.cs" />
     <Compile Include="Windows\EffectWindowBase.cs" />
     <Compile Include="Windows\LyricWindow.xaml.WinApi.cs" />
     <Compile Include="Windows\MainWindow.Player.cs" />
     <Compile Include="Windows\MainWindow.Surface.cs" />
-    <Compile Include="Media\Enums.cs" />
-    <Compile Include="Media\IPlayer.cs" />
     <Compile Include="Media\Lyric\LyricProvider.cs" />
     <Compile Include="Media\Lyric\Model\Info.cs" />
     <Compile Include="Media\Lyric\Model\Lyric.cs" />
@@ -233,18 +229,10 @@
     <Compile Include="Windows\LyricWindow.xaml.cs">
       <DependentUpon>LyricWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Media\Music\MusicPlayer.cs" />
-    <Compile Include="Media\Music\SampleProviders\MyAudioFileReader.cs" />
-    <Compile Include="Media\Music\SoundTouch\SoundTouchApi.cs" />
-    <Compile Include="Media\Music\TimeStretchProfile.cs" />
-    <Compile Include="Media\Music\WaveProviders\CusBufferedWaveProvider.cs" />
     <Compile Include="Models\CurrentInfo.cs" />
     <Compile Include="Models\Github\Release.cs" />
     <Compile Include="Models\BeatmapDataModel.cs" />
     <Compile Include="Data\EntryExtension.cs" />
-    <Compile Include="Media\HitsoundElement.cs" />
-    <Compile Include="Models\Enums.cs" />
-    <Compile Include="Models\MapIndentity.cs" />
     <Compile Include="Windows\NewVersionWindow.xaml.cs">
       <DependentUpon>NewVersionWindow.xaml</DependentUpon>
     </Compile>
@@ -306,9 +294,7 @@
       <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\DictionaryExtension.cs" />
-    <Compile Include="Media\Music\HitsoundPlayer.cs" />
     <Compile Include="Utils\Downloader.cs" />
-    <Compile Include="Media\Music\WavePlayer.cs" />
     <Compile Include="Utils\KeyConverter.cs" />
     <Compile Include="Utils\Updater.cs" />
     <Compile Include="ViewModels\ExportPageViewModel.cs" />
@@ -515,6 +501,14 @@
     <ProjectReference Include="..\..\..\OSharp\OSharp.Storyboard\OSharp.Storyboard.csproj">
       <Project>{aefcaaac-94a8-48ab-89c9-58b7b55af6c8}</Project>
       <Name>OSharp.Storyboard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
+      <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>
+      <Name>OsuPlayer.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj">
+      <Project>{3cd240f8-da65-44f0-ab58-d78f58109786}</Project>
+      <Name>OsuPlayer.Media.Audio</Name>
     </ProjectReference>
     <ProjectReference Include="..\WpfApi\WpfApi.csproj">
       <Project>{028e6f4e-d538-4b83-904c-c94c2f1e3c83}</Project>

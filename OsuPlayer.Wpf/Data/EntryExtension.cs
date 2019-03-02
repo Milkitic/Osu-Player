@@ -5,6 +5,7 @@ using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Milky.OsuPlayer.Common;
 
 namespace Milky.OsuPlayer.Models
 {

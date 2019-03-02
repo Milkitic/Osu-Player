@@ -1,20 +1,17 @@
 ﻿using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Models;
-using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap;
 using osu_database_reader.Components.Beatmaps;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Player;
 
 namespace Milky.OsuPlayer.Pages
 {

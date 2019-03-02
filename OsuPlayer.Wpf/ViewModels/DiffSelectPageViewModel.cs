@@ -1,11 +1,7 @@
-﻿using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Pages;
-using osu_database_reader.Components.Beatmaps;
+﻿using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Milky.OsuPlayer.Models;
 using Milky.WpfApi;

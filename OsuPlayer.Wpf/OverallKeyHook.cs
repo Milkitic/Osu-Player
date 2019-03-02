@@ -1,10 +1,8 @@
 ﻿using Gma.System.MouseKeyHook;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Pages.Settings;
 using Milky.OsuPlayer.Windows;
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Media.Lyric.Model;
 
 namespace Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base

@@ -1,6 +1,4 @@
 ﻿using Microsoft.Win32;
-using Milky.OsuPlayer;
-using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.I18N;
 using Milky.OsuPlayer.Media.Lyric;
@@ -9,11 +7,8 @@ using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
 using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Kugou;
 using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Netease;
 using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.QQMusic;
-using Milky.OsuPlayer.Media.Music;
 using Milky.OsuPlayer.Utils;
 using Newtonsoft.Json;
-using osu.Shared.Serialization;
-using osu_database_reader.BinaryFiles;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
@@ -23,6 +18,10 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Media.Audio;
 
 namespace Milky.OsuPlayer
 {
@@ -38,8 +37,9 @@ namespace Milky.OsuPlayer
 
         public static List<BeatmapEntry> Beatmaps => BeatmapEntryQuery.BeatmapDb?.Beatmaps;
 
-        public static MusicPlayer MusicPlayer;
-        public static HitsoundPlayer HitsoundPlayer;
+        public static ComponentPlayer Player;
+        //public static MusicPlayer MusicPlayer;
+        //public static HitsoundPlayer HitsoundPlayer;
 
         public static LyricProvider LyricProvider;
         public static readonly PlayerList PlayerList = new PlayerList();

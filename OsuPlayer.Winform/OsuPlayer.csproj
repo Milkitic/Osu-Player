@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9F64872B-6E39-419E-85F7-54C910220FD5}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Milky.OsuPlayer.Winform</RootNamespace>
+    <AssemblyName>OsuPlayer</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NAudio, Version=1.8.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio.Vorbis, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.Vorbis.1.0.0.0\lib\net35\NAudio.Vorbis.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NVorbis.0.8.4.0\lib\NVorbis.dll</HintPath>
+    </Reference>
+    <Reference Include="osu-database-reader, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HoLLy.osu.DatabaseReader.2.1.0\lib\net40\osu-database-reader.dll</HintPath>
+    </Reference>
+    <Reference Include="osu.Shared, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\osu.Shared.1.0.2\lib\net20\osu.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct2D1.4.2.0\lib\net45\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DXGI.4.2.0\lib\net45\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Mathematics.4.2.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XAudio2, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.XAudio2.4.2.0\lib\net45\SharpDX.XAudio2.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Config.cs" />
+    <Compile Include="Domain.cs" />
+    <Compile Include="Interface\IPlayer.cs" />
+    <Compile Include="LyricExtension\LyricProvider.cs" />
+    <Compile Include="LyricExtension\Model\Info.cs" />
+    <Compile Include="LyricExtension\Model\Lyric.cs" />
+    <Compile Include="LyricExtension\Model\Sentence.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Auto\AutoSourceProvider.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Base\LyricDownloaderBase.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Base\LyricParserBase.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Base\SearchSongResultBase.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Base\SongSearchBase.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Base\SourceProviderBase.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Kugou\KugouLyricDownloader.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Kugou\KugouLyricsParser.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Kugou\KugouSearcher.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Kugou\KugouSourceProvider.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Netease\NeteaseLyricDownloader.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Netease\NeteaseLyricParser.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Netease\NeteaseSearch.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Netease\NeteaseSourceProvider.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\QQMusic\QQMusicLyricDownloader.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\QQMusic\QQMusicLyricParser.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\QQMusic\QQMusicSearch.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\QQMusic\QQMusicSourceProvider.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Settings.cs" />
+    <Compile Include="LyricExtension\SourcePrivoder\Utils.cs" />
+    <Compile Include="Models\PlayrEnum.cs" />
+    <Compile Include="Models\PlayStatus.cs" />
+    <Compile Include="Models\SortEnum.cs" />
+    <Compile Include="Query.cs" />
+    <Compile Include="Storyboard\Animation\AnimatedInstance.cs" />
+    <Compile Include="Storyboard\Animation\AnimatedObject.cs" />
+    <Compile Include="Storyboard\Animation\ElementInstance.cs" />
+    <Compile Include="Storyboard\Animation\StoryboardObject.cs" />
+    <Compile Include="Storyboard\Layer\CoverLayer.cs" />
+    <Compile Include="Storyboard\Layer\CustomLayer.cs" />
+    <Compile Include="Storyboard\Layer\FpsLayer.cs" />
+    <Compile Include="Storyboard\Layer\StoryboardLayer.cs" />
+    <Compile Include="Storyboard\StoryboardProvider.cs" />
+    <Compile Include="Storyboard\RenderThings.cs" />
+    <Compile Include="Storyboard\Render\HwndRenderBase.cs" />
+    <Compile Include="Storyboard\Render\RenderBase.cs" />
+    <Compile Include="Storyboard\Static.cs" />
+    <Compile Include="Storyboard\TimeRange.cs" />
+    <Compile Include="Storyboard\Timing.cs" />
+    <Compile Include="Storyboard\Util\LogUtil.cs" />
+    <Compile Include="Storyboard\Util\TextureLoader.cs" />
+    <Compile Include="Utils\DictionaryExtension.cs" />
+    <Compile Include="Utils\MetaSelect.cs" />
+    <Compile Include="Winforms\GdipForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Winforms\LyricControlForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Winforms\LyricControlForm.Designer.cs">
+      <DependentUpon>LyricControlForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Winforms\LyricForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Winforms\HwPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Winforms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Winforms\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Utils\MyAudioFileReader.cs" />
+    <Compile Include="Utils\HitsoundPlayer.cs" />
+    <Compile Include="Models\HitsoundElement.cs" />
+    <Compile Include="Utils\MusicPlayer.cs" />
+    <Compile Include="Utils\WavePlayer.cs" />
+    <Compile Include="Core.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Winforms\RenderForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Winforms\VolumeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Winforms\VolumeForm.Designer.cs">
+      <DependentUpon>VolumeForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Winforms\LyricControlForm.resx">
+      <DependentUpon>LyricControlForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Winforms\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="Winforms\RenderForm.resx">
+      <DependentUpon>RenderForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Winforms\VolumeForm.resx">
+      <DependentUpon>VolumeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="LyricExtension\readme.md" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Storyboard\App.config" />
+    <None Include="Storyboard\packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

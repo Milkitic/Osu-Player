@@ -1,14 +1,7 @@
-﻿using Milky.OsuPlayer.Windows;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Input;
-using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Data.EF.Model;
-using Milky.OsuPlayer.Models;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
 

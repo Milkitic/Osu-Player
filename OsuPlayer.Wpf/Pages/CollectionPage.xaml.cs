@@ -1,23 +1,21 @@
-﻿using Milky.OsuPlayer;
-using Milky.OsuPlayer.Control;
+﻿using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.EF.Model;
 using Milky.OsuPlayer.Models;
-using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using Milky.WpfApi.Collections;
 using OSharp.Beatmap;
 using osu_database_reader.Components.Beatmaps;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Player;
 using Collection = Milky.OsuPlayer.Data.EF.Model.Collection;
 
 namespace Milky.OsuPlayer.Pages

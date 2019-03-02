@@ -1,7 +1,5 @@
-﻿using Milky.OsuPlayer;
-using Milky.OsuPlayer.Control;
+﻿using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using Milky.WpfApi.Collections;
 using osu_database_reader.Components.Beatmaps;
@@ -12,6 +10,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Models;
 using OSharp.Beatmap;
 

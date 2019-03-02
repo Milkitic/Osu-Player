@@ -18,6 +18,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Media.Audio;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
@@ -132,7 +134,7 @@ namespace Milky.OsuPlayer.Windows
                 while (!_cts.Token.IsCancellationRequested)
                 {
                     Thread.Sleep(50);
-                    var validLyrics = _lyricList.Where(t => t.StartTime <= App.HitsoundPlayer?.PlayTime).ToArray();
+                    var validLyrics = _lyricList.Where(t => t.StartTime <= ComponentPlayer.Current?.PlayTime).ToArray();
                     if (validLyrics.Length < 1)
                         continue;
                     int maxTime = validLyrics.Max(t => t.StartTime);

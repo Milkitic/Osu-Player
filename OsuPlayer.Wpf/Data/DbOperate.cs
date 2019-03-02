@@ -1,9 +1,8 @@
-﻿using Milky.OsuPlayer;
-using osu_database_reader.Components.Beatmaps;
+﻿using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Data.EF;
 using Milky.OsuPlayer.Data.EF.Model;
 using Milky.OsuPlayer.Models;

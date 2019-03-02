@@ -1,7 +1,4 @@
-﻿using Milky.OsuPlayer;
-using Milky.OsuPlayer.Data.EF.Model;
-using Milky.OsuPlayer.Models;
-using Milky.OsuPlayer.Utils;
+﻿using Milky.OsuPlayer.Models;
 using OSharp.Beatmap;
 using OSharp.Common;
 using osu.Shared;
@@ -13,7 +10,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Data;
 
 namespace Milky.OsuPlayer.Data
 {

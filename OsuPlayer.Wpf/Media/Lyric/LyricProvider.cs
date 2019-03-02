@@ -1,5 +1,6 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Media.Lyric.SourcePrivoder.Base;
+using System;
 
 namespace Milky.OsuPlayer.Media.Lyric
 {
@@ -63,10 +64,5 @@ namespace Milky.OsuPlayer.Media.Lyric
         {
             throw new NotImplementedException();
         }
-    }
-
-    public enum LyricProvideType
-    {
-        Original, PreferTranslated, PreferBoth
     }
 }

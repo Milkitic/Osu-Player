@@ -1,8 +1,7 @@
-﻿using Milky.OsuPlayer.Control;
+﻿using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Media;
-using Milky.OsuPlayer.Media.Music;
-using Milky.OsuPlayer.Models;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
 using System;
 using System.Linq;
@@ -72,8 +71,7 @@ namespace Milky.OsuPlayer.Windows
 
             ClearHitsoundPlayer();
             _cts.Dispose();
-            WavePlayer.Device?.Dispose();
-            WavePlayer.MasteringVoice?.Dispose();
+            ComponentPlayer.DisposeAll();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
             if (ConfigWindow == null || ConfigWindow.IsClosed) return;
@@ -270,13 +268,13 @@ namespace Milky.OsuPlayer.Windows
         {
             _videoPlay = true;
             _forcePaused = false;
-            if (App.HitsoundPlayer == null)
+            if (ComponentPlayer.Current == null)
             {
                 BtnOpen_Click(sender, e);
                 return;
             }
 
-            switch (App.HitsoundPlayer.PlayerStatus)
+            switch (ComponentPlayer.Current.PlayerStatus)
             {
                 case PlayerStatus.Playing:
                     if (VideoElement?.Source != null) await VideoElement.Pause();
@@ -454,21 +452,21 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private async void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
         {
-            if (App.HitsoundPlayer != null)
+            if (ComponentPlayer.Current != null)
             {
-                switch (App.HitsoundPlayer.PlayerStatus)
+                switch (ComponentPlayer.Current.PlayerStatus)
                 {
                     case PlayerStatus.Playing:
                         if (VideoElement.Source != null)
                         {
-                            App.HitsoundPlayer.SetTime((int)PlayProgress.Value, false);
+                            ComponentPlayer.Current.SetTime((int)PlayProgress.Value, false);
                             // Todo: Set Storyboard Progress
                             _forcePaused = false;
                             await VideoJumpTo((int)PlayProgress.Value);
                         }
                         else
                         {
-                            App.HitsoundPlayer.SetTime((int)PlayProgress.Value);
+                            ComponentPlayer.Current.SetTime((int)PlayProgress.Value);
                             // Todo: Set Storyboard Progress
                         }
                         break;
@@ -477,7 +475,7 @@ namespace Milky.OsuPlayer.Windows
                         _forcePaused = true;
                         if (VideoElement.Source != null)
                             await VideoJumpTo((int)PlayProgress.Value);
-                        App.HitsoundPlayer.SetTime((int)PlayProgress.Value, false);
+                        ComponentPlayer.Current.SetTime((int)PlayProgress.Value, false);
                         // Todo: Set Storyboard Progress
                         break;
                 }
@@ -503,8 +501,7 @@ namespace Milky.OsuPlayer.Windows
                 throw new ArgumentOutOfRangeException();
 
             App.Config.Play.PlayMod = mod;
-            App.MusicPlayer.SetPlayMod(mod);
-            App.HitsoundPlayer.SetPlayMod(mod, App.HitsoundPlayer.PlayerStatus == PlayerStatus.Playing);
+            ComponentPlayer.Current.SetPlayMod(mod, ComponentPlayer.Current.PlayerStatus == PlayerStatus.Playing);
         }
 
         #endregion Play control events
@@ -547,9 +544,9 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void Offset_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            if (App.HitsoundPlayer == null) return;
-            App.HitsoundPlayer.SingleOffset = (int)Offset.Value;
-            DbOperate.UpdateMap(App.PlayerList.CurrentInfo.Identity, App.HitsoundPlayer.SingleOffset);
+            if (ComponentPlayer.Current == null) return;
+            ComponentPlayer.Current.HitsoundOffset = (int)Offset.Value;
+            DbOperate.UpdateMap(App.PlayerList.CurrentInfo.Identity, ComponentPlayer.Current.HitsoundOffset);
         }
 
         #endregion Popup events

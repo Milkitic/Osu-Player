@@ -7,22 +7,14 @@ using Milky.WpfApi;
 using Milky.WpfApi.Collections;
 using Milky.WpfApi.Commands;
 using osu_database_reader.Components.Beatmaps;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common;
 
 namespace Milky.OsuPlayer.ViewModels
 {

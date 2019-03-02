@@ -1,9 +1,10 @@
 ﻿using Microsoft.Win32;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.EF.Model;
-using Milky.OsuPlayer.Media;
-using Milky.OsuPlayer.Media.Music;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.Pages;
 using OSharp.Beatmap;
@@ -57,7 +58,7 @@ namespace Milky.OsuPlayer.Windows
             {
                 try
                 {
-                    var osu = OsuFile.ReadFromFile(path);
+                    var osuFile = OsuFile.ReadFromFile(path);
                     var fi = new FileInfo(path);
                     if (!fi.Exists)
                         throw new FileNotFoundException("Cannot locate.", fi.FullName);
@@ -67,25 +68,23 @@ namespace Milky.OsuPlayer.Windows
                     ClearHitsoundPlayer();
 
                     /* Set new hitsound player*/
-                    App.HitsoundPlayer = new HitsoundPlayer(path, osu);
+                    App.Player = new ComponentPlayer(path, osuFile);
                     _cts = new CancellationTokenSource();
 
                     /* Set Meta */
-                    MapIdentity nowIdentity =
-                        new MapIdentity(fi.Directory.Name, App.HitsoundPlayer.Osufile.Metadata.Version);
+                    MapIdentity nowIdentity = new MapIdentity(fi.Directory.Name, osuFile.Metadata.Version);
 
                     MapInfo mapInfo = DbOperate.GetMapFromDb(nowIdentity);
                     //BeatmapEntry entry = App.PlayerList.Entries.GetBeatmapByIdentity(nowIdentity);
                     BeatmapEntry entry = App.Beatmaps.FilterByIdentity(nowIdentity);
-                    OsuFile osuFile = App.HitsoundPlayer.Osufile;
 
-                    LblTitle.Content = App.HitsoundPlayer.Osufile.Metadata.TitleMeta.ToUnicodeString();
-                    LblArtist.Content = App.HitsoundPlayer.Osufile.Metadata.ArtistMeta.ToUnicodeString();
+                    LblTitle.Content = osuFile.Metadata.TitleMeta.ToUnicodeString();
+                    LblArtist.Content = osuFile.Metadata.ArtistMeta.ToUnicodeString();
                     ((ToolTip)NotifyIcon.TrayToolTip).Content =
                         (string)LblArtist.Content + " - " + (string)LblTitle.Content;
                     bool isFaved = SetFaved(nowIdentity);
-                    App.HitsoundPlayer.SingleOffset = mapInfo.Offset;
-                    Offset.Value = App.HitsoundPlayer.SingleOffset;
+                    App.Player.HitsoundOffset = mapInfo.Offset;
+                    Offset.Value = App.Player.HitsoundOffset;
 
                     App.PlayerList.CurrentInfo =
                         new CurrentInfo(osuFile.Metadata.Artist,
@@ -106,7 +105,7 @@ namespace Milky.OsuPlayer.Windows
                             osuFile.Difficulty.CircleSize,
                             osuFile.Difficulty.ApproachRate,
                             osuFile.Difficulty.OverallDifficulty,
-                            App.MusicPlayer?.Duration ?? 0,
+                            App.Player?.Duration ?? 0,
                             nowIdentity,
                             mapInfo,
                             entry,
@@ -117,10 +116,10 @@ namespace Milky.OsuPlayer.Windows
 
                     /* Set Progress */
                     //PlayProgress.Value = App.HitsoundPlayer.SingleOffset;
-                    PlayProgress.Maximum = App.HitsoundPlayer.Duration;
+                    PlayProgress.Maximum = App.Player.Duration;
                     PlayProgress.Value = 0;
-                    LblTotal.Content = new TimeSpan(0, 0, 0, 0, App.HitsoundPlayer.Duration).ToString(@"mm\:ss");
-                    LblNow.Content = new TimeSpan(0, 0, 0, 0, App.HitsoundPlayer.PlayTime).ToString(@"mm\:ss");
+                    LblTotal.Content = new TimeSpan(0, 0, 0, 0, App.Player.Duration).ToString(@"mm\:ss");
+                    LblNow.Content = new TimeSpan(0, 0, 0, 0, App.Player.PlayTime).ToString(@"mm\:ss");
 
                     /* Set Storyboard */
                     if (true)
@@ -136,7 +135,7 @@ namespace Milky.OsuPlayer.Windows
 
                         if (showVideo)
                         {
-                            var videoName = App.HitsoundPlayer.Osufile.Events.VideoInfo?.Filename;
+                            var videoName = osuFile.Events.VideoInfo?.Filename;
                             if (videoName == null)
                             {
                                 VideoElement.Source = null;
@@ -148,7 +147,7 @@ namespace Milky.OsuPlayer.Windows
                                 if (File.Exists(vPath))
                                 {
                                     VideoElement.Source = new Uri(vPath);
-                                    _videoOffset = -App.HitsoundPlayer.Osufile.Events.VideoInfo.Offset;
+                                    _videoOffset = -(osuFile.Events.VideoInfo.Offset);
                                     if (_videoOffset >= 0)
                                     {
                                         _waitAction = () => { };
@@ -169,9 +168,9 @@ namespace Milky.OsuPlayer.Windows
                     }
 
                     /* Set Background */
-                    if (App.HitsoundPlayer.Osufile.Events.BackgroundInfo != null)
+                    if (osuFile.Events.BackgroundInfo != null)
                     {
-                        var bgPath = Path.Combine(dir, App.HitsoundPlayer.Osufile.Events.BackgroundInfo.Filename);
+                        var bgPath = Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
                         BlurScene.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
                         Thumb.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
                     }
@@ -198,12 +197,12 @@ namespace Milky.OsuPlayer.Windows
                     {
                         if (showVideo && VideoElement?.Source != null)
                         {
-
-                            VideoPlay();
+                            // use event to control here.
+                            //VideoPlay();
                             //App.HitsoundPlayer.Play();
                         }
                         else
-                            App.HitsoundPlayer.Play();
+                            App.Player.Play();
                     }
 
                     //if (!App.PlayerList.Entries.Any(k => k.GetIdentity().Equals(nowIdentity)))
@@ -220,8 +219,8 @@ namespace Milky.OsuPlayer.Windows
                         MessageBoxImage.Warning);
                     if (result == MessageBoxResult.OK)
                     {
-                        if (App.HitsoundPlayer == null) return;
-                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
+                        if (App.Player == null) return;
+                        if (App.Player.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
                     }
                 }
                 catch (BadOsuFormatException ex)
@@ -230,8 +229,8 @@ namespace Milky.OsuPlayer.Windows
                         MessageBoxImage.Warning);
                     if (result == MessageBoxResult.OK)
                     {
-                        if (App.HitsoundPlayer == null) return;
-                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
+                        if (App.Player == null) return;
+                        if (App.Player.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
                     }
                 }
                 catch (VersionNotSupportedException ex)
@@ -240,8 +239,8 @@ namespace Milky.OsuPlayer.Windows
                         MessageBoxImage.Warning);
                     if (result == MessageBoxResult.OK)
                     {
-                        if (App.HitsoundPlayer == null) return;
-                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
+                        if (App.Player == null) return;
+                        if (App.Player.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
                     }
                 }
                 catch (Exception ex)
@@ -250,8 +249,8 @@ namespace Milky.OsuPlayer.Windows
                         MessageBoxButton.OK, MessageBoxImage.Error);
                     if (result == MessageBoxResult.OK)
                     {
-                        if (App.HitsoundPlayer == null) return;
-                        if (App.HitsoundPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
+                        if (App.Player == null) return;
+                        if (App.Player.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
                     }
 
                     Console.WriteLine(ex);
@@ -266,12 +265,12 @@ namespace Milky.OsuPlayer.Windows
             }
         }
 
-        private async void VideoPlay()
-        {
-            //await VideoElement.Pause();
+        //private async void VideoPlay()
+        //{
+        //    //await VideoElement.Pause();
 
-            //await VideoElement.Play();
-        }
+        //    //await VideoElement.Play();
+        //}
 
         private async Task VideoJumpTo(int milliseconds)
         {
@@ -344,13 +343,13 @@ namespace Milky.OsuPlayer.Windows
         private void PlayMedia()
         {
             if (_forcePaused) return;
-            App.HitsoundPlayer.Play();
+            App.Player.Play();
             // Todo: Set Storyboard
         }
 
         private void PauseMedia()
         {
-            App.HitsoundPlayer.Pause();
+            App.Player.Pause();
             // Todo: Set Storyboard
         }
 
@@ -362,7 +361,7 @@ namespace Milky.OsuPlayer.Windows
         /// <param name="isNext"></param>
         private async void PlayNext(bool isManual, bool isNext)
         {
-            if (App.HitsoundPlayer == null) return;
+            if (App.Player == null) return;
             var result = App.PlayerList.PlayTo(isNext, isManual, out var entry);
             switch (result)
             {
@@ -378,7 +377,7 @@ namespace Milky.OsuPlayer.Windows
                     //PlayNewFile(path2, false);
                     _videoPlay = false;
                     _forcePaused = true;
-                    App.HitsoundPlayer.Stop();
+                    App.Player.Stop();
                     break;
                 case PlayerList.ChangeType.Change:
                 default:
@@ -393,9 +392,9 @@ namespace Milky.OsuPlayer.Windows
         {
             _cts.Cancel();
             Task.WaitAll(_statusTask);
-            App.HitsoundPlayer?.Stop();
-            App.HitsoundPlayer?.Dispose();
-            App.HitsoundPlayer = null;
+            App.Player?.Stop();
+            App.Player?.Dispose();
+            App.Player = null;
         }
     }
 

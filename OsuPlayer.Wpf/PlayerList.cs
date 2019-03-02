@@ -1,10 +1,10 @@
-﻿using Milky.OsuPlayer;
-using Milky.OsuPlayer.Data;
+﻿using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Utils;
 using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.Linq;
-using Milky.OsuPlayer.Media;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Models;
 
 namespace Milky.OsuPlayer
