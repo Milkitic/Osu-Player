@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Milky.WpfApi;
+using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Common.Data.EF.Model
 {
@@ -26,9 +27,11 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         }
 
         [Required, Column("id")]
+        [JsonProperty("id")]
         public string Id { get; set; }
 
         [Required, Column("name")]
+        [JsonProperty("name")]
         public string Name
         {
             get => _name;
@@ -40,9 +43,11 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         }
 
         [Column("locked")]
+        [JsonProperty("locked")]
         public int LockedInt { get; set; }
 
         [Column("index")]
+        [JsonProperty("index")]
         public int Index
         {
             get => _index;
@@ -54,6 +59,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         }
 
         [Column("imagePath")]
+        [JsonProperty("imagePath")]
         public string ImagePath
         {
             get => _imagePath;
@@ -65,6 +71,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         }
 
         [Column("description")]
+        [JsonProperty("description")]
         public string Description
         {
             get => _description;
@@ -76,6 +83,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         }
 
         [Required, Column("createTime")]
+        [JsonProperty("createTime")]
         public DateTime CreateTime
         {
             get => _createTime;

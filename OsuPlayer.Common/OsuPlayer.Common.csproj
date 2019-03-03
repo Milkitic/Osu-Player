@@ -74,12 +74,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConcurrentFile.cs" />
     <Compile Include="Configuration\PlayerConfig.cs" />
     <Compile Include="Configuration\ExportControl.cs" />
     <Compile Include="Configuration\GeneralControl.cs" />
     <Compile Include="Configuration\HotKey.cs" />
     <Compile Include="Configuration\LyricControl.cs" />
     <Compile Include="Data\BeatmapEntryQuery.cs" />
+    <Compile Include="Data\DbJsonObject.cs" />
     <Compile Include="Data\DbOperate.cs" />
     <Compile Include="Data\EF\ApplicationDbContext.cs" />
     <Compile Include="Data\EF\Model\Collection.cs" />

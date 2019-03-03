@@ -174,6 +174,7 @@
       <DependentUpon>EditCollectionPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="RandomSeed.cs" />
+    <Compile Include="StartupConfig.cs" />
     <Compile Include="ViewModels\CollectionPageViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModel.cs" />
     <Compile Include="ViewModels\EditCollectionPageViewModel.cs" />
@@ -252,13 +253,13 @@
       <DependentUpon>StoryboardPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\OptionContainer.cs" />
-    <Compile Include="Utils\RedirectEventHandle.cs" />
+    <Compile Include="Utils\EventRedirectHandle.cs" />
     <Compile Include="Utils\Util.cs" />
     <Compile Include="UpdateWindow.xaml.cs">
       <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\KeyConverter.cs" />
-    <Compile Include="Utils\Updater.cs" />
+    <Compile Include="Instances\Updater.cs" />
     <Compile Include="ViewModels\ExportPageViewModel.cs" />
     <Page Include="Pages\EditCollectionPage.xaml">
       <Generator>MSBuild:Compile</Generator>

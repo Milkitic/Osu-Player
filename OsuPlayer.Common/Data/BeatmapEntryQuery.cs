@@ -11,9 +11,6 @@ namespace Milky.OsuPlayer.Common.Data
 {
     public static class BeatmapEntryQuery
     {
-        //public static OsuDb BeatmapDb { get; set; }
-        //public static List<BeatmapEntry> Beatmaps => BeatmapDb?.Beatmaps;
-
         private static readonly ConcurrentRandom Random = new ConcurrentRandom();
 
         public static IEnumerable<BeatmapEntry> FilterByTitleArtist(this IEnumerable<BeatmapEntry> list, string title,

@@ -32,7 +32,7 @@ namespace Milky.OsuPlayer.Common.Configuration
 
         public static void SaveCurrent()
         {
-            File.WriteAllText(Domain.ConfigFile, JsonConvert.SerializeObject(Current, Formatting.Indented));
+            ConcurrentFile.WriteAllText(Domain.ConfigFile, JsonConvert.SerializeObject(Current, Formatting.Indented));
         }
 
         public static void Load(PlayerConfig config)

@@ -1,15 +1,75 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common.Data.EF;
+using Milky.OsuPlayer.Common.Data.EF.Model;
+using Newtonsoft.Json;
+using osu_database_reader.Components.Beatmaps;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Milky.OsuPlayer.Common.Data.EF;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using osu_database_reader.Components.Beatmaps;
+using System.Threading.Tasks;
 using Collection = Milky.OsuPlayer.Common.Data.EF.Model.Collection;
 
 namespace Milky.OsuPlayer.Common.Data
 {
     public static class DbOperate
     {
+        private static DbJsonObject _dbJsonObject;
+
+        static DbOperate()
+        {
+            LookupBackup();
+        }
+
+        private static void LookupBackup()
+        {
+            Task.Run(() =>
+            {
+                _dbJsonObject = new DbJsonObject
+                {
+                    Collections = GetCollections(),
+                    MapInfos = GetMaps(),
+                    CollectionRelations = GetCollectionsRelations()
+                };
+
+                Backup();
+            });
+        }
+
+        private static void Backup()
+        {
+            ConcurrentFile.WriteAllText("player.db.bak", JsonConvert.SerializeObject(_dbJsonObject));
+        }
+
+        private static List<CollectionRelation> GetCollectionsRelations()
+        {
+            using (ApplicationDbContext context = new ApplicationDbContext())
+            {
+                try
+                {
+                    return context.Relations.ToList();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(@"Failed: " + ex);
+                    throw;
+                }
+            }
+        }
+
+        private static List<MapInfo> GetMaps()
+        {
+            using (ApplicationDbContext context = new ApplicationDbContext())
+            {
+                try
+                {
+                    return context.MapInfos.ToList();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(@"Failed: " + ex);
+                    throw;
+                }
+            }
+        }
 
         public static MapInfo GetMapFromDb(MapIdentity id)
         {
@@ -27,7 +87,7 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static IEnumerable<MapInfo> GetRecent()
+        public static List<MapInfo> GetRecent()
         {
             using (ApplicationDbContext context = new ApplicationDbContext())
             {
@@ -44,7 +104,7 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static IEnumerable<MapInfo> GetExportedMaps()
+        public static List<MapInfo> GetExportedMaps()
         {
             using (ApplicationDbContext context = new ApplicationDbContext())
             {
@@ -60,7 +120,7 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static IEnumerable<MapInfo> GetMapsFromCollection(Collection collection)
+        public static List<MapInfo> GetMapsFromCollection(Collection collection)
         {
             using (ApplicationDbContext context = new ApplicationDbContext())
             {
@@ -82,7 +142,7 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static IEnumerable<Collection> GetCollections()
+        public static List<Collection> GetCollections()
         {
             using (ApplicationDbContext context = new ApplicationDbContext())
             {
@@ -98,7 +158,7 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static IEnumerable<Collection> GetCollectionById(string[] id)
+        public static List<Collection> GetCollectionById(string[] id)
         {
             using (ApplicationDbContext context = new ApplicationDbContext())
             {
@@ -130,7 +190,7 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static IEnumerable<Collection> GetCollectionsByMap(MapInfo map)
+        public static List<Collection> GetCollectionsByMap(MapInfo map)
         {
             using (ApplicationDbContext context = new ApplicationDbContext())
             {
@@ -154,7 +214,7 @@ namespace Milky.OsuPlayer.Common.Data
             {
                 try
                 {
-                    var newOne = new Collection(Guid.NewGuid().ToString(), name, locked, 0) {CreateTime = DateTime.Now};
+                    var newOne = new Collection(Guid.NewGuid().ToString(), name, locked, 0) { CreateTime = DateTime.Now };
                     applicationDbContext.Collections.Add(newOne);
                     applicationDbContext.SaveChanges();
                 }
@@ -364,6 +424,5 @@ namespace Milky.OsuPlayer.Common.Data
 
             return map;
         }
-
     }
 }

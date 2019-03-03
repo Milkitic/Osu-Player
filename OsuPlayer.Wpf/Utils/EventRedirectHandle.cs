@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace Milky.OsuPlayer.Utils
 {
-    public static class RedirectEventHandle
+    public static class EventRedirectHandle
     {
         public static void Redirect()
         {

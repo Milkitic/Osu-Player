@@ -1,30 +1,15 @@
 ﻿using Microsoft.Win32;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.I18N;
 using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Instances;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Lyric;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider.Auto;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider.Kugou;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic;
 using Milky.OsuPlayer.Utils;
-using Milky.WpfApi;
-using Newtonsoft.Json;
-using osu_database_reader.Components.Beatmaps;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -40,7 +25,7 @@ namespace Milky.OsuPlayer
         [STAThread]
         public static void Main()
         {
-            //AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
             StartupConfig.Startup();
 
             InstanceManage.AddInstance(new UiMetadata());
@@ -63,7 +48,7 @@ namespace Milky.OsuPlayer
         {
             if (!e.IsTerminating) return;
             MessageBox.Show(string.Format("发生严重错误，即将退出。。。详情请查看error.log。{0}{1}", Environment.NewLine, (e.ExceptionObject as Exception)?.Message), "Osu Player", MessageBoxButton.OK, MessageBoxImage.Error);
-            File.AppendAllText("error.log", string.Format(@"===================={0}===================={1}{2}{3}{4}", DateTime.Now, Environment.NewLine, e.ExceptionObject, Environment.NewLine, Environment.NewLine));
+            ConcurrentFile.AppendAllText("error.log", string.Format(@"===================={0}===================={1}{2}{3}{4}", DateTime.Now, Environment.NewLine, e.ExceptionObject, Environment.NewLine, Environment.NewLine));
             Environment.Exit(1);
         }
 
@@ -116,55 +101,6 @@ namespace Milky.OsuPlayer
             var result = fbd.ShowDialog();
             chosedPath = fbd.FileName;
             return result;
-        }
-    }
-
-    public static class StartupConfig
-    {
-        public static void Startup()
-        {
-            if (!LoadConfig())
-                Environment.Exit(0);
-
-            InitLocalDb();
-
-            RedirectEventHandle.Redirect();
-            StyleUtilities.SetAlignment();
-        }
-
-        private static bool LoadConfig()
-        {
-            var file = Domain.ConfigFile;
-            if (!File.Exists(file))
-            {
-                PlayerConfig.CreateNewConfig();
-            }
-            else
-            {
-                try
-                {
-                    PlayerConfig.Load(JsonConvert.DeserializeObject<PlayerConfig>(File.ReadAllText(file)));
-                }
-                catch (JsonException e)
-                {
-                    var result = MessageBox.Show(@"载入配置文件时失败，用默认配置覆盖继续打开吗？\r\n" + e.Message,
-                        "Osu Player", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        PlayerConfig.CreateNewConfig();
-                    }
-                    else
-                        return false;
-                }
-            }
-
-            return true;
-        }
-
-        private static void InitLocalDb()
-        {
-            var defCol = DbOperate.GetCollections().Where(k => k.Locked);
-            if (!defCol.Any()) DbOperate.AddCollection("最喜爱的", true);
         }
     }
 }
