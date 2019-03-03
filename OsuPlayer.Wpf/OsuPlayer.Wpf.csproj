@@ -202,30 +202,6 @@
     <Compile Include="Windows\LyricWindow.xaml.WinApi.cs" />
     <Compile Include="Windows\MainWindow.Player.cs" />
     <Compile Include="Windows\MainWindow.Surface.cs" />
-    <Compile Include="Media\Lyric\LyricProvider.cs" />
-    <Compile Include="Media\Lyric\Model\Info.cs" />
-    <Compile Include="Media\Lyric\Model\Lyric.cs" />
-    <Compile Include="Media\Lyric\Model\Sentence.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Auto\AutoSourceProvider.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Base\LyricDownloaderBase.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Base\LyricParserBase.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Base\SearchSongResultBase.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Base\SongSearchBase.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Base\SourceProviderBase.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Kugou\KugouLyricDownloader.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Kugou\KugouLyricsParser.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Kugou\KugouSearcher.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Kugou\KugouSourceProvider.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Netease\NeteaseLyricDownloader.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Netease\NeteaseLyricParser.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Netease\NeteaseSearch.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Netease\NeteaseSourceProvider.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\QQMusic\QQMusicLyricDownloader.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\QQMusic\QQMusicLyricParser.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\QQMusic\QQMusicSearch.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\QQMusic\QQMusicSourceProvider.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Settings.cs" />
-    <Compile Include="Media\Lyric\SourcePrivoder\Utils.cs" />
     <Compile Include="Windows\LyricWindow.xaml.cs">
       <DependentUpon>LyricWindow.xaml</DependentUpon>
     </Compile>
@@ -476,7 +452,6 @@
     </EmbeddedResource>
     <Compile Include="Windows\MainWindow.Event.cs" />
     <None Include="app.manifest" />
-    <None Include="Media\Lyric\readme.md" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -509,6 +484,10 @@
     <ProjectReference Include="..\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj">
       <Project>{3cd240f8-da65-44f0-ab58-d78f58109786}</Project>
       <Name>OsuPlayer.Media.Audio</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj">
+      <Project>{33580e59-aa08-45ef-b79f-2f8fe2f539cc}</Project>
+      <Name>OsuPlayer.Media.Lyric</Name>
     </ProjectReference>
     <ProjectReference Include="..\WpfApi\WpfApi.csproj">
       <Project>{028e6f4e-d538-4b83-904c-c94c2f1e3c83}</Project>

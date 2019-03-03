@@ -1,5 +1,4 @@
-﻿using Milky.OsuPlayer.Media.Lyric.Model;
-using Milky.OsuPlayer.ViewModels;
+﻿using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
 using OSharp.Beatmap;
 using System;
@@ -20,6 +19,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Lyric;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;

@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Media.Audio", "Os
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Common", "OsuPlayer.Common\OsuPlayer.Common.csproj", "{654D6521-43E1-48D2-BAEE-E694E38EF56D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Media.Lyric", "OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj", "{33580E59-AA08-45EF-B79F-2F8FE2F539CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analysis|Any CPU = Analysis|Any CPU
@@ -66,6 +68,12 @@ Global
 		{654D6521-43E1-48D2-BAEE-E694E38EF56D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{654D6521-43E1-48D2-BAEE-E694E38EF56D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{654D6521-43E1-48D2-BAEE-E694E38EF56D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33580E59-AA08-45EF-B79F-2F8FE2F539CC}.Analysis|Any CPU.ActiveCfg = Debug|Any CPU
+		{33580E59-AA08-45EF-B79F-2F8FE2F539CC}.Analysis|Any CPU.Build.0 = Debug|Any CPU
+		{33580E59-AA08-45EF-B79F-2F8FE2F539CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33580E59-AA08-45EF-B79F-2F8FE2F539CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33580E59-AA08-45EF-B79F-2F8FE2F539CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33580E59-AA08-45EF-B79F-2F8FE2F539CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
