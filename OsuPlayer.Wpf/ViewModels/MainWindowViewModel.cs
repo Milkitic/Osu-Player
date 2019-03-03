@@ -17,6 +17,7 @@ namespace Milky.OsuPlayer.ViewModels
         private bool _isLyricWindowLocked;
         private bool _isPlaying;
         private bool _enableVideo;
+        private bool _isSyncing;
 
         public bool IsNavigationCollapsed
         {
@@ -54,6 +55,16 @@ namespace Milky.OsuPlayer.ViewModels
             set
             {
                 _isLyricWindowLocked = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsSyncing
+        {
+            get => _isSyncing;
+            set
+            {
+                _isSyncing = value;
                 OnPropertyChanged();
             }
         }

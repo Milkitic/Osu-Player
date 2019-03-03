@@ -1,9 +1,15 @@
-﻿using Milky.OsuPlayer.Common.Player;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.Utils;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,11 +17,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -30,10 +31,16 @@ namespace Milky.OsuPlayer.Windows
             UpdateCollections();
             LoadSurfaceSettings();
             RunSurfaceUpdate();
+            await LoadDb();
+
             if (PlayerConfig.Current.CurrentPath != null && PlayerConfig.Current.Play.Memory)
             {
-                var entries = InstanceManage.GetInstance<OsuDbInst>().Beatmaps.FilterByIdentities(PlayerConfig.Current.CurrentList);
-                InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.All, entries: entries);
+                var entries = InstanceManage.GetInstance<OsuDbInst>().Beatmaps
+                    .FilterByIdentities(PlayerConfig.Current.CurrentList);
+                if (App.UseDbMode)
+                    InstanceManage.GetInstance<PlayerList>()
+                        .RefreshPlayList(PlayerList.FreshType.All, entries: entries);
+
                 bool play = PlayerConfig.Current.Play.AutoPlay;
                 await PlayNewFile(PlayerConfig.Current.CurrentPath, play);
             }
@@ -53,6 +60,13 @@ namespace Milky.OsuPlayer.Windows
                 NewVersionWindow newVersionWindow = new NewVersionWindow(InstanceManage.GetInstance<Updater>().NewRelease, this);
                 newVersionWindow.ShowDialog();
             }
+        }
+
+        private async Task LoadDb()
+        {
+            ViewModel.IsSyncing = true;
+            await InstanceManage.GetInstance<OsuDbInst>().LoadNewDbAsync(PlayerConfig.Current.General.DbPath);
+            ViewModel.IsSyncing = false;
         }
 
         /// <summary>

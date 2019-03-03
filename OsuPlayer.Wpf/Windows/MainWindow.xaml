@@ -10,6 +10,7 @@
                           xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
                           xmlns:windows="clr-namespace:Milky.OsuPlayer.Windows"
                           xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+                          xmlns:loaders="clr-namespace:Loaders;assembly=MrMitch.Loaders"
                           mc:Ignorable="d"
                           Width="998" Height="759" MinWidth="878" MinHeight="138"
                           Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
@@ -656,6 +657,32 @@
                     DMSystemButtonSize="40" Canvas.Left="160" />
             </Canvas>
         </DockPanel>
+        <!--<Border Grid.Row="1" Background="{StaticResource WhiteBrush80}"
+                Visibility="{Binding IsSyncing,Converter={StaticResource TrueToVisibleConverter}}">
+            <loaders:ChromeLoader
+                Foreground="{StaticResource SliderBackground}"
+                Thickness="3"
+                IsIndeterminate="{Binding IsSyncing}"
+                Width="40" Height="40" />
+        </Border>-->
+       
+        <Border Grid.Row="1"
+                Background="{StaticResource WhiteBrush80}"
+                Visibility="{Binding IsSyncing,Converter={StaticResource TrueToVisibleConverter}}">
+            <StackPanel VerticalAlignment="Center"
+                        HorizontalAlignment="Center">
+                <loaders:ChromeLoader
+                    Foreground="{StaticResource SliderBackground}"
+                    Thickness="8"
+                    Width="100" Height="100"
+                    IsIndeterminate="{Binding IsSyncing}" />
+                <Label Content="正在与osu!db同步中..."
+                       FontSize="15"
+                       Margin="0,15,0,0"
+                       FontWeight="Bold" 
+                       Foreground="{StaticResource SliderBackground}" />
+            </StackPanel>
+        </Border>
         <ResizeGrip Grid.Row="1" x:Name="Grip"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"

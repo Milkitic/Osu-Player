@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>MrMitch.Loaders</id>
+    <version>1.1.0.1</version>
+    <title>Animated loaders for WPF</title>
+    <authors>Mickael GOETZ</authors>
+    <owners>Mickael GOETZ</owners>
+    <licenseUrl>https://raw.githubusercontent.com/MrMitch/WPF-Loaders/master/MrMitch.Loaders/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/MrMitch/WPF-Loaders</projectUrl>
+    <!-- <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl> -->
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>A set of animated loader for your WPF projects.</description>
+    <releaseNotes><![CDATA[
+        - Fix nuget packaging
+        - Allow to override the style of ImgurLoader and ChromeLoader
+    ]]>
+    </releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>WPF Loaders Animations Loading Progress</tags>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="Microsoft.Expression.Drawing" />
+      <frameworkAssembly assemblyName="Microsoft.Expression.Interactions" />
+      <frameworkAssembly assemblyName="System.Windows.Interactivity" />
+    </frameworkAssemblies>
+  </metadata>
+  <files>
+    <!--
+    <file src="bin\Release\net40\MrMitch.Loaders.dll" target="lib\net40\MrMitch.Loaders.dll" />
+    <file src="bin\Release\net40\MrMitch.Loaders.pdb" target="lib\net40\MrMitch.Loaders.pdb" />
+    <file src="bin\Release\net40\MrMitch.Loaders.xml" target="lib\net40\MrMitch.Loaders.xml" />
+    -->
+    <file src="bin\Release\net45\MrMitch.Loaders.dll" target="lib\net45\MrMitch.Loaders.dll" />
+    <file src="bin\Release\net46\MrMitch.Loaders.dll" target="lib\net46\MrMitch.Loaders.dll" />
+    </files>
+</package>

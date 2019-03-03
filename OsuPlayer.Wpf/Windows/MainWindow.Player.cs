@@ -3,6 +3,7 @@ using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
@@ -14,6 +15,7 @@ using OSharp.Beatmap;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -21,7 +23,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using Milky.OsuPlayer.Common.Instances;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -57,22 +58,28 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private async Task PlayNewFile(string path, bool play)
         {
+            var sw = Stopwatch.StartNew();
+
+            var playerInst = InstanceManage.GetInstance<PlayersInst>();
+            ComponentPlayer audioPlayer = null;
+            var dbInst = InstanceManage.GetInstance<OsuDbInst>();
             if (path == null) return;
             if (File.Exists(path))
             {
                 try
                 {
-                    var osuFile = OsuFile.ReadFromFile(path);
+                    var osuFile = OsuFile.ReadFromFile(path); //50 ms
                     var fi = new FileInfo(path);
                     if (!fi.Exists)
                         throw new FileNotFoundException("Cannot locate.", fi.FullName);
                     var dir = fi.Directory.FullName;
 
                     /* Clear */
-                    ClearHitsoundPlayer();
+                    ClearHitsoundPlayer(); //todo: 500 ms
 
                     /* Set new hitsound player*/
-                    InstanceManage.GetInstance<PlayersInst>().LoadAudioPlayer(path, osuFile);
+                    playerInst.LoadAudioPlayer(path, osuFile); //todo: 700 ms
+                    audioPlayer = playerInst.AudioPlayer;
                     _cts = new CancellationTokenSource();
 
                     /* Set Meta */
@@ -80,15 +87,15 @@ namespace Milky.OsuPlayer.Windows
 
                     MapInfo mapInfo = DbOperate.GetMapFromDb(nowIdentity);
                     //BeatmapEntry entry = App.PlayerList.Entries.GetBeatmapByIdentity(nowIdentity);
-                    BeatmapEntry entry = InstanceManage.GetInstance<OsuDbInst>().Beatmaps.FilterByIdentity(nowIdentity);
+                    BeatmapEntry entry = dbInst.Beatmaps.FilterByIdentity(nowIdentity);
 
                     LblTitle.Content = osuFile.Metadata.TitleMeta.ToUnicodeString();
                     LblArtist.Content = osuFile.Metadata.ArtistMeta.ToUnicodeString();
                     ((ToolTip)NotifyIcon.TrayToolTip).Content =
                         (string)LblArtist.Content + " - " + (string)LblTitle.Content;
-                    bool isFaved = SetFaved(nowIdentity);
-                    InstanceManage.GetInstance<PlayersInst>().AudioPlayer.HitsoundOffset = mapInfo.Offset;
-                    Offset.Value = InstanceManage.GetInstance<PlayersInst>().AudioPlayer.HitsoundOffset;
+                    bool isFaved = SetFaved(nowIdentity); //50 ms
+                    audioPlayer.HitsoundOffset = mapInfo.Offset;
+                    Offset.Value = audioPlayer.HitsoundOffset;
 
                     InstanceManage.GetInstance<PlayerList>().CurrentInfo =
                         new CurrentInfo(osuFile.Metadata.Artist,
@@ -109,21 +116,21 @@ namespace Milky.OsuPlayer.Windows
                             osuFile.Difficulty.CircleSize,
                             osuFile.Difficulty.ApproachRate,
                             osuFile.Difficulty.OverallDifficulty,
-                            InstanceManage.GetInstance<PlayersInst>().AudioPlayer?.Duration ?? 0,
+                            audioPlayer?.Duration ?? 0,
                             nowIdentity,
                             mapInfo,
                             entry,
-                            isFaved);
+                            isFaved); // 20 ms
 
                     /* Set Lyric */
-                    SetLyric();
+                    SetLyric(); //todo: 900ms
 
                     /* Set Progress */
                     //PlayProgress.Value = App.HitsoundPlayer.SingleOffset;
-                    PlayProgress.Maximum = InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Duration;
+                    PlayProgress.Maximum = audioPlayer.Duration;
                     PlayProgress.Value = 0;
-                    LblTotal.Content = new TimeSpan(0, 0, 0, 0, InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Duration).ToString(@"mm\:ss");
-                    LblNow.Content = new TimeSpan(0, 0, 0, 0, InstanceManage.GetInstance<PlayersInst>().AudioPlayer.PlayTime).ToString(@"mm\:ss");
+                    LblTotal.Content = new TimeSpan(0, 0, 0, 0, audioPlayer.Duration).ToString(@"mm\:ss");
+                    LblNow.Content = new TimeSpan(0, 0, 0, 0, audioPlayer.PlayTime).ToString(@"mm\:ss");
 
                     /* Set Storyboard */
                     if (true)
@@ -206,7 +213,7 @@ namespace Milky.OsuPlayer.Windows
                             //App.HitsoundPlayer.Play();
                         }
                         else
-                            InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Play();
+                            audioPlayer.Play();
                     }
 
                     //if (!App.PlayerList.Entries.Any(k => k.GetIdentity().Equals(nowIdentity)))
@@ -223,8 +230,8 @@ namespace Milky.OsuPlayer.Windows
                         MessageBoxImage.Warning);
                     if (result == MessageBoxResult.OK)
                     {
-                        if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;
-                        if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
+                        if (audioPlayer == null) return;
+                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
                     }
                 }
                 catch (BadOsuFormatException ex)
@@ -233,8 +240,8 @@ namespace Milky.OsuPlayer.Windows
                         MessageBoxImage.Warning);
                     if (result == MessageBoxResult.OK)
                     {
-                        if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;
-                        if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
+                        if (audioPlayer == null) return;
+                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
                     }
                 }
                 catch (VersionNotSupportedException ex)
@@ -243,8 +250,8 @@ namespace Milky.OsuPlayer.Windows
                         MessageBoxImage.Warning);
                     if (result == MessageBoxResult.OK)
                     {
-                        if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;
-                        if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
+                        if (audioPlayer == null) return;
+                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
                     }
                 }
                 catch (Exception ex)
@@ -253,8 +260,8 @@ namespace Milky.OsuPlayer.Windows
                         MessageBoxButton.OK, MessageBoxImage.Error);
                     if (result == MessageBoxResult.OK)
                     {
-                        if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;
-                        if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
+                        if (audioPlayer == null) return;
+                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
                     }
 
                     Console.WriteLine(ex);
@@ -267,6 +274,9 @@ namespace Milky.OsuPlayer.Windows
                         : " ，可能是db没有及时更新。请关闭此播放器或osu后重试"),
                     Title, MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+
+            sw.Stop();
+            Console.WriteLine(sw.ElapsedMilliseconds);
         }
 
         //private async void VideoPlay()
