@@ -1,6 +1,7 @@
-﻿using Milky.OsuPlayer.Control;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.EF.Model;
 using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
@@ -14,9 +15,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Player;
-using Collection = Milky.OsuPlayer.Data.EF.Model.Collection;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Common.Metadata;
+using Collection = Milky.OsuPlayer.Common.Data.EF.Model.Collection;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -38,7 +41,7 @@ namespace Milky.OsuPlayer.Pages
             ViewModel = (CollectionPageViewModel)this.DataContext;
             ViewModel.CollectionInfo = collectionInfo;
             var infos = (List<MapInfo>)DbOperate.GetMapsFromCollection(collectionInfo);
-            _entries = infos.ToBeatmapEntries(App.Beatmaps, false);
+            _entries = infos.ToBeatmapEntries(InstanceManage.GetInstance<OsuDbInst>().Beatmaps, false);
             ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModels(false));
         }
 
@@ -47,7 +50,7 @@ namespace Milky.OsuPlayer.Pages
             //LblTitle.Content = _collection.Name;
 
             var item = ViewModel.Beatmaps?.FirstOrDefault(k =>
-                k.GetIdentity().Equals(App.PlayerList?.CurrentInfo?.Identity));
+                k.GetIdentity().Equals(InstanceManage.GetInstance<PlayerList>()?.CurrentInfo?.Identity));
             if (item != null)
                 MapList.SelectedItem = item;
         }
@@ -69,7 +72,7 @@ namespace Milky.OsuPlayer.Pages
         {
             //CollectionInfoGrid.DataContext = _collection;
             //var infos = (List<MapInfo>)DbOperator.GetMapsFromCollection(_collection);
-            //_entries = App.Beatmaps.GetMapListFromDb(infos, false);
+            //_entries = Instances.OsuDb.Beatmaps.GetMapListFromDb(infos, false);
             //UpdateView(_entries);
         }
 
@@ -111,7 +114,7 @@ namespace Milky.OsuPlayer.Pages
             }
             //var dataModel = (BeatmapDataModel)MapList.SelectedItem;
             UpdateList();
-            App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
         }
 
         private void BtnDelCol_Click(object sender, RoutedEventArgs e)
@@ -195,7 +198,7 @@ namespace Milky.OsuPlayer.Pages
             if (map == null) return;
             await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                  map.BeatmapFileName));
-            App.PlayerList.RefreshPlayList(PlayerList.FreshType.None, PlayListMode.Collection, _entries);
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.None, PlayListMode.Collection, _entries);
         }
 
         private BeatmapEntry GetSelected()

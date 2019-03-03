@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
-    public class Config
+    public class PlayerConfig
     {
-        public Config()
+        public PlayerConfig()
         {
             if (Current != null)
             {
@@ -26,6 +28,27 @@ namespace Milky.OsuPlayer.Common.Configuration
         public DateTime? LastUpdateCheck { get; set; } = null;
         public string IgnoredVer { get; set; } = null;
 
-        public static Config Current { get; set; }
+        public static PlayerConfig Current { get; private set; }
+
+        public static void SaveCurrent()
+        {
+            File.WriteAllText(Domain.ConfigFile, JsonConvert.SerializeObject(Current, Formatting.Indented));
+        }
+
+        public static void Load(PlayerConfig config)
+        {
+            Current = config;
+        }
+
+        public static void LoadNew()
+        {
+            Load(new PlayerConfig());
+        }
+
+        public static void CreateNewConfig()
+        {
+            LoadNew();
+            SaveCurrent();
+        }
     }
 }

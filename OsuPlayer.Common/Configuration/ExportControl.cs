@@ -1,4 +1,4 @@
-﻿using Milky.OsuPlayer.Common.Data;
+﻿using Milky.OsuPlayer.Common.Metadata;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {

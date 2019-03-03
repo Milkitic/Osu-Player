@@ -13,7 +13,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Metadata;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer.Pages
@@ -51,7 +53,7 @@ namespace Milky.OsuPlayer.Pages
             InitializeComponent();
             _mainWindow = mainWindow;
             ViewModel = (ExportPageViewModel)DataContext;
-            ViewModel.ExportPath = App.Config.Export.MusicPath;
+            ViewModel.ExportPath = PlayerConfig.Current.Export.MusicPath;
         }
 
         public static void QueueEntries(IEnumerable<BeatmapEntry> entries)
@@ -95,7 +97,7 @@ namespace Milky.OsuPlayer.Pages
             var title = MetaString.GetUnicode(entry.Title, entry.TitleUnicode);
             var artistOri = MetaString.GetOriginal(entry.Artist, entry.ArtistUnicode);
             string escapedMp3, escapedBg;
-            switch (App.Config.Export.NamingStyle)
+            switch (PlayerConfig.Current.Export.NamingStyle)
             {
                 case NamingStyle.Title:
                     escapedMp3 = Escape($"{title}");
@@ -114,7 +116,7 @@ namespace Milky.OsuPlayer.Pages
             }
 
             string exportMp3Folder, exportBgFolder;
-            switch (App.Config.Export.SortStyle)
+            switch (PlayerConfig.Current.Export.SortStyle)
             {
                 case SortStyle.None:
                     exportMp3Folder = Domain.MusicPath;

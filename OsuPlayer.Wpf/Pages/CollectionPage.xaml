@@ -4,7 +4,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:osuPlayer="clr-namespace:Milky.OsuPlayer"
-      xmlns:data="clr-namespace:Milky.OsuPlayer.Data"
       xmlns:cvt="clr-namespace:Milky.OsuPlayer.Converter"
       xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
       xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"

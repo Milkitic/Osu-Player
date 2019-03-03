@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Models;
 
 namespace Milky.OsuPlayer.Pages

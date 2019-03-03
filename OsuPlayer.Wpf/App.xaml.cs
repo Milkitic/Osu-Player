@@ -2,8 +2,12 @@
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.I18N;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Common.Metadata;
+using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.I18N;
+using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Lyric;
 using Milky.OsuPlayer.Media.Lyric.SourceProvider;
@@ -12,6 +16,7 @@ using Milky.OsuPlayer.Media.Lyric.SourceProvider.Kugou;
 using Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease;
 using Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic;
 using Milky.OsuPlayer.Utils;
+using Milky.WpfApi;
 using Newtonsoft.Json;
 using osu_database_reader.Components.Beatmaps;
 using System;
@@ -30,54 +35,28 @@ namespace Milky.OsuPlayer
     /// </summary>
     public partial class App : Application
     {
-        public static Config Config { get; set; }
-        public static UiMetadata UiMetadata { get; set; } = new UiMetadata();
-        public static bool UseDbMode => Config.General.DbPath != null;
-
-
-        public static List<BeatmapEntry> Beatmaps => BeatmapEntryQuery.BeatmapDb?.Beatmaps;
-
-        public static ComponentPlayer Player;
-        //public static MusicPlayer MusicPlayer;
-        //public static HitsoundPlayer HitsoundPlayer;
-
-        public static LyricProvider LyricProvider;
-        public static readonly PlayerList PlayerList = new PlayerList();
-        public static readonly Updater Updater = new Updater();
+        public static bool UseDbMode => PlayerConfig.Current.General.DbPath != null;
 
         [STAThread]
         public static void Main()
         {
-            AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
+            //AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
+            StartupConfig.Startup();
 
-            if (!LoadConfig())
-                Environment.Exit(0);
-            CreateDirectories();
-            InitLocalDb();
-            SaveConfig();
-            ReloadLyricProvider();
-            RedirectHandler.Redirect();
-            SetAlignment();
+            InstanceManage.AddInstance(new UiMetadata());
+            InstanceManage.AddInstance(new PlayerList());
+            InstanceManage.AddInstance(new OsuDbInst());
+            InstanceManage.AddInstance(new PlayersInst());
+            InstanceManage.AddInstance(new LyricsInst());
+            InstanceManage.AddInstance(new Updater());
+
+            InstanceManage.GetInstance<LyricsInst>().ReloadLyricProvider();
+
             LoadOsuDbAsync().Wait();
+
             App app = new App();
             app.InitializeComponent();
             app.Run();
-        }
-
-        public static void SetAlignment()
-        {
-            //获取系统是以Left-handed（true）还是Right-handed（false）
-            var ifLeft = SystemParameters.MenuDropAlignment;
-
-            if (ifLeft)
-            {
-                // change to false
-                var t = typeof(SystemParameters);
-                var field = t.GetField("_menuDropAlignment", BindingFlags.NonPublic | BindingFlags.Static);
-                field?.SetValue(null, false);
-
-                ifLeft = SystemParameters.MenuDropAlignment;
-            }
         }
 
         private static void OnCurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -88,75 +67,9 @@ namespace Milky.OsuPlayer
             Environment.Exit(1);
         }
 
-        public static void ReloadLyricProvider(bool useStrict = true)
-        {
-            Config.Lyric.StrictMode = useStrict;
-            Settings.StrictMatch = useStrict;
-            SourceProviderBase provider;
-            switch (Config.Lyric.LyricSource)
-            {
-                case LyricSource.Auto:
-                    provider = new AutoSourceProvider(new SourceProviderBase[]
-                    {
-                        new NeteaseSourceProvider(),
-                        new KugouSourceProvider(),
-                        new QQMusicSourceProvider()
-                    });
-                    break;
-                case LyricSource.Netease:
-                    provider = new NeteaseSourceProvider();
-                    break;
-                case LyricSource.Kugou:
-                    provider = new KugouSourceProvider();
-                    break;
-                case LyricSource.QqMusic:
-                    provider = new QQMusicSourceProvider();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            LyricProvider = new LyricProvider(provider, LyricProvideType.Original);
-        }
-
-        private static void InitLocalDb()
-        {
-            var defCol = DbOperate.GetCollections().Where(k => k.Locked);
-            if (!defCol.Any()) DbOperate.AddCollection("最喜爱的", true);
-        }
-
-        private static bool LoadConfig()
-        {
-            var file = Domain.ConfigFile;
-            if (!File.Exists(file))
-            {
-                CreateConfig();
-            }
-            else
-            {
-                try
-                {
-                    Config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(file));
-                }
-                catch (JsonException e)
-                {
-                    var result = MessageBox.Show(@"载入配置文件时失败，用默认配置覆盖继续打开吗？\r\n" + e.Message,
-                        "Osu Player", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        CreateConfig();
-                    }
-                    else
-                        return false;
-                }
-            }
-
-            return true;
-        }
-
         private static async Task LoadOsuDbAsync()
         {
-            string dbPath = Config.General.DbPath;
+            string dbPath = PlayerConfig.Current.General.DbPath;
             if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath))
             {
                 var osuProcess = Process.GetProcesses().Where(x => x.ProcessName == "osu!").ToArray();
@@ -187,10 +100,10 @@ namespace Milky.OsuPlayer
                 }
 
                 //if (dbPath == null) return;
-                Config.General.DbPath = dbPath;
+                PlayerConfig.Current.General.DbPath = dbPath;
             }
 
-            await BeatmapEntryQuery.LoadNewDbAsync(dbPath);
+            await InstanceManage.GetInstance<OsuDbInst>().LoadNewDbAsync(dbPath);
         }
 
         public static bool? BrowseDb(out string chosedPath)
@@ -204,39 +117,54 @@ namespace Milky.OsuPlayer
             chosedPath = fbd.FileName;
             return result;
         }
+    }
 
-        private static void CreateConfig()
+    public static class StartupConfig
+    {
+        public static void Startup()
         {
-            Config = new Config();
-            File.WriteAllText(Domain.ConfigFile, JsonConvert.SerializeObject(Config));
+            if (!LoadConfig())
+                Environment.Exit(0);
+
+            InitLocalDb();
+
+            RedirectEventHandle.Redirect();
+            StyleUtilities.SetAlignment();
         }
 
-        public static void SaveConfig()
+        private static bool LoadConfig()
         {
-            File.WriteAllText(Domain.ConfigFile, JsonConvert.SerializeObject(Config, Formatting.Indented));
-        }
-
-        /// <summary>
-        /// 创建目录
-        /// </summary>
-        private static void CreateDirectories()
-        {
-            Type t = typeof(Domain);
-            var infos = t.GetProperties();
-            foreach (var item in infos)
+            var file = Domain.ConfigFile;
+            if (!File.Exists(file))
             {
-                if (!item.Name.EndsWith("Path")) continue;
+                PlayerConfig.CreateNewConfig();
+            }
+            else
+            {
                 try
                 {
-                    string path = (string)item.GetValue(null, null);
-                    if (!Directory.Exists(path))
-                        Directory.CreateDirectory(path);
+                    PlayerConfig.Load(JsonConvert.DeserializeObject<PlayerConfig>(File.ReadAllText(file)));
                 }
-                catch (Exception)
+                catch (JsonException e)
                 {
-                    Console.WriteLine(@"未创建：" + item.Name);
+                    var result = MessageBox.Show(@"载入配置文件时失败，用默认配置覆盖继续打开吗？\r\n" + e.Message,
+                        "Osu Player", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        PlayerConfig.CreateNewConfig();
+                    }
+                    else
+                        return false;
                 }
             }
+
+            return true;
+        }
+
+        private static void InitLocalDb()
+        {
+            var defCol = DbOperate.GetCollections().Where(k => k.Locked);
+            if (!defCol.Any()) DbOperate.AddCollection("最喜爱的", true);
         }
     }
 }

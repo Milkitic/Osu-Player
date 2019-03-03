@@ -11,6 +11,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Common.Player;
 
 namespace Milky.OsuPlayer.Pages
@@ -58,12 +61,12 @@ namespace Milky.OsuPlayer.Pages
                 return;
             var ok = (BeatmapDataModel)ResultList.SelectedItem;
             var page = new DiffSelectPage(ParentWindow,
-                App.Beatmaps.FilterByFolder(ok.GetIdentity().FolderName));
+                InstanceManage.GetInstance<OsuDbInst>().Beatmaps.FilterByFolder(ok.GetIdentity().FolderName));
             page.Callback = async () =>
             {
                 await ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, page.SelectedMap.FolderName,
                       page.SelectedMap.BeatmapFileName));
-                App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
+                InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
                 ParentWindow.FramePop.Navigate(null);
             };
             ParentWindow.FramePop.Navigate(page);
@@ -112,11 +115,11 @@ namespace Milky.OsuPlayer.Pages
                 return;
             var ok = (BeatmapDataModel)ResultList.SelectedItem;
             var page = new DiffSelectPage(ParentWindow,
-                App.Beatmaps.FilterByFolder(ok.GetIdentity().FolderName));
+                InstanceManage.GetInstance<OsuDbInst>().Beatmaps.FilterByFolder(ok.GetIdentity().FolderName));
             page.Callback = () =>
             {
                 ParentWindow.FramePop.Navigate(new SelectCollectionPage(ParentWindow,
-                    App.Beatmaps.FilterByFolder(page.SelectedMap.FolderName)
+                    InstanceManage.GetInstance<OsuDbInst>().Beatmaps.FilterByFolder(page.SelectedMap.FolderName)
                         .FirstOrDefault(k => k.Version == page.SelectedMap.Version)));
             };
             ParentWindow.FramePop.Navigate(page);
@@ -140,14 +143,14 @@ namespace Milky.OsuPlayer.Pages
             if (map == null) return;
             await ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                 map.BeatmapFileName));
-            App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
         }
 
         private BeatmapEntry GetSelectedDefault()
         {
             if (ResultList.SelectedItem == null)
                 return null;
-            var map = App.Beatmaps.FilterByFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
+            var map = InstanceManage.GetInstance<OsuDbInst>().Beatmaps.FilterByFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
                 .GetHighestDiff();
             return map;
         }

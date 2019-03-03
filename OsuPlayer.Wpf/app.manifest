@@ -47,7 +47,7 @@
   <!-- 指示该应用程序可以感知 DPI 且 Windows 在 DPI 较高时将不会对其进行
        自动缩放。Windows Presentation Foundation (WPF)应用程序自动感知 DPI，无需
        选择加入。选择加入此设置的 Windows 窗体应用程序(目标设定为 .NET Framework 4.6 )还应
-       在其 app.config 中将 "EnableWindowsFormsHighDpiAutoResizing" 设置设置为 "true"。-->
+       在其 Config.Current 中将 "EnableWindowsFormsHighDpiAutoResizing" 设置设置为 "true"。-->
 
   <application xmlns="urn:schemas-microsoft-com:asm.v3">
     <windowsSettings>

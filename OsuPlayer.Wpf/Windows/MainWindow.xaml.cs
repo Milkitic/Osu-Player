@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Pages;
@@ -72,8 +73,8 @@ namespace Milky.OsuPlayer.Windows
                 //TODO
             });
             OverallKeyHook.AddKeyHook(page.Next.Name, () => { BtnNext_Click(null, null); });
-            OverallKeyHook.AddKeyHook(page.VolumeUp.Name, () => { App.Config.Volume.Main += 0.05f; });
-            OverallKeyHook.AddKeyHook(page.VolumeDown.Name, () => { App.Config.Volume.Main -= 0.05f; });
+            OverallKeyHook.AddKeyHook(page.VolumeUp.Name, () => { PlayerConfig.Current.Volume.Main += 0.05f; });
+            OverallKeyHook.AddKeyHook(page.VolumeDown.Name, () => { PlayerConfig.Current.Volume.Main -= 0.05f; });
             OverallKeyHook.AddKeyHook(page.FullMini.Name, () =>
             {
                 //TODO

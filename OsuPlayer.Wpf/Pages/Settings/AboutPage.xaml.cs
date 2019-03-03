@@ -1,4 +1,7 @@
-﻿using Milky.OsuPlayer.Control;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Diagnostics;
@@ -36,24 +39,24 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            CurrentVer.Content = App.Updater.CurrentVersion;
-            if (App.Updater.NewRelease != null)
+            CurrentVer.Content = InstanceManage.GetInstance<Updater>().CurrentVersion;
+            if (InstanceManage.GetInstance<Updater>().NewRelease != null)
                 NewVersion.Visibility = Visibility.Visible;
             GetLastUpdate();
         }
 
         private void GetLastUpdate()
         {
-            LastUpdate.Content = App.Config.LastUpdateCheck == null
+            LastUpdate.Content = PlayerConfig.Current.LastUpdateCheck == null
                 ? "从未"
-                : App.Config.LastUpdateCheck.Value.ToString(_dtFormat);
+                : PlayerConfig.Current.LastUpdateCheck.Value.ToString(_dtFormat);
         }
 
         private async void CheckUpdate_Click(object sender, RoutedEventArgs e)
         {
             //todo: action
             CheckUpdate.IsEnabled = false;
-            var hasNew = await App.Updater.CheckUpdateAsync();
+            var hasNew = await InstanceManage.GetInstance<Updater>().CheckUpdateAsync();
             CheckUpdate.IsEnabled = true;
             if (hasNew == null)
             {
@@ -61,9 +64,9 @@ namespace Milky.OsuPlayer.Pages.Settings
                 return;
             }
 
-            App.Config.LastUpdateCheck = DateTime.Now;
+            PlayerConfig.Current.LastUpdateCheck = DateTime.Now;
             GetLastUpdate();
-            App.SaveConfig();
+            PlayerConfig.SaveCurrent();
             if (hasNew == true)
             {
                 NewVersion.Visibility = Visibility.Visible;
@@ -80,7 +83,7 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             if (_newVersionWindow != null && !_newVersionWindow.IsClosed)
                 _newVersionWindow.Close();
-            _newVersionWindow = new NewVersionWindow(App.Updater.NewRelease, _mainWindow);
+            _newVersionWindow = new NewVersionWindow(InstanceManage.GetInstance<Updater>().NewRelease, _mainWindow);
             _newVersionWindow.ShowDialog();
         }
 

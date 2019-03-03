@@ -34,18 +34,18 @@ namespace Milky.OsuPlayer
 
         public static void AddKeyHook(string name, Action callback)
         {
-            if (App.Config.HotKeys.FirstOrDefault(k => k.Name == name) == null)
-                App.Config.HotKeys.Add(new HotKey { Name = name, Callback = callback });
+            if (PlayerConfig.Current.HotKeys.FirstOrDefault(k => k.Name == name) == null)
+                PlayerConfig.Current.HotKeys.Add(new HotKey { Name = name, Callback = callback });
             else
             {
-                var hotKey = App.Config.HotKeys.First(k => k.Name == name);
+                var hotKey = PlayerConfig.Current.HotKeys.First(k => k.Name == name);
                 hotKey.Callback = callback;
             }
         }
 
         public static void BindHotKey(string name, bool useCtrl, bool useAlt, bool useShift, Keys key)
         {
-            var hotKey = App.Config.HotKeys.FirstOrDefault(k => k.Name == name);
+            var hotKey = PlayerConfig.Current.HotKeys.FirstOrDefault(k => k.Name == name);
             if (hotKey == null) throw new ArgumentException();
             hotKey.Key = key;
             hotKey.UseControlKey = useCtrl;
@@ -68,7 +68,7 @@ namespace Milky.OsuPlayer
                     BindHotKey(ConfigString, _holdingCtrl, _holdingAlt, _holdingShift, e.KeyCode);
                 }
                 else
-                    App.Config.HotKeys.FirstOrDefault(key =>
+                    PlayerConfig.Current.HotKeys.FirstOrDefault(key =>
                         _holdingCtrl == key.UseControlKey && _holdingAlt == key.UseAltKey &&
                         _holdingShift == key.UseShiftKey && e.KeyCode == key.Key)?.Callback?.Invoke();
             }

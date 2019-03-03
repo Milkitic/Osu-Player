@@ -100,7 +100,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             try
             {
                 _sourceVoice.SubmitSourceBuffer(_buffer, _stream.DecodedPacketsInfo);
-                _sourceVoice.SetVolume(volume * Config.Current.Volume.Main * Config.Current.Volume.Hitsound);
+                _sourceVoice.SetVolume(volume * PlayerConfig.Current.Volume.Main * PlayerConfig.Current.Volume.Hitsound);
                 _sourceVoice.Start();
             }
             catch (Exception)

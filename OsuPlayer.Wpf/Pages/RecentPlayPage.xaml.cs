@@ -11,6 +11,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Models;
 using OSharp.Beatmap;
@@ -34,7 +37,7 @@ namespace Milky.OsuPlayer.Pages
 
         public void UpdateList()
         {
-            _entries = App.Beatmaps.GetRecentListFromDb();
+            _entries = InstanceManage.GetInstance<OsuDbInst>().Beatmaps.GetRecentListFromDb();
             DataModels = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModels(false));
             RecentList.DataContext = DataModels.ToList();
         }
@@ -43,7 +46,7 @@ namespace Milky.OsuPlayer.Pages
         {
             UpdateList();
             var item = DataModels.FirstOrDefault(k =>
-                k.GetIdentity().Equals(App.PlayerList.CurrentInfo.Identity));
+                k.GetIdentity().Equals(InstanceManage.GetInstance<PlayerList>().CurrentInfo.Identity));
             RecentList.SelectedItem = item;
         }
 
@@ -69,7 +72,7 @@ namespace Milky.OsuPlayer.Pages
                 DbOperate.RemoveFromRecent(entry.GetIdentity());
             }
             UpdateList();
-            App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
         }
 
         private void BtnDelAll_Click(object sender, RoutedEventArgs e)
@@ -148,7 +151,7 @@ namespace Milky.OsuPlayer.Pages
 
             await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                    map.BeatmapFileName));
-            App.PlayerList.RefreshPlayList(PlayerList.FreshType.None, PlayListMode.RecentList);
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.None, PlayListMode.RecentList);
         }
 
         private BeatmapEntry GetSelected()

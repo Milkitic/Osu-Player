@@ -11,6 +11,11 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -25,27 +30,27 @@ namespace Milky.OsuPlayer.Windows
             UpdateCollections();
             LoadSurfaceSettings();
             RunSurfaceUpdate();
-            if (App.Config.CurrentPath != null && App.Config.Play.Memory)
+            if (PlayerConfig.Current.CurrentPath != null && PlayerConfig.Current.Play.Memory)
             {
-                var entries = App.Beatmaps.FilterByIdentities(App.Config.CurrentList);
-                App.PlayerList.RefreshPlayList(PlayerList.FreshType.All, entries: entries);
-                bool play = App.Config.Play.AutoPlay;
-                await PlayNewFile(App.Config.CurrentPath, play);
+                var entries = InstanceManage.GetInstance<OsuDbInst>().Beatmaps.FilterByIdentities(PlayerConfig.Current.CurrentList);
+                InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.All, entries: entries);
+                bool play = PlayerConfig.Current.Play.AutoPlay;
+                await PlayNewFile(PlayerConfig.Current.CurrentPath, play);
             }
 
             if (App.UseDbMode)
             {
-                SetPlayMode(App.Config.Play.PlayListMode);
+                SetPlayMode(PlayerConfig.Current.Play.PlayListMode);
             }
 
             var helper = new WindowInteropHelper(this);
             var source = HwndSource.FromHwnd(helper.Handle);
             source?.AddHook(HwndMessageHook);
 
-            bool? sb = await App.Updater.CheckUpdateAsync();
-            if (sb.HasValue && sb.Value && App.Updater.NewRelease.NewVerString != App.Config.IgnoredVer)
+            bool? sb = await InstanceManage.GetInstance<Updater>().CheckUpdateAsync();
+            if (sb.HasValue && sb.Value && InstanceManage.GetInstance<Updater>().NewRelease.NewVerString != PlayerConfig.Current.IgnoredVer)
             {
-                NewVersionWindow newVersionWindow = new NewVersionWindow(App.Updater.NewRelease, this);
+                NewVersionWindow newVersionWindow = new NewVersionWindow(InstanceManage.GetInstance<Updater>().NewRelease, this);
                 newVersionWindow.ShowDialog();
             }
         }
@@ -55,13 +60,13 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (App.Config.General.ExitWhenClosed == null && !ForceExit)
+            if (PlayerConfig.Current.General.ExitWhenClosed == null && !ForceExit)
             {
                 e.Cancel = true;
                 FramePop.Navigate(new ClosingPage(this));
                 return;
             }
-            else if (App.Config.General.ExitWhenClosed == false && !ForceExit)
+            else if (PlayerConfig.Current.General.ExitWhenClosed == false && !ForceExit)
             {
                 WindowState = WindowState.Minimized;
                 Hide();
@@ -292,7 +297,7 @@ namespace Milky.OsuPlayer.Windows
         private async void BtnOpen_Click(object sender, RoutedEventArgs e)
         {
             await PlayNewFile(LoadFile());
-            App.PlayerList.RefreshPlayList(PlayerList.FreshType.None);
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.None);
         }
 
         public void BtnPrev_Click(object sender, RoutedEventArgs e)
@@ -316,7 +321,7 @@ namespace Milky.OsuPlayer.Windows
         private void BtnLike_Click(object sender, RoutedEventArgs e)
         {
             if (!ValidateDb()) return;
-            var entry = App.Beatmaps.FilterByIdentity(App.PlayerList.CurrentIdentity);
+            var entry = InstanceManage.GetInstance<OsuDbInst>().Beatmaps.FilterByIdentity(InstanceManage.GetInstance<PlayerList>().CurrentIdentity);
             //var entry = App.PlayerList?.CurrentInfo.Entry;
             if (entry == null)
             {
@@ -329,19 +334,19 @@ namespace Milky.OsuPlayer.Windows
             else
             {
                 var collection = DbOperate.GetCollections().First(k => k.Locked);
-                if (App.PlayerList.CurrentInfo.IsFaved)
+                if (InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFaved)
                 {
                     DbOperate.RemoveMapFromCollection(entry, collection);
-                    App.PlayerList.CurrentInfo.IsFaved = false;
+                    InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFaved = false;
                 }
                 else
                 {
                     SelectCollectionPage.AddToCollection(collection, entry);
-                    App.PlayerList.CurrentInfo.IsFaved = true;
+                    InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFaved = true;
                 }
             }
 
-            SetFaved(App.PlayerList.CurrentInfo.Identity);
+            SetFaved(InstanceManage.GetInstance<PlayerList>().CurrentInfo.Identity);
         }
 
         private void BtnVolume_Click(object sender, RoutedEventArgs e)
@@ -428,12 +433,12 @@ namespace Milky.OsuPlayer.Windows
 
             string flag = ViewModel.IsMiniMode ? "S" : "";
             BtnMode.Background = (ImageBrush)ToolControl.FindResource(playmode + flag);
-            if (playmode == App.PlayerList.PlayerMode)
+            if (playmode == InstanceManage.GetInstance<PlayerList>().PlayerMode)
                 return;
-            App.PlayerList.PlayerMode = playmode;
-            App.PlayerList.RefreshPlayList(PlayerList.FreshType.IndexOnly);
-            App.Config.Play.PlayListMode = playmode;
-            App.SaveConfig();
+            InstanceManage.GetInstance<PlayerList>().PlayerMode = playmode;
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.IndexOnly);
+            PlayerConfig.Current.Play.PlayListMode = playmode;
+            PlayerConfig.SaveCurrent();
         }
 
         private void BtnMax_Click(object sender, RoutedEventArgs e)
@@ -500,7 +505,7 @@ namespace Milky.OsuPlayer.Windows
             else
                 throw new ArgumentOutOfRangeException();
 
-            App.Config.Play.PlayMod = mod;
+            PlayerConfig.Current.Play.PlayMod = mod;
             ComponentPlayer.Current.SetPlayMod(mod, ComponentPlayer.Current.PlayerStatus == PlayerStatus.Playing);
         }
 
@@ -517,8 +522,8 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void MasterVolume_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            App.Config.Volume.Main = (float)(MasterVolume.Value / 100);
-            App.SaveConfig();
+            PlayerConfig.Current.Volume.Main = (float)(MasterVolume.Value / 100);
+            PlayerConfig.SaveCurrent();
         }
 
         /// <summary>
@@ -526,8 +531,8 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void MusicVolume_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            App.Config.Volume.Music = (float)(MusicVolume.Value / 100);
-            App.SaveConfig();
+            PlayerConfig.Current.Volume.Music = (float)(MusicVolume.Value / 100);
+            PlayerConfig.SaveCurrent();
         }
 
         /// <summary>
@@ -535,8 +540,8 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void HitsoundVolume_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            App.Config.Volume.Hitsound = (float)(HitsoundVolume.Value / 100);
-            App.SaveConfig();
+            PlayerConfig.Current.Volume.Hitsound = (float)(HitsoundVolume.Value / 100);
+            PlayerConfig.SaveCurrent();
         }
 
         /// <summary>
@@ -546,7 +551,7 @@ namespace Milky.OsuPlayer.Windows
         {
             if (ComponentPlayer.Current == null) return;
             ComponentPlayer.Current.HitsoundOffset = (int)Offset.Value;
-            DbOperate.UpdateMap(App.PlayerList.CurrentInfo.Identity, ComponentPlayer.Current.HitsoundOffset);
+            DbOperate.UpdateMap(InstanceManage.GetInstance<PlayerList>().CurrentInfo.Identity, ComponentPlayer.Current.HitsoundOffset);
         }
 
         #endregion Popup events
@@ -577,12 +582,12 @@ namespace Milky.OsuPlayer.Windows
         {
             if (ViewModel.IsLyricWindowShown)
             {
-                App.Config.Lyric.EnableLyric = false;
+                PlayerConfig.Current.Lyric.EnableLyric = false;
                 LyricWindow.Hide();
             }
             else
             {
-                App.Config.Lyric.EnableLyric = true;
+                PlayerConfig.Current.Lyric.EnableLyric = true;
                 LyricWindow.Show();
             }
         }

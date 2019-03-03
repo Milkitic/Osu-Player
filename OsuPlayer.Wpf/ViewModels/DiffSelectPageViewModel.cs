@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Models;
 using Milky.WpfApi;
 using Milky.WpfApi.Collections;

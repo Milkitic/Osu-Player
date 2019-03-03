@@ -2,6 +2,7 @@
 using Milky.WpfApi;
 using System.Diagnostics;
 using System.Windows;
+using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -35,8 +36,8 @@ namespace Milky.OsuPlayer.Windows
             }
             else if (p == "ignore")
             {
-                App.Config.IgnoredVer = _release.NewVerString;
-                App.SaveConfig();
+                PlayerConfig.Current.IgnoredVer = _release.NewVerString;
+                PlayerConfig.SaveCurrent();
                 Close();
             }
             else if (p == "update")

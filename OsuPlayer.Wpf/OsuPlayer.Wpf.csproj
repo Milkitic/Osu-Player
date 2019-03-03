@@ -168,13 +168,8 @@
     <Compile Include="Converter\TabConverter.cs" />
     <Compile Include="Converter\TrueToVisibleConverter.cs" />
     <Compile Include="Converter\VersionToStringConverter.cs" />
-    <Compile Include="IgnoreCaseComparer.cs" />
-    <Compile Include="Models\DataModelComparer.cs" />
-    <Compile Include="Data\EF\Model\CollectionRelation.cs" />
-    <Compile Include="Data\EF\Model\Collection.cs" />
-    <Compile Include="Data\EF\Model\MapInfo.cs" />
-    <Compile Include="I18N\UiMetadata.cs" />
-    <Compile Include="Migrations\MigrationConfiguration.cs" />
+    <Compile Include="Instances\LyricsInst.cs" />
+    <Compile Include="Instances\PlayersInst.cs" />
     <Compile Include="Pages\EditCollectionPage.xaml.cs">
       <DependentUpon>EditCollectionPage.xaml</DependentUpon>
     </Compile>
@@ -196,8 +191,6 @@
     <Compile Include="Converter\DateTimeConverter.cs" />
     <Compile Include="Converter\NavigationColorConverter.cs" />
     <Compile Include="Converter\MainWindowConverters.cs" />
-    <Compile Include="Data\EF\ApplicationDbContext.cs" />
-    <Compile Include="Data\DbOperate.cs" />
     <Compile Include="Windows\EffectWindowBase.cs" />
     <Compile Include="Windows\LyricWindow.xaml.WinApi.cs" />
     <Compile Include="Windows\MainWindow.Player.cs" />
@@ -205,10 +198,7 @@
     <Compile Include="Windows\LyricWindow.xaml.cs">
       <DependentUpon>LyricWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\CurrentInfo.cs" />
     <Compile Include="Models\Github\Release.cs" />
-    <Compile Include="Models\BeatmapDataModel.cs" />
-    <Compile Include="Data\EntryExtension.cs" />
     <Compile Include="Windows\NewVersionWindow.xaml.cs">
       <DependentUpon>NewVersionWindow.xaml</DependentUpon>
     </Compile>
@@ -237,7 +227,6 @@
     <Compile Include="Pages\Settings\PlayPage.xaml.cs">
       <DependentUpon>PlayPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PlayerList.cs" />
     <Compile Include="Pages\AddCollectionPage.xaml.cs">
       <DependentUpon>AddCollectionPage.xaml</DependentUpon>
     </Compile>
@@ -259,18 +248,15 @@
     <Compile Include="Pages\SearchPage.xaml.cs">
       <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Data\BeatmapEntryQuery.cs" />
     <Compile Include="Pages\StoryboardPage.xaml.cs">
       <DependentUpon>StoryboardPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\OptionContainer.cs" />
-    <Compile Include="Utils\RedirectHandler.cs" />
+    <Compile Include="Utils\RedirectEventHandle.cs" />
     <Compile Include="Utils\Util.cs" />
     <Compile Include="UpdateWindow.xaml.cs">
       <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utils\DictionaryExtension.cs" />
-    <Compile Include="Utils\Downloader.cs" />
     <Compile Include="Utils\KeyConverter.cs" />
     <Compile Include="Utils\Updater.cs" />
     <Compile Include="ViewModels\ExportPageViewModel.cs" />

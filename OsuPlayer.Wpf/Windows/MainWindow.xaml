@@ -4,7 +4,6 @@
                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                           xmlns:dmSkin="clr-namespace:DMSkin.WPF;assembly=DMSkin.WPF"
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                          xmlns:data="clr-namespace:Milky.OsuPlayer.Data"
                           xmlns:tb="http://www.hardcodet.net/taskbar"
                           xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
                           xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
@@ -349,13 +348,14 @@
                                 HorizontalAlignment="Right" VerticalAlignment="Top"
                                 Margin="5"
                                 Cursor="Hand">
-                            <dms:DMSystemButton DMSystemButtonForeground="#505050"
-                                                DMSystemButtonHoverColor="{StaticResource ExtraLightBrush80}"
-                                                DMSystemButtonHoverForeground="#303030"
-                                                DMSystemButtonSize="25"
-                                                Icon="{StaticResource No}"
-                                                IconHeight="14" IconWidth="14"
-                                                Click="BtnHideFullScr_Click" />
+                            <dms:DMSystemButton
+                                DMSystemButtonForeground="#505050"
+                                DMSystemButtonHoverColor="{StaticResource ExtraLightBrush80}"
+                                DMSystemButtonHoverForeground="#303030"
+                                DMSystemButtonSize="25"
+                                Icon="{StaticResource No}"
+                                IconHeight="14" IconWidth="14"
+                                Click="BtnHideFullScr_Click" />
                         </Border>
                     </Grid>
                 </Border>

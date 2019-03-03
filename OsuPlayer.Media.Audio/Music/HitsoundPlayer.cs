@@ -16,7 +16,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 {
     internal class HitsoundPlayer : IPlayer, IDisposable
     {
-        private static bool UseSoundTouch => Config.Current.Play.UsePlayerV2;
+        private static bool UseSoundTouch => PlayerConfig.Current.Play.UsePlayerV2;
         public PlayerStatus PlayerStatus
         {
             get => _playerStatus;
@@ -80,7 +80,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 WavePlayer.SaveToCache(path); // Cache each file once before play.
 
             PlayerStatus = PlayerStatus.Ready;
-            SetPlayMod(Config.Current.Play.PlayMod, false);
+            SetPlayMod(PlayerConfig.Current.Play.PlayMod, false);
         }
 
         public void SetPlayMod(PlayMod mod, bool play)
@@ -227,7 +227,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                         {
                             preMs = playerMs;
                             var d = playerMs - (PlayTime + SingleOffset + (UseSoundTouch ? 480 : 0));
-                            var r = Config.Current.Play.GeneralOffset - d;
+                            var r = PlayerConfig.Current.Play.GeneralOffset - d;
                             if (Math.Abs(r) > 5)
                             {
                                 //Console.WriteLine($@"music: {App.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Windows;
 

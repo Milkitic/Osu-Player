@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Windows;
@@ -6,6 +7,8 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Instances;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -30,24 +33,24 @@ namespace Milky.OsuPlayer.Pages.Settings
             if (RunOnStartup.IsChecked.HasValue && RunOnStartup.IsChecked.Value)
             {
                 rKey?.SetValue("OsuPlayer", Process.GetCurrentProcess().MainModule.FileName);
-                App.Config.General.RunOnStartup = true;
+                PlayerConfig.Current.General.RunOnStartup = true;
             }
             else
             {
                 rKey?.DeleteValue("OsuPlayer", false);
-                App.Config.General.RunOnStartup = false;
+                PlayerConfig.Current.General.RunOnStartup = false;
             }
 
-            App.SaveConfig();
+            PlayerConfig.SaveCurrent();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            RunOnStartup.IsChecked = App.Config.General.RunOnStartup;
-            LblDbPath.Text = App.Config.General.DbPath;
-            if (App.Config.General.ExitWhenClosed.HasValue)
+            RunOnStartup.IsChecked = PlayerConfig.Current.General.RunOnStartup;
+            LblDbPath.Text = PlayerConfig.Current.General.DbPath;
+            if (PlayerConfig.Current.General.ExitWhenClosed.HasValue)
             {
-                if (App.Config.General.ExitWhenClosed.Value)
+                if (PlayerConfig.Current.General.ExitWhenClosed.Value)
                     RadioExit.IsChecked = true;
                 else
                     RadioMinimum.IsChecked = true;
@@ -62,12 +65,12 @@ namespace Milky.OsuPlayer.Pages.Settings
         private void Radio_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (RadioExit.IsChecked.HasValue && RadioExit.IsChecked.Value)
-                App.Config.General.ExitWhenClosed = true;
+                PlayerConfig.Current.General.ExitWhenClosed = true;
             else if (RadioMinimum.IsChecked.HasValue && RadioMinimum.IsChecked.Value)
-                App.Config.General.ExitWhenClosed = false;
+                PlayerConfig.Current.General.ExitWhenClosed = false;
 
             AsDefault.IsChecked = true;
-            App.SaveConfig();
+            PlayerConfig.SaveCurrent();
         }
 
         private async void Browse_Click(object sender, RoutedEventArgs e)
@@ -77,7 +80,7 @@ namespace Milky.OsuPlayer.Pages.Settings
                 return;
             try
             {
-                await BeatmapEntryQuery.LoadNewDbAsync(path);
+                await InstanceManage.GetInstance<OsuDbInst>().LoadNewDbAsync(path);
             }
             catch (Exception ex)
             {
@@ -88,10 +91,10 @@ namespace Milky.OsuPlayer.Pages.Settings
         private void AsDefault_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (AsDefault.IsChecked.HasValue && !AsDefault.IsChecked.Value)
-                App.Config.General.ExitWhenClosed = null;
+                PlayerConfig.Current.General.ExitWhenClosed = null;
             else
                 Radio_CheckChanged(sender, e);
-            App.SaveConfig();
+            PlayerConfig.SaveCurrent();
         }
     }
 }

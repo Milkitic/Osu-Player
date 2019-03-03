@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.Pages.Settings
@@ -80,12 +81,12 @@ namespace Milky.OsuPlayer.Pages.Settings
                 _holdingAlt = false;
             var textBox = (TextBox)sender;
             GetHotKeyValue(textBox);
-            App.SaveConfig();
+            PlayerConfig.SaveCurrent();
         }
 
         private static void GetHotKeyValue(TextBox textBox)
         {
-            var hotKey = App.Config.HotKeys.First(k => k.Name == textBox.Name);
+            var hotKey = PlayerConfig.Current.HotKeys.First(k => k.Name == textBox.Name);
             List<string> strs = new List<string>();
 
             if (hotKey.UseControlKey) strs.Add("Ctrl");

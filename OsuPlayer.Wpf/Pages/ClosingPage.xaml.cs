@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.Pages
@@ -26,8 +27,8 @@ namespace Milky.OsuPlayer.Pages
         {
             if (AsDefault.IsChecked == true)
             {
-                App.Config.General.ExitWhenClosed = RadioMinimum.IsChecked != true;
-                App.SaveConfig();
+                PlayerConfig.Current.General.ExitWhenClosed = RadioMinimum.IsChecked != true;
+                PlayerConfig.SaveCurrent();
             }
 
             _mainWindow.FramePop.Navigate(null);

@@ -6,10 +6,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
-using Collection = Milky.OsuPlayer.Data.EF.Model.Collection;
+using Collection = Milky.OsuPlayer.Common.Data.EF.Model.Collection;
 
 namespace Milky.OsuPlayer.Pages
 {

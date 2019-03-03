@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Data.EF.Model;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
 

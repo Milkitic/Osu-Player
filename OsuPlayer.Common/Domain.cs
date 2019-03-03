@@ -1,11 +1,31 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using System;
 using System.IO;
-using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Common
 {
     public static class Domain
     {
+        static Domain()
+        {
+            Type t = typeof(Domain);
+            var infos = t.GetProperties();
+            foreach (var item in infos)
+            {
+                if (!item.Name.EndsWith("Path")) continue;
+                try
+                {
+                    string path = (string)item.GetValue(null, null);
+                    if (!Directory.Exists(path))
+                        Directory.CreateDirectory(path);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine(@"未创建：" + item.Name);
+                }
+            }
+        }
+
         public static string CurrentPath => AppDomain.CurrentDomain.BaseDirectory;
         public static string ConfigFile => Path.Combine(CurrentPath, "config.json");
 
@@ -18,7 +38,7 @@ namespace Milky.OsuPlayer.Common
         public static string BackgroundPath => Path.Combine(CurrentPath, "Background");
         public static string PluginPath => Path.Combine(ExternalPath, "Plugins");
 
-        public static string OsuPath => new FileInfo(Config.Current.General.DbPath).Directory.FullName;
-        public static string OsuSongPath => Path.Combine(OsuPath, "Songs");
+        public static string OsuPath => PlayerConfig.Current == null ? null : new FileInfo(PlayerConfig.Current.General.DbPath).Directory.FullName;
+        public static string OsuSongPath => OsuPath == null ? null : Path.Combine(OsuPath, "Songs");
     }
 }

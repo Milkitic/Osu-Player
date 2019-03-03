@@ -1,8 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.EF.Model;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 

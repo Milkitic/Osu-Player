@@ -1,6 +1,7 @@
-﻿using Milky.WpfApi;
+﻿using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Metadata;
+using Milky.WpfApi;
 using Milky.WpfApi.Collections;
-using Milky.OsuPlayer.Data.EF.Model;
 using Milky.OsuPlayer.Models;
 
 namespace Milky.OsuPlayer.ViewModels

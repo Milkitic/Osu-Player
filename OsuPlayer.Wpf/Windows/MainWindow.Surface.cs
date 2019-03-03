@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -6,10 +10,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.EF.Model;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Instances;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -47,10 +50,10 @@ namespace Milky.OsuPlayer.Windows
         public void SetLyric()
         {
             if (!LyricWindow.IsVisible) return;
-            if (App.Player == null) return;
-            var lyric = App.LyricProvider.GetLyric(App.Player.OsuFile.Metadata.ArtistMeta.ToUnicodeString(),
-                App.Player.OsuFile.Metadata.TitleMeta.ToUnicodeString(), App.Player.Duration);
-            LyricWindow.SetNewLyric(lyric, App.Player.OsuFile);
+            if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;
+            var lyric = InstanceManage.GetInstance<LyricsInst>().LyricProvider.GetLyric(InstanceManage.GetInstance<PlayersInst>().AudioPlayer.OsuFile.Metadata.ArtistMeta.ToUnicodeString(),
+                InstanceManage.GetInstance<PlayersInst>().AudioPlayer.OsuFile.Metadata.TitleMeta.ToUnicodeString(), InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Duration);
+            LyricWindow.SetNewLyric(lyric, InstanceManage.GetInstance<PlayersInst>().AudioPlayer.OsuFile);
             LyricWindow.StartWork();
         }
 
@@ -59,9 +62,9 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void LoadSurfaceSettings()
         {
-            MasterVolume.Value = App.Config.Volume.Main * 100;
-            MusicVolume.Value = App.Config.Volume.Music * 100;
-            HitsoundVolume.Value = App.Config.Volume.Hitsound * 100;
+            MasterVolume.Value = PlayerConfig.Current.Volume.Main * 100;
+            MusicVolume.Value = PlayerConfig.Current.Volume.Music * 100;
+            HitsoundVolume.Value = PlayerConfig.Current.Volume.Hitsound * 100;
         }
 
         /// <summary>
@@ -80,15 +83,15 @@ namespace Milky.OsuPlayer.Windows
             const int interval = 500;
             while (!_cts.IsCancellationRequested)
             {
-                if (App.Player == null)
+                if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null)
                 {
                     Thread.Sleep(interval);
                     continue;
                 }
 
-                if (_tmpStatus != App.Player.PlayerStatus)
+                if (_tmpStatus != InstanceManage.GetInstance<PlayersInst>().AudioPlayer.PlayerStatus)
                 {
-                    var s = App.Player.PlayerStatus;
+                    var s = InstanceManage.GetInstance<PlayersInst>().AudioPlayer.PlayerStatus;
                     switch (s)
                     {
                         case PlayerStatus.Playing:
@@ -107,36 +110,36 @@ namespace Milky.OsuPlayer.Windows
                         case PlayerStatus.Paused:
                             Dispatcher.BeginInvoke(new Action(() =>
                             {
-                                if (App.Player == null) return;
-                                var playTime = Math.Min(App.Player.PlayTime, PlayProgress.Maximum);
+                                if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;
+                                var playTime = Math.Min(InstanceManage.GetInstance<PlayersInst>().AudioPlayer.PlayTime, PlayProgress.Maximum);
                                 ViewModel.IsPlaying = false;
                                 ((ContentPresenter)LyricWindow.BtnPlay.Content).Content =
                                     LyricWindow.MainGrid.FindResource("PlayButton");
                                 BtnPlay.Style = (Style)FindResource("PlayButtonStyle");
                                 PlayProgress.Value = playTime < 0 ? 0 : playTime;
                                 LblTotal.Content =
-                                    new TimeSpan(0, 0, 0, 0, App.Player.Duration).ToString(@"mm\:ss");
+                                    new TimeSpan(0, 0, 0, 0, InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Duration).ToString(@"mm\:ss");
                                 LblNow.Content =
-                                    new TimeSpan(0, 0, 0, 0, App.Player.PlayTime).ToString(@"mm\:ss");
+                                    new TimeSpan(0, 0, 0, 0, InstanceManage.GetInstance<PlayersInst>().AudioPlayer.PlayTime).ToString(@"mm\:ss");
                             }));
                             break;
                     }
 
-                    _tmpStatus = App.Player.PlayerStatus;
+                    _tmpStatus = InstanceManage.GetInstance<PlayersInst>().AudioPlayer.PlayerStatus;
                 }
 
                 if (_tmpStatus == PlayerStatus.Playing && !_scrollLock)
                 {
                     Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        if (App.Player == null) return;
-                        var playTime = Math.Min(App.Player.PlayTime, PlayProgress.Maximum);
-                        PlayProgress.Maximum = App.Player.Duration;
+                        if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;
+                        var playTime = Math.Min(InstanceManage.GetInstance<PlayersInst>().AudioPlayer.PlayTime, PlayProgress.Maximum);
+                        PlayProgress.Maximum = InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Duration;
                         PlayProgress.Value = playTime < 0
                             ? 0
                             : (playTime > PlayProgress.Maximum ? PlayProgress.Maximum : playTime);
-                        LblTotal.Content = new TimeSpan(0, 0, 0, 0, App.Player.Duration).ToString(@"mm\:ss");
-                        LblNow.Content = new TimeSpan(0, 0, 0, 0, App.Player.PlayTime).ToString(@"mm\:ss");
+                        LblTotal.Content = new TimeSpan(0, 0, 0, 0, InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Duration).ToString(@"mm\:ss");
+                        LblNow.Content = new TimeSpan(0, 0, 0, 0, InstanceManage.GetInstance<PlayersInst>().AudioPlayer.PlayTime).ToString(@"mm\:ss");
                     }));
                 }
 
@@ -182,8 +185,8 @@ namespace Milky.OsuPlayer.Windows
             TitleBarAreaBack.Visibility = Visibility.Collapsed;
             MainFrame.Visibility = Visibility.Collapsed;
 
-            SetFaved(App.PlayerList.CurrentInfo.Identity);
-            SetPlayMode(App.PlayerList.PlayerMode);
+            SetFaved(InstanceManage.GetInstance<PlayerList>().CurrentInfo.Identity);
+            SetPlayMode(InstanceManage.GetInstance<PlayerList>().PlayerMode);
         }
 
         private void ToNormalMode()
@@ -224,8 +227,8 @@ namespace Milky.OsuPlayer.Windows
             TitleBarAreaBack.Visibility = Visibility.Visible;
             MainFrame.Visibility = Visibility.Visible;
 
-            SetFaved(App.PlayerList.CurrentInfo.Identity);
-            SetPlayMode(App.PlayerList.PlayerMode);
+            SetFaved(InstanceManage.GetInstance<PlayerList>().CurrentInfo.Identity);
+            SetPlayMode(InstanceManage.GetInstance<PlayerList>().PlayerMode);
 
             Topmost = false;
         }

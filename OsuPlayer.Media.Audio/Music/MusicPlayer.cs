@@ -15,7 +15,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
     internal class MusicPlayer : IPlayer, IDisposable
     {
         private const int Latency = 5;
-        private static bool UseSoundTouch => Config.Current.Play.UsePlayerV2;
+        private static bool UseSoundTouch => PlayerConfig.Current.Play.UsePlayerV2;
         private static bool WaitingMode => true;
 
         private TimeStretchProfile TimeStretchProfile
@@ -87,7 +87,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
                 InitSoundTouch();
                 _device.Init(_provider);
-                SetPlayMod(Config.Current.Play.PlayMod);
+                SetPlayMod(PlayerConfig.Current.Play.PlayMod);
                 _playThread = new Thread(ProcessWave) { Name = "PlayThread" };
                 _playThread.Start();
             }
@@ -104,7 +104,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 {
                     if (PlayerStatus != PlayerStatus.NotInitialized && _reader != null)
                     {
-                        _reader.Volume = 1f * Config.Current.Volume.Music * Config.Current.Volume.Main;
+                        _reader.Volume = 1f * PlayerConfig.Current.Volume.Music * PlayerConfig.Current.Volume.Main;
                         PlayTime = (int)_reader?.CurrentTime.TotalMilliseconds;
                         if (PlayTime >= (int)_reader?.TotalTime.TotalMilliseconds)
                             PlayerStatus = PlayerStatus.Finished;

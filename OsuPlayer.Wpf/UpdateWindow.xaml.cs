@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Web;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer

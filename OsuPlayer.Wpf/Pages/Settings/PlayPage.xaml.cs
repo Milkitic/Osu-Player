@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Milky.OsuPlayer.Pages.Settings
@@ -15,9 +16,9 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void SliderOffset_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            App.Config.Play.GeneralOffset = (int)SliderOffset.Value;
-            BoxOffset.Text = App.Config.Play.GeneralOffset.ToString();
-            App.SaveConfig();
+            PlayerConfig.Current.Play.GeneralOffset = (int)SliderOffset.Value;
+            BoxOffset.Text = PlayerConfig.Current.Play.GeneralOffset.ToString();
+            PlayerConfig.SaveCurrent();
         }
 
         private void BoxOffset_TextChanged(object sender, TextChangedEventArgs e)
@@ -27,61 +28,61 @@ namespace Milky.OsuPlayer.Pages.Settings
             if (num > SliderOffset.Maximum)
             {
                 num = (int)SliderOffset.Maximum;
-                App.Config.Play.GeneralOffset = num;
-                BoxOffset.Text = App.Config.Play.GeneralOffset.ToString();
+                PlayerConfig.Current.Play.GeneralOffset = num;
+                BoxOffset.Text = PlayerConfig.Current.Play.GeneralOffset.ToString();
             }
             else if (num < SliderOffset.Minimum)
             {
                 num = (int)SliderOffset.Minimum;
-                App.Config.Play.GeneralOffset = num;
-                BoxOffset.Text = App.Config.Play.GeneralOffset.ToString();
+                PlayerConfig.Current.Play.GeneralOffset = num;
+                BoxOffset.Text = PlayerConfig.Current.Play.GeneralOffset.ToString();
             }
-            
-            App.Config.Play.GeneralOffset = num;
-            SliderOffset.Value = App.Config.Play.GeneralOffset;
-            App.SaveConfig();
+
+            PlayerConfig.Current.Play.GeneralOffset = num;
+            SliderOffset.Value = PlayerConfig.Current.Play.GeneralOffset;
+            PlayerConfig.SaveCurrent();
         }
 
         private void RadioReplace_Checked(object sender, RoutedEventArgs e)
         {
-            App.Config.Play.ReplacePlayList = true;
-            App.SaveConfig();
+            PlayerConfig.Current.Play.ReplacePlayList = true;
+            PlayerConfig.SaveCurrent();
         }
 
         private void RadioInsert_Checked(object sender, RoutedEventArgs e)
         {
-            App.Config.Play.ReplacePlayList = false;
-            App.SaveConfig();
+            PlayerConfig.Current.Play.ReplacePlayList = false;
+            PlayerConfig.SaveCurrent();
         }
 
         private void ChkAutoPlay_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (!ChkAutoPlay.IsChecked.HasValue)
                 return;
-            App.Config.Play.AutoPlay = ChkAutoPlay.IsChecked.Value;
-            App.SaveConfig();
+            PlayerConfig.Current.Play.AutoPlay = ChkAutoPlay.IsChecked.Value;
+            PlayerConfig.SaveCurrent();
         }
 
         private void ChkMemory_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (!ChkMemory.IsChecked.HasValue)
                 return;
-            App.Config.Play.Memory = ChkMemory.IsChecked.Value;
-            App.SaveConfig();
+            PlayerConfig.Current.Play.Memory = ChkMemory.IsChecked.Value;
+            PlayerConfig.SaveCurrent();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            SliderOffset.Value = App.Config.Play.GeneralOffset;
-            BoxOffset.Text = App.Config.Play.GeneralOffset.ToString();
-            if (App.Config.Play.ReplacePlayList)
+            SliderOffset.Value = PlayerConfig.Current.Play.GeneralOffset;
+            BoxOffset.Text = PlayerConfig.Current.Play.GeneralOffset.ToString();
+            if (PlayerConfig.Current.Play.ReplacePlayList)
                 RadioReplace.IsChecked = true;
             else
                 RadioInsert.IsChecked = true;
-            ChkAutoPlay.IsChecked = App.Config.Play.AutoPlay;
-            ChkMemory.IsChecked = App.Config.Play.Memory;
-            SliderLatency.Value = App.Config.Play.DesiredLatency;
-            BoxLatency.Text = App.Config.Play.DesiredLatency.ToString();
+            ChkAutoPlay.IsChecked = PlayerConfig.Current.Play.AutoPlay;
+            ChkMemory.IsChecked = PlayerConfig.Current.Play.Memory;
+            SliderLatency.Value = PlayerConfig.Current.Play.DesiredLatency;
+            BoxLatency.Text = PlayerConfig.Current.Play.DesiredLatency.ToString();
         }
 
         private void BoxLatency_TextChanged(object sender, TextChangedEventArgs e)
@@ -91,26 +92,26 @@ namespace Milky.OsuPlayer.Pages.Settings
             if (num > SliderLatency.Maximum)
             {
                 num = (int)SliderLatency.Maximum;
-                App.Config.Play.DesiredLatency = num;
-                BoxLatency.Text = App.Config.Play.DesiredLatency.ToString();
+                PlayerConfig.Current.Play.DesiredLatency = num;
+                BoxLatency.Text = PlayerConfig.Current.Play.DesiredLatency.ToString();
             }
             else if (num < SliderLatency.Minimum)
             {
                 num = (int)SliderLatency.Minimum;
-                App.Config.Play.DesiredLatency = num;
-                BoxLatency.Text = App.Config.Play.DesiredLatency.ToString();
+                PlayerConfig.Current.Play.DesiredLatency = num;
+                BoxLatency.Text = PlayerConfig.Current.Play.DesiredLatency.ToString();
             }
 
-            App.Config.Play.DesiredLatency = num;
-            SliderLatency.Value = App.Config.Play.DesiredLatency;
-            App.SaveConfig();
+            PlayerConfig.Current.Play.DesiredLatency = num;
+            SliderLatency.Value = PlayerConfig.Current.Play.DesiredLatency;
+            PlayerConfig.SaveCurrent();
         }
 
         private void SliderLatency_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            App.Config.Play.DesiredLatency = (int)SliderLatency.Value;
-            BoxLatency.Text = App.Config.Play.DesiredLatency.ToString();
-            App.SaveConfig();
+            PlayerConfig.Current.Play.DesiredLatency = (int)SliderLatency.Value;
+            BoxLatency.Text = PlayerConfig.Current.Play.DesiredLatency.ToString();
+            PlayerConfig.SaveCurrent();
         }
     }
 }
