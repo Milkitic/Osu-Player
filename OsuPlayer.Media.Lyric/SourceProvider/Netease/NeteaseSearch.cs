@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
 {
-    public class NeteaseSearch : SongSearchBase<NeteaseSearch.Song>
+    public class NeteaseSearch:SongSearchBase<NeteaseSearch.Song>
     {
         #region Search Result
         public class Artist
@@ -29,7 +29,7 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
             public int size { get; set; }
         }
 
-        public class Song : SearchSongResultBase
+        public class Song:SearchSongResultBase
         {
             public Album album { get; set; }
             public int status { get; set; }
@@ -41,45 +41,52 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
             public int duration { get; set; }
             public int id { get; set; }
 
-            public override string Artist => artists?.First().name;
-            public override string Title => name;
             public override int Duration => duration;
-            public override string ResultId => id.ToString();
+
+            public override string ID =>id.ToString();
+
+            public override string Title => name;
+
+            public override string Artist =>artists?.First().name;
         }
 
         #endregion
 
-        private const string ApiUrl = "http://music.163.com/api/search/get/";
-        private const int SearchLimit = 5;
+        private static readonly string API_URL = "http://music.163.com/api/search/get/";
+        private static readonly int SEARCH_LIMIT = 5;
 
-        public override List<Song> Search(params string[] paramArr)
+        public override List<Song> Search(params string[] param_arr)
         {
-            string title = paramArr[0], artist = paramArr[1];
-            Uri url = new Uri($"{ApiUrl}?s={artist} {title}&limit={SearchLimit}&type=1&offset=0");
+            string title = param_arr[0], artist = param_arr[1];
+            Uri url = new Uri($"{API_URL}?s={artist} {title}&limit={SEARCH_LIMIT}&type=1&offset=0");
 
-            HttpWebRequest request = WebRequest.CreateHttp(url);
+            HttpWebRequest request = HttpWebRequest.CreateHttp(url);
             request.Method = "POST";
-            request.Timeout = SearchSettings.SearchDownloadTimeout;
+            request.Timeout = Settings.SearchAndDownloadTimeout;
             request.Referer = "http://music.163.com";
-            request.Headers["appver"] = "2.0.2";
-            var response = request.GetResponse();
-            var stream = response.GetResponseStream();
+            request.Headers["appver"] = $"2.0.2";
 
-            string content;
-            if (stream != null)
+            var response = request.GetResponse();
+
+            string content = string.Empty;
+
+            using (var reader = new StreamReader(response.GetResponseStream()))
             {
-                using (var reader = new StreamReader(stream))
-                {
-                    content = reader.ReadToEnd();
-                }
+                content = reader.ReadToEnd();
             }
-            else throw new NullReferenceException();
 
             JObject json = JObject.Parse(content);
+
             var count = json["result"]["songCount"]?.ToObject<int>();
-            return count == 0
-                ? new List<Song>()
-                : json["result"]["songs"].ToObject<List<Song>>();
+
+            if (count == 0)
+            {
+                return new List<Song>();
+            }
+
+            var result = json["result"]["songs"].ToObject<List<Song>>();
+
+            return result;
         }
     }
 }

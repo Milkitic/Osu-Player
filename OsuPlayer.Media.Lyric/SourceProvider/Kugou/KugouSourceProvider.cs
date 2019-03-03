@@ -1,12 +1,11 @@
-﻿using Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease;
-
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Kugou
+﻿namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Kugou
 {
-    public class KugouSourceProvider
-        : SourceProviderBase<KugouSearchResultSong, KugouSearcher, KugouLyricDownloader, NeteaseLyricParser>
+    [SourceProviderName("kugou", "DarkProjector")]
+    public class KugouSourceProvider : SourceProviderBase<
+        KugouSearchResultSong,
+        KugouSearcher,
+        KugouLyricDownloader,
+        Netease.NeteaseLyricParser>
     {
-        public KugouSourceProvider(bool strictMode) : base(strictMode)
-        {
-        }
     }
 }

@@ -19,7 +19,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Lyric;
+using Milky.OsuPlayer.Media.Lyric.Models;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
@@ -116,7 +116,7 @@ namespace Milky.OsuPlayer.Windows
             if (!_pressed) Left = 0;
         }
 
-        public void SetNewLyric(Lyric lyric, OsuFile osuFile)
+        public void SetNewLyric(Lyrics lyric, OsuFile osuFile)
         {
             StopWork();
 

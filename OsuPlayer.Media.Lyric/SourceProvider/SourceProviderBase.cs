@@ -1,128 +1,118 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Media.Lyric.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Milky.OsuPlayer.Common;
 
 namespace Milky.OsuPlayer.Media.Lyric.SourceProvider
 {
     public abstract class SourceProviderBase
     {
-        protected readonly bool StrictMode;
-
-        protected SourceProviderBase(bool strictMode)
-        {
-            StrictMode = strictMode;
-        }
-
-        public abstract Lyric ProvideLyric(string artist, string title, int time, bool requestTransLyrics);
+        public abstract Lyrics ProvideLyric(string artist, string title, int time, bool requestTransLyrics);
     }
 
-    public abstract class SourceProviderBase<TSearchresult, TSearcher, TDownloader, TParser> : SourceProviderBase
+    public abstract class SourceProviderBase<TSearchResult, TSearcher, TDownloader, TParser> : SourceProviderBase
         where TDownloader : LyricDownloaderBase, new()
         where TParser : LyricParserBase, new()
-        where TSearcher : SongSearchBase<TSearchresult>, new()
-        where TSearchresult : SearchSongResultBase, new()
+        where TSearcher : SongSearchBase<TSearchResult>, new()
+        where TSearchResult : SearchSongResultBase, new()
     {
         public int DurationThresholdValue { get; set; } = 1000;
+
         public TDownloader Downloader { get; } = new TDownloader();
-        public TSearcher Seacher { get; } = new TSearcher();
+        public TSearcher Seadrcher { get; } = new TSearcher();
         public TParser Parser { get; } = new TParser();
 
-        public override Lyric ProvideLyric(string artist, string title, int time, bool requestTransLyrics)
+        public override Lyrics ProvideLyric(string artist, string title, int time, bool requestTransLyrics)
         {
             try
             {
-                List<TSearchresult> searchResult = Seacher.Search(artist, title);
+                var searchResult = Seadrcher.Search(artist, title);
 
-                var lyrics = PickLyric(artist, title, time, searchResult, requestTransLyrics, out TSearchresult pickedResult);
+                var lyrics = PickLyric(artist, title, time, searchResult, requestTransLyrics, out TSearchResult pickedResult);
 
-                if (lyrics != null && SearchSettings.EnableOutputSearchResult)
+                if (lyrics != null && Settings.EnableOutputSearchResult)
                 {
                     //output lyrics search result
-                    var contentObj = new
-                    {
-                        DateTime = DateTime.Now,
-                        ID = pickedResult.ResultId,
-                        pickedResult.Artist,
-                        pickedResult.Title,
-                        pickedResult.Duration,
-                        Raw_Title = title,
-                        Raw_Artist = artist,
-                        Raw_Duration = time
-                    };
+                    var contentObj = new { DateTime = DateTime.Now, pickedResult.ID, pickedResult.Artist, pickedResult.Title, pickedResult.Duration, Raw_Title = title, Raw_Artist = artist, Raw_Duration = time };
                     string json = Newtonsoft.Json.JsonConvert.SerializeObject(contentObj, Newtonsoft.Json.Formatting.None);
-                    if (!Directory.Exists(Domain.LyricCachePath))
-                        Directory.CreateDirectory(Domain.LyricCachePath);
-                    string filePath = Path.Combine(Domain.LyricCachePath, $"{GetType().Name}.txt");
+                    if (!Directory.Exists(@"..\lyric_cache"))
+                        Directory.CreateDirectory(@"..\lyric_cache");
+                    string filePath = $@"..\lyric_cache\{this.GetType().Name}.txt";
                     File.AppendAllText(filePath, json + Environment.NewLine, Encoding.UTF8);
 
-                    Console.WriteLine(@"-> 从{0}获取到 {1}", GetType().Name, lyrics.IsTranslatedLyrics ? "翻译歌词" : "原歌词");
+                    Utils.Output($"-> 从{this.GetType().Name}获取到 {(lyrics.IsTranslatedLyrics ? "翻译歌词" : "原歌词")}", ConsoleColor.Green);
                 }
 
                 return lyrics;
             }
             catch (Exception e)
             {
+                Utils.Output($"{GetType().Name}获取歌词失败:{e.Message}", ConsoleColor.Red);
                 return null;
-                //throw new Exception($"{GetType().Name}获取歌词失败。", e);
             }
         }
 
-        public virtual Lyric PickLyric(string artist, string title, int time, List<TSearchresult> searchResult,
-            bool requestTransLyrics, out TSearchresult pickedResult)
+        public virtual Lyrics PickLyric(string artist, string title, int time, List<TSearchResult> searchResult, bool requestTransLyrics, out TSearchResult pickedResult)
         {
             pickedResult = null;
 
             DumpSearchList("-", time, searchResult);
+
             FuckSearchFilte(artist, title, time, ref searchResult);
+
             DumpSearchList("+", time, searchResult);
 
             if (searchResult.Count == 0)
                 return null;
 
-            Lyric lyric = null;
-            TSearchresult curResult = null;
+            Lyrics lyricCont = null;
+            TSearchResult curResult = null;
 
             foreach (var result in searchResult)
             {
                 var content = Downloader.DownloadLyric(result, requestTransLyrics);
                 curResult = result;
+
                 if (string.IsNullOrWhiteSpace(content))
                     continue;
 
-                lyric = Parser.Parse(content);
+                lyricCont = Parser.Parse(content);
+
                 //过滤没有实质歌词内容的玩意,比如没有时间轴的歌词文本
-                if (lyric?.LyricSentencs?.Count == 0)
+                if (lyricCont?.LyricSentencs?.Count == 0)
                     continue;
 
+                Utils.Debug($"* Picked music_id:{result.ID} artist:{result.Artist} title:{result.Title}");
                 break;
             }
 
-            if (lyric == null)
+            if (lyricCont == null)
                 return null;
 
             pickedResult = curResult;
-            WrapInfo(lyric);
-            return lyric;
+
+            WrapInfo(lyricCont);
+
+            return lyricCont;
 
             #region Wrap Methods
 
             //封装信息
-            void WrapInfo(Lyric l)
+            void WrapInfo(Lyrics l)
             {
                 if (l == null)
                     return;
 
-                Info rawInfo = new Info
+                Info rawInfo = new Info()
                 {
                     Artist = artist,
                     Title = title
-                }, queryInfo = new Info
+                }, queryInfo = new Info()
                 {
                     Artist = curResult.Artist,
                     Title = curResult.Title,
-                    Id = curResult.ResultId
+                    ID = curResult.ID
                 };
 
                 l.RawInfo = rawInfo;
@@ -133,21 +123,21 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider
             #endregion
         }
 
-        private static void DumpSearchList(string prefix, int time, List<TSearchresult> searchList)
+        private static void DumpSearchList(string prefix, int time, List<TSearchResult> searchList)
         {
-            foreach (var r in searchList)
-                Console.WriteLine(@"{0} music_id:{1} artist:{2} title:{3} time{4}({5:F2})", prefix, r.ResultId,
-                    r.Artist, r.Title, r.Duration, Math.Abs(r.Duration - time));
+            if (Settings.DebugMode)
+                foreach (var r in searchList)
+                    Utils.Debug($"{prefix} music_id:{r.ID} artist:{r.Artist} title:{r.Title} time{r.Duration}({Math.Abs(r.Duration - time):F2})");
         }
 
-        public virtual void FuckSearchFilte(string artist, string title, int time, ref List<TSearchresult> searchResult)
+        public virtual void FuckSearchFilte(string artist, string title, int time, ref List<TSearchResult> searchResult)
         {
             //删除长度不对的
-            searchResult.RemoveAll(r => Math.Abs(r.Duration - time) > DurationThresholdValue);
+            searchResult.RemoveAll((r) => Math.Abs(r.Duration - time) > DurationThresholdValue);
 
             string checkStr = $"{title.Trim()}";
 
-            if (StrictMode) //(Setting.StrictMatch)
+            if (Settings.StrictMatch)
             {
                 //删除标题看起来不匹配的(超过1/3内容不对就出局)，当然开头相同除外
                 float threholdLength = checkStr.Length * (1.0f / 3);
@@ -163,13 +153,13 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider
                 );
             }
 
+            //search_result.Sort((a, b) => Math.Abs(a.Duration - time) - Math.Abs(b.Duration - time));
             searchResult.Sort((a, b) => GetEditDistance(a) - GetEditDistance(b));
 
-            int GetEditDistance(SearchSongResultBase s) => StringUtils.GetEditDistance($"{s.Title}", checkStr);
-        }
-
-        protected SourceProviderBase(bool strictMode) : base(strictMode)
-        {
+            int GetEditDistance(SearchSongResultBase s)
+            {
+                return Utils.EditDistance($"{s.Title}", checkStr);
+            }
         }
     }
 }

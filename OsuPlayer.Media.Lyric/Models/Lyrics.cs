@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Milky.OsuPlayer.Media.Lyric
+namespace Milky.OsuPlayer.Media.Lyric.Models
 {
-    public class Lyric
+    public class Lyrics
     {
-        public static Lyric Empty { get; private set; } = new Lyric(new List<Sentence>());
+        public static Lyrics Empty { get; private set; } = new Lyrics(new List<Sentence>());
 
         public List<Sentence> LyricSentencs { get; set; }
 
@@ -21,66 +21,66 @@ namespace Milky.OsuPlayer.Media.Lyric
         /// </summary>
         public Info QueryInfo { get; set; }
 
-        public Lyric() : this(new List<Sentence>()) { }
+        public Lyrics() : this(new List<Sentence>()) { }
 
-        public Lyric(IEnumerable<Sentence> sentences, bool isTransLyrics = false)
+        public Lyrics(IEnumerable<Sentence> sentences, bool is_trans_lyrics = false)
         {
             LyricSentencs = new List<Sentence>(sentences);
-            IsTranslatedLyrics = isTransLyrics;
+            IsTranslatedLyrics = is_trans_lyrics;
         }
 
-        public (Sentence, int) GetCurrentSentence(int time)
+        public virtual (Sentence, int) GetCurrentSentence(int time)
         {
             var index = LyricSentencs.FindLastIndex((s) => s.StartTime <= time);
 
             return (index < 0 ? Sentence.Empty : LyricSentencs[index], index);
         }
 
-        public static Lyric operator +(Lyric a, Lyric b)
+        public static Lyrics operator +(Lyrics a, Lyrics b)
         {
             if (a == null)
                 return b;
             if (b == null)
                 return a;
 
-            if (a.IsTranslatedLyrics == b.IsTranslatedLyrics)
+            if (a.IsTranslatedLyrics==b.IsTranslatedLyrics)
             {
                 return a;
             }
 
-            Dictionary<int, Sentence> combimeDic = new Dictionary<int, Sentence>();
+            Dictionary<int, Sentence> combime_dic = new Dictionary<int, Sentence>();
 
             foreach (var lyrics in a.LyricSentencs)
             {
-                if (combimeDic.ContainsKey(lyrics.StartTime))
+                if (combime_dic.ContainsKey(lyrics.StartTime))
                 {
-                    var exsit = combimeDic[lyrics.StartTime];
+                    var exsit = combime_dic[lyrics.StartTime];
 
-                    combimeDic[lyrics.StartTime] = exsit + lyrics;
+                    combime_dic[lyrics.StartTime] = exsit + lyrics;
                 }
                 else
                 {
-                    combimeDic[lyrics.StartTime] = lyrics;
+                    combime_dic[lyrics.StartTime] = lyrics;
                 }
             }
 
             foreach (var lyrics in b.LyricSentencs)
             {
-                if (combimeDic.ContainsKey(lyrics.StartTime))
+                if (combime_dic.ContainsKey(lyrics.StartTime))
                 {
-                    var exsit = combimeDic[lyrics.StartTime];
+                    var exsit = combime_dic[lyrics.StartTime];
 
-                    combimeDic[lyrics.StartTime] = exsit + lyrics;
+                    combime_dic[lyrics.StartTime] = exsit + lyrics;
                 }
                 else
                 {
-                    combimeDic[lyrics.StartTime] = lyrics;
+                    combime_dic[lyrics.StartTime] = lyrics;
                 }
             }
 
-            var sentences = combimeDic.Values.ToList();
+            var sentences = combime_dic.Values.ToList();
             sentences.Sort();
-            return new Lyric(sentences);
+            return new Lyrics(sentences);
         }
     }
 }

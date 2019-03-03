@@ -1,6 +1,7 @@
 ﻿using Milky.OsuPlayer.Common.Data;
-using System;
 using Milky.OsuPlayer.Media.Lyric.SourceProvider;
+using System;
+using Milky.OsuPlayer.Media.Lyric.Models;
 
 namespace Milky.OsuPlayer.Media.Lyric
 {
@@ -9,18 +10,16 @@ namespace Milky.OsuPlayer.Media.Lyric
         public LyricProvideType ProvideType { get; set; }
 
         private readonly SourceProviderBase _sourceProvider;
-        private readonly bool _strictMode;
 
-        public LyricProvider(SourceProviderBase provider, LyricProvideType provideType, bool strictMode)
+        public LyricProvider(SourceProviderBase provider, LyricProvideType provideType)
         {
             _sourceProvider = provider;
-            _strictMode = strictMode;
             ProvideType = provideType;
         }
 
-        public Lyric GetLyric(string artist, string title, int duration)
+        public Lyrics GetLyric(string artist, string title, int duration)
         {
-            Lyric lyric;
+            Lyrics lyric;
             switch (ProvideType)
             {
                 case LyricProvideType.PreferBoth:
@@ -43,24 +42,24 @@ namespace Milky.OsuPlayer.Media.Lyric
             return lyric;
         }
 
-        private Lyric InnerGetLyric(string artist, string title, int duration, bool useTranslated, bool useCache = false)
+        private Lyrics InnerGetLyric(string artist, string title, int duration, bool useTranslated, bool useCache = false)
         {
-            if (useCache && TryGetCache(title, artist, duration, useTranslated, out Lyric cached))
+            if (useCache && TryGetCache(title, artist, duration, useTranslated, out Lyrics cached))
             {
                 return cached;
             }
 
-            Lyric lyric = _sourceProvider?.ProvideLyric(artist, title, duration, useTranslated);
+            Lyrics lyric = _sourceProvider?.ProvideLyric(artist, title, duration, useTranslated);
             if (useCache) WriteCache(title, artist, duration, lyric);
             return lyric;
         }
 
-        private static void WriteCache(string title, string artist, int duration, Lyric lyric)
+        private static void WriteCache(string title, string artist, int duration, Lyrics lyric)
         {
             throw new NotImplementedException();
         }
 
-        private static bool TryGetCache(string title, string artist, int duration, bool useTranslated, out Lyric lyric)
+        private static bool TryGetCache(string title, string artist, int duration, bool useTranslated, out Lyrics lyric)
         {
             throw new NotImplementedException();
         }

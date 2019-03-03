@@ -1,53 +1,55 @@
-﻿using System.Threading;
+﻿using Milky.OsuPlayer.Media.Lyric.Models;
+using System;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider.Kugou;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic;
 
 namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Auto
 {
+    [SourceProviderName("auto", "DarkProjector")]
     public class AutoSourceProvider : SourceProviderBase
     {
-        private readonly SourceProviderBase[] _searchEngines;
+        public readonly SourceProviderBase[] SearchEngines;
 
-        public override Lyric ProvideLyric(string artist, string title, int time, bool requestTransLyrics)
+        public AutoSourceProvider(SourceProviderBase[] sourceProviders)
         {
-            Task<Lyric>[] tasks = new Task<Lyric>[_searchEngines.Length];
+            //search_engines=SourceProviderManager.LyricsSourceProvidersType
+            //    .Select(x => x.GetCustomAttribute<SourceProviderNameAttribute>())
+            //    .OfType<SourceProviderNameAttribute>()
+            //    .Where(x => !x.Name.Equals("auto", StringComparison.InvariantCultureIgnoreCase))
+            //    .Select(x => SourceProviderManager.GetOrCreateSourceProvier(x.Name))
+            //    .ToArray();
+            SearchEngines = sourceProviders;
+        }
 
-            CancellationTokenSource cts = new CancellationTokenSource();
+        public override Lyrics ProvideLyric(string artist, string title, int time, bool request_trans_lyrics)
+        {
+            Task<Lyrics>[] tasks = new Task<Lyrics>[SearchEngines.Length];
 
-            for (int i = 0; i < _searchEngines.Length; i++)
+            System.Threading.CancellationTokenSource token = new System.Threading.CancellationTokenSource();
+
+            for (int i = 0; i < SearchEngines.Length; i++)
+                tasks[i] = Task.Factory.StartNew<Lyrics>(
+                    index => SearchEngines[(int)index].ProvideLyric(artist, title, time, request_trans_lyrics),
+                    i,
+                    token.Token);
+
+            Lyrics lyrics = null;
+
+            for (int i = 0; i < SearchEngines.Length; i++)
             {
-                int j = i;
-                tasks[i] = Task.Run(() => _searchEngines[j].ProvideLyric(artist, title, time, requestTransLyrics),
-                    cts.Token);
-            }
-
-            Lyric lyric = null;
-
-            for (int i = 0; i < _searchEngines.Length; i++)
-            {
-                lyric = tasks[i].Result;
+                lyrics = tasks[i].Result;
 
                 //如果是刚好是要相同版本的歌词那可以直接返回了,否则就等一下其他源是不是还能拿到合适的版本
-                if (lyric != null)
+                if (lyrics != null)
                 {
-                    cts.Cancel();
+                    token.Cancel();
+                    Utils.Debug($"Quick select lyric from {SearchEngines[i].GetType().Name}");
                     break;
                 }
             }
 
-            return lyric;
-        }
-
-        public AutoSourceProvider(bool strictMode) : base(strictMode)
-        {
-            _searchEngines = new SourceProviderBase[]
-            {
-                new NeteaseSourceProvider(StrictMode),
-                new QqMusicSourceProvider(StrictMode),
-                new KugouSourceProvider(StrictMode)
-            };
+            return lyrics;
         }
     }
 }

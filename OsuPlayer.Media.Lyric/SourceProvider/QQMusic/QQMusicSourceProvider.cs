@@ -1,41 +1,42 @@
-﻿using System.Collections.Generic;
+﻿using Milky.OsuPlayer.Media.Lyric.Models;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic
 {
-    public class QqMusicSourceProvider
-        : SourceProviderBase<Song, QqMusicSearch, QqMusicLyricDownloader, QqMusicLyricParser>
+    [SourceProviderName("qqmusic", "DarkProjector")]
+    public class QQMusicSourceProvider : SourceProviderBase<Song, QQMusicSearch, QQMusicLyricDownloader, QQMusicLyricParser>
     {
-        public override Lyric PickLyric(string artist, string title, int time, List<Song> searchResult,
-            bool requestTransLyrics, out Song pickedResult)
+        public override Lyrics PickLyric(string artist, string title, int time, List<Song> searchResult, bool requestTransLyrics, out Song picked_result)
         {
-            pickedResult = null;
-            Lyric result = base.PickLyric(artist, title, time, searchResult, requestTransLyrics, out Song tempPickedResult);
+            picked_result = null;
+
+            Lyrics result = base.PickLyric(artist, title, time, searchResult, requestTransLyrics, out Song tempPickedResult);
+
             if (result != null)
             {
                 switch (result.LyricSentencs.Count)
                 {
                     case 0:
-                        // 无任何歌词在里面
+                        Utils.Debug($"{picked_result?.ID}:无任何歌词在里面,rej");
                         return null;
+
                     case 1:
                         var firstSentence = result.LyricSentencs.First();
-                        if (firstSentence.StartTime <= 0 && firstSentence.Content.Contains("纯音乐") &&
-                            firstSentence.Content.Contains("没有填词"))
+                        if (firstSentence.StartTime <= 0 && firstSentence.Content.Contains("纯音乐") && firstSentence.Content.Contains("没有填词"))
                         {
-                            // 纯音乐或无歌词
+                            Utils.Debug($"{picked_result?.ID}:纯音乐? : " + firstSentence);
                             return null;
                         }
+                        break;
+
+                    default:
                         break;
                 }
             }
 
-            pickedResult = tempPickedResult;
+            picked_result = tempPickedResult;
             return result;
-        }
-
-        public QqMusicSourceProvider(bool strictMode) : base(strictMode)
-        {
         }
     }
 }

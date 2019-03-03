@@ -1,10 +1,12 @@
-﻿namespace Milky.OsuPlayer.Media.Lyric.SourceProvider
+﻿using System;
+
+namespace Milky.OsuPlayer.Media.Lyric.SourceProvider
 {
     public abstract class SearchSongResultBase
     {
         public abstract string Title { get; }
         public abstract string Artist { get; }
         public abstract int Duration { get; }
-        public abstract string ResultId { get; }
+        public abstract string ID { get; }
     }
 }

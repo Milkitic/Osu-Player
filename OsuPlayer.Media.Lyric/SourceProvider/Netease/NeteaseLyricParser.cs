@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Milky.OsuPlayer.Media.Lyric.Models;
 
 namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
 {
-    public class NeteaseLyricParser : LyricParserBase
+    public class NeteaseLyricParser:LyricParserBase
     {
         private static readonly Regex LyricRegex = new Regex(@"\[(\d{2}\d*)\:(\d{2})\.(\d*)?\](.*?)(\r)?\n");
 
-        public override Lyric Parse(string content)
+        public override Lyrics Parse(string content)
         {
             List<Sentence> sentenceList = new List<Sentence>();
 
@@ -15,7 +16,7 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
 
             while (match.Success)
             {
-                int min = int.Parse(match.Groups[1].Value.ToString()), sec = int.Parse(match.Groups[2].Value.ToString()), msec = int.Parse(match.Groups[3].Value.ToString());
+                int min = int.Parse(match.Groups[1].Value.ToString()), sec = int.Parse(match.Groups[2].Value), msec = int.Parse(match.Groups[3].Value.ToString());
 
                 string cont = match.Groups[4].Value.ToString().Trim();
 
@@ -28,7 +29,7 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
 
             sentenceList.Sort();
 
-            return new Lyric(sentenceList);
+            return new Lyrics(sentenceList);
         }
     }
 }
