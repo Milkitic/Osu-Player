@@ -1,14 +1,14 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Milky.OsuPlayer.Common;
+﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Media.Audio.Music.SampleProviders;
 using Milky.OsuPlayer.Media.Audio.Music.SoundTouch;
 using Milky.OsuPlayer.Media.Audio.Music.WaveProviders;
 using NAudio.Wave;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Milky.OsuPlayer.Media.Audio.Music
 {
@@ -76,7 +76,10 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             //else
             //    _device = new WaveOutEvent { DesiredLatency = App.Config.Play.DesiredLatency };
             //_device = new WaveOutEvent { DesiredLatency = 70 };
-            _device.PlaybackStopped += (sender, args) => { PlayerStatus = PlayerStatus.Finished; };
+            _device.PlaybackStopped += (sender, args) =>
+            {
+                PlayerStatus = PlayerStatus.Finished;
+            };
 
             if (UseSoundTouch)
             {
@@ -97,21 +100,29 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             }
 
             PlayerStatus = PlayerStatus.Ready;
-
-            Task.Run(() =>
+            PlayerConfig.Current.Volume.PropertyChanged += Volume_PropertyChanged;
+            Task.Factory.StartNew(() =>
             {
                 while (!_cts.IsCancellationRequested)
                 {
-                    if (PlayerStatus != PlayerStatus.NotInitialized && _reader != null)
+                    if (_reader != null &&
+                        PlayerStatus != PlayerStatus.NotInitialized &&
+                        PlayerStatus != PlayerStatus.Finished)
                     {
-                        _reader.Volume = 1f * PlayerConfig.Current.Volume.Music * PlayerConfig.Current.Volume.Main;
+                        //_reader.Volume = 1f * PlayerConfig.Current.Volume.Music * PlayerConfig.Current.Volume.Main;
                         PlayTime = (int)_reader?.CurrentTime.TotalMilliseconds;
-                        if (PlayTime >= (int)_reader?.TotalTime.TotalMilliseconds)
-                            PlayerStatus = PlayerStatus.Finished;
+                        //if (PlayTime >= (int)_reader?.TotalTime.TotalMilliseconds)
+                        //    PlayerStatus = PlayerStatus.Finished;
                     }
+
                     Thread.Sleep(10);
                 }
-            });
+            }, TaskCreationOptions.LongRunning);
+        }
+
+        private void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            _reader.Volume = 1f * PlayerConfig.Current.Volume.Music * PlayerConfig.Current.Volume.Main;
         }
 
         public void SetPlayMod(PlayMod mod)
