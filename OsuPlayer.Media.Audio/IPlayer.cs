@@ -1,15 +1,18 @@
-﻿using System;
-using Milky.OsuPlayer.Common.Player;
+﻿using Milky.OsuPlayer.Common.Player;
+using System;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
     public interface IPlayer
     {
-        event Action PlayerLoaded;
-        event Action PlayerStarted;
-        event Action PlayerStopped;
-        event Action PlayerPaused;
-        event Action PlayerFinished;
+        event EventHandler PlayerLoaded;
+        event EventHandler PlayerStarted;
+        event EventHandler PlayerStopped;
+        event EventHandler PlayerPaused;
+        event EventHandler PlayerFinished;
+        event EventHandler ProgressChanged;
+
+        int ProgressRefreshInterval { get; set; }
 
         PlayerStatus PlayerStatus { get; }
         int Duration { get; }

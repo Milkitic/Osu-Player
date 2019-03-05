@@ -6,6 +6,7 @@ using Milky.OsuPlayer.Media.Audio.Music.SoundTouch;
 using Milky.OsuPlayer.Media.Audio.Music.WaveProviders;
 using NAudio.Wave;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,6 +61,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         private float _tempoValue = 1f;
         private float _pitchValue = 0f;
         private float _rateValue = 1f;
+        private int _progressRefreshInterval;
 
         public MusicPlayer(string filePath)
         {
@@ -79,6 +81,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             _device.PlaybackStopped += (sender, args) =>
             {
                 PlayerStatus = PlayerStatus.Finished;
+                PlayerFinished?.Invoke(this, new EventArgs());
             };
 
             if (UseSoundTouch)
@@ -99,25 +102,45 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 _device.Init(_reader);
             }
 
-            PlayerStatus = PlayerStatus.Ready;
             PlayerConfig.Current.Volume.PropertyChanged += Volume_PropertyChanged;
-            Task.Factory.StartNew(() =>
-            {
-                while (!_cts.IsCancellationRequested)
-                {
-                    if (_reader != null &&
-                        PlayerStatus != PlayerStatus.NotInitialized &&
-                        PlayerStatus != PlayerStatus.Finished)
-                    {
-                        //_reader.Volume = 1f * PlayerConfig.Current.Volume.Music * PlayerConfig.Current.Volume.Main;
-                        PlayTime = (int)_reader?.CurrentTime.TotalMilliseconds;
-                        //if (PlayTime >= (int)_reader?.TotalTime.TotalMilliseconds)
-                        //    PlayerStatus = PlayerStatus.Finished;
-                    }
+            Task.Factory.StartNew(UpdateProgress, TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(NotifyProgress, TaskCreationOptions.LongRunning);
 
-                    Thread.Sleep(10);
+            PlayerStatus = PlayerStatus.Ready;
+            PlayerLoaded?.Invoke(this, new EventArgs());
+        }
+
+        private void NotifyProgress()
+        {
+            var oldT = PlayTime;
+            var sw = Stopwatch.StartNew();
+            while (!_cts.IsCancellationRequested)
+            {
+                Thread.Sleep(10);
+                var newT = PlayTime;
+                if (newT != oldT && sw.ElapsedMilliseconds > ProgressRefreshInterval - 10)
+                {
+                    oldT = newT;
+                    ProgressChanged?.Invoke(this, new EventArgs());
+                    sw.Restart();
                 }
-            }, TaskCreationOptions.LongRunning);
+            }
+        }
+
+        private void UpdateProgress()
+        {
+            while (!_cts.IsCancellationRequested)
+            {
+                if (_reader != null && PlayerStatus != PlayerStatus.NotInitialized && PlayerStatus != PlayerStatus.Finished)
+                {
+                    //_reader.Volume = 1f * PlayerConfig.Current.Volume.Music * PlayerConfig.Current.Volume.Main;
+                    PlayTime = (int)_reader?.CurrentTime.TotalMilliseconds;
+                    //if (PlayTime >= (int)_reader?.TotalTime.TotalMilliseconds)
+                    //    PlayerStatus = PlayerStatus.Finished;
+                }
+
+                Thread.Sleep(10);
+            }
         }
 
         private void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -164,14 +187,28 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         public void Play()
         {
-            _device.Play();
+            PlayWithoutNotify();
+
             PlayerStatus = PlayerStatus.Playing;
+            PlayerStarted?.Invoke(this, new EventArgs());
+        }
+
+        private void PlayWithoutNotify()
+        {
+            _device.Play();
         }
 
         public void Pause()
         {
-            _device.Pause();
+            PauseWithoutNotify();
+
             PlayerStatus = PlayerStatus.Paused;
+            PlayerPaused?.Invoke(this, new EventArgs());
+        }
+
+        private void PauseWithoutNotify()
+        {
+            _device.Pause();
         }
 
         public void Replay()
@@ -185,14 +222,21 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             if (ms < 0) ms = 0;
             var span = new TimeSpan(0, 0, 0, 0, ms);
             _reader.CurrentTime = span >= _reader.TotalTime ? _reader.TotalTime - new TimeSpan(0, 0, 0, 0, 1) : span;
-            PlayerStatus = PlayerStatus.Playing;
-            if (!play) Pause();
+            //PlayerStatus = PlayerStatus.Playing;
+            if (!play) PauseWithoutNotify();
         }
 
         public void Stop()
         {
             SetTime(0, false);
+
             PlayerStatus = PlayerStatus.Stopped;
+            PlayerStopped?.Invoke(this, new EventArgs());
+        }
+
+        internal void ResetWithoutNotify()
+        {
+            SetTime(0, false);
         }
 
         public void Dispose()
@@ -340,6 +384,24 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         #endregion
 
         #region Properties
+
+        public event EventHandler PlayerLoaded;
+        public event EventHandler PlayerStarted;
+        public event EventHandler PlayerStopped;
+        public event EventHandler PlayerPaused;
+        public event EventHandler PlayerFinished;
+        public event EventHandler ProgressChanged;
+
+        public int ProgressRefreshInterval
+        {
+            get => _progressRefreshInterval;
+            set
+            {
+                if (value < 10)
+                    _progressRefreshInterval = 10;
+                _progressRefreshInterval = value;
+            }
+        }
 
         public PlayerStatus PlayerStatus
         {

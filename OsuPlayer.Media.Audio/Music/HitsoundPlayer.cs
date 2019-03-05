@@ -1,4 +1,5 @@
 ﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Player;
 using OSharp.Beatmap;
 using OSharp.Beatmap.Sections.HitObject;
@@ -10,13 +11,21 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Media.Audio.Music
 {
     internal class HitsoundPlayer : IPlayer, IDisposable
     {
+        public event EventHandler PlayerLoaded;
+        public event EventHandler PlayerStarted;
+        public event EventHandler PlayerStopped;
+        public event EventHandler PlayerPaused;
+        public event EventHandler PlayerFinished;
+        public event EventHandler ProgressChanged;
+        public int ProgressRefreshInterval { get; set; }
+
         private static bool UseSoundTouch => PlayerConfig.Current.Play.UsePlayerV2;
+
         public PlayerStatus PlayerStatus
         {
             get => _playerStatus;
@@ -81,6 +90,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
             PlayerStatus = PlayerStatus.Ready;
             SetPlayMod(PlayerConfig.Current.Play.PlayMod, false);
+
+            PlayerLoaded?.Invoke(this, new EventArgs());
         }
 
         public void SetPlayMod(PlayMod mod, bool play)
@@ -119,13 +130,16 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             _playingTask.Start();
 
             PlayerStatus = PlayerStatus.Playing;
+            PlayerStarted?.Invoke(this, new EventArgs());
         }
 
         public void Pause()
         {
             CancelTask();
-            PlayerStatus = PlayerStatus.Paused;
             PlayTime = PlayTime;
+
+            PlayerStatus = PlayerStatus.Paused;
+            PlayerPaused?.Invoke(this, new EventArgs());
         }
 
         public void Stop()
@@ -153,7 +167,6 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             if (_playingTask != null) Task.WaitAll(_playingTask);
             _playingTask?.Dispose();
             _cts?.Dispose();
-            OnFinished = null;
             WavePlayer.ClearCache();
             GC.Collect();
         }
@@ -167,13 +180,18 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         {
             CancelTask(innerCall);
             PlayTime = 0;
-            PlayerStatus = interrupt ? PlayerStatus.Stopped : PlayerStatus.Finished;
             Requeue();
-            if (!interrupt)
-                OnFinished?.Invoke();
+            if (interrupt)
+            {
+                PlayerStatus = PlayerStatus.Stopped;
+                PlayerStopped?.Invoke(this, new EventArgs());
+            }
+            else
+            {
+                PlayerStatus = PlayerStatus.Finished;
+                PlayerFinished?.Invoke(this, new EventArgs());
+            }
         }
-
-        public event Action OnFinished;
 
         private void CancelTask(bool innerCall = false)
         {
@@ -210,6 +228,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             }
 
             InnerStop(innerCall: true, interrupt: false);
+
         }
 
         private void DynamicOffset()

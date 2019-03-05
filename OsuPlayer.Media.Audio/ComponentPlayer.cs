@@ -12,8 +12,18 @@ namespace Milky.OsuPlayer.Media.Audio
 {
     public class ComponentPlayer : IPlayer, IDisposable
     {
-        public OsuFile OsuFile { get; }
         private string _filePath;
+        private int _stopCount;
+
+        public event EventHandler PlayerLoaded;
+        public event EventHandler PlayerStarted;
+        public event EventHandler PlayerStopped;
+        public event EventHandler PlayerPaused;
+        public event EventHandler PlayerFinished;
+        public event EventHandler ProgressChanged;
+        public int ProgressRefreshInterval { get; set; }
+
+        public OsuFile OsuFile { get; }
         internal HitsoundPlayer HitsoundPlayer { get; private set; }
         internal MusicPlayer MusicPlayer { get; private set; }
         public PlayerStatus PlayerStatus => HitsoundPlayer?.PlayerStatus ?? PlayerStatus.Stopped;
@@ -24,6 +34,8 @@ namespace Milky.OsuPlayer.Media.Audio
             get => HitsoundPlayer.SingleOffset;
             set => HitsoundPlayer.SingleOffset = value;
         }
+
+        public static ComponentPlayer Current { get; set; }
 
         public ComponentPlayer(string filePath, OsuFile osuFile)
         {
@@ -39,34 +51,47 @@ namespace Milky.OsuPlayer.Media.Audio
             MusicPlayer = new MusicPlayer(musicInfo.FullName);
 
             HitsoundPlayer.SetDuration(MusicPlayer.Duration);
-            HitsoundPlayer.OnFinished += HitsoundPlayer_OnFinished;
+            HitsoundPlayer.PlayerFinished += Players_OnFinished;
+            MusicPlayer.PlayerFinished += Players_OnFinished;
+
+            PlayerLoaded?.Invoke(this, new EventArgs());
         }
 
-        private void HitsoundPlayer_OnFinished()
+        private void Players_OnFinished(object sender, EventArgs e)
         {
-            MusicPlayer.Stop();
-        }
+            _stopCount++;
+            if (_stopCount < 2) return;
 
-        public static ComponentPlayer Current { get; set; }
+            MusicPlayer.ResetWithoutNotify();
+            PlayerFinished?.Invoke(this, new EventArgs());
+        }
 
         public void Play()
         {
             if (HitsoundPlayer.IsPlaying)
                 return;
+
+            _stopCount = 0;
             MusicPlayer.Play();
             HitsoundPlayer.Play();
+
+            PlayerStarted?.Invoke(this, new EventArgs());
         }
 
         public void Pause()
         {
             MusicPlayer.Pause();
             HitsoundPlayer.Pause();
+
+            PlayerPaused?.Invoke(this, new EventArgs());
         }
 
         public void Stop()
         {
             HitsoundPlayer.Stop();
             MusicPlayer.Stop();
+
+            PlayerStopped?.Invoke(this, new EventArgs());
         }
 
         public void Replay()

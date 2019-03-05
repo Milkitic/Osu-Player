@@ -80,6 +80,36 @@ namespace Milky.OsuPlayer.Windows
                     /* Set new hitsound player*/
                     playerInst.LoadAudioPlayer(path, osuFile); //todo: 700 ms
                     audioPlayer = playerInst.AudioPlayer;
+                    audioPlayer.PlayerLoaded += (sender, e) =>
+                    {
+                        var player = (ComponentPlayer)sender;
+                        Console.WriteLine(player.OsuFile.ToString() + @" PlayerLoaded.");
+                    };
+                    audioPlayer.PlayerFinished += (sender, e) =>
+                    {
+                        var player = (ComponentPlayer)sender;
+                        Console.WriteLine(player.OsuFile.ToString() + @" PlayerFinished.");
+                    };
+                    audioPlayer.PlayerPaused += (sender, e) =>
+                    {
+                        var player = (ComponentPlayer)sender;
+                        Console.WriteLine(player.OsuFile.ToString() + @" PlayerPaused.");
+                    };
+                    audioPlayer.PlayerStarted += (sender, e) =>
+                    {
+                        var player = (ComponentPlayer)sender;
+                        Console.WriteLine(player.OsuFile.ToString() + @" PlayerStarted.");
+                    };
+                    audioPlayer.PlayerStopped += (sender, e) =>
+                    {
+                        var player = (ComponentPlayer)sender;
+                        Console.WriteLine(player.OsuFile.ToString() + @" PlayerStopped.");
+                    };
+                    audioPlayer.ProgressChanged += (sender, e) =>
+                    {
+                        var player = (ComponentPlayer)sender;
+                        Console.WriteLine(player.OsuFile.ToString() + @" ProgressChanged.");
+                    };
                     _cts = new CancellationTokenSource();
 
                     /* Set Meta */
@@ -221,7 +251,7 @@ namespace Milky.OsuPlayer.Windows
                     PlayerConfig.Current.CurrentPath = path;
                     PlayerConfig.SaveCurrent();
 
-                    RunSurfaceUpdate();
+                    //RunSurfaceUpdate();
                     DbOperate.UpdateMap(nowIdentity);
                 }
                 catch (RepeatTimingSectionException ex)
