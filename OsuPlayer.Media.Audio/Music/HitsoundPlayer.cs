@@ -14,34 +14,28 @@ using System.Threading.Tasks;
 
 namespace Milky.OsuPlayer.Media.Audio.Music
 {
-    internal class HitsoundPlayer : IPlayer, IDisposable
+    internal sealed class HitsoundPlayer : Player, IDisposable
     {
-        public event EventHandler PlayerLoaded;
-        public event EventHandler PlayerStarted;
-        public event EventHandler PlayerStopped;
-        public event EventHandler PlayerPaused;
-        public event EventHandler PlayerFinished;
-        public event EventHandler ProgressChanged;
-        public int ProgressRefreshInterval { get; set; }
+        public override int ProgressRefreshInterval { get; set; }
 
         private static bool UseSoundTouch => PlayerConfig.Current.Play.UsePlayerV2;
 
-        public PlayerStatus PlayerStatus
+        public override PlayerStatus PlayerStatus
         {
             get => _playerStatus;
-            private set
+            protected set
             {
                 Console.WriteLine(@"Hitsound: " + value);
                 _playerStatus = value;
             }
         }
 
-        public int Duration { get; private set; }
+        public override int Duration { get; protected set; }
 
-        public int PlayTime
+        public override int PlayTime
         {
             get => (int)(_sw.ElapsedMilliseconds * _multiplier + _controlOffset);
-            private set
+            protected set
             {
                 _controlOffset = value;
                 _sw.Reset();
@@ -49,11 +43,16 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         }
 
         public int SingleOffset { get; set; }
-        public bool IsPlaying => _playingTask != null && !_playingTask.IsCanceled && !_playingTask.IsCompleted &&
+
+        public bool IsPlaying => _playingTask != null &&
+                                 !_playingTask.IsCanceled &&
+                                 !_playingTask.IsCompleted &&
                                  !_playingTask.IsFaulted;
 
-        public bool IsRunningDynamicOffset => _offsetTask != null && !_offsetTask.IsCanceled &&
-                                              !_offsetTask.IsCompleted && !_offsetTask.IsFaulted;
+        public bool IsRunningDynamicOffset => _offsetTask != null &&
+                                              !_offsetTask.IsCanceled &&
+                                              !_offsetTask.IsCompleted &&
+                                              !_offsetTask.IsFaulted;
 
         private readonly string _defaultDir = Domain.DefaultPath;
         private ConcurrentQueue<HitsoundElement> _hsQueue;
@@ -91,7 +90,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             PlayerStatus = PlayerStatus.Ready;
             SetPlayMod(PlayerConfig.Current.Play.PlayMod, false);
 
-            PlayerLoaded?.Invoke(this, new EventArgs());
+            RaisePlayerLoadedEvent(this, new EventArgs());
         }
 
         public void SetPlayMod(PlayMod mod, bool play)
@@ -116,7 +115,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             }
         }
 
-        public void Play()
+        public override void Play()
         {
             //if (IsPlaying)
             //    return;
@@ -130,30 +129,30 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             _playingTask.Start();
 
             PlayerStatus = PlayerStatus.Playing;
-            PlayerStarted?.Invoke(this, new EventArgs());
+            RaisePlayerStartedEvent(this, new ProgressEventArgs(PlayTime, Duration));
         }
 
-        public void Pause()
+        public override void Pause()
         {
             CancelTask();
             PlayTime = PlayTime;
 
             PlayerStatus = PlayerStatus.Paused;
-            PlayerPaused?.Invoke(this, new EventArgs());
+            RaisePlayerPausedEvent(this, new ProgressEventArgs(PlayTime, Duration));
         }
 
-        public void Stop()
+        public override void Stop()
         {
             InnerStop(interrupt: true);
         }
 
-        public void Replay()
+        public override void Replay()
         {
             Stop();
             Play();
         }
 
-        public void SetTime(int ms, bool play = true)
+        public override void SetTime(int ms, bool play = true)
         {
             Pause();
             int offsetMs = ms;
@@ -184,12 +183,12 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             if (interrupt)
             {
                 PlayerStatus = PlayerStatus.Stopped;
-                PlayerStopped?.Invoke(this, new EventArgs());
+                RaisePlayerStoppedEvent(this, new EventArgs());
             }
             else
             {
                 PlayerStatus = PlayerStatus.Finished;
-                PlayerFinished?.Invoke(this, new EventArgs());
+                RaisePlayerFinishedEvent(this, new EventArgs());
             }
         }
 

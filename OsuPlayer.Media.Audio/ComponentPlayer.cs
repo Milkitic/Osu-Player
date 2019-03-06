@@ -6,29 +6,42 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
-    public class ComponentPlayer : IPlayer, IDisposable
+    public sealed class ComponentPlayer : Player, IDisposable
     {
         private string _filePath;
         private int _stopCount;
 
-        public event EventHandler PlayerLoaded;
-        public event EventHandler PlayerStarted;
-        public event EventHandler PlayerStopped;
-        public event EventHandler PlayerPaused;
-        public event EventHandler PlayerFinished;
-        public event EventHandler ProgressChanged;
-        public int ProgressRefreshInterval { get; set; }
+        public override int ProgressRefreshInterval { get; set; }
 
         public OsuFile OsuFile { get; }
         internal HitsoundPlayer HitsoundPlayer { get; private set; }
         internal MusicPlayer MusicPlayer { get; private set; }
-        public PlayerStatus PlayerStatus => HitsoundPlayer?.PlayerStatus ?? PlayerStatus.Stopped;
-        public int Duration => HitsoundPlayer?.Duration ?? 0;
-        public int PlayTime => HitsoundPlayer?.PlayTime ?? 0;
+
+        private CancellationTokenSource _cts = new CancellationTokenSource();
+
+        public override PlayerStatus PlayerStatus
+        {
+            get => HitsoundPlayer?.PlayerStatus ?? PlayerStatus.Stopped;
+            protected set => throw new InvalidOperationException();
+        }
+
+        public override int Duration
+        {
+            get => HitsoundPlayer?.Duration ?? 0;
+            protected set => throw new InvalidOperationException();
+        }
+
+        public override int PlayTime
+        {
+            get => HitsoundPlayer?.PlayTime ?? 0;
+            protected set => throw new InvalidOperationException();
+        }
+
         public int HitsoundOffset
         {
             get => HitsoundPlayer.SingleOffset;
@@ -54,7 +67,9 @@ namespace Milky.OsuPlayer.Media.Audio
             HitsoundPlayer.PlayerFinished += Players_OnFinished;
             MusicPlayer.PlayerFinished += Players_OnFinished;
 
-            PlayerLoaded?.Invoke(this, new EventArgs());
+            NotifyProgress(_cts.Token);
+
+            RaisePlayerLoadedEvent(this, new EventArgs());
         }
 
         private void Players_OnFinished(object sender, EventArgs e)
@@ -63,10 +78,10 @@ namespace Milky.OsuPlayer.Media.Audio
             if (_stopCount < 2) return;
 
             MusicPlayer.ResetWithoutNotify();
-            PlayerFinished?.Invoke(this, new EventArgs());
+            RaisePlayerFinishedEvent(this, new EventArgs());
         }
 
-        public void Play()
+        public override void Play()
         {
             if (HitsoundPlayer.IsPlaying)
                 return;
@@ -75,32 +90,32 @@ namespace Milky.OsuPlayer.Media.Audio
             MusicPlayer.Play();
             HitsoundPlayer.Play();
 
-            PlayerStarted?.Invoke(this, new EventArgs());
+            RaisePlayerStartedEvent(this, new ProgressEventArgs(PlayTime, Duration));
         }
 
-        public void Pause()
+        public override void Pause()
         {
             MusicPlayer.Pause();
             HitsoundPlayer.Pause();
 
-            PlayerPaused?.Invoke(this, new EventArgs());
+            RaisePlayerPausedEvent(this, new ProgressEventArgs(PlayTime, Duration));
         }
 
-        public void Stop()
+        public override void Stop()
         {
             HitsoundPlayer.Stop();
             MusicPlayer.Stop();
 
-            PlayerStopped?.Invoke(this, new EventArgs());
+            RaisePlayerStoppedEvent(this, new EventArgs());
         }
 
-        public void Replay()
+        public override void Replay()
         {
             Stop();
             Play();
         }
 
-        public void SetTime(int ms, bool play = true)
+        public override void SetTime(int ms, bool play = true)
         {
             HitsoundPlayer.SetTime(ms, play);
             if (play)
@@ -120,6 +135,8 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public void Dispose()
         {
+            _cts?.Cancel();
+            _cts?.Dispose();
             HitsoundPlayer?.Dispose();
             MusicPlayer?.Dispose();
             Current = null;

@@ -61,11 +61,13 @@
     <Compile Include="IPlayer.cs" />
     <Compile Include="Music\HitsoundPlayer.cs" />
     <Compile Include="Music\MusicPlayer.cs" />
+    <Compile Include="Music\ProgressEventArgs.cs" />
     <Compile Include="Music\SampleProviders\MyAudioFileReader.cs" />
     <Compile Include="Music\SoundTouch\SoundTouchApi.cs" />
     <Compile Include="Music\TimeStretchProfile.cs" />
     <Compile Include="Music\WavePlayer.cs" />
     <Compile Include="Music\WaveProviders\CusBufferedWaveProvider.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

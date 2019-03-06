@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Windows.Input;
-using Milky.OsuPlayer.Common.Data.EF.Model;
+﻿using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Player;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
+using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -18,6 +18,10 @@ namespace Milky.OsuPlayer.ViewModels
         private bool _isPlaying;
         private bool _enableVideo;
         private bool _isSyncing;
+
+        private long _position;
+        private long _duration;
+        private long _scrollPosition;
 
         public bool IsNavigationCollapsed
         {
@@ -120,6 +124,35 @@ namespace Milky.OsuPlayer.ViewModels
                         IsNavigationCollapsed = !IsNavigationCollapsed;
                     });
                 });
+            }
+        }
+
+        public long Position
+        {
+            get => _position;
+            set
+            {
+                _position = value;
+                OnPropertyChanged();
+            }
+        }
+        public long ScrollPosition
+        {
+            get => _position;
+            set
+            {
+                _scrollPosition = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public long Duration
+        {
+            get => _duration;
+            set
+            {
+                _duration = value;
+                OnPropertyChanged();
             }
         }
     }

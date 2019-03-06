@@ -11,6 +11,7 @@ using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.Pages;
+using Milky.WpfApi;
 using OSharp.Beatmap;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
@@ -80,6 +81,7 @@ namespace Milky.OsuPlayer.Windows
                     /* Set new hitsound player*/
                     playerInst.LoadAudioPlayer(path, osuFile); //todo: 700 ms
                     audioPlayer = playerInst.AudioPlayer;
+                    audioPlayer.ProgressRefreshInterval = 500;
                     audioPlayer.PlayerLoaded += (sender, e) =>
                     {
                         var player = (ComponentPlayer)sender;
@@ -87,28 +89,46 @@ namespace Milky.OsuPlayer.Windows
                     };
                     audioPlayer.PlayerFinished += (sender, e) =>
                     {
-                        var player = (ComponentPlayer)sender;
-                        Console.WriteLine(player.OsuFile.ToString() + @" PlayerFinished.");
+                        PlayNext(false, true);
                     };
                     audioPlayer.PlayerPaused += (sender, e) =>
                     {
-                        var player = (ComponentPlayer)sender;
-                        Console.WriteLine(player.OsuFile.ToString() + @" PlayerPaused.");
+                        ViewModel.IsPlaying = false;
+                        ((ContentPresenter)LyricWindow.BtnPlay.Content).Content = LyricWindow.MainGrid.FindResource("PlayButton");
+                        BtnPlay.Style = (Style)FindResource("PlayButtonStyle");
+                        ViewModel.Position = e.Position;
+                        ViewModel.ScrollPosition = e.Position;
+                    };
+                    audioPlayer.PositionSet += (sender, e) =>
+                    {
+
                     };
                     audioPlayer.PlayerStarted += (sender, e) =>
                     {
-                        var player = (ComponentPlayer)sender;
-                        Console.WriteLine(player.OsuFile.ToString() + @" PlayerStarted.");
+                        ViewModel.IsPlaying = true;
+                        ViewModel.Position = e.Position;
+                        ViewModel.ScrollPosition = e.Position;
+                        ((ContentPresenter)LyricWindow.BtnPlay.Content).Content =
+                            LyricWindow.MainGrid.FindResource("PauseButton");
+                        BtnPlay.Style = (Style)FindResource("PauseButtonStyle");
                     };
                     audioPlayer.PlayerStopped += (sender, e) =>
                     {
-                        var player = (ComponentPlayer)sender;
-                        Console.WriteLine(player.OsuFile.ToString() + @" PlayerStopped.");
+
                     };
-                    audioPlayer.ProgressChanged += (sender, e) =>
+                    audioPlayer.PositionChanged += (sender, e) =>
                     {
-                        var player = (ComponentPlayer)sender;
-                        Console.WriteLine(player.OsuFile.ToString() + @" ProgressChanged.");
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            if (!_scrollLock)
+                            {
+                                ViewModel.ScrollPosition = e.Position;
+                                //PlayProgress.Value = e.Position;
+                            }
+
+                            ViewModel.Position = e.Position;
+                        }));
+
                     };
                     _cts = new CancellationTokenSource();
 
@@ -159,8 +179,10 @@ namespace Milky.OsuPlayer.Windows
                     //PlayProgress.Value = App.HitsoundPlayer.SingleOffset;
                     PlayProgress.Maximum = audioPlayer.Duration;
                     PlayProgress.Value = 0;
-                    LblTotal.Content = new TimeSpan(0, 0, 0, 0, audioPlayer.Duration).ToString(@"mm\:ss");
-                    LblNow.Content = new TimeSpan(0, 0, 0, 0, audioPlayer.PlayTime).ToString(@"mm\:ss");
+
+                    ViewModel.Duration = InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Duration;
+                    //LblTotal.Content = new TimeSpan(0, 0, 0, 0, audioPlayer.Duration).ToString(@"mm\:ss");
+                    //LblNow.Content = new TimeSpan(0, 0, 0, 0, audioPlayer.PlayTime).ToString(@"mm\:ss");
 
                     /* Set Storyboard */
                     if (true)

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Milky.OsuPlayer.Media.Audio.Music
 {
-    internal class MusicPlayer : IPlayer, IDisposable
+    internal sealed class MusicPlayer : Player, IDisposable
     {
         private const int Latency = 5;
         private static bool UseSoundTouch => PlayerConfig.Current.Play.UsePlayerV2;
@@ -81,7 +81,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             _device.PlaybackStopped += (sender, args) =>
             {
                 PlayerStatus = PlayerStatus.Finished;
-                PlayerFinished?.Invoke(this, new EventArgs());
+                RaisePlayerFinishedEvent(this, new EventArgs());
             };
 
             if (UseSoundTouch)
@@ -104,27 +104,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
             PlayerConfig.Current.Volume.PropertyChanged += Volume_PropertyChanged;
             Task.Factory.StartNew(UpdateProgress, TaskCreationOptions.LongRunning);
-            Task.Factory.StartNew(NotifyProgress, TaskCreationOptions.LongRunning);
 
             PlayerStatus = PlayerStatus.Ready;
-            PlayerLoaded?.Invoke(this, new EventArgs());
-        }
-
-        private void NotifyProgress()
-        {
-            var oldT = PlayTime;
-            var sw = Stopwatch.StartNew();
-            while (!_cts.IsCancellationRequested)
-            {
-                Thread.Sleep(10);
-                var newT = PlayTime;
-                if (newT != oldT && sw.ElapsedMilliseconds > ProgressRefreshInterval - 10)
-                {
-                    oldT = newT;
-                    ProgressChanged?.Invoke(this, new EventArgs());
-                    sw.Restart();
-                }
-            }
+            RaisePlayerLoadedEvent(this, new EventArgs());
         }
 
         private void UpdateProgress()
@@ -185,12 +167,12 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             PitchValue = 0;
         }
 
-        public void Play()
+        public override void Play()
         {
             PlayWithoutNotify();
 
             PlayerStatus = PlayerStatus.Playing;
-            PlayerStarted?.Invoke(this, new EventArgs());
+            RaisePlayerStartedEvent(this, new ProgressEventArgs(PlayTime, Duration));
         }
 
         private void PlayWithoutNotify()
@@ -198,12 +180,12 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             _device.Play();
         }
 
-        public void Pause()
+        public override void Pause()
         {
             PauseWithoutNotify();
 
             PlayerStatus = PlayerStatus.Paused;
-            PlayerPaused?.Invoke(this, new EventArgs());
+            RaisePlayerPausedEvent(this, new ProgressEventArgs(PlayTime, Duration));
         }
 
         private void PauseWithoutNotify()
@@ -211,13 +193,13 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             _device.Pause();
         }
 
-        public void Replay()
+        public override void Replay()
         {
             SetTime(0);
             Play();
         }
 
-        public void SetTime(int ms, bool play = true)
+        public override void SetTime(int ms, bool play = true)
         {
             if (ms < 0) ms = 0;
             var span = new TimeSpan(0, 0, 0, 0, ms);
@@ -226,12 +208,12 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             if (!play) PauseWithoutNotify();
         }
 
-        public void Stop()
+        public override void Stop()
         {
             SetTime(0, false);
 
             PlayerStatus = PlayerStatus.Stopped;
-            PlayerStopped?.Invoke(this, new EventArgs());
+            RaisePlayerStoppedEvent(this, new EventArgs());
         }
 
         internal void ResetWithoutNotify()
@@ -385,14 +367,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         #region Properties
 
-        public event EventHandler PlayerLoaded;
-        public event EventHandler PlayerStarted;
-        public event EventHandler PlayerStopped;
-        public event EventHandler PlayerPaused;
-        public event EventHandler PlayerFinished;
-        public event EventHandler ProgressChanged;
-
-        public int ProgressRefreshInterval
+        public override int ProgressRefreshInterval
         {
             get => _progressRefreshInterval;
             set
@@ -403,18 +378,23 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             }
         }
 
-        public PlayerStatus PlayerStatus
+        public override PlayerStatus PlayerStatus
         {
             get => _playerStatus;
-            private set
+            protected set
             {
                 Console.WriteLine(@"Music: " + value);
                 _playerStatus = value;
             }
         }
 
-        public int Duration => (int)_reader.TotalTime.TotalMilliseconds;
-        public int PlayTime { get; private set; }
+        public override int Duration
+        {
+            get => (int)_reader.TotalTime.TotalMilliseconds;
+            protected set => throw new InvalidOperationException();
+        }
+
+        public override int PlayTime { get; protected set; }
 
         public float TempoValue
         {

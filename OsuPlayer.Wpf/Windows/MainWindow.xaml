@@ -31,6 +31,7 @@
         <converter:LyricWindowShownConverter x:Key="CvtLyricWindowShown" />
         <converter:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
         <converter:VideoShowConverter x:Key="CvtVideoShow" />
+        <converter:MsToStringConverter x:Key="MsToStringConverter" />
     </windows:EffectWindowBase.Resources>
     <Grid>
         <Grid.Background>
@@ -470,11 +471,14 @@
                     </StackPanel>
                     <StackPanel x:Name="LblProgress" Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3"
                                 HorizontalAlignment="Right">
-                        <Label x:Name="LblNow" Content="00:00" Foreground="#777" />
+                        <Label x:Name="LblNow" Content="{Binding Position, Mode=OneWay, Converter={StaticResource MsToStringConverter}}" Foreground="#777" />
                         <Label Content="/" Foreground="#858585" Margin="-5,0,-5,0" />
-                        <Label x:Name="LblTotal" Content="00:00" Foreground="#AAA" />
+                        <Label x:Name="LblTotal" Content="{Binding Duration, Mode=OneWay, Converter={StaticResource MsToStringConverter}}" Foreground="#AAA" />
                     </StackPanel>
                     <Slider x:Name="PlayProgress" Grid.Row="1" Margin="3"
+                            Minimum="0"
+                            Maximum="{Binding Duration, Mode=OneWay}"
+                            Value="{Binding ScrollPosition, Mode=OneWay}"
                             Style="{StaticResource HorizontalSliderPinkStyle}"
                             Thumb.DragStarted="PlayProgress_DragStarted"
                             Thumb.DragCompleted="PlayProgress_DragCompleted" />
@@ -665,7 +669,7 @@
                 IsIndeterminate="{Binding IsSyncing}"
                 Width="40" Height="40" />
         </Border>-->
-       
+
         <Border Grid.Row="1"
                 Background="{StaticResource WhiteBrush80}"
                 Visibility="{Binding IsSyncing,Converter={StaticResource TrueToVisibleConverter}}">

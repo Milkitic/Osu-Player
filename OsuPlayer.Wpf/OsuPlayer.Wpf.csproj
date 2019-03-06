@@ -145,6 +145,7 @@
     <Compile Include="Converter\ButtonColorConverter.cs" />
     <Compile Include="Converter\IndexToStringConverter.cs" />
     <Compile Include="Converter\MarkdownConverter.cs" />
+    <Compile Include="Converter\MsToStringConverter.cs" />
     <Compile Include="Converter\PlayingConverter.cs" />
     <Compile Include="Converter\SingleParameterConverter.cs" />
     <Compile Include="Converter\TabConverter.cs" />

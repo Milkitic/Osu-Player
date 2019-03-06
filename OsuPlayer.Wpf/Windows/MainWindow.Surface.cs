@@ -80,6 +80,7 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void UpdateSurface()
         {
+            return;
             const int interval = 500;
             while (!_cts.IsCancellationRequested)
             {
