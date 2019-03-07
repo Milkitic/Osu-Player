@@ -89,15 +89,17 @@ namespace Milky.OsuPlayer.Windows
                     };
                     audioPlayer.PlayerFinished += (sender, e) =>
                     {
-                        PlayNext(false, true);
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            PlayNext(false, true);
+                        }));
                     };
                     audioPlayer.PlayerPaused += (sender, e) =>
                     {
                         ViewModel.IsPlaying = false;
                         ((ContentPresenter)LyricWindow.BtnPlay.Content).Content = LyricWindow.MainGrid.FindResource("PlayButton");
-                        BtnPlay.Style = (Style)FindResource("PlayButtonStyle");
+                        //BtnPlay.Style = (Style)FindResource("PlayButtonStyle");
                         ViewModel.Position = e.Position;
-                        ViewModel.ScrollPosition = e.Position;
                     };
                     audioPlayer.PositionSet += (sender, e) =>
                     {
@@ -105,12 +107,14 @@ namespace Milky.OsuPlayer.Windows
                     };
                     audioPlayer.PlayerStarted += (sender, e) =>
                     {
-                        ViewModel.IsPlaying = true;
-                        ViewModel.Position = e.Position;
-                        ViewModel.ScrollPosition = e.Position;
-                        ((ContentPresenter)LyricWindow.BtnPlay.Content).Content =
-                            LyricWindow.MainGrid.FindResource("PauseButton");
-                        BtnPlay.Style = (Style)FindResource("PauseButtonStyle");
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            ViewModel.IsPlaying = true;
+                            ViewModel.Position = e.Position;
+                            ((ContentPresenter) LyricWindow.BtnPlay.Content).Content =
+                                LyricWindow.MainGrid.FindResource("PauseButton");
+                            //BtnPlay.Style = (Style)FindResource("PauseButtonStyle");
+                        }));
                     };
                     audioPlayer.PlayerStopped += (sender, e) =>
                     {
@@ -122,11 +126,9 @@ namespace Milky.OsuPlayer.Windows
                         {
                             if (!_scrollLock)
                             {
-                                ViewModel.ScrollPosition = e.Position;
-                                //PlayProgress.Value = e.Position;
+                                ViewModel.Position = e.Position;
+                                PlayProgress.Value = e.Position;
                             }
-
-                            ViewModel.Position = e.Position;
                         }));
 
                     };
@@ -438,12 +440,11 @@ namespace Milky.OsuPlayer.Windows
                 //    break;
 
                 case PlayerList.ChangeType.Stop:
-                    //var path2 = Path.Combine(new FileInfo(Config.Current.General.DbPath).Directory.FullName, "Songs",
-                    //    entry.FolderName, entry.BeatmapFileName);
-                    //PlayNewFile(path2, false);
+                    ViewModel.IsPlaying = false;
+                    ViewModel.Position = 0;
                     _videoPlay = false;
                     _forcePaused = true;
-                    InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Stop();
+                    //InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Stop();
                     break;
                 case PlayerList.ChangeType.Change:
                 default:

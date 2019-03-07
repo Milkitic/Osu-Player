@@ -77,7 +77,8 @@ namespace Milky.OsuPlayer.Media.Audio
             _stopCount++;
             if (_stopCount < 2) return;
 
-            MusicPlayer.ResetWithoutNotify();
+            ResetWithoutNotify();
+
             RaisePlayerFinishedEvent(this, new EventArgs());
         }
 
@@ -103,10 +104,14 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public override void Stop()
         {
-            HitsoundPlayer.Stop();
-            MusicPlayer.Stop();
-
+            ResetWithoutNotify();
             RaisePlayerStoppedEvent(this, new EventArgs());
+        }
+
+        private void ResetWithoutNotify()
+        {
+            HitsoundPlayer.ResetWithoutNotify();
+            MusicPlayer.ResetWithoutNotify();
         }
 
         public override void Replay()

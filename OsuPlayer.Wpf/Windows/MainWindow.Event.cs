@@ -30,7 +30,6 @@ namespace Milky.OsuPlayer.Windows
             //BtnRecent_Click(sender, e);
             UpdateCollections();
             LoadSurfaceSettings();
-            RunSurfaceUpdate();
             await LoadDb();
 
             if (PlayerConfig.Current.CurrentPath != null && PlayerConfig.Current.Play.Memory)

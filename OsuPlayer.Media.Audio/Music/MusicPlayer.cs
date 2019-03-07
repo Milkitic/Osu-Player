@@ -210,15 +210,14 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         public override void Stop()
         {
-            SetTime(0, false);
-
-            PlayerStatus = PlayerStatus.Stopped;
+            ResetWithoutNotify();
             RaisePlayerStoppedEvent(this, new EventArgs());
         }
 
         internal void ResetWithoutNotify()
         {
             SetTime(0, false);
+            PlayerStatus = PlayerStatus.Stopped;
         }
 
         public void Dispose()

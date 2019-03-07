@@ -82,7 +82,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
             List<HitsoundElement> hitsoundList = FillHitsoundList(osuFile, dirInfo);
             _hitsoundList = hitsoundList.OrderBy(t => t.Offset).ToList(); // Sorted before enqueue.
-            Requeue();
+            Requeue(0);
             List<string> allPaths = hitsoundList.Select(t => t.FilePaths).SelectMany(sbx2 => sbx2).Distinct().ToList();
             foreach (var path in allPaths)
                 WavePlayer.SaveToCache(path); // Cache each file once before play.
@@ -134,7 +134,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         public override void Pause()
         {
-            CancelTask();
+            CancelTask(true);
             PlayTime = PlayTime;
 
             PlayerStatus = PlayerStatus.Paused;
@@ -143,7 +143,15 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         public override void Stop()
         {
-            InnerStop(interrupt: true);
+            ResetWithoutNotify();
+            RaisePlayerStoppedEvent(this, new EventArgs());
+        }
+
+        internal void ResetWithoutNotify(bool finished = false)
+        {
+            CancelTask(true);
+            SetTimePurely(0);
+            PlayerStatus = finished ? PlayerStatus.Finished : PlayerStatus.Stopped;
         }
 
         public override void Replay()
@@ -155,9 +163,13 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         public override void SetTime(int ms, bool play = true)
         {
             Pause();
-            int offsetMs = ms;
-            PlayTime = offsetMs;
-            Requeue(offsetMs);
+            SetTimePurely(ms);
+        }
+
+        private void SetTimePurely(int ms)
+        {
+            PlayTime = ms;
+            Requeue(ms);
         }
 
         public void Dispose()
@@ -173,31 +185,6 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         internal void SetDuration(int musicPlayerDuration)
         {
             Duration = (int)Math.Ceiling(Math.Max(_hitsoundList.Max(k => k.Offset), musicPlayerDuration));
-        }
-
-        private void InnerStop(bool innerCall = false, bool interrupt = false)
-        {
-            CancelTask(innerCall);
-            PlayTime = 0;
-            Requeue();
-            if (interrupt)
-            {
-                PlayerStatus = PlayerStatus.Stopped;
-                RaisePlayerStoppedEvent(this, new EventArgs());
-            }
-            else
-            {
-                PlayerStatus = PlayerStatus.Finished;
-                RaisePlayerFinishedEvent(this, new EventArgs());
-            }
-        }
-
-        private void CancelTask(bool innerCall = false)
-        {
-            _cts.Cancel();
-            if (!innerCall && _playingTask != null) Task.WaitAll(_playingTask);
-            if (_offsetTask != null) Task.WaitAll(_offsetTask);
-            Console.WriteLine(@"Task canceled.");
         }
 
         private void PlayHitsound()
@@ -226,8 +213,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 Thread.Sleep(1);
             }
 
-            InnerStop(innerCall: true, interrupt: false);
+            SetTimePurely(0);
+            CancelTask(false);
 
+            PlayerStatus = PlayerStatus.Finished;
+            Task.Run(() => { RaisePlayerFinishedEvent(this, new EventArgs()); });
         }
 
         private void DynamicOffset()
@@ -259,12 +249,12 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             }
         }
 
-        private void Requeue(long skippedMs = 0)
+        private void Requeue(long startTime)
         {
             _hsQueue = new ConcurrentQueue<HitsoundElement>();
             foreach (var i in _hitsoundList)
             {
-                if (i.Offset < skippedMs)
+                if (i.Offset < startTime)
                     continue;
                 _hsQueue.Enqueue(i);
             }
@@ -273,6 +263,14 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         private void StartTask()
         {
             _cts = new CancellationTokenSource();
+        }
+
+        private void CancelTask(bool waitPlayTask)
+        {
+            _cts.Cancel();
+            if (waitPlayTask && _playingTask != null) Task.WaitAll(_playingTask);
+            if (_offsetTask != null) Task.WaitAll(_offsetTask);
+            Console.WriteLine(@"Task canceled.");
         }
 
         #region Load

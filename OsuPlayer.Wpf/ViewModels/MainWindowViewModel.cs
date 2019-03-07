@@ -21,7 +21,6 @@ namespace Milky.OsuPlayer.ViewModels
 
         private long _position;
         private long _duration;
-        private long _scrollPosition;
 
         public bool IsNavigationCollapsed
         {
@@ -133,15 +132,6 @@ namespace Milky.OsuPlayer.ViewModels
             set
             {
                 _position = value;
-                OnPropertyChanged();
-            }
-        }
-        public long ScrollPosition
-        {
-            get => _position;
-            set
-            {
-                _scrollPosition = value;
                 OnPropertyChanged();
             }
         }
