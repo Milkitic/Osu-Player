@@ -1,16 +1,16 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using Milky.OsuPlayer.Common;
+﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -27,7 +27,7 @@ namespace Milky.OsuPlayer.Windows
             StoryboardPage = new StoryboardPage(this),
             ExportPage = new ExportPage(this),
         };
-        public MainWindowViewModel ViewModel { get; }
+        internal MainWindowViewModel ViewModel { get; }
 
         public readonly LyricWindow LyricWindow;
         public ConfigWindow ConfigWindow;
@@ -37,7 +37,7 @@ namespace Milky.OsuPlayer.Windows
         private WindowState _lastState;
         private readonly OptionContainer _optionContainer = new OptionContainer();
         private readonly OptionContainer _modeOptionContainer = new OptionContainer();
-        
+
         //local player control
         private bool _scrollLock;
         private PlayerStatus _tmpStatus = PlayerStatus.Stopped;
@@ -47,7 +47,10 @@ namespace Milky.OsuPlayer.Windows
         {
             InitializeComponent();
             ViewModel = (MainWindowViewModel)DataContext;
+            PlayerViewModel.InitViewModel();
+            ViewModel.Player = PlayerViewModel.Current;
             LyricWindow = new LyricWindow(this);
+
             LyricWindow.Show();
             OverallKeyHook = new OverallKeyHook(this);
             TryBindHotkeys();

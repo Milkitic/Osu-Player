@@ -335,7 +335,7 @@
                 </Grid>
             </DockPanel>
             <Grid x:Name="FullModeArea" Grid.Row="0" Margin="1,0,1,0"
-                  Visibility="{Binding EnableVideo,Converter={StaticResource CvtVideoShow}}">
+                  Visibility="{Binding Player.EnableVideo,Converter={StaticResource CvtVideoShow}}">
                 <Border x:Name="ResizableArea">
                     <Grid>
                         <Image Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center"
@@ -456,26 +456,13 @@
                 </Grid>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
                     <Button x:Name="BtnPrev" Style="{StaticResource PrevButtonStyle}" Click="BtnPrev_Click" />
-                    <Button x:Name="BtnPlay" Style="{StaticResource PlayButtonStyle}" Click="BtnPlay_Click">
-                        <!--<Style TargetType="Button">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=IsPlaying}" Value="True"
-                                             wpfApi:TriggerTracing.TriggerName="PlayTriggered"
-                                             wpfApi:TriggerTracing.TraceEnabled="True">
-                                    <Setter Property="Style" Value="{StaticResource PauseButtonStyle}" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Path=IsPlaying}" Value="False"
-                                             wpfApi:TriggerTracing.TriggerName="PauseTriggered"
-                                             wpfApi:TriggerTracing.TraceEnabled="True">
-                                    <Setter Property="Style" Value="{StaticResource PlayButtonStyle}" />
-                                </DataTrigger>
-                                <Trigger Property="IsMouseOver" Value="True"
-                                             wpfApi:TriggerTracing.TriggerName="IsMouseOver"
-                                             wpfApi:TriggerTracing.TraceEnabled="True">
-                                    <Setter Property="Style" Value="{StaticResource PauseButtonStyle}" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>-->
+                    <Button x:Name="BtnPlay" Click="BtnPlay_Click">
+                        <Button.Style>
+                            <MultiBinding Converter="{StaticResource PlayingConverter}">
+                                <Binding Path="Player.IsPlaying" />
+                                <Binding RelativeSource="{RelativeSource AncestorType=Window}" />
+                            </MultiBinding>
+                        </Button.Style>
                     </Button>
                     <Button x:Name="BtnNext" Style="{StaticResource NextButtonStyle}" Click="BtnNext_Click" />
                     <Button x:Name="BtnOpen" Style="{StaticResource OpenButtonStyle}" Click="BtnOpen_Click" />
@@ -492,14 +479,14 @@
                     </StackPanel>
                     <StackPanel x:Name="LblProgress" Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3"
                                 HorizontalAlignment="Right">
-                        <Label x:Name="LblNow" Content="{Binding Position, Mode=OneWay, Converter={StaticResource MsToStringConverter}}" Foreground="#777" />
+                        <Label x:Name="LblNow" Content="{Binding Player.Position, Mode=OneWay, Converter={StaticResource MsToStringConverter}}" Foreground="#777" />
                         <Label Content="/" Foreground="#858585" Margin="-5,0,-5,0" />
-                        <Label x:Name="LblTotal" Content="{Binding Duration, Mode=OneWay, Converter={StaticResource MsToStringConverter}}" Foreground="#AAA" />
+                        <Label x:Name="LblTotal" Content="{Binding Player.Duration, Mode=OneWay, Converter={StaticResource MsToStringConverter}}" Foreground="#AAA" />
                     </StackPanel>
                     <Slider x:Name="PlayProgress" Grid.Row="1" Margin="3"
                             Minimum="0"
-                            Maximum="{Binding Duration, Mode=OneWay}"
-                            Value="{Binding Position, Mode=OneWay}"
+                            Maximum="{Binding Player.Duration, Mode=OneWay}"
+                            Value="{Binding Player.Position, Mode=OneWay}"
                             Style="{StaticResource HorizontalSliderPinkStyle}"
                             Thumb.DragStarted="PlayProgress_DragStarted"
                             Thumb.DragCompleted="PlayProgress_DragCompleted" />

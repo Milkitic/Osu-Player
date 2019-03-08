@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 
 namespace Milky.WpfApi
@@ -24,5 +25,15 @@ namespace Milky.WpfApi
         public bool IsClosed { get; set; }
         public Guid Guid { get; } = Guid.NewGuid();
         public static IReadOnlyList<Window> CurrentWindows => Current;
+
+        public static Window GetCurrentOnly<T>() where T : WindowBase
+        {
+            return CurrentWindows.Single(k => k.GetType() == typeof(T));
+        }
+
+        public static Window GetCurrentFirst<T>() where T : WindowBase
+        {
+            return CurrentWindows.FirstOrDefault(k => k.GetType() == typeof(T));
+        }
     }
 }

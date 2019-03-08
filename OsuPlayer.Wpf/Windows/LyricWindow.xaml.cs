@@ -1,4 +1,7 @@
-﻿using Milky.OsuPlayer.ViewModels;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Lyric.Models;
+using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
 using OSharp.Beatmap;
 using System;
@@ -17,9 +20,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Lyric.Models;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
@@ -37,7 +37,7 @@ namespace Milky.OsuPlayer.Windows
         private readonly MainWindow _mainWindow;
 
         public bool IsHide { get; set; }
-        public MainWindowViewModel ViewModel { get; set; }
+        internal LyricWindowViewModel ViewModel { get; set; }
 
         private List<Sentence> _lyricList;
         private CancellationTokenSource _cts;
@@ -51,9 +51,10 @@ namespace Milky.OsuPlayer.Windows
         public LyricWindow(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
-            DataContext = _mainWindow.ViewModel;
-            ViewModel = _mainWindow.ViewModel;
             InitializeComponent();
+
+            ViewModel = (LyricWindowViewModel)DataContext;
+            ViewModel.Player = PlayerViewModel.Current;
 
             FileInfo fi = new FileInfo(Path.Combine(Domain.ExternalPath, "font", "default.ttc"));
             if (!fi.Exists) _fontFamily = new FontFamily("等线");

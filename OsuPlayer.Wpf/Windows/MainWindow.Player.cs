@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Milky.OsuPlayer.ViewModels;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -76,53 +77,13 @@ namespace Milky.OsuPlayer.Windows
                     var dir = fi.Directory.FullName;
 
                     /* Clear */
-                    ClearHitsoundPlayer(); //todo: 500 ms
+                    ClearHitsoundPlayer();
 
                     /* Set new hitsound player*/
                     playerInst.LoadAudioPlayer(path, osuFile); //todo: 700 ms
                     audioPlayer = playerInst.AudioPlayer;
                     audioPlayer.ProgressRefreshInterval = 500;
-                    audioPlayer.PlayerLoaded += (sender, e) =>
-                    {
-                        var player = (ComponentPlayer)sender;
-                        Console.WriteLine(player.OsuFile.ToString() + @" PlayerLoaded.");
-                    };
-                    audioPlayer.PlayerFinished += (sender, e) =>
-                    {
-                        PlayNext(false, true);
-                    };
-                    audioPlayer.PlayerPaused += (sender, e) =>
-                    {
-                        ViewModel.IsPlaying = false;
-                        ((ContentPresenter)LyricWindow.BtnPlay.Content).Content = LyricWindow.MainGrid.FindResource("PlayButton");
-                        //BtnPlay.Style = (Style)FindResource("PlayButtonStyle");
-                        ViewModel.Position = e.Position;
-                    };
-                    audioPlayer.PositionSet += (sender, e) =>
-                    {
-
-                    };
-                    audioPlayer.PlayerStarted += (sender, e) =>
-                    {
-                        ViewModel.IsPlaying = true;
-                        ViewModel.Position = e.Position;
-                        ((ContentPresenter)LyricWindow.BtnPlay.Content).Content =
-                            LyricWindow.MainGrid.FindResource("PauseButton");
-                        //BtnPlay.Style = (Style)FindResource("PauseButtonStyle");
-                    };
-                    audioPlayer.PlayerStopped += (sender, e) =>
-                    {
-
-                    };
-                    //Dispatcher.BeginInvoke(new Action(() => { }));
-                    audioPlayer.PositionChanged += (sender, e) =>
-                    {
-                        if (!_scrollLock)
-                        {
-                            ViewModel.Position = e.Position;
-                            PlayProgress.Value = e.Position;
-                        }
-                    };
+                    SignUpPlayerEvent(audioPlayer);
 
                     /* Set Meta */
                     var nowIdentity = new MapIdentity(fi.Directory.Name, osuFile.Metadata.Version);
@@ -172,7 +133,7 @@ namespace Milky.OsuPlayer.Windows
                     PlayProgress.Maximum = audioPlayer.Duration;
                     PlayProgress.Value = 0;
 
-                    ViewModel.Duration = InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Duration;
+                    PlayerViewModel.Current.Duration = InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Duration;
                     //LblTotal.Content = new TimeSpan(0, 0, 0, 0, audioPlayer.Duration).ToString(@"mm\:ss");
                     //LblNow.Content = new TimeSpan(0, 0, 0, 0, audioPlayer.PlayTime).ToString(@"mm\:ss");
 
@@ -183,7 +144,7 @@ namespace Milky.OsuPlayer.Windows
                     }
 
                     /* Set Video */
-                    bool showVideo = ViewModel.EnableVideo && !ViewModel.IsMiniMode;
+                    bool showVideo = PlayerViewModel.Current.EnableVideo && !ViewModel.IsMiniMode;
                     if (VideoElement != null)
                     {
                         await ClearVideoElement(showVideo);
@@ -323,6 +284,45 @@ namespace Milky.OsuPlayer.Windows
             Console.WriteLine(sw.ElapsedMilliseconds);
         }
 
+        private void SignUpPlayerEvent(ComponentPlayer audioPlayer)
+        {
+            audioPlayer.PlayerLoaded += (sender, e) =>
+            {
+                var player = (ComponentPlayer)sender;
+                Console.WriteLine(player.OsuFile.ToString() + @" PlayerLoaded.");
+            };
+            audioPlayer.PlayerFinished += (sender, e) =>
+            {
+                PlayNext(false, true);
+            };
+            audioPlayer.PlayerPaused += (sender, e) =>
+            {
+                PlayerViewModel.Current.IsPlaying = false;
+                PlayerViewModel.Current.Position = e.Position;
+            };
+            audioPlayer.PositionSet += (sender, e) =>
+            {
+
+            };
+            audioPlayer.PlayerStarted += (sender, e) =>
+            {
+                PlayerViewModel.Current.IsPlaying = true;
+                PlayerViewModel.Current.Position = e.Position;
+            };
+            audioPlayer.PlayerStopped += (sender, e) =>
+            {
+
+            };
+            audioPlayer.PositionChanged += (sender, e) =>
+            {
+                if (!_scrollLock)
+                {
+                    PlayerViewModel.Current.Position = e.Position;
+                    PlayProgress.Value = e.Position;
+                }
+            };
+        }
+
         //private async void VideoPlay()
         //{
         //    //await VideoElement.Pause();
@@ -430,11 +430,10 @@ namespace Milky.OsuPlayer.Windows
                 //    break;
 
                 case PlayerList.ChangeType.Stop:
-                    ViewModel.IsPlaying = false;
-                    ViewModel.Position = 0;
+                    PlayerViewModel.Current.IsPlaying = false;
+                    PlayerViewModel.Current.Position = 0;
                     _videoPlay = false;
                     _forcePaused = true;
-                    //InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Stop();
                     break;
                 case PlayerList.ChangeType.Change:
                 default:

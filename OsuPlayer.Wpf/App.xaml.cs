@@ -32,7 +32,7 @@ namespace Milky.OsuPlayer
             InstanceManage.AddInstance(new Updater());
 
             InstanceManage.GetInstance<LyricsInst>().ReloadLyricProvider();
-
+            
             App app = new App();
             app.InitializeComponent();
             app.Run();

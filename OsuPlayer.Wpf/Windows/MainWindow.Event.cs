@@ -17,6 +17,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
+using Milky.OsuPlayer.ViewModels;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -231,9 +232,9 @@ namespace Milky.OsuPlayer.Windows
 
         private void ThumbButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!ViewModel.EnableVideo)
-                ViewModel.EnableVideo = true;
-            else if (ViewModel.EnableVideo)
+            if (!PlayerViewModel.Current.EnableVideo)
+                PlayerViewModel.Current.EnableVideo = true;
+            else if (PlayerViewModel.Current.EnableVideo)
             {
                 if (ResizableArea.Margin == new Thickness(5))
                     SetFullScr();
@@ -260,10 +261,10 @@ namespace Milky.OsuPlayer.Windows
             //    SetFullScr();
             //    FullModeArea.Visibility = Visibility.Hidden;
             //}
-            if (ViewModel.EnableVideo)
+            if (PlayerViewModel.Current.EnableVideo)
             {
                 SetFullScr();
-                ViewModel.EnableVideo = false;
+                PlayerViewModel.Current.EnableVideo = false;
             }
         }
 

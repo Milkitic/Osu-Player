@@ -162,6 +162,7 @@
     <Compile Include="ViewModels\CollectionViewModel.cs" />
     <Compile Include="ViewModels\EditCollectionPageViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\PlayerViewModel.cs" />
     <Compile Include="ViewModels\SearchPageViewModel.cs" />
     <Compile Include="ViewModels\SelectCollectionPageViewModel.cs" />
     <Compile Include="ViewModels\DiffSelectPageViewModel.cs" />
@@ -177,6 +178,7 @@
     <Compile Include="Converter\MainWindowConverters.cs" />
     <Compile Include="Windows\EffectWindowBase.cs" />
     <Compile Include="Windows\LyricWindow.xaml.WinApi.cs" />
+    <Compile Include="ViewModels\LyricWindowViewModel.cs" />
     <Compile Include="Windows\MainWindow.Player.cs" />
     <Compile Include="Windows\MainWindow.Surface.cs" />
     <Compile Include="Windows\LyricWindow.xaml.cs">

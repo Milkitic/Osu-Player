@@ -7,20 +7,15 @@ using System.Windows.Input;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    internal class MainWindowViewModel : ViewModelBase
     {
         private bool _isNavigationCollapsed;
         private bool _isMiniMode;
         private List<Collection> _collection;
-        private PlayListMode _playListMode;
         private bool _isLyricWindowShown;
         private bool _isLyricWindowLocked;
-        private bool _isPlaying;
-        private bool _enableVideo;
         private bool _isSyncing;
-
-        private long _position;
-        private long _duration;
+        private PlayerViewModel _player;
 
         public bool IsNavigationCollapsed
         {
@@ -82,36 +77,6 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public PlayListMode PlayListMode
-        {
-            get => _playListMode;
-            set
-            {
-                _playListMode = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsPlaying
-        {
-            get => _isPlaying;
-            set
-            {
-                _isPlaying = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool EnableVideo
-        {
-            get => _enableVideo;
-            set
-            {
-                _enableVideo = value;
-                OnPropertyChanged();
-            }
-        }
-
         public ICommand CollapseCommand
         {
             get
@@ -126,22 +91,12 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public long Position
+        public PlayerViewModel Player
         {
-            get => _position;
+            get => _player;
             set
             {
-                _position = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public long Duration
-        {
-            get => _duration;
-            set
-            {
-                _duration = value;
+                _player = value;
                 OnPropertyChanged();
             }
         }
