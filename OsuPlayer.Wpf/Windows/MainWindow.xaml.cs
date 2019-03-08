@@ -39,8 +39,6 @@ namespace Milky.OsuPlayer.Windows
         private readonly OptionContainer _modeOptionContainer = new OptionContainer();
         
         //local player control
-        private CancellationTokenSource _cts = new CancellationTokenSource();
-        private Task _statusTask;
         private bool _scrollLock;
         private PlayerStatus _tmpStatus = PlayerStatus.Stopped;
         private double _videoOffset;

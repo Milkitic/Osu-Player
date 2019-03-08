@@ -88,7 +88,6 @@ namespace Milky.OsuPlayer.Windows
             }
 
             ClearHitsoundPlayer();
-            _cts.Dispose();
             ComponentPlayer.DisposeAll();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();

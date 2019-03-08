@@ -89,10 +89,7 @@ namespace Milky.OsuPlayer.Windows
                     };
                     audioPlayer.PlayerFinished += (sender, e) =>
                     {
-                        Dispatcher.BeginInvoke(new Action(() =>
-                        {
-                            PlayNext(false, true);
-                        }));
+                        PlayNext(false, true);
                     };
                     audioPlayer.PlayerPaused += (sender, e) =>
                     {
@@ -107,35 +104,28 @@ namespace Milky.OsuPlayer.Windows
                     };
                     audioPlayer.PlayerStarted += (sender, e) =>
                     {
-                        Dispatcher.BeginInvoke(new Action(() =>
-                        {
-                            ViewModel.IsPlaying = true;
-                            ViewModel.Position = e.Position;
-                            ((ContentPresenter) LyricWindow.BtnPlay.Content).Content =
-                                LyricWindow.MainGrid.FindResource("PauseButton");
-                            //BtnPlay.Style = (Style)FindResource("PauseButtonStyle");
-                        }));
+                        ViewModel.IsPlaying = true;
+                        ViewModel.Position = e.Position;
+                        ((ContentPresenter)LyricWindow.BtnPlay.Content).Content =
+                            LyricWindow.MainGrid.FindResource("PauseButton");
+                        //BtnPlay.Style = (Style)FindResource("PauseButtonStyle");
                     };
                     audioPlayer.PlayerStopped += (sender, e) =>
                     {
 
                     };
+                    //Dispatcher.BeginInvoke(new Action(() => { }));
                     audioPlayer.PositionChanged += (sender, e) =>
                     {
-                        Dispatcher.BeginInvoke(new Action(() =>
+                        if (!_scrollLock)
                         {
-                            if (!_scrollLock)
-                            {
-                                ViewModel.Position = e.Position;
-                                PlayProgress.Value = e.Position;
-                            }
-                        }));
-
+                            ViewModel.Position = e.Position;
+                            PlayProgress.Value = e.Position;
+                        }
                     };
-                    _cts = new CancellationTokenSource();
 
                     /* Set Meta */
-                    MapIdentity nowIdentity = new MapIdentity(fi.Directory.Name, osuFile.Metadata.Version);
+                    var nowIdentity = new MapIdentity(fi.Directory.Name, osuFile.Metadata.Version);
 
                     MapInfo mapInfo = DbOperate.GetMapFromDb(nowIdentity);
                     //BeatmapEntry entry = App.PlayerList.Entries.GetBeatmapByIdentity(nowIdentity);
@@ -457,8 +447,6 @@ namespace Milky.OsuPlayer.Windows
 
         private void ClearHitsoundPlayer()
         {
-            _cts.Cancel();
-            Task.WaitAll(_statusTask);
             InstanceManage.GetInstance<PlayersInst>().ClearAudioPlayer();
         }
     }

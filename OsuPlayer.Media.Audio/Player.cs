@@ -2,6 +2,9 @@
 using Milky.OsuPlayer.Media.Audio.Music;
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,13 +20,56 @@ namespace Milky.OsuPlayer.Media.Audio
         public event EventHandler<ProgressEventArgs> PositionChanged;
         public event EventHandler<ProgressEventArgs> PositionSet;
 
-        protected virtual void RaisePlayerLoadedEvent(object sender, EventArgs e) => PlayerLoaded?.Invoke(sender, e);
-        protected virtual void RaisePlayerStartedEvent(object sender, ProgressEventArgs e) => PlayerStarted?.Invoke(sender, e);
-        protected virtual void RaisePlayerStoppedEvent(object sender, EventArgs e) => PlayerStopped?.Invoke(sender, e);
-        protected virtual void RaisePlayerPausedEvent(object sender, ProgressEventArgs e) => PlayerPaused?.Invoke(sender, e);
-        protected virtual void RaisePlayerFinishedEvent(object sender, EventArgs e) => PlayerFinished?.Invoke(sender, e);
-        protected virtual void RaiseProgressChangedEvent(object sender, ProgressEventArgs e) => PositionChanged?.Invoke(sender, e);
-        protected virtual void RaiseProgressSetEvent(object sender, ProgressEventArgs e) => PositionChanged?.Invoke(sender, e);
+        protected virtual void RaisePlayerLoadedEvent(object sender, EventArgs e) =>
+            InvokeActionOnMainThread(() => PlayerLoaded?.Invoke(sender, e));
+
+        protected virtual void RaisePlayerStartedEvent(object sender, ProgressEventArgs e) =>
+            InvokeActionOnMainThread(() => PlayerStarted?.Invoke(sender, e));
+
+        protected virtual void RaisePlayerStoppedEvent(object sender, EventArgs e) =>
+            InvokeActionOnMainThread(() => PlayerStopped?.Invoke(sender, e));
+
+        protected virtual void RaisePlayerPausedEvent(object sender, ProgressEventArgs e) =>
+            InvokeActionOnMainThread(() => PlayerPaused?.Invoke(sender, e));
+
+        protected virtual void RaisePlayerFinishedEvent(object sender, EventArgs e) =>
+            InvokeActionOnMainThread(() => PlayerFinished?.Invoke(sender, e));
+
+        protected virtual void RaiseProgressChangedEvent(object sender, ProgressEventArgs e) =>
+            InvokeActionOnMainThread(() => PositionChanged?.Invoke(sender, e));
+
+        protected virtual void RaiseProgressSetEvent(object sender, ProgressEventArgs e) =>
+            InvokeActionOnMainThread(() => PositionSet?.Invoke(sender, e));
+
+        private static readonly SynchronizationContext UiContext;
+
+        static Player()
+        {
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly assembly in assemblies)
+            {
+                var fileName = Path.GetFileName(assembly.Location);
+                if (fileName == "System.Windows.Forms.dll")
+                {
+                    var type = assembly.DefinedTypes.First(k => k.Name.StartsWith("WindowsFormsSynchronizationContext"));
+                    UiContext = (SynchronizationContext)Activator.CreateInstance(type);
+                    break;
+                }
+                else if (fileName == "WindowsBase.dll")
+                {
+                    var type = assembly.DefinedTypes.First(k => k.Name.StartsWith("DispatcherSynchronizationContext"));
+                    UiContext = (SynchronizationContext)Activator.CreateInstance(type);
+                    break;
+                }
+            }
+
+            if (UiContext == null) UiContext = SynchronizationContext.Current;
+        }
+
+        private void InvokeActionOnMainThread(Action action)
+        {
+            UiContext.Send(obj => { action?.Invoke(); }, null);
+        }
 
         protected virtual void NotifyProgress(CancellationToken cancellationToken)
         {
@@ -41,7 +87,7 @@ namespace Milky.OsuPlayer.Media.Audio
                         PlayerStatus == PlayerStatus.Playing)
                     {
                         oldT = newT;
-                        PositionChanged?.Invoke(this, new ProgressEventArgs(PlayTime, Duration));
+                        RaiseProgressChangedEvent(this, new ProgressEventArgs(PlayTime, Duration));
                         sw.Restart();
                     }
                 }

@@ -1,50 +1,15 @@
 ﻿using System;
 using System.Threading;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace Milky.WpfApi
 {
     public static class Execute
     {
-        private static void InnerExecute(Action action, Dispatcher dispatcher, bool waitForThread, bool force)
+        public static void OnUiThread(this Action action)
         {
-            if (dispatcher == null)
-            {
-                dispatcher = Dispatcher.CurrentDispatcher;
-            }
-
-            if (dispatcher.CheckAccess() && !force)
-            {
-                action.Invoke();
-            }
-            else
-            {
-                if (waitForThread)
-                    dispatcher.Invoke(action);
-                else
-                    dispatcher.BeginInvoke(action);
-            }
-        }
-
-        public static void OnUiThread(this Action action, bool force = false)
-        {
-            InnerExecute(action, null, true, force);
-        }
-
-        public static void CallUiThread(this Action action, bool force = false)
-        {
-            InnerExecute(action, null, false, force);
-        }
-
-
-        public static void OnUiThread(this Action action, SynchronizationContext uiContext)
-        {
-            uiContext.Send(obj => { action.Invoke(); }, null);
-        }
-
-        public static void OnUiThread(this Action action, Dispatcher dispatcher)
-        {
-            InnerExecute(action, dispatcher, false, false);
+            Application.Current.Dispatcher.Invoke(() => { action?.Invoke(); });
         }
     }
 }

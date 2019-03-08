@@ -68,7 +68,6 @@
     <Compile Include="Converters\NegativeBooleanConverter.cs" />
     <Compile Include="TriggerTracing.cs" />
     <Compile Include="StyleUtilities.cs" />
-    <Compile Include="UiActionInvoker.cs" />
     <Compile Include="Commands\DelegateCommand.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Execute.cs" />
