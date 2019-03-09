@@ -11,6 +11,7 @@ using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
 using OSharp.Beatmap;
 using osu.Shared;
@@ -24,7 +25,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using Milky.OsuPlayer.ViewModels;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -70,7 +70,7 @@ namespace Milky.OsuPlayer.Windows
             {
                 try
                 {
-                    var osuFile = OsuFile.ReadFromFile(path); //50 ms
+                    var osuFile = await OsuFile.ReadFromFileAsync(path); //50 ms
                     var fi = new FileInfo(path);
                     if (!fi.Exists)
                         throw new FileNotFoundException("Cannot locate.", fi.FullName);
@@ -80,8 +80,9 @@ namespace Milky.OsuPlayer.Windows
                     ClearHitsoundPlayer();
 
                     /* Set new hitsound player*/
-                    playerInst.LoadAudioPlayer(path, osuFile); //todo: 700 ms
+                    playerInst.SetAudioPlayer(path, osuFile); //todo: 700 ms
                     audioPlayer = playerInst.AudioPlayer;
+                    await audioPlayer.InitializeAsync();
                     audioPlayer.ProgressRefreshInterval = 500;
                     SignUpPlayerEvent(audioPlayer);
 
@@ -126,7 +127,7 @@ namespace Milky.OsuPlayer.Windows
                             isFaved); // 20 ms
 
                     /* Set Lyric */
-                    SetLyric(); //todo: 900ms
+                    SetLyricSynchronously(); //todo: 900ms
 
                     /* Set Progress */
                     //PlayProgress.Value = App.HitsoundPlayer.SingleOffset;
@@ -236,7 +237,7 @@ namespace Milky.OsuPlayer.Windows
                     if (result == MessageBoxResult.OK)
                     {
                         if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
+                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNextAsync(false, true);
                     }
                 }
                 catch (BadOsuFormatException ex)
@@ -246,7 +247,7 @@ namespace Milky.OsuPlayer.Windows
                     if (result == MessageBoxResult.OK)
                     {
                         if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
+                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNextAsync(false, true);
                     }
                 }
                 catch (VersionNotSupportedException ex)
@@ -256,7 +257,7 @@ namespace Milky.OsuPlayer.Windows
                     if (result == MessageBoxResult.OK)
                     {
                         if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
+                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNextAsync(false, true);
                     }
                 }
                 catch (Exception ex)
@@ -266,7 +267,7 @@ namespace Milky.OsuPlayer.Windows
                     if (result == MessageBoxResult.OK)
                     {
                         if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNext(false, true);
+                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNextAsync(false, true);
                     }
 
                     Console.WriteLine(ex);
@@ -293,7 +294,7 @@ namespace Milky.OsuPlayer.Windows
             };
             audioPlayer.PlayerFinished += (sender, e) =>
             {
-                PlayNext(false, true);
+                PlayNextAsync(false, true);
             };
             audioPlayer.PlayerPaused += (sender, e) =>
             {
@@ -417,10 +418,10 @@ namespace Milky.OsuPlayer.Windows
         /// <param name="isManual">Whether it is called by user (Click next button manually)
         /// or called by application (A song finshed).</param>
         /// <param name="isNext"></param>
-        private async void PlayNext(bool isManual, bool isNext)
+        private async void PlayNextAsync(bool isManual, bool isNext)
         {
             if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;
-            var result = InstanceManage.GetInstance<PlayerList>().PlayTo(isNext, isManual, out var entry);
+            (PlayerList.ChangeType result, BeatmapEntry entry) = await InstanceManage.GetInstance<PlayerList>().PlayToAsync(isNext, isManual);
             switch (result)
             {
                 //case PlayerList.ChangeType.Keep:

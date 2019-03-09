@@ -1,7 +1,14 @@
-﻿using Milky.OsuPlayer.Control;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Common.Metadata;
+using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.Windows;
 using Milky.WpfApi.Collections;
+using OSharp.Beatmap;
 using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,13 +17,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Metadata;
-using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Models;
-using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -60,7 +60,7 @@ namespace Milky.OsuPlayer.Pages
             PlaySelected();
         }
 
-        private void ItemDelete_Click(object sender, RoutedEventArgs e)
+        private async void ItemDelete_Click(object sender, RoutedEventArgs e)
         {
             if (RecentList.SelectedItem == null)
                 return;
@@ -72,7 +72,7 @@ namespace Milky.OsuPlayer.Pages
                 DbOperate.RemoveFromRecent(entry.GetIdentity());
             }
             UpdateList();
-            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
+            await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
         }
 
         private void BtnDelAll_Click(object sender, RoutedEventArgs e)
@@ -151,7 +151,7 @@ namespace Milky.OsuPlayer.Pages
 
             await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                    map.BeatmapFileName));
-            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.None, PlayListMode.RecentList);
+            await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.RecentList);
         }
 
         private BeatmapEntry GetSelected()

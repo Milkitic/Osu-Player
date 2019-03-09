@@ -8,6 +8,7 @@ using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.ViewModels;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -17,7 +18,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
-using Milky.OsuPlayer.ViewModels;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -38,8 +38,8 @@ namespace Milky.OsuPlayer.Windows
                 var entries = InstanceManage.GetInstance<OsuDbInst>().Beatmaps
                     .FilterByIdentities(PlayerConfig.Current.CurrentList);
                 if (App.UseDbMode)
-                    InstanceManage.GetInstance<PlayerList>()
-                        .RefreshPlayList(PlayerList.FreshType.All, entries: entries);
+                    await InstanceManage.GetInstance<PlayerList>()
+                        .RefreshPlayListAsync(PlayerList.FreshType.All, entries: entries);
 
                 bool play = PlayerConfig.Current.Play.AutoPlay;
                 await PlayNewFile(PlayerConfig.Current.CurrentPath, play);
@@ -47,7 +47,7 @@ namespace Milky.OsuPlayer.Windows
 
             if (App.UseDbMode)
             {
-                SetPlayMode(PlayerConfig.Current.Play.PlayListMode);
+                await SetPlayMode(PlayerConfig.Current.Play.PlayListMode);
             }
 
             var helper = new WindowInteropHelper(this);
@@ -310,17 +310,17 @@ namespace Milky.OsuPlayer.Windows
         private async void BtnOpen_Click(object sender, RoutedEventArgs e)
         {
             await PlayNewFile(LoadFile());
-            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.None);
+            await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None);
         }
 
         public void BtnPrev_Click(object sender, RoutedEventArgs e)
         {
-            PlayNext(true, false);
+            PlayNextAsync(true, false);
         }
 
         public void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            PlayNext(true, true);
+            PlayNextAsync(true, true);
         }
 
         private void BtnMode_Click(object sender, RoutedEventArgs e)
@@ -331,7 +331,7 @@ namespace Milky.OsuPlayer.Windows
         /// <summary>
         /// Popup a dialog for adding music to a collection.
         /// </summary>
-        private void BtnLike_Click(object sender, RoutedEventArgs e)
+        private async void BtnLike_Click(object sender, RoutedEventArgs e)
         {
             if (!ValidateDb()) return;
             var entry = InstanceManage.GetInstance<OsuDbInst>().Beatmaps.FilterByIdentity(InstanceManage.GetInstance<PlayerList>().CurrentIdentity);
@@ -354,7 +354,7 @@ namespace Milky.OsuPlayer.Windows
                 }
                 else
                 {
-                    SelectCollectionPage.AddToCollection(collection, entry);
+                    await SelectCollectionPage.AddToCollectionAsync(collection, entry);
                     InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFaved = true;
                 }
             }
@@ -383,7 +383,7 @@ namespace Milky.OsuPlayer.Windows
             ((ToggleButton)sender).IsChecked = true;
             _ischanging = false;
         }
-        private void PlayMode_Click(object sender, RoutedEventArgs e)
+        private async void PlayMode_Click(object sender, RoutedEventArgs e)
         {
             var btn = (ToggleButton)sender;
             PlayerMode playmode;
@@ -416,11 +416,11 @@ namespace Milky.OsuPlayer.Windows
                     break;
             }
 
-            SetPlayMode(playmode);
+            await SetPlayMode(playmode);
             PopMode.IsOpen = false;
         }
 
-        private void SetPlayMode(PlayerMode playmode)
+        private async Task SetPlayMode(PlayerMode playmode)
         {
             switch (playmode)
             {
@@ -449,7 +449,7 @@ namespace Milky.OsuPlayer.Windows
             if (playmode == InstanceManage.GetInstance<PlayerList>().PlayerMode)
                 return;
             InstanceManage.GetInstance<PlayerList>().PlayerMode = playmode;
-            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.IndexOnly);
+            await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.IndexOnly);
             PlayerConfig.Current.Play.PlayListMode = playmode;
             PlayerConfig.SaveCurrent();
         }

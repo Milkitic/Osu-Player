@@ -18,7 +18,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public override int ProgressRefreshInterval { get; set; }
 
-        public OsuFile OsuFile { get; }
+        public OsuFile OsuFile { get; private set; }
         internal HitsoundPlayer HitsoundPlayer { get; private set; }
         internal MusicPlayer MusicPlayer { get; private set; }
 
@@ -52,16 +52,23 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public ComponentPlayer(string filePath, OsuFile osuFile)
         {
-            Current?.Dispose();
-            Current = this;
             _filePath = filePath;
             OsuFile = osuFile;
-            HitsoundPlayer = new HitsoundPlayer(filePath, osuFile);
+        }
 
-            FileInfo fileInfo = new FileInfo(filePath);
+        public override async Task InitializeAsync()
+        {
+            Current?.Dispose();
+            Current = this;
+
+            FileInfo fileInfo = new FileInfo(_filePath);
             DirectoryInfo dirInfo = fileInfo.Directory;
             FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, OsuFile.General.AudioFilename));
+            HitsoundPlayer = new HitsoundPlayer(_filePath, OsuFile);
             MusicPlayer = new MusicPlayer(musicInfo.FullName);
+
+            await HitsoundPlayer.InitializeAsync();
+            await MusicPlayer.InitializeAsync();
 
             HitsoundPlayer.SetDuration(MusicPlayer.Duration);
             HitsoundPlayer.PlayerFinished += Players_OnFinished;

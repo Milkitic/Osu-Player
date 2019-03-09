@@ -1,4 +1,8 @@
-﻿using Milky.OsuPlayer.Data;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Metadata;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
@@ -12,10 +16,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Metadata;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer.Pages
@@ -74,23 +74,23 @@ namespace Milky.OsuPlayer.Pages
         {
             if (ExportTask != null && !ExportTask.IsCanceled && !ExportTask.IsCompleted)
                 return;
-            ExportTask = Task.Run(() =>
+            ExportTask = Task.Run(async () =>
             {
                 while (!TaskQueue.IsEmpty)
                 {
                     if (!TaskQueue.TryDequeue(out var entry))
                         continue;
-                    CopyFile(entry);
+                    await CopyFileAsync(entry);
                     HasTaskSuccess = true;
                 }
             });
         }
 
-        private static void CopyFile(BeatmapEntry entry)
+        private static async Task CopyFileAsync(BeatmapEntry entry)
         {
             string folder = Path.Combine(Domain.OsuSongPath, entry.FolderName);
             FileInfo mp3File = new FileInfo(Path.Combine(folder, entry.AudioFileName));
-            var osuFile = OsuFile.ReadFromFile(Path.Combine(folder, entry.BeatmapFileName));
+            var osuFile = await OsuFile.ReadFromFileAsync(Path.Combine(folder, entry.BeatmapFileName));
             FileInfo bgFile = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));
 
             var artist = MetaString.GetUnicode(entry.Artist, entry.ArtistUnicode);

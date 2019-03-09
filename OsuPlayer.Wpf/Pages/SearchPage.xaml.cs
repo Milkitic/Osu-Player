@@ -66,7 +66,7 @@ namespace Milky.OsuPlayer.Pages
             {
                 await ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, page.SelectedMap.FolderName,
                       page.SelectedMap.BeatmapFileName));
-                InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
+                InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
                 ParentWindow.FramePop.Navigate(null);
             };
             ParentWindow.FramePop.Navigate(page);
@@ -143,7 +143,7 @@ namespace Milky.OsuPlayer.Pages
             if (map == null) return;
             await ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                 map.BeatmapFileName));
-            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
         }
 
         private BeatmapEntry GetSelectedDefault()

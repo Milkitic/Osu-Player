@@ -26,11 +26,11 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(obj =>
+                return new DelegateCommand(async obj =>
                 {
-                    var entry = (BeatmapEntry)obj;
+                    var entry = (BeatmapEntry) obj;
                     var col = DbOperate.GetCollectionById(Id);
-                    SelectCollectionPage.AddToCollection(col, entry);
+                    await SelectCollectionPage.AddToCollectionAsync(col, entry);
                 });
             }
         }

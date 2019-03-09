@@ -43,14 +43,14 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         #region SoundTouch requirement
 
-        private readonly BlockAlignReductionStream _blockAlignReductionStream;
-        private readonly WaveChannel32 _waveChannel;
-        private readonly CusBufferedWaveProvider _provider;
+        private BlockAlignReductionStream _blockAlignReductionStream;
+        private WaveChannel32 _waveChannel;
+        private CusBufferedWaveProvider _provider;
 
         private static SoundTouchApi _soundTouch;
         private TimeStretchProfile _timeStretchProfile;
 
-        private readonly Thread _playThread;
+        private Thread _playThread;
         private bool _stopWorker;
 
         #endregion
@@ -63,16 +63,23 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         private float _rateValue = 1f;
         private int _progressRefreshInterval;
 
+        private string _filePath;
+
         public MusicPlayer(string filePath)
         {
-            FileInfo fi = new FileInfo(filePath);
+            _filePath = filePath;
+        }
+
+        public override async Task InitializeAsync()
+        {
+            FileInfo fi = new FileInfo(_filePath);
             if (!fi.Exists)
             {
                 //throw new FileNotFoundException("找不到音乐文件…", fi.FullName);
-                filePath = Path.Combine(Domain.DefaultPath, "blank.wav");
+                _filePath = Path.Combine(Domain.DefaultPath, "blank.wav");
             }
 
-            _reader = new MyAudioFileReader(filePath);
+            _reader = new MyAudioFileReader(_filePath);
             //if (UseSoundTouch)
             _device = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, Latency);
             //else

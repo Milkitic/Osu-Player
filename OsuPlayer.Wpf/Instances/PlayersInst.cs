@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using System.Text;
-using Milky.OsuPlayer.Media.Audio;
+﻿using Milky.OsuPlayer.Media.Audio;
 using OSharp.Beatmap;
+using System.Linq;
+using System.Text;
 
 namespace Milky.OsuPlayer.Instances
 {
@@ -9,7 +9,7 @@ namespace Milky.OsuPlayer.Instances
     {
         public ComponentPlayer AudioPlayer { get; private set; }
 
-        public void LoadAudioPlayer(string filePath, OsuFile osuFile)
+        public void SetAudioPlayer(string filePath, OsuFile osuFile)
         {
             AudioPlayer = new ComponentPlayer(filePath, osuFile);
         }

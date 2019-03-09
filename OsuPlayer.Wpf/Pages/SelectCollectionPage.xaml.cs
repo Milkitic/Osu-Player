@@ -3,6 +3,7 @@ using osu_database_reader.Components.Beatmaps;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Milky.OsuPlayer.Common;
@@ -55,12 +56,13 @@ namespace Milky.OsuPlayer.Pages
                 CollectionViewModel.CopyFrom(DbOperate.GetCollections().OrderByDescending(k => k.CreateTime)));
         }
 
-        public static void AddToCollection(Collection col, BeatmapEntry entry)
+        public static async Task AddToCollectionAsync(Collection col, BeatmapEntry entry)
         {
             if (string.IsNullOrEmpty(col.ImagePath))
             {
-                OsuFile osuFile =
-                     OsuFile.ReadFromFile(Path.Combine(Domain.OsuSongPath, entry.FolderName, entry.BeatmapFileName));
+                var osuFile =
+                    await OsuFile.ReadFromFileAsync(Path.Combine(Domain.OsuSongPath, entry.FolderName,
+                        entry.BeatmapFileName));
                 if (osuFile.Events.BackgroundInfo != null)
                 {
                     var imgPath = Path.Combine(Domain.OsuSongPath, entry.FolderName, osuFile.Events.BackgroundInfo.Filename);

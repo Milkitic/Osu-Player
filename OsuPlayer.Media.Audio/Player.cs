@@ -12,6 +12,8 @@ namespace Milky.OsuPlayer.Media.Audio
 {
     public abstract class Player : IPlayer
     {
+        private static readonly SynchronizationContext UiContext;
+
         public event EventHandler PlayerLoaded;
         public event EventHandler<ProgressEventArgs> PlayerStarted;
         public event EventHandler PlayerStopped;
@@ -41,7 +43,20 @@ namespace Milky.OsuPlayer.Media.Audio
         protected virtual void RaiseProgressSetEvent(object sender, ProgressEventArgs e) =>
             InvokeActionOnMainThread(() => PositionSet?.Invoke(sender, e));
 
-        private static readonly SynchronizationContext UiContext;
+        public virtual bool RaiseEventInUiThread { get; set; } = true;
+
+        public abstract int ProgressRefreshInterval { get; set; }
+
+        public abstract PlayerStatus PlayerStatus { get; protected set; }
+        public abstract int Duration { get; protected set; }
+        public abstract int PlayTime { get; protected set; }
+
+        public abstract Task InitializeAsync();
+        public abstract void Play();
+        public abstract void Pause();
+        public abstract void Stop();
+        public abstract void Replay();
+        public abstract void SetTime(int ms, bool play = true);
 
         static Player()
         {
@@ -68,7 +83,10 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private void InvokeActionOnMainThread(Action action)
         {
-            UiContext.Send(obj => { action?.Invoke(); }, null);
+            if (RaiseEventInUiThread)
+                UiContext.Send(obj => { action?.Invoke(); }, null);
+            else
+                action?.Invoke();
         }
 
         protected virtual void NotifyProgress(CancellationToken cancellationToken)
@@ -93,18 +111,5 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
             }, TaskCreationOptions.LongRunning);
         }
-
-
-        public abstract int ProgressRefreshInterval { get; set; }
-
-        public abstract PlayerStatus PlayerStatus { get; protected set; }
-        public abstract int Duration { get; protected set; }
-        public abstract int PlayTime { get; protected set; }
-
-        public abstract void Play();
-        public abstract void Pause();
-        public abstract void Stop();
-        public abstract void Replay();
-        public abstract void SetTime(int ms, bool play = true);
     }
 }

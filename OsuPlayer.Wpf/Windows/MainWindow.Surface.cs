@@ -47,7 +47,7 @@ namespace Milky.OsuPlayer.Windows
         /// Call lyric provider to check lyric
         /// todo: this should run synchronously.
         /// </summary>
-        public void SetLyric()
+        public void SetLyricSynchronously()
         {
             if (!LyricWindow.IsVisible) return;
             if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;

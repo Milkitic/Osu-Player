@@ -56,7 +56,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         private readonly string _defaultDir = Domain.DefaultPath;
         private ConcurrentQueue<HitsoundElement> _hsQueue;
-        private readonly List<HitsoundElement> _hitsoundList;
+        private List<HitsoundElement> _hitsoundList;
         private readonly string _filePath;
 
         // Play Control
@@ -73,19 +73,26 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         {
             _osuFile = osuFile;
             _filePath = filePath;
-            FileInfo fileInfo = new FileInfo(filePath);
+        }
+
+        public override async Task InitializeAsync()
+        {
+            FileInfo fileInfo = new FileInfo(_filePath);
             DirectoryInfo dirInfo = fileInfo.Directory;
             if (!fileInfo.Exists)
-                throw new FileNotFoundException("文件不存在：" + filePath);
+                throw new FileNotFoundException("文件不存在：" + _filePath);
             if (dirInfo == null)
                 throw new DirectoryNotFoundException("获取" + fileInfo.Name + "所在目录失败了？");
 
-            List<HitsoundElement> hitsoundList = FillHitsoundList(osuFile, dirInfo);
+            List<HitsoundElement> hitsoundList = FillHitsoundList(_osuFile, dirInfo);
             _hitsoundList = hitsoundList.OrderBy(t => t.Offset).ToList(); // Sorted before enqueue.
             Requeue(0);
             List<string> allPaths = hitsoundList.Select(t => t.FilePaths).SelectMany(sbx2 => sbx2).Distinct().ToList();
-            foreach (var path in allPaths)
-                WavePlayer.SaveToCache(path); // Cache each file once before play.
+            await Task.Run(() =>
+            {
+                foreach (var path in allPaths)
+                    WavePlayer.SaveToCache(path); // Cache each file once before play.
+            });
 
             PlayerStatus = PlayerStatus.Ready;
             SetPlayMod(PlayerConfig.Current.Play.PlayMod, false);
