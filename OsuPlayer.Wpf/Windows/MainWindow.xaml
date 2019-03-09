@@ -1,4 +1,4 @@
-﻿<windows:EffectWindowBase x:Class="Milky.OsuPlayer.Windows.MainWindow"
+﻿<wpfApi:WindowBase x:Class="Milky.OsuPlayer.Windows.MainWindow"
                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -17,14 +17,18 @@
                           Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
                           Loaded="Window_Loaded" Closing="Window_Closing" SizeChanged="Window_SizeChanged"
                           WindowStartupLocation="CenterScreen"
-                          ResizeMode="CanResizeWithGrip"
-                          DMWindowShadowColor="#FF000000"
-                          DMWindowShadowSize="20"
-                          DMWindowShadowOpacity="0.5">
-    <windows:EffectWindowBase.DataContext>
+                          ResizeMode="CanResize">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CornerRadius="0"
+                      CaptionHeight="46"
+                      GlassFrameThickness="1,1,1,1"
+                      UseAeroCaptionButtons="False"
+                      ResizeBorderThickness="3" />
+    </WindowChrome.WindowChrome> 
+    <wpfApi:WindowBase.DataContext>
         <viewModels:MainWindowViewModel />
-    </windows:EffectWindowBase.DataContext>
-    <windows:EffectWindowBase.Resources>
+    </wpfApi:WindowBase.DataContext>
+    <wpfApi:WindowBase.Resources>
         <converter:NavigationWidthConverter x:Key="CvtNavigationWidth" />
         <converter:IconMarginConverter x:Key="CvtIconMargin" />
         <converter:TitleVisibleConverter x:Key="CvtTitleVisible" />
@@ -33,7 +37,7 @@
         <converter:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
         <converter:VideoShowConverter x:Key="CvtVideoShow" />
         <converter:MsToStringConverter x:Key="MsToStringConverter" />
-    </windows:EffectWindowBase.Resources>
+    </wpfApi:WindowBase.Resources>
     <Grid>
         <Grid.Background>
             <ImageBrush ImageSource="{StaticResource TextrueSource1}" Viewport="0,0,500,500" ViewportUnits="Absolute"
@@ -45,8 +49,6 @@
         </Grid.RowDefinitions>
         <DockPanel x:Name="TitleBarAreaBack" Grid.Row="0" Height="50">
             <Image Source="{StaticResource TitleLogo}" Height="32" HorizontalAlignment="Left" Margin="8,0,0,0" />
-            <Button PreviewMouseDoubleClick="Button_MouseDoubleClick" Background="Transparent" Opacity="0"
-                    PreviewMouseDown="Button_MouseDown" />
         </DockPanel>
         <Grid Grid.Row="1" x:Name="MainGrid">
             <Grid.RowDefinitions>
@@ -641,6 +643,7 @@
                     VerticalAlignment="Center"
                     Width="200" Height="40" Margin="0,0,5,0">
                 <dms:DMSystemButton
+                    WindowChrome.IsHitTestVisibleInChrome="True"
                     x:Name="BtnSettings"
                     DMSystemButtonForeground="#E0EEEEEE"
                     DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
@@ -648,6 +651,7 @@
                     DMSystemButtonSize="40"
                     Click="BtnSettings_Click" />
                 <dms:DMSystemButton
+                    WindowChrome.IsHitTestVisibleInChrome="True"
                     DMSystemButtonForeground="#E0EEEEEE"
                     DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
                     Icon="{StaticResource Mini}"
@@ -656,14 +660,17 @@
                     IsEnabled="{Binding Content, ElementName=FramePop,Converter={StaticResource CvtMiniEnabled}}">
                 </dms:DMSystemButton>
                 <dms:DMSystemMinButton
+                    WindowChrome.IsHitTestVisibleInChrome="True"
                     DMSystemButtonForeground="#E0EEEEEE"
                     DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
                     DMSystemButtonSize="40" Canvas.Left="80" />
                 <dms:DMSystemMaxButton
+                    WindowChrome.IsHitTestVisibleInChrome="True"
                     DMSystemButtonForeground="#E0EEEEEE"
                     DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
                     DMSystemButtonSize="40" Canvas.Left="120" />
                 <dms:DMSystemCloseButton
+                    WindowChrome.IsHitTestVisibleInChrome="True"
                     DMSystemButtonForeground="#E0EEEEEE"
                     DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
                     DMSystemButtonSize="40" Canvas.Left="160" />
@@ -695,11 +702,6 @@
                        Foreground="{StaticResource SliderBackground}" />
             </StackPanel>
         </Border>
-        <ResizeGrip Grid.Row="1" x:Name="Grip"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom"
-                    HorizontalContentAlignment="Stretch"
-                    VerticalContentAlignment="Stretch" />
         <tb:TaskbarIcon Grid.Row="0" x:Name="NotifyIcon"
                         Visibility="Visible"
                         IconSource="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
@@ -826,4 +828,4 @@
             </ContextMenu>
         </Grid.Resources>
     </Grid>
-</windows:EffectWindowBase>
+</wpfApi:WindowBase>

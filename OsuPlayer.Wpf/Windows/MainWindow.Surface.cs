@@ -1,7 +1,10 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Instances;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +13,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Instances;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -96,7 +96,7 @@ namespace Milky.OsuPlayer.Windows
             // modoules
             BtnOpen.Visibility = Visibility.Collapsed;
             ThumbArea.Visibility = Visibility.Collapsed;
-            Grip.Visibility = Visibility.Collapsed;
+            ResizeMode = ResizeMode.NoResize;
             LblProgress.Visibility = Visibility.Collapsed;
             LblSeperate.Visibility = Visibility.Collapsed;
             PlayProgress.Visibility = Visibility.Collapsed;
@@ -138,7 +138,7 @@ namespace Milky.OsuPlayer.Windows
             // modoules
             BtnOpen.Visibility = Visibility.Visible;
             ThumbArea.Visibility = Visibility.Visible;
-            Grip.Visibility = Visibility.Visible;
+            ResizeMode = ResizeMode.CanResize;
             LblProgress.Visibility = Visibility.Visible;
             LblSeperate.Visibility = Visibility.Visible;
             PlayProgress.Visibility = Visibility.Visible;

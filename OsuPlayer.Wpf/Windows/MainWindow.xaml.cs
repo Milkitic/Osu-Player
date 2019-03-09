@@ -5,6 +5,7 @@ using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
+using Milky.WpfApi;
 using System;
 using System.IO;
 using System.Threading;
@@ -17,7 +18,7 @@ namespace Milky.OsuPlayer.Windows
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : EffectWindowBase
+    public partial class MainWindow : WindowBase
     {
         public PageParts Pages => new PageParts
         {
@@ -110,22 +111,6 @@ namespace Milky.OsuPlayer.Windows
             }
 
             return IntPtr.Zero;
-        }
-
-        private void Button_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
-        }
-
-        private void Button_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed)
-                this.DragMove();
-        }
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 

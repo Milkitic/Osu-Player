@@ -23,11 +23,14 @@
     </i:Interaction.Triggers>-->
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
-            <TabItem Style="{StaticResource PinkTabItem}">
+            <TabItem Style="{StaticResource PinkTabItem}"
+                     WindowChrome.IsHitTestVisibleInChrome="True"
+                     Cursor="Hand">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding UiStrExported}" Cursor="Hand" FontSize="16" Padding="26,10"/>
+                    <TextBlock Text="{Binding UiStrExported}" FontSize="16" />
                 </TabItem.Header>
-                <Grid Background="Transparent">
+                <Grid Background="Transparent"
+                      Cursor="Arrow">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition/>
@@ -131,11 +134,13 @@
                 </Grid>
 
             </TabItem>
-            <TabItem Style="{StaticResource PinkTabItem}">
+            <TabItem Style="{StaticResource PinkTabItem}"
+                     WindowChrome.IsHitTestVisibleInChrome="True"
+                     Cursor="Hand">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding UiStrExporting}" FontSize="16" Cursor="Hand" Padding="18,10"/>
+                    <TextBlock Text="{Binding UiStrExporting}" FontSize="16" />
                 </TabItem.Header>
-                <Grid Background="Transparent" />
+                <Grid Background="Transparent" Cursor="Arrow" />
             </TabItem>
         </TabControl>
 

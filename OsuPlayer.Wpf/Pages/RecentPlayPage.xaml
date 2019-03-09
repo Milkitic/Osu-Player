@@ -11,11 +11,14 @@
 
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
-            <TabItem Style="{StaticResource PinkTabItem}">
+            <TabItem Style="{StaticResource PinkTabItem}"
+                     WindowChrome.IsHitTestVisibleInChrome="True"
+                     Cursor="Hand">
                 <TabItem.Header>
-                    <TextBlock Text="音乐" Cursor="Hand" FontSize="16" Padding="18,10"/>
+                    <TextBlock Text="音乐" FontSize="16" />
                 </TabItem.Header>
-                <Grid Margin="0,0,0,0">
+                <Grid Margin="0,0,0,0"
+                      Cursor="Arrow">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition />
