@@ -113,7 +113,7 @@ namespace Milky.OsuPlayer.Pages.Settings
         private void ReloadLyric()
         {
             InstanceManage.GetInstance<LyricsInst>().ReloadLyricProvider();
-            _mainWindow.SetLyric();
+            _mainWindow.SetLyricSynchronously();
         }
     }
 }

@@ -1,15 +1,16 @@
-﻿using OSharp.Beatmap;
-using osu_database_reader.Components.Beatmaps;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using Milky.OsuPlayer.Common;
+﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
+using OSharp.Beatmap;
+using osu_database_reader.Components.Beatmaps;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using Collection = Milky.OsuPlayer.Common.Data.EF.Model.Collection;
 
 namespace Milky.OsuPlayer.Pages
@@ -55,12 +56,12 @@ namespace Milky.OsuPlayer.Pages
                 CollectionViewModel.CopyFrom(DbOperate.GetCollections().OrderByDescending(k => k.CreateTime)));
         }
 
-        public static void AddToCollection(Collection col, BeatmapEntry entry)
+        public static async Task AddToCollectionAsync(Collection col, BeatmapEntry entry)
         {
             if (string.IsNullOrEmpty(col.ImagePath))
             {
-                OsuFile osuFile =
-                     OsuFile.ReadFromFile(Path.Combine(Domain.OsuSongPath, entry.FolderName, entry.BeatmapFileName));
+                var osuFile = await
+                     OsuFile.ReadFromFileAsync(Path.Combine(Domain.OsuSongPath, entry.FolderName, entry.BeatmapFileName));
                 if (osuFile.Events.BackgroundInfo != null)
                 {
                     var imgPath = Path.Combine(Domain.OsuSongPath, entry.FolderName, osuFile.Events.BackgroundInfo.Filename);

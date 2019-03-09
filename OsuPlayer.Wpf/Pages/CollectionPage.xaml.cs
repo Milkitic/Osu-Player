@@ -114,7 +114,7 @@ namespace Milky.OsuPlayer.Pages
             }
             //var dataModel = (BeatmapDataModel)MapList.SelectedItem;
             UpdateList();
-            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
         }
 
         private void BtnDelCol_Click(object sender, RoutedEventArgs e)
@@ -198,7 +198,7 @@ namespace Milky.OsuPlayer.Pages
             if (map == null) return;
             await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                  map.BeatmapFileName));
-            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.None, PlayListMode.Collection, _entries);
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.Collection, _entries);
         }
 
         private BeatmapEntry GetSelected()

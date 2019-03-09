@@ -72,7 +72,7 @@ namespace Milky.OsuPlayer.Pages
                 DbOperate.RemoveFromRecent(entry.GetIdentity());
             }
             UpdateList();
-            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.All, PlayListMode.RecentList);
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
         }
 
         private void BtnDelAll_Click(object sender, RoutedEventArgs e)
@@ -151,7 +151,7 @@ namespace Milky.OsuPlayer.Pages
 
             await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
                    map.BeatmapFileName));
-            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.None, PlayListMode.RecentList);
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.RecentList);
         }
 
         private BeatmapEntry GetSelected()

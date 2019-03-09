@@ -1,7 +1,10 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Instances;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +13,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Instances;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -47,14 +47,22 @@ namespace Milky.OsuPlayer.Windows
         /// Call lyric provider to check lyric
         /// todo: this should run synchronously.
         /// </summary>
-        public void SetLyric()
+        public void SetLyricSynchronously()
         {
             if (!LyricWindow.IsVisible) return;
-            if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;
-            var lyric = InstanceManage.GetInstance<LyricsInst>().LyricProvider.GetLyric(InstanceManage.GetInstance<PlayersInst>().AudioPlayer.OsuFile.Metadata.ArtistMeta.ToUnicodeString(),
-                InstanceManage.GetInstance<PlayersInst>().AudioPlayer.OsuFile.Metadata.TitleMeta.ToUnicodeString(), InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Duration);
-            LyricWindow.SetNewLyric(lyric, InstanceManage.GetInstance<PlayersInst>().AudioPlayer.OsuFile);
-            LyricWindow.StartWork();
+            var provider = InstanceManage.GetInstance<LyricsInst>().LyricProvider;
+            var player = InstanceManage.GetInstance<PlayersInst>().AudioPlayer;
+
+            if (provider == null || player == null) return;
+
+            var meta = player.OsuFile.Metadata;
+            Task.Run(() =>
+            {
+                var lyric = provider.GetLyric(meta.ArtistMeta.ToUnicodeString(), meta.TitleMeta.ToUnicodeString(), // will takes about 900ms
+                    player.Duration);
+                LyricWindow.SetNewLyric(lyric, player.OsuFile);
+                LyricWindow.StartWork();
+            });
         }
 
         /// <summary>
