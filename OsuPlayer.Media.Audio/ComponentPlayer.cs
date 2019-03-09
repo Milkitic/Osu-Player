@@ -50,7 +50,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public static ComponentPlayer Current { get; set; }
 
-        private ComponentPlayer(string filePath, OsuFile osuFile)
+        public ComponentPlayer(string filePath, OsuFile osuFile)
         {
             Current?.Dispose();
             Current = this;
@@ -58,7 +58,9 @@ namespace Milky.OsuPlayer.Media.Audio
             OsuFile = osuFile;
             HitsoundPlayer = new HitsoundPlayer(filePath, osuFile);
 
-            FileInfo musicInfo = new FileInfo(Path.Combine(Path.GetDirectoryName(filePath), OsuFile.General.AudioFilename));
+            FileInfo fileInfo = new FileInfo(filePath);
+            DirectoryInfo dirInfo = fileInfo.Directory;
+            FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, OsuFile.General.AudioFilename));
             MusicPlayer = new MusicPlayer(musicInfo.FullName);
 
             HitsoundPlayer.SetDuration(MusicPlayer.Duration);
@@ -66,6 +68,7 @@ namespace Milky.OsuPlayer.Media.Audio
             MusicPlayer.PlayerFinished += Players_OnFinished;
 
             NotifyProgress(_cts.Token);
+
             RaisePlayerLoadedEvent(this, new EventArgs());
         }
 
@@ -77,11 +80,6 @@ namespace Milky.OsuPlayer.Media.Audio
             ResetWithoutNotify();
 
             RaisePlayerFinishedEvent(this, new EventArgs());
-        }
-
-        public static async Task<ComponentPlayer> InitializeAsync(string filePath, OsuFile osuFile)
-        {
-            return await Task.Run(() => new ComponentPlayer(filePath, osuFile));
         }
 
         public override void Play()

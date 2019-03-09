@@ -1,8 +1,7 @@
-﻿using Milky.OsuPlayer.Media.Audio;
-using OSharp.Beatmap;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Milky.OsuPlayer.Media.Audio;
+using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Instances
 {
@@ -10,9 +9,9 @@ namespace Milky.OsuPlayer.Instances
     {
         public ComponentPlayer AudioPlayer { get; private set; }
 
-        public async Task LoadAudioPlayerAsync(string filePath, OsuFile osuFile)
+        public void LoadAudioPlayer(string filePath, OsuFile osuFile)
         {
-            AudioPlayer = await ComponentPlayer.InitializeAsync(filePath, osuFile);
+            AudioPlayer = new ComponentPlayer(filePath, osuFile);
         }
 
         public void ClearAudioPlayer()

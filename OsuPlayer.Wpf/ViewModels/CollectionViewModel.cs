@@ -30,7 +30,7 @@ namespace Milky.OsuPlayer.ViewModels
                 {
                     var entry = (BeatmapEntry)obj;
                     var col = DbOperate.GetCollectionById(Id);
-                    SelectCollectionPage.AddToCollectionAsync(col, entry);
+                    SelectCollectionPage.AddToCollection(col, entry);
                 });
             }
         }

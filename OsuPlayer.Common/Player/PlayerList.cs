@@ -1,10 +1,9 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Instances;
 using osu_database_reader.Components.Beatmaps;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Milky.OsuPlayer.Common.Player
 {
@@ -31,8 +30,8 @@ namespace Milky.OsuPlayer.Common.Player
         /// <param name="playListMode">If the value is null, current mode will not be infected.</param>
         /// <param name="entries">If the value is not null, current mode will forcly changed to collection mode.</param>
         /// <param name="finishList"></param>
-        public async Task RefreshPlayListAsync(
-            FreshType freshType,
+        public void RefreshPlayList(
+            FreshType freshType, 
             PlayListMode? playListMode = null,
             IEnumerable<BeatmapEntry> entries = null, bool finishList = false)
         {
@@ -54,7 +53,7 @@ namespace Milky.OsuPlayer.Common.Player
                     default:
                     case PlayListMode.Collection:
                         if (entries != null)
-                            Entries = await Task.Run(() => entries.ToList()); //todo: 150ms
+                            Entries = entries.ToList();
                         break;
                 }
 
@@ -104,7 +103,7 @@ namespace Milky.OsuPlayer.Common.Player
         /// <param name="isManual">Whether it is called by user (Click next button manually)
         /// or called by application (A song finshed).</param>
         /// <param name="entry"></param>
-        public async Task<(ChangeType, BeatmapEntry)> PlayToAsync(bool isNext, bool isManual)
+        public ChangeType PlayTo(bool isNext, bool isManual, out BeatmapEntry entry)
         {
             if (!isNext)
                 Pointer--;
@@ -113,7 +112,8 @@ namespace Milky.OsuPlayer.Common.Player
 
             if (Indexes.Count == 0 || Entries.Count == 0)
             {
-                return (ChangeType.Stop, null);
+                entry = null;
+                return ChangeType.Stop;
             }
 
             if (isManual)
@@ -121,21 +121,23 @@ namespace Milky.OsuPlayer.Common.Player
                 if (Pointer > Indexes.Count - 1)
                 {
                     Pointer = 0;
-                    await RefreshPlayListAsync(FreshType.IndexOnly, finishList: true);
+                    RefreshPlayList(FreshType.IndexOnly, finishList: true);
                 }
             }
             else
             {
                 if (PlayerMode == PlayerMode.Single)
                 {
+                    entry = Entries.First(k => k.GetIdentity().Equals(CurrentIdentity));
                     Pointer--;
-                    return (ChangeType.Stop, Entries.First(k => k.GetIdentity().Equals(CurrentIdentity)));
+                    return ChangeType.Stop;
                 }
 
                 if (PlayerMode == PlayerMode.SingleLoop)
                 {
+                    entry = Entries.First(k => k.GetIdentity().Equals(CurrentIdentity));
                     Pointer--;
-                    return (ChangeType.Keep, Entries.First(k => k.GetIdentity().Equals(CurrentIdentity)));
+                    return ChangeType.Keep;
                 }
 
                 if (Pointer > Indexes.Count - 1)
@@ -143,16 +145,18 @@ namespace Milky.OsuPlayer.Common.Player
                     Pointer = 0;
                     if (PlayerMode == PlayerMode.LoopRandom || PlayerMode == PlayerMode.Loop)
                     {
-                        await RefreshPlayListAsync(FreshType.IndexOnly, finishList: true);
+                        RefreshPlayList(FreshType.IndexOnly, finishList: true);
                     }
                     else
                     {
-                        return (ChangeType.Stop, null);
+                        entry = null;
+                        return ChangeType.Stop;
                     }
                 }
             }
 
-            return (ChangeType.Change, Entries[Indexes[Pointer]]);
+            entry = Entries[Indexes[Pointer]];
+            return ChangeType.Change;
         }
 
         public enum ChangeType

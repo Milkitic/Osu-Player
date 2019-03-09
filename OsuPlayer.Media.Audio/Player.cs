@@ -12,6 +12,34 @@ namespace Milky.OsuPlayer.Media.Audio
 {
     public abstract class Player : IPlayer
     {
+        public event EventHandler PlayerLoaded;
+        public event EventHandler<ProgressEventArgs> PlayerStarted;
+        public event EventHandler PlayerStopped;
+        public event EventHandler<ProgressEventArgs> PlayerPaused;
+        public event EventHandler PlayerFinished;
+        public event EventHandler<ProgressEventArgs> PositionChanged;
+        public event EventHandler<ProgressEventArgs> PositionSet;
+
+        protected virtual void RaisePlayerLoadedEvent(object sender, EventArgs e) =>
+            InvokeActionOnMainThread(() => PlayerLoaded?.Invoke(sender, e));
+
+        protected virtual void RaisePlayerStartedEvent(object sender, ProgressEventArgs e) =>
+            InvokeActionOnMainThread(() => PlayerStarted?.Invoke(sender, e));
+
+        protected virtual void RaisePlayerStoppedEvent(object sender, EventArgs e) =>
+            InvokeActionOnMainThread(() => PlayerStopped?.Invoke(sender, e));
+
+        protected virtual void RaisePlayerPausedEvent(object sender, ProgressEventArgs e) =>
+            InvokeActionOnMainThread(() => PlayerPaused?.Invoke(sender, e));
+
+        protected virtual void RaisePlayerFinishedEvent(object sender, EventArgs e) =>
+            InvokeActionOnMainThread(() => PlayerFinished?.Invoke(sender, e));
+
+        protected virtual void RaiseProgressChangedEvent(object sender, ProgressEventArgs e) =>
+            InvokeActionOnMainThread(() => PositionChanged?.Invoke(sender, e));
+
+        protected virtual void RaiseProgressSetEvent(object sender, ProgressEventArgs e) =>
+            InvokeActionOnMainThread(() => PositionSet?.Invoke(sender, e));
 
         private static readonly SynchronizationContext UiContext;
 
@@ -38,49 +66,10 @@ namespace Milky.OsuPlayer.Media.Audio
             if (UiContext == null) UiContext = SynchronizationContext.Current;
         }
 
-        public event EventHandler PlayerLoaded;
-        public event EventHandler<ProgressEventArgs> PlayerStarted;
-        public event EventHandler PlayerStopped;
-        public event EventHandler<ProgressEventArgs> PlayerPaused;
-        public event EventHandler PlayerFinished;
-        public event EventHandler<ProgressEventArgs> PositionChanged;
-        public event EventHandler<ProgressEventArgs> PositionSet;
-
-        protected void RaisePlayerLoadedEvent(object sender, EventArgs e) =>
-            InvokeActionOnMainThread(() => PlayerLoaded?.Invoke(sender, e));
-
-        protected void RaisePlayerStartedEvent(object sender, ProgressEventArgs e) =>
-            InvokeActionOnMainThread(() => PlayerStarted?.Invoke(sender, e));
-
-        protected void RaisePlayerStoppedEvent(object sender, EventArgs e) =>
-            InvokeActionOnMainThread(() => PlayerStopped?.Invoke(sender, e));
-
-        protected void RaisePlayerPausedEvent(object sender, ProgressEventArgs e) =>
-            InvokeActionOnMainThread(() => PlayerPaused?.Invoke(sender, e));
-
-        protected void RaisePlayerFinishedEvent(object sender, EventArgs e) =>
-            InvokeActionOnMainThread(() => PlayerFinished?.Invoke(sender, e));
-
-        protected void RaiseProgressChangedEvent(object sender, ProgressEventArgs e) =>
-            InvokeActionOnMainThread(() => PositionChanged?.Invoke(sender, e));
-
-        protected void RaiseProgressSetEvent(object sender, ProgressEventArgs e) =>
-            InvokeActionOnMainThread(() => PositionSet?.Invoke(sender, e));
-
-        public bool RaiseEventInUiThread { get; set; } = true;
-
-        public abstract int ProgressRefreshInterval { get; set; }
-
-        public abstract PlayerStatus PlayerStatus { get; protected set; }
-        public abstract int Duration { get; protected set; }
-        public abstract int PlayTime { get; protected set; }
-
-        
-        public abstract void Play();
-        public abstract void Pause();
-        public abstract void Stop();
-        public abstract void Replay();
-        public abstract void SetTime(int ms, bool play = true);
+        private void InvokeActionOnMainThread(Action action)
+        {
+            UiContext.Send(obj => { action?.Invoke(); }, null);
+        }
 
         protected virtual void NotifyProgress(CancellationToken cancellationToken)
         {
@@ -105,12 +94,17 @@ namespace Milky.OsuPlayer.Media.Audio
             }, TaskCreationOptions.LongRunning);
         }
 
-        private void InvokeActionOnMainThread(Action action)
-        {
-            if (RaiseEventInUiThread)
-                UiContext.Send(obj => { action?.Invoke(); }, null);
-            else
-                action?.Invoke();
-        }
+
+        public abstract int ProgressRefreshInterval { get; set; }
+
+        public abstract PlayerStatus PlayerStatus { get; protected set; }
+        public abstract int Duration { get; protected set; }
+        public abstract int PlayTime { get; protected set; }
+
+        public abstract void Play();
+        public abstract void Pause();
+        public abstract void Stop();
+        public abstract void Replay();
+        public abstract void SetTime(int ms, bool play = true);
     }
 }

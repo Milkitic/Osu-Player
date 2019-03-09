@@ -8,7 +8,6 @@ using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.ViewModels;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -18,6 +17,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
+using Milky.OsuPlayer.ViewModels;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -38,8 +38,8 @@ namespace Milky.OsuPlayer.Windows
                 var entries = InstanceManage.GetInstance<OsuDbInst>().Beatmaps
                     .FilterByIdentities(PlayerConfig.Current.CurrentList);
                 if (App.UseDbMode)
-                    await InstanceManage.GetInstance<PlayerList>()
-                        .RefreshPlayListAsync(PlayerList.FreshType.All, entries: entries);
+                    InstanceManage.GetInstance<PlayerList>()
+                        .RefreshPlayList(PlayerList.FreshType.All, entries: entries);
 
                 bool play = PlayerConfig.Current.Play.AutoPlay;
                 await PlayNewFile(PlayerConfig.Current.CurrentPath, play);
@@ -310,7 +310,7 @@ namespace Milky.OsuPlayer.Windows
         private async void BtnOpen_Click(object sender, RoutedEventArgs e)
         {
             await PlayNewFile(LoadFile());
-            await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None);
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.None);
         }
 
         public void BtnPrev_Click(object sender, RoutedEventArgs e)
@@ -331,7 +331,7 @@ namespace Milky.OsuPlayer.Windows
         /// <summary>
         /// Popup a dialog for adding music to a collection.
         /// </summary>
-        private async void BtnLike_Click(object sender, RoutedEventArgs e)
+        private void BtnLike_Click(object sender, RoutedEventArgs e)
         {
             if (!ValidateDb()) return;
             var entry = InstanceManage.GetInstance<OsuDbInst>().Beatmaps.FilterByIdentity(InstanceManage.GetInstance<PlayerList>().CurrentIdentity);
@@ -354,7 +354,7 @@ namespace Milky.OsuPlayer.Windows
                 }
                 else
                 {
-                    await SelectCollectionPage.AddToCollectionAsync(collection, entry);
+                    SelectCollectionPage.AddToCollection(collection, entry);
                     InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFaved = true;
                 }
             }
@@ -383,7 +383,7 @@ namespace Milky.OsuPlayer.Windows
             ((ToggleButton)sender).IsChecked = true;
             _ischanging = false;
         }
-        private async void PlayMode_Click(object sender, RoutedEventArgs e)
+        private void PlayMode_Click(object sender, RoutedEventArgs e)
         {
             var btn = (ToggleButton)sender;
             PlayerMode playmode;
@@ -416,11 +416,11 @@ namespace Milky.OsuPlayer.Windows
                     break;
             }
 
-            await SetPlayMode(playmode);
+            SetPlayMode(playmode);
             PopMode.IsOpen = false;
         }
 
-        private async Task SetPlayMode(PlayerMode playmode)
+        private void SetPlayMode(PlayerMode playmode)
         {
             switch (playmode)
             {
@@ -449,7 +449,7 @@ namespace Milky.OsuPlayer.Windows
             if (playmode == InstanceManage.GetInstance<PlayerList>().PlayerMode)
                 return;
             InstanceManage.GetInstance<PlayerList>().PlayerMode = playmode;
-            await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.IndexOnly);
+            InstanceManage.GetInstance<PlayerList>().RefreshPlayList(PlayerList.FreshType.IndexOnly);
             PlayerConfig.Current.Play.PlayListMode = playmode;
             PlayerConfig.SaveCurrent();
         }
