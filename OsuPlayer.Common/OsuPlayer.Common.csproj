@@ -119,15 +119,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OSharp\OSharp.Beatmap\OSharp.Beatmap.csproj">
-      <Project>{0040102e-2eab-4593-b130-d3d95cb201e5}</Project>
+    <ProjectReference Include="..\OsuPlayer.Wpf\OSharp.Beatmap\OSharp.Beatmap.csproj">
+      <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
       <Name>OSharp.Beatmap</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\OSharp\OSharp.Common\OSharp.Common.csproj">
-      <Project>{7cc8c305-e319-4a56-beb3-680077d4837c}</Project>
+    <ProjectReference Include="..\OsuPlayer.Wpf\OSharp.Common\OSharp.Common.csproj">
+      <Project>{4c8d4eea-e81b-4fd3-b6a4-9857abc152a5}</Project>
       <Name>OSharp.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WpfApi\WpfApi.csproj">
+    <ProjectReference Include="..\OsuPlayer.Wpf\WpfApi\WpfApi.csproj">
       <Project>{028e6f4e-d538-4b83-904c-c94c2f1e3c83}</Project>
       <Name>WpfApi</Name>
     </ProjectReference>
