@@ -27,6 +27,8 @@ namespace Milky.OsuPlayer.Common.Instances
 
         public async Task LoadNewDbAsync(string path)
         {
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+                return;
             var db = await ReadDbAsync(path);
             BeatmapDb = db;
         }

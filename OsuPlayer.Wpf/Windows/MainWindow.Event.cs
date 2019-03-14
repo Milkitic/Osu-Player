@@ -309,8 +309,12 @@ namespace Milky.OsuPlayer.Windows
 
         private async void BtnOpen_Click(object sender, RoutedEventArgs e)
         {
-            await PlayNewFile(LoadFile());
-            await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None);
+            var path = LoadFile();
+            if (path != null)
+            {
+                await PlayNewFile(path);
+                await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None);
+            }
         }
 
         public void BtnPrev_Click(object sender, RoutedEventArgs e)
