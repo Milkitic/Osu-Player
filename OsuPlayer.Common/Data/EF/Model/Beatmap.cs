@@ -6,9 +6,9 @@ using Newtonsoft.Json;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
 
-namespace Milky.OsuPlayer.Common.Data
+namespace Milky.OsuPlayer.Common.Data.EF.Model
 {
-    public class BeatmapInfo : IMapIdentifiable
+    public class Beatmap : IMapIdentifiable
     {
         public string Artist { get; set; }
         public string ArtistUnicode { get; set; }
@@ -34,28 +34,8 @@ namespace Milky.OsuPlayer.Common.Data
 
         [Required, Column("id")]
         [JsonProperty("id")]
-        public string Id { get; set; }
-
-        [Column("offset")]
-        [JsonProperty("offset")]
-        public int Offset { get; set; }
-
-        [Column("lastPlayTime")]
-        [JsonProperty("lastPlayTime")]
-        public DateTime? LastPlayTime { get; set; }
-
-        [Column("playCount")]
-        [JsonProperty("playCount")]
-        public int PlayCount { get; set; } = 0;
-
-        [Column("exportFile")]
-        [JsonProperty("exportFile")]
-        public string ExportFile { get; set; }
-
-        [Column("addTime")]
-        [JsonProperty("addTime")]
-        public DateTime? AddTime { get; }
-
+        public Guid Id { get; set; }
+        
         #region Only used in HoLLy
 
         //public string AudioFileName { get; set; }
@@ -92,7 +72,7 @@ namespace Milky.OsuPlayer.Common.Data
 
         #endregion
 
-        public BeatmapInfo UpdateFromHolly(BeatmapEntry entry)
+        public Beatmap UpdateFromHolly(BeatmapEntry entry)
         {
             Artist = entry.Artist;
             ArtistUnicode = entry.ArtistUnicode;
@@ -119,9 +99,9 @@ namespace Milky.OsuPlayer.Common.Data
             return this;
         }
 
-        public static BeatmapInfo ParseFromHolly(BeatmapEntry entry)
+        public static Beatmap ParseFromHolly(BeatmapEntry entry)
         {
-            return (new BeatmapInfo()).UpdateFromHolly(entry);
+            return (new Beatmap()).UpdateFromHolly(entry);
         }
     }
 

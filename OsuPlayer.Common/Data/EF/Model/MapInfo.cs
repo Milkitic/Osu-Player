@@ -20,7 +20,8 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
             Offset = offset;
             LastPlayTime = lastPlayTime;
             AddTime = addTime;
-            if (exportFile != null) ExportFile = exportFile;
+            if (exportFile != null)
+                ExportFile = exportFile;
         }
 
         [Required, Column("id")]
@@ -43,12 +44,17 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         [JsonProperty("lastPlayTime")]
         public DateTime? LastPlayTime { get; set; }
 
+        //[Column("playCount")]
+        //[JsonProperty("playCount")]
+        //public int PlayCount { get; set; } = 0;
+
         [Column("exportFile")]
         [JsonProperty("exportFile")]
         public string ExportFile { get; set; }
 
         //Extension
         [JsonProperty("addTime")]
+        //[Column("addTime")]
         public DateTime? AddTime { get; }
 
     }
