@@ -179,8 +179,10 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             Requeue(ms);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
+            base.Dispose();
+
             Stop();
             if (_playingTask != null) Task.WaitAll(_playingTask);
             _playingTask?.Dispose();

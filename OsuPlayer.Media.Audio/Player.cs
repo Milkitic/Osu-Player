@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
-    public abstract class Player : IPlayer
+    public abstract class Player : IPlayer, IDisposable
     {
         private static readonly SynchronizationContext UiContext;
 
@@ -110,6 +110,17 @@ namespace Milky.OsuPlayer.Media.Audio
                     }
                 }
             }, TaskCreationOptions.LongRunning);
+        }
+
+        public virtual void Dispose()
+        {
+            PlayerLoaded = null;
+            PlayerStarted = null;
+            PlayerStopped = null;
+            PlayerPaused = null;
+            PlayerFinished = null;
+            PositionChanged = null;
+            PositionSet = null;
         }
     }
 }

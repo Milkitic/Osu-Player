@@ -227,8 +227,10 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             PlayerStatus = PlayerStatus.Stopped;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
+            base.Dispose();
+
             _cts.Cancel();
             _playThread?.Abort();
             _soundTouch?.Dispose();
@@ -238,6 +240,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             _reader?.Dispose();
             _reader = null;
             _cts?.Dispose();
+
+            PlayerConfig.Current.Volume.PropertyChanged -= Volume_PropertyChanged;
         }
 
         #region Private methods

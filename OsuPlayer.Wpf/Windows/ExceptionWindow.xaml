@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Milky.OsuPlayer.Windows"
         mc:Ignorable="d"
-        Title="Oops!" Height="360" Width="315" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="Oops!" Height="360" Width="480" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Window.DataContext>
         <local:ExceptionWindowViewModel />
     </Window.DataContext>
@@ -28,9 +28,9 @@
         <TextBox Grid.Row="4" FontSize="11" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" 
                  VerticalScrollBarVisibility="Auto"
                  Text="{Binding Exception,Converter={StaticResource ExceptionToStringConverter}}" />
-        <Button Grid.Row="5" Content="Exit" HorizontalAlignment="Left" Margin="0,15,0,0" Width="75" Height="22"
+        <Button Grid.Row="5" Content="Exit" HorizontalAlignment="Left" Margin="347,14,0,0" Width="75" Height="24"
                 Click="BtnExit_Click" />
-        <Button Grid.Row="5" Content="Continue" HorizontalAlignment="Left" Margin="180,15,0,0" Width="76"
+        <Button Grid.Row="5" Content="Continue" HorizontalAlignment="Left" Margin="263,14,0,0" Width="76" Height="24"
                 Visibility="{Binding IsUiException,Converter={StaticResource TrueToVisibleConverter},ConverterParameter=True}"
                 Click="BtnContinue_Click" />
     </Grid>

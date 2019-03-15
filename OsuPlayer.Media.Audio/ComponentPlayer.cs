@@ -145,8 +145,10 @@ namespace Milky.OsuPlayer.Media.Audio
             HitsoundPlayer.SetPlayMod(mod, play);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
+            base.Dispose();
+
             _cts?.Cancel();
             _cts?.Dispose();
             HitsoundPlayer?.Dispose();
