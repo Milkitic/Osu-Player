@@ -237,7 +237,7 @@ namespace Milky.OsuPlayer.Windows
                     if (result == MessageBoxResult.OK)
                     {
                         if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNextAsync(false, true);
+                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
                     }
                 }
                 catch (BadOsuFormatException ex)
@@ -247,7 +247,7 @@ namespace Milky.OsuPlayer.Windows
                     if (result == MessageBoxResult.OK)
                     {
                         if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNextAsync(false, true);
+                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
                     }
                 }
                 catch (VersionNotSupportedException ex)
@@ -257,7 +257,7 @@ namespace Milky.OsuPlayer.Windows
                     if (result == MessageBoxResult.OK)
                     {
                         if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNextAsync(false, true);
+                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
                     }
                 }
                 catch (Exception ex)
@@ -267,7 +267,7 @@ namespace Milky.OsuPlayer.Windows
                     if (result == MessageBoxResult.OK)
                     {
                         if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) PlayNextAsync(false, true);
+                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
                     }
 
                     Console.WriteLine(ex);
@@ -292,9 +292,9 @@ namespace Milky.OsuPlayer.Windows
                 var player = (ComponentPlayer)sender;
                 Console.WriteLine(player.OsuFile.ToString() + @" PlayerLoaded.");
             };
-            audioPlayer.PlayerFinished += (sender, e) =>
+            audioPlayer.PlayerFinished += async (sender, e) =>
             {
-                PlayNextAsync(false, true);
+                await PlayNextAsync(false, true);
             };
             audioPlayer.PlayerPaused += (sender, e) =>
             {
@@ -418,7 +418,7 @@ namespace Milky.OsuPlayer.Windows
         /// <param name="isManual">Whether it is called by user (Click next button manually)
         /// or called by application (A song finshed).</param>
         /// <param name="isNext"></param>
-        private async void PlayNextAsync(bool isManual, bool isNext)
+        private async Task PlayNextAsync(bool isManual, bool isNext)
         {
             if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;
             (PlayerList.ChangeType result, BeatmapEntry entry) = await InstanceManage.GetInstance<PlayerList>().PlayToAsync(isNext, isManual);

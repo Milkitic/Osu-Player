@@ -13,11 +13,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Windows
 {
     partial class MainWindow
     {
+        private Task _searchLyricTask;
+
         /// <summary>
         /// Update collections in the navigation bar.
         /// </summary>
@@ -50,11 +53,25 @@ namespace Milky.OsuPlayer.Windows
         public void SetLyricSynchronously()
         {
             if (!LyricWindow.IsVisible) return;
-            if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;
-            var lyric = InstanceManage.GetInstance<LyricsInst>().LyricProvider.GetLyric(InstanceManage.GetInstance<PlayersInst>().AudioPlayer.OsuFile.Metadata.ArtistMeta.ToUnicodeString(),
-                InstanceManage.GetInstance<PlayersInst>().AudioPlayer.OsuFile.Metadata.TitleMeta.ToUnicodeString(), InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Duration);
-            LyricWindow.SetNewLyric(lyric, InstanceManage.GetInstance<PlayersInst>().AudioPlayer.OsuFile);
-            LyricWindow.StartWork();
+
+            Task.Run(async () =>
+            {
+                if (_searchLyricTask?.IsTaskBusy() == true)
+                    await Task.WhenAny(_searchLyricTask);
+
+                _searchLyricTask = Task.Run(async () =>
+                {
+                    var player = InstanceManage.GetInstance<PlayersInst>().AudioPlayer;
+                    if (player == null) return;
+                    var meta = player.OsuFile.Metadata;
+                    var lyricInst = InstanceManage.GetInstance<LyricsInst>();
+                    var lyric = await lyricInst.LyricProvider.GetLyricAsync(meta.ArtistMeta.ToUnicodeString(),
+                        meta.TitleMeta.ToUnicodeString(), player.Duration);
+                    LyricWindow.SetNewLyric(lyric, player.OsuFile);
+                    LyricWindow.StartWork();
+                });
+            });
+
         }
 
         /// <summary>

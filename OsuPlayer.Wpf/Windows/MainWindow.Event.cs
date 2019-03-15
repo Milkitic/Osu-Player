@@ -317,14 +317,14 @@ namespace Milky.OsuPlayer.Windows
             }
         }
 
-        public void BtnPrev_Click(object sender, RoutedEventArgs e)
+        public async void BtnPrev_Click(object sender, RoutedEventArgs e)
         {
-            PlayNextAsync(true, false);
+            await PlayNextAsync(true, false);
         }
 
-        public void BtnNext_Click(object sender, RoutedEventArgs e)
+        public async void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            PlayNextAsync(true, true);
+            await PlayNextAsync(true, true);
         }
 
         private void BtnMode_Click(object sender, RoutedEventArgs e)
