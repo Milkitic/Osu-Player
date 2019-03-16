@@ -94,7 +94,7 @@ namespace Milky.OsuPlayer.Windows
             Width = MinWidth;
             Topmost = true;
             BtnPrev.Margin = new Thickness(5);
-            BtnPlay.Margin = new Thickness(5);
+            //BtnPlay.Margin = new Thickness(5);
             BtnNext.Margin = new Thickness(5);
             BtnMode.Margin = new Thickness(2);
             BtnLike.Margin = new Thickness(2);
@@ -135,7 +135,7 @@ namespace Milky.OsuPlayer.Windows
             MinWidth = 840 + 38;
             Width = 960 + 38;
             BtnPrev.Margin = new Thickness(8);
-            BtnPlay.Margin = new Thickness(8);
+            //BtnPlay.Margin = new Thickness(8);
             BtnNext.Margin = new Thickness(8);
             BtnMode.Margin = new Thickness(8);
             BtnLike.Margin = new Thickness(8);

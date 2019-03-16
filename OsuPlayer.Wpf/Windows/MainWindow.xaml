@@ -12,6 +12,7 @@
                           xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
                           xmlns:loaders="clr-namespace:Loaders;assembly=MrMitch.Loaders"
                           xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
+                          xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
                           mc:Ignorable="d"
                           Width="998" Height="759" MinWidth="878" MinHeight="138"
                           Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
@@ -458,14 +459,44 @@
                 </Grid>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
                     <Button x:Name="BtnPrev" Style="{StaticResource PrevButtonStyle}" Click="BtnPrev_Click" />
-                    <Button x:Name="BtnPlay" Click="BtnPlay_Click">
+                    <custom:PlayerControlButton
+                        x:Name="PlayButton"
+                        IsTabStop="False"
+                        Width="32" Height="32"
+                        BorderRadius="16"
+                        Background="{StaticResource TextureBrush}"
+                        Click="BtnPlay_Click">
+                        <ContentPresenter x:Name="PlayIcon">
+                            <ContentPresenter.Content>
+                                <MultiBinding Converter="{StaticResource PlayingConverter}">
+                                    <Binding Path="Player.IsPlaying" />
+                                    <Binding RelativeSource="{RelativeSource Self}" />
+                                </MultiBinding>
+                            </ContentPresenter.Content>
+                        </ContentPresenter>
                         <Button.Style>
-                            <MultiBinding Converter="{StaticResource PlayingConverter}">
-                                <Binding Path="Player.IsPlaying" />
-                                <Binding RelativeSource="{RelativeSource AncestorType=Window}" />
-                            </MultiBinding>
+                            <Style TargetType="custom:PlayerControlButton">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Player.IsPlaying}" Value="True">
+                                        <Setter Property="ImageMargin" Value="0" />
+                                        <Setter Property="ImageWidth" Value="16" />
+                                        <Setter Property="ImageHeight" Value="16" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Player.IsPlaying}" Value="False">
+                                        <Setter Property="ImageMargin" Value="2,0,0,0" />
+                                        <Setter Property="ImageWidth" Value="20" />
+                                        <Setter Property="ImageHeight" Value="20" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                        <Setter Property="Margin" Value="8" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                        <Setter Property="Margin" Value="5" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
                         </Button.Style>
-                    </Button>
+                    </custom:PlayerControlButton>
                     <Button x:Name="BtnNext" Style="{StaticResource NextButtonStyle}" Click="BtnNext_Click" />
                     <Button x:Name="BtnOpen" Style="{StaticResource OpenButtonStyle}" Click="BtnOpen_Click" />
                 </StackPanel>

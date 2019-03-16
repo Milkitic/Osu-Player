@@ -470,6 +470,10 @@
       <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>
       <Name>OsuPlayer.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.ControlLibrary\OsuPlayer.ControlLibrary.csproj">
+      <Project>{30dfc628-f9a6-42b1-9bbd-73489e3ab204}</Project>
+      <Name>OsuPlayer.ControlLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj">
       <Project>{3cd240f8-da65-44f0-ab58-d78f58109786}</Project>
       <Name>OsuPlayer.Media.Audio</Name>

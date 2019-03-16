@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSharp.Storyboard", "OsuPla
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApi", "OsuPlayer.Wpf\WpfApi\WpfApi.csproj", "{028E6F4E-D538-4B83-904C-C94C2F1E3C83}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.ControlLibrary", "OsuPlayer.ControlLibrary\OsuPlayer.ControlLibrary.csproj", "{30DFC628-F9A6-42B1-9BBD-73489E3AB204}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analysis|Any CPU = Analysis|Any CPU
@@ -215,6 +217,26 @@ Global
 		{028E6F4E-D538-4B83-904C-C94C2F1E3C83}.Release|Any CPU.Build.0 = Release|Any CPU
 		{028E6F4E-D538-4B83-904C-C94C2F1E3C83}.Release|x64.ActiveCfg = Release|x64
 		{028E6F4E-D538-4B83-904C-C94C2F1E3C83}.Release|x64.Build.0 = Release|x64
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Analysis|Any CPU.ActiveCfg = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Analysis|Any CPU.Build.0 = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Analysis|x64.ActiveCfg = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Analysis|x64.Build.0 = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Debug|x64.Build.0 = Debug|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Release 4.5|Any CPU.ActiveCfg = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Release 4.5|Any CPU.Build.0 = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Release 4.5|x64.ActiveCfg = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Release 4.5|x64.Build.0 = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Release 4.6|Any CPU.ActiveCfg = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Release 4.6|Any CPU.Build.0 = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Release 4.6|x64.ActiveCfg = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Release 4.6|x64.Build.0 = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Release|x64.ActiveCfg = Release|Any CPU
+		{30DFC628-F9A6-42B1-9BBD-73489E3AB204}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

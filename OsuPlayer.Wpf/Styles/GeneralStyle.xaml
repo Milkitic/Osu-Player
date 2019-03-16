@@ -3,6 +3,7 @@
                     xmlns:local="clr-namespace:Milky.OsuPlayer">
     <BitmapImage x:Key="TitleLogo" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/title.png"/>
     <BitmapImage x:Key="TextrueSource1" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/osu_texture.png"/>
+    <ImageBrush x:Key="TextureBrush" ImageSource="{StaticResource TextrueSource1}"/>
 
     <BitmapImage x:Key="GearS" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/gear_s.png"/>
     <BitmapImage x:Key="ExitS" CacheOption="OnLoad" UriSource="pack://application:,,,/OsuPlayer;component/Resources/exit_s.png"/>

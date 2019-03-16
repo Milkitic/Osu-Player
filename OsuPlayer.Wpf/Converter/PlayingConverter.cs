@@ -1,9 +1,11 @@
-﻿using Milky.OsuPlayer.Windows;
+﻿using Milky.OsuPlayer.ControlLibrary.Custom;
+using Milky.OsuPlayer.Windows;
+using Milky.WpfApi;
 using System;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
-using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Converter
 {
@@ -11,16 +13,27 @@ namespace Milky.OsuPlayer.Converter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            bool isPlaying = (bool)values[0];
-            var window = (Window)values[1];
-            if (window is LyricWindow lyricWindow)
+            if (values[0] is bool isPlaying)
             {
-                return lyricWindow.FindResource(isPlaying ? "PauseButton" : "PlayButton");
-            }
+                if (values[1] is Window window)
+                {
+                    if (window is LyricWindow lyricWindow)
+                    {
+                        return lyricWindow.FindResource(isPlaying ? "PauseButton" : "PlayButton");
+                    }
+                    if (window is MainWindow mainWindow)
+                    {
+                        return Application.Current.FindResource(isPlaying ? "PauseButtonStyle" : "PlayButtonStyle");
+                    }
+                }
+                if (values[1] is ContentPresenter button)
+                {
+                    if (button.Name == "PlayIcon")
+                    {
+                        return Application.Current.FindResource(isPlaying ? "WhitePauseIcon" : "WhitePlayIcon");
+                    }
 
-            if (window is MainWindow mainWindow)
-            {
-                return Application.Current.FindResource(isPlaying ? "PauseButtonStyle" : "PlayButtonStyle");
+                }
             }
 
             return null;

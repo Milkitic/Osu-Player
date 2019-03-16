@@ -21,4 +21,26 @@
                   Data="{StaticResource PageArrowR}" />
         </Canvas>
     </ControlTemplate>
+
+    <Canvas x:Key="WhitePlayIcon" Width="1024" Height="1024">
+        <Path Fill="White">
+            <Path.Data>
+                <PathGeometry Figures="M780.8 475.733333L285.866667 168.533333c-27.733333-17.066667-64 4.266667-64 36.266667v614.4c0 32 36.266667 53.333333 64 36.266667l492.8-307.2c29.866667-14.933333 29.866667-57.6 2.133333-72.533334z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+    <Canvas x:Key="WhitePauseIcon" Width="1024" Height="1024">
+        <Path Fill="White">
+            <Path.Data>
+                <PathGeometry Figures="M757.52 73.107h-62.493c-34.526 0-62.498 27.984-62.498 62.511v749.948c0 34.526 27.974 62.493 62.498 62.493h62.493c34.516 0 62.502-27.968 62.502-62.493v-749.953c-0.001-34.524-27.984-62.509-62.502-62.509z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path Fill="White">
+            <Path.Data>
+                <PathGeometry Figures="M320.054 73.107h-62.502c-34.526 0-62.498 27.984-62.498 62.511v749.948c0 34.526 27.974 62.493 62.498 62.493h62.502c34.505 0 62.493-27.968 62.493-62.493v-749.953c-0.001-34.524-27.984-62.509-62.493-62.509z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
 </ResourceDictionary>
