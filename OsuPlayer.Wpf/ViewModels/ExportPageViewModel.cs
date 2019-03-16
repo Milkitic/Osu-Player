@@ -16,6 +16,7 @@ using System.Windows.Input;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.I18N;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Metadata;

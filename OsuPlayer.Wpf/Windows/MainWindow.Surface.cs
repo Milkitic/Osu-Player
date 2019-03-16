@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Windows

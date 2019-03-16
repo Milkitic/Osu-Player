@@ -4,6 +4,7 @@ using Milky.WpfApi;
 using Milky.WpfApi.Commands;
 using System.Collections.Generic;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 
 namespace Milky.OsuPlayer.ViewModels
 {

@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
-namespace Milky.OsuPlayer.Common.Data.EF.Model
+namespace Milky.OsuPlayer.Common.Data.EF.Model.V1
 {
     [Table("collection_relation")]
     public class CollectionRelation

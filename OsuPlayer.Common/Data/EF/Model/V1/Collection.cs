@@ -1,10 +1,10 @@
-﻿using Milky.WpfApi;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Milky.WpfApi;
+using Newtonsoft.Json;
 
-namespace Milky.OsuPlayer.Common.Data.EF.Model
+namespace Milky.OsuPlayer.Common.Data.EF.Model.V1
 {
     [Table("collection")]
     public class Collection : ViewModelBase

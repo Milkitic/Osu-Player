@@ -19,7 +19,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Collection = Milky.OsuPlayer.Common.Data.EF.Model.Collection;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
+using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.Pages
 {

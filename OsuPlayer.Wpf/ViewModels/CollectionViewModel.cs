@@ -8,7 +8,7 @@ using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Pages;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
-using Collection = Milky.OsuPlayer.Common.Data.EF.Model.Collection;
+using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.ViewModels
 {

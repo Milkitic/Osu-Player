@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 
 namespace Milky.OsuPlayer.Common.Data
 {

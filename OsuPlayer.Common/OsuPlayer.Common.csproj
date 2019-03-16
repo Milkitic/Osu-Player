@@ -85,9 +85,9 @@
     <Compile Include="Data\DbJsonObject.cs" />
     <Compile Include="Data\DbOperate.cs" />
     <Compile Include="Data\EF\ApplicationDbContext.cs" />
-    <Compile Include="Data\EF\Model\Collection.cs" />
-    <Compile Include="Data\EF\Model\CollectionRelation.cs" />
-    <Compile Include="Data\EF\Model\MapInfo.cs" />
+    <Compile Include="Data\EF\Model\V1\Collection.cs" />
+    <Compile Include="Data\EF\Model\V1\CollectionRelation.cs" />
+    <Compile Include="Data\EF\Model\V1\MapInfo.cs" />
     <Compile Include="Data\EntryExtension.cs" />
     <Compile Include="DictionaryExtension.cs" />
     <Compile Include="I18N\UiMetadata.cs" />

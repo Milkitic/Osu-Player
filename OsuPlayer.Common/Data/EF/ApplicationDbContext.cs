@@ -1,6 +1,7 @@
 ﻿using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Migrations;
 using System.Data.Entity;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 
 namespace Milky.OsuPlayer.Common.Data.EF
 {

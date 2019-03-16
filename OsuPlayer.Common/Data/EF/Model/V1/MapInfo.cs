@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Milky.OsuPlayer.Data;
 using Newtonsoft.Json;
 
-namespace Milky.OsuPlayer.Common.Data.EF.Model
+namespace Milky.OsuPlayer.Common.Data.EF.Model.V1
 {
     [Table("map_info")]
     public class MapInfo : IMapIdentifiable

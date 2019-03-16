@@ -6,7 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Collection = Milky.OsuPlayer.Common.Data.EF.Model.Collection;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
+using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.Common.Data
 {

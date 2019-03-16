@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 
 namespace Milky.OsuPlayer.Windows
 {
