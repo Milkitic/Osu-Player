@@ -1,12 +1,13 @@
 ﻿using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
+using Milky.OsuPlayer.Common.Player;
 using Newtonsoft.Json;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.Common.Data
@@ -237,6 +238,18 @@ namespace Milky.OsuPlayer.Common.Data
                     context.Relations.Add(new CollectionRelation(Guid.NewGuid().ToString(), collection.Id,
                         map.Id));
                     context.SaveChanges();
+
+                    //todo: not suitable position
+                    var currentInfo = InstanceManage.GetInstance<PlayerList>().CurrentInfo;
+                    if (currentInfo != null)
+                    {
+                        if (collection.Locked &&
+                            currentInfo.Identity.Equals(entry.GetIdentity()))
+                        {
+                            currentInfo.IsFavourite = true;
+                        }
+                    }
+
                 }
                 catch (Exception ex)
                 {
@@ -403,6 +416,17 @@ namespace Milky.OsuPlayer.Common.Data
                     context.Relations.RemoveRange(context.Relations.Where(k =>
                         k.CollectionId == collection.Id && k.MapId == map.Id));
                     context.SaveChanges();
+
+                    //todo: not suitable position
+                    var currentInfo = InstanceManage.GetInstance<PlayerList>().CurrentInfo;
+                    if (currentInfo != null)
+                    {
+                        if (collection.Locked &&
+                            currentInfo.Identity.Equals(id))
+                        {
+                            currentInfo.IsFavourite = false;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {

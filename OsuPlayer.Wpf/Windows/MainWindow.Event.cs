@@ -223,6 +223,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void BtnMini_Click(object sender, RoutedEventArgs e)
         {
+            ViewModel.IsMiniMode = true;
             ToMiniMode();
         }
 
@@ -351,19 +352,19 @@ namespace Milky.OsuPlayer.Windows
             else
             {
                 var collection = DbOperate.GetCollections().First(k => k.Locked);
-                if (InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFaved)
+                if (InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFavourite)
                 {
                     DbOperate.RemoveMapFromCollection(entry, collection);
-                    InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFaved = false;
+                    InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFavourite = false;
                 }
                 else
                 {
                     await SelectCollectionPage.AddToCollectionAsync(collection, entry);
-                    InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFaved = true;
+                    InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFavourite = true;
                 }
             }
 
-            SetFaved(InstanceManage.GetInstance<PlayerList>().CurrentInfo.Identity);
+            IsMapFavourite(InstanceManage.GetInstance<PlayerList>().CurrentInfo.Identity);
         }
 
         private void BtnVolume_Click(object sender, RoutedEventArgs e)
@@ -394,28 +395,28 @@ namespace Milky.OsuPlayer.Windows
             switch (btn.Name)
             {
                 case "Single":
-                    BtnMode.Content = "单曲播放";
+                    //BtnMode.Content = "单曲播放";
                     playmode = PlayerMode.Single;
                     break;
                 case "SingleLoop":
-                    BtnMode.Content = "单曲循环";
+                    //BtnMode.Content = "单曲循环";
                     playmode = PlayerMode.SingleLoop;
                     break;
                 case "Normal":
-                    BtnMode.Content = "顺序播放";
+                    //BtnMode.Content = "顺序播放";
                     playmode = PlayerMode.Normal;
                     break;
                 case "Random":
-                    BtnMode.Content = "随机播放";
+                    //BtnMode.Content = "随机播放";
                     playmode = PlayerMode.Random;
                     break;
                 case "Loop":
-                    BtnMode.Content = "循环列表";
+                    //BtnMode.Content = "循环列表";
                     playmode = PlayerMode.Loop;
                     break;
                 default:
                 case "LoopRandom":
-                    BtnMode.Content = "随机循环";
+                    //BtnMode.Content = "随机循环";
                     playmode = PlayerMode.LoopRandom;
                     break;
             }
@@ -449,7 +450,7 @@ namespace Milky.OsuPlayer.Windows
             }
 
             string flag = ViewModel.IsMiniMode ? "S" : "";
-            BtnMode.Background = (ImageBrush)ToolControl.FindResource(playmode + flag);
+            ModeButton.Background = (ImageBrush)ToolControl.FindResource(playmode + flag);
             if (playmode == InstanceManage.GetInstance<PlayerList>().PlayerMode)
                 return;
             InstanceManage.GetInstance<PlayerList>().PlayerMode = playmode;
@@ -460,6 +461,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void BtnMax_Click(object sender, RoutedEventArgs e)
         {
+            ViewModel.IsMiniMode = false;
             ToNormalMode();
         }
 

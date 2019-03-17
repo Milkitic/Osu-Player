@@ -7,4 +7,5 @@
     <converter:TrueToVisibleConverter x:Key="TrueToVisibleConverter" />
     <converter:ExceptionToStringConverter x:Key="ExceptionToStringConverter" />
     <converter:PlayingConverter x:Key="PlayingConverter" />
+    <converter:MiniWindowConverter x:Key="MiniWindowConverter" />
 </ResourceDictionary>

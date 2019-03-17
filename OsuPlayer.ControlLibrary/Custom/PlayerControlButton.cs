@@ -8,12 +8,12 @@ namespace Milky.OsuPlayer.ControlLibrary.Custom
 {
     public class PlayerControlButton : Button, INotifyPropertyChanged
     {
-        public new static readonly DependencyProperty BorderThicknessProperty =
-            DependencyProperty.Register("BorderThickness", typeof(Thickness), typeof(PlayerControlButton),
-                new PropertyMetadata(new Thickness(2, 2, 2, 2), null));
-        public new static readonly DependencyProperty BorderBrushProperty =
-            DependencyProperty.Register("BorderBrush", typeof(Brush), typeof(PlayerControlButton),
-                new PropertyMetadata(new SolidColorBrush(Color.FromArgb(255, 255, 255, 255)), null));
+        //public new static readonly DependencyProperty BorderThicknessProperty =
+        //    DependencyProperty.Register("BorderThickness", typeof(Thickness), typeof(PlayerControlButton),
+        //        new PropertyMetadata(new Thickness(2, 2, 2, 2), null));
+        //public new static readonly DependencyProperty BorderBrushProperty =
+        //    DependencyProperty.Register("BorderBrush", typeof(Brush), typeof(PlayerControlButton),
+        //        new PropertyMetadata(new SolidColorBrush(Color.FromArgb(255, 255, 255, 255)), null));
 
         public Color ShadowColor
         {
@@ -23,7 +23,7 @@ namespace Milky.OsuPlayer.ControlLibrary.Custom
 
         public static readonly DependencyProperty ShadowColorProperty =
             DependencyProperty.Register("ShadowColor", typeof(Color), typeof(PlayerControlButton),
-                new PropertyMetadata(Color.FromArgb(255, 205, 30, 93), OnShadowColorChanged)); //CD1E5D
+                new PropertyMetadata(Color.FromArgb(255, 205, 30, 93), null)); //CD1E5D
 
         public double ShadowOpacity
         {
@@ -33,7 +33,7 @@ namespace Milky.OsuPlayer.ControlLibrary.Custom
 
         public static readonly DependencyProperty ShadowOpacityProperty =
             DependencyProperty.Register("ShadowOpacity", typeof(double), typeof(PlayerControlButton),
-                new PropertyMetadata(0.2d, OnShadowOpacityChanged));
+                new PropertyMetadata(0.2d, null));
 
         public double ImageWidth
         {
@@ -47,7 +47,7 @@ namespace Milky.OsuPlayer.ControlLibrary.Custom
 
         public static readonly DependencyProperty ImageWidthProperty =
             DependencyProperty.Register("ImageWidth", typeof(double), typeof(PlayerControlButton),
-                new PropertyMetadata(32d, OnImageWidthChanged));
+                new PropertyMetadata(32d, null));
 
         public double ImageHeight
         {
@@ -61,7 +61,7 @@ namespace Milky.OsuPlayer.ControlLibrary.Custom
 
         public static readonly DependencyProperty ImageHeightProperty =
             DependencyProperty.Register("ImageHeight", typeof(double), typeof(PlayerControlButton),
-                new PropertyMetadata(32d, OnImageHeightChanged));
+                new PropertyMetadata(32d, null));
 
         public Thickness ImageMargin
         {
@@ -95,23 +95,6 @@ namespace Milky.OsuPlayer.ControlLibrary.Custom
         static PlayerControlButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(PlayerControlButton), new FrameworkPropertyMetadata(typeof(PlayerControlButton)));
-        }
-
-        private static void OnShadowColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-        }
-
-        private static void OnShadowOpacityChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-        }
-        private static void OnImageWidthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-        }
-        private static void OnImageHeightChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-        }
-        private static void OnImageRadiusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

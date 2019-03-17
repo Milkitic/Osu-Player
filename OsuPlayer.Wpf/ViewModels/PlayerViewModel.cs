@@ -32,6 +32,9 @@ namespace Milky.OsuPlayer.ViewModels
 
         private long _position;
         private long _duration;
+        private bool _isFavourite;
+        private CurrentInfo _currentInfo;
+
         public PlayListMode PlayListMode
         {
             get => _playListMode;
@@ -78,6 +81,16 @@ namespace Milky.OsuPlayer.ViewModels
             set
             {
                 _duration = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public CurrentInfo CurrentInfo
+        {
+            get => _currentInfo;
+            set
+            {
+                _currentInfo = value;
                 OnPropertyChanged();
             }
         }

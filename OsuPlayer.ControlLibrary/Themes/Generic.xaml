@@ -10,8 +10,8 @@
                     <Border Background="{TemplateBinding Background}"
                             Width="{TemplateBinding Width}"
                             Height="{TemplateBinding Height}"
-                            BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource TemplatedParent}}"
-                            BorderThickness="{Binding BorderThickness, RelativeSource={RelativeSource TemplatedParent}}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{Binding BorderRadius, RelativeSource={RelativeSource TemplatedParent}}">
                         <Grid>
                             <Border x:Name="Cover"
@@ -37,6 +37,31 @@
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="ButtonContent" Property="Opacity" Value="0.8" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type custom1:BitmapButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type custom1:BitmapButton}">
+                    <Canvas Name="Canvas" ClipToBounds="True"
+                            Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
+                            Background="{TemplateBinding Background}"
+                            RenderOptions.BitmapScalingMode="HighQuality">
+                        <Canvas.Effect>
+                            <DropShadowEffect BlurRadius="3" ShadowDepth="1" Color="Black" Opacity="0.1"/>
+                        </Canvas.Effect>
+                    </Canvas>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Canvas" Property="Opacity" Value="0.7"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Canvas" Property="Opacity" Value="1" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

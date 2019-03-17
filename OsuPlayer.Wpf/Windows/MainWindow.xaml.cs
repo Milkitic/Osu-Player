@@ -103,6 +103,7 @@ namespace Milky.OsuPlayer.Windows
                 case WmExitSizeMove:
                     if (Height <= MinHeight && !ViewModel.IsMiniMode)
                     {
+                        ViewModel.IsMiniMode = true;
                         ToMiniMode();
                     }
 

@@ -3,6 +3,7 @@ using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Control;
@@ -25,7 +26,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -98,37 +98,41 @@ namespace Milky.OsuPlayer.Windows
                     LblArtist.Content = osuFile.Metadata.ArtistMeta.ToUnicodeString();
                     ((ToolTip)NotifyIcon.TrayToolTip).Content =
                         (string)LblArtist.Content + " - " + (string)LblTitle.Content;
-                    bool isFaved = SetFaved(nowIdentity); //50 ms
+
+                    bool isFavourite = IsMapFavourite(mapInfo); //50 ms
+
                     audioPlayer.HitsoundOffset = mapInfo.Offset;
                     Offset.Value = audioPlayer.HitsoundOffset;
 
-                    InstanceManage.GetInstance<PlayerList>().CurrentInfo =
-                        new CurrentInfo(osuFile.Metadata.Artist,
-                            osuFile.Metadata.ArtistUnicode,
-                            osuFile.Metadata.Title,
-                            osuFile.Metadata.TitleUnicode,
-                            osuFile.Metadata.Creator,
-                            osuFile.Metadata.Source,
-                            osuFile.Metadata.TagList,
-                            osuFile.Metadata.BeatmapId,
-                            osuFile.Metadata.BeatmapSetId,
-                            entry != null
-                                ? (entry.DiffStarRatingStandard.ContainsKey(Mods.None)
-                                    ? entry.DiffStarRatingStandard[Mods.None]
-                                    : 0)
-                                : 0,
-                            osuFile.Difficulty.HpDrainRate,
-                            osuFile.Difficulty.CircleSize,
-                            osuFile.Difficulty.ApproachRate,
-                            osuFile.Difficulty.OverallDifficulty,
-                            audioPlayer?.Duration ?? 0,
-                            nowIdentity,
-                            mapInfo,
-                            entry,
-                            isFaved); // 20 ms
-
+                    var currentInfo = new CurrentInfo(
+                        osuFile.Metadata.Artist,
+                        osuFile.Metadata.ArtistUnicode,
+                        osuFile.Metadata.Title,
+                        osuFile.Metadata.TitleUnicode,
+                        osuFile.Metadata.Creator,
+                        osuFile.Metadata.Source,
+                        osuFile.Metadata.TagList,
+                        osuFile.Metadata.BeatmapId,
+                        osuFile.Metadata.BeatmapSetId,
+                        entry != null
+                            ? (entry.DiffStarRatingStandard.ContainsKey(Mods.None)
+                                ? entry.DiffStarRatingStandard[Mods.None]
+                                : 0)
+                            : 0,
+                        osuFile.Difficulty.HpDrainRate,
+                        osuFile.Difficulty.CircleSize,
+                        osuFile.Difficulty.ApproachRate,
+                        osuFile.Difficulty.OverallDifficulty,
+                        audioPlayer?.Duration ?? 0,
+                        nowIdentity,
+                        mapInfo,
+                        entry,
+                        isFavourite); // 20 ms
+                    InstanceManage.GetInstance<PlayerList>().CurrentInfo = currentInfo;
+                    ViewModel.Player.CurrentInfo = currentInfo;
+                    
                     /* Set Lyric */
-                    SetLyricSynchronously(); //todo: 900ms
+                    SetLyricSynchronously();
 
                     /* Set Progress */
                     //PlayProgress.Value = App.HitsoundPlayer.SingleOffset;

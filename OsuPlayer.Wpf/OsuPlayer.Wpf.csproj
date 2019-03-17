@@ -171,6 +171,7 @@
     <Compile Include="Converter\VersionToStringConverter.cs" />
     <Compile Include="Instances\LyricsInst.cs" />
     <Compile Include="Instances\PlayersInst.cs" />
+    <Compile Include="Converter\MiniWindowConverter.cs" />
     <Compile Include="Pages\EditCollectionPage.xaml.cs">
       <DependentUpon>EditCollectionPage.xaml</DependentUpon>
     </Compile>

@@ -1,31 +1,47 @@
-﻿<wpfApi:WindowBase x:Class="Milky.OsuPlayer.Windows.MainWindow"
-                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                          xmlns:dmSkin="clr-namespace:DMSkin.WPF;assembly=DMSkin.WPF"
-                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                          xmlns:tb="http://www.hardcodet.net/taskbar"
-                          xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
-                          xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
-                          xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
-                          xmlns:windows="clr-namespace:Milky.OsuPlayer.Windows"
-                          xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
-                          xmlns:loaders="clr-namespace:Loaders;assembly=MrMitch.Loaders"
-                          xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
-                          xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
-                          mc:Ignorable="d"
-                          Width="998" Height="759" MinWidth="878" MinHeight="138"
-                          Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
-                          Loaded="Window_Loaded" Closing="Window_Closing" SizeChanged="Window_SizeChanged"
-                          WindowStartupLocation="CenterScreen"
-                          ResizeMode="CanResize">
+﻿<wpfApi:WindowBase
+    x:Class="Milky.OsuPlayer.Windows.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tb="http://www.hardcodet.net/taskbar"
+    xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
+    xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+    xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
+    xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+    xmlns:loaders="clr-namespace:Loaders;assembly=MrMitch.Loaders"
+    xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
+    xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
+    mc:Ignorable="d"
+    Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
+    Loaded="Window_Loaded" Closing="Window_Closing" SizeChanged="Window_SizeChanged"
+    WindowStartupLocation="CenterScreen">
+    <!--Width="998" Height="759" MinWidth="878" MinHeight="138"-->
+    <wpfApi:WindowBase.Style>
+        <Style TargetType="wpfApi:WindowBase">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMiniMode,Converter={StaticResource MiniWindowConverter}}" Value="False"
+                             wpfApi:TriggerTracing.TriggerName="Window -> IsMiniMode -> False"
+                             wpfApi:TriggerTracing.TraceEnabled="True">
+                    <Setter Property="Topmost" Value="False" />
+                    <Setter Property="ResizeMode" Value="CanResize" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsMiniMode,Converter={StaticResource MiniWindowConverter}}" Value="True"
+                             wpfApi:TriggerTracing.TriggerName="Window -> IsMiniMode -> True"
+                             wpfApi:TriggerTracing.TraceEnabled="True">
+                    <Setter Property="Topmost" Value="True" />
+                    <Setter Property="ResizeMode" Value="NoResize" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </wpfApi:WindowBase.Style>
     <WindowChrome.WindowChrome>
         <WindowChrome CornerRadius="0"
                       CaptionHeight="46"
                       GlassFrameThickness="1,1,1,1"
                       UseAeroCaptionButtons="False"
                       ResizeBorderThickness="3" />
-    </WindowChrome.WindowChrome> 
+    </WindowChrome.WindowChrome>
     <wpfApi:WindowBase.DataContext>
         <viewModels:MainWindowViewModel />
     </wpfApi:WindowBase.DataContext>
@@ -49,6 +65,18 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <DockPanel x:Name="TitleBarAreaBack" Grid.Row="0" Height="50">
+            <DockPanel.Style>
+                <Style TargetType="FrameworkElement">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DockPanel.Style>
             <Image Source="{StaticResource TitleLogo}" Height="32" HorizontalAlignment="Left" Margin="8,0,0,0" />
         </DockPanel>
         <Grid Grid.Row="1" x:Name="MainGrid">
@@ -334,7 +362,20 @@
                             </Style>
                         </Grid.Style>
                     </Grid>
-                    <Frame Name="MainFrame" NavigationUIVisibility="Hidden"></Frame>
+                    <Frame Name="MainFrame" NavigationUIVisibility="Hidden">
+                        <Frame.Style>
+                            <Style TargetType="FrameworkElement">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Frame.Style>
+                    </Frame>
                 </Grid>
             </DockPanel>
             <Grid x:Name="FullModeArea" Grid.Row="0" Margin="1,0,1,0"
@@ -453,19 +494,52 @@
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
                             </Style>
                         </Button.Style>
                     </Button>
                 </Grid>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
-                    <Button x:Name="BtnPrev" Style="{StaticResource PrevButtonStyle}" Click="BtnPrev_Click" />
+                    <custom:PlayerControlButton
+                        x:Name="PrevButton"
+                        IsTabStop="False"
+                        ImageWidth="24" ImageHeight="24"
+                        Width="28" Height="28"
+                        BorderRadius="7"
+                        Background="{StaticResource TextureBrush}"
+                        Click="BtnPrev_Click"
+                        BorderBrush="White" BorderThickness="1"
+                        WindowChrome.IsHitTestVisibleInChrome="True">
+                        <ContentPresenter x:Name="PrevIcon" Content="{StaticResource WhitePrevIcon}" />
+                        <Button.Style>
+                            <Style TargetType="custom:PlayerControlButton">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                        <Setter Property="Margin" Value="8" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                        <Setter Property="Margin" Value="5" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </custom:PlayerControlButton>
                     <custom:PlayerControlButton
                         x:Name="PlayButton"
                         IsTabStop="False"
                         Width="32" Height="32"
-                        BorderRadius="16"
+                        BorderRadius="8"
                         Background="{StaticResource TextureBrush}"
-                        Click="BtnPlay_Click">
+                        Click="BtnPlay_Click"
+                        BorderBrush="White" BorderThickness="1"
+                        WindowChrome.IsHitTestVisibleInChrome="True">
                         <ContentPresenter x:Name="PlayIcon">
                             <ContentPresenter.Content>
                                 <MultiBinding Converter="{StaticResource PlayingConverter}">
@@ -497,21 +571,128 @@
                             </Style>
                         </Button.Style>
                     </custom:PlayerControlButton>
-                    <Button x:Name="BtnNext" Style="{StaticResource NextButtonStyle}" Click="BtnNext_Click" />
-                    <Button x:Name="BtnOpen" Style="{StaticResource OpenButtonStyle}" Click="BtnOpen_Click" />
+                    <custom:PlayerControlButton
+                        x:Name="NextButton"
+                        IsTabStop="False"
+                        ImageWidth="24" ImageHeight="24"
+                        Width="28" Height="28"
+                        BorderRadius="7"
+                        Background="{StaticResource TextureBrush}"
+                        Click="BtnNext_Click"
+                        BorderBrush="White" BorderThickness="1"
+                        WindowChrome.IsHitTestVisibleInChrome="True">
+                        <ContentPresenter x:Name="NextIcon" Content="{StaticResource WhiteNextIcon}" />
+                        <Button.Style>
+                            <Style TargetType="custom:PlayerControlButton">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                        <Setter Property="Margin" Value="8" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                        <Setter Property="Margin" Value="5" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </custom:PlayerControlButton>
+                    <custom:PlayerControlButton
+                        x:Name="OpenButton"
+                        IsTabStop="False"
+                        ImageWidth="24" ImageHeight="24"
+                        Width="28" Height="28"
+                        BorderRadius="14"
+                        BorderBrush="White" BorderThickness="2" Background="#5d9cec" ShadowColor="#5d9cec"
+                        Click="BtnOpen_Click" Margin="8">
+                        <ContentPresenter x:Name="OpenIcon" Content="{StaticResource WhiteOpenIcon}" />
+                        <Button.Style>
+                            <Style TargetType="custom:PlayerControlButton">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </custom:PlayerControlButton>
                 </StackPanel>
                 <Grid Grid.Column="2" Background="White">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <StackPanel x:Name="LblMeta" Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3">
-                        <Label x:Name="LblTitle" Content="Title" Foreground="#777" />
-                        <Label x:Name="LblSeperate" Content="-" Foreground="#858585" Margin="-5,0,-5,0" />
-                        <Label x:Name="LblArtist" Content="Artist" Foreground="#AAA" />
+                    <StackPanel x:Name="LblMeta" Grid.Row="0" Margin="0,3,0,-3">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                        <Setter Property="Orientation" Value="Horizontal" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                        <Setter Property="Orientation" Value="Vertical" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <Label x:Name="LblTitle" Content="Title" Foreground="#777">
+                            <Label.Style>
+                                <Style TargetType="FrameworkElement">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                            <Setter Property="Margin" Value="0" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                            <Setter Property="Margin" Value="0,-2" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Label.Style>
+                        </Label>
+                        <Label x:Name="LblSeperate" Content="-" Foreground="#858585" Margin="-5,0,-5,0" >
+                            <Label.Style>
+                                <Style TargetType="FrameworkElement">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Label.Style>
+                        </Label>
+                        <Label x:Name="LblArtist" Content="Artist" Foreground="#AAA">
+                            <Label.Style>
+                                <Style TargetType="FrameworkElement">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                            <Setter Property="Margin" Value="0" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                            <Setter Property="Margin" Value="0,-2" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Label.Style>
+                        </Label>
                     </StackPanel>
                     <StackPanel x:Name="LblProgress" Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3"
                                 HorizontalAlignment="Right">
+                        <StackPanel.Style>
+                            <Style TargetType="FrameworkElement">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
                         <Label x:Name="LblNow" Content="{Binding Player.Position, Mode=OneWay, Converter={StaticResource MsToStringConverter}}" Foreground="#777" />
                         <Label Content="/" Foreground="#858585" Margin="-5,0,-5,0" />
                         <Label x:Name="LblTotal" Content="{Binding Player.Duration, Mode=OneWay, Converter={StaticResource MsToStringConverter}}" Foreground="#AAA" />
@@ -525,8 +706,8 @@
                             Thumb.DragCompleted="PlayProgress_DragCompleted" />
                 </Grid>
                 <Grid Grid.Column="3">
-                    <StackPanel x:Name="FuncPanel" Orientation="Horizontal" Margin="10,0,10,0"
-                                VerticalAlignment="Center">
+                    <StackPanel x:Name="FuncPanel" Margin="10,0,10,0"
+                                VerticalAlignment="Center" Orientation="Horizontal">
                         <StackPanel Orientation="Horizontal">
                             <WrapPanel Orientation="Horizontal" Width="100" Visibility="Collapsed">
                                 <RadioButton x:Name="ModNone" Content="none" Checked="Mod_CheckChanged" />
@@ -535,27 +716,132 @@
                                 <RadioButton x:Name="ModNc" Content="nc" Checked="Mod_CheckChanged" />
                                 <RadioButton x:Name="ModDc" Content="dc" Checked="Mod_CheckChanged" />
                             </WrapPanel>
-                            <Button x:Name="BtnMode" Style="{StaticResource SmallTextureButtonStyle}"
-                                    Background="{StaticResource Loop}" Click="BtnMode_Click" />
-                            <Button x:Name="BtnLike" Style="{StaticResource SmallTextureButtonStyle}"
-                                    Background="{StaticResource Fav}" Click="BtnLike_Click" />
+                            <custom:BitmapButton
+                                x:Name="ModeButton"
+                                Background="{StaticResource Loop}" Click="BtnMode_Click"
+                                WindowChrome.IsHitTestVisibleInChrome="True">
+                                <Button.Style>
+                                    <Style TargetType="custom:BitmapButton">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                                <Setter Property="Margin" Value="8" />
+                                                <Setter Property="Width" Value="24" />
+                                                <Setter Property="Height" Value="24" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                                <Setter Property="Margin" Value="2" />
+                                                <Setter Property="Width" Value="18" />
+                                                <Setter Property="Height" Value="18" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </custom:BitmapButton>
+                            <custom:BitmapButton
+                                x:Name="LikeButton" Click="BtnLike_Click"
+                                WindowChrome.IsHitTestVisibleInChrome="True">
+                                <Button.Style>
+                                    <Style TargetType="custom:BitmapButton">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavourite}" Value="True"
+                                                         wpfApi:TriggerTracing.TriggerName="LikeButton -> CurrentMusic -> Null"
+                                                         wpfApi:TriggerTracing.TraceEnabled="True">
+                                                <Setter Property="Background" Value="{StaticResource Faved}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Player.CurrentInfo}" Value="{x:Null}"
+                                                         wpfApi:TriggerTracing.TriggerName="LikeButton -> Fav -> False"
+                                                         wpfApi:TriggerTracing.TraceEnabled="True">
+                                                <Setter Property="Background" Value="{StaticResource Fav}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavourite}" Value="False"
+                                                         wpfApi:TriggerTracing.TriggerName="LikeButton -> Fav -> False"
+                                                         wpfApi:TriggerTracing.TraceEnabled="True">
+                                                <Setter Property="Background" Value="{StaticResource Fav}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                                <Setter Property="Margin" Value="8" />
+                                                <Setter Property="Width" Value="24" />
+                                                <Setter Property="Height" Value="24" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                                <Setter Property="Margin" Value="2" />
+                                                <Setter Property="Width" Value="18" />
+                                                <Setter Property="Height" Value="18" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </custom:BitmapButton>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Button x:Name="BtnVolume" Style="{StaticResource SmallTextureButtonStyle}"
-                                    Background="{StaticResource Volume}" Click="BtnVolume_Click" />
-                            <Button x:Name="BtnMax" Style="{StaticResource SmallTextureButtonStyle}" Width="18"
-                                    Height="18"
-                                    Background="{StaticResource FullscreenS}" Click="BtnMax_Click"
-                                    Visibility="Collapsed" Margin="2" />
+                            <custom:BitmapButton
+                                x:Name="VolumeButton"
+                                Background="{StaticResource Volume}"
+                                Click="BtnVolume_Click"
+                                WindowChrome.IsHitTestVisibleInChrome="True">
+                                <Button.Style>
+                                    <Style TargetType="custom:BitmapButton">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                                <Setter Property="Margin" Value="8" />
+                                                <Setter Property="Width" Value="24" />
+                                                <Setter Property="Height" Value="24" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                                <Setter Property="Margin" Value="2" />
+                                                <Setter Property="Width" Value="18" />
+                                                <Setter Property="Height" Value="18" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </custom:BitmapButton>
+                            <custom:BitmapButton
+                                x:Name="MaxButton"
+                                Background="{StaticResource FullscreenS}"
+                                Click="BtnMax_Click"
+                                WindowChrome.IsHitTestVisibleInChrome="True">
+                                <Button.Style>
+                                    <Style TargetType="custom:BitmapButton">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                                <Setter Property="Margin" Value="8" />
+                                                <Setter Property="Width" Value="24" />
+                                                <Setter Property="Height" Value="24" />
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                                <Setter Property="Margin" Value="2" />
+                                                <Setter Property="Width" Value="18" />
+                                                <Setter Property="Height" Value="18" />
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </custom:BitmapButton>
                         </StackPanel>
                     </StackPanel>
                 </Grid>
-                <Border x:Name="BorderMini" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="#40dc498d"
-                        BorderThickness="1" Visibility="Hidden" />
+                <Border x:Name="BorderMini" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="#60dc498d"
+                        BorderThickness="1">
+                    <Border.Style>
+                        <Style TargetType="FrameworkElement">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                                    <Setter Property="Visibility" Value="Hidden" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
             </Grid>
             <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Pop" PopupAnimation="Fade"
-                   Width="150" HorizontalOffset="-63"
-                   PlacementTarget="{Binding ElementName=BtnVolume}" Placement="Top" AllowsTransparency="True"
+                   Width="150" HorizontalOffset="-113"
+                   PlacementTarget="{Binding ElementName=VolumeButton}" Placement="Top" AllowsTransparency="True"
                    StaysOpen="False">
                 <Grid Margin="5">
                     <Border BorderBrush="#cccccc" BorderThickness="1">
@@ -620,7 +906,7 @@
             </Popup>
             <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="PopMode" PopupAnimation="Fade"
                    HorizontalOffset="-27"
-                   PlacementTarget="{Binding ElementName=BtnMode}" Placement="Top" AllowsTransparency="True"
+                   PlacementTarget="{Binding ElementName=ModeButton}" Placement="Top" AllowsTransparency="True"
                    StaysOpen="False">
                 <Grid Margin="5">
                     <Border BorderBrush="#cccccc" BorderThickness="1">
@@ -670,6 +956,18 @@
                 Background="{StaticResource WhiteBrush80}"
                 Visibility="Hidden" />
         <DockPanel x:Name="TitleBarArea" Grid.Row="0" Height="50">
+            <DockPanel.Style>
+                <Style TargetType="FrameworkElement">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DockPanel.Style>
             <Canvas HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Width="200" Height="40" Margin="0,0,5,0">
