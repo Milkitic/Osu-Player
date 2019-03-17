@@ -22,4 +22,22 @@ namespace Milky.OsuPlayer.Common.Migrations
             //  to avoid creating duplicate seed data.
         }
     }
+
+    internal sealed class BeatmapMigrationConfiguration : DbMigrationsConfiguration<BeatmapDbContext>
+    {
+        public BeatmapMigrationConfiguration()
+        {
+            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
+            SetSqlGenerator("System.Data.SQLite", new SQLiteMigrationSqlGenerator());
+        }
+
+        protected override void Seed(BeatmapDbContext context)
+        {
+            //  This method will be called after migrating to the latest version.
+
+            //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
+            //  to avoid creating duplicate seed data.
+        }
+    }
 }

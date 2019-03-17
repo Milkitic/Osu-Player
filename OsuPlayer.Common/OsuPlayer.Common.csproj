@@ -80,6 +80,7 @@
     <Compile Include="Configuration\GeneralControl.cs" />
     <Compile Include="Configuration\HotKey.cs" />
     <Compile Include="Configuration\LyricControl.cs" />
+    <Compile Include="Data\EF\BeatmapDbContext.cs" />
     <Compile Include="Data\EF\Model\Beatmap.cs" />
     <Compile Include="Data\BeatmapEntryQuery.cs" />
     <Compile Include="Data\DbJsonObject.cs" />

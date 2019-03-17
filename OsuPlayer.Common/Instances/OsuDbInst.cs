@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Common.Data.EF;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;
 using osu_database_reader.Components.Beatmaps;
@@ -30,6 +31,8 @@ namespace Milky.OsuPlayer.Common.Instances
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
                 return;
             var db = await ReadDbAsync(path);
+
+            BeatmapDbContext.SyncMapsFromOsuDb(db.Beatmaps);
             BeatmapDb = db;
         }
 
