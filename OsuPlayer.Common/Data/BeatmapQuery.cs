@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Milky.OsuPlayer.Common.Data.EF;
+﻿using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Metadata;
-using osu.Shared;
 using OSharp.Beatmap;
 using OSharp.Common;
+using osu.Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using GameMode = OSharp.Beatmap.Sections.GamePlay.GameMode;
 
 namespace Milky.OsuPlayer.Common.Data
@@ -65,11 +66,11 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static IEnumerable<Beatmap> FilterByIdentities(IEnumerable<MapIdentity> identities)
+        public static List<Beatmap> FilterByIdentities(IEnumerable<MapIdentity> identities)
         {
             using (var context = new BeatmapDbContext())
             {
-                return identities.Select(id => context.Beatmaps.FirstOrDefault(k => k.FolderName == id.FolderName && k.Version == id.Version)); //todo: need optimize
+                return identities.Select(id => context.Beatmaps.FirstOrDefault(k => k.FolderName == id.FolderName && k.Version == id.Version)).ToList(); //todo: need optimize
             }
         }
 
@@ -127,5 +128,14 @@ namespace Milky.OsuPlayer.Common.Data
         //{
         //    return enumerable.Aggregate((i1, i2) => selector.Invoke() > i2.ID ? i1 : i2);
         //}
+        public static List<Beatmap> GetWholeList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public static List<Beatmap> GetMaps(List<MapInfo> maps, bool playedOrAddedTime = true)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

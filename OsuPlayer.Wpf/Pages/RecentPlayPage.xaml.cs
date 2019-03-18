@@ -1,5 +1,6 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Common.Player;
@@ -7,7 +8,6 @@ using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Windows;
 using Milky.WpfApi.Collections;
 using OSharp.Beatmap;
-using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -23,7 +23,7 @@ namespace Milky.OsuPlayer.Pages
     /// </summary>
     public partial class RecentPlayPage : Page
     {
-        private IEnumerable<BeatmapEntry> _entries;
+        private IEnumerable<Beatmap> _entries;
         public NumberableObservableCollection<BeatmapDataModel> DataModels;
         private readonly MainWindow _mainWindow;
 
@@ -35,7 +35,7 @@ namespace Milky.OsuPlayer.Pages
 
         public void UpdateList()
         {
-            _entries = InstanceManage.GetInstance<OsuDbInst>().Beatmaps.GetRecentListFromDb();
+            _entries = BeatmapQuery.GetRecentListFromDb();
             DataModels = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModels(false));
             RecentList.DataContext = DataModels.ToList();
         }
@@ -152,22 +152,22 @@ namespace Milky.OsuPlayer.Pages
             await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.RecentList);
         }
 
-        private BeatmapEntry GetSelected()
+        private Beatmap GetSelected()
         {
             if (RecentList.SelectedItem == null)
                 return null;
             var selectedItem = (BeatmapDataModel)RecentList.SelectedItem;
-            return _entries.FilterByFolder(selectedItem.FolderName)
+            return BeatmapQuery.FilterByFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
 
-        private BeatmapEntry ConvertToEntry(BeatmapDataModel dataModel)
+        private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _entries.FilterByFolder(dataModel.FolderName)
+            return BeatmapQuery.FilterByFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 
-        private IEnumerable<BeatmapEntry> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)
+        private IEnumerable<Beatmap> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)
         {
             return dataModels.Select(ConvertToEntry);
         }

@@ -1,13 +1,13 @@
-﻿using System.Collections.ObjectModel;
+﻿using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.WpfApi;
-using osu_database_reader.Components.Beatmaps;
+using System.Collections.ObjectModel;
 
 namespace Milky.OsuPlayer.ViewModels
 {
     public class SelectCollectionPageViewModel : ViewModelBase
     {
         private ObservableCollection<CollectionViewModel> _collections;
-        private BeatmapEntry _entry;
+        private Beatmap _entry;
 
         public ObservableCollection<CollectionViewModel> Collections
         {
@@ -19,7 +19,7 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public BeatmapEntry Entry
+        public Beatmap Entry
         {
             get => _entry;
             set

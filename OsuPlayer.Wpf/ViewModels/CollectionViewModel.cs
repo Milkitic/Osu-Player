@@ -1,12 +1,12 @@
-﻿using osu_database_reader.Components.Beatmaps;
+﻿using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Pages;
+using Milky.WpfApi;
+using Milky.WpfApi.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Pages;
-using Milky.WpfApi;
-using Milky.WpfApi.Commands;
 using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.ViewModels
@@ -27,7 +27,7 @@ namespace Milky.OsuPlayer.ViewModels
             {
                 return new DelegateCommand(async obj =>
                 {
-                    var entry = (BeatmapEntry) obj;
+                    var entry = (Beatmap)obj;
                     var col = DbOperate.GetCollectionById(Id);
                     await SelectCollectionPage.AddToCollectionAsync(col, entry);
                 });

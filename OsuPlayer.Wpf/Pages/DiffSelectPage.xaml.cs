@@ -1,12 +1,12 @@
 ﻿using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using Milky.WpfApi.Collections;
-using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Models;
 
@@ -28,7 +28,7 @@ namespace Milky.OsuPlayer.Pages
         public BeatmapDataModel SelectedMap => ViewModel.SelectedMap;
         public DiffSelectPageViewModel ViewModel { get; set; }
 
-        public DiffSelectPage(MainWindow mainWindow, IEnumerable<BeatmapEntry> entries)
+        public DiffSelectPage(MainWindow mainWindow, IEnumerable<Beatmap> entries)
         {
             InitializeComponent();
 

@@ -72,6 +72,9 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         [Column("folderName")]
         public string FolderName { get; set; } = "";
 
+        [Column("audioName")]
+        public string AudioFileName { get; set; }
+
         [Key]
         [Required, Column("id")]
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -80,7 +83,6 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         public bool InOwnFolder { get; set; }
 
         #region Only used in HoLLy
-        //public string AudioFileName { get; set; }
         //public string BeatmapChecksum { get; set; }
         //public RankStatus RankedStatus { get; set; }
         //public ushort CountHitCircles { get; set; }

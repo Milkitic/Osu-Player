@@ -1,9 +1,15 @@
-﻿using Milky.OsuPlayer.Pages;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
+using Milky.OsuPlayer.Common.I18N;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Common.Metadata;
+using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Utils;
 using Milky.WpfApi;
 using Milky.WpfApi.Collections;
 using Milky.WpfApi.Commands;
-using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,12 +17,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
-using Milky.OsuPlayer.Common.I18N;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Metadata;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -29,7 +29,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private string _exportPath;
         private NumberableObservableCollection<BeatmapDataModel> _dataModelList;
-        private IEnumerable<BeatmapEntry> _entries;
+        private IEnumerable<Beatmap> _entries;
         private readonly UiMetadata _uiMetadata;
 
         public string UiStrExported => _uiMetadata.Exported;
@@ -152,13 +152,13 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        private BeatmapEntry ConvertToEntry(BeatmapDataModel dataModel)
+        private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _entries.FilterByFolder(dataModel.FolderName)
+            return BeatmapQuery.FilterByFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 
-        private IEnumerable<BeatmapEntry> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)
+        private IEnumerable<Beatmap> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)
         {
             return dataModels.Select(ConvertToEntry);
         }
@@ -176,7 +176,7 @@ namespace Milky.OsuPlayer.ViewModels
                     : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), Util.CountSize(fi.Length)));
             }
 
-            _entries = maps.ToBeatmapEntries(InstanceManage.GetInstance<OsuDbInst>().Beatmaps);
+            _entries = BeatmapQuery.GetMaps(maps);
             var viewModels = _entries.ToDataModels(true).ToList();
             for (var i = 0; i < viewModels.Count; i++)
             {

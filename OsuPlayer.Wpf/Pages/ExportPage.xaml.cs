@@ -5,7 +5,6 @@ using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap;
-using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer.Pages
@@ -28,7 +28,7 @@ namespace Milky.OsuPlayer.Pages
         private readonly MainWindow _mainWindow;
 
         public ExportPageViewModel ViewModel { get; }
-        public static readonly ConcurrentQueue<BeatmapEntry> TaskQueue = new ConcurrentQueue<BeatmapEntry>();
+        public static readonly ConcurrentQueue<Beatmap> TaskQueue = new ConcurrentQueue<Beatmap>();
         public static Task ExportTask;
         public static bool Overlap = true;
 
@@ -54,7 +54,7 @@ namespace Milky.OsuPlayer.Pages
             ViewModel.ExportPath = PlayerConfig.Current.Export.MusicPath;
         }
 
-        public static void QueueEntries(IEnumerable<BeatmapEntry> entries)
+        public static void QueueEntries(IEnumerable<Beatmap> entries)
         {
             foreach (var entry in entries)
                 TaskQueue.Enqueue(entry);
@@ -62,7 +62,7 @@ namespace Milky.OsuPlayer.Pages
             StartTask();
         }
 
-        public static void QueueEntry(BeatmapEntry entry)
+        public static void QueueEntry(Beatmap entry)
         {
             TaskQueue.Enqueue(entry);
             StartTask();
@@ -84,7 +84,7 @@ namespace Milky.OsuPlayer.Pages
             });
         }
 
-        private static async Task CopyFileAsync(BeatmapEntry entry)
+        private static async Task CopyFileAsync(Beatmap entry)
         {
             string folder = Path.Combine(Domain.OsuSongPath, entry.FolderName);
             FileInfo mp3File = new FileInfo(Path.Combine(folder, entry.AudioFileName));

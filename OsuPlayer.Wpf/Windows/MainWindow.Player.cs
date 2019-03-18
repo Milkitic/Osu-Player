@@ -2,6 +2,7 @@
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
@@ -11,8 +12,6 @@ using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.ViewModels;
 using OSharp.Beatmap;
-using osu.Shared;
-using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -87,8 +86,7 @@ namespace Milky.OsuPlayer.Windows
                     var nowIdentity = new MapIdentity(fi.Directory.Name, osuFile.Metadata.Version);
 
                     MapInfo mapInfo = DbOperate.GetMapFromDb(nowIdentity);
-                    //BeatmapEntry entry = App.PlayerList.Entries.GetBeatmapByIdentity(nowIdentity);
-                    BeatmapEntry entry = dbInst.Beatmaps.FilterByIdentity(nowIdentity);
+                    Beatmap entry = BeatmapQuery.FilterByIdentity(nowIdentity);
 
                     LblTitle.Content = osuFile.Metadata.TitleMeta.ToUnicodeString();
                     LblArtist.Content = osuFile.Metadata.ArtistMeta.ToUnicodeString();
@@ -110,11 +108,7 @@ namespace Milky.OsuPlayer.Windows
                         osuFile.Metadata.TagList,
                         osuFile.Metadata.BeatmapId,
                         osuFile.Metadata.BeatmapSetId,
-                        entry != null
-                            ? (entry.DiffStarRatingStandard.ContainsKey(Mods.None)
-                                ? entry.DiffStarRatingStandard[Mods.None]
-                                : 0)
-                            : 0,
+                        entry?.DiffSrNoneStandard ?? 0,
                         osuFile.Difficulty.HpDrainRate,
                         osuFile.Difficulty.CircleSize,
                         osuFile.Difficulty.ApproachRate,
@@ -126,7 +120,7 @@ namespace Milky.OsuPlayer.Windows
                         isFavourite); // 20 ms
                     InstanceManage.GetInstance<PlayerList>().CurrentInfo = currentInfo;
                     ViewModel.Player.CurrentInfo = currentInfo;
-                    
+
                     /* Set Lyric */
                     SetLyricSynchronously();
 
@@ -276,9 +270,7 @@ namespace Milky.OsuPlayer.Windows
             }
             else
             {
-                MsgBox.Show(this, string.Format(@"所选文件不存在{0}。", InstanceManage.GetInstance<OsuDbInst>().Beatmaps == null
-                        ? ""
-                        : " ，可能是db没有及时更新。请关闭此播放器或osu后重试"),
+                MsgBox.Show(this, @"所选文件不存在，可能是db没有及时更新。请关闭此播放器或osu后重试。",
                     Title, MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
@@ -422,7 +414,7 @@ namespace Milky.OsuPlayer.Windows
         private async Task PlayNextAsync(bool isManual, bool isNext)
         {
             if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;
-            (PlayerList.ChangeType result, BeatmapEntry entry) = await InstanceManage.GetInstance<PlayerList>().PlayToAsync(isNext, isManual);
+            (PlayerList.ChangeType result, Beatmap entry) = await InstanceManage.GetInstance<PlayerList>().PlayToAsync(isNext, isManual);
             switch (result)
             {
                 //case PlayerList.ChangeType.Keep:

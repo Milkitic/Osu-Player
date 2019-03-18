@@ -29,24 +29,20 @@ namespace Milky.OsuPlayer.Windows
             //BtnRecent_Click(sender, e);
             UpdateCollections();
             LoadSurfaceSettings();
-            await LoadDb();
+            //await LoadDb();
 
             if (PlayerConfig.Current.CurrentPath != null && PlayerConfig.Current.Play.Memory)
             {
-                var entries = InstanceManage.GetInstance<OsuDbInst>().Beatmaps
+                var entries = BeatmapQuery
                     .FilterByIdentities(PlayerConfig.Current.CurrentList);
-                if (App.UseDbMode)
-                    await InstanceManage.GetInstance<PlayerList>()
-                        .RefreshPlayListAsync(PlayerList.FreshType.All, entries: entries);
+                await InstanceManage.GetInstance<PlayerList>()
+                    .RefreshPlayListAsync(PlayerList.FreshType.All, entries: entries);
 
                 bool play = PlayerConfig.Current.Play.AutoPlay;
                 await PlayNewFile(PlayerConfig.Current.CurrentPath, play);
             }
 
-            if (App.UseDbMode)
-            {
-                await SetPlayMode(PlayerConfig.Current.Play.PlayListMode);
-            }
+            await SetPlayMode(PlayerConfig.Current.Play.PlayListMode);
 
             var helper = new WindowInteropHelper(this);
             var source = HwndSource.FromHwnd(helper.Handle);
@@ -113,7 +109,6 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void BtnSearch_Click(object sender, RoutedEventArgs e)
         {
-            if (!ValidateDb()) return;
             if (MainFrame.Content?.GetType() != typeof(SearchPage))
                 MainFrame.Navigate(Pages.SearchPage);
             //MainFrame.Navigate(new Uri("Pages/SearchPage.xaml", UriKind.Relative), this);
@@ -134,8 +129,6 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void Storyboard_Click(object sender, RoutedEventArgs e)
         {
-            if (!ValidateDb()) return;
-
             MainFrame.Navigate(Pages.StoryboardPage);
         }
 
@@ -144,7 +137,6 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void BtnRecent_Click(object sender, RoutedEventArgs e)
         {
-            if (!ValidateDb()) return;
             if (MainFrame.Content?.GetType() != typeof(RecentPlayPage))
                 MainFrame.Navigate(Pages.RecentPlayPage);
         }
@@ -154,7 +146,6 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void BtnExport_Click(object sender, RoutedEventArgs e)
         {
-            if (!ValidateDb()) return;
             if (MainFrame.Content?.GetType() != typeof(ExportPage))
                 MainFrame.Navigate(Pages.ExportPage);
         }
@@ -336,8 +327,7 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private async void BtnLike_Click(object sender, RoutedEventArgs e)
         {
-            if (!ValidateDb()) return;
-            var entry = InstanceManage.GetInstance<OsuDbInst>().Beatmaps.FilterByIdentity(InstanceManage.GetInstance<PlayerList>().CurrentIdentity);
+            var entry = BeatmapQuery.FilterByIdentity(InstanceManage.GetInstance<PlayerList>().CurrentIdentity);
             //var entry = App.PlayerList?.CurrentInfo.Entry;
             if (entry == null)
             {

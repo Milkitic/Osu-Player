@@ -3,7 +3,6 @@ using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Player;
 using Newtonsoft.Json;
-using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -228,7 +227,7 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static void AddMapToCollection(BeatmapEntry entry, Collection collection)
+        public static void AddMapToCollection(Beatmap entry, Collection collection)
         {
             using (ApplicationDbContext context = new ApplicationDbContext())
             {
@@ -350,7 +349,7 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static void UpdateMap(BeatmapEntry entry, int offset)
+        public static void UpdateMap(Beatmap entry, int offset)
         {
             UpdateMap(entry.GetIdentity());
         }
@@ -365,7 +364,7 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static void RemoveFromRecent(BeatmapEntry entry)
+        public static void RemoveFromRecent(Beatmap entry)
         {
             RemoveFromRecent(entry.GetIdentity());
         }
@@ -401,7 +400,7 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static void RemoveMapFromCollection(BeatmapEntry entry, Collection collection)
+        public static void RemoveMapFromCollection(Beatmap entry, Collection collection)
         {
             RemoveMapFromCollection(entry.GetIdentity(), collection);
         }

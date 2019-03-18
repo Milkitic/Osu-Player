@@ -20,8 +20,6 @@ namespace Milky.OsuPlayer
     /// </summary>
     public partial class App : Application
     {
-        public static bool UseDbMode => InstanceManage.GetInstance<OsuDbInst>().BeatmapDb != null;
-
         [STAThread]
         public static void Main()
         {

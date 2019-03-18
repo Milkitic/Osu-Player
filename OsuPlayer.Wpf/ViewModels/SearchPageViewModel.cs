@@ -1,5 +1,6 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Metadata;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
@@ -10,7 +11,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common.Instances;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -90,8 +90,8 @@ namespace Milky.OsuPlayer.ViewModels
 
         public async Task PlayListQueryAsync()
         {
-            if (InstanceManage.GetInstance<OsuDbInst>().Beatmaps == null)
-                return;
+            //if (InstanceManage.GetInstance<OsuDbInst>().Beatmaps == null)
+            //    return;
 
             //SortEnum sortEnum = (SortEnum)cbSortType.SelectedItem;
             SortMode sortMode = SortMode.Artist;
@@ -111,8 +111,8 @@ namespace Milky.OsuPlayer.ViewModels
                 _querySw.Stop();
 
                 var sorted = string.IsNullOrWhiteSpace(SearchText)
-                    ? InstanceManage.GetInstance<OsuDbInst>().Beatmaps.SortBy(sortMode).ToDataModels(true).ToList()
-                    : InstanceManage.GetInstance<OsuDbInst>().Beatmaps.FilterByKeyword(SearchText).SortBy(sortMode).ToDataModels(true);
+                    ? BeatmapQuery.SortBy(BeatmapQuery.GetWholeList(), sortMode).ToDataModels(true).ToList()
+                    : BeatmapQuery.FilterByKeyword(SearchText).SortBy(sortMode).ToDataModels(true);
 
                 SearchedMaps = sorted;
                 SetPage(SearchedMaps.Count(), 0);

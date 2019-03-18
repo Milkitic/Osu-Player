@@ -1,7 +1,7 @@
 ﻿using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Instances;
-using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +13,7 @@ namespace Milky.OsuPlayer.Common.Player
         private int _pointer;
         public PlayerMode PlayerMode { get; set; } = PlayerMode.Loop;
         public PlayListMode PlayListMode { get; set; }
-        public List<BeatmapEntry> Entries { get; set; } = new List<BeatmapEntry>();
+        public List<Beatmap> Entries { get; set; } = new List<Beatmap>();
         public List<int> Indexes { get; set; } = new List<int>();
         //public MapIdentity NowIdentity { get; set; }
         public CurrentInfo CurrentInfo { get; set; }
@@ -34,7 +34,7 @@ namespace Milky.OsuPlayer.Common.Player
         public async Task RefreshPlayListAsync(
             FreshType freshType,
             PlayListMode? playListMode = null,
-            IEnumerable<BeatmapEntry> entries = null, bool finishList = false)
+            IEnumerable<Beatmap> entries = null, bool finishList = false)
         {
             bool force = false;
             if (playListMode != null)
@@ -49,7 +49,7 @@ namespace Milky.OsuPlayer.Common.Player
                 switch (PlayListMode)
                 {
                     case PlayListMode.RecentList:
-                        Entries = InstanceManage.GetInstance<OsuDbInst>().BeatmapDb.Beatmaps.GetRecentListFromDb().ToList();
+                        Entries = BeatmapQuery.GetRecentListFromDb().ToList();
                         break;
                     default:
                     case PlayListMode.Collection:
@@ -104,7 +104,7 @@ namespace Milky.OsuPlayer.Common.Player
         /// <param name="isManual">Whether it is called by user (Click next button manually)
         /// or called by application (A song finshed).</param>
         /// <param name="entry"></param>
-        public async Task<(ChangeType, BeatmapEntry)> PlayToAsync(bool isNext, bool isManual)
+        public async Task<(ChangeType, Beatmap)> PlayToAsync(bool isNext, bool isManual)
         {
             if (!isNext)
                 Pointer--;
