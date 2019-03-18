@@ -17,6 +17,7 @@ namespace Milky.OsuPlayer.Common.Metadata
         public string SongTags { get; set; }
         public string Version { get; set; } //difficulty name
         public GameMode GameMode { get; set; }
+        public OSharp.Beatmap.Sections.GamePlay.GameMode OSharpGameMode { get; set; }
         public int BeatmapId { get; set; }
         public string FolderName { get; set; }
         public string BeatmapFileName { get; set; }
