@@ -34,16 +34,17 @@ namespace Milky.OsuPlayer.Common.Data
                 if (string.IsNullOrWhiteSpace(keywordStr))
                     return context.Beatmaps.ToList();
                 string[] keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-                return keywords.Aggregate(context.Beatmaps,
-                    (current, keywd) => current.Where(k =>
-                        k.Title?.Contains(keywd, true) == true ||
-                        k.TitleUnicode?.Contains(keywd, true) == true ||
-                        k.Artist?.Contains(keywd, true) == true ||
-                        k.ArtistUnicode?.Contains(keywd, true) == true ||
-                        k.SongTags?.Contains(keywd, true) == true ||
-                        k.SongSource?.Contains(keywd, true) == true ||
-                        k.Creator?.Contains(keywd, true) == true ||
-                        k.Version?.Contains(keywd, true) == true
+
+                return keywords.Aggregate<string, IEnumerable<Beatmap>>(context.Beatmaps,
+                    (current, keyword) => current.Where(k =>
+                        k.Title?.Contains(keyword, true) == true ||
+                        k.TitleUnicode?.Contains(keyword, true) == true ||
+                        k.Artist?.Contains(keyword, true) == true ||
+                        k.ArtistUnicode?.Contains(keyword, true) == true ||
+                        k.SongTags?.Contains(keyword, true) == true ||
+                        k.SongSource?.Contains(keyword, true) == true ||
+                        k.Creator?.Contains(keyword, true) == true ||
+                        k.Version?.Contains(keyword, true) == true
                     )).ToList();
             }
         }
