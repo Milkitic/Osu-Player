@@ -1,7 +1,7 @@
-﻿using Milky.OsuPlayer.Data;
-using Milky.WpfApi.Collections;
+﻿using Milky.WpfApi.Collections;
 using osu.Shared;
 using OSharp.Beatmap;
+using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.Common.Metadata
 {

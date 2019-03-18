@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Metadata;
-using Milky.OsuPlayer.Data;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
+using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.Common.Data
 {

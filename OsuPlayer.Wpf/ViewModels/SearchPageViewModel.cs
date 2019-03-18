@@ -1,8 +1,6 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Metadata;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Models;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
 using System;

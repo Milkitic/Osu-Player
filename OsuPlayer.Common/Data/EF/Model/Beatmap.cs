@@ -1,10 +1,9 @@
-﻿using Milky.OsuPlayer.Data;
-using Newtonsoft.Json;
-using osu.Shared;
+﻿using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.Common.Data.EF.Model
 {
@@ -12,55 +11,75 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
     {
         [Column("artist")]
         public string Artist { get; set; }
+
         [Column("artistU")]
         public string ArtistUnicode { get; set; }
+
         [Column("title")]
         public string Title { get; set; }
+
         [Column("titleU")]
         public string TitleUnicode { get; set; }
+
         [Column("creator")]
-        public string Creator { get; set; }  //mapper
+        public string Creator { get; set; } //mapper
 
         [Column("version")]
-        public string Version { get; set; }  //difficulty name
+        public string Version { get; set; } //difficulty name
+
         [Column("fileName")]
         public string BeatmapFileName { get; set; }
+
         [Column("lastModified")]
         public DateTime LastModifiedTime { get; set; }
+
         [Column("diffSrStd")]
         public double DiffSrNoneStandard { get; set; }
+
         [Column("diffSrTaiko")]
         public double DiffSrNoneTaiko { get; set; }
+
         [Column("diffSrCtb")]
         public double DiffSrNoneCtB { get; set; }
+
         [Column("diffSrMania")]
         public double DiffSrNoneMania { get; set; }
+
         [Column("drainTime")]
-        public int DrainTimeSeconds { get; set; }    //NOTE: in s
+        public int DrainTimeSeconds { get; set; } //NOTE: in s
+
         [Column("totalTime")]
-        public int TotalTime { get; set; }           //NOTE: in ms
+        public int TotalTime { get; set; } //NOTE: in ms
+
         [Column("audioPreview")]
-        public int AudioPreviewTime { get; set; }    //NOTE: in ms
+        public int AudioPreviewTime { get; set; } //NOTE: in ms
+
         [Column("beatmapId")]
         public int BeatmapId { get; set; }
+
         [Column("beatmapSetId")]
         public int BeatmapSetId { get; set; }
+
         [Column("gameMode")]
         public OSharp.Beatmap.Sections.GamePlay.GameMode GameMode { get; set; }
+
         [Column("source")]
         public string SongSource { get; set; }
+
         [Column("tags")]
         public string SongTags { get; set; }
 
         [Column("folderName")]
         public string FolderName { get; set; } = "";
 
-        [Key] [Required, Column("id")]
+        [Key]
+        [Required, Column("id")]
         public Guid Id { get; set; } = Guid.NewGuid();
+
         [Required, Column("own")]
         public bool InOwnFolder { get; set; }
-        #region Only used in HoLLy
 
+        #region Only used in HoLLy
         //public string AudioFileName { get; set; }
         //public string BeatmapChecksum { get; set; }
         //public RankStatus RankedStatus { get; set; }
@@ -92,7 +111,6 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         //public bool DisableVideo { get; set; }
         //public bool VisualOverride { get; set; }
         //public byte ManiaScrollSpeed { get; set; }
-
         #endregion
 
         public Beatmap UpdateFromHolly(BeatmapEntry entry)
@@ -105,10 +123,16 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
             Version = entry.Version;
             BeatmapFileName = entry.BeatmapFileName;
             LastModifiedTime = entry.LastModifiedTime;
-            DiffSrNoneStandard = entry.DiffStarRatingStandard.ContainsKey(Mods.None) ? entry.DiffStarRatingStandard[Mods.None] : -1;
-            DiffSrNoneTaiko = entry.DiffStarRatingTaiko.ContainsKey(Mods.None) ? entry.DiffStarRatingTaiko[Mods.None] : -1;
+            DiffSrNoneStandard = entry.DiffStarRatingStandard.ContainsKey(Mods.None)
+                ? entry.DiffStarRatingStandard[Mods.None]
+                : -1;
+            DiffSrNoneTaiko = entry.DiffStarRatingTaiko.ContainsKey(Mods.None)
+                ? entry.DiffStarRatingTaiko[Mods.None]
+                : -1;
             DiffSrNoneCtB = entry.DiffStarRatingCtB.ContainsKey(Mods.None) ? entry.DiffStarRatingCtB[Mods.None] : -1;
-            DiffSrNoneMania = entry.DiffStarRatingMania.ContainsKey(Mods.None) ? entry.DiffStarRatingMania[Mods.None] : -1;
+            DiffSrNoneMania = entry.DiffStarRatingMania.ContainsKey(Mods.None)
+                ? entry.DiffStarRatingMania[Mods.None]
+                : -1;
             DrainTimeSeconds = entry.DrainTimeSeconds;
             TotalTime = entry.TotalTime;
             AudioPreviewTime = entry.AudioPreviewTime;
@@ -135,7 +159,6 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
             return (OSharp.Beatmap.Sections.GamePlay.GameMode)(int)gameMode;
 
             #region not sure
-
             //switch (gameMode)
             //{
             //    case osu.Shared.GameMode.Standard:
@@ -149,7 +172,6 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
             //    default:
             //        throw new ArgumentOutOfRangeException(nameof(gameMode), gameMode, null);
             //}
-
             #endregion
         }
     }

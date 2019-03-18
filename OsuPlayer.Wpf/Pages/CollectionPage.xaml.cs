@@ -5,7 +5,6 @@ using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;

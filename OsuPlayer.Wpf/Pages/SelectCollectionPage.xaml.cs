@@ -1,7 +1,5 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap;

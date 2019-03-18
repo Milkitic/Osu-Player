@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Milky.OsuPlayer.Data;
 using Newtonsoft.Json;
+using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.Common.Data.EF.Model.V1
 {

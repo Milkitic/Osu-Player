@@ -1,6 +1,4 @@
-﻿using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Models;
-using Milky.OsuPlayer.ViewModels;
+﻿using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap;
 using osu_database_reader.Components.Beatmaps;

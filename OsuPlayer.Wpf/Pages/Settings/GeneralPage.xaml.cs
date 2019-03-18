@@ -1,7 +1,6 @@
 ﻿using Microsoft.Win32;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Diagnostics;

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Pages;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;

@@ -1,6 +1,4 @@
-﻿using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Models;
-using Milky.OsuPlayer.Pages;
+﻿using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Utils;
 using Milky.WpfApi;
 using Milky.WpfApi.Collections;
@@ -15,7 +13,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.I18N;
 using Milky.OsuPlayer.Common.Instances;
