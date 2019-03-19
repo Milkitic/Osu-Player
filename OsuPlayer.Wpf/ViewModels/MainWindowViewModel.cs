@@ -15,7 +15,7 @@ namespace Milky.OsuPlayer.ViewModels
         private List<Collection> _collection;
         private bool _isLyricWindowShown;
         private bool _isLyricWindowLocked;
-        private bool _isSyncing;
+        private bool _showWelcome;
         private PlayerViewModel _player;
 
         public bool IsNavigationCollapsed
@@ -58,12 +58,12 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public bool IsSyncing
+        public bool ShowWelcome
         {
-            get => _isSyncing;
+            get => _showWelcome;
             set
             {
-                _isSyncing = value;
+                _showWelcome = value;
                 OnPropertyChanged();
             }
         }

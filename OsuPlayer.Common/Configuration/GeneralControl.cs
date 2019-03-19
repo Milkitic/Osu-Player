@@ -5,5 +5,6 @@
         public bool RunOnStartup { get; set; } = false;
         public string DbPath { get; set; }
         public bool? ExitWhenClosed { get; set; } = null;
+        public bool FirstOpen { get; set; } = true;
     }
 }

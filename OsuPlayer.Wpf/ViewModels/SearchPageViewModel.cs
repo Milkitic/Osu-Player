@@ -111,7 +111,7 @@ namespace Milky.OsuPlayer.ViewModels
                 _querySw.Stop();
 
                 var sorted = string.IsNullOrWhiteSpace(SearchText)
-                    ? BeatmapQuery.SortBy(BeatmapDatabaseQuery.GetWholeListFromDb(), sortMode).ToDataModels(true).ToList()
+                    ? BeatmapQuery.GetWholeList().SortBy(sortMode).ToDataModels(true).ToList()
                     : BeatmapQuery.FilterByKeyword(SearchText).SortBy(sortMode).ToDataModels(true);
 
                 SearchedMaps = sorted;
@@ -164,7 +164,8 @@ namespace Milky.OsuPlayer.ViewModels
             Pages = pages;
             ListPage page = GetPage(nowIndex + 1);
 
-            if (page != null) page.IsActivated = true;
+            if (page != null)
+                page.IsActivated = true;
             DisplayedMaps = SearchedMaps.Skip(nowIndex * MaxListCount).Take(MaxListCount);
         }
 

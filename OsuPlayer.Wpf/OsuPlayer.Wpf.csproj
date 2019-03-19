@@ -463,10 +463,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MrMitch.Loaders\MrMitch.Loaders.csproj">
-      <Project>{00e8fbc2-33cd-440b-81f4-066c15b06a46}</Project>
-      <Name>MrMitch.Loaders</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
       <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>
       <Name>OsuPlayer.Common</Name>

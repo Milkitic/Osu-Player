@@ -9,7 +9,6 @@
     xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
-    xmlns:loaders="clr-namespace:Loaders;assembly=MrMitch.Loaders"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
     xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
     mc:Ignorable="d"
@@ -20,14 +19,12 @@
     <wpfApi:WindowBase.Style>
         <Style TargetType="wpfApi:WindowBase">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding IsMiniMode,Converter={StaticResource MiniWindowConverter}}" Value="False"
-                             wpfApi:TriggerTracing.TriggerName="Window -> IsMiniMode -> False"
-                             wpfApi:TriggerTracing.TraceEnabled="True">
+                <DataTrigger Binding="{Binding IsMiniMode,Converter={StaticResource MiniWindowConverter}}" Value="False">
                     <Setter Property="Topmost" Value="False" />
                     <Setter Property="ResizeMode" Value="CanResize" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsMiniMode,Converter={StaticResource MiniWindowConverter}}" Value="True"
-                             wpfApi:TriggerTracing.TriggerName="Window -> IsMiniMode -> True"
+                             wpfApi:TriggerTracing.TriggerName="MainWindow -> IsMiniMode"
                              wpfApi:TriggerTracing.TraceEnabled="True">
                     <Setter Property="Topmost" Value="True" />
                     <Setter Property="ResizeMode" Value="NoResize" />
@@ -744,18 +741,14 @@
                                     <Style TargetType="custom:BitmapButton">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavourite}" Value="True"
-                                                         wpfApi:TriggerTracing.TriggerName="LikeButton -> CurrentMusic -> Null"
+                                                         wpfApi:TriggerTracing.TriggerName="LikeButton -> CurrentMusic"
                                                          wpfApi:TriggerTracing.TraceEnabled="True">
                                                 <Setter Property="Background" Value="{StaticResource Faved}" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding Player.CurrentInfo}" Value="{x:Null}"
-                                                         wpfApi:TriggerTracing.TriggerName="LikeButton -> Fav -> False"
-                                                         wpfApi:TriggerTracing.TraceEnabled="True">
+                                            <DataTrigger Binding="{Binding Player.CurrentInfo}" Value="{x:Null}">
                                                 <Setter Property="Background" Value="{StaticResource Fav}" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavourite}" Value="False"
-                                                         wpfApi:TriggerTracing.TriggerName="LikeButton -> Fav -> False"
-                                                         wpfApi:TriggerTracing.TraceEnabled="True">
+                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavourite}" Value="False">
                                                 <Setter Property="Background" Value="{StaticResource Fav}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
@@ -1015,20 +1008,44 @@
         </Border>-->
 
         <Border Grid.Row="1"
-                Background="{StaticResource WhiteBrush80}"
-                Visibility="{Binding IsSyncing,Converter={StaticResource TrueToVisibleConverter}}">
+                Background="{StaticResource WhiteBrushB0}"
+                Visibility="{Binding ShowWelcome,Converter={StaticResource TrueToVisibleConverter}}">
+            <Border.Style>
+                <Style TargetType="FrameworkElement">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowWelcome}" Value="True"
+                                     wpfApi:TriggerTracing.TriggerName="MainWindow -> ShowWelcome"
+                                     wpfApi:TriggerTracing.TraceEnabled="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ShowWelcome}" Value="False">
+                            <Setter Property="Visibility" Value="Hidden" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
             <StackPanel VerticalAlignment="Center"
                         HorizontalAlignment="Center">
-                <loaders:ChromeLoader
-                    Foreground="{StaticResource SliderBackground}"
-                    Thickness="8"
-                    Width="100" Height="100"
-                    IsIndeterminate="{Binding IsSyncing}" />
-                <Label Content="正在与osu!db同步中..."
-                       FontSize="15"
-                       Margin="0,15,0,0"
+                <Label Content="欢迎"
+                       HorizontalContentAlignment="Center"
+                       FontSize="35"
+                       Margin="0,3,0,0"
                        FontWeight="Bold" 
                        Foreground="{StaticResource SliderBackground}" />
+                <Label Content="选择以下项目，开启精彩音乐世界……"
+                       Margin="0,0,0,3"
+                       HorizontalContentAlignment="Center"
+                       FontSize="12"
+                       Foreground="{StaticResource SliderBackground}" />
+                <CheckBox Margin="0,3" Content="选择osu!db，同步曲库"></CheckBox>
+                <CheckBox Margin="0,3" Content="开启曲库目录监听服务，减少同步与扫描时间"></CheckBox>
+                <Label HorizontalContentAlignment="Center" Margin="0,30,0,0">
+                    <TextBlock>
+                        <Hyperlink NavigateUri="skip" Click="SkipStep_Click">
+                            Skip this step
+                        </Hyperlink>
+                    </TextBlock>
+                </Label>
             </StackPanel>
         </Border>
         <tb:TaskbarIcon Grid.Row="0" x:Name="NotifyIcon"

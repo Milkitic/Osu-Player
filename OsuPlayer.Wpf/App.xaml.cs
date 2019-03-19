@@ -7,6 +7,8 @@ using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Utils;
 using System;
 using System.Windows;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Scanning;
 using Milky.OsuPlayer.Windows;
 
 #if !DEBUG
@@ -37,6 +39,7 @@ namespace Milky.OsuPlayer
             InstanceManage.AddInstance(new PlayersInst());
             InstanceManage.AddInstance(new LyricsInst());
             InstanceManage.AddInstance(new Updater());
+            InstanceManage.AddInstance(new OsuFileScanner(PlayerConfig.Current.SongPath));
 
             InstanceManage.GetInstance<LyricsInst>().ReloadLyricProvider();
 

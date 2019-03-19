@@ -1,9 +1,11 @@
 ﻿using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using OSharp.Beatmap;
 using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.Common.Data.EF.Model
@@ -152,6 +154,46 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         public static Beatmap ParseFromHolly(BeatmapEntry entry)
         {
             return (new Beatmap()).UpdateFromHolly(entry);
+        }
+
+        public Beatmap UpdateFromOSharp(OsuFile osuFile)
+        {
+            Artist = osuFile.Metadata.Artist;
+            ArtistUnicode = osuFile.Metadata.ArtistUnicode;
+            Title = osuFile.Metadata.Title;
+            TitleUnicode = osuFile.Metadata.TitleUnicode;
+            Creator = osuFile.Metadata.Creator;
+            Version = osuFile.Metadata.Version;
+            //BeatmapFileName = osuFile.BeatmapFileName;
+            //LastModifiedTime = osuFile.LastModifiedTime;
+            //DiffSrNoneStandard = osuFile.DiffStarRatingStandard.ContainsKey(Mods.None)
+            //    ? osuFile.DiffStarRatingStandard[Mods.None]
+            //    : -1;
+            //DiffSrNoneTaiko = osuFile.DiffStarRatingTaiko.ContainsKey(Mods.None)
+            //    ? osuFile.DiffStarRatingTaiko[Mods.None]
+            //    : -1;
+            //DiffSrNoneCtB = osuFile.DiffStarRatingCtB.ContainsKey(Mods.None) ? osuFile.DiffStarRatingCtB[Mods.None] : -1;
+            //DiffSrNoneMania = osuFile.DiffStarRatingMania.ContainsKey(Mods.None)
+            //    ? osuFile.DiffStarRatingMania[Mods.None]
+            //    : -1;
+            DrainTimeSeconds = (int)(osuFile.HitObjects.MaxTime -
+                                     osuFile.HitObjects.MinTime -
+                                     osuFile.Events.Breaks.Select(k => k.EndTime - k.StartTime).Sum());
+            TotalTime = (int)osuFile.HitObjects.MaxTime;
+            AudioPreviewTime = osuFile.General.PreviewTime;
+            BeatmapId = osuFile.Metadata.BeatmapId;
+            BeatmapSetId = osuFile.Metadata.BeatmapSetId;
+            GameMode = osuFile.General.Mode;
+            SongSource = osuFile.Metadata.Source;
+            SongTags = string.Join(" ", osuFile.Metadata.TagList);
+            //FolderName = osuFile.FolderName;
+
+            return this;
+        }
+
+        public static Beatmap ParseFromOSharp(OsuFile osuFile)
+        {
+            return (new Beatmap()).UpdateFromOSharp(osuFile);
         }
 
         public class Comparer : IEqualityComparer<Beatmap>

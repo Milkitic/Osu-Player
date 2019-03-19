@@ -8,6 +8,7 @@ using osu.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using OSharp.Beatmap.MetaData;
 using GameMode = OSharp.Beatmap.Sections.GamePlay.GameMode;
 
@@ -169,12 +170,15 @@ namespace Milky.OsuPlayer.Common.Data
         }
 #endif
 
-        public static List<Beatmap> GetWholeListFromDb()
+        public static async Task<List<Beatmap>> GetWholeListFromDbAsync()
         {
-            using (var context = new BeatmapDbContext())
+            return await Task.Run(() =>
             {
-                return context.Beatmaps.ToList();
-            }
+                using (var context = new BeatmapDbContext())
+                {
+                    return context.Beatmaps.ToList();
+                }
+            });
         }
     }
 }

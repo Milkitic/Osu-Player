@@ -33,35 +33,6 @@ namespace Milky.OsuPlayer.Common.Data.EF
             modelBuilder.Configurations.Add(new BeatmapMap());
             base.OnModelCreating(modelBuilder);
         }
-
-        public static async Task SyncMapsFromHoLLyAsync(IEnumerable<BeatmapEntry> entry, bool addOnly)
-        {
-            await Task.Run(() =>
-            {
-                using (var context = new BeatmapDbContext())
-                {
-                    if (addOnly)
-                    {
-                        var dbMaps = context.Beatmaps.Where(k => !k.InOwnFolder).ToList();
-                        var newList = entry.Select(Beatmap.ParseFromHolly).ToList();
-                        var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
-
-                        context.Beatmaps.AddRange(except);
-                        context.SaveChanges();
-                    }
-                    else
-                    {
-                        var dbMaps = context.Beatmaps.Where(k => !k.InOwnFolder);
-                        context.Beatmaps.RemoveRange(dbMaps);
-
-                        var osuMaps = entry.Select(Beatmap.ParseFromHolly);
-                        context.Beatmaps.AddRange(osuMaps);
-
-                        context.SaveChanges();
-                    }
-                }
-            });
-        }
     }
 
     internal class MapIdentifiable : IEqualityComparer<IMapIdentifiable>

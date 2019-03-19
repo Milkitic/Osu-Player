@@ -7,11 +7,30 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Common.Data;
+using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Common.Instances
 {
+
     public class OsuDbInst
     {
+        private readonly object _scanningObject = new object();
+        public class ViewModelClass : ViewModelBase
+        {
+            private bool _isScanning;
+
+            public bool IsScanning
+            {
+                get => _isScanning;
+                set
+                {
+                    _isScanning = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public ViewModelClass ViewModel { get; set; } = new ViewModelClass();
 
         public async Task<bool> TrySyncOsuDbAsync(string path, bool addOnly)
         {
@@ -25,18 +44,27 @@ namespace Milky.OsuPlayer.Common.Instances
                 return false;
             }
         }
+        public async Task LoadLocalDbAsync()
+        {
+            Beatmaps = new HashSet<Beatmap>(await BeatmapDatabaseQuery.GetWholeListFromDbAsync());
+        }
 
         public async Task SyncOsuDbAsync(string path, bool addOnly)
         {
+            lock (_scanningObject)
+                ViewModel.IsScanning = true;
+
             if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
             {
                 var db = await ReadDbAsync(path);
-
-                await BeatmapDbContext.SyncMapsFromHoLLyAsync(db.Beatmaps, addOnly);
+                await BeatmapDbOperator.SyncMapsFromHoLLyAsync(db.Beatmaps, addOnly);
             }
 
-            Beatmaps = new HashSet<Beatmap>(BeatmapDatabaseQuery.GetWholeListFromDb());
+
+            lock (_scanningObject)
+                ViewModel.IsScanning = false;
         }
+
 
         private static async Task<OsuDb> ReadDbAsync(string path)
         {

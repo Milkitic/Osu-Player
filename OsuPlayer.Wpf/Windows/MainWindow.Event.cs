@@ -16,6 +16,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
+using Milky.OsuPlayer.Common.Scanning;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -27,7 +28,17 @@ namespace Milky.OsuPlayer.Windows
         {
             //// todo: This should be kept since the application exit last time.
             //BtnRecent_Click(sender, e);
-            await LoadDb();
+            if (PlayerConfig.Current.General.FirstOpen)
+            {
+                ViewModel.ShowWelcome = true;
+                await LoadLocalDbAsync();
+            }
+            else
+            {
+                SyncSynchronously();
+                ScanSynchronously();
+            }
+
             UpdateCollections();
             LoadSurfaceSettings();
 
@@ -47,19 +58,33 @@ namespace Milky.OsuPlayer.Windows
             var source = HwndSource.FromHwnd(helper.Handle);
             source?.AddHook(HwndMessageHook);
 
-            bool? sb = await InstanceManage.GetInstance<Updater>().CheckUpdateAsync();
-            if (sb.HasValue && sb.Value && InstanceManage.GetInstance<Updater>().NewRelease.NewVerString != PlayerConfig.Current.IgnoredVer)
+            //if (PlayerConfig.Current.General.FirstOpen)
+            //{
+            //    ViewModel.ShowWelcome = true;
+            //}
+
+            var updater = InstanceManage.GetInstance<Updater>();
+            bool? hasUpdate = await updater.CheckUpdateAsync();
+            if (hasUpdate == true && updater.NewRelease.NewVerString != PlayerConfig.Current.IgnoredVer)
             {
-                var newVersionWindow = new NewVersionWindow(InstanceManage.GetInstance<Updater>().NewRelease, this);
+                var newVersionWindow = new NewVersionWindow(updater.NewRelease, this);
                 newVersionWindow.ShowDialog();
             }
         }
 
-        private async Task LoadDb()
+        private static void ScanSynchronously()
         {
-            ViewModel.IsSyncing = true;
-            await InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(PlayerConfig.Current.General.DbPath, true);
-            ViewModel.IsSyncing = false;
+            Task.Run(() => InstanceManage.GetInstance<OsuFileScanner>().NewScanAndAddAsync());
+        }
+
+        private static async Task LoadLocalDbAsync()
+        {
+            await InstanceManage.GetInstance<OsuDbInst>().LoadLocalDbAsync();
+        }
+
+        private static void SyncSynchronously()
+        {
+            Task.Run(() => InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(PlayerConfig.Current.General.DbPath, true));
         }
 
         /// <summary>
@@ -637,6 +662,13 @@ namespace Milky.OsuPlayer.Windows
 
         #endregion Video element events
 
+        #region Guide events
+        private void SkipStep_Click(object sender, RoutedEventArgs e)
+        {
+            PlayerConfig.Current.General.FirstOpen = false;
+            PlayerConfig.SaveCurrent();
+        }
 
+        #endregion
     }
 }

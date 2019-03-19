@@ -81,6 +81,7 @@
     <Compile Include="Configuration\HotKey.cs" />
     <Compile Include="Configuration\LyricControl.cs" />
     <Compile Include="Data\BeatmapDatabaseQuery.cs" />
+    <Compile Include="Data\BeatmapDbOperator.cs" />
     <Compile Include="Data\BeatmapQuery.cs" />
     <Compile Include="Data\EF\BeatmapDbContext.cs" />
     <Compile Include="Data\EF\Model\Beatmap.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Player\PlayMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Metadata\SortStyle.cs" />
+    <Compile Include="Scanning\OsuFileScanner.cs" />
     <Compile Include="StringExtension.cs" />
     <Compile Include="Web\Downloader.cs" />
   </ItemGroup>
