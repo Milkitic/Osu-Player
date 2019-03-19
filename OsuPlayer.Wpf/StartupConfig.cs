@@ -38,7 +38,8 @@ namespace Milky.OsuPlayer
             {
                 try
                 {
-                    PlayerConfig.Load(JsonConvert.DeserializeObject<PlayerConfig>(ConcurrentFile.ReadAllText(file)));
+                    var content = ConcurrentFile.ReadAllText(file);
+                    PlayerConfig.Load(JsonConvert.DeserializeObject<PlayerConfig>(content));
                 }
                 catch (JsonException e)
                 {

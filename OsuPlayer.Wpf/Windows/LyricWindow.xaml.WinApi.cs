@@ -33,7 +33,7 @@ namespace Milky.OsuPlayer.Windows
                     SetPenetrate();
                     ImgLyric.Opacity = 0.9;
                     //ShowAnimation();
-                    HideFrame();
+                    ViewModel.ShowFrame = false;
                 }
                 else
                 {

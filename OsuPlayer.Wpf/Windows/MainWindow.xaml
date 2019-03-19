@@ -93,9 +93,9 @@
                 </Border.BorderBrush>
             </Border>
             <DockPanel x:Name="MainArea" Grid.Row="0" Margin="0,0,1,0" Width="Auto" Height="Auto">
-                <DockPanel.Effect>
+                <!--<DockPanel.Effect>
                     <DropShadowEffect ShadowDepth="0" BlurRadius="10" Opacity="0.24" />
-                </DockPanel.Effect>
+                </DockPanel.Effect>-->
                 <DockPanel x:Name="Navigation" Height="{Binding ElementName=MainArea,Path=ActualHeight}"
                            Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}">
                     <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto"
@@ -336,9 +336,9 @@
                     <Grid x:Name="BgArea" Margin="0">
                         <Image x:Name="BlurScene" Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center"
                                VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality">
-                            <Image.Effect>
+                            <!--<Image.Effect>
                                 <BlurEffect Radius="100" />
-                            </Image.Effect>
+                            </Image.Effect>-->
                         </Image>
                         <Rectangle x:Name="WhiteCover" Fill="{StaticResource WhiteBrush}" Opacity="0.833333333" />
                         <Grid.Style>
@@ -845,9 +845,9 @@
                    StaysOpen="False">
                 <Grid Margin="5">
                     <Border BorderBrush="#cccccc" BorderThickness="1">
-                        <Border.Effect>
+                        <!--<Border.Effect>
                             <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="#000000" Opacity="1" />
-                        </Border.Effect>
+                        </Border.Effect>-->
                     </Border>
                     <Border>
                         <Border.Background>
@@ -910,9 +910,9 @@
                    StaysOpen="False">
                 <Grid Margin="5">
                     <Border BorderBrush="#cccccc" BorderThickness="1">
-                        <Border.Effect>
+                        <!--<Border.Effect>
                             <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="#000000" Opacity="0.5" />
-                        </Border.Effect>
+                        </Border.Effect>-->
                     </Border>
                     <Border HorizontalAlignment="Center" BorderBrush="#cccccc" BorderThickness="1">
                         <Border.Background>
