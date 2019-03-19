@@ -227,13 +227,13 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static void AddMapToCollection(Beatmap entry, Collection collection)
+        public static void AddMapToCollection(Beatmap beatmap, Collection collection)
         {
             using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
-                    MapInfo map = InnerGetMapFromDb(entry.GetIdentity(), context);
+                    MapInfo map = InnerGetMapFromDb(beatmap.GetIdentity(), context);
                     context.Relations.Add(new CollectionRelation(Guid.NewGuid().ToString(), collection.Id,
                         map.Id));
                     context.SaveChanges();
@@ -243,7 +243,7 @@ namespace Milky.OsuPlayer.Common.Data
                     if (currentInfo != null)
                     {
                         if (collection.Locked &&
-                            currentInfo.Identity.Equals(entry.GetIdentity()))
+                            currentInfo.Identity.Equals(beatmap.GetIdentity()))
                         {
                             currentInfo.IsFavourite = true;
                         }
@@ -349,9 +349,9 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static void UpdateMap(Beatmap entry, int offset)
+        public static void UpdateMap(Beatmap beatmap, int offset)
         {
-            UpdateMap(entry.GetIdentity());
+            UpdateMap(beatmap.GetIdentity());
         }
 
         public static void RemoveFromRecent(MapIdentity id)
@@ -364,9 +364,9 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static void RemoveFromRecent(Beatmap entry)
+        public static void RemoveFromRecent(Beatmap beatmap)
         {
-            RemoveFromRecent(entry.GetIdentity());
+            RemoveFromRecent(beatmap.GetIdentity());
         }
 
         public static void ClearRecent()
@@ -400,9 +400,9 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static void RemoveMapFromCollection(Beatmap entry, Collection collection)
+        public static void RemoveMapFromCollection(Beatmap beatmap, Collection collection)
         {
-            RemoveMapFromCollection(entry.GetIdentity(), collection);
+            RemoveMapFromCollection(beatmap.GetIdentity(), collection);
         }
 
         public static void RemoveMapFromCollection(MapIdentity id, Collection collection)

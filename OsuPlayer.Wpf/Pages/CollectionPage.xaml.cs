@@ -40,7 +40,7 @@ namespace Milky.OsuPlayer.Pages
             ViewModel = (CollectionPageViewModel)this.DataContext;
             ViewModel.CollectionInfo = collectionInfo;
             var infos = (List<MapInfo>)DbOperate.GetMapsFromCollection(collectionInfo);
-            _entries = BeatmapQuery.GetMaps(infos, false);
+            _entries = BeatmapQuery.GetBeatmapsByIdentifiable(infos, false);
             ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModels(false));
         }
 

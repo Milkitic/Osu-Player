@@ -24,7 +24,7 @@ namespace Milky.OsuPlayer
             EventRedirectHandle.Redirect();
             StyleUtilities.SetAlignment();
 
-            SetDbPath();
+            //SetDbPath();
         }
 
         private static bool LoadConfig()

@@ -184,7 +184,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             base.Dispose();
 
             Stop();
-            if (_playingTask != null) Task.WaitAll(_playingTask);
+            if (_playingTask != null)
+                Task.WaitAll(_playingTask);
             _playingTask?.Dispose();
             _cts?.Dispose();
             WavePlayer.ClearCache();
@@ -213,9 +214,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 {
                     while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= PlayTime)
                     {
-                        if (!_hsQueue.TryDequeue(out var hs)) continue;
+                        if (!_hsQueue.TryDequeue(out var hs))
+                            continue;
 
-                        foreach (var path in hs.FilePaths) Task.Run(() => WavePlayer.PlayFile(path, hs.Volume));
+                        foreach (var path in hs.FilePaths)
+                            Task.Run(() => WavePlayer.PlayFile(path, hs.Volume));
                     }
                 }
 
@@ -261,12 +264,13 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         private void Requeue(long startTime)
         {
             _hsQueue = new ConcurrentQueue<HitsoundElement>();
-            foreach (var i in _hitsoundList)
-            {
-                if (i.Offset < startTime)
-                    continue;
-                _hsQueue.Enqueue(i);
-            }
+            if (_hitsoundList != null)
+                foreach (var i in _hitsoundList)
+                {
+                    if (i.Offset < startTime)
+                        continue;
+                    _hsQueue.Enqueue(i);
+                }
         }
 
         private void StartTask()
@@ -276,9 +280,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         private void CancelTask(bool waitPlayTask)
         {
-            _cts.Cancel();
-            if (waitPlayTask && _playingTask != null) Task.WaitAll(_playingTask);
-            if (_offsetTask != null) Task.WaitAll(_offsetTask);
+            _cts?.Cancel();
+            if (waitPlayTask && _playingTask != null)
+                Task.WaitAll(_playingTask);
+            if (_offsetTask != null)
+                Task.WaitAll(_offsetTask);
             Console.WriteLine(@"Task canceled.");
         }
 

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration;
 using System.Linq;
+using System.Threading.Tasks;
 using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.Common.Data.EF
@@ -33,26 +34,33 @@ namespace Milky.OsuPlayer.Common.Data.EF
             base.OnModelCreating(modelBuilder);
         }
 
-        public static void SyncMapsFromOsuDb(IEnumerable<BeatmapEntry> entry)
+        public static async Task SyncMapsFromHoLLyAsync(IEnumerable<BeatmapEntry> entry, bool addOnly)
         {
-            using (BeatmapDbContext context = new BeatmapDbContext())
+            await Task.Run(() =>
             {
-                try
+                using (var context = new BeatmapDbContext())
                 {
-                    var dbMaps = context.Beatmaps.Where(k => !k.InOwnFolder);
-                    context.Beatmaps.RemoveRange(dbMaps);
+                    if (addOnly)
+                    {
+                        var dbMaps = context.Beatmaps.Where(k => !k.InOwnFolder).ToList();
+                        var newList = entry.Select(Beatmap.ParseFromHolly).ToList();
+                        var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
 
-                    var osuMaps = entry.Select(Beatmap.ParseFromHolly);
-                    context.Beatmaps.AddRange(osuMaps);
+                        context.Beatmaps.AddRange(except);
+                        context.SaveChanges();
+                    }
+                    else
+                    {
+                        var dbMaps = context.Beatmaps.Where(k => !k.InOwnFolder);
+                        context.Beatmaps.RemoveRange(dbMaps);
 
-                    context.SaveChanges();
+                        var osuMaps = entry.Select(Beatmap.ParseFromHolly);
+                        context.Beatmaps.AddRange(osuMaps);
+
+                        context.SaveChanges();
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(@"Failed: " + ex);
-                    throw;
-                }
-            }
+            });
         }
     }
 

@@ -27,16 +27,15 @@ namespace Milky.OsuPlayer.Windows
         {
             //// todo: This should be kept since the application exit last time.
             //BtnRecent_Click(sender, e);
+            await LoadDb();
             UpdateCollections();
             LoadSurfaceSettings();
-            //await LoadDb();
 
             if (PlayerConfig.Current.CurrentPath != null && PlayerConfig.Current.Play.Memory)
             {
-                var entries = BeatmapQuery
-                    .FilterByIdentities(PlayerConfig.Current.CurrentList);
+                var entries = BeatmapQuery.FilterByIdentities(PlayerConfig.Current.CurrentList);
                 await InstanceManage.GetInstance<PlayerList>()
-                    .RefreshPlayListAsync(PlayerList.FreshType.All, entries: entries);
+                    .RefreshPlayListAsync(PlayerList.FreshType.All, beatmaps: entries);
 
                 bool play = PlayerConfig.Current.Play.AutoPlay;
                 await PlayNewFile(PlayerConfig.Current.CurrentPath, play);
@@ -51,7 +50,7 @@ namespace Milky.OsuPlayer.Windows
             bool? sb = await InstanceManage.GetInstance<Updater>().CheckUpdateAsync();
             if (sb.HasValue && sb.Value && InstanceManage.GetInstance<Updater>().NewRelease.NewVerString != PlayerConfig.Current.IgnoredVer)
             {
-                NewVersionWindow newVersionWindow = new NewVersionWindow(InstanceManage.GetInstance<Updater>().NewRelease, this);
+                var newVersionWindow = new NewVersionWindow(InstanceManage.GetInstance<Updater>().NewRelease, this);
                 newVersionWindow.ShowDialog();
             }
         }
@@ -59,7 +58,7 @@ namespace Milky.OsuPlayer.Windows
         private async Task LoadDb()
         {
             ViewModel.IsSyncing = true;
-            await InstanceManage.GetInstance<OsuDbInst>().LoadNewDbAsync(PlayerConfig.Current.General.DbPath);
+            await InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(PlayerConfig.Current.General.DbPath, true);
             ViewModel.IsSyncing = false;
         }
 
@@ -86,7 +85,8 @@ namespace Milky.OsuPlayer.Windows
             ComponentPlayer.DisposeAll();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
-            if (ConfigWindow == null || ConfigWindow.IsClosed) return;
+            if (ConfigWindow == null || ConfigWindow.IsClosed)
+                return;
             if (ConfigWindow.IsInitialized)
                 ConfigWindow.Close();
         }
@@ -174,7 +174,8 @@ namespace Milky.OsuPlayer.Windows
 
         private void BtnNavigate_Checked(object sender, RoutedEventArgs e)
         {
-            if (_ischanging) return;
+            if (_ischanging)
+                return;
             _ischanging = true;
             var btn = (ToggleButton)sender;
             _optionContainer.Switch(btn);
@@ -183,7 +184,8 @@ namespace Milky.OsuPlayer.Windows
 
         private void BtnNavigate_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (_ischanging) return;
+            if (_ischanging)
+                return;
             _ischanging = true;
             ((ToggleButton)sender).IsChecked = true;
             _ischanging = false;
@@ -285,13 +287,15 @@ namespace Milky.OsuPlayer.Windows
             switch (ComponentPlayer.Current.PlayerStatus)
             {
                 case PlayerStatus.Playing:
-                    if (VideoElement?.Source != null) await VideoElement.Pause();
+                    if (VideoElement?.Source != null)
+                        await VideoElement.Pause();
                     PauseMedia();
                     break;
                 case PlayerStatus.Ready:
                 case PlayerStatus.Stopped:
                 case PlayerStatus.Paused:
-                    if (VideoElement?.Source != null) await VideoElement.Play();
+                    if (VideoElement?.Source != null)
+                        await VideoElement.Play();
                     PlayMedia();
                     break;
             }
@@ -328,7 +332,7 @@ namespace Milky.OsuPlayer.Windows
         private async void BtnLike_Click(object sender, RoutedEventArgs e)
         {
             var entry = BeatmapQuery.FilterByIdentity(InstanceManage.GetInstance<PlayerList>().CurrentIdentity);
-            //var entry = App.PlayerList?.CurrentInfo.Entry;
+            //var entry = App.PlayerList?.CurrentInfo.Beatmap;
             if (entry == null)
             {
                 MsgBox.Show(this, "该图不存在于该osu!db中。", Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -362,7 +366,8 @@ namespace Milky.OsuPlayer.Windows
 
         private void PlayMode_Checked(object sender, RoutedEventArgs e)
         {
-            if (_ischanging) return;
+            if (_ischanging)
+                return;
             _ischanging = true;
             var btn = (ToggleButton)sender;
             _modeOptionContainer.Switch(btn);
@@ -371,7 +376,8 @@ namespace Milky.OsuPlayer.Windows
 
         private void PlayMode_UnChecked(object sender, RoutedEventArgs e)
         {
-            if (_ischanging) return;
+            if (_ischanging)
+                return;
             _ischanging = true;
             ((ToggleButton)sender).IsChecked = true;
             _ischanging = false;
@@ -556,7 +562,8 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void Offset_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            if (ComponentPlayer.Current == null) return;
+            if (ComponentPlayer.Current == null)
+                return;
             ComponentPlayer.Current.HitsoundOffset = (int)Offset.Value;
             DbOperate.UpdateMap(InstanceManage.GetInstance<PlayerList>().CurrentInfo.Identity, ComponentPlayer.Current.HitsoundOffset);
         }
@@ -611,7 +618,8 @@ namespace Milky.OsuPlayer.Windows
         private async void VideoElement_MediaOpened(object sender, RoutedEventArgs e)
         {
             VideoElementBorder.Visibility = Visibility.Visible;
-            if (!_videoPlay) return;
+            if (!_videoPlay)
+                return;
             await Task.Run(() => _waitAction?.Invoke());
             await VideoElement.Play();
             VideoElement.Position = _position;
@@ -621,7 +629,8 @@ namespace Milky.OsuPlayer.Windows
         {
             VideoElementBorder.Visibility = Visibility.Hidden;
             //MsgBox.Show(this, e.ErrorException.ToString(), "不支持的视频格式", MessageBoxButton.OK, MessageBoxImage.Error);
-            if (!_videoPlay) return;
+            if (!_videoPlay)
+                return;
             await ClearVideoElement(false);
             PlayMedia();
         }

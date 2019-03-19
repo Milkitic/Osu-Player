@@ -1,6 +1,7 @@
 ﻿using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using OSharp.Beatmap.MetaData;
@@ -151,6 +152,36 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         public static Beatmap ParseFromHolly(BeatmapEntry entry)
         {
             return (new Beatmap()).UpdateFromHolly(entry);
+        }
+
+        public class Comparer : IEqualityComparer<Beatmap>
+        {
+            private readonly bool _byIdentity;
+
+            public Comparer(bool byIdentity)
+            {
+                _byIdentity = byIdentity;
+            }
+
+            public bool Equals(Beatmap x, Beatmap y)
+            {
+                if (x == null && y == null)
+                    return true;
+                if (x == null || y == null)
+                    return false;
+
+                if (_byIdentity)
+                {
+                    return x.EqualsTo(y);
+                }
+
+                return x.Id == y.Id; //todo: sb
+            }
+
+            public int GetHashCode(Beatmap obj)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 

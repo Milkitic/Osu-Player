@@ -111,7 +111,7 @@ namespace Milky.OsuPlayer.ViewModels
                 _querySw.Stop();
 
                 var sorted = string.IsNullOrWhiteSpace(SearchText)
-                    ? BeatmapQuery.SortBy(BeatmapQuery.GetWholeList(), sortMode).ToDataModels(true).ToList()
+                    ? BeatmapQuery.SortBy(BeatmapDatabaseQuery.GetWholeListFromDb(), sortMode).ToDataModels(true).ToList()
                     : BeatmapQuery.FilterByKeyword(SearchText).SortBy(sortMode).ToDataModels(true);
 
                 SearchedMaps = sorted;

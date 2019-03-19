@@ -176,7 +176,7 @@ namespace Milky.OsuPlayer.ViewModels
                     : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), Util.CountSize(fi.Length)));
             }
 
-            _entries = BeatmapQuery.GetMaps(maps);
+            _entries = BeatmapQuery.GetBeatmapsByIdentifiable(maps);
             var viewModels = _entries.ToDataModels(true).ToList();
             for (var i = 0; i < viewModels.Count; i++)
             {

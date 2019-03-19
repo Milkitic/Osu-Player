@@ -79,7 +79,7 @@ namespace Milky.OsuPlayer.Pages.Settings
                 return;
             try
             {
-                await InstanceManage.GetInstance<OsuDbInst>().LoadNewDbAsync(path);
+                await InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(path, false);
             }
             catch (Exception ex)
             {

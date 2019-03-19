@@ -117,8 +117,8 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private void ResetWithoutNotify()
         {
-            HitsoundPlayer.ResetWithoutNotify();
-            MusicPlayer.ResetWithoutNotify();
+            HitsoundPlayer?.ResetWithoutNotify();
+            MusicPlayer?.ResetWithoutNotify();
         }
 
         public override void Replay()

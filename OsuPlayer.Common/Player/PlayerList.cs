@@ -29,12 +29,12 @@ namespace Milky.OsuPlayer.Common.Player
         /// </summary>
         /// <param name="freshType"></param>
         /// <param name="playListMode">If the value is null, current mode will not be infected.</param>
-        /// <param name="entries">If the value is not null, current mode will forcly changed to collection mode.</param>
+        /// <param name="beatmaps">If the value is not null, current mode will forcly changed to collection mode.</param>
         /// <param name="finishList"></param>
         public async Task RefreshPlayListAsync(
             FreshType freshType,
             PlayListMode? playListMode = null,
-            IEnumerable<Beatmap> entries = null, bool finishList = false)
+            IEnumerable<Beatmap> beatmaps = null, bool finishList = false)
         {
             bool force = false;
             if (playListMode != null)
@@ -43,9 +43,9 @@ namespace Milky.OsuPlayer.Common.Player
                     force = true;
                 PlayListMode = playListMode.Value;
             }
-            if (entries != null)
+            if (beatmaps != null)
                 PlayListMode = PlayListMode.Collection;
-            if (force || entries != null || freshType == FreshType.All || Entries.Count == 0)
+            if (force || beatmaps != null || freshType == FreshType.All || Entries.Count == 0)
                 switch (PlayListMode)
                 {
                     case PlayListMode.RecentList:
@@ -53,12 +53,12 @@ namespace Milky.OsuPlayer.Common.Player
                         break;
                     default:
                     case PlayListMode.Collection:
-                        if (entries != null)
-                            Entries = await Task.Run(() => entries.ToList()); //todo: 150ms
+                        if (beatmaps != null)
+                            Entries = await Task.Run(() => beatmaps.ToList()); //todo: 150ms
                         break;
                 }
 
-            if (force || entries != null || freshType != FreshType.None || Indexes == null || Indexes.Count == 0)
+            if (force || beatmaps != null || freshType != FreshType.None || Indexes == null || Indexes.Count == 0)
                 switch (PlayerMode)
                 {
                     default:
@@ -103,7 +103,6 @@ namespace Milky.OsuPlayer.Common.Player
         /// <param name="isNext">Play next or previous depends on if true or false</param>
         /// <param name="isManual">Whether it is called by user (Click next button manually)
         /// or called by application (A song finshed).</param>
-        /// <param name="entry"></param>
         public async Task<(ChangeType, Beatmap)> PlayToAsync(bool isNext, bool isManual)
         {
             if (!isNext)

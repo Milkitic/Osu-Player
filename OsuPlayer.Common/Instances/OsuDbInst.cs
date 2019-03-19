@@ -6,16 +6,18 @@ using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Common.Data;
 
 namespace Milky.OsuPlayer.Common.Instances
 {
     public class OsuDbInst
     {
-        public async Task<bool> TryLoadNewDbAsync(string path)
+
+        public async Task<bool> TrySyncOsuDbAsync(string path, bool addOnly)
         {
             try
             {
-                await LoadNewDbAsync(path);
+                await SyncOsuDbAsync(path, addOnly);
                 return true;
             }
             catch
@@ -24,14 +26,16 @@ namespace Milky.OsuPlayer.Common.Instances
             }
         }
 
-        public async Task LoadNewDbAsync(string path)
+        public async Task SyncOsuDbAsync(string path, bool addOnly)
         {
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
-                return;
-            var db = await ReadDbAsync(path);
+            if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+            {
+                var db = await ReadDbAsync(path);
 
-            BeatmapDbContext.SyncMapsFromOsuDb(db.Beatmaps);
-            //BeatmapDb = db;
+                await BeatmapDbContext.SyncMapsFromHoLLyAsync(db.Beatmaps, addOnly);
+            }
+
+            Beatmaps = new HashSet<Beatmap>(BeatmapDatabaseQuery.GetWholeListFromDb());
         }
 
         private static async Task<OsuDb> ReadDbAsync(string path)
@@ -39,7 +43,7 @@ namespace Milky.OsuPlayer.Common.Instances
             return await Task.Run(() =>
             {
                 var db = new OsuDb();
-                using (FileStream fs = new FileStream(path, FileMode.Open))
+                using (var fs = new FileStream(path, FileMode.Open))
                 {
                     db.ReadFromStream(new SerializationReader(fs));
                 }
@@ -47,5 +51,7 @@ namespace Milky.OsuPlayer.Common.Instances
                 return db;
             });
         }
+
+        public HashSet<Beatmap> Beatmaps { get; set; }
     }
 }

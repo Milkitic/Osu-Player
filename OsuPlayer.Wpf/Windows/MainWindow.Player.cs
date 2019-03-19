@@ -64,7 +64,7 @@ namespace Milky.OsuPlayer.Windows
             if (path == null) return;
             if (File.Exists(path))
             {
-                try
+                //try
                 {
                     var osuFile = await OsuFile.ReadFromFileAsync(path); //50 ms
                     var fi = new FileInfo(path);
@@ -225,48 +225,48 @@ namespace Milky.OsuPlayer.Windows
                     //RunSurfaceUpdate();
                     DbOperate.UpdateMap(nowIdentity);
                 }
-                catch (RepeatTimingSectionException ex)
-                {
-                    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.OK)
-                    {
-                        if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
-                    }
-                }
-                catch (BadOsuFormatException ex)
-                {
-                    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.OK)
-                    {
-                        if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
-                    }
-                }
-                catch (VersionNotSupportedException ex)
-                {
-                    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.OK)
-                    {
-                        if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var result = MsgBox.Show(this, @"发生未处理的异常问题：" + (ex.InnerException ?? ex), Title,
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                    if (result == MessageBoxResult.OK)
-                    {
-                        if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
-                    }
+                //catch (RepeatTimingSectionException ex)
+                //{
+                //    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
+                //        MessageBoxImage.Warning);
+                //    if (result == MessageBoxResult.OK)
+                //    {
+                //        if (audioPlayer == null) return;
+                //        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
+                //    }
+                //}
+                //catch (BadOsuFormatException ex)
+                //{
+                //    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
+                //        MessageBoxImage.Warning);
+                //    if (result == MessageBoxResult.OK)
+                //    {
+                //        if (audioPlayer == null) return;
+                //        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
+                //    }
+                //}
+                //catch (VersionNotSupportedException ex)
+                //{
+                //    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
+                //        MessageBoxImage.Warning);
+                //    if (result == MessageBoxResult.OK)
+                //    {
+                //        if (audioPlayer == null) return;
+                //        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
+                //    }
+                //}
+                //catch (Exception ex)
+                //{
+                //    var result = MsgBox.Show(this, @"发生未处理的异常问题：" + (ex.InnerException ?? ex), Title,
+                //        MessageBoxButton.OK, MessageBoxImage.Error);
+                //    if (result == MessageBoxResult.OK)
+                //    {
+                //        if (audioPlayer == null) return;
+                //        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
+                //    }
 
-                    Console.WriteLine(ex);
-                }
+                //    Console.WriteLine(ex);
+                //}
             }
             else
             {
@@ -440,7 +440,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void ClearHitsoundPlayer()
         {
-            InstanceManage.GetInstance<PlayersInst>().ClearAudioPlayer();
+            InstanceManage.GetInstance<PlayersInst>()?.ClearAudioPlayer();
         }
     }
 

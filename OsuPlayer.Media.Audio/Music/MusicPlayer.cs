@@ -197,7 +197,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         private void PauseWithoutNotify()
         {
-            _device.Pause();
+            _device?.Pause();
         }
 
         public override void Replay()
@@ -210,7 +210,10 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         {
             if (ms < 0) ms = 0;
             var span = new TimeSpan(0, 0, 0, 0, ms);
-            _reader.CurrentTime = span >= _reader.TotalTime ? _reader.TotalTime - new TimeSpan(0, 0, 0, 0, 1) : span;
+            if (_reader != null)
+            {
+                _reader.CurrentTime = span >= _reader.TotalTime ? _reader.TotalTime - new TimeSpan(0, 0, 0, 0, 1) : span;
+            }
             //PlayerStatus = PlayerStatus.Playing;
             if (!play) PauseWithoutNotify();
         }
