@@ -24,8 +24,8 @@ namespace Milky.OsuPlayer.Common.Data
             {
                 if (addOnly)
                 {
-                    var dbMaps = context.Beatmaps.Where(k => !k.InOwnFolder).ToList();
-                    var newList = entry.Select(Beatmap.ParseFromHolly).ToList();
+                    var dbMaps = context.Beatmaps.Where(k => !k.InOwnFolder);
+                    var newList = entry.Select(Beatmap.ParseFromHolly);
                     var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
 
                     context.Beatmaps.AddRange(except);

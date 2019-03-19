@@ -3,6 +3,7 @@ using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Common.Scanning;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
@@ -16,7 +17,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
-using Milky.OsuPlayer.Common.Scanning;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -35,8 +35,11 @@ namespace Milky.OsuPlayer.Windows
             }
             else
             {
-                SyncSynchronously();
-                ScanSynchronously();
+                await InstanceManage.GetInstance<OsuFileScanner>().NewScanAndAddAsync();
+                await InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(PlayerConfig.Current.General.DbPath, true);
+                await InstanceManage.GetInstance<OsuDbInst>().LoadLocalDbAsync();
+                //ScanSynchronously();
+                //SyncSynchronously();
             }
 
             UpdateCollections();
@@ -667,6 +670,7 @@ namespace Milky.OsuPlayer.Windows
         {
             PlayerConfig.Current.General.FirstOpen = false;
             PlayerConfig.SaveCurrent();
+            ViewModel.ShowWelcome = false;
         }
 
         #endregion

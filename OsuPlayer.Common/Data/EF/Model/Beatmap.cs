@@ -1,12 +1,12 @@
-﻿using osu.Shared;
+﻿using OSharp.Beatmap;
+using OSharp.Beatmap.MetaData;
+using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using OSharp.Beatmap;
-using OSharp.Beatmap.MetaData;
+using System.Linq;
 
 namespace Milky.OsuPlayer.Common.Data.EF.Model
 {
@@ -151,6 +151,11 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
             return this;
         }
 
+        public override int GetHashCode()
+        {
+            return (FolderName + Version).GetHashCode();
+        }
+
         public static Beatmap ParseFromHolly(BeatmapEntry entry)
         {
             return (new Beatmap()).UpdateFromHolly(entry);
@@ -222,7 +227,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
 
             public int GetHashCode(Beatmap obj)
             {
-                throw new NotImplementedException();
+                return obj.GetHashCode();
             }
         }
     }

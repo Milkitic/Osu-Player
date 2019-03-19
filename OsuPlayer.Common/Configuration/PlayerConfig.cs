@@ -29,7 +29,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         public string IgnoredVer { get; set; } = null;
 
         public static PlayerConfig Current { get; private set; }
-        public string SongPath { get; set; } = Path.Combine(Domain.CurrentPath, "Songs");
+        public string SongPath { get; set; } = Domain.SongPath;
 
         public static void SaveCurrent()
         {
