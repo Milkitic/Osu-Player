@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -74,7 +75,7 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private async void Browse_Click(object sender, RoutedEventArgs e)
         {
-            var result = App.BrowseDb(out var path);
+            var result = Util.BrowseDb(out var path);
             if (!result.HasValue || !result.Value)
                 return;
             try

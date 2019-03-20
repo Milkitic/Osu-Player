@@ -672,6 +672,34 @@ namespace Milky.OsuPlayer.Windows
             ViewModel.ShowWelcome = false;
         }
 
+        private async void Step1_Click(object sender, RoutedEventArgs e)
+        {
+            var result = Util.BrowseDb(out var path);
+            if (!result.HasValue || !result.Value)
+            {
+                ViewModel.GuideSelectedDb = false;
+                return;
+            }
+            try
+            {
+                ViewModel.GuideSyncing = true;
+                await InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(path, false);
+                ViewModel.GuideSyncing = false;
+            }
+            catch (Exception ex)
+            {
+                MsgBox.Show(this, ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                ViewModel.GuideSelectedDb = false;
+            }
+
+            ViewModel.GuideSelectedDb = true;
+        }
+
+        private void Step2_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         #endregion
     }
 }

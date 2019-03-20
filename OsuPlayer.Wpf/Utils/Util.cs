@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Microsoft.Win32;
 
 namespace Milky.OsuPlayer.Utils
 {
@@ -13,7 +14,8 @@ namespace Milky.OsuPlayer.Utils
         {
             System.Resources.ResourceManager rm = Properties.Resources.ResourceManager;
             byte[] obj = (byte[])rm.GetObject(filename, null);
-            if (obj == null) return;
+            if (obj == null)
+                return;
             using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
             {
                 fs.Write(obj, 0, obj.Length);
@@ -34,6 +36,18 @@ namespace Milky.OsuPlayer.Utils
             else if (factSize >= 1073741824)
                 strSize = (factSize / 1024f / 1024f / 1024f).ToString("F2") + " GB";
             return strSize;
+        }
+
+        public static bool? BrowseDb(out string path)
+        {
+            var fbd = new OpenFileDialog
+            {
+                Title = @"请选择osu所在目录内的""osu!.db""",
+                Filter = @"Beatmap Database|osu!.db"
+            };
+            var result = fbd.ShowDialog();
+            path = fbd.FileName;
+            return result;
         }
     }
 }

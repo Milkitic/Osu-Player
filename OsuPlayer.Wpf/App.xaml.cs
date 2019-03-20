@@ -65,18 +65,6 @@ namespace Milky.OsuPlayer
             Environment.Exit(1);
         }
 
-        public static bool? BrowseDb(out string path)
-        {
-            var fbd = new OpenFileDialog
-            {
-                Title = @"请选择osu所在目录内的""osu!.db""",
-                Filter = @"Beatmap Database|osu!.db"
-            };
-            var result = fbd.ShowDialog();
-            path = fbd.FileName;
-            return result;
-        }
-
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
 #if !DEBUG

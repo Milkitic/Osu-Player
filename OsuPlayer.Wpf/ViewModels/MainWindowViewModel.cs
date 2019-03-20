@@ -17,6 +17,8 @@ namespace Milky.OsuPlayer.ViewModels
         private bool _isLyricWindowLocked;
         private bool _showWelcome;
         private PlayerViewModel _player;
+        private bool _guideSyncing;
+        private bool _guideSelectedDb;
 
         public bool IsNavigationCollapsed
         {
@@ -98,6 +100,26 @@ namespace Milky.OsuPlayer.ViewModels
             set
             {
                 _player = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool GuideSyncing
+        {
+            get => _guideSyncing;
+            set
+            {
+                _guideSyncing = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool GuideSelectedDb
+        {
+            get => _guideSelectedDb;
+            set
+            {
+                _guideSelectedDb = value;
                 OnPropertyChanged();
             }
         }

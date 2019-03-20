@@ -1037,8 +1037,8 @@
                        HorizontalContentAlignment="Center"
                        FontSize="12"
                        Foreground="{StaticResource SliderBackground}" />
-                <CheckBox Margin="0,3" Content="选择osu!db，同步曲库"></CheckBox>
-                <CheckBox Margin="0,3" Content="开启曲库目录监听服务，减少同步与扫描时间"></CheckBox>
+                <CheckBox x:Name="Step1" Margin="0,3" Content="选择osu!db，同步曲库" Click="Step1_Click"></CheckBox>
+                <CheckBox x:Name="Step2" Margin="0,3" Content="开启曲库目录监听服务，减少同步与扫描时间"></CheckBox>
                 <Label HorizontalContentAlignment="Center" Margin="0,30,0,0">
                     <TextBlock>
                         <Hyperlink NavigateUri="skip" Click="SkipStep_Click">

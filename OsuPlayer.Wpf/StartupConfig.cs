@@ -78,7 +78,7 @@ namespace Milky.OsuPlayer
 
                 if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath))
                 {
-                    var result = App.BrowseDb(out var chosedPath);
+                    var result = Util.BrowseDb(out var chosedPath);
                     if (!result.HasValue || !result.Value)
                     {
                         MessageBox.Show(@"你尚未初始化osu!db，因此部分功能将不可用。", "Osu Player", MessageBoxButton.OK,
