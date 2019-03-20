@@ -18,6 +18,14 @@ namespace Milky.OsuPlayer.Pages.Settings
         private readonly MainWindow _mainWindow;
         private bool _holdingCtrl, _holdingAlt, _holdingShift;
 
+        private readonly Key[] _exceptKeys =
+        {
+            Key.System,
+            Key.LeftCtrl, Key.RightCtrl,
+            Key.LeftShift, Key.RightShift,
+            Key.LeftAlt, Key.RightAlt
+        };
+
         public HotKeyPage(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
@@ -43,26 +51,39 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void TextBox_Keydown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
-                _holdingCtrl = true;
-            else if (e.Key == Key.LeftShift || e.Key == Key.RightShift)
-                _holdingShift = true;
-            else if (e.Key == Key.LeftAlt || e.Key == Key.RightAlt || e.Key == Key.System)
-                _holdingAlt = true;
-            var textBox = (TextBox)sender;
-            List<string> strs = new List<string>();
-
-            if (_holdingCtrl) strs.Add("Ctrl + ");
-            if (_holdingShift) strs.Add("Shift + ");
-            if (_holdingAlt) strs.Add("Alt + ");
-            var key = e.Key.ToString();
-            if (e.Key != Key.System && e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl && e.Key != Key.LeftShift &&
-                e.Key != Key.RightShift && e.Key != Key.LeftAlt && e.Key != Key.RightAlt)
+            switch (e.Key)
             {
-                strs.Add(e.Key.ConvertToString());
+                case Key.LeftCtrl:
+                case Key.RightCtrl:
+                    _holdingCtrl = true;
+                    break;
+                case Key.LeftShift:
+                case Key.RightShift:
+                    _holdingShift = true;
+                    break;
+                case Key.LeftAlt:
+                case Key.RightAlt:
+                case Key.System:
+                    _holdingAlt = true;
+                    break;
             }
 
-            textBox.Text = string.Join("", strs);
+            var textBox = (TextBox)sender;
+            var strList = new List<string>();
+
+            if (_holdingCtrl)
+                strList.Add("Ctrl + ");
+            if (_holdingShift)
+                strList.Add("Shift + ");
+            if (_holdingAlt)
+                strList.Add("Alt + ");
+
+            if (!_exceptKeys.Contains(e.Key))
+            {
+                strList.Add(e.Key.ConvertToString());
+            }
+
+            textBox.Text = string.Join("", strList);
         }
 
         private void TextBox_KeyUp(object sender, KeyEventArgs e)
@@ -73,12 +94,21 @@ namespace Milky.OsuPlayer.Pages.Settings
                 _holdingShift = false;
                 _holdingAlt = false;
             }
-            else if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
-                _holdingCtrl = false;
-            else if (e.Key == Key.LeftShift || e.Key == Key.RightShift)
-                _holdingShift = false;
-            else if (e.Key == Key.LeftAlt || e.Key == Key.RightAlt)
-                _holdingAlt = false;
+            else switch (e.Key) {
+                case Key.LeftCtrl:
+                case Key.RightCtrl:
+                    _holdingCtrl = false;
+                    break;
+                case Key.LeftShift:
+                case Key.RightShift:
+                    _holdingShift = false;
+                    break;
+                case Key.LeftAlt:
+                case Key.RightAlt:
+                    _holdingAlt = false;
+                    break;
+            }
+
             var textBox = (TextBox)sender;
             GetHotKeyValue(textBox);
             PlayerConfig.SaveCurrent();
@@ -87,21 +117,24 @@ namespace Milky.OsuPlayer.Pages.Settings
         private static void GetHotKeyValue(TextBox textBox)
         {
             var hotKey = PlayerConfig.Current.HotKeys.First(k => k.Name == textBox.Name);
-            List<string> strs = new List<string>();
+            var strList = new List<string>();
 
-            if (hotKey.UseControlKey) strs.Add("Ctrl");
-            if (hotKey.UseShiftKey) strs.Add("Shift");
-            if (hotKey.UseAltKey) strs.Add("Alt");
-            strs.Add(hotKey.Key.ConvertToString());
+            if (hotKey.UseControlKey)
+                strList.Add("Ctrl");
+            if (hotKey.UseShiftKey)
+                strList.Add("Shift");
+            if (hotKey.UseAltKey)
+                strList.Add("Alt");
+            strList.Add(hotKey.Key.ConvertToString());
 
-            textBox.Text = string.Join(" + ", strs);
+            textBox.Text = string.Join(" + ", strList);
         }
 
         private static void GetAllHotKeyValue(DependencyObject obj)
         {
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
             {
-                Visual childVisual = (Visual)VisualTreeHelper.GetChild(obj, i);
+                var childVisual = (Visual)VisualTreeHelper.GetChild(obj, i);
                 if (childVisual is TextBox box)
                     GetHotKeyValue(box);
             }

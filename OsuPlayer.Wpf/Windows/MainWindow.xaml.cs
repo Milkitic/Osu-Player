@@ -114,13 +114,4 @@ namespace Milky.OsuPlayer.Windows
             return IntPtr.Zero;
         }
     }
-
-    public class PageParts
-    {
-        public SearchPage SearchPage { get; set; }
-        public StoryboardPage StoryboardPage { get; set; }
-        public RecentPlayPage RecentPlayPage { get; set; }
-        public FindPage FindPage { get; set; }
-        public ExportPage ExportPage { get; set; }
-    }
 }

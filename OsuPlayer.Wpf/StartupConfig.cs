@@ -99,6 +99,5 @@ namespace Milky.OsuPlayer
                 PlayerConfig.Current.General.DbPath = dbPath;
             }
         }
-
     }
 }

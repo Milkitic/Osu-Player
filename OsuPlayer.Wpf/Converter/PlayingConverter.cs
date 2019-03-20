@@ -32,7 +32,6 @@ namespace Milky.OsuPlayer.Converter
                     {
                         return Application.Current.FindResource(isPlaying ? "WhitePauseIcon" : "WhitePlayIcon");
                     }
-
                 }
             }
 

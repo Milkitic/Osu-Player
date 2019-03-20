@@ -25,11 +25,9 @@ namespace Milky.OsuPlayer
         [STAThread]
         public static void Main()
         {
-
 #if !DEBUG
             SentrySdk.Init("https://1fe13baa86284da5a0a70efa9750650e:fcbd468d43f94fb1b43af424517ec00b@sentry.io/1412154");
 #endif
-
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
             StartupConfig.Startup();
 
@@ -52,11 +50,9 @@ namespace Milky.OsuPlayer
         {
             if (e.ExceptionObject is Exception ex)
             {
-
 #if !DEBUG
                 SentrySdk.CaptureException(ex);
 #endif
-
                 var exceptionWindow = new ExceptionWindow(ex, false);
                 exceptionWindow.ShowDialog();
             }
@@ -83,11 +79,9 @@ namespace Milky.OsuPlayer
 
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-
 #if !DEBUG
             SentrySdk.CaptureException(e.Exception);
 #endif
-
             var exceptionWindow = new ExceptionWindow(e.Exception, true);
             var val = exceptionWindow.ShowDialog();
             e.Handled = val != true;

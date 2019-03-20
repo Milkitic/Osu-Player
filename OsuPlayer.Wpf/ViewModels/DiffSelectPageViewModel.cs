@@ -39,6 +39,5 @@ namespace Milky.OsuPlayer.ViewModels
                 });
             }
         }
-
     }
 }

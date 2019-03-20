@@ -87,33 +87,37 @@ namespace Milky.OsuPlayer.Pages
         private static async Task CopyFileAsync(Beatmap entry)
         {
             string folder = Path.Combine(Domain.OsuSongPath, entry.FolderName);
-            FileInfo mp3File = new FileInfo(Path.Combine(folder, entry.AudioFileName));
+            var mp3FileInfo = new FileInfo(Path.Combine(folder, entry.AudioFileName));
             var osuFile = await OsuFile.ReadFromFileAsync(Path.Combine(folder, entry.BeatmapFileName));
-            FileInfo bgFile = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));
+            var bgFileInfo = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));
 
-            var artist = MetaString.GetUnicode(entry.Artist, entry.ArtistUnicode);
-            var title = MetaString.GetUnicode(entry.Title, entry.TitleUnicode);
-            var artistOri = MetaString.GetOriginal(entry.Artist, entry.ArtistUnicode);
-            string escapedMp3, escapedBg;
-            switch (PlayerConfig.Current.Export.NamingStyle)
-            {
-                case NamingStyle.Title:
-                    escapedMp3 = Escape($"{title}");
-                    escapedBg = Escape($"{title}({entry.Creator})[{entry.Version}]");
-                    break;
-                case NamingStyle.ArtistTitle:
-                    escapedMp3 = Escape($"{artist} - {title}");
-                    escapedBg = Escape($"{artist} - {title}({entry.Creator})[{entry.Version}]");
-                    break;
-                case NamingStyle.TitleArtist:
-                    escapedMp3 = Escape($"{title} - {artist}");
-                    escapedBg = Escape($"{title} - {artist}({entry.Creator})[{entry.Version}]");
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            var artistUtf = MetaString.GetUnicode(entry.Artist, entry.ArtistUnicode);
+            var titleUtf = MetaString.GetUnicode(entry.Title, entry.TitleUnicode);
+            var artistAsc = MetaString.GetOriginal(entry.Artist, entry.ArtistUnicode);
+            var creator = entry.Creator;
+            var version = entry.Version;
+            var source = entry.SongSource;
 
-            string exportMp3Folder, exportBgFolder;
+            ConstructNameWithEscaping(out var escapedMp3, out var escapedBg,
+                titleUtf, artistUtf, creator, version);
+
+            GetExportFolder(out var exportMp3Folder, out var exportBgFolder,
+                new MetaString(artistAsc, artistUtf), creator, source);
+
+            string exportMp3Name = ValidateFilename(escapedMp3, Domain.MusicPath, mp3FileInfo.Extension);
+            string exportBgName = ValidateFilename(escapedBg, Domain.BackgroundPath, bgFileInfo.Extension);
+
+            if (mp3FileInfo.Exists)
+                Export(mp3FileInfo, exportMp3Folder, exportMp3Name);
+            if (bgFileInfo.Exists)
+                Export(bgFileInfo, exportBgFolder, exportBgName);
+            if (mp3FileInfo.Exists || bgFileInfo.Exists)
+                DbOperate.AddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
+        }
+
+        private static void GetExportFolder(out string exportMp3Folder, out string exportBgFolder,
+            MetaString artist, string creator, string source)
+        {
             switch (PlayerConfig.Current.Export.SortStyle)
             {
                 case SortStyle.None:
@@ -121,47 +125,69 @@ namespace Milky.OsuPlayer.Pages
                     exportBgFolder = Domain.BackgroundPath;
                     break;
                 case SortStyle.Artist:
-                    {
-                        var art = Escape(artist);
-                        var oriArt = Escape(artistOri);
-                        var oArt = Escape(entry.Artist);
-                        var tArt = Escape(entry.ArtistUnicode);
-                        if (!string.IsNullOrEmpty(tArt) && Directory.Exists(Path.Combine(Domain.MusicPath, tArt)))
-                            exportMp3Folder = Path.Combine(Domain.MusicPath, tArt);
-                        else if (!string.IsNullOrEmpty(oArt) && Directory.Exists(Path.Combine(Domain.MusicPath, oArt)))
-                            exportMp3Folder = Path.Combine(Domain.MusicPath, oArt);
-                        else
-                            exportMp3Folder = Path.Combine(Domain.MusicPath, string.IsNullOrEmpty(art) ? "未知艺术家" : art);
-                        exportBgFolder = Path.Combine(Domain.BackgroundPath, string.IsNullOrEmpty(art) ? "未知艺术家" : art);
-                        break;
-                    }
+                {
+                    var escArtistAsc = Escape(artist.Origin);
+                    var escArtistUtf = Escape(artist.Unicode);
+                    if (string.IsNullOrEmpty(escArtistAsc))
+                        escArtistAsc = "未知艺术家";
+                    if (string.IsNullOrEmpty(escArtistUtf))
+                        escArtistUtf = "未知艺术家";
+
+                    if (Directory.Exists(Path.Combine(Domain.MusicPath, escArtistUtf)))
+                        exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistUtf);
+                    else if (Directory.Exists(Path.Combine(Domain.MusicPath, escArtistAsc)))
+                        exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistAsc);
+                    else
+                        exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistUtf);
+
+                    exportBgFolder = Path.Combine(Domain.BackgroundPath, escArtistUtf);
+                    break;
+                }
                 case SortStyle.Mapper:
-                    {
-                        var c = Escape(entry.Creator);
-                        exportMp3Folder = Path.Combine(Domain.MusicPath, string.IsNullOrEmpty(c) ? "未知作者" : c);
-                        exportBgFolder = Path.Combine(Domain.BackgroundPath, string.IsNullOrEmpty(c) ? "未知作者" : c);
-                        break;
-                    }
+                {
+                    var escCreator = Escape(creator);
+                    if (string.IsNullOrEmpty(escCreator))
+                        escCreator = "未知作者";
+
+                    exportMp3Folder = Path.Combine(Domain.MusicPath, escCreator);
+                    exportBgFolder = Path.Combine(Domain.BackgroundPath, escCreator);
+                    break;
+                }
                 case SortStyle.Source:
-                    {
-                        var f = Escape(entry.SongSource);
-                        exportMp3Folder = Path.Combine(Domain.MusicPath, string.IsNullOrEmpty(f) ? "未知来源" : f);
-                        exportBgFolder = Path.Combine(Domain.BackgroundPath, string.IsNullOrEmpty(f) ? "未知来源" : f);
-                        break;
-                    }
+                {
+                    var escSource = Escape(source);
+                    if (string.IsNullOrEmpty(escSource))
+                        escSource = "未知来源";
+
+                    exportMp3Folder = Path.Combine(Domain.MusicPath, escSource);
+                    exportBgFolder = Path.Combine(Domain.BackgroundPath, escSource);
+                    break;
+                }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
 
-            string validMp3Name = ValidateFilename(escapedMp3, Domain.MusicPath, mp3File.Extension);
-            string validBgName = ValidateFilename(escapedBg, Domain.BackgroundPath, bgFile.Extension);
-
-            if (mp3File.Exists)
-                Export(mp3File, exportMp3Folder, validMp3Name);
-            if (bgFile.Exists)
-                Export(bgFile, exportBgFolder, validBgName);
-            if (mp3File.Exists || bgFile.Exists)
-                DbOperate.AddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, validMp3Name + mp3File.Extension));
+        private static void ConstructNameWithEscaping(out string originAudio, out string originBack,
+            string title, string artist, string creator, string version)
+        {
+            switch (PlayerConfig.Current.Export.NamingStyle)
+            {
+                case NamingStyle.Title:
+                    originAudio = Escape($"{title}");
+                    originBack = Escape($"{title}({creator})[{version}]");
+                    break;
+                case NamingStyle.ArtistTitle:
+                    originAudio = Escape($"{artist} - {title}");
+                    originBack = Escape($"{artist} - {title}({creator})[{version}]");
+                    break;
+                case NamingStyle.TitleArtist:
+                    originAudio = Escape($"{title} - {artist}");
+                    originBack = Escape($"{title} - {artist}({creator})[{version}]");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private static void Export(FileInfo originFile, string outputDir, string outputFile)
@@ -177,7 +203,8 @@ namespace Milky.OsuPlayer.Pages
 
         private static string ValidateFilename(string escaped, string dirPath, string ext)
         {
-            if (Overlap) return escaped;
+            if (Overlap)
+                return escaped;
             var validName = escaped;
             int i = 1;
             if (string.IsNullOrEmpty(validName.Trim()))

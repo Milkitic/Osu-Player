@@ -19,12 +19,12 @@ namespace Milky.OsuPlayer.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-
+            // todo
         }
         
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-           
+            // todo
         }
     }
 }

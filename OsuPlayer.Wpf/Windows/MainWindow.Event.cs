@@ -619,7 +619,6 @@ namespace Milky.OsuPlayer.Windows
             BtnSettings_Click(sender, e);
         }
 
-
         private void MenuOpenHideLyric_Click(object sender, RoutedEventArgs e)
         {
             if (ViewModel.IsLyricWindowShown)

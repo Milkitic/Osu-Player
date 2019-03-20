@@ -20,9 +20,9 @@ namespace Milky.OsuPlayer.ViewModels
         private IEnumerable<BeatmapDataModel> _searchedMaps;
         private IEnumerable<BeatmapDataModel> _displayedMaps;
 
-        private IEnumerable<ListPage> _pages;
-        private ListPage _lastPage;
-        private ListPage _firstPage;
+        private IEnumerable<ListPageViewModel> _pages;
+        private ListPageViewModel _lastPage;
+        private ListPageViewModel _firstPage;
         private string _searchText;
 
         public string SearchText
@@ -54,7 +54,7 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public IEnumerable<ListPage> Pages
+        public IEnumerable<ListPageViewModel> Pages
         {
             get => _pages;
             private set
@@ -63,7 +63,7 @@ namespace Milky.OsuPlayer.ViewModels
                 OnPropertyChanged();
             }
         }
-        public ListPage LastPage
+        public ListPageViewModel LastPage
         {
             get => _lastPage;
             private set
@@ -73,7 +73,7 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public ListPage FirstPage
+        public ListPageViewModel FirstPage
         {
             get => _firstPage;
             private set
@@ -82,8 +82,7 @@ namespace Milky.OsuPlayer.ViewModels
                 OnPropertyChanged();
             }
         }
-
-
+        
         private readonly Stopwatch _querySw = new Stopwatch();
         private bool _isQuerying;
         private static readonly object QueryLock = new object();
@@ -132,7 +131,7 @@ namespace Milky.OsuPlayer.ViewModels
             {
                 if (nowIndex > 5)
                 {
-                    FirstPage = new ListPage(1);
+                    FirstPage = new ListPageViewModel(1);
                     if (nowIndex >= totalCount - 5)
                     {
                         startIndex = totalCount - 10;
@@ -146,8 +145,8 @@ namespace Milky.OsuPlayer.ViewModels
                 {
                     startIndex = 0;
                 }
-                count = 10;
 
+                count = 10;
             }
             else
             {
@@ -155,21 +154,21 @@ namespace Milky.OsuPlayer.ViewModels
                 startIndex = 0;
             }
 
-            var pages = new List<ListPage>(totalCount);
+            var pages = new List<ListPageViewModel>(totalCount);
             for (int i = startIndex; i < startIndex + count; i++)
             {
-                pages.Add(new ListPage(i + 1));
+                pages.Add(new ListPageViewModel(i + 1));
             }
 
             Pages = pages;
-            ListPage page = GetPage(nowIndex + 1);
+            ListPageViewModel page = GetPage(nowIndex + 1);
 
             if (page != null)
                 page.IsActivated = true;
             DisplayedMaps = SearchedMaps.Skip(nowIndex * MaxListCount).Take(MaxListCount);
         }
 
-        private ListPage GetPage(int page)
+        private ListPageViewModel GetPage(int page)
         {
             return Pages.FirstOrDefault(k => k.Index == page);
         }
@@ -191,16 +190,5 @@ namespace Milky.OsuPlayer.ViewModels
                 });
             }
         }
-    }
-
-    public class ListPage : ViewModelBase
-    {
-        public ListPage(int index)
-        {
-            Index = index;
-        }
-
-        public int Index { get; set; }
-        public bool IsActivated { get; set; }
     }
 }

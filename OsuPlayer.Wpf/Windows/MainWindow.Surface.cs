@@ -65,7 +65,6 @@ namespace Milky.OsuPlayer.Windows
                     LyricWindow.StartWork();
                 });
             });
-
         }
 
         /// <summary>

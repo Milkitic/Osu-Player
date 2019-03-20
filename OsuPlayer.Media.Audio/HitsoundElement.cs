@@ -22,79 +22,99 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             get
             {
-                List<string> tracks = new List<string>();
+                var tracks = new List<string>();
                 if (!string.IsNullOrEmpty(CustomFile))
                 {
                     tracks.Add(CustomFile);
                     return tracks.ToArray();
                 }
 
-                string sample, addition;
-                switch (LineSample)
-                {
-
-                    case TimingSamplesetType.Soft:
-                        sample = "soft";
-                        break;
-                    case TimingSamplesetType.Drum:
-                        sample = "drum";
-                        break;
-                    default:
-                    case TimingSamplesetType.None:
-                    case TimingSamplesetType.Normal:
-                        sample = "normal";
-                        break;
-                }
-                switch (Sample)
-                {
-                    case ObjectSamplesetType.Soft:
-                        sample = "soft";
-                        break;
-                    case ObjectSamplesetType.Drum:
-                        sample = "drum";
-                        break;
-                    case ObjectSamplesetType.Normal:
-                        sample = "normal";
-                        break;
-                }
-
-                switch (Addition)
-                {
-                    case ObjectSamplesetType.Soft:
-                        addition = "soft";
-                        break;
-                    case ObjectSamplesetType.Drum:
-                        addition = "drum";
-                        break;
-                    case ObjectSamplesetType.Normal:
-                        addition = "normal";
-                        break;
-                    default:
-                    case ObjectSamplesetType.Auto:
-                        addition = sample;
-                        break;
-                }
+                string sample = GetFromLineSample();
+                AdjustObjectSample(ref sample);
+                string addition = GetObjectAddition(sample);
 
                 if (Hitsound == 0)
                     tracks.Add($"{sample}-hitnormal.wav");
                 else
                 {
-                    if ((Hitsound & HitsoundType.Whistle) == HitsoundType.Whistle)
+                    if (Hitsound.HasFlag(HitsoundType.Whistle))
                         tracks.Add($"{addition}-hitwhistle.wav");
-                    if ((Hitsound & HitsoundType.Clap) == HitsoundType.Clap)
+                    if (Hitsound.HasFlag(HitsoundType.Clap))
                         tracks.Add($"{addition}-hitclap.wav");
-                    if ((Hitsound & HitsoundType.Finish) == HitsoundType.Finish)
+                    if (Hitsound.HasFlag(HitsoundType.Finish))
                         tracks.Add($"{addition}-hitfinish.wav");
-                    if ((Hitsound & HitsoundType.Normal) == HitsoundType.Normal ||
+                    if (Hitsound.HasFlag(HitsoundType.Normal) ||
                         (Hitsound & HitsoundType.Normal) == 0)
                     {
-                        if (GameMode != GameMode.Mania) tracks.Add($"{sample}-hitnormal.wav");
+                        if (GameMode != GameMode.Mania)
+                            tracks.Add($"{sample}-hitnormal.wav");
                     }
                 }
 
                 return tracks.ToArray();
             }
         }
+
+        private string GetObjectAddition(string sample)
+        {
+            string addition;
+            switch (Addition)
+            {
+                case ObjectSamplesetType.Soft:
+                    addition = "soft";
+                    break;
+                case ObjectSamplesetType.Drum:
+                    addition = "drum";
+                    break;
+                case ObjectSamplesetType.Normal:
+                    addition = "normal";
+                    break;
+                default:
+                case ObjectSamplesetType.Auto:
+                    addition = sample;
+                    break;
+            }
+
+            return addition;
+        }
+
+        private void AdjustObjectSample(ref string sample)
+        {
+            switch (Sample)
+            {
+                case ObjectSamplesetType.Soft:
+                    sample = "soft";
+                    break;
+                case ObjectSamplesetType.Drum:
+                    sample = "drum";
+                    break;
+                case ObjectSamplesetType.Normal:
+                    sample = "normal";
+                    break;
+            }
+        }
+
+        private string GetFromLineSample()
+        {
+            string sample;
+            switch (LineSample)
+            {
+                case TimingSamplesetType.Soft:
+                    sample = "soft";
+                    break;
+                case TimingSamplesetType.Drum:
+                    sample = "drum";
+                    break;
+                default:
+                case TimingSamplesetType.None:
+                case TimingSamplesetType.Normal:
+                    sample = "normal";
+                    break;
+            }
+
+            return sample;
+        }
+
         public string[] FileNames
         {
             get
@@ -104,8 +124,8 @@ namespace Milky.OsuPlayer.Media.Audio
                 {
                     if (s == CustomFile)
                         return s;
-                    var splitted = s.Split('.');
-                    return splitted.Length == 1 ? s : $"{splitted[0]}{track}.{splitted[1]}";
+                    var split = s.Split('.');
+                    return split.Length == 1 ? s : $"{split[0]}{track}.{split[1]}";
                 }).ToArray();
             }
         }

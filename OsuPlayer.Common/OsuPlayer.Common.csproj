@@ -83,11 +83,14 @@
     <Compile Include="Data\BeatmapDatabaseQuery.cs" />
     <Compile Include="Data\BeatmapDbOperator.cs" />
     <Compile Include="Data\BeatmapQuery.cs" />
+    <Compile Include="Data\EF\BeatmapDbConfiguration.cs" />
     <Compile Include="Data\EF\BeatmapDbContext.cs" />
+    <Compile Include="Data\EF\MapIdentifiableComparer.cs" />
     <Compile Include="Data\EF\Model\Beatmap.cs" />
     <Compile Include="Data\DbJsonObject.cs" />
     <Compile Include="Data\DbOperate.cs" />
     <Compile Include="Data\EF\ApplicationDbContext.cs" />
+    <Compile Include="Data\EF\Model\BeatmapExtension.cs" />
     <Compile Include="Data\EF\Model\V1\Collection.cs" />
     <Compile Include="Data\EF\Model\V1\CollectionRelation.cs" />
     <Compile Include="Data\EF\Model\V1\MapInfo.cs" />

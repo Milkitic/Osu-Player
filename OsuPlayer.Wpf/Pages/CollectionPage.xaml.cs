@@ -64,7 +64,6 @@ namespace Milky.OsuPlayer.Pages
                 var query = BeatmapQuery.FilterByKeyword(keyword);
                 UpdateView(query);
             }
-
         }
 
         private void UpdateList()
@@ -88,7 +87,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void Dispose()
         {
-
+            //todo
         }
 
         private void RecentList_MouseDoubleClick(object sender, MouseButtonEventArgs e)

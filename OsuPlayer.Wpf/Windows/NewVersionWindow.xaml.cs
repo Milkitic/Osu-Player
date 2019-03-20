@@ -22,11 +22,6 @@ namespace Milky.OsuPlayer.Windows
             MainGrid.DataContext = _release;
         }
 
-        private void WindowBase_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void OpenHyperlink(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
         {
             var p = e.Parameter.ToString();

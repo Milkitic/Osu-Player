@@ -34,5 +34,4 @@ namespace Milky.OsuPlayer.Converter
             throw new NotImplementedException();
         }
     }
-
 }

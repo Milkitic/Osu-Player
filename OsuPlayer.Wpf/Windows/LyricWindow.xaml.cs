@@ -285,11 +285,6 @@ namespace Milky.OsuPlayer.Windows
                 Task.WaitAll(_playingTask);
         }
 
-        private void ImgLyric_MouseMove(object sender, MouseEventArgs e)
-        {
-
-        }
-
         private void ImgLyric_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
@@ -348,6 +343,5 @@ namespace Milky.OsuPlayer.Windows
         {
             _mainWindow.BtnNext_Click(sender, e);
         }
-
     }
 }

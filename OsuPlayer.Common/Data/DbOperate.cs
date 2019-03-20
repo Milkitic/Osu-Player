@@ -248,7 +248,6 @@ namespace Milky.OsuPlayer.Common.Data
                             currentInfo.IsFavourite = true;
                         }
                     }
-
                 }
                 catch (Exception ex)
                 {

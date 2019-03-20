@@ -10,8 +10,10 @@ namespace Milky.OsuPlayer.Utils
             string keyStr = key.ToString();
             if (keyStr.StartsWith("D") && keyStr.Length == 2)
                 return keyStr[1].ToString();
+
             if (keyStr.StartsWith("NumPad") && keyStr.Length == 7)
                 return "Num" + keyStr[6];
+
             switch (key)
             {
                 case Key.OemMinus:
@@ -64,8 +66,10 @@ namespace Milky.OsuPlayer.Utils
             string keyStr = key.ToString();
             if (keyStr.StartsWith("D") && keyStr.Length == 2)
                 return keyStr[1].ToString();
+
             if (keyStr.StartsWith("NumPad") && keyStr.Length == 7)
                 return "Num" + keyStr[6];
+
             switch (key)
             {
                 case Keys.OemMinus:

@@ -11,7 +11,6 @@ using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Common.Instances
 {
-
     public class OsuDbInst
     {
         private readonly object _scanningObject = new object();
@@ -52,20 +51,23 @@ namespace Milky.OsuPlayer.Common.Instances
         public async Task SyncOsuDbAsync(string path, bool addOnly)
         {
             lock (_scanningObject)
+            {
+                if (ViewModel.IsScanning)
+                    return;
+
                 ViewModel.IsScanning = true;
+            }
 
             if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
             {
                 var db = await ReadDbAsync(path);
                 await BeatmapDbOperator.SyncMapsFromHoLLyAsync(db.Beatmaps, addOnly);
             }
-
-
+            
             lock (_scanningObject)
                 ViewModel.IsScanning = false;
         }
-
-
+        
         private static async Task<OsuDb> ReadDbAsync(string path)
         {
             return await Task.Run(() =>

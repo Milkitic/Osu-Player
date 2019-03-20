@@ -10,7 +10,6 @@ using System.Windows.Input;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-
     internal class PlayerViewModel : ViewModelBase
     {
         public static PlayerViewModel Current { get; set; }

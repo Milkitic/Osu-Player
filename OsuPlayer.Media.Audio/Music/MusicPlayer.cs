@@ -344,8 +344,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 int bytesRead = _waveChannel.Read(convertInputBuffer.Bytes, 0, convertInputBuffer.Bytes.Length);
                 //bytesRead = _waveChannel.Read(buffer, 0, BUFFER_SIZE);
                 //bytesRead = _reader.Read(convertInputBuffer.Bytes, 0, convertInputBuffer.Bytes.Length);
-
-
+                
                 int floatsRead = bytesRead / ((sizeof(float)) * _waveChannel.WaveFormat.Channels);
                 _soundTouch.PutSamples(convertInputBuffer.Floats, (uint)floatsRead);
 

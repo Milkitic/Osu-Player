@@ -22,14 +22,12 @@ namespace Milky.OsuPlayer.Common.Data
 
         public static List<Beatmap> FilterByTitleArtist(string title, string artist)
         {
-
             var result = Beatmaps
                 .Where(k => k.Title != null && k.Title == title ||
                             k.TitleUnicode != null && k.TitleUnicode == title)
                 .Where(k => k.Artist != null && k.Artist == artist ||
                             k.ArtistUnicode != null && k.ArtistUnicode == artist).ToList();
             return result;
-
         }
 
         public static List<Beatmap> FilterByKeyword(string keywordStr)
