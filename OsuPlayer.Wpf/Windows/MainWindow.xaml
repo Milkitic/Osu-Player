@@ -1026,6 +1026,7 @@
             </Border.Style>
             <StackPanel VerticalAlignment="Center"
                         HorizontalAlignment="Center">
+                <custom:Loader Width="50" FillColor="{StaticResource PinkColorOsu}" Rotate="True" />
                 <Label Content="欢迎"
                        HorizontalContentAlignment="Center"
                        FontSize="35"
