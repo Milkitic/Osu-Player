@@ -20,7 +20,7 @@
                 <Label Style="{StaticResource ConfigTitleStyle}"
                        Content="osu!db位置：" HorizontalAlignment="Left" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
-                    <dms:DMTextBox x:Name="LblDbPath" Margin="5,0"
+                    <dms:DMTextBox x:Name="TbDbPath" Margin="5,0"
                                    Text="D:\asdf\asdf" Width="250" Height="27"
                                    VerticalContentAlignment="Center" 
                                    Background="White" BorderBrush="#33999999"
@@ -28,8 +28,22 @@
                                    IsReadOnly="True"/>
                     <dms:DMButton Width="25" Height="25" CornerRadius="100"
                                   Background="#E3E3E3" Foreground="Black"
-                                  x:Name="Browse" Content="..." 
-                                  Click="Browse_Click" />
+                                  x:Name="BrowseDb" Content="..." 
+                                  Click="BrowseDb_Click" />
+                </StackPanel>
+                <Label Style="{StaticResource ConfigTitleStyle}"
+                       Content="自定义曲库路径：" HorizontalAlignment="Left" />
+                <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
+                    <dms:DMTextBox x:Name="TbCustomPath" Margin="5,0"
+                                   Text="D:\asdf\asdf" Width="250" Height="27"
+                                   VerticalContentAlignment="Center" 
+                                   Background="White" BorderBrush="#33999999"
+                                   CornerRadius="5"
+                                   IsReadOnly="True"/>
+                    <dms:DMButton Width="25" Height="25" CornerRadius="100"
+                                  Background="#E3E3E3" Foreground="Black"
+                                  x:Name="BrowseCustom" Content="..." 
+                                  Click="BrowseCustom_Click" />
                 </StackPanel>
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="关闭窗体：" HorizontalAlignment="Left" />
                 <StackPanel HorizontalAlignment="Left">

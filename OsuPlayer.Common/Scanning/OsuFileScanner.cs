@@ -1,32 +1,58 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common.Data;
+using OSharp.Beatmap;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Data;
-using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Common.Scanning
 {
     public class OsuFileScanner
     {
-        private readonly string _path;
+        private CancellationTokenSource _scanCts;
+        private bool _isScanning;
+        private static readonly object ScanObject = new object();
 
-        public OsuFileScanner(string path)
+        public async Task NewScanAndAddAsync(string path)
         {
-            _path = path;
-        }
+            lock (ScanObject)
+            {
+                if (_isScanning)
+                    return;
+                _isScanning = true;
+            }
 
-        public async Task NewScanAndAddAsync()
-        {
+            _scanCts = new CancellationTokenSource();
             await BeatmapDbOperator.RemoveLocalAllAsync();
-            var dirInfo = new DirectoryInfo(_path);
+            var dirInfo = new DirectoryInfo(path);
 
             foreach (var privateFolder in dirInfo.EnumerateDirectories(searchPattern: "*.*", searchOption: SearchOption.TopDirectoryOnly))
             {
+                if (_scanCts.IsCancellationRequested)
+                    break;
                 await ScanPrivateFolderAsync(privateFolder);
             }
+
+            lock (ScanObject)
+            {
+                _isScanning = false;
+            }
+        }
+
+        public async Task CancelTaskAsync()
+        {
+            _scanCts.Cancel();
+            await Task.Run(() =>
+            {
+                // ReSharper disable once InconsistentlySynchronizedField
+                while (_isScanning)
+                {
+                    Thread.Sleep(1);
+                }
+            });
         }
 
         private async Task ScanPrivateFolderAsync(DirectoryInfo privateFolder)
@@ -35,6 +61,9 @@ namespace Milky.OsuPlayer.Common.Scanning
             {
                 foreach (var fileInfo in privateFolder.EnumerateFiles(searchPattern: "*.osu", searchOption: SearchOption.TopDirectoryOnly))
                 {
+                    if (_scanCts.IsCancellationRequested)
+                        return;
+
                     var osuFile = await OsuFile.ReadFromFileAsync(fileInfo.FullName);
                     await AddFileAsync(dbOperator, osuFile, fileInfo);
                 }

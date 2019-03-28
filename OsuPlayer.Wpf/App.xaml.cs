@@ -1,15 +1,15 @@
 ﻿using Microsoft.Win32;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.I18N;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Common.Scanning;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.Windows;
 using System;
 using System.Windows;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Scanning;
-using Milky.OsuPlayer.Windows;
 
 #if !DEBUG
 using Sentry;
@@ -31,13 +31,13 @@ namespace Milky.OsuPlayer
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
             StartupConfig.Startup();
 
-            InstanceManage.AddInstance(new UiMetadata());
-            InstanceManage.AddInstance(new PlayerList());
-            InstanceManage.AddInstance(new OsuDbInst());
-            InstanceManage.AddInstance(new PlayersInst());
-            InstanceManage.AddInstance(new LyricsInst());
-            InstanceManage.AddInstance(new Updater());
-            InstanceManage.AddInstance(new OsuFileScanner(PlayerConfig.Current.SongPath));
+            InstanceManage.TryAddInstance(new UiMetadata());
+            InstanceManage.TryAddInstance(new PlayerList());
+            InstanceManage.TryAddInstance(new OsuDbInst());
+            InstanceManage.TryAddInstance(new PlayersInst());
+            InstanceManage.TryAddInstance(new LyricsInst());
+            InstanceManage.TryAddInstance(new Updater());
+            InstanceManage.TryAddInstance(new OsuFileScanner());
 
             InstanceManage.GetInstance<LyricsInst>().ReloadLyricProvider();
 

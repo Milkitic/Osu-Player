@@ -1,14 +1,16 @@
 ﻿using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Common.Scanning;
 using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -47,7 +49,9 @@ namespace Milky.OsuPlayer.Pages.Settings
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             RunOnStartup.IsChecked = PlayerConfig.Current.General.RunOnStartup;
-            LblDbPath.Text = PlayerConfig.Current.General.DbPath;
+            TbDbPath.Text = PlayerConfig.Current.General.DbPath;
+            TbCustomPath.Text = PlayerConfig.Current.General.CustomSongsPath;
+
             if (PlayerConfig.Current.General.ExitWhenClosed.HasValue)
             {
                 if (PlayerConfig.Current.General.ExitWhenClosed.Value)
@@ -73,7 +77,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             PlayerConfig.SaveCurrent();
         }
 
-        private async void Browse_Click(object sender, RoutedEventArgs e)
+        private async void BrowseDb_Click(object sender, RoutedEventArgs e)
         {
             var result = Util.BrowseDb(out var path);
             if (!result.HasValue || !result.Value)
@@ -81,6 +85,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             try
             {
                 await InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(path, false);
+                TbDbPath.Text = path;
             }
             catch (Exception ex)
             {
@@ -95,6 +100,30 @@ namespace Milky.OsuPlayer.Pages.Settings
             else
                 Radio_CheckChanged(sender, e);
             PlayerConfig.SaveCurrent();
+        }
+
+        private async void BrowseCustom_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true,
+                Title = "Select Folder"
+            };
+
+            var result = openFileDialog.ShowDialog();
+            if (result != CommonFileDialogResult.Ok)
+                return;
+            var path = openFileDialog.FileName;
+            try
+            {
+                TbCustomPath.Text = path;
+                await InstanceManage.GetInstance<OsuFileScanner>().CancelTaskAsync();
+                await InstanceManage.GetInstance<OsuFileScanner>().NewScanAndAddAsync(path);
+            }
+            catch (Exception ex)
+            {
+                MsgBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

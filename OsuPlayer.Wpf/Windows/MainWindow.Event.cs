@@ -35,7 +35,7 @@ namespace Milky.OsuPlayer.Windows
             }
             else
             {
-                await InstanceManage.GetInstance<OsuFileScanner>().NewScanAndAddAsync();
+                await InstanceManage.GetInstance<OsuFileScanner>().NewScanAndAddAsync(PlayerConfig.Current.General.CustomSongsPath);
                 await InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(PlayerConfig.Current.General.DbPath, true);
                 await InstanceManage.GetInstance<OsuDbInst>().LoadLocalDbAsync();
                 //ScanSynchronously();
@@ -77,7 +77,7 @@ namespace Milky.OsuPlayer.Windows
 
         private static void ScanSynchronously()
         {
-            Task.Run(() => InstanceManage.GetInstance<OsuFileScanner>().NewScanAndAddAsync());
+            Task.Run(() => InstanceManage.GetInstance<OsuFileScanner>().NewScanAndAddAsync(PlayerConfig.Current.General.CustomSongsPath));
         }
 
         private static async Task LoadLocalDbAsync()
