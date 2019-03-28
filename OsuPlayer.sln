@@ -11,13 +11,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Common", "OsuPlay
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Media.Lyric", "OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj", "{33580E59-AA08-45EF-B79F-2F8FE2F539CC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSharp.Beatmap", "OsuPlayer.Wpf\OSharp.Beatmap\OSharp.Beatmap.csproj", "{631A4ABE-0C76-4972-97F2-F6928F0608EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSharp.Beatmap", "Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj", "{631A4ABE-0C76-4972-97F2-F6928F0608EE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSharp.Common", "OsuPlayer.Wpf\OSharp.Common\OSharp.Common.csproj", "{4C8D4EEA-E81B-4FD3-B6A4-9857ABC152A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSharp.Common", "Libraries\OSharp.Common\OSharp.Common.csproj", "{4C8D4EEA-E81B-4FD3-B6A4-9857ABC152A5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSharp.Storyboard", "OsuPlayer.Wpf\OSharp.Storyboard\OSharp.Storyboard.csproj", "{D18BDC44-577C-49BA-BB91-1311422D362A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSharp.Storyboard", "Libraries\OSharp.Storyboard\OSharp.Storyboard.csproj", "{D18BDC44-577C-49BA-BB91-1311422D362A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApi", "OsuPlayer.Wpf\WpfApi\WpfApi.csproj", "{028E6F4E-D538-4B83-904C-C94C2F1E3C83}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApi", "Libraries\WpfApi\WpfApi.csproj", "{028E6F4E-D538-4B83-904C-C94C2F1E3C83}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.ControlLibrary", "OsuPlayer.ControlLibrary\OsuPlayer.ControlLibrary.csproj", "{30DFC628-F9A6-42B1-9BBD-73489E3AB204}"
 EndProject

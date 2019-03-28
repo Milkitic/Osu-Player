@@ -1,3 +1,15 @@
 [submodule "DMSkin-for-WPF"]
 	path = DMSkin-for-WPF
 	url = https://github.com/944095635/DMSkin-for-WPF
+[submodule "Libraries/OSharp.Storyboard"]
+	path = Libraries/OSharp.Storyboard
+	url = https://github.com/Milkitic/OSharp.Storyboard
+[submodule "Libraries/OSharp.Common"]
+	path = Libraries/OSharp.Common
+	url = https://github.com/Milkitic/OSharp.Common
+[submodule "Libraries/OSharp.Beatmap"]
+	path = Libraries/OSharp.Beatmap
+	url = https://github.com/Milkitic/OSharp.Beatmap
+[submodule "Libraries/WpfApi"]
+	path = Libraries/WpfApi
+	url = https://github.com/Milkitic/WpfApi

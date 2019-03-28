@@ -71,18 +71,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
-      <Project>{654D6521-43E1-48D2-BAEE-E694E38EF56D}</Project>
-      <Name>OsuPlayer.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Wpf\OSharp.Beatmap\OSharp.Beatmap.csproj">
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
       <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
       <Name>OSharp.Beatmap</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
+    <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
+      <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>
+      <Name>OsuPlayer.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
