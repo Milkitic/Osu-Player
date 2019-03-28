@@ -40,17 +40,17 @@ namespace Milky.OsuPlayer.ControlLibrary.Custom
             set => SetValue(FillColorProperty, value);
         }
 
-        public static readonly DependencyProperty RotateProperty =
-            DependencyProperty.Register("Rotate", typeof(bool), typeof(Loader),
-                new UIPropertyMetadata(false, null)
-            );
+        //public static readonly DependencyProperty RotateProperty =
+        //    DependencyProperty.Register("Rotate", typeof(bool), typeof(Loader),
+        //        new UIPropertyMetadata(false, null)
+        //    );
 
-        //VS设计器属性支持
-        //[Description("背景色"), Category("个性配置"), DefaultValue(false)]
-        public bool Rotate
-        {
-            get => (bool)GetValue(RotateProperty);
-            set => SetValue(RotateProperty, value);
-        }
+        ////VS设计器属性支持
+        ////[Description("背景色"), Category("个性配置"), DefaultValue(false)]
+        //public bool Rotate
+        //{
+        //    get => (bool)GetValue(RotateProperty);
+        //    set => SetValue(RotateProperty, value);
+        //}
     }
 }

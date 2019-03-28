@@ -12,8 +12,8 @@
     <SolidColorBrush x:Key="ExtraLightBrushF0" Color="#F0F0F0F0" />
     <SolidColorBrush x:Key="ExtraLightBrush80" Color="#80F0F0F0" />
     <SolidColorBrush x:Key="ExtraLightBrush20" Color="#20F0F0F0" />
-   
-    <SolidColorBrush x:Key="PinkBrushOsu" Color="{StaticResource PinkColorOsu}" />
+
+    <SolidColorBrush x:Key="PinkBrushOsu" Color="#FFFD629A" />
   
     <SolidColorBrush x:Key="LightBrush" Color="#D0D0D0" />
 

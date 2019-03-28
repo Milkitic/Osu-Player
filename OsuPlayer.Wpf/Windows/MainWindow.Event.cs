@@ -447,9 +447,9 @@ namespace Milky.OsuPlayer.Windows
             PopMode.IsOpen = false;
         }
 
-        private async Task SetPlayMode(PlayerMode playmode)
+        private async Task SetPlayMode(PlayerMode playMode)
         {
-            switch (playmode)
+            switch (playMode)
             {
                 case PlayerMode.Normal:
                     Normal.IsChecked = true;
@@ -472,12 +472,12 @@ namespace Milky.OsuPlayer.Windows
             }
 
             string flag = ViewModel.IsMiniMode ? "S" : "";
-            ModeButton.Background = (ImageBrush)ToolControl.FindResource(playmode + flag);
-            if (playmode == InstanceManage.GetInstance<PlayerList>().PlayerMode)
+            ModeButton.Background = (ImageBrush)ToolControl.FindResource(playMode + flag);
+            if (playMode == InstanceManage.GetInstance<PlayerList>().PlayerMode)
                 return;
-            InstanceManage.GetInstance<PlayerList>().PlayerMode = playmode;
+            InstanceManage.GetInstance<PlayerList>().PlayerMode = playMode;
             await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.IndexOnly);
-            PlayerConfig.Current.Play.PlayListMode = playmode;
+            PlayerConfig.Current.Play.PlayListMode = playMode;
             PlayerConfig.SaveCurrent();
         }
 
@@ -638,67 +638,5 @@ namespace Milky.OsuPlayer.Windows
         }
 
         #endregion Notification events
-
-        #region Video element events
-
-        private async void VideoElement_MediaOpened(object sender, RoutedEventArgs e)
-        {
-            VideoElementBorder.Visibility = Visibility.Visible;
-            if (!_videoPlay)
-                return;
-            await Task.Run(() => _waitAction?.Invoke());
-            await VideoElement.Play();
-            VideoElement.Position = _position;
-        }
-
-        private async void VideoElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
-        {
-            VideoElementBorder.Visibility = Visibility.Hidden;
-            //MsgBox.Show(this, e.ErrorException.ToString(), "不支持的视频格式", MessageBoxButton.OK, MessageBoxImage.Error);
-            if (!_videoPlay)
-                return;
-            await ClearVideoElement(false);
-            PlayMedia();
-        }
-
-        #endregion Video element events
-
-        #region Guide events
-        private void SkipStep_Click(object sender, RoutedEventArgs e)
-        {
-            PlayerConfig.Current.General.FirstOpen = false;
-            PlayerConfig.SaveCurrent();
-            ViewModel.ShowWelcome = false;
-        }
-
-        private async void Step1_Click(object sender, RoutedEventArgs e)
-        {
-            var result = Util.BrowseDb(out var path);
-            if (!result.HasValue || !result.Value)
-            {
-                ViewModel.GuideSelectedDb = false;
-                return;
-            }
-            try
-            {
-                ViewModel.GuideSyncing = true;
-                await InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(path, false);
-                ViewModel.GuideSyncing = false;
-            }
-            catch (Exception ex)
-            {
-                MsgBox.Show(this, ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
-                ViewModel.GuideSelectedDb = false;
-            }
-
-            ViewModel.GuideSelectedDb = true;
-        }
-
-        private void Step2_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        #endregion
     }
 }

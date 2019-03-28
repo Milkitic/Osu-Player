@@ -10,3 +10,6 @@
 [submodule "OsuPlayer.Wpf/OSharp.Beatmap"]
 	path = OsuPlayer.Wpf/OSharp.Beatmap
 	url = https://github.com/Milkitic/OSharp.Beatmap
+[submodule "DMSkin-for-WPF"]
+	path = DMSkin-for-WPF
+	url = https://github.com/944095635/DMSkin-for-WPF

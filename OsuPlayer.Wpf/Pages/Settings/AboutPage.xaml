@@ -50,10 +50,11 @@
                         </Canvas>
                     </Viewbox>
                     <Label>
-                        <dms:DMLinkButton Click="LinkGithub_Click"
-                                          DMSystemButtonHoverColor="Transparent"
-                                          DMSystemButtonHoverForeground="#949494"
-                                          Content="项目地址"/>
+                        <dms:DMLinkButton
+                            Click="LinkGithub_Click"
+                            DMSystemButtonHoverColor="Transparent"
+                            DMSystemButtonHoverForeground="#949494"
+                            Content="项目地址" />
                     </Label>
                     <Label>
                         <dms:DMLinkButton Click="LinkFeedback_Click" 

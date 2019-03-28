@@ -11,6 +11,7 @@
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
     xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
+    xmlns:osuPlayer="clr-namespace:Milky.OsuPlayer"
     mc:Ignorable="d"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
     Loaded="Window_Loaded" Closing="Window_Closing" SizeChanged="Window_SizeChanged"
@@ -376,7 +377,7 @@
                 </Grid>
             </DockPanel>
             <Grid x:Name="FullModeArea" Grid.Row="0" Margin="1,0,1,0"
-                  Visibility="{Binding Player.EnableVideo,Converter={StaticResource CvtVideoShow}}">
+                  Visibility="{Binding Player.EnableVideo,Converter={StaticResource CvtVideoShow}}" d:IsHidden="True">
                 <Border x:Name="ResizableArea">
                     <Grid>
                         <Image Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center"
@@ -384,9 +385,7 @@
                                RenderOptions.BitmapScalingMode="HighQuality"
                                Source="{Binding Source, ElementName=BlurScene}" />
                         <Grid x:Name="VideoElementBorder" Background="#E0000000">
-                            <ffme:MediaElement x:Name="VideoElement" IsMuted="True" LoadedBehavior="Manual"
-                                               MediaOpened="VideoElement_MediaOpened"
-                                               MediaFailed="VideoElement_MediaFailed" />
+                            <ffme:MediaElement x:Name="VideoElement" IsMuted="True" LoadedBehavior="Manual" />
                         </Grid>
                         <Border Background="{StaticResource ExtraLightBrush20}"
                                 HorizontalAlignment="Right" VerticalAlignment="Top"
@@ -467,18 +466,13 @@
                                                     <Viewbox Stretch="Uniform"
                                                              Width="30" Height="30">
                                                         <Canvas Width="1000" Height="1000">
-                                                            <Canvas.RenderTransform>
-                                                                <TranslateTransform X="0" Y="0" />
-                                                            </Canvas.RenderTransform>
-                                                            <Canvas>
-                                                                <Path Fill="{StaticResource ExtraLightBrushF0}">
-                                                                    <Path.Data>
-                                                                        <PathGeometry
+                                                            <Path Fill="{StaticResource ExtraLightBrushF0}">
+                                                                <Path.Data>
+                                                                    <PathGeometry
                                                                             Figures="M602.1 500l226.5 226.5l91.9-91.9c11.5-12.1 29.4-15.3 44.7-8.9c14.7 6.4 24.9 21.1 24.9 37.6v285.8c0 22.3-18.5 40.8-40.8 40.8H663.3c-16.6 0-31.3-10.2-37.6-25.5c-6.4-14.7-3.2-32.5 8.9-44l91.9-91.9L500 602.1L273.5 828.6l91.9 91.9c12.1 11.5 15.3 29.4 8.9 44c-6.4 15.3-21.1 25.5-37.6 25.5H50.8C28.5 990 10 971.5 10 949.2V663.3c0-16.6 10.2-31.3 25.5-37.6c14.7-6.4 32.5-3.2 44 8.9l91.9 91.9L397.9 500L171.4 273.5l-91.9 91.9c-7.7 7.7-17.9 12.1-28.7 12.1c-5.1 0-10.8-1.3-15.3-3.2C20.2 367.9 10 353.3 10 336.7V50.8C10 28.5 28.5 10 50.8 10h285.8c16.6 0 31.3 10.2 37.6 25.5c6.4 14.7 3.2 32.5-8.9 44l-91.9 91.9L500 397.9l226.5-226.5l-91.9-91.9c-12.1-11.5-15.3-29.3-8.9-44c6.4-15.3 21.1-25.5 37.6-25.5h285.8c22.3 0 40.8 18.5 40.8 40.8v285.8c0 16.6-10.2 31.3-24.9 37.6c-5.1 1.9-10.8 3.2-16 3.2c-10.8 0-21.1-4.5-28.7-12.1l-91.9-91.9L602.1 500z"
                                                                             FillRule="NonZero" />
-                                                                    </Path.Data>
-                                                                </Path>
-                                                            </Canvas>
+                                                                </Path.Data>
+                                                            </Path>
                                                         </Canvas>
                                                     </Viewbox>
                                                 </Border>
@@ -945,9 +939,9 @@
                 </Grid>
             </Popup>
         </Grid>
-        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True">
-            <Frame Name="FramePop" NavigationUIVisibility="Hidden" />
-        </Grid>
+        <Frame Name="FramePop" 
+               Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" 
+               NavigationUIVisibility="Hidden" d:IsHidden="True" />
         <Border x:Name="MsgBoxCover" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
                 Background="{StaticResource WhiteBrush80}"
                 Visibility="Hidden" />
@@ -1010,26 +1004,14 @@
                 Width="40" Height="40" />
         </Border>-->
 
-        <Border Grid.Row="1"
+        <Border x:Name="WelcomeArea" Grid.Row="1"
                 Background="{StaticResource WhiteBrushB0}"
                 Visibility="{Binding ShowWelcome,Converter={StaticResource TrueToVisibleConverter}}">
-            <Border.Style>
-                <Style TargetType="FrameworkElement">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ShowWelcome}" Value="True"
-                                     wpfApi:TriggerTracing.TriggerName="MainWindow -> ShowWelcome"
-                                     wpfApi:TriggerTracing.TraceEnabled="True">
-                            <Setter Property="Visibility" Value="Visible" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ShowWelcome}" Value="False">
-                            <Setter Property="Visibility" Value="Hidden" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-            <StackPanel VerticalAlignment="Center"
+            <Border.DataContext>
+                <viewModels:WelcomeViewModel/>
+            </Border.DataContext>
+            <StackPanel x:Name="VerticalWelcomeStackPanel" VerticalAlignment="Center"
                         HorizontalAlignment="Center">
-                <custom:Loader Width="50" FillColor="{StaticResource PinkColorOsu}" Rotate="True" />
                 <Label Content="欢迎"
                        HorizontalContentAlignment="Center"
                        FontSize="35"
@@ -1041,15 +1023,22 @@
                        HorizontalContentAlignment="Center"
                        FontSize="12"
                        Foreground="{StaticResource SliderBackground}" />
-                <CheckBox x:Name="Step1" Margin="0,3" Content="选择osu!db，同步曲库" Click="Step1_Click"></CheckBox>
-                <CheckBox x:Name="Step2" Margin="0,3" Content="开启曲库目录监听服务，减少同步与扫描时间"></CheckBox>
-                <Label HorizontalContentAlignment="Center" Margin="0,30,0,0">
-                    <TextBlock>
-                        <Hyperlink NavigateUri="skip" Click="SkipStep_Click">
-                            Skip this step
-                        </Hyperlink>
-                    </TextBlock>
-                </Label>
+                <custom:Loader Width="30" Height="30" FillColor="#303030" Visibility="{Binding GuideSyncing,Converter={StaticResource TrueToVisibleConverter}}" />
+                <dms:DMCheckBox
+                    x:Name="Step1" Margin="0,3"
+                    IsChecked="{Binding GuideSelectedDb, Mode=TwoWay}"
+                    Content="选择osu!db，同步曲库" Click="Step1_Click"
+                    IconColor="{StaticResource PinkBrushOsu}" />
+                <dms:DMCheckBox
+                    Visibility="Collapsed"
+                    x:Name="Step2" Margin="0,3"
+                    Content="开启曲库目录监听服务，减少同步与扫描时间"
+                    IconColor="{StaticResource PinkBrushOsu}" />
+                <dms:DMLinkButton
+                    HorizontalContentAlignment="Center" Margin="0,30,0,0"
+                    DMSystemButtonHoverColor="Transparent"
+                    DMSystemButtonHoverForeground="#949494"
+                    Content="Skip this step" />
             </StackPanel>
         </Border>
         <tb:TaskbarIcon Grid.Row="0" x:Name="NotifyIcon"
@@ -1083,7 +1072,6 @@
                                 </Canvas>
                             </Canvas>
                         </Viewbox>
-
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="上一首" Style="{DynamicResource DefaultMenuItem}"
@@ -1172,7 +1160,6 @@
                                 </Canvas>
                             </Canvas>
                         </Viewbox>
-
                     </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>

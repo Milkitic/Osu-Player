@@ -29,6 +29,7 @@ namespace Milky.OsuPlayer.Windows
             ExportPage = new ExportPage(this),
         };
         internal MainWindowViewModel ViewModel { get; }
+        public WelcomeViewModel WelcomeViewModel { get; }
 
         public readonly LyricWindow LyricWindow;
         public ConfigWindow ConfigWindow;
@@ -48,6 +49,7 @@ namespace Milky.OsuPlayer.Windows
         {
             InitializeComponent();
             ViewModel = (MainWindowViewModel)DataContext;
+            WelcomeViewModel= (WelcomeViewModel) WelcomeArea.DataContext;
             PlayerViewModel.InitViewModel();
             ViewModel.Player = PlayerViewModel.Current;
             LyricWindow = new LyricWindow(this);

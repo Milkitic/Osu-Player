@@ -16,7 +16,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private string _filePath;
         private int _stopCount;
 
-        public override int ProgressRefreshInterval { get; set; }
+        public override int ProgressRefreshInterval { get; set; } = 500;
 
         public OsuFile OsuFile { get; private set; }
         internal HitsoundPlayer HitsoundPlayer { get; private set; }
