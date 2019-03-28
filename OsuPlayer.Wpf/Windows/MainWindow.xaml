@@ -740,7 +740,7 @@
                                 <Button.Style>
                                     <Style TargetType="custom:BitmapButton">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavourite}" Value="True"
+                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavorite}" Value="True"
                                                          wpfApi:TriggerTracing.TriggerName="LikeButton -> CurrentMusic"
                                                          wpfApi:TriggerTracing.TraceEnabled="True">
                                                 <Setter Property="Background" Value="{StaticResource Faved}" />
@@ -748,7 +748,7 @@
                                             <DataTrigger Binding="{Binding Player.CurrentInfo}" Value="{x:Null}">
                                                 <Setter Property="Background" Value="{StaticResource Fav}" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavourite}" Value="False">
+                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavorite}" Value="False">
                                                 <Setter Property="Background" Value="{StaticResource Fav}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
@@ -861,24 +861,27 @@
                                 <StackPanel Grid.Column="0">
                                     <Slider x:Name="MasterVolume" Orientation="Vertical" HorizontalAlignment="Center"
                                             Margin="10,5"
-                                            Maximum="100" Style="{StaticResource VerticalSliderWhiteStyle}"
-                                            Thumb.DragDelta="MasterVolume_DragDelta" Height="70" />
+                                            Maximum="1" Value="{Binding Player.CurrentVolume.Main,Mode=TwoWay}"
+                                            Style="{StaticResource VerticalSliderWhiteStyle}"
+                                            Thumb.DragCompleted="MasterVolume_DragComplete" Height="70" />
                                     <Label Content="主音量" Margin="0,-5,0,0" HorizontalAlignment="Center"
                                            Foreground="White" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
                                     <Slider x:Name="MusicVolume" Orientation="Vertical" HorizontalAlignment="Center"
                                             Margin="10,5"
-                                            Maximum="100" Style="{StaticResource VerticalSliderWhiteStyle}"
-                                            Thumb.DragDelta="MusicVolume_DragDelta" Height="70" />
+                                            Maximum="100" Value="{Binding Player.CurrentVolume.Music,Mode=TwoWay}"
+                                            Style="{StaticResource VerticalSliderWhiteStyle}"
+                                            Thumb.DragCompleted="MusicVolume_DragComplete" Height="70" />
                                     <Label Content="音乐" Margin="0,-5,0,0" HorizontalAlignment="Center"
                                            Foreground="White" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <Slider x:Name="HitsoundVolume" Orientation="Vertical" HorizontalAlignment="Center"
                                             Margin="10,5"
-                                            Maximum="100" Style="{StaticResource VerticalSliderWhiteStyle}"
-                                            Thumb.DragDelta="HitsoundVolume_DragDelta" Height="70" />
+                                            Maximum="100" Value="{Binding Player.CurrentVolume.Hitsound, Mode=TwoWay}"
+                                            Style="{StaticResource VerticalSliderWhiteStyle}"
+                                            Thumb.DragCompleted="HitsoundVolume_DragComplete" Height="70" />
                                     <Label Content="音效" Margin="0,-5,0,0" HorizontalAlignment="Center"
                                            Foreground="White" />
                                 </StackPanel>

@@ -245,7 +245,7 @@ namespace Milky.OsuPlayer.Common.Data
                         if (collection.Locked &&
                             currentInfo.Identity.Equals(beatmap.GetIdentity()))
                         {
-                            currentInfo.IsFavourite = true;
+                            currentInfo.IsFavorite = true;
                         }
                     }
                 }
@@ -422,7 +422,7 @@ namespace Milky.OsuPlayer.Common.Data
                         if (collection.Locked &&
                             currentInfo.Identity.Equals(id))
                         {
-                            currentInfo.IsFavourite = false;
+                            currentInfo.IsFavorite = false;
                         }
                     }
                 }

@@ -20,6 +20,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 
 namespace Milky.OsuPlayer.Windows
@@ -93,7 +94,7 @@ namespace Milky.OsuPlayer.Windows
                     ((ToolTip)NotifyIcon.TrayToolTip).Content =
                         (string)LblArtist.Content + " - " + (string)LblTitle.Content;
 
-                    bool isFavourite = IsMapFavourite(mapInfo); //50 ms
+                    bool isFavorite = IsMapFavorite(mapInfo); //50 ms
 
                     audioPlayer.HitsoundOffset = mapInfo.Offset;
                     Offset.Value = audioPlayer.HitsoundOffset;
@@ -113,11 +114,11 @@ namespace Milky.OsuPlayer.Windows
                         osuFile.Difficulty.CircleSize,
                         osuFile.Difficulty.ApproachRate,
                         osuFile.Difficulty.OverallDifficulty,
-                        audioPlayer?.Duration ?? 0,
+                        audioPlayer.Duration,
                         nowIdentity,
                         mapInfo,
                         entry,
-                        isFavourite); // 20 ms
+                        isFavorite); // 20 ms
                     InstanceManage.GetInstance<PlayerList>().CurrentInfo = currentInfo;
                     ViewModel.Player.CurrentInfo = currentInfo;
 

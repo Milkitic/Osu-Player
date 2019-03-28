@@ -3,6 +3,7 @@ using Milky.OsuPlayer.Common.Player;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 
@@ -12,7 +13,7 @@ namespace Milky.OsuPlayer.ViewModels
     {
         private bool _isNavigationCollapsed;
         private bool _isMiniMode;
-        private List<Collection> _collection;
+        private ObservableCollection<Collection> _collection;
         private bool _isLyricWindowShown;
         private bool _isLyricWindowLocked;
         private bool _showWelcome;
@@ -70,7 +71,7 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public List<Collection> Collection
+        public ObservableCollection<Collection> Collection
         {
             get => _collection;
             set

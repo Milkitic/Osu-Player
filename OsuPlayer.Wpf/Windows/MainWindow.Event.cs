@@ -43,7 +43,7 @@ namespace Milky.OsuPlayer.Windows
             }
 
             UpdateCollections();
-            LoadSurfaceSettings();
+            //LoadSurfaceSettings();
 
             if (PlayerConfig.Current.CurrentPath != null && PlayerConfig.Current.Play.Memory)
             {
@@ -372,19 +372,19 @@ namespace Milky.OsuPlayer.Windows
             else
             {
                 var collection = DbOperate.GetCollections().First(k => k.Locked);
-                if (InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFavourite)
+                if (InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFavorite)
                 {
                     DbOperate.RemoveMapFromCollection(entry, collection);
-                    InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFavourite = false;
+                    InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFavorite = false;
                 }
                 else
                 {
                     await SelectCollectionPage.AddToCollectionAsync(collection, entry);
-                    InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFavourite = true;
+                    InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFavorite = true;
                 }
             }
 
-            IsMapFavourite(InstanceManage.GetInstance<PlayerList>().CurrentInfo.Identity);
+            IsMapFavorite(InstanceManage.GetInstance<PlayerList>().CurrentInfo.Identity);
         }
 
         private void BtnVolume_Click(object sender, RoutedEventArgs e)
@@ -561,27 +561,26 @@ namespace Milky.OsuPlayer.Windows
         /// <summary>
         /// Master Volume Settings
         /// </summary>
-        private void MasterVolume_DragDelta(object sender, DragDeltaEventArgs e)
+        private void MasterVolume_DragComplete(object sender, DragCompletedEventArgs e)
         {
-            PlayerConfig.Current.Volume.Main = (float)(MasterVolume.Value / 100);
+            //PlayerConfig.Current.Volume.Main = (float)(MasterVolume.Value / 100);
             PlayerConfig.SaveCurrent();
         }
 
         /// <summary>
         /// Music Volume Settings
         /// </summary>
-        private void MusicVolume_DragDelta(object sender, DragDeltaEventArgs e)
+        private void MusicVolume_DragComplete(object sender, DragCompletedEventArgs e)
         {
-            PlayerConfig.Current.Volume.Music = (float)(MusicVolume.Value / 100);
+            //PlayerConfig.Current.Volume.Music = (float)(MusicVolume.Value / 100);
             PlayerConfig.SaveCurrent();
         }
 
         /// <summary>
         /// Effect Volume Settings
         /// </summary>
-        private void HitsoundVolume_DragDelta(object sender, DragDeltaEventArgs e)
+        private void HitsoundVolume_DragComplete(object sender, DragCompletedEventArgs e)
         {
-            PlayerConfig.Current.Volume.Hitsound = (float)(HitsoundVolume.Value / 100);
             PlayerConfig.SaveCurrent();
         }
 

@@ -5,6 +5,7 @@ using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Instances;
 using Milky.WpfApi;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,30 +24,30 @@ namespace Milky.OsuPlayer.Windows
         {
             var list = (List<Collection>)DbOperate.GetCollections();
             list.Reverse();
-            ViewModel.Collection = list;
+            ViewModel.Collection = new ObservableCollection<Collection>(list);
         }
 
-        private bool IsMapFavourite(MapInfo info)
+        private bool IsMapFavorite(MapInfo info)
         {
             var album = DbOperate.GetCollectionsByMap(info);
-            bool isFavourite = album != null && album.Any(k => k.Locked);
+            bool isFavorite = album != null && album.Any(k => k.Locked);
 
-            return isFavourite;
+            return isFavorite;
         }
 
-        private bool IsMapFavourite(MapIdentity identity)
+        private bool IsMapFavorite(MapIdentity identity)
         {
             var info = DbOperate.GetMapFromDb(identity);
-            return IsMapFavourite(info);
+            return IsMapFavorite(info);
         }
 
         /// <summary>
         /// Call lyric provider to check lyric
-        /// todo: this should run synchronously.
         /// </summary>
         public void SetLyricSynchronously()
         {
-            if (!LyricWindow.IsVisible) return;
+            if (!LyricWindow.IsVisible)
+                return;
 
             Task.Run(async () =>
             {
@@ -56,7 +57,9 @@ namespace Milky.OsuPlayer.Windows
                 _searchLyricTask = Task.Run(async () =>
                 {
                     var player = InstanceManage.GetInstance<PlayersInst>().AudioPlayer;
-                    if (player == null) return;
+                    if (player == null)
+                        return;
+
                     var meta = player.OsuFile.Metadata;
                     var lyricInst = InstanceManage.GetInstance<LyricsInst>();
                     var lyric = await lyricInst.LyricProvider.GetLyricAsync(meta.ArtistMeta.ToUnicodeString(),

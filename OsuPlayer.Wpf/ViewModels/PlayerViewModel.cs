@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -23,6 +24,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private PlayerViewModel()
         {
+            CurrentVolume = PlayerConfig.Current.Volume;
         }
 
         private bool _isPlaying;
@@ -31,8 +33,8 @@ namespace Milky.OsuPlayer.ViewModels
 
         private long _position;
         private long _duration;
-        private bool _isFavourite;
         private CurrentInfo _currentInfo;
+        private VolumeControl _currentVolume;
 
         public PlayListMode PlayListMode
         {
@@ -93,5 +95,16 @@ namespace Milky.OsuPlayer.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public VolumeControl CurrentVolume
+        {
+            get => _currentVolume;
+            private set
+            {
+                _currentVolume = value;
+                OnPropertyChanged();
+            }
+        }
+
     }
 }

@@ -7,12 +7,12 @@ namespace Milky.OsuPlayer.Common.Player
 {
     public class CurrentInfo : ViewModelBase
     {
-        private bool _isFavourite;
+        private bool _isFavorite;
         public CurrentInfo() { }
 
         public CurrentInfo(string artist, string artistUnicode, string title, string titleUnicode, string creator,
             string source, List<string> tags, int beatmapId, int beatmapsetId, double stars, double hp, double cs, double ar,
-            double od, long songLength, MapIdentity identity, MapInfo mapInfo, Beatmap beatmap, bool isFavourite)
+            double od, long songLength, MapIdentity identity, MapInfo mapInfo, Beatmap beatmap, bool isFavorite)
         {
             Artist = artist;
             ArtistUnicode = artistUnicode;
@@ -32,7 +32,7 @@ namespace Milky.OsuPlayer.Common.Player
             Identity = identity;
             MapInfo = mapInfo;
             Beatmap = beatmap;
-            IsFavourite = isFavourite;
+            IsFavorite = isFavorite;
         }
 
         public string Artist { get; set; }
@@ -58,12 +58,12 @@ namespace Milky.OsuPlayer.Common.Player
         public MapInfo MapInfo { get; }
         public Beatmap Beatmap { get; }
 
-        public bool IsFavourite
+        public bool IsFavorite
         {
-            get => _isFavourite;
+            get => _isFavorite;
             set
             {
-                _isFavourite = value;
+                _isFavorite = value;
                 OnPropertyChanged();
             }
         }
