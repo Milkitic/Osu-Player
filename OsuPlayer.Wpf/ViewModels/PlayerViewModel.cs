@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Common.Player;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Player;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
 using System;
@@ -7,11 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    internal class PlayerViewModel : ViewModelBase
+    public class PlayerViewModel : ViewModelBase
     {
         public static PlayerViewModel Current { get; set; }
 

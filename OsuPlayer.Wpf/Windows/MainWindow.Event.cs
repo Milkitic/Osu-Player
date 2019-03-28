@@ -30,7 +30,7 @@ namespace Milky.OsuPlayer.Windows
             //BtnRecent_Click(sender, e);
             if (PlayerConfig.Current.General.FirstOpen)
             {
-                ViewModel.ShowWelcome = true;
+                WelcomeViewModel.ShowWelcome = true;
                 await LoadLocalDbAsync();
             }
             else
@@ -620,14 +620,12 @@ namespace Milky.OsuPlayer.Windows
 
         private void MenuOpenHideLyric_Click(object sender, RoutedEventArgs e)
         {
-            if (ViewModel.IsLyricWindowShown)
+            if (LyricWindow.IsShown)
             {
-                PlayerConfig.Current.Lyric.EnableLyric = false;
                 LyricWindow.Hide();
             }
             else
             {
-                PlayerConfig.Current.Lyric.EnableLyric = true;
                 LyricWindow.Show();
             }
         }

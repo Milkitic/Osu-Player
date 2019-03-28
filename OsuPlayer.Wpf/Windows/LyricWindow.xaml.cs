@@ -1,4 +1,5 @@
 ﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Lyric.Models;
 using Milky.OsuPlayer.ViewModels;
@@ -36,8 +37,8 @@ namespace Milky.OsuPlayer.Windows
     {
         private readonly MainWindow _mainWindow;
 
-        public bool IsHide { get; set; }
-        private LyricWindowViewModel ViewModel { get; set; }
+        public LyricWindowViewModel ViewModel { get; }
+        public bool IsShown => ViewModel.IsLyricWindowShown;
 
         private List<Sentence> _lyricList;
         private CancellationTokenSource _cts;
@@ -45,13 +46,14 @@ namespace Milky.OsuPlayer.Windows
         private FontFamily _fontFamily;
         private bool _pressed;
 
-        public LyricWindow(MainWindow mainWindow)
+        public LyricWindow(MainWindow mainWindow) : this()
         {
             _mainWindow = mainWindow;
             InitializeComponent();
 
             ViewModel = (LyricWindowViewModel)DataContext;
             ViewModel.Player = PlayerViewModel.Current;
+            MainWindowViewModel.Current.LyricWindowViewModel = ViewModel;
 
             var fi = new FileInfo(Path.Combine(Domain.ExternalPath, "font", "default.ttc"));
             if (!fi.Exists)
@@ -69,6 +71,11 @@ namespace Milky.OsuPlayer.Windows
             Width = SystemParameters.PrimaryScreenWidth;
             MouseMove += LyricWindow_MouseMove;
             MouseLeave += LyricWindow_MouseLeave;
+        }
+
+        private void LyricWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void LyricWindow_MouseMove(object sender, MouseEventArgs e)
@@ -306,15 +313,17 @@ namespace Milky.OsuPlayer.Windows
 
         public new void Show()
         {
-            IsHide = false;
-            _mainWindow.ViewModel.IsLyricWindowShown = true;
+            PlayerConfig.Current.Lyric.EnableLyric = true;
+            PlayerConfig.SaveCurrent();
+            ViewModel.IsLyricWindowShown = true;
             base.Show();
         }
 
         public new void Hide()
         {
-            IsHide = true;
-            _mainWindow.ViewModel.IsLyricWindowShown = false;
+            PlayerConfig.Current.Lyric.EnableLyric = false;
+            PlayerConfig.SaveCurrent();
+            ViewModel.IsLyricWindowShown = false;
             base.Hide();
         }
 

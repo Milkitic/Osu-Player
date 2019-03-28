@@ -455,7 +455,6 @@
     <Content Include="External\font\default.ttc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Compile Include="Windows\MainWindow.Guide.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

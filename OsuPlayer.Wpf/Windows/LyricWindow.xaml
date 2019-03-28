@@ -12,7 +12,7 @@
         mc:Ignorable="d"
         Title="LyricWindow" Height="90" WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False"
         Background="Transparent" AllowsTransparency="True" BorderBrush="Black" SizeToContent="Height" Topmost="True"
-                    Loaded="WindowBase_Loaded">
+                    Loaded="LyricWindow_Loaded">
     <wpfApi:WindowBase.Resources>
         <Viewbox x:Key="PlayButton" Stretch="Uniform" Width="20" Height="20">
             <Canvas Width="1000" Height="1000">

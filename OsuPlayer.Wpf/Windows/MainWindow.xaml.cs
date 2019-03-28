@@ -53,8 +53,9 @@ namespace Milky.OsuPlayer.Windows
             PlayerViewModel.InitViewModel();
             ViewModel.Player = PlayerViewModel.Current;
             LyricWindow = new LyricWindow(this);
+            if (PlayerConfig.Current.Lyric.EnableLyric)
+                LyricWindow.Show();
 
-            LyricWindow.Show();
             OverallKeyHook = new OverallKeyHook(this);
             TryBindHotkeys();
             Unosquare.FFME.MediaElement.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg");
@@ -89,10 +90,10 @@ namespace Milky.OsuPlayer.Windows
             });
             OverallKeyHook.AddKeyHook(page.Lyric.Name, () =>
             {
-                if (LyricWindow.IsHide)
-                    LyricWindow.Show();
-                else
+                if (LyricWindow.IsShown)
                     LyricWindow.Hide();
+                else
+                    LyricWindow.Show();
             });
         }
 

@@ -1027,7 +1027,8 @@
                 <dms:DMCheckBox
                     x:Name="Step1" Margin="0,3"
                     IsChecked="{Binding GuideSelectedDb, Mode=TwoWay}"
-                    Content="选择osu!db，同步曲库" Click="Step1_Click"
+                    Content="选择osu!db，同步曲库"
+                    Command="{Binding Step1Command}"
                     IconColor="{StaticResource PinkBrushOsu}" />
                 <dms:DMCheckBox
                     Visibility="Collapsed"
@@ -1038,7 +1039,8 @@
                     HorizontalContentAlignment="Center" Margin="0,30,0,0"
                     DMSystemButtonHoverColor="Transparent"
                     DMSystemButtonHoverForeground="#949494"
-                    Content="Skip this step" />
+                    Content="Skip this step"
+                    Command="{Binding SkipCommand}"/>
             </StackPanel>
         </Border>
         <tb:TaskbarIcon Grid.Row="0" x:Name="NotifyIcon"
@@ -1118,11 +1120,11 @@
                 </MenuItem>
                 <!--<Button Content="循环模式" Style="{DynamicResource DefaultMenuItem}"/>-->
                 <MenuItem
-                    Header="{Binding IsLyricWindowShown,Converter={StaticResource CvtLyricWindowShown},ConverterParameter=string}"
+                    Header="{Binding LyricWindowViewModel.IsLyricWindowShown,Converter={StaticResource CvtLyricWindowShown},ConverterParameter=string}"
                     Style="{DynamicResource DefaultMenuItem}" Click="MenuOpenHideLyric_Click" />
                 <MenuItem Header="{Binding IsLyricWindowLocked,Converter={StaticResource CvtLyricWindowLocked}}"
                           Style="{DynamicResource DefaultMenuItem}"
-                          IsEnabled="{Binding IsLyricWindowShown,Converter={StaticResource CvtLyricWindowShown},ConverterParameter=bool}"
+                          IsEnabled="{Binding LyricWindowViewModel.IsLyricWindowShown,Converter={StaticResource CvtLyricWindowShown},ConverterParameter=bool}"
                           Click="MenuLockLyric_Click" />
                 <Separator />
                 <MenuItem x:Name="MenuConfig" Header="设置" Style="{DynamicResource DefaultMenuItem}"

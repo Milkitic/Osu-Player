@@ -2,11 +2,17 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
+using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Windows
 {
     partial class LyricWindow
     {
+        public LyricWindow()
+        {
+            Loaded += WindowBase_Loaded;
+        }
+
         private uint _oldGwlEx;
         private bool _isLocked;
         private const uint WS_EX_LAYERED = 0x80000;

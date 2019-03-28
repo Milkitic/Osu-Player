@@ -3,10 +3,11 @@ using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Windows
 {
-    internal class LyricWindowViewModel : ViewModelBase
+    public class LyricWindowViewModel : ViewModelBase
     {
         private PlayerViewModel _player;
         private bool _showFrame;
+        private bool _isLyricEnabled;
 
         public PlayerViewModel Player
         {
@@ -24,6 +25,17 @@ namespace Milky.OsuPlayer.Windows
             set
             {
                 _showFrame = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public bool IsLyricWindowShown
+        {
+            get => _isLyricEnabled;
+            set
+            {
+                _isLyricEnabled = value;
                 OnPropertyChanged();
             }
         }
