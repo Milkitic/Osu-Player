@@ -130,10 +130,10 @@ namespace Milky.OsuPlayer.Windows
                     Console.WriteLine(current.Content);
 
                     var size = DrawLyric(_lyricList.IndexOf(current));
-                    Dispatcher.BeginInvoke(new Action(() =>
+                    Execute.ToUiThread(() =>
                     {
                         BeginTranslate(size, maxTime, next?.StartTime ?? -1);
-                    }));
+                    });
                     _pressed = false;
                     oldTime = maxTime;
                 }
@@ -247,8 +247,8 @@ namespace Milky.OsuPlayer.Windows
                     g.FillPath(b, gp);
                 }
             }
-
-            Execute.OnUiThread(() =>
+            
+            Execute.ToUiThread(() =>
             {
                 using (var ms = new MemoryStream())
                 {
@@ -259,6 +259,7 @@ namespace Milky.OsuPlayer.Windows
                     wpfImage.EndInit();
 
                     ImgLyric.Source = wpfImage;
+
                 }
             });
 

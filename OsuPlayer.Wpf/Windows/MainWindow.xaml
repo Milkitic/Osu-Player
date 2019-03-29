@@ -864,7 +864,7 @@
                                 <StackPanel Grid.Column="1">
                                     <Slider x:Name="MusicVolume" Orientation="Vertical" HorizontalAlignment="Center"
                                             Margin="10,5"
-                                            Maximum="100" Value="{Binding Player.CurrentVolume.Music,Mode=TwoWay}"
+                                            Maximum="1" Value="{Binding Player.CurrentVolume.Music,Mode=TwoWay}"
                                             Style="{StaticResource VerticalSliderWhiteStyle}"
                                             Thumb.DragCompleted="MusicVolume_DragComplete" Height="70" />
                                     <Label Content="音乐" Margin="0,-5,0,0" HorizontalAlignment="Center"
@@ -873,7 +873,7 @@
                                 <StackPanel Grid.Column="2">
                                     <Slider x:Name="HitsoundVolume" Orientation="Vertical" HorizontalAlignment="Center"
                                             Margin="10,5"
-                                            Maximum="100" Value="{Binding Player.CurrentVolume.Hitsound, Mode=TwoWay}"
+                                            Maximum="1" Value="{Binding Player.CurrentVolume.Hitsound, Mode=TwoWay}"
                                             Style="{StaticResource VerticalSliderWhiteStyle}"
                                             Thumb.DragCompleted="HitsoundVolume_DragComplete" Height="70" />
                                     <Label Content="音效" Margin="0,-5,0,0" HorizontalAlignment="Center"
