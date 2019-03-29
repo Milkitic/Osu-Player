@@ -377,7 +377,7 @@
                 </Grid>
             </DockPanel>
             <Grid x:Name="FullModeArea" Grid.Row="0" Margin="1,0,1,0"
-                  Visibility="{Binding Player.EnableVideo,Converter={StaticResource CvtVideoShow}}" d:IsHidden="True">
+                  Visibility="{Binding Player.EnableVideo,Converter={StaticResource CvtVideoShow}}">
                 <Border x:Name="ResizableArea">
                     <Grid>
                         <Image Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center"
@@ -941,7 +941,7 @@
         </Grid>
         <Frame Name="FramePop" 
                Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" 
-               NavigationUIVisibility="Hidden" d:IsHidden="True" />
+               NavigationUIVisibility="Hidden" />
         <Border x:Name="MsgBoxCover" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
                 Background="{StaticResource WhiteBrush80}"
                 Visibility="Hidden" />

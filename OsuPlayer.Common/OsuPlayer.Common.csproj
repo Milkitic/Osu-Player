@@ -118,6 +118,7 @@
     <Compile Include="Player\PlayMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Metadata\SortStyle.cs" />
+    <Compile Include="Scanning\FileScannerViewModel.cs" />
     <Compile Include="Scanning\OsuFileScanner.cs" />
     <Compile Include="StringExtension.cs" />
     <Compile Include="Web\Downloader.cs" />

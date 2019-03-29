@@ -12,17 +12,18 @@ namespace Milky.OsuPlayer.Common.Scanning
 {
     public class OsuFileScanner
     {
+        public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();
         private CancellationTokenSource _scanCts;
-        private bool _isScanning;
         private static readonly object ScanObject = new object();
+        private static readonly object CancelObject = new object();
 
         public async Task NewScanAndAddAsync(string path)
         {
             lock (ScanObject)
             {
-                if (_isScanning)
+                if (ViewModel.IsScanning)
                     return;
-                _isScanning = true;
+                ViewModel.IsScanning = true;
             }
 
             _scanCts = new CancellationTokenSource();
@@ -38,21 +39,33 @@ namespace Milky.OsuPlayer.Common.Scanning
 
             lock (ScanObject)
             {
-                _isScanning = false;
+                ViewModel.IsScanning = false;
             }
         }
 
         public async Task CancelTaskAsync()
         {
+            lock (CancelObject)
+            {
+                if (ViewModel.IsCanceling)
+                    return;
+                ViewModel.IsCanceling = true;
+            }
+
             _scanCts.Cancel();
             await Task.Run(() =>
             {
                 // ReSharper disable once InconsistentlySynchronizedField
-                while (_isScanning)
+                while (ViewModel.IsScanning)
                 {
                     Thread.Sleep(1);
                 }
             });
+
+            lock (CancelObject)
+            {
+                ViewModel.IsCanceling = false;
+            }
         }
 
         private async Task ScanPrivateFolderAsync(DirectoryInfo privateFolder)

@@ -21,12 +21,14 @@ namespace Milky.OsuPlayer.Pages.Settings
     {
         private readonly MainWindow _mainWindow;
         private readonly ConfigWindow _configWindow;
+        private FileScannerViewModel ScannerViewModel { get; }
 
         public GeneralPage(MainWindow mainWindow, ConfigWindow configWindow)
         {
             _mainWindow = mainWindow;
             _configWindow = configWindow;
             InitializeComponent();
+            ScannerViewModel = InstanceManage.GetInstance<OsuFileScanner>().ViewModel;
         }
 
         private void RunOnStartup_CheckChanged(object sender, RoutedEventArgs e)
@@ -124,6 +126,11 @@ namespace Milky.OsuPlayer.Pages.Settings
             {
                 MsgBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private async void CancelScan_Click(object sender, RoutedEventArgs e)
+        {
+            await InstanceManage.GetInstance<OsuFileScanner>().CancelTaskAsync();
         }
     }
 }
