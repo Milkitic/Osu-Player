@@ -147,8 +147,9 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelected();
             if (map == null) return;
 
-            await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
-                   map.BeatmapFileName));
+            //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
+            //       map.BeatmapFileName));
+            await _mainWindow.PlayNewFile(map);
             await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.RecentList);
         }
 

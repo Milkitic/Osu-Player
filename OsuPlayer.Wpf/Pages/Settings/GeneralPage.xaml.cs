@@ -88,6 +88,8 @@ namespace Milky.OsuPlayer.Pages.Settings
             {
                 await InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(path, false);
                 TbDbPath.Text = path;
+                PlayerConfig.Current.General.DbPath = path;
+                PlayerConfig.SaveCurrent();
             }
             catch (Exception ex)
             {
@@ -121,6 +123,8 @@ namespace Milky.OsuPlayer.Pages.Settings
                 TbCustomPath.Text = path;
                 await InstanceManage.GetInstance<OsuFileScanner>().CancelTaskAsync();
                 await InstanceManage.GetInstance<OsuFileScanner>().NewScanAndAddAsync(path);
+                PlayerConfig.Current.General.CustomSongsPath = path;
+                PlayerConfig.SaveCurrent();
             }
             catch (Exception ex)
             {

@@ -120,6 +120,10 @@ namespace Milky.OsuPlayer.Common.Data
         {
             return Beatmaps.ToList();
         }
+        public static Beatmap GetBeatmapsByIdentifiable(IMapIdentifiable map)
+        {
+            return GetBeatmapsByIdentifiable(new[] { map }).FirstOrDefault();
+        }
 
         public static IEnumerable<Beatmap> GetBeatmapsByIdentifiable(IEnumerable<IMapIdentifiable> enumerable,
             bool playedOrAddedTime = true)

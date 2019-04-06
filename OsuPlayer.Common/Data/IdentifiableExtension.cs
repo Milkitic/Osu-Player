@@ -59,6 +59,7 @@ namespace Milky.OsuPlayer.Common.Data
                     TitleUnicode = beatmap.TitleUnicode,
                     Version = beatmap.Version,
                     BeatmapFileName = beatmap.BeatmapFileName,
+                    InOwnDb = beatmap.InOwnFolder
                 };
                 try
                 {

@@ -40,6 +40,14 @@ namespace Milky.OsuPlayer.Windows
             return (result.HasValue && result.Value) ? openFileDialog.FileName : null;
         }
 
+        public async Task PlayNewFile(Beatmap map)
+        {
+            string path = map.InOwnFolder
+              ? Path.Combine(Domain.CustomSongPath, map.FolderName, map.BeatmapFileName)
+              : Path.Combine(Domain.OsuSongPath, map.FolderName, map.BeatmapFileName);
+            await PlayNewFile(path);
+        }
+
         public async Task PlayNewFile(string path)
         {
             await PlayNewFile(path, true);
@@ -460,7 +468,7 @@ namespace Milky.OsuPlayer.Windows
         {
             if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null)
                 return;
-            (PlayerList.ChangeType result, Beatmap entry) = await InstanceManage.GetInstance<PlayerList>().PlayToAsync(isNext, isManual);
+            (PlayerList.ChangeType result, Beatmap map) = await InstanceManage.GetInstance<PlayerList>().PlayToAsync(isNext, isManual);
             switch (result)
             {
                 //case PlayerList.ChangeType.Keep:
@@ -477,9 +485,10 @@ namespace Milky.OsuPlayer.Windows
                     break;
                 case PlayerList.ChangeType.Change:
                 default:
-                    var path = Path.Combine(new FileInfo(PlayerConfig.Current.General.DbPath).Directory.FullName, "Songs",
-                        entry.FolderName, entry.BeatmapFileName);
-                    await PlayNewFile(path);
+                    //var path = Path.Combine(new FileInfo(PlayerConfig.Current.General.DbPath).Directory.FullName, "Songs",
+                    //    entry.FolderName, entry.BeatmapFileName);
+                    //await PlayNewFile(path);
+                    await PlayNewFile(map);
                     break;
             }
         }

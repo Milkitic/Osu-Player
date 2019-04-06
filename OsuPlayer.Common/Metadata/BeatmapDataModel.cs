@@ -34,5 +34,6 @@ namespace Milky.OsuPlayer.Common.Metadata
         public string FileSize { get; set; }
         public string ExportTime { get; set; }
         public string ExportFile { get; set; }
+        public bool InOwnDb { get; set; }
     }
 }
