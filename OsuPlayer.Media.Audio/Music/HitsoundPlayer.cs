@@ -295,7 +295,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             List<RawHitObject> hitObjects = _osuFile.HitObjects.HitObjectList;
             List<HitsoundElement> hitsoundList = new List<HitsoundElement>();
 
-            var mapFiles = dirInfo.GetFiles("*.wav").Select(p => p.Name).ToArray();
+            var mapWaves = dirInfo.GetFiles("*.wav").Select(p => Path.GetFileNameWithoutExtension(p.FullName)).ToArray();
 
             foreach (var obj in hitObjects)
             {
@@ -305,19 +305,19 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                     {
                         //var currentTiming = file.TimingPoints.GetRedLine(item.Offset);
                         var currentLine = _osuFile.TimingPoints.GetLine(item.Offset);
-                        var element = new HitsoundElement
-                        {
-                            GameMode = _osuFile.General.Mode,
-                            Offset = item.Offset,
-                            Volume = (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f,
-                            Hitsound = item.EdgeHitsound,
-                            Sample = item.EdgeSample,
-                            Addition = item.EdgeAddition,
-                            Track = currentLine.Track,
-                            LineSample = currentLine.TimingSampleset,
-                            CustomFile = obj.FileName,
-                        };
-                        SetFullPath(dirInfo, mapFiles, element);
+                        var element = new HitsoundElement(
+                            mapFolderName: dirInfo.FullName,
+                            mapWaveFiles: mapWaves,
+                            gameMode: osuFile.General.Mode,
+                            offset: item.Offset,
+                            track: currentLine.Track,
+                            lineSample: currentLine.TimingSampleset,
+                            hitsound: item.EdgeHitsound,
+                            sample: item.EdgeSample,
+                            addition: item.EdgeAddition,
+                            customFile: obj.FileName,
+                            volume: (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f
+                        );
 
                         hitsoundList.Add(element);
                     }
@@ -328,42 +328,25 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                     var currentLine = _osuFile.TimingPoints.GetLine(obj.Offset);
                     var offset = obj.Offset; //todo: Spinner & hold
 
-                    var element = new HitsoundElement
-                    {
-                        GameMode = _osuFile.General.Mode,
-                        Offset = offset,
-                        Volume = (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f,
-                        Hitsound = obj.Hitsound,
-                        Sample = obj.SampleSet,
-                        Addition = obj.AdditionSet,
-                        Track = currentLine.Track,
-                        LineSample = currentLine.TimingSampleset,
-                        CustomFile = obj.FileName,
-                    };
-                    SetFullPath(dirInfo, mapFiles, element);
+                    var element = new HitsoundElement(
+                        mapFolderName: dirInfo.FullName,
+                        mapWaveFiles: mapWaves,
+                        gameMode: osuFile.General.Mode,
+                        offset: offset,
+                        track: currentLine.Track,
+                        lineSample: currentLine.TimingSampleset,
+                        hitsound: obj.Hitsound,
+                        sample: obj.SampleSet,
+                        addition: obj.AdditionSet,
+                        customFile: obj.FileName,
+                        volume: (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f
+                    );
+
                     hitsoundList.Add(element);
                 }
             }
 
             return hitsoundList;
-        }
-
-        private void SetFullPath(DirectoryInfo dirInfo, string[] mapFiles, HitsoundElement element)
-        {
-            var files = element.FileNames;
-            element.FilePaths = new string[files.Length];
-            for (var i = 0; i < files.Length; i++)
-            {
-                var name = files[i];
-                if (!mapFiles.Contains(name) || element.Track == 0 && string.IsNullOrEmpty(element.CustomFile))
-                {
-                    element.FilePaths[i] = Path.Combine(_defaultDir, element.DefaultFileNames[i]);
-                }
-                else
-                {
-                    element.FilePaths[i] = Path.Combine(dirInfo.FullName, name);
-                }
-            }
         }
 
         #endregion Load
