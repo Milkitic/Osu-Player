@@ -13,7 +13,8 @@ namespace Milky.OsuPlayer.Media.Audio
         private readonly string _mapFolderName;
         private readonly string[] _mapWaveFiles;
         private string[] _fileNamesWithoutTrack;
-        private string _extension = ".wav";
+        private string _wavExtension = ".wav";
+        private string _oggExtension = ".ogg";
 
         public HitsoundElement(
             string mapFolderName,
@@ -64,7 +65,13 @@ namespace Milky.OsuPlayer.Media.Audio
                 var name = _fileNamesWithoutTrack[i] + (Track > 1 && string.IsNullOrWhiteSpace(CustomFile) ? Track.ToString() : "");
                 if (_mapWaveFiles.Contains(name))
                 {
-                    FilePaths[i] = Path.Combine(_mapFolderName, name + _extension);
+                    var path= Path.Combine(_mapFolderName, name + _wavExtension);
+                    if (!File.Exists(path))
+                    {
+                         path = Path.Combine(_mapFolderName, name + _oggExtension);
+                    }
+
+                    FilePaths[i] = path;
                 }
                 else if (!string.IsNullOrWhiteSpace(CustomFile))
                 {
@@ -72,7 +79,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
                 else
                 {
-                    FilePaths[i] = Path.Combine(Domain.DefaultPath, _fileNamesWithoutTrack[i] + _extension);
+                    FilePaths[i] = Path.Combine(Domain.DefaultPath, _fileNamesWithoutTrack[i] + _wavExtension);
                 }
             }
         }

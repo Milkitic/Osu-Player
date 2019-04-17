@@ -141,7 +141,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public void SetPlayMod(PlayMod mod, bool play)
         {
-            MusicPlayer.SetPlayMod(mod);
+            //MusicPlayer.SetPlayMod(mod);
             HitsoundPlayer.SetPlayMod(mod, play);
         }
 

@@ -16,6 +16,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 {
     internal sealed class HitsoundPlayer : Player, IDisposable
     {
+        static HitsoundPlayer()
+        {
+            CachedSound.CachePath = Path.Combine(Domain.CachePath, "_temp.sound");
+        }
+
         public override int ProgressRefreshInterval { get; set; }
 
         private static bool UseSoundTouch => PlayerConfig.Current.Play.UsePlayerV2;
@@ -55,7 +60,6 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                               !_offsetTask.IsFaulted;
 
         AudioPlaybackEngine _engine = new AudioPlaybackEngine();
-        ConcurrentDictionary<string, CachedSound> _cachedDictionary = new ConcurrentDictionary<string, CachedSound>();
 
         private readonly string _defaultDir = Domain.DefaultPath;
         private ConcurrentQueue<HitsoundElement> _hsQueue;
@@ -90,13 +94,10 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             List<HitsoundElement> hitsoundList = FillHitsoundList(_osuFile, dirInfo);
             _hitsoundList = hitsoundList.OrderBy(t => t.Offset).ToList(); // Sorted before enqueue.
             Requeue(0);
-            List<string> allPaths = hitsoundList.Select(t => t.FilePaths).SelectMany(sbx2 => sbx2).Distinct().ToList();
+            var allPaths = hitsoundList.Select(t => t.FilePaths).SelectMany(sbx2 => sbx2).Distinct();
             await Task.Run(() =>
             {
-                foreach (var path in allPaths)
-                {
-                    _cachedDictionary.TryAdd(path, new CachedSound(path)); // Cache each file once before play.
-                }
+                _engine.CreateCacheSounds(allPaths);
             });
 
             PlayerStatus = PlayerStatus.Ready;
@@ -224,7 +225,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
                         foreach (var path in hs.FilePaths)
                         {
-                            Task.Run(() => _engine.PlaySound(_cachedDictionary[path], hs.Volume));
+                            Task.Run(() => _engine.PlaySound(path, hs.Volume * 1f * PlayerConfig.Current.Volume.Hitsound * PlayerConfig.Current.Volume.Main));
                         }
                     }
                 }
@@ -302,7 +303,10 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             List<RawHitObject> hitObjects = _osuFile.HitObjects.HitObjectList;
             List<HitsoundElement> hitsoundList = new List<HitsoundElement>();
 
-            var mapWaves = dirInfo.GetFiles("*.wav").Select(p => Path.GetFileNameWithoutExtension(p.FullName)).ToArray();
+            var mapWaves = dirInfo.EnumerateFiles()
+                .Where(k => k.Extension.ToLower() == ".wav" || k.Extension.ToLower() == ".ogg")
+                .Select(p => Path.GetFileNameWithoutExtension(p.FullName))
+                .ToArray();
 
             foreach (var obj in hitObjects)
             {

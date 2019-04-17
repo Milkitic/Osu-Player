@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using Milky.OsuPlayer.Media.Audio.Music.WaveProviders;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -7,6 +9,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 {
     public class AudioPlaybackEngine : IDisposable
     {
+        ConcurrentDictionary<string, CachedSound> _cachedDictionary = new ConcurrentDictionary<string, CachedSound>();
+
         private readonly IWavePlayer _outputDevice;
         private readonly MixingSampleProvider _mixer;
 
@@ -22,7 +26,30 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             _outputDevice.Play();
         }
 
-        public void PlaySound(CachedSound sound, float volume)
+        public void CreateCacheSounds(IEnumerable<string> paths)
+        {
+            foreach (var path in paths)
+            {
+                CreateCacheSound(path); // Cache each file once before play.
+            }
+        }
+
+        public void CreateCacheSound(string path)
+        {
+            _cachedDictionary.TryAdd(path, new CachedSound(path)); // Cache each file once before play.
+        }
+
+        public void PlaySound(string path, float volume)
+        {
+            if (!_cachedDictionary.ContainsKey(path))
+            {
+                CreateCacheSound(path);
+            }
+
+            PlaySound(_cachedDictionary[path], volume);
+        }
+
+        private void PlaySound(CachedSound sound, float volume)
         {
             AddMixerInput(new CachedSoundSampleProvider(sound), volume);
         }

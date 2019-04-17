@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Milky.OsuPlayer.Media.Audio.Music.SampleProviders;
 using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Media.Audio.Music
@@ -18,9 +19,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             int channels = 2;
             var outFormat = new WaveFormat(outRate, channels);
             var newFileName = CachePath;
-            using (var audioFileReader = new AudioFileReader(audioFileName))
+            using (var audioFileReader = new MyAudioFileReader(audioFileName))
             using (var resampler = new MediaFoundationResampler(audioFileReader, outFormat))
-            using (FileStream stream = new FileStream(newFileName, FileMode.Create))
+            using (var stream = new FileStream(newFileName, FileMode.Create))
             {
                 resampler.ResamplerQuality = 60;
                 WaveFileWriter.WriteWavFileToStream(stream, resampler);
