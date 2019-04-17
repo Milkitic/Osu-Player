@@ -54,6 +54,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                               !_offsetTask.IsCompleted &&
                                               !_offsetTask.IsFaulted;
 
+        AudioPlaybackEngine _engine = new AudioPlaybackEngine();
+        ConcurrentDictionary<string, CachedSound> _cachedDictionary = new ConcurrentDictionary<string, CachedSound>();
+
         private readonly string _defaultDir = Domain.DefaultPath;
         private ConcurrentQueue<HitsoundElement> _hsQueue;
         private List<HitsoundElement> _hitsoundList;
@@ -91,7 +94,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             await Task.Run(() =>
             {
                 foreach (var path in allPaths)
-                    WavePlayer.SaveToCache(path); // Cache each file once before play.
+                {
+                    _cachedDictionary.TryAdd(path, new CachedSound(path)); // Cache each file once before play.
+                }
             });
 
             PlayerStatus = PlayerStatus.Ready;
@@ -188,7 +193,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 Task.WaitAll(_playingTask);
             _playingTask?.Dispose();
             _cts?.Dispose();
-            WavePlayer.ClearCache();
+            _engine?.Dispose();
             GC.Collect();
         }
 
@@ -200,7 +205,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         private void PlayHitsound()
         {
             _sw.Restart();
-            while ((_hsQueue.Count > 0 && _mod == PlayMod.None) ||
+            while (_hsQueue.Count > 0 && _mod == PlayMod.None ||
                    ComponentPlayer.Current.MusicPlayer.PlayerStatus != PlayerStatus.Finished)
             {
                 if (_cts.Token.IsCancellationRequested)
@@ -218,7 +223,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                             continue;
 
                         foreach (var path in hs.FilePaths)
-                            Task.Run(() => WavePlayer.PlayFile(path, hs.Volume));
+                        {
+                            Task.Run(() => _engine.PlaySound(_cachedDictionary[path], hs.Volume));
+                        }
                     }
                 }
 

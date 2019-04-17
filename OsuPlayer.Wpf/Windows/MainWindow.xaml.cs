@@ -58,16 +58,8 @@ namespace Milky.OsuPlayer.Windows
 
             OverallKeyHook = new OverallKeyHook(this);
             TryBindHotkeys();
-            Unosquare.FFME.MediaElement.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg");
+            Unosquare.FFME.Library.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg");
         }
-
-        //private bool ValidateDb()
-        //{
-        //    if (App.UseDbMode)
-        //        return true;
-        //    MsgBox.Show(this, "你尚未初始化osu!db，因此该功能不可用。", Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-        //    return false;
-        //}
 
         private void TryBindHotkeys()
         {

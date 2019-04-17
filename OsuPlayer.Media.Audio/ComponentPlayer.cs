@@ -155,11 +155,5 @@ namespace Milky.OsuPlayer.Media.Audio
             MusicPlayer?.Dispose();
             Current = null;
         }
-
-        public static void DisposeAll()
-        {
-            WavePlayer.Device?.Dispose();
-            WavePlayer.MasteringVoice?.Dispose();
-        }
     }
 }

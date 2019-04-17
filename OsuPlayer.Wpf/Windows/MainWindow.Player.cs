@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Unosquare.FFME.Common;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -380,13 +381,13 @@ namespace Milky.OsuPlayer.Windows
                     VideoElement.SeekingStarted -= OnSeekingStarted;
                     VideoElement.SeekingEnded -= OnSeekingEnded;
 
-                    VideoElement.Dispose();
+                    //VideoElement.Dispose();
                     VideoElement = null;
                     VideoElementBorder.Visibility = Visibility.Hidden;
                     VideoElement = new Unosquare.FFME.MediaElement
                     {
                         IsMuted = true,
-                        LoadedBehavior = MediaState.Manual,
+                        LoadedBehavior = MediaPlaybackState.Manual,
                         Visibility = Visibility.Visible,
                     };
                     VideoElement.MediaOpened += OnMediaOpened;
@@ -403,20 +404,20 @@ namespace Milky.OsuPlayer.Windows
                 });
             });
 
-            async void OnMediaOpened(object sender, RoutedEventArgs e)
+            async void OnMediaOpened(object sender, MediaOpenedEventArgs e)
             {
                 VideoElementBorder.Visibility = Visibility.Visible;
                 if (!_videoPlay)
                     return;
                 await Task.Run(() => _waitAction?.Invoke());
 
-                if (VideoElement == null || VideoElement.IsDisposed)
+                if (VideoElement == null/* || VideoElement.IsDisposed*/)
                     return;
                 await VideoElement.Play();
                 VideoElement.Position = _position;
             }
 
-            async void OnMediaFailed(object sender, ExceptionRoutedEventArgs e)
+            async void OnMediaFailed(object sender, MediaFailedEventArgs e)
             {
                 VideoElementBorder.Visibility = Visibility.Hidden;
                 //MsgBox.Show(this, e.ErrorException.ToString(), "不支持的视频格式", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -426,17 +427,17 @@ namespace Milky.OsuPlayer.Windows
                 PlayMedia();
             }
 
-            void OnMediaEnded(object sender, RoutedEventArgs e)
+            void OnMediaEnded(object sender, EventArgs e)
             {
-                if (VideoElement == null || VideoElement.IsDisposed)
+                if (VideoElement == null /*|| VideoElement.IsDisposed*/)
                     return;
                 VideoElement.Position = TimeSpan.Zero;
             }
 
-            void OnSeekingStarted(object sender, RoutedEventArgs e)
+            void OnSeekingStarted(object sender, EventArgs e)
             { }
 
-            void OnSeekingEnded(object sender, RoutedEventArgs e)
+            void OnSeekingEnded(object sender, EventArgs e)
             {
                 if (!_videoPlay)
                     return;
