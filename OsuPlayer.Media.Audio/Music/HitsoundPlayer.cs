@@ -54,6 +54,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                               !_offsetTask.IsCompleted &&
                                               !_offsetTask.IsFaulted;
 
+        AudioPlaybackEngine _engine = new AudioPlaybackEngine();
+        ConcurrentDictionary<string, CachedSound> _cachedDictionary = new ConcurrentDictionary<string, CachedSound>();
+
         private readonly string _defaultDir = Domain.DefaultPath;
         private ConcurrentQueue<HitsoundElement> _hsQueue;
         private List<HitsoundElement> _hitsoundList;
@@ -91,7 +94,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             await Task.Run(() =>
             {
                 foreach (var path in allPaths)
-                    WavePlayer.SaveToCache(path); // Cache each file once before play.
+                {
+                    _cachedDictionary.TryAdd(path, new CachedSound(path)); // Cache each file once before play.
+                }
             });
 
             PlayerStatus = PlayerStatus.Ready;
@@ -184,10 +189,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             base.Dispose();
 
             Stop();
-            if (_playingTask != null) Task.WaitAll(_playingTask);
+            if (_playingTask != null)
+                Task.WaitAll(_playingTask);
             _playingTask?.Dispose();
             _cts?.Dispose();
-            WavePlayer.ClearCache();
+            _engine?.Dispose();
             GC.Collect();
         }
 
@@ -199,7 +205,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         private void PlayHitsound()
         {
             _sw.Restart();
-            while ((_hsQueue.Count > 0 && _mod == PlayMod.None) ||
+            while (_hsQueue.Count > 0 && _mod == PlayMod.None ||
                    ComponentPlayer.Current.MusicPlayer.PlayerStatus != PlayerStatus.Finished)
             {
                 if (_cts.Token.IsCancellationRequested)
@@ -213,9 +219,13 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 {
                     while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= PlayTime)
                     {
-                        if (!_hsQueue.TryDequeue(out var hs)) continue;
+                        if (!_hsQueue.TryDequeue(out var hs))
+                            continue;
 
-                        foreach (var path in hs.FilePaths) Task.Run(() => WavePlayer.PlayFile(path, hs.Volume));
+                        foreach (var path in hs.FilePaths)
+                        {
+                            Task.Run(() => _engine.PlaySound(_cachedDictionary[path], hs.Volume));
+                        }
                     }
                 }
 
@@ -261,12 +271,13 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         private void Requeue(long startTime)
         {
             _hsQueue = new ConcurrentQueue<HitsoundElement>();
-            foreach (var i in _hitsoundList)
-            {
-                if (i.Offset < startTime)
-                    continue;
-                _hsQueue.Enqueue(i);
-            }
+            if (_hitsoundList != null)
+                foreach (var i in _hitsoundList)
+                {
+                    if (i.Offset < startTime)
+                        continue;
+                    _hsQueue.Enqueue(i);
+                }
         }
 
         private void StartTask()
@@ -276,9 +287,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         private void CancelTask(bool waitPlayTask)
         {
-            _cts.Cancel();
-            if (waitPlayTask && _playingTask != null) Task.WaitAll(_playingTask);
-            if (_offsetTask != null) Task.WaitAll(_offsetTask);
+            _cts?.Cancel();
+            if (waitPlayTask && _playingTask != null)
+                Task.WaitAll(_playingTask);
+            if (_offsetTask != null)
+                Task.WaitAll(_offsetTask);
             Console.WriteLine(@"Task canceled.");
         }
 
@@ -289,7 +302,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             List<RawHitObject> hitObjects = _osuFile.HitObjects.HitObjectList;
             List<HitsoundElement> hitsoundList = new List<HitsoundElement>();
 
-            var mapFiles = dirInfo.GetFiles("*.wav").Select(p => p.Name).ToArray();
+            var mapWaves = dirInfo.GetFiles("*.wav").Select(p => Path.GetFileNameWithoutExtension(p.FullName)).ToArray();
 
             foreach (var obj in hitObjects)
             {
@@ -299,19 +312,19 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                     {
                         //var currentTiming = file.TimingPoints.GetRedLine(item.Offset);
                         var currentLine = _osuFile.TimingPoints.GetLine(item.Offset);
-                        var element = new HitsoundElement
-                        {
-                            GameMode = _osuFile.General.Mode,
-                            Offset = item.Offset,
-                            Volume = (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f,
-                            Hitsound = item.EdgeHitsound,
-                            Sample = item.EdgeSample,
-                            Addition = item.EdgeAddition,
-                            Track = currentLine.Track,
-                            LineSample = currentLine.TimingSampleset,
-                            CustomFile = obj.FileName,
-                        };
-                        SetFullPath(dirInfo, mapFiles, element);
+                        var element = new HitsoundElement(
+                            mapFolderName: dirInfo.FullName,
+                            mapWaveFiles: mapWaves,
+                            gameMode: osuFile.General.Mode,
+                            offset: item.Offset,
+                            track: currentLine.Track,
+                            lineSample: currentLine.TimingSampleset,
+                            hitsound: item.EdgeHitsound,
+                            sample: item.EdgeSample,
+                            addition: item.EdgeAddition,
+                            customFile: obj.FileName,
+                            volume: (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f
+                        );
 
                         hitsoundList.Add(element);
                     }
@@ -322,42 +335,25 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                     var currentLine = _osuFile.TimingPoints.GetLine(obj.Offset);
                     var offset = obj.Offset; //todo: Spinner & hold
 
-                    var element = new HitsoundElement
-                    {
-                        GameMode = _osuFile.General.Mode,
-                        Offset = offset,
-                        Volume = (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f,
-                        Hitsound = obj.Hitsound,
-                        Sample = obj.SampleSet,
-                        Addition = obj.AdditionSet,
-                        Track = currentLine.Track,
-                        LineSample = currentLine.TimingSampleset,
-                        CustomFile = obj.FileName,
-                    };
-                    SetFullPath(dirInfo, mapFiles, element);
+                    var element = new HitsoundElement(
+                        mapFolderName: dirInfo.FullName,
+                        mapWaveFiles: mapWaves,
+                        gameMode: osuFile.General.Mode,
+                        offset: offset,
+                        track: currentLine.Track,
+                        lineSample: currentLine.TimingSampleset,
+                        hitsound: obj.Hitsound,
+                        sample: obj.SampleSet,
+                        addition: obj.AdditionSet,
+                        customFile: obj.FileName,
+                        volume: (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f
+                    );
+
                     hitsoundList.Add(element);
                 }
             }
 
             return hitsoundList;
-        }
-
-        private void SetFullPath(DirectoryInfo dirInfo, string[] mapFiles, HitsoundElement element)
-        {
-            var files = element.FileNames;
-            element.FilePaths = new string[files.Length];
-            for (var i = 0; i < files.Length; i++)
-            {
-                var name = files[i];
-                if (!mapFiles.Contains(name) || element.Track == 0 && string.IsNullOrEmpty(element.CustomFile))
-                {
-                    element.FilePaths[i] = Path.Combine(_defaultDir, element.DefaultFileNames[i]);
-                }
-                else
-                {
-                    element.FilePaths[i] = Path.Combine(dirInfo.FullName, name);
-                }
-            }
         }
 
         #endregion Load

@@ -1,19 +1,18 @@
 ﻿using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.WpfApi;
-using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 
 namespace Milky.OsuPlayer.Common.Player
 {
     public class CurrentInfo : ViewModelBase
     {
-        private bool _isFavourite;
+        private bool _isFavorite;
         public CurrentInfo() { }
 
         public CurrentInfo(string artist, string artistUnicode, string title, string titleUnicode, string creator,
             string source, List<string> tags, int beatmapId, int beatmapsetId, double stars, double hp, double cs, double ar,
-            double od, long songLength, MapIdentity identity, MapInfo mapInfo, BeatmapEntry entry, bool isFavourite)
+            double od, long songLength, MapIdentity identity, MapInfo mapInfo, Beatmap beatmap, bool isFavorite)
         {
             Artist = artist;
             ArtistUnicode = artistUnicode;
@@ -32,8 +31,8 @@ namespace Milky.OsuPlayer.Common.Player
             SongLength = songLength;
             Identity = identity;
             MapInfo = mapInfo;
-            Entry = entry;
-            IsFavourite = isFavourite;
+            Beatmap = beatmap;
+            IsFavorite = isFavorite;
         }
 
         public string Artist { get; set; }
@@ -57,14 +56,14 @@ namespace Milky.OsuPlayer.Common.Player
         public long SongLength { get; set; }
         public MapIdentity Identity { get; set; }
         public MapInfo MapInfo { get; }
-        public BeatmapEntry Entry { get; }
+        public Beatmap Beatmap { get; }
 
-        public bool IsFavourite
+        public bool IsFavorite
         {
-            get => _isFavourite;
+            get => _isFavorite;
             set
             {
-                _isFavourite = value;
+                _isFavorite = value;
                 OnPropertyChanged();
             }
         }

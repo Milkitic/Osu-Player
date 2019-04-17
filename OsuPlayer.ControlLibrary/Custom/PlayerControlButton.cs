@@ -15,6 +15,7 @@ namespace Milky.OsuPlayer.ControlLibrary.Custom
         //    DependencyProperty.Register("BorderBrush", typeof(Brush), typeof(PlayerControlButton),
         //        new PropertyMetadata(new SolidColorBrush(Color.FromArgb(255, 255, 255, 255)), null));
 
+        [Description("Shadow Color"), Category("Appearance"), DefaultValue(typeof(Color), "255, 205, 30, 93")]
         public Color ShadowColor
         {
             get => (Color)GetValue(ShadowColorProperty);
@@ -25,6 +26,7 @@ namespace Milky.OsuPlayer.ControlLibrary.Custom
             DependencyProperty.Register("ShadowColor", typeof(Color), typeof(PlayerControlButton),
                 new PropertyMetadata(Color.FromArgb(255, 205, 30, 93), null)); //CD1E5D
 
+        [Description("Shadow Opcacity"), Category("Appearance"), DefaultValue(0.2d)]
         public double ShadowOpacity
         {
             get => (double)GetValue(ShadowOpacityProperty);
@@ -35,6 +37,7 @@ namespace Milky.OsuPlayer.ControlLibrary.Custom
             DependencyProperty.Register("ShadowOpacity", typeof(double), typeof(PlayerControlButton),
                 new PropertyMetadata(0.2d, null));
 
+        [Description("Image Width"), Category("Appearance"), DefaultValue(32d)]
         public double ImageWidth
         {
             get => (double)GetValue(ImageWidthProperty);
@@ -49,6 +52,7 @@ namespace Milky.OsuPlayer.ControlLibrary.Custom
             DependencyProperty.Register("ImageWidth", typeof(double), typeof(PlayerControlButton),
                 new PropertyMetadata(32d, null));
 
+        [Description("Image Height"), Category("Appearance"), DefaultValue(32d)]
         public double ImageHeight
         {
             get => (double)GetValue(ImageHeightProperty);
@@ -63,6 +67,7 @@ namespace Milky.OsuPlayer.ControlLibrary.Custom
             DependencyProperty.Register("ImageHeight", typeof(double), typeof(PlayerControlButton),
                 new PropertyMetadata(32d, null));
 
+        [Description("Image Margin"), Category("Appearance")]
         public Thickness ImageMargin
         {
             get => (Thickness)GetValue(ImageMarginProperty);
@@ -78,6 +83,7 @@ namespace Milky.OsuPlayer.ControlLibrary.Custom
                 new PropertyMetadata(null));
 
 
+        [Description("Border Radius"), Category("Appearance")]
         public double BorderRadius
         {
             get => (double)GetValue(BorderRadiusProperty);

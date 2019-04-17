@@ -1,4 +1,5 @@
 ﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Lyric.Models;
 using Milky.OsuPlayer.ViewModels;
@@ -36,8 +37,8 @@ namespace Milky.OsuPlayer.Windows
     {
         private readonly MainWindow _mainWindow;
 
-        public bool IsHide { get; set; }
-        internal LyricWindowViewModel ViewModel { get; set; }
+        public LyricWindowViewModel ViewModel { get; }
+        public bool IsShown => ViewModel.IsLyricWindowShown;
 
         private List<Sentence> _lyricList;
         private CancellationTokenSource _cts;
@@ -45,22 +46,21 @@ namespace Milky.OsuPlayer.Windows
         private FontFamily _fontFamily;
         private bool _pressed;
 
-        private readonly Stopwatch _sw = new Stopwatch();
-        private CancellationTokenSource _hoverCts = new CancellationTokenSource();
-
-        public LyricWindow(MainWindow mainWindow)
+        public LyricWindow(MainWindow mainWindow) : this()
         {
             _mainWindow = mainWindow;
             InitializeComponent();
 
             ViewModel = (LyricWindowViewModel)DataContext;
             ViewModel.Player = PlayerViewModel.Current;
+            MainWindowViewModel.Current.LyricWindowViewModel = ViewModel;
 
-            FileInfo fi = new FileInfo(Path.Combine(Domain.ExternalPath, "font", "default.ttc"));
-            if (!fi.Exists) _fontFamily = new FontFamily("等线");
+            var fi = new FileInfo(Path.Combine(Domain.ExternalPath, "font", "default.ttc"));
+            if (!fi.Exists)
+                _fontFamily = new FontFamily("等线");
             else
             {
-                PrivateFontCollection pfc = new PrivateFontCollection();
+                var pfc = new PrivateFontCollection();
                 pfc.AddFontFile(fi.FullName);
                 _fontFamily = pfc.Families[0];
             }
@@ -69,52 +69,33 @@ namespace Milky.OsuPlayer.Windows
             Left = 0;
             Top = SystemParameters.WorkArea.Height - Height - 20;
             Width = SystemParameters.PrimaryScreenWidth;
-            this.MouseMove += LyricWindow_MouseMove;
-            this.MouseLeave += LyricWindow_MouseLeave;
-            //this.Loaded += (sender, e) =>
-            //{
+            MouseMove += LyricWindow_MouseMove;
+            MouseLeave += LyricWindow_MouseLeave;
+        }
 
-            //};
+        private void LyricWindow_Loaded(object sender, RoutedEventArgs e)
+        {
 
         }
 
         private void LyricWindow_MouseMove(object sender, MouseEventArgs e)
         {
-            _hoverCts?.Cancel();
-            _sw.Reset();
-            ToolBar.Visibility = Visibility.Visible;
-            ShadowBar.Visibility = Visibility.Visible;
-            StrokeBar.Visibility = Visibility.Visible;
+            _frameTimer?.Dispose();
+            ViewModel.ShowFrame = true;
         }
 
         private void LyricWindow_MouseLeave(object sender, MouseEventArgs e)
         {
-            _hoverCts = new CancellationTokenSource();
-            _sw.Restart();
-            Task.Run(() =>
+            _frameTimer = new Timer(state =>
             {
-                while (_sw.ElapsedMilliseconds < 1500)
-                {
-                    if (_hoverCts.IsCancellationRequested)
-                        return;
-                    Thread.Sleep(20);
-                }
-
-                Dispatcher.BeginInvoke(new Action(HideFrame));
-
-            }, _hoverCts.Token);
-        }
-
-        private void HideFrame()
-        {
-            ToolBar.Visibility = Visibility.Hidden;
-            ShadowBar.Visibility = Visibility.Hidden;
-            StrokeBar.Visibility = Visibility.Hidden;
+                Execute.OnUiThread(() => ViewModel.ShowFrame = false);
+            }, null, 1500, Timeout.Infinite);
         }
 
         private void OnRendering(object sender, EventArgs e)
         {
-            if (!_pressed) Left = 0;
+            if (!_pressed)
+                Left = 0;
         }
 
         public void SetNewLyric(Lyrics lyric, OsuFile osuFile)
@@ -149,10 +130,10 @@ namespace Milky.OsuPlayer.Windows
                     Console.WriteLine(current.Content);
 
                     var size = DrawLyric(_lyricList.IndexOf(current));
-                    Dispatcher.BeginInvoke(new Action(() =>
+                    Execute.ToUiThread(() =>
                     {
                         BeginTranslate(size, maxTime, next?.StartTime ?? -1);
-                    }));
+                    });
                     _pressed = false;
                     oldTime = maxTime;
                 }
@@ -161,6 +142,7 @@ namespace Milky.OsuPlayer.Windows
 
         //动画定义
         private Storyboard _myStoryboard;
+        private Timer _frameTimer;
 
         private void BeginTranslate(Size size, int nowTime, int nextTime)
         {
@@ -168,15 +150,18 @@ namespace Milky.OsuPlayer.Windows
             _myStoryboard?.Remove();
             LyricBar.ClearValue(Border.MarginProperty);
             double viewWidth = 600, width = size.Width;
-            if (width <= viewWidth) return;
-            else Console.WriteLine($@"{size.Width}>{viewWidth}");
+            if (width <= viewWidth)
+                return;
+            else
+                Console.WriteLine($@"{size.Width}>{viewWidth}");
 
             //const double minInterval = 0.5;
             //if (nextTime - nowTime < minInterval) return;
             var interval = nextTime == -1 ? 4000 : (nextTime - nowTime);
             double startTime = interval / 5 > 3000 ? 3000 : interval / 5;
             double duration;
-            if (nextTime == -1) duration = 3000;
+            if (nextTime == -1)
+                duration = 3000;
             else
             {
                 if (nextTime - nowTime < 10000)
@@ -197,14 +182,14 @@ namespace Milky.OsuPlayer.Windows
             }
 
             Console.WriteLine($@"{0}->{viewWidth - width}, start: {startTime}, duration: {duration}");
-            ThicknessAnimation defaultAnimation = new ThicknessAnimation
+            var defaultAnimation = new ThicknessAnimation
             {
                 From = new Thickness(0),
                 To = new Thickness(0),
                 BeginTime = TimeSpan.FromMilliseconds(0),
                 Duration = new Duration(TimeSpan.FromMilliseconds(startTime))
             };
-            ThicknessAnimation translateAnimation = new ThicknessAnimation
+            var translateAnimation = new ThicknessAnimation
             {
                 From = new Thickness(0),
                 To = new Thickness(viewWidth - width, 0, 0, 0),
@@ -228,10 +213,10 @@ namespace Milky.OsuPlayer.Windows
         private Size DrawLyric(int index)
         {
             string content = _lyricList[index].Content;
-            Bitmap bmp = new Bitmap(1, 1);
+            var bmp = new Bitmap(1, 1);
             SizeF size;
-            using (Graphics g = Graphics.FromImage(bmp))
-            using (Font f = new Font(_fontFamily, 32))
+            using (var g = Graphics.FromImage(bmp))
+            using (var f = new Font(_fontFamily, 32))
             {
                 size = g.MeasureString(content, f);
             }
@@ -241,24 +226,20 @@ namespace Milky.OsuPlayer.Windows
 
             bmp.Dispose();
             bmp = new Bitmap(width + 5, height + 5);
-            using (StringFormat format = StringFormat.GenericTypographic)
-            using (Graphics g = Graphics.FromImage(bmp))
+            using (var format = StringFormat.GenericTypographic)
+            using (var g = Graphics.FromImage(bmp))
             //using (Brush bBg = new SolidBrush(Color.FromArgb(48, 0, 176, 255)))
             //using (Pen pBg = new Pen(Color.FromArgb(192, 0, 176, 255), 3))
             using (Brush b = new TextureBrush(
                     Image.FromFile(Path.Combine(Domain.ExternalPath, "texture", "osu.png"))))
             //using (Pen p = new Pen(Color.Red))
-            using (Pen p2 = new Pen(Color.FromArgb(255, 255, 255), 6))
-            using (Font f = new Font(_fontFamily, 32))
+            using (var p2 = new Pen(Color.FromArgb(255, 255, 255), 6))
+            using (var f = new Font(_fontFamily, 32))
             {
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 g.TextRenderingHint = TextRenderingHint.AntiAlias;
-                //if (_hoverd)
-                //{
-                //    g.DrawRectangle(pBg, 0, 0, bmp.Width - 1, bmp.Height - 1);
-                //    g.FillRectangle(bBg, 0, 0, bmp.Width - 1, bmp.Height - 1);
-                //}
-                Rectangle rect = new Rectangle(16, 5, bmp.Width - 1, bmp.Height - 1);
+
+                var rect = new Rectangle(16, 5, bmp.Width - 1, bmp.Height - 1);
                 float dpi = g.DpiY;
                 using (GraphicsPath gp = GetStringPath(content, dpi, rect, f, format))
                 {
@@ -266,27 +247,28 @@ namespace Milky.OsuPlayer.Windows
                     g.FillPath(b, gp);
                 }
             }
-
-            Dispatcher.BeginInvoke(new Action(() =>
+            
+            Execute.ToUiThread(() =>
             {
-                using (MemoryStream ms = new MemoryStream())
+                using (var ms = new MemoryStream())
                 {
                     bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                    BitmapImage wpfImage = new BitmapImage();
+                    var wpfImage = new BitmapImage();
                     wpfImage.BeginInit();
                     wpfImage.StreamSource = new MemoryStream(ms.ToArray());
                     wpfImage.EndInit();
 
                     ImgLyric.Source = wpfImage;
+
                 }
-            }));
+            });
 
             return new Size(width + 5, height + 5);
         }
 
         private static GraphicsPath GetStringPath(string s, float dpi, RectangleF rect, Font font, StringFormat format)
         {
-            GraphicsPath path = new GraphicsPath();
+            var path = new GraphicsPath();
             // Convert font size into appropriate coordinates
             float emSize = dpi * font.SizeInPoints / 72;
             path.AddString(s, font.FontFamily, (int)font.Style, emSize, rect, format);
@@ -307,12 +289,8 @@ namespace Milky.OsuPlayer.Windows
         private void CancelTask()
         {
             _cts?.Cancel();
-            if (_playingTask != null) Task.WaitAll(_playingTask);
-        }
-
-        private void ImgLyric_MouseMove(object sender, MouseEventArgs e)
-        {
-
+            if (_playingTask != null)
+                Task.WaitAll(_playingTask);
         }
 
         private void ImgLyric_MouseDown(object sender, MouseButtonEventArgs e)
@@ -322,7 +300,6 @@ namespace Milky.OsuPlayer.Windows
                 _pressed = true;
                 this.DragMove();
             }
-
         }
 
         private void ImgLyric_MouseUp(object sender, MouseButtonEventArgs e)
@@ -337,15 +314,17 @@ namespace Milky.OsuPlayer.Windows
 
         public new void Show()
         {
-            IsHide = false;
-            _mainWindow.ViewModel.IsLyricWindowShown = true;
+            PlayerConfig.Current.Lyric.EnableLyric = true;
+            PlayerConfig.SaveCurrent();
+            ViewModel.IsLyricWindowShown = true;
             base.Show();
         }
 
         public new void Hide()
         {
-            IsHide = true;
-            _mainWindow.ViewModel.IsLyricWindowShown = false;
+            PlayerConfig.Current.Lyric.EnableLyric = false;
+            PlayerConfig.SaveCurrent();
+            ViewModel.IsLyricWindowShown = false;
             base.Hide();
         }
 
@@ -374,6 +353,5 @@ namespace Milky.OsuPlayer.Windows
         {
             _mainWindow.BtnNext_Click(sender, e);
         }
-
     }
 }

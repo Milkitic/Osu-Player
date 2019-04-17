@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Milky.OsuPlayer.Common;
 using OSharp.Beatmap.Sections.GamePlay;
 using OSharp.Beatmap.Sections.HitObject;
 using OSharp.Beatmap.Sections.Timing;
@@ -8,106 +10,166 @@ namespace Milky.OsuPlayer.Media.Audio
 {
     public class HitsoundElement
     {
-        public GameMode GameMode { get; set; }
-        public double Offset { get; set; }
-        public float Volume { get; set; }
-        public HitsoundType Hitsound { get; set; }
-        public int Track { get; set; }
-        public TimingSamplesetType LineSample { get; set; }
-        public ObjectSamplesetType Sample { get; set; }
-        public ObjectSamplesetType Addition { get; set; }
-        public string CustomFile { get; set; }
-        public string[] FilePaths { get; set; }
-        public string[] DefaultFileNames
+        private readonly string _mapFolderName;
+        private readonly string[] _mapWaveFiles;
+        private string[] _fileNamesWithoutTrack;
+        private string _extension = ".wav";
+
+        public HitsoundElement(
+            string mapFolderName,
+            string[] mapWaveFiles,
+            GameMode gameMode,
+            double offset,
+            int track,
+            TimingSamplesetType lineSample,
+            HitsoundType hitsound,
+            ObjectSamplesetType sample,
+            ObjectSamplesetType addition,
+            string customFile,
+            float volume)
         {
-            get
+            _mapFolderName = mapFolderName;
+            _mapWaveFiles = mapWaveFiles;
+            GameMode = gameMode;
+            Offset = offset;
+            Track = track;
+            LineSample = lineSample;
+            Hitsound = hitsound;
+            Sample = sample;
+            Addition = addition;
+            CustomFile = customFile;
+            Volume = volume;
+
+            SetNamesWithoutTrack();
+            SetFullPath();
+        }
+
+        public GameMode GameMode { get; }
+        public double Offset { get; }
+        public float Volume { get; }
+        public HitsoundType Hitsound { get; }
+        public int Track { get; }
+        public TimingSamplesetType LineSample { get; }
+        public ObjectSamplesetType Sample { get; }
+        public ObjectSamplesetType Addition { get; }
+        public string CustomFile { get; }
+
+        public string[] FilePaths { get; private set; }
+
+        private void SetFullPath()
+        {
+            FilePaths = new string[_fileNamesWithoutTrack.Length];
+            for (var i = 0; i < _fileNamesWithoutTrack.Length; i++)
             {
-                List<string> tracks = new List<string>();
-                if (!string.IsNullOrEmpty(CustomFile))
+                var name = _fileNamesWithoutTrack[i] + (Track > 1 && string.IsNullOrWhiteSpace(CustomFile) ? Track.ToString() : "");
+                if (_mapWaveFiles.Contains(name))
                 {
-                    tracks.Add(CustomFile);
-                    return tracks.ToArray();
+                    FilePaths[i] = Path.Combine(_mapFolderName, name + _extension);
                 }
-
-                string sample, addition;
-                switch (LineSample)
+                else if (!string.IsNullOrWhiteSpace(CustomFile))
                 {
-
-                    case TimingSamplesetType.Soft:
-                        sample = "soft";
-                        break;
-                    case TimingSamplesetType.Drum:
-                        sample = "drum";
-                        break;
-                    default:
-                    case TimingSamplesetType.None:
-                    case TimingSamplesetType.Normal:
-                        sample = "normal";
-                        break;
+                    FilePaths[i] = Path.Combine(_mapFolderName, name);
                 }
-                switch (Sample)
-                {
-                    case ObjectSamplesetType.Soft:
-                        sample = "soft";
-                        break;
-                    case ObjectSamplesetType.Drum:
-                        sample = "drum";
-                        break;
-                    case ObjectSamplesetType.Normal:
-                        sample = "normal";
-                        break;
-                }
-
-                switch (Addition)
-                {
-                    case ObjectSamplesetType.Soft:
-                        addition = "soft";
-                        break;
-                    case ObjectSamplesetType.Drum:
-                        addition = "drum";
-                        break;
-                    case ObjectSamplesetType.Normal:
-                        addition = "normal";
-                        break;
-                    default:
-                    case ObjectSamplesetType.Auto:
-                        addition = sample;
-                        break;
-                }
-
-                if (Hitsound == 0)
-                    tracks.Add($"{sample}-hitnormal.wav");
                 else
                 {
-                    if ((Hitsound & HitsoundType.Whistle) == HitsoundType.Whistle)
-                        tracks.Add($"{addition}-hitwhistle.wav");
-                    if ((Hitsound & HitsoundType.Clap) == HitsoundType.Clap)
-                        tracks.Add($"{addition}-hitclap.wav");
-                    if ((Hitsound & HitsoundType.Finish) == HitsoundType.Finish)
-                        tracks.Add($"{addition}-hitfinish.wav");
-                    if ((Hitsound & HitsoundType.Normal) == HitsoundType.Normal ||
-                        (Hitsound & HitsoundType.Normal) == 0)
-                    {
-                        if (GameMode != GameMode.Mania) tracks.Add($"{sample}-hitnormal.wav");
-                    }
+                    FilePaths[i] = Path.Combine(Domain.DefaultPath, _fileNamesWithoutTrack[i] + _extension);
                 }
-
-                return tracks.ToArray();
             }
         }
-        public string[] FileNames
+
+        private void SetNamesWithoutTrack()
         {
-            get
+            var tracks = new List<string>();
+            if (!string.IsNullOrEmpty(CustomFile))
             {
-                string track = (Track > 1 ? Track.ToString() : "");
-                return DefaultFileNames.ToArray().Select(s =>
-                {
-                    if (s == CustomFile)
-                        return s;
-                    var splitted = s.Split('.');
-                    return splitted.Length == 1 ? s : $"{splitted[0]}{track}.{splitted[1]}";
-                }).ToArray();
+                tracks.Add(CustomFile);
+                _fileNamesWithoutTrack = tracks.ToArray();
+                return;
             }
+
+            string sample = GetFromLineSample();
+            AdjustObjectSample(ref sample);
+            string addition = GetObjectAddition(sample);
+
+            if (Hitsound == 0)
+                tracks.Add($"{sample}-hitnormal");
+            else
+            {
+                if (Hitsound.HasFlag(HitsoundType.Whistle))
+                    tracks.Add($"{addition}-hitwhistle");
+                if (Hitsound.HasFlag(HitsoundType.Clap))
+                    tracks.Add($"{addition}-hitclap");
+                if (Hitsound.HasFlag(HitsoundType.Finish))
+                    tracks.Add($"{addition}-hitfinish");
+                if (Hitsound.HasFlag(HitsoundType.Normal) ||
+                    (Hitsound & HitsoundType.Normal) == 0)
+                {
+                    if (GameMode != GameMode.Mania)
+                        tracks.Add($"{sample}-hitnormal");
+                }
+            }
+
+            _fileNamesWithoutTrack = tracks.ToArray();
+        }
+
+        private string GetObjectAddition(string sample)
+        {
+            string addition;
+            switch (Addition)
+            {
+                case ObjectSamplesetType.Soft:
+                    addition = "soft";
+                    break;
+                case ObjectSamplesetType.Drum:
+                    addition = "drum";
+                    break;
+                case ObjectSamplesetType.Normal:
+                    addition = "normal";
+                    break;
+                default:
+                case ObjectSamplesetType.Auto:
+                    addition = sample;
+                    break;
+            }
+
+            return addition;
+        }
+
+        private void AdjustObjectSample(ref string sample)
+        {
+            switch (Sample)
+            {
+                case ObjectSamplesetType.Soft:
+                    sample = "soft";
+                    break;
+                case ObjectSamplesetType.Drum:
+                    sample = "drum";
+                    break;
+                case ObjectSamplesetType.Normal:
+                    sample = "normal";
+                    break;
+            }
+        }
+
+        private string GetFromLineSample()
+        {
+            string sample;
+            switch (LineSample)
+            {
+                case TimingSamplesetType.Soft:
+                    sample = "soft";
+                    break;
+                case TimingSamplesetType.Drum:
+                    sample = "drum";
+                    break;
+                default:
+                case TimingSamplesetType.None:
+                case TimingSamplesetType.Normal:
+                    sample = "normal";
+                    break;
+            }
+
+            return sample;
         }
     }
 }

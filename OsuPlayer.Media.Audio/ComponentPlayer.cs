@@ -16,7 +16,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private string _filePath;
         private int _stopCount;
 
-        public override int ProgressRefreshInterval { get; set; }
+        public override int ProgressRefreshInterval { get; set; } = 500;
 
         public OsuFile OsuFile { get; private set; }
         internal HitsoundPlayer HitsoundPlayer { get; private set; }
@@ -117,8 +117,8 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private void ResetWithoutNotify()
         {
-            HitsoundPlayer.ResetWithoutNotify();
-            MusicPlayer.ResetWithoutNotify();
+            HitsoundPlayer?.ResetWithoutNotify();
+            MusicPlayer?.ResetWithoutNotify();
         }
 
         public override void Replay()
@@ -154,12 +154,6 @@ namespace Milky.OsuPlayer.Media.Audio
             HitsoundPlayer?.Dispose();
             MusicPlayer?.Dispose();
             Current = null;
-        }
-
-        public static void DisposeAll()
-        {
-            WavePlayer.Device?.Dispose();
-            WavePlayer.MasteringVoice?.Dispose();
         }
     }
 }

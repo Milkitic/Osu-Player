@@ -1,13 +1,12 @@
-﻿using osu_database_reader.Components.Beatmaps;
+﻿using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Metadata;
+using Milky.WpfApi;
+using Milky.WpfApi.Collections;
+using Milky.WpfApi.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common.Metadata;
-using Milky.OsuPlayer.Models;
-using Milky.WpfApi;
-using Milky.WpfApi.Collections;
-using Milky.WpfApi.Commands;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -25,7 +24,7 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public IEnumerable<BeatmapEntry> Entries { get; set; }
+        public IEnumerable<Beatmap> Entries { get; set; }
         public BeatmapDataModel SelectedMap { get; set; }
         public Action Callback { get; set; }
 
@@ -40,6 +39,5 @@ namespace Milky.OsuPlayer.ViewModels
                 });
             }
         }
-
     }
 }

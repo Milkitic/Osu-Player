@@ -1,6 +1,7 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Common.Player;
@@ -10,7 +11,6 @@ using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using Milky.WpfApi.Collections;
 using OSharp.Beatmap;
-using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -18,7 +18,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.Pages
@@ -29,7 +28,7 @@ namespace Milky.OsuPlayer.Pages
     public partial class CollectionPage : Page
     {
         private readonly MainWindow _mainWindow;
-        private IEnumerable<BeatmapEntry> _entries;
+        private IEnumerable<Beatmap> _entries;
         public CollectionPageViewModel ViewModel { get; set; }
         public string Id { get; set; }
 
@@ -41,7 +40,7 @@ namespace Milky.OsuPlayer.Pages
             ViewModel = (CollectionPageViewModel)this.DataContext;
             ViewModel.CollectionInfo = collectionInfo;
             var infos = (List<MapInfo>)DbOperate.GetMapsFromCollection(collectionInfo);
-            _entries = infos.ToBeatmapEntries(InstanceManage.GetInstance<OsuDbInst>().Beatmaps, false);
+            _entries = BeatmapQuery.GetBeatmapsByIdentifiable(infos, false);
             ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModels(false));
         }
 
@@ -62,10 +61,9 @@ namespace Milky.OsuPlayer.Pages
                 UpdateList();
             else
             {
-                var query = BeatmapEntryQuery.FilterByKeyword(_entries, keyword);
+                var query = BeatmapQuery.FilterByKeyword(keyword);
                 UpdateView(query);
             }
-
         }
 
         private void UpdateList()
@@ -76,7 +74,7 @@ namespace Milky.OsuPlayer.Pages
             //UpdateView(_entries);
         }
 
-        private void UpdateView(IEnumerable<BeatmapEntry> entries)
+        private void UpdateView(IEnumerable<Beatmap> entries)
         {
             //ViewModel.Beatmaps = new ObservableCollection<BeatmapDataModel>(entries.ToDataModels(false));
             //ListCount.Content = ViewModel.Beatmaps.Count;
@@ -89,7 +87,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void Dispose()
         {
-
+            //todo
         }
 
         private void RecentList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -196,17 +194,18 @@ namespace Milky.OsuPlayer.Pages
         {
             var map = GetSelected();
             if (map == null) return;
-            await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
-                 map.BeatmapFileName));
+            //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
+            //     map.BeatmapFileName));
+            await _mainWindow.PlayNewFile(map);
             await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.Collection, _entries);
         }
 
-        private BeatmapEntry GetSelected()
+        private Beatmap GetSelected()
         {
             if (MapList.SelectedItem == null)
                 return null;
             var selectedItem = (BeatmapDataModel)MapList.SelectedItem;
-            return _entries.FilterByFolder(selectedItem.FolderName)
+            return BeatmapQuery.FilterByFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
 
@@ -215,13 +214,13 @@ namespace Milky.OsuPlayer.Pages
             _mainWindow.FramePop.Navigate(new EditCollectionPage(_mainWindow, ViewModel.CollectionInfo));
         }
 
-        private BeatmapEntry ConvertToEntry(BeatmapDataModel dataModel)
+        private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _entries.FilterByFolder(dataModel.FolderName)
+            return BeatmapQuery.FilterByFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 
-        private IEnumerable<BeatmapEntry> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)
+        private IEnumerable<Beatmap> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)
         {
             return dataModels.Select(ConvertToEntry);
         }

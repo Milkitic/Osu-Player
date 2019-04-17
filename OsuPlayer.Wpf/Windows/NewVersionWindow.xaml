@@ -15,8 +15,7 @@
     mc:Ignorable="d"
     Title="有可用更新" Height="600" Width="800" ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
-    Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
-    Loaded="WindowBase_Loaded">
+    Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico">
     <wpfApi:WindowBase.DataContext>
         <github:Release />
     </wpfApi:WindowBase.DataContext>

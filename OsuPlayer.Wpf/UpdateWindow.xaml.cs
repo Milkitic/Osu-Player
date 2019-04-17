@@ -71,8 +71,7 @@ namespace Milky.OsuPlayer
             Process.Start(_savePath);
             Dispatcher.BeginInvoke(new Action(Close));
         }
-
-
+        
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             _downloader.Interrupt();

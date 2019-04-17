@@ -1,76 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
+using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Metadata;
-using osu.Shared;
 using OSharp.Beatmap;
+using OSharp.Beatmap.MetaData;
+using OSharp.Beatmap.Sections.GamePlay;
 using OSharp.Common;
-using GameMode = OSharp.Beatmap.Sections.GamePlay.GameMode;
 
 namespace Milky.OsuPlayer.Common.Data
 {
     public static class BeatmapQuery
     {
         private static readonly ConcurrentRandom Random = new ConcurrentRandom();
+        private static HashSet<Beatmap> Beatmaps => InstanceManage.GetInstance<OsuDbInst>().Beatmaps;
 
         public static List<Beatmap> FilterByTitleArtist(string title, string artist)
         {
-            using (var context = new BeatmapDbContext())
-            {
-                return context.Beatmaps
-                    .Where(k => k.Title != null && k.Title == title ||
-                                k.TitleUnicode != null && k.TitleUnicode == title)
-                    .Where(k => k.Artist != null && k.Artist == artist ||
-                                k.ArtistUnicode != null && k.ArtistUnicode == artist).ToList();
-            }
+            var result = Beatmaps
+                .Where(k => k.Title != null && k.Title == title ||
+                            k.TitleUnicode != null && k.TitleUnicode == title)
+                .Where(k => k.Artist != null && k.Artist == artist ||
+                            k.ArtistUnicode != null && k.ArtistUnicode == artist).ToList();
+            return result;
         }
 
         public static List<Beatmap> FilterByKeyword(string keywordStr)
         {
-            using (var context = new BeatmapDbContext())
-            {
-                if (string.IsNullOrWhiteSpace(keywordStr))
-                    return context.Beatmaps.ToList();
-                string[] keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            if (string.IsNullOrWhiteSpace(keywordStr))
+                return Beatmaps.ToList();
+            string[] keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
-                return keywords.Aggregate<string, IEnumerable<Beatmap>>(context.Beatmaps,
-                    (current, keyword) => current.Where(k =>
-                        k.Title?.Contains(keyword, true) == true ||
-                        k.TitleUnicode?.Contains(keyword, true) == true ||
-                        k.Artist?.Contains(keyword, true) == true ||
-                        k.ArtistUnicode?.Contains(keyword, true) == true ||
-                        k.SongTags?.Contains(keyword, true) == true ||
-                        k.SongSource?.Contains(keyword, true) == true ||
-                        k.Creator?.Contains(keyword, true) == true ||
-                        k.Version?.Contains(keyword, true) == true
-                    )).ToList();
-            }
+            return keywords.Aggregate<string, IEnumerable<Beatmap>>(Beatmaps,
+                (current, keyword) => current.Where(k =>
+                    k.Title?.Contains(keyword, true) == true ||
+                    k.TitleUnicode?.Contains(keyword, true) == true ||
+                    k.Artist?.Contains(keyword, true) == true ||
+                    k.ArtistUnicode?.Contains(keyword, true) == true ||
+                    k.SongTags?.Contains(keyword, true) == true ||
+                    k.SongSource?.Contains(keyword, true) == true ||
+                    k.Creator?.Contains(keyword, true) == true ||
+                    k.Version?.Contains(keyword, true) == true
+                )).ToList();
         }
 
         public static List<Beatmap> FilterByFolder(string folder)
         {
-            using (var context = new BeatmapDbContext())
-            {
-                return context.Beatmaps.Where(k => k.FolderName == folder).ToList();
-            }
+            return Beatmaps.Where(k => k.FolderName == folder).ToList();
         }
 
         public static Beatmap FilterByIdentity(MapIdentity identity)
         {
-            using (var context = new BeatmapDbContext())
-            {
-                return context.Beatmaps.Where(k => k != null).FirstOrDefault(k => k.FolderName == identity.FolderName && k.Version == identity.Version);
-            }
+            return Beatmaps.Where(k => k != null).FirstOrDefault(k => k.FolderName == identity.FolderName && k.Version == identity.Version);
         }
 
-        public static IEnumerable<Beatmap> FilterByIdentities(IEnumerable<MapIdentity> identities)
+        public static List<Beatmap> FilterByIdentities(IEnumerable<MapIdentity> identities)
         {
-            using (var context = new BeatmapDbContext())
-            {
-                return identities.Select(id => context.Beatmaps.FirstOrDefault(k => k.FolderName == id.FolderName && k.Version == id.Version)); //todo: need optimize
-            }
+            return identities.Select(id => Beatmaps.FirstOrDefault(k => k.FolderName == id.FolderName && k.Version == id.Version)).ToList();
         }
 
         public static Beatmap GetHighestDiff(this IEnumerable<Beatmap> enumerable)
@@ -103,10 +94,8 @@ namespace Milky.OsuPlayer.Common.Data
 
         public static IEnumerable<Beatmap> GetRecentListFromDb()
         {
-            using (var context = new BeatmapDbContext())
-            {
-                throw new NotImplementedException();
-            }
+            var recent = DbOperate.GetRecent().ToList();
+            return GetBeatmapsByIdentifiable(recent);
         }
 
         public static IEnumerable<Beatmap> SortBy(this IEnumerable<Beatmap> list, SortMode sortMode)
@@ -127,5 +116,55 @@ namespace Milky.OsuPlayer.Common.Data
         //{
         //    return enumerable.Aggregate((i1, i2) => selector.Invoke() > i2.ID ? i1 : i2);
         //}
+        public static List<Beatmap> GetWholeList()
+        {
+            return Beatmaps.ToList();
+        }
+        public static Beatmap GetBeatmapsByIdentifiable(IMapIdentifiable map)
+        {
+            return GetBeatmapsByIdentifiable(new[] { map }).FirstOrDefault();
+        }
+
+        public static IEnumerable<Beatmap> GetBeatmapsByIdentifiable(IEnumerable<IMapIdentifiable> enumerable,
+            bool playedOrAddedTime = true)
+        {
+            if (enumerable is IEnumerable<Beatmap> foo)
+                return foo;
+
+            var identifiableListCopy =
+                enumerable.ToList(); /*enumerable is List<IMapIdentifiable> list ? list : enumerable.ToList();*/
+            bool flag = true;
+
+            var db = new List<(Beatmap entry, DateTime? lastPlayedTime, DateTime? addTime)>();
+            Beatmaps.Where(k => enumerable.Any(inner => inner.FolderName == k.FolderName));
+            foreach (Beatmap k in Beatmaps)
+            {
+                foreach (var identifiable in identifiableListCopy)
+                {
+                    if (identifiable.FolderName != k.FolderName || identifiable.Version != k.Version)
+                        continue;
+
+                    if (identifiable is MapInfo mapInfo)
+                        db.Add((k, mapInfo.LastPlayTime ?? new DateTime(), mapInfo.AddTime));
+                    else
+                    {
+                        db.Add((k, null, null));
+                        flag = false;
+                    }
+
+                    identifiableListCopy.Remove(identifiable);
+                    break;
+                }
+            }
+
+            if (flag)
+            {
+                return playedOrAddedTime
+                    ? db.OrderByDescending(k => k.lastPlayedTime).Select(k => k.entry)
+                    : db.OrderByDescending(k => k.addTime).Select(k => k.entry);
+            }
+
+            return db.Select(k => k.entry);
+        }
     }
 }

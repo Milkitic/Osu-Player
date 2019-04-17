@@ -16,7 +16,6 @@
       x:Name="CurrentPage">
     <Page.Resources>
         <converter:ButtonColorConverter x:Key="ButtonColorConverter" />
-        <converters:NegativeBooleanConverter x:Key="NegativeBooleanConverter" />
         <converter:BooleanToCursorConverter x:Key="BooleanToCursorConverter" />
         <converter:TrueToVisibleConverter x:Key="TrueToVisibleConverter" />
     </Page.Resources>

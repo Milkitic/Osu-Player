@@ -1,23 +1,41 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Data.EF;
+﻿using Milky.OsuPlayer.Common.Data.EF;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;
 using osu_database_reader.Components.Beatmaps;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using Milky.OsuPlayer.Common.Data;
+using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Common.Instances
 {
     public class OsuDbInst
     {
-        public OsuDb BeatmapDb { get; private set; }
-        public List<BeatmapEntry> Beatmaps => BeatmapDb?.Beatmaps;
+        private readonly object _scanningObject = new object();
+        public class ViewModelClass : ViewModelBase
+        {
+            private bool _isScanning;
 
-        public async Task<bool> TryLoadNewDbAsync(string path)
+            public bool IsScanning
+            {
+                get => _isScanning;
+                set
+                {
+                    _isScanning = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public ViewModelClass ViewModel { get; set; } = new ViewModelClass();
+
+        public async Task<bool> TrySyncOsuDbAsync(string path, bool addOnly)
         {
             try
             {
-                await LoadNewDbAsync(path);
+                await SyncOsuDbAsync(path, addOnly);
                 return true;
             }
             catch
@@ -25,23 +43,37 @@ namespace Milky.OsuPlayer.Common.Instances
                 return false;
             }
         }
-
-        public async Task LoadNewDbAsync(string path)
+        public async Task LoadLocalDbAsync()
         {
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
-                return;
-            var db = await ReadDbAsync(path);
-
-            BeatmapDbContext.SyncMapsFromOsuDb(db.Beatmaps);
-            BeatmapDb = db;
+            Beatmaps = new HashSet<Beatmap>(await BeatmapDatabaseQuery.GetWholeListFromDbAsync());
         }
 
+        public async Task SyncOsuDbAsync(string path, bool addOnly)
+        {
+            lock (_scanningObject)
+            {
+                if (ViewModel.IsScanning)
+                    return;
+
+                ViewModel.IsScanning = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+            {
+                var db = await ReadDbAsync(path);
+                await BeatmapDbOperator.SyncMapsFromHoLLyAsync(db.Beatmaps, addOnly);
+            }
+            
+            lock (_scanningObject)
+                ViewModel.IsScanning = false;
+        }
+        
         private static async Task<OsuDb> ReadDbAsync(string path)
         {
             return await Task.Run(() =>
             {
                 var db = new OsuDb();
-                using (FileStream fs = new FileStream(path, FileMode.Open))
+                using (var fs = new FileStream(path, FileMode.Open))
                 {
                     db.ReadFromStream(new SerializationReader(fs));
                 }
@@ -49,5 +81,7 @@ namespace Milky.OsuPlayer.Common.Instances
                 return db;
             });
         }
+
+        public HashSet<Beatmap> Beatmaps { get; set; }
     }
 }

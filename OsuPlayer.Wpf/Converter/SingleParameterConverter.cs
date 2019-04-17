@@ -42,20 +42,4 @@ namespace Milky.OsuPlayer.Converter
             throw new NotImplementedException();
         }
     }
-
-    public class KeyValueLogic
-    {
-        public Type SourceType { get; set; }
-        public Type TargetType { get; set; }
-
-    }
-
-    public interface ISourceTargetLogic
-    {
-        Type SourceType { get; set; }
-        Type TargetType { get; set; }
-
-        object Convert();
-        object NegativeConvert();
-    }
 }

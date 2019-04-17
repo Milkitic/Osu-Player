@@ -9,9 +9,9 @@
     xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
-    xmlns:loaders="clr-namespace:Loaders;assembly=MrMitch.Loaders"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
     xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
+    xmlns:osuPlayer="clr-namespace:Milky.OsuPlayer"
     mc:Ignorable="d"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
     Loaded="Window_Loaded" Closing="Window_Closing" SizeChanged="Window_SizeChanged"
@@ -20,14 +20,12 @@
     <wpfApi:WindowBase.Style>
         <Style TargetType="wpfApi:WindowBase">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding IsMiniMode,Converter={StaticResource MiniWindowConverter}}" Value="False"
-                             wpfApi:TriggerTracing.TriggerName="Window -> IsMiniMode -> False"
-                             wpfApi:TriggerTracing.TraceEnabled="True">
+                <DataTrigger Binding="{Binding IsMiniMode,Converter={StaticResource MiniWindowConverter}}" Value="False">
                     <Setter Property="Topmost" Value="False" />
                     <Setter Property="ResizeMode" Value="CanResize" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsMiniMode,Converter={StaticResource MiniWindowConverter}}" Value="True"
-                             wpfApi:TriggerTracing.TriggerName="Window -> IsMiniMode -> True"
+                             wpfApi:TriggerTracing.TriggerName="MainWindow -> IsMiniMode"
                              wpfApi:TriggerTracing.TraceEnabled="True">
                     <Setter Property="Topmost" Value="True" />
                     <Setter Property="ResizeMode" Value="NoResize" />
@@ -93,9 +91,9 @@
                 </Border.BorderBrush>
             </Border>
             <DockPanel x:Name="MainArea" Grid.Row="0" Margin="0,0,1,0" Width="Auto" Height="Auto">
-                <DockPanel.Effect>
+                <!--<DockPanel.Effect>
                     <DropShadowEffect ShadowDepth="0" BlurRadius="10" Opacity="0.24" />
-                </DockPanel.Effect>
+                </DockPanel.Effect>-->
                 <DockPanel x:Name="Navigation" Height="{Binding ElementName=MainArea,Path=ActualHeight}"
                            Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}">
                     <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto"
@@ -336,9 +334,9 @@
                     <Grid x:Name="BgArea" Margin="0">
                         <Image x:Name="BlurScene" Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center"
                                VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality">
-                            <Image.Effect>
+                            <!--<Image.Effect>
                                 <BlurEffect Radius="100" />
-                            </Image.Effect>
+                            </Image.Effect>-->
                         </Image>
                         <Rectangle x:Name="WhiteCover" Fill="{StaticResource WhiteBrush}" Opacity="0.833333333" />
                         <Grid.Style>
@@ -387,9 +385,7 @@
                                RenderOptions.BitmapScalingMode="HighQuality"
                                Source="{Binding Source, ElementName=BlurScene}" />
                         <Grid x:Name="VideoElementBorder" Background="#E0000000">
-                            <ffme:MediaElement x:Name="VideoElement" IsMuted="True" LoadedBehavior="Manual"
-                                               MediaOpened="VideoElement_MediaOpened"
-                                               MediaFailed="VideoElement_MediaFailed" />
+                            <ffme:MediaElement x:Name="VideoElement" IsMuted="True" LoadedBehavior="Manual" />
                         </Grid>
                         <Border Background="{StaticResource ExtraLightBrush20}"
                                 HorizontalAlignment="Right" VerticalAlignment="Top"
@@ -470,18 +466,13 @@
                                                     <Viewbox Stretch="Uniform"
                                                              Width="30" Height="30">
                                                         <Canvas Width="1000" Height="1000">
-                                                            <Canvas.RenderTransform>
-                                                                <TranslateTransform X="0" Y="0" />
-                                                            </Canvas.RenderTransform>
-                                                            <Canvas>
-                                                                <Path Fill="{StaticResource ExtraLightBrushF0}">
-                                                                    <Path.Data>
-                                                                        <PathGeometry
+                                                            <Path Fill="{StaticResource ExtraLightBrushF0}">
+                                                                <Path.Data>
+                                                                    <PathGeometry
                                                                             Figures="M602.1 500l226.5 226.5l91.9-91.9c11.5-12.1 29.4-15.3 44.7-8.9c14.7 6.4 24.9 21.1 24.9 37.6v285.8c0 22.3-18.5 40.8-40.8 40.8H663.3c-16.6 0-31.3-10.2-37.6-25.5c-6.4-14.7-3.2-32.5 8.9-44l91.9-91.9L500 602.1L273.5 828.6l91.9 91.9c12.1 11.5 15.3 29.4 8.9 44c-6.4 15.3-21.1 25.5-37.6 25.5H50.8C28.5 990 10 971.5 10 949.2V663.3c0-16.6 10.2-31.3 25.5-37.6c14.7-6.4 32.5-3.2 44 8.9l91.9 91.9L397.9 500L171.4 273.5l-91.9 91.9c-7.7 7.7-17.9 12.1-28.7 12.1c-5.1 0-10.8-1.3-15.3-3.2C20.2 367.9 10 353.3 10 336.7V50.8C10 28.5 28.5 10 50.8 10h285.8c16.6 0 31.3 10.2 37.6 25.5c6.4 14.7 3.2 32.5-8.9 44l-91.9 91.9L500 397.9l226.5-226.5l-91.9-91.9c-12.1-11.5-15.3-29.3-8.9-44c6.4-15.3 21.1-25.5 37.6-25.5h285.8c22.3 0 40.8 18.5 40.8 40.8v285.8c0 16.6-10.2 31.3-24.9 37.6c-5.1 1.9-10.8 3.2-16 3.2c-10.8 0-21.1-4.5-28.7-12.1l-91.9-91.9L602.1 500z"
                                                                             FillRule="NonZero" />
-                                                                    </Path.Data>
-                                                                </Path>
-                                                            </Canvas>
+                                                                </Path.Data>
+                                                            </Path>
                                                         </Canvas>
                                                     </Viewbox>
                                                 </Border>
@@ -743,19 +734,15 @@
                                 <Button.Style>
                                     <Style TargetType="custom:BitmapButton">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavourite}" Value="True"
-                                                         wpfApi:TriggerTracing.TriggerName="LikeButton -> CurrentMusic -> Null"
+                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavorite}" Value="True"
+                                                         wpfApi:TriggerTracing.TriggerName="LikeButton -> CurrentMusic"
                                                          wpfApi:TriggerTracing.TraceEnabled="True">
                                                 <Setter Property="Background" Value="{StaticResource Faved}" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding Player.CurrentInfo}" Value="{x:Null}"
-                                                         wpfApi:TriggerTracing.TriggerName="LikeButton -> Fav -> False"
-                                                         wpfApi:TriggerTracing.TraceEnabled="True">
+                                            <DataTrigger Binding="{Binding Player.CurrentInfo}" Value="{x:Null}">
                                                 <Setter Property="Background" Value="{StaticResource Fav}" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavourite}" Value="False"
-                                                         wpfApi:TriggerTracing.TriggerName="LikeButton -> Fav -> False"
-                                                         wpfApi:TriggerTracing.TraceEnabled="True">
+                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavorite}" Value="False">
                                                 <Setter Property="Background" Value="{StaticResource Fav}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
@@ -845,9 +832,9 @@
                    StaysOpen="False">
                 <Grid Margin="5">
                     <Border BorderBrush="#cccccc" BorderThickness="1">
-                        <Border.Effect>
+                        <!--<Border.Effect>
                             <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="#000000" Opacity="1" />
-                        </Border.Effect>
+                        </Border.Effect>-->
                     </Border>
                     <Border>
                         <Border.Background>
@@ -868,24 +855,27 @@
                                 <StackPanel Grid.Column="0">
                                     <Slider x:Name="MasterVolume" Orientation="Vertical" HorizontalAlignment="Center"
                                             Margin="10,5"
-                                            Maximum="100" Style="{StaticResource VerticalSliderWhiteStyle}"
-                                            Thumb.DragDelta="MasterVolume_DragDelta" Height="70" />
+                                            Maximum="1" Value="{Binding Player.CurrentVolume.Main,Mode=TwoWay}"
+                                            Style="{StaticResource VerticalSliderWhiteStyle}"
+                                            Thumb.DragCompleted="MasterVolume_DragComplete" Height="70" />
                                     <Label Content="主音量" Margin="0,-5,0,0" HorizontalAlignment="Center"
                                            Foreground="White" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
                                     <Slider x:Name="MusicVolume" Orientation="Vertical" HorizontalAlignment="Center"
                                             Margin="10,5"
-                                            Maximum="100" Style="{StaticResource VerticalSliderWhiteStyle}"
-                                            Thumb.DragDelta="MusicVolume_DragDelta" Height="70" />
+                                            Maximum="1" Value="{Binding Player.CurrentVolume.Music,Mode=TwoWay}"
+                                            Style="{StaticResource VerticalSliderWhiteStyle}"
+                                            Thumb.DragCompleted="MusicVolume_DragComplete" Height="70" />
                                     <Label Content="音乐" Margin="0,-5,0,0" HorizontalAlignment="Center"
                                            Foreground="White" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <Slider x:Name="HitsoundVolume" Orientation="Vertical" HorizontalAlignment="Center"
                                             Margin="10,5"
-                                            Maximum="100" Style="{StaticResource VerticalSliderWhiteStyle}"
-                                            Thumb.DragDelta="HitsoundVolume_DragDelta" Height="70" />
+                                            Maximum="1" Value="{Binding Player.CurrentVolume.Hitsound, Mode=TwoWay}"
+                                            Style="{StaticResource VerticalSliderWhiteStyle}"
+                                            Thumb.DragCompleted="HitsoundVolume_DragComplete" Height="70" />
                                     <Label Content="音效" Margin="0,-5,0,0" HorizontalAlignment="Center"
                                            Foreground="White" />
                                 </StackPanel>
@@ -910,9 +900,9 @@
                    StaysOpen="False">
                 <Grid Margin="5">
                     <Border BorderBrush="#cccccc" BorderThickness="1">
-                        <Border.Effect>
+                        <!--<Border.Effect>
                             <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="#000000" Opacity="0.5" />
-                        </Border.Effect>
+                        </Border.Effect>-->
                     </Border>
                     <Border HorizontalAlignment="Center" BorderBrush="#cccccc" BorderThickness="1">
                         <Border.Background>
@@ -949,9 +939,9 @@
                 </Grid>
             </Popup>
         </Grid>
-        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" d:IsHidden="True">
-            <Frame Name="FramePop" NavigationUIVisibility="Hidden" />
-        </Grid>
+        <Frame Name="FramePop" 
+               Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" 
+               NavigationUIVisibility="Hidden" />
         <Border x:Name="MsgBoxCover" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
                 Background="{StaticResource WhiteBrush80}"
                 Visibility="Hidden" />
@@ -1014,21 +1004,43 @@
                 Width="40" Height="40" />
         </Border>-->
 
-        <Border Grid.Row="1"
-                Background="{StaticResource WhiteBrush80}"
-                Visibility="{Binding IsSyncing,Converter={StaticResource TrueToVisibleConverter}}">
-            <StackPanel VerticalAlignment="Center"
+        <Border x:Name="WelcomeArea" Grid.Row="1"
+                Background="{StaticResource WhiteBrushB0}"
+                Visibility="{Binding ShowWelcome,Converter={StaticResource TrueToVisibleConverter}}">
+            <Border.DataContext>
+                <viewModels:WelcomeViewModel/>
+            </Border.DataContext>
+            <StackPanel x:Name="VerticalWelcomeStackPanel" VerticalAlignment="Center"
                         HorizontalAlignment="Center">
-                <loaders:ChromeLoader
-                    Foreground="{StaticResource SliderBackground}"
-                    Thickness="8"
-                    Width="100" Height="100"
-                    IsIndeterminate="{Binding IsSyncing}" />
-                <Label Content="正在与osu!db同步中..."
-                       FontSize="15"
-                       Margin="0,15,0,0"
+                <Label Content="欢迎"
+                       HorizontalContentAlignment="Center"
+                       FontSize="35"
+                       Margin="0,3,0,0"
                        FontWeight="Bold" 
                        Foreground="{StaticResource SliderBackground}" />
+                <Label Content="选择以下项目，开启精彩音乐世界……"
+                       Margin="0,0,0,3"
+                       HorizontalContentAlignment="Center"
+                       FontSize="12"
+                       Foreground="{StaticResource SliderBackground}" />
+                <custom:Loader Width="30" Height="30" FillColor="#303030" Visibility="{Binding GuideSyncing,Converter={StaticResource TrueToVisibleConverter}}" />
+                <dms:DMCheckBox
+                    x:Name="Step1" Margin="0,3"
+                    IsChecked="{Binding GuideSelectedDb, Mode=TwoWay}"
+                    Content="选择osu!db，同步曲库"
+                    Command="{Binding Step1Command}"
+                    IconColor="{StaticResource PinkBrushOsu}" />
+                <dms:DMCheckBox
+                    Visibility="Collapsed"
+                    x:Name="Step2" Margin="0,3"
+                    Content="开启曲库目录监听服务，减少同步与扫描时间"
+                    IconColor="{StaticResource PinkBrushOsu}" />
+                <dms:DMLinkButton
+                    HorizontalContentAlignment="Center" Margin="0,30,0,0"
+                    DMSystemButtonHoverColor="Transparent"
+                    DMSystemButtonHoverForeground="#949494"
+                    Content="Skip this step"
+                    Command="{Binding SkipCommand}"/>
             </StackPanel>
         </Border>
         <tb:TaskbarIcon Grid.Row="0" x:Name="NotifyIcon"
@@ -1062,7 +1074,6 @@
                                 </Canvas>
                             </Canvas>
                         </Viewbox>
-
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="上一首" Style="{DynamicResource DefaultMenuItem}"
@@ -1109,11 +1120,11 @@
                 </MenuItem>
                 <!--<Button Content="循环模式" Style="{DynamicResource DefaultMenuItem}"/>-->
                 <MenuItem
-                    Header="{Binding IsLyricWindowShown,Converter={StaticResource CvtLyricWindowShown},ConverterParameter=string}"
+                    Header="{Binding LyricWindowViewModel.IsLyricWindowShown,Converter={StaticResource CvtLyricWindowShown},ConverterParameter=string}"
                     Style="{DynamicResource DefaultMenuItem}" Click="MenuOpenHideLyric_Click" />
                 <MenuItem Header="{Binding IsLyricWindowLocked,Converter={StaticResource CvtLyricWindowLocked}}"
                           Style="{DynamicResource DefaultMenuItem}"
-                          IsEnabled="{Binding IsLyricWindowShown,Converter={StaticResource CvtLyricWindowShown},ConverterParameter=bool}"
+                          IsEnabled="{Binding LyricWindowViewModel.IsLyricWindowShown,Converter={StaticResource CvtLyricWindowShown},ConverterParameter=bool}"
                           Click="MenuLockLyric_Click" />
                 <Separator />
                 <MenuItem x:Name="MenuConfig" Header="设置" Style="{DynamicResource DefaultMenuItem}"
@@ -1151,7 +1162,6 @@
                                 </Canvas>
                             </Canvas>
                         </Viewbox>
-
                     </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>

@@ -3,13 +3,13 @@ using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap;
-using osu_database_reader.Components.Beatmaps;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.Pages
@@ -22,9 +22,9 @@ namespace Milky.OsuPlayer.Pages
         public SelectCollectionPageViewModel ViewModel { get; set; }
 
         private readonly MainWindow _mainWindow;
-        private readonly BeatmapEntry _entry;
+        private readonly Beatmap _entry;
 
-        public SelectCollectionPage(MainWindow mainWindow, BeatmapEntry entry)
+        public SelectCollectionPage(MainWindow mainWindow, Beatmap entry)
         {
             InitializeComponent();
             ViewModel = (SelectCollectionPageViewModel)DataContext;
@@ -55,7 +55,7 @@ namespace Milky.OsuPlayer.Pages
                 CollectionViewModel.CopyFrom(DbOperate.GetCollections().OrderByDescending(k => k.CreateTime)));
         }
 
-        public static async Task AddToCollectionAsync(Collection col, BeatmapEntry entry)
+        public static async Task AddToCollectionAsync(Collection col, Beatmap entry)
         {
             if (string.IsNullOrEmpty(col.ImagePath))
             {

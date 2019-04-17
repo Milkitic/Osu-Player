@@ -5,10 +5,14 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:Milky.OsuPlayer.Pages.Settings"
       xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+      xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
+      xmlns:scanning="clr-namespace:Milky.OsuPlayer.Common.Scanning;assembly=OsuPlayer.Common"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="GeneralPage" Loaded="Page_Loaded">
-
+    <Page.DataContext>
+        <scanning:FileScannerViewModel />
+    </Page.DataContext>
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
@@ -20,7 +24,22 @@
                 <Label Style="{StaticResource ConfigTitleStyle}"
                        Content="osu!db位置：" HorizontalAlignment="Left" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
-                    <dms:DMTextBox x:Name="LblDbPath" Margin="5,0"
+                    <dms:DMTextBox x:Name="TbDbPath" Margin="5,0"
+                                   Text="D:\asdf\asdf" Width="250" Height="27"
+                                   VerticalContentAlignment="Center" 
+                                   Background="White" BorderBrush="#33999999"
+                                   CornerRadius="5"
+                                   IsReadOnly="True" />
+                    <dms:DMButton Width="25" Height="25" CornerRadius="100"
+                                  Background="#E3E3E3" Foreground="Black"
+                                  x:Name="BrowseDb" Content="..." 
+                                  Click="BrowseDb_Click" 
+                                  IsEnabled="{Binding IsScanning,Converter={StaticResource NegativeBooleanConverter}}" />
+                </StackPanel>
+                <Label Style="{StaticResource ConfigTitleStyle}"
+                       Content="自定义曲库路径：" HorizontalAlignment="Left" />
+                <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
+                    <dms:DMTextBox x:Name="TbCustomPath" Margin="5,0"
                                    Text="D:\asdf\asdf" Width="250" Height="27"
                                    VerticalContentAlignment="Center" 
                                    Background="White" BorderBrush="#33999999"
@@ -28,8 +47,15 @@
                                    IsReadOnly="True"/>
                     <dms:DMButton Width="25" Height="25" CornerRadius="100"
                                   Background="#E3E3E3" Foreground="Black"
-                                  x:Name="Browse" Content="..." 
-                                  Click="Browse_Click" />
+                                  x:Name="BrowseCustom" Content="..." 
+                                  Click="BrowseCustom_Click" />
+                    <custom:Loader Width="25" Height="25" FillColor="#303030" Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
+                    <Label Content="正在扫描..." Foreground="#303030" Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
+                    <dms:DMButton Width="25" Height="25" CornerRadius="100"
+                                  Background="#E3E3E3" Foreground="Black"
+                                  x:Name="CancelScan" Content="..." 
+                                  Click="CancelScan_Click"
+                                  IsEnabled="{Binding IsCanceling,Converter={StaticResource NegativeBooleanConverter}}"/>
                 </StackPanel>
                 <Label Style="{StaticResource ConfigTitleStyle}" Content="关闭窗体：" HorizontalAlignment="Left" />
                 <StackPanel HorizontalAlignment="Left">

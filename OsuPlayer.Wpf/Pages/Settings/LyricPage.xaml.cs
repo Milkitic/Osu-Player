@@ -48,16 +48,12 @@ namespace Milky.OsuPlayer.Pages.Settings
             if (!_loaded) return;
             if (EnableLyric.IsChecked.HasValue && EnableLyric.IsChecked.Value)
             {
-                PlayerConfig.Current.Lyric.EnableLyric = true;
                 _mainWindow.LyricWindow.Show();
             }
             else
             {
-                PlayerConfig.Current.Lyric.EnableLyric = false;
                 _mainWindow.LyricWindow.Hide();
             }
-
-            PlayerConfig.SaveCurrent();
         }
 
         private void Source_CheckChanged(object sender, RoutedEventArgs e)

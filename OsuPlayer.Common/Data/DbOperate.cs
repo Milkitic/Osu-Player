@@ -3,7 +3,6 @@ using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Player;
 using Newtonsoft.Json;
-using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -228,13 +227,13 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static void AddMapToCollection(BeatmapEntry entry, Collection collection)
+        public static void AddMapToCollection(Beatmap beatmap, Collection collection)
         {
             using (ApplicationDbContext context = new ApplicationDbContext())
             {
                 try
                 {
-                    MapInfo map = InnerGetMapFromDb(entry.GetIdentity(), context);
+                    MapInfo map = InnerGetMapFromDb(beatmap.GetIdentity(), context);
                     context.Relations.Add(new CollectionRelation(Guid.NewGuid().ToString(), collection.Id,
                         map.Id));
                     context.SaveChanges();
@@ -244,12 +243,11 @@ namespace Milky.OsuPlayer.Common.Data
                     if (currentInfo != null)
                     {
                         if (collection.Locked &&
-                            currentInfo.Identity.Equals(entry.GetIdentity()))
+                            currentInfo.Identity.Equals(beatmap.GetIdentity()))
                         {
-                            currentInfo.IsFavourite = true;
+                            currentInfo.IsFavorite = true;
                         }
                     }
-
                 }
                 catch (Exception ex)
                 {
@@ -350,9 +348,9 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static void UpdateMap(BeatmapEntry entry, int offset)
+        public static void UpdateMap(Beatmap beatmap, int offset)
         {
-            UpdateMap(entry.GetIdentity());
+            UpdateMap(beatmap.GetIdentity());
         }
 
         public static void RemoveFromRecent(MapIdentity id)
@@ -365,9 +363,9 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static void RemoveFromRecent(BeatmapEntry entry)
+        public static void RemoveFromRecent(Beatmap beatmap)
         {
-            RemoveFromRecent(entry.GetIdentity());
+            RemoveFromRecent(beatmap.GetIdentity());
         }
 
         public static void ClearRecent()
@@ -401,9 +399,9 @@ namespace Milky.OsuPlayer.Common.Data
             }
         }
 
-        public static void RemoveMapFromCollection(BeatmapEntry entry, Collection collection)
+        public static void RemoveMapFromCollection(Beatmap beatmap, Collection collection)
         {
-            RemoveMapFromCollection(entry.GetIdentity(), collection);
+            RemoveMapFromCollection(beatmap.GetIdentity(), collection);
         }
 
         public static void RemoveMapFromCollection(MapIdentity id, Collection collection)
@@ -424,7 +422,7 @@ namespace Milky.OsuPlayer.Common.Data
                         if (collection.Locked &&
                             currentInfo.Identity.Equals(id))
                         {
-                            currentInfo.IsFavourite = false;
+                            currentInfo.IsFavorite = false;
                         }
                     }
                 }

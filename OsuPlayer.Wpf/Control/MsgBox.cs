@@ -47,39 +47,32 @@ namespace Milky.OsuPlayer.Control
             MessageBoxButton button, MessageBoxImage icon)
         {
             MessageBoxWindow messageBox = null;
-            try
+            messageBox = new MessageBoxWindow(messageBoxText, caption, button, icon);
+            Border cover = null;
+            if (owner != null)
             {
-                messageBox = new MessageBoxWindow(messageBoxText, caption, button, icon);
-                Border cover = null;
-                if (owner != null)
+                cover = owner.FindName("MsgBoxCover") as Border;
+                if (cover != null)
+                    cover.Visibility = Visibility.Visible;
+                dynamic dynOwner = owner;
+                try
                 {
-                    cover = (Border)owner.FindName("MsgBoxCover");
-                    if (cover != null)
-                        cover.Visibility = Visibility.Visible;
-                    dynamic dynOwner = owner;
-                    try
+                    if (!dynOwner.IsClosed)
                     {
-                        if (!dynOwner.IsClosed)
-                        {
-                            messageBox.Owner = owner;
-                            messageBox.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        // ignored
+                        messageBox.Owner = owner;
+                        messageBox.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                     }
                 }
+                catch (Exception)
+                {
+                    // ignored
+                }
+            }
 
-                messageBox.ShowDialog();
-                if (cover != null)
-                    cover.Visibility = Visibility.Hidden;
-                return messageBox.MessageBoxResult;
-            }
-            finally
-            {
-              
-            }
+            messageBox.ShowDialog();
+            if (cover != null)
+                cover.Visibility = Visibility.Hidden;
+            return messageBox.MessageBoxResult;
         }
     }
 }

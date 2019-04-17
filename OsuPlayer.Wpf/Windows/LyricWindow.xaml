@@ -12,7 +12,7 @@
         mc:Ignorable="d"
         Title="LyricWindow" Height="90" WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False"
         Background="Transparent" AllowsTransparency="True" BorderBrush="Black" SizeToContent="Height" Topmost="True"
-                    Loaded="WindowBase_Loaded">
+                    Loaded="LyricWindow_Loaded">
     <wpfApi:WindowBase.Resources>
         <Viewbox x:Key="PlayButton" Stretch="Uniform" Width="20" Height="20">
             <Canvas Width="1000" Height="1000">
@@ -52,8 +52,22 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Border x:Name="ToolBar" Grid.Row="0" HorizontalAlignment="Center"
-                Background="#60453035" Visibility="Hidden"
+                Background="#60453035"
                 BorderBrush="#c0303030" BorderThickness="2,2,2,0">
+            <Border.Style>
+                <Style TargetType="FrameworkElement">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowFrame}" Value="True"
+                                     wpfApi:TriggerTracing.TriggerName="LyricWindow -> ShowFrame"
+                                     wpfApi:TriggerTracing.TraceEnabled="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ShowFrame}" Value="False">
+                            <Setter Property="Visibility" Value="Hidden" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
             <StackPanel Orientation="Horizontal">
                 <dms:DMButton x:Name="BtnPrev" Click="BtnPrev_Click" Margin="10,5,5,5"
                               BorderThickness="0" BorderBrush="Transparent"
@@ -138,9 +152,24 @@
               Cursor="SizeAll">
             <Border x:Name="ShadowBar" Height="{Binding ElementName=CutView,Path=ActualHeight}"
                     Width="{Binding ElementName=CutView,Path=ActualWidth}"
-                    Background="#60303030" Visibility="Hidden"
+                    Background="#60303030"
                     MinWidth="{Binding ElementName=ToolBar,Path=ActualWidth}"
-                    HorizontalAlignment="Left"></Border>
+                    HorizontalAlignment="Left">
+                <Border.Style>
+                    <Style TargetType="FrameworkElement">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowFrame}" Value="True"
+                                         wpfApi:TriggerTracing.TriggerName="LyricWindow -> ShowFrame"
+                                         wpfApi:TriggerTracing.TraceEnabled="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ShowFrame}" Value="False">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
             <Border x:Name="LyricBar" HorizontalAlignment="Center">
                 <Image x:Name="ImgLyric" Stretch="None" MouseDown="ImgLyric_MouseDown" MouseUp="ImgLyric_MouseUp"
                    HorizontalAlignment="Left" Cursor="SizeAll"/>
@@ -148,8 +177,23 @@
             <Border x:Name="StrokeBar" Height="{Binding ElementName=CutView,Path=ActualHeight}"
                     MinWidth="{Binding ElementName=ToolBar,Path=ActualWidth}"
                     Width="{Binding ElementName=CutView,Path=ActualWidth}" BorderBrush="#c0303030"
-                    BorderThickness="2" Visibility="Hidden"
-                    HorizontalAlignment="Left"></Border>
+                    BorderThickness="2"
+                    HorizontalAlignment="Left">
+                <Border.Style>
+                    <Style TargetType="FrameworkElement">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowFrame}" Value="True"
+                                         wpfApi:TriggerTracing.TriggerName="LyricWindow -> ShowFrame"
+                                         wpfApi:TriggerTracing.TraceEnabled="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ShowFrame}" Value="False">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
         </Grid>
     </Grid>
 </wpfApi:WindowBase>

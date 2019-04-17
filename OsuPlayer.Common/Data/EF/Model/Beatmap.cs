@@ -1,9 +1,12 @@
-﻿using osu.Shared;
+﻿using OSharp.Beatmap;
+using OSharp.Beatmap.MetaData;
+using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using OSharp.Beatmap.MetaData;
+using System.Linq;
 
 namespace Milky.OsuPlayer.Common.Data.EF.Model
 {
@@ -72,6 +75,9 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         [Column("folderName")]
         public string FolderName { get; set; } = "";
 
+        [Column("audioName")]
+        public string AudioFileName { get; set; }
+
         [Key]
         [Required, Column("id")]
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -80,7 +86,6 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         public bool InOwnFolder { get; set; }
 
         #region Only used in HoLLy
-        //public string AudioFileName { get; set; }
         //public string BeatmapChecksum { get; set; }
         //public RankStatus RankedStatus { get; set; }
         //public ushort CountHitCircles { get; set; }
@@ -146,33 +151,84 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
             return this;
         }
 
+        public override int GetHashCode()
+        {
+            return (FolderName + Version).GetHashCode();
+        }
+
         public static Beatmap ParseFromHolly(BeatmapEntry entry)
         {
             return (new Beatmap()).UpdateFromHolly(entry);
         }
-    }
 
-    public static class EnumExt
-    {
-        public static OSharp.Beatmap.Sections.GamePlay.GameMode ParseHollyToOSharp(this osu.Shared.GameMode gameMode)
+        public Beatmap UpdateFromOSharp(OsuFile osuFile)
         {
-            return (OSharp.Beatmap.Sections.GamePlay.GameMode)(int)gameMode;
+            Artist = osuFile.Metadata.Artist;
+            ArtistUnicode = osuFile.Metadata.ArtistUnicode;
+            Title = osuFile.Metadata.Title;
+            TitleUnicode = osuFile.Metadata.TitleUnicode;
+            Creator = osuFile.Metadata.Creator;
+            Version = osuFile.Metadata.Version;
+            //BeatmapFileName = osuFile.BeatmapFileName;
+            //LastModifiedTime = osuFile.LastModifiedTime;
+            //DiffSrNoneStandard = osuFile.DiffStarRatingStandard.ContainsKey(Mods.None)
+            //    ? osuFile.DiffStarRatingStandard[Mods.None]
+            //    : -1;
+            //DiffSrNoneTaiko = osuFile.DiffStarRatingTaiko.ContainsKey(Mods.None)
+            //    ? osuFile.DiffStarRatingTaiko[Mods.None]
+            //    : -1;
+            //DiffSrNoneCtB = osuFile.DiffStarRatingCtB.ContainsKey(Mods.None) ? osuFile.DiffStarRatingCtB[Mods.None] : -1;
+            //DiffSrNoneMania = osuFile.DiffStarRatingMania.ContainsKey(Mods.None)
+            //    ? osuFile.DiffStarRatingMania[Mods.None]
+            //    : -1;
+            DrainTimeSeconds = (int)(osuFile.HitObjects.MaxTime -
+                                     osuFile.HitObjects.MinTime -
+                                     osuFile.Events.Breaks.Select(k => k.EndTime - k.StartTime).Sum());
+            TotalTime = (int)osuFile.HitObjects.MaxTime;
+            AudioPreviewTime = osuFile.General.PreviewTime;
+            BeatmapId = osuFile.Metadata.BeatmapId;
+            BeatmapSetId = osuFile.Metadata.BeatmapSetId;
+            GameMode = osuFile.General.Mode;
+            SongSource = osuFile.Metadata.Source;
+            SongTags = string.Join(" ", osuFile.Metadata.TagList);
+            //FolderName = osuFile.FolderName;
 
-            #region not sure
-            //switch (gameMode)
-            //{
-            //    case osu.Shared.GameMode.Standard:
-            //        return OSharp.Beatmap.Sections.GamePlay.GameMode.Circle;
-            //    case osu.Shared.GameMode.Taiko:
-            //        return OSharp.Beatmap.Sections.GamePlay.GameMode.Taiko;
-            //    case osu.Shared.GameMode.CatchTheBeat:
-            //        return OSharp.Beatmap.Sections.GamePlay.GameMode.Catch;
-            //    case osu.Shared.GameMode.Mania:
-            //        return OSharp.Beatmap.Sections.GamePlay.GameMode.Mania;
-            //    default:
-            //        throw new ArgumentOutOfRangeException(nameof(gameMode), gameMode, null);
-            //}
-            #endregion
+            return this;
+        }
+
+        public static Beatmap ParseFromOSharp(OsuFile osuFile)
+        {
+            return (new Beatmap()).UpdateFromOSharp(osuFile);
+        }
+
+        public class Comparer : IEqualityComparer<Beatmap>
+        {
+            private readonly bool _byIdentity;
+
+            public Comparer(bool byIdentity)
+            {
+                _byIdentity = byIdentity;
+            }
+
+            public bool Equals(Beatmap x, Beatmap y)
+            {
+                if (x == null && y == null)
+                    return true;
+                if (x == null || y == null)
+                    return false;
+
+                if (_byIdentity)
+                {
+                    return x.EqualsTo(y);
+                }
+
+                return x.Id == y.Id; //todo: sb
+            }
+
+            public int GetHashCode(Beatmap obj)
+            {
+                return obj.GetHashCode();
+            }
         }
     }
 }

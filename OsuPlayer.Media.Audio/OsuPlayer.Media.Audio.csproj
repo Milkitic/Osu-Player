@@ -37,14 +37,8 @@
     <Reference Include="NAudio.Vorbis, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NAudio.Vorbis.1.0.0.0\lib\net35\NAudio.Vorbis.dll</HintPath>
     </Reference>
-    <Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NVorbis.0.8.4.0\lib\NVorbis.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.XAudio2, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.XAudio2.4.2.0\lib\net45\SharpDX.XAudio2.dll</HintPath>
+    <Reference Include="NVorbis, Version=0.8.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NVorbis.0.8.6\lib\net35\NVorbis.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -56,33 +50,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Music\AudioPlaybackEngine.cs" />
     <Compile Include="ComponentPlayer.cs" />
     <Compile Include="HitsoundElement.cs" />
     <Compile Include="IPlayer.cs" />
+    <Compile Include="Music\CachedSound.cs" />
     <Compile Include="Music\HitsoundPlayer.cs" />
     <Compile Include="Music\MusicPlayer.cs" />
     <Compile Include="Music\ProgressEventArgs.cs" />
     <Compile Include="Music\SampleProviders\MyAudioFileReader.cs" />
     <Compile Include="Music\SoundTouch\SoundTouchApi.cs" />
     <Compile Include="Music\TimeStretchProfile.cs" />
-    <Compile Include="Music\WavePlayer.cs" />
+    <Compile Include="Music\WaveProviders\AutoDisposeFileReader.cs" />
+    <Compile Include="Music\WaveProviders\CachedSoundSampleProvider.cs" />
     <Compile Include="Music\WaveProviders\CusBufferedWaveProvider.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
-      <Project>{654D6521-43E1-48D2-BAEE-E694E38EF56D}</Project>
-      <Name>OsuPlayer.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Wpf\OSharp.Beatmap\OSharp.Beatmap.csproj">
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
       <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
       <Name>OSharp.Beatmap</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
+    <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
+      <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>
+      <Name>OsuPlayer.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

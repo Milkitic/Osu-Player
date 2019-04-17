@@ -2,10 +2,12 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Milky.OsuPlayer"
                     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
-                    xmlns:converters="clr-namespace:DMSkin.Core.Converters;assembly=DMSkin.Core">
+                    xmlns:converters="clr-namespace:DMSkin.Core.Converters;assembly=DMSkin.Core"
+                    xmlns:apiConverter="clr-namespace:Milky.WpfApi.Converters;assembly=WpfApi">
     <converter:IndexToStringConverter x:Key="IndexToStringConverter" />
     <converter:TrueToVisibleConverter x:Key="TrueToVisibleConverter" />
     <converter:ExceptionToStringConverter x:Key="ExceptionToStringConverter" />
     <converter:PlayingConverter x:Key="PlayingConverter" />
     <converter:MiniWindowConverter x:Key="MiniWindowConverter" />
+    <apiConverter:NegativeBooleanConverter x:Key="NegativeBooleanConverter" />
 </ResourceDictionary>

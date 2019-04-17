@@ -2,6 +2,7 @@
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
@@ -11,8 +12,6 @@ using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.ViewModels;
 using OSharp.Beatmap;
-using osu.Shared;
-using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -22,6 +21,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Unosquare.FFME.Common;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -30,7 +30,7 @@ namespace Milky.OsuPlayer.Windows
         /// <summary>
         /// Call a file dialog to open custom file.
         /// </summary>
-        public string LoadFile()
+        private static string LoadFile()
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -39,6 +39,14 @@ namespace Milky.OsuPlayer.Windows
             };
             var result = openFileDialog.ShowDialog();
             return (result.HasValue && result.Value) ? openFileDialog.FileName : null;
+        }
+
+        public async Task PlayNewFile(Beatmap map)
+        {
+            string path = map.InOwnFolder
+              ? Path.Combine(Domain.CustomSongPath, map.FolderName, map.BeatmapFileName)
+              : Path.Combine(Domain.OsuSongPath, map.FolderName, map.BeatmapFileName);
+            await PlayNewFile(path);
         }
 
         public async Task PlayNewFile(string path)
@@ -60,12 +68,14 @@ namespace Milky.OsuPlayer.Windows
             var sw = Stopwatch.StartNew();
 
             var playerInst = InstanceManage.GetInstance<PlayersInst>();
-            ComponentPlayer audioPlayer = null;
             var dbInst = InstanceManage.GetInstance<OsuDbInst>();
-            if (path == null) return;
+            ComponentPlayer audioPlayer = null;
+
+            if (path == null)
+                return;
             if (File.Exists(path))
             {
-                try
+                //try
                 {
                     var osuFile = await OsuFile.ReadFromFileAsync(path); //50 ms
                     var fi = new FileInfo(path);
@@ -77,25 +87,18 @@ namespace Milky.OsuPlayer.Windows
                     ClearHitsoundPlayer();
 
                     /* Set new hitsound player*/
-                    playerInst.SetAudioPlayer(path, osuFile); //todo: 700 ms
+                    playerInst.SetAudioPlayer(path, osuFile);
                     audioPlayer = playerInst.AudioPlayer;
-                    await audioPlayer.InitializeAsync();
-                    audioPlayer.ProgressRefreshInterval = 500;
                     SignUpPlayerEvent(audioPlayer);
+                    await audioPlayer.InitializeAsync(); //700 ms
 
                     /* Set Meta */
                     var nowIdentity = new MapIdentity(fi.Directory.Name, osuFile.Metadata.Version);
 
                     MapInfo mapInfo = DbOperate.GetMapFromDb(nowIdentity);
-                    //BeatmapEntry entry = App.PlayerList.Entries.GetBeatmapByIdentity(nowIdentity);
-                    BeatmapEntry entry = dbInst.Beatmaps.FilterByIdentity(nowIdentity);
+                    Beatmap beatmap = BeatmapQuery.FilterByIdentity(nowIdentity);
 
-                    LblTitle.Content = osuFile.Metadata.TitleMeta.ToUnicodeString();
-                    LblArtist.Content = osuFile.Metadata.ArtistMeta.ToUnicodeString();
-                    ((ToolTip)NotifyIcon.TrayToolTip).Content =
-                        (string)LblArtist.Content + " - " + (string)LblTitle.Content;
-
-                    bool isFavourite = IsMapFavourite(mapInfo); //50 ms
+                    bool isFavorite = IsMapFavorite(mapInfo); //50 ms
 
                     audioPlayer.HitsoundOffset = mapInfo.Offset;
                     Offset.Value = audioPlayer.HitsoundOffset;
@@ -110,34 +113,34 @@ namespace Milky.OsuPlayer.Windows
                         osuFile.Metadata.TagList,
                         osuFile.Metadata.BeatmapId,
                         osuFile.Metadata.BeatmapSetId,
-                        entry != null
-                            ? (entry.DiffStarRatingStandard.ContainsKey(Mods.None)
-                                ? entry.DiffStarRatingStandard[Mods.None]
-                                : 0)
-                            : 0,
+                        beatmap?.DiffSrNoneStandard ?? 0,
                         osuFile.Difficulty.HpDrainRate,
                         osuFile.Difficulty.CircleSize,
                         osuFile.Difficulty.ApproachRate,
                         osuFile.Difficulty.OverallDifficulty,
-                        audioPlayer?.Duration ?? 0,
+                        audioPlayer.Duration,
                         nowIdentity,
                         mapInfo,
-                        entry,
-                        isFavourite); // 20 ms
+                        beatmap,
+                        isFavorite); // 20 ms
                     InstanceManage.GetInstance<PlayerList>().CurrentInfo = currentInfo;
                     ViewModel.Player.CurrentInfo = currentInfo;
-                    
+
+                    /*start of ui*/
+                    LblTitle.Content = osuFile.Metadata.TitleMeta.ToUnicodeString();
+                    LblArtist.Content = osuFile.Metadata.ArtistMeta.ToUnicodeString();
+                    ((ToolTip)NotifyIcon.TrayToolTip).Content =
+                        (string)LblArtist.Content + " - " + (string)LblTitle.Content;
+                    /*end of ui*/
+
                     /* Set Lyric */
                     SetLyricSynchronously();
 
                     /* Set Progress */
-                    //PlayProgress.Value = App.HitsoundPlayer.SingleOffset;
                     PlayProgress.Maximum = audioPlayer.Duration;
                     PlayProgress.Value = 0;
 
                     PlayerViewModel.Current.Duration = InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Duration;
-                    //LblTotal.Content = new TimeSpan(0, 0, 0, 0, audioPlayer.Duration).ToString(@"mm\:ss");
-                    //LblNow.Content = new TimeSpan(0, 0, 0, 0, audioPlayer.PlayTime).ToString(@"mm\:ss");
 
                     /* Set Storyboard */
                     if (true)
@@ -149,7 +152,7 @@ namespace Milky.OsuPlayer.Windows
                     bool showVideo = PlayerViewModel.Current.EnableVideo && !ViewModel.IsMiniMode;
                     if (VideoElement != null)
                     {
-                        await ClearVideoElement(showVideo);
+                        await SafelyRecreateVideoElement(showVideo);
 
                         if (showVideo)
                         {
@@ -157,7 +160,7 @@ namespace Milky.OsuPlayer.Windows
                             if (videoName == null)
                             {
                                 VideoElement.Source = null;
-                                VideoElementBorder.Visibility = System.Windows.Visibility.Hidden;
+                                VideoElementBorder.Visibility = Visibility.Hidden;
                             }
                             else
                             {
@@ -179,7 +182,7 @@ namespace Milky.OsuPlayer.Windows
                                 else
                                 {
                                     VideoElement.Source = null;
-                                    VideoElementBorder.Visibility = System.Windows.Visibility.Hidden;
+                                    VideoElementBorder.Visibility = Visibility.Hidden;
                                 }
                             }
                         }
@@ -228,57 +231,54 @@ namespace Milky.OsuPlayer.Windows
                     PlayerConfig.Current.CurrentPath = path;
                     PlayerConfig.SaveCurrent();
 
-                    //RunSurfaceUpdate();
                     DbOperate.UpdateMap(nowIdentity);
                 }
-                catch (RepeatTimingSectionException ex)
-                {
-                    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.OK)
-                    {
-                        if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
-                    }
-                }
-                catch (BadOsuFormatException ex)
-                {
-                    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.OK)
-                    {
-                        if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
-                    }
-                }
-                catch (VersionNotSupportedException ex)
-                {
-                    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.OK)
-                    {
-                        if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var result = MsgBox.Show(this, @"发生未处理的异常问题：" + (ex.InnerException ?? ex), Title,
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                    if (result == MessageBoxResult.OK)
-                    {
-                        if (audioPlayer == null) return;
-                        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
-                    }
+                //catch (RepeatTimingSectionException ex)
+                //{
+                //    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
+                //        MessageBoxImage.Warning);
+                //    if (result == MessageBoxResult.OK)
+                //    {
+                //        if (audioPlayer == null) return;
+                //        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
+                //    }
+                //}
+                //catch (BadOsuFormatException ex)
+                //{
+                //    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
+                //        MessageBoxImage.Warning);
+                //    if (result == MessageBoxResult.OK)
+                //    {
+                //        if (audioPlayer == null) return;
+                //        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
+                //    }
+                //}
+                //catch (VersionNotSupportedException ex)
+                //{
+                //    var result = MsgBox.Show(this, @"铺面读取时发生问题：" + ex.Message, Title, MessageBoxButton.OK,
+                //        MessageBoxImage.Warning);
+                //    if (result == MessageBoxResult.OK)
+                //    {
+                //        if (audioPlayer == null) return;
+                //        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
+                //    }
+                //}
+                //catch (Exception ex)
+                //{
+                //    var result = MsgBox.Show(this, @"发生未处理的异常问题：" + (ex.InnerException ?? ex), Title,
+                //        MessageBoxButton.OK, MessageBoxImage.Error);
+                //    if (result == MessageBoxResult.OK)
+                //    {
+                //        if (audioPlayer == null) return;
+                //        if (audioPlayer.PlayerStatus != PlayerStatus.Playing) await PlayNextAsync(false, true);
+                //    }
 
-                    Console.WriteLine(ex);
-                }
+                //    Console.WriteLine(ex);
+                //}
             }
             else
             {
-                MsgBox.Show(this, string.Format(@"所选文件不存在{0}。", InstanceManage.GetInstance<OsuDbInst>().Beatmaps == null
-                        ? ""
-                        : " ，可能是db没有及时更新。请关闭此播放器或osu后重试"),
+                MsgBox.Show(this, @"所选文件不存在，可能是db没有及时更新。请关闭此播放器或osu后重试。",
                     Title, MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
@@ -365,44 +365,90 @@ namespace Milky.OsuPlayer.Windows
             }
         }
 
-        private async Task ClearVideoElement(bool seek)
+        private async Task SafelyRecreateVideoElement(bool showVideo)
         {
             await Task.Run(async () =>
             {
                 await VideoElement.Stop();
                 Dispatcher.Invoke(() =>
                 {
-                    VideoElement.Position = new TimeSpan(0);
+                    VideoElement.Position = TimeSpan.Zero;
                     VideoElement.Source = null;
-                    VideoElement.Dispose();
+
+                    VideoElement.MediaOpened -= OnMediaOpened;
+                    VideoElement.MediaFailed -= OnMediaFailed;
+                    VideoElement.MediaEnded -= OnMediaEnded;
+                    VideoElement.SeekingStarted -= OnSeekingStarted;
+                    VideoElement.SeekingEnded -= OnSeekingEnded;
+
+                    //VideoElement.Dispose();
                     VideoElement = null;
                     VideoElementBorder.Visibility = Visibility.Hidden;
                     VideoElement = new Unosquare.FFME.MediaElement
                     {
                         IsMuted = true,
-                        LoadedBehavior = MediaState.Manual,
-                        Visibility = System.Windows.Visibility.Visible,
+                        LoadedBehavior = MediaPlaybackState.Manual,
+                        Visibility = Visibility.Visible,
                     };
-                    VideoElement.MediaOpened += VideoElement_MediaOpened;
-                    VideoElement.MediaFailed += VideoElement_MediaFailed;
-                    VideoElement.MediaEnded += (sender, e) => { VideoElement.Position = TimeSpan.FromSeconds(0); };
-                    if (seek)
+                    VideoElement.MediaOpened += OnMediaOpened;
+                    VideoElement.MediaFailed += OnMediaFailed;
+                    VideoElement.MediaEnded += OnMediaEnded;
+
+                    if (showVideo)
                     {
-                        VideoElement.SeekingStarted += (sender, e) => { };
-                        VideoElement.SeekingEnded += (sender, e) =>
-                        {
-                            if (!_videoPlay) return;
-                            PlayMedia();
-                        };
+                        VideoElement.SeekingStarted += OnSeekingStarted;
+                        VideoElement.SeekingEnded += OnSeekingEnded;
                     }
+
                     VideoElementBorder.Children.Add(VideoElement);
                 });
             });
+
+            async void OnMediaOpened(object sender, MediaOpenedEventArgs e)
+            {
+                VideoElementBorder.Visibility = Visibility.Visible;
+                if (!_videoPlay)
+                    return;
+                await Task.Run(() => _waitAction?.Invoke());
+
+                if (VideoElement == null/* || VideoElement.IsDisposed*/)
+                    return;
+                await VideoElement.Play();
+                VideoElement.Position = _position;
+            }
+
+            async void OnMediaFailed(object sender, MediaFailedEventArgs e)
+            {
+                VideoElementBorder.Visibility = Visibility.Hidden;
+                //MsgBox.Show(this, e.ErrorException.ToString(), "不支持的视频格式", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (!_videoPlay)
+                    return;
+                await SafelyRecreateVideoElement(false);
+                PlayMedia();
+            }
+
+            void OnMediaEnded(object sender, EventArgs e)
+            {
+                if (VideoElement == null /*|| VideoElement.IsDisposed*/)
+                    return;
+                VideoElement.Position = TimeSpan.Zero;
+            }
+
+            void OnSeekingStarted(object sender, EventArgs e)
+            { }
+
+            void OnSeekingEnded(object sender, EventArgs e)
+            {
+                if (!_videoPlay)
+                    return;
+                PlayMedia();
+            }
         }
 
         private void PlayMedia()
         {
-            if (_forcePaused) return;
+            if (_forcePaused)
+                return;
             InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Play();
             // Todo: Set Storyboard
         }
@@ -417,12 +463,13 @@ namespace Milky.OsuPlayer.Windows
         /// Play next song in list if list exist.
         /// </summary>
         /// <param name="isManual">Whether it is called by user (Click next button manually)
-        /// or called by application (A song finshed).</param>
+        /// or called by application (A song finished).</param>
         /// <param name="isNext"></param>
         private async Task PlayNextAsync(bool isManual, bool isNext)
         {
-            if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null) return;
-            (PlayerList.ChangeType result, BeatmapEntry entry) = await InstanceManage.GetInstance<PlayerList>().PlayToAsync(isNext, isManual);
+            if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null)
+                return;
+            (PlayerList.ChangeType result, Beatmap map) = await InstanceManage.GetInstance<PlayerList>().PlayToAsync(isNext, isManual);
             switch (result)
             {
                 //case PlayerList.ChangeType.Keep:
@@ -439,16 +486,17 @@ namespace Milky.OsuPlayer.Windows
                     break;
                 case PlayerList.ChangeType.Change:
                 default:
-                    var path = Path.Combine(new FileInfo(PlayerConfig.Current.General.DbPath).Directory.FullName, "Songs",
-                        entry.FolderName, entry.BeatmapFileName);
-                    await PlayNewFile(path);
+                    //var path = Path.Combine(new FileInfo(PlayerConfig.Current.General.DbPath).Directory.FullName, "Songs",
+                    //    entry.FolderName, entry.BeatmapFileName);
+                    //await PlayNewFile(path);
+                    await PlayNewFile(map);
                     break;
             }
         }
 
         private void ClearHitsoundPlayer()
         {
-            InstanceManage.GetInstance<PlayersInst>().ClearAudioPlayer();
+            InstanceManage.GetInstance<PlayersInst>()?.ClearAudioPlayer();
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Common.Player;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Player;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
 using System;
@@ -10,8 +11,7 @@ using System.Windows.Input;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-
-    internal class PlayerViewModel : ViewModelBase
+    public class PlayerViewModel : ViewModelBase
     {
         public static PlayerViewModel Current { get; set; }
 
@@ -24,6 +24,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private PlayerViewModel()
         {
+            CurrentVolume = PlayerConfig.Current.Volume;
         }
 
         private bool _isPlaying;
@@ -32,8 +33,8 @@ namespace Milky.OsuPlayer.ViewModels
 
         private long _position;
         private long _duration;
-        private bool _isFavourite;
         private CurrentInfo _currentInfo;
+        private VolumeControl _currentVolume;
 
         public PlayListMode PlayListMode
         {
@@ -94,5 +95,16 @@ namespace Milky.OsuPlayer.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public VolumeControl CurrentVolume
+        {
+            get => _currentVolume;
+            private set
+            {
+                _currentVolume = value;
+                OnPropertyChanged();
+            }
+        }
+
     }
 }

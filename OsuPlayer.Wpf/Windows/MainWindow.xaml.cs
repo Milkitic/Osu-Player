@@ -29,6 +29,7 @@ namespace Milky.OsuPlayer.Windows
             ExportPage = new ExportPage(this),
         };
         internal MainWindowViewModel ViewModel { get; }
+        public WelcomeViewModel WelcomeViewModel { get; }
 
         public readonly LyricWindow LyricWindow;
         public ConfigWindow ConfigWindow;
@@ -48,22 +49,16 @@ namespace Milky.OsuPlayer.Windows
         {
             InitializeComponent();
             ViewModel = (MainWindowViewModel)DataContext;
+            WelcomeViewModel= (WelcomeViewModel) WelcomeArea.DataContext;
             PlayerViewModel.InitViewModel();
             ViewModel.Player = PlayerViewModel.Current;
             LyricWindow = new LyricWindow(this);
+            if (PlayerConfig.Current.Lyric.EnableLyric)
+                LyricWindow.Show();
 
-            LyricWindow.Show();
             OverallKeyHook = new OverallKeyHook(this);
             TryBindHotkeys();
-            Unosquare.FFME.MediaElement.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg");
-        }
-
-        private bool ValidateDb()
-        {
-            if (App.UseDbMode)
-                return true;
-            MsgBox.Show(this, "你尚未初始化osu!db，因此该功能不可用。", Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-            return false;
+            Unosquare.FFME.Library.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg");
         }
 
         private void TryBindHotkeys()
@@ -87,10 +82,10 @@ namespace Milky.OsuPlayer.Windows
             });
             OverallKeyHook.AddKeyHook(page.Lyric.Name, () =>
             {
-                if (LyricWindow.IsHide)
-                    LyricWindow.Show();
-                else
+                if (LyricWindow.IsShown)
                     LyricWindow.Hide();
+                else
+                    LyricWindow.Show();
             });
         }
 
@@ -113,14 +108,5 @@ namespace Milky.OsuPlayer.Windows
 
             return IntPtr.Zero;
         }
-    }
-
-    public class PageParts
-    {
-        public SearchPage SearchPage { get; set; }
-        public StoryboardPage StoryboardPage { get; set; }
-        public RecentPlayPage RecentPlayPage { get; set; }
-        public FindPage FindPage { get; set; }
-        public ExportPage ExportPage { get; set; }
     }
 }

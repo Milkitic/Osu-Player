@@ -3,20 +3,38 @@ using Milky.OsuPlayer.Common.Player;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
+using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    internal class MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : ViewModelBase
     {
+        public static MainWindowViewModel Current { get; private set; }
+
+        public MainWindowViewModel()
+        {
+            Current = this;
+        }
+
         private bool _isNavigationCollapsed;
         private bool _isMiniMode;
-        private List<Collection> _collection;
-        private bool _isLyricWindowShown;
+        private ObservableCollection<Collection> _collection;
         private bool _isLyricWindowLocked;
-        private bool _isSyncing;
         private PlayerViewModel _player;
+        private LyricWindowViewModel _lyricWindowViewModel;
+
+        public LyricWindowViewModel LyricWindowViewModel
+        {
+            get => _lyricWindowViewModel;
+            set
+            {
+                _lyricWindowViewModel = value;
+                OnPropertyChanged();
+            }
+        }
 
         public bool IsNavigationCollapsed
         {
@@ -38,16 +56,6 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public bool IsLyricWindowShown
-        {
-            get => _isLyricWindowShown;
-            set
-            {
-                _isLyricWindowShown = value;
-                OnPropertyChanged();
-            }
-        }
-
         public bool IsLyricWindowLocked
         {
             get => _isLyricWindowLocked;
@@ -58,17 +66,7 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public bool IsSyncing
-        {
-            get => _isSyncing;
-            set
-            {
-                _isSyncing = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public List<Collection> Collection
+        public ObservableCollection<Collection> Collection
         {
             get => _collection;
             set

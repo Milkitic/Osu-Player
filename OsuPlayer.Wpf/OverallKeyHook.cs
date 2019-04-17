@@ -84,7 +84,7 @@ namespace Milky.OsuPlayer
                 _holdingAlt = false;
             else
             {
-
+                // ignore
             }
         }
 
@@ -95,6 +95,4 @@ namespace Milky.OsuPlayer
             _globalHook.Dispose();
         }
     }
-
-
 }

@@ -1,7 +1,7 @@
 ﻿using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Instances;
-using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +13,7 @@ namespace Milky.OsuPlayer.Common.Player
         private int _pointer;
         public PlayerMode PlayerMode { get; set; } = PlayerMode.Loop;
         public PlayListMode PlayListMode { get; set; }
-        public List<BeatmapEntry> Entries { get; set; } = new List<BeatmapEntry>();
+        public List<Beatmap> Entries { get; set; } = new List<Beatmap>();
         public List<int> Indexes { get; set; } = new List<int>();
         //public MapIdentity NowIdentity { get; set; }
         public CurrentInfo CurrentInfo { get; set; }
@@ -29,12 +29,12 @@ namespace Milky.OsuPlayer.Common.Player
         /// </summary>
         /// <param name="freshType"></param>
         /// <param name="playListMode">If the value is null, current mode will not be infected.</param>
-        /// <param name="entries">If the value is not null, current mode will forcly changed to collection mode.</param>
+        /// <param name="beatmaps">If the value is not null, current mode will forcly changed to collection mode.</param>
         /// <param name="finishList"></param>
         public async Task RefreshPlayListAsync(
             FreshType freshType,
             PlayListMode? playListMode = null,
-            IEnumerable<BeatmapEntry> entries = null, bool finishList = false)
+            IEnumerable<Beatmap> beatmaps = null, bool finishList = false)
         {
             bool force = false;
             if (playListMode != null)
@@ -43,22 +43,22 @@ namespace Milky.OsuPlayer.Common.Player
                     force = true;
                 PlayListMode = playListMode.Value;
             }
-            if (entries != null)
+            if (beatmaps != null)
                 PlayListMode = PlayListMode.Collection;
-            if (force || entries != null || freshType == FreshType.All || Entries.Count == 0)
+            if (force || beatmaps != null || freshType == FreshType.All || Entries.Count == 0)
                 switch (PlayListMode)
                 {
                     case PlayListMode.RecentList:
-                        Entries = InstanceManage.GetInstance<OsuDbInst>().BeatmapDb.Beatmaps.GetRecentListFromDb().ToList();
+                        Entries = BeatmapQuery.GetRecentListFromDb().ToList();
                         break;
                     default:
                     case PlayListMode.Collection:
-                        if (entries != null)
-                            Entries = await Task.Run(() => entries.ToList()); //todo: 150ms
+                        if (beatmaps != null)
+                            Entries = await Task.Run(() => beatmaps.ToList()); //todo: 150ms
                         break;
                 }
 
-            if (force || entries != null || freshType != FreshType.None || Indexes == null || Indexes.Count == 0)
+            if (force || beatmaps != null || freshType != FreshType.None || Indexes == null || Indexes.Count == 0)
                 switch (PlayerMode)
                 {
                     default:
@@ -103,8 +103,7 @@ namespace Milky.OsuPlayer.Common.Player
         /// <param name="isNext">Play next or previous depends on if true or false</param>
         /// <param name="isManual">Whether it is called by user (Click next button manually)
         /// or called by application (A song finshed).</param>
-        /// <param name="entry"></param>
-        public async Task<(ChangeType, BeatmapEntry)> PlayToAsync(bool isNext, bool isManual)
+        public async Task<(ChangeType, Beatmap)> PlayToAsync(bool isNext, bool isManual)
         {
             if (!isNext)
                 Pointer--;
