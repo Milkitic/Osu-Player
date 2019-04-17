@@ -21,4 +21,4 @@ After that, ppen `OsuPlayer.sln` with an IDE that supports .NET Framework 4.6 an
 * Interface: DMSkin, FFME.Windows, Hardcodet.NotifyIcon.Wpf
 * Func: MouseKeyHook
 * Data: HoLLy.osu.DatabaseReader, OSharp.Beatmap, OSharp.Storyboard, System.Data.SQLite.Core, System.Data.SQLite.EF6.Migrations
-* Audio: NAudio, NAudio.Vorbis, SharpDX.XAudio2
+* Audio: NAudio, NAudio.Vorbis
