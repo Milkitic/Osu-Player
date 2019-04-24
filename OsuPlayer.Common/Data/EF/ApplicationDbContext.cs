@@ -9,8 +9,7 @@ namespace Milky.OsuPlayer.Common.Data.EF
     {
         static ApplicationDbContext()
         {
-            Database.SetInitializer(
-                new MigrateDatabaseToLatestVersion<ApplicationDbContext, MigrationConfiguration>(true));
+            //Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, MigrationConfiguration>(true));
         }
 
         public DbSet<MapInfo> MapInfos { get; set; }
