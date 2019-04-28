@@ -33,16 +33,20 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void RunOnStartup_CheckChanged(object sender, RoutedEventArgs e)
         {
-            RegistryKey rKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
-            if (RunOnStartup.IsChecked.HasValue && RunOnStartup.IsChecked.Value)
+            var isRunOnStartup = RunOnStartup.IsChecked == true;
+
+            using (var rKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run"))
             {
-                rKey?.SetValue("OsuPlayer", Process.GetCurrentProcess().MainModule.FileName);
-                PlayerConfig.Current.General.RunOnStartup = true;
-            }
-            else
-            {
-                rKey?.DeleteValue("OsuPlayer", false);
-                PlayerConfig.Current.General.RunOnStartup = false;
+                if (isRunOnStartup)
+                {
+                    rKey?.SetValue("OsuPlayer", Process.GetCurrentProcess().MainModule.FileName);
+                    PlayerConfig.Current.General.RunOnStartup = true;
+                }
+                else
+                {
+                    rKey?.DeleteValue("OsuPlayer", false);
+                    PlayerConfig.Current.General.RunOnStartup = false;
+                }
             }
 
             PlayerConfig.SaveCurrent();
