@@ -851,6 +851,7 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                     <ColumnDefinition />
+                                    <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
                                     <Slider x:Name="MasterVolume" Orientation="Vertical" HorizontalAlignment="Center"
@@ -877,6 +878,15 @@
                                             Style="{StaticResource VerticalSliderWhiteStyle}"
                                             Thumb.DragCompleted="HitsoundVolume_DragComplete" Height="70" />
                                     <Label Content="音效" Margin="0,-5,0,0" HorizontalAlignment="Center"
+                                           Foreground="White" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="3">
+                                    <Slider x:Name="SampleVolume" Orientation="Vertical" HorizontalAlignment="Center"
+                                            Margin="10,5"
+                                            Maximum="1" Value="{Binding Player.CurrentVolume.Sample, Mode=TwoWay}"
+                                            Style="{StaticResource VerticalSliderWhiteStyle}"
+                                            Thumb.DragCompleted="SampleVolume_DragComplete" Height="70" />
+                                    <Label Content="音轨" Margin="0,-5,0,0" HorizontalAlignment="Center"
                                            Foreground="White" />
                                 </StackPanel>
                             </Grid>

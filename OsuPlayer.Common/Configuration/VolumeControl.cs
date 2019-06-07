@@ -8,6 +8,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         private float _main = 0.8f;
         private float _bgm = 1;
         private float _hs = 0.9f;
+        private float _sample = 0.85f;
 
         public float Main
         {
@@ -32,6 +33,15 @@ namespace Milky.OsuPlayer.Common.Configuration
             get => _hs; set
             {
                 SetValue(ref _hs, value);
+                OnPropertyChanged();
+            }
+        }
+
+        public float Sample
+        {
+            get => _sample; set
+            {
+                SetValue(ref _sample, value);
                 OnPropertyChanged();
             }
         }

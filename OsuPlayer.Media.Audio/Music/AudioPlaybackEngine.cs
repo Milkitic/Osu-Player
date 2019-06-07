@@ -13,6 +13,13 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         private readonly IWavePlayer _outputDevice;
         private readonly MixingSampleProvider _mixer;
+        private VolumeSampleProvider _volumeProvider;
+
+        public float Volume
+        {
+            get => _volumeProvider.Volume;
+            set => _volumeProvider.Volume = value;
+        }
 
         public AudioPlaybackEngine(int sampleRate = 44100, int channelCount = 2)
         {
@@ -21,8 +28,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             {
                 ReadFully = true
             };
-
-            _outputDevice.Init(_mixer);
+            _volumeProvider = new VolumeSampleProvider(_mixer);
+            _outputDevice.Init(_volumeProvider);
             _outputDevice.Play();
         }
 

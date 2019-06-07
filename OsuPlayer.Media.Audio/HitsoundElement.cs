@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Milky.OsuPlayer.Common;
@@ -65,10 +66,10 @@ namespace Milky.OsuPlayer.Media.Audio
                 var name = _fileNamesWithoutTrack[i] + (Track > 1 && string.IsNullOrWhiteSpace(CustomFile) ? Track.ToString() : "");
                 if (_mapWaveFiles.Contains(name))
                 {
-                    var path= Path.Combine(_mapFolderName, name + _wavExtension);
+                    var path = Path.Combine(_mapFolderName, name + _wavExtension);
                     if (!File.Exists(path))
                     {
-                         path = Path.Combine(_mapFolderName, name + _oggExtension);
+                        path = Path.Combine(_mapFolderName, name + _oggExtension);
                     }
 
                     FilePaths[i] = path;

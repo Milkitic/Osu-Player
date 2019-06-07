@@ -584,6 +584,14 @@ namespace Milky.OsuPlayer.Windows
         }
 
         /// <summary>
+        /// Sample Volume Settings
+        /// </summary>
+        private void SampleVolume_DragComplete(object sender, DragCompletedEventArgs e)
+        {
+            PlayerConfig.SaveCurrent();
+        }
+
+        /// <summary>
         /// Offset Settings
         /// </summary>
         private void Offset_DragDelta(object sender, DragDeltaEventArgs e)

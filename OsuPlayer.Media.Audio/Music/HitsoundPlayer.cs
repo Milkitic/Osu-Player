@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Milky.OsuPlayer.Media.Audio.Music
 {
-    internal sealed class HitsoundPlayer : Player, IDisposable
+    internal class HitsoundPlayer : Player, IDisposable
     {
         static HitsoundPlayer()
         {
@@ -59,7 +59,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                               !_offsetTask.IsCompleted &&
                                               !_offsetTask.IsFaulted;
 
-        AudioPlaybackEngine _engine = new AudioPlaybackEngine();
+        protected AudioPlaybackEngine Engine = new AudioPlaybackEngine();
 
         private readonly string _defaultDir = Domain.DefaultPath;
         private ConcurrentQueue<HitsoundElement> _hsQueue;
@@ -97,14 +97,25 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             var allPaths = hitsoundList.Select(t => t.FilePaths).SelectMany(sbx2 => sbx2).Distinct();
             await Task.Run(() =>
             {
-                _engine.CreateCacheSounds(allPaths);
+                Engine.CreateCacheSounds(allPaths);
             });
-
             PlayerStatus = PlayerStatus.Ready;
             SetPlayMod(PlayerConfig.Current.Play.PlayMod, false);
-
+            InitVolume();
+            PlayerConfig.Current.Volume.PropertyChanged += Volume_PropertyChanged;
             RaisePlayerLoadedEvent(this, new EventArgs());
         }
+
+        protected virtual void InitVolume()
+        {
+            Engine.Volume = 1f * PlayerConfig.Current.Volume.Hitsound * PlayerConfig.Current.Volume.Main;
+        }
+
+        protected virtual void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            Engine.Volume = 1f * PlayerConfig.Current.Volume.Hitsound * PlayerConfig.Current.Volume.Main;
+        }
+
 
         public void SetPlayMod(PlayMod mod, bool play)
         {
@@ -194,13 +205,20 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 Task.WaitAll(_playingTask);
             _playingTask?.Dispose();
             _cts?.Dispose();
-            _engine?.Dispose();
+            Engine?.Dispose();
+
+            PlayerConfig.Current.Volume.PropertyChanged -= Volume_PropertyChanged;
+
             GC.Collect();
         }
 
         internal void SetDuration(int musicPlayerDuration)
         {
-            Duration = (int)Math.Ceiling(Math.Max(_hitsoundList.Max(k => k.Offset), musicPlayerDuration));
+            Duration = (int)Math.Ceiling(_hitsoundList.Count == 0
+                ? 0
+                : Math.Max(_hitsoundList.Max(k => k.Offset),
+                    musicPlayerDuration)
+            );
         }
 
         private void PlayHitsound()
@@ -225,7 +243,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
                         foreach (var path in hs.FilePaths)
                         {
-                            Task.Run(() => _engine.PlaySound(path, hs.Volume * 1f * PlayerConfig.Current.Volume.Hitsound * PlayerConfig.Current.Volume.Main));
+                            Task.Run(() => Engine.PlaySound(path, hs.Volume * 1f));
                         }
                     }
                 }
@@ -298,7 +316,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         #region Load
 
-        private List<HitsoundElement> FillHitsoundList(OsuFile osuFile, DirectoryInfo dirInfo)
+        protected virtual List<HitsoundElement> FillHitsoundList(OsuFile osuFile, DirectoryInfo dirInfo)
         {
             List<RawHitObject> hitObjects = _osuFile.HitObjects.HitObjectList;
             List<HitsoundElement> hitsoundList = new List<HitsoundElement>();
