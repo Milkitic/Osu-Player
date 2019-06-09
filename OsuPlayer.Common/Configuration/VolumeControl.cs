@@ -9,7 +9,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         private float _bgm = 1;
         private float _hs = 0.9f;
         private float _sample = 0.85f;
-
+        private float _balanceFactor = 0.30f;
         public float Main
         {
             get => _main;
@@ -22,7 +22,8 @@ namespace Milky.OsuPlayer.Common.Configuration
 
         public float Music
         {
-            get => _bgm; set
+            get => _bgm;
+            set
             {
                 SetValue(ref _bgm, value);
                 OnPropertyChanged();
@@ -30,7 +31,8 @@ namespace Milky.OsuPlayer.Common.Configuration
         }
         public float Hitsound
         {
-            get => _hs; set
+            get => _hs;
+            set
             {
                 SetValue(ref _hs, value);
                 OnPropertyChanged();
@@ -39,9 +41,19 @@ namespace Milky.OsuPlayer.Common.Configuration
 
         public float Sample
         {
-            get => _sample; set
+            get => _sample;
+            set
             {
                 SetValue(ref _sample, value);
+                OnPropertyChanged();
+            }
+        }
+        public float BalanceFactor
+        {
+            get => _balanceFactor * 100;
+            set
+            {
+                SetValue(ref _balanceFactor, value / 100f);
                 OnPropertyChanged();
             }
         }

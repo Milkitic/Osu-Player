@@ -28,7 +28,8 @@ namespace Milky.OsuPlayer.Media.Audio
             ObjectSamplesetType sample,
             ObjectSamplesetType addition,
             string customFile,
-            float volume)
+            float volume,
+            float balance)
         {
             _mapFolderName = mapFolderName;
             _mapWaveFiles = mapWaveFiles;
@@ -41,7 +42,7 @@ namespace Milky.OsuPlayer.Media.Audio
             Addition = addition;
             CustomFile = customFile;
             Volume = volume;
-
+            Balance = balance;
             SetNamesWithoutTrack();
             SetFullPath();
         }
@@ -49,6 +50,7 @@ namespace Milky.OsuPlayer.Media.Audio
         public GameMode GameMode { get; }
         public double Offset { get; }
         public float Volume { get; }
+        public float Balance { get; }
         public HitsoundType Hitsound { get; }
         public int Track { get; }
         public TimingSamplesetType LineSample { get; }

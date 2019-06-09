@@ -827,7 +827,7 @@
                 </Border>
             </Grid>
             <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Pop" PopupAnimation="Fade"
-                   Width="150" HorizontalOffset="-113"
+                   Width="160" HorizontalOffset="-113"
                    PlacementTarget="{Binding ElementName=VolumeButton}" Placement="Top" AllowsTransparency="True"
                    StaysOpen="False">
                 <Grid Margin="5">
@@ -859,7 +859,7 @@
                                             Maximum="1" Value="{Binding Player.CurrentVolume.Main,Mode=TwoWay}"
                                             Style="{StaticResource VerticalSliderWhiteStyle}"
                                             Thumb.DragCompleted="MasterVolume_DragComplete" Height="70" />
-                                    <Label Content="主音量" Margin="0,-5,0,0" HorizontalAlignment="Center"
+                                    <Label Content="总体" Margin="0,-5,0,0" HorizontalAlignment="Center"
                                            Foreground="White" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
@@ -892,6 +892,16 @@
                             </Grid>
                             <Grid Grid.Row="1">
                                 <StackPanel>
+                                    <Slider x:Name="Balance" Orientation="Horizontal" Margin="10,5"
+                                            Style="{StaticResource HorizontalSliderWhiteStyle}"
+                                            Value="{Binding Player.CurrentVolume.BalanceFactor, Mode=TwoWay}"
+                                            Thumb.DragCompleted="Balance_DragComplete" 
+                                            Minimum="0"
+                                            Maximum="100"
+                                            TickFrequency="1"
+                                            AutoToolTipPlacement="BottomRight" />
+                                    <Label Content="3D差异度" Margin="0,-5,0,0" HorizontalAlignment="Center"
+                                           Foreground="White" />
                                     <Slider x:Name="Offset" Orientation="Horizontal" Margin="10,5"
                                             Maximum="200" Style="{StaticResource HorizontalSliderWhiteStyle}"
                                             Thumb.DragDelta="Offset_DragDelta" Minimum="-200"

@@ -525,6 +525,9 @@
     <Resource Include="Resources\volume.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="player.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\gear.png" />
     <Resource Include="Resources\gear_s.png" />
     <Resource Include="Resources\heart_disable_s.png" />

@@ -592,6 +592,14 @@ namespace Milky.OsuPlayer.Windows
         }
 
         /// <summary>
+        /// Balance Settings
+        /// </summary>
+        private void Balance_DragComplete(object sender, DragCompletedEventArgs e)
+        {
+            PlayerConfig.SaveCurrent();
+        }
+
+        /// <summary>
         /// Offset Settings
         /// </summary>
         private void Offset_DragDelta(object sender, DragDeltaEventArgs e)

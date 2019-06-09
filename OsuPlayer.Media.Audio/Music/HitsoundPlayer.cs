@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using OSharp.Beatmap.Sections.GamePlay;
 
 namespace Milky.OsuPlayer.Media.Audio.Music
 {
@@ -243,7 +244,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
                         foreach (var path in hs.FilePaths)
                         {
-                            Task.Run(() => Engine.PlaySound(path, hs.Volume * 1f));
+                            Engine.PlaySound(path, hs.Volume * 1f,
+                                hs.Balance * PlayerConfig.Current.Volume.BalanceFactor / 100f);
+                            //Task.Run(() =>);
                         }
                     }
                 }
@@ -334,6 +337,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                     {
                         //var currentTiming = file.TimingPoints.GetRedLine(item.Offset);
                         var currentLine = _osuFile.TimingPoints.GetLine(item.Offset);
+                        float balance = GetObjectBalance(item.Point.X);
+
                         var element = new HitsoundElement(
                             mapFolderName: dirInfo.FullName,
                             mapWaveFiles: mapWaves,
@@ -345,7 +350,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                             sample: item.EdgeSample,
                             addition: item.EdgeAddition,
                             customFile: obj.FileName,
-                            volume: (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f
+                            volume: (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f,
+                            balance: balance
                         );
 
                         hitsoundList.Add(element);
@@ -356,6 +362,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                     //var currentTiming = file.TimingPoints.GetRedLine(obj.Offset);
                     var currentLine = _osuFile.TimingPoints.GetLine(obj.Offset);
                     var offset = obj.Offset; //todo: Spinner & hold
+
+                    float balance = GetObjectBalance(obj.X);
 
                     var element = new HitsoundElement(
                         mapFolderName: dirInfo.FullName,
@@ -368,7 +376,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                         sample: obj.SampleSet,
                         addition: obj.AdditionSet,
                         customFile: obj.FileName,
-                        volume: (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f
+                        volume: (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f,
+                        balance: balance
                     );
 
                     hitsoundList.Add(element);
@@ -376,6 +385,20 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             }
 
             return hitsoundList;
+
+            float GetObjectBalance(float x)
+            {
+                if (osuFile.General.Mode != GameMode.Circle && osuFile.General.Mode != GameMode.Catch)
+                {
+                    return 1;
+                }
+
+                if (x > 512) x = 512;
+                else if (x < 0) x = 0;
+
+                float balance = (x - 256f) / 256f;
+                return balance;
+            }
         }
 
         #endregion Load

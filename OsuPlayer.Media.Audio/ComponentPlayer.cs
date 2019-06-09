@@ -2,13 +2,11 @@
 using Milky.OsuPlayer.Media.Audio.Music;
 using OSharp.Beatmap;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
@@ -166,50 +164,6 @@ namespace Milky.OsuPlayer.Media.Audio
             SampleTrackPlayer?.Dispose();
             MusicPlayer?.Dispose();
             Current = null;
-        }
-    }
-
-    internal class SampleTrackPlayer : HitsoundPlayer
-    {
-        public SampleTrackPlayer(string filePath, OsuFile osuFile) : base(filePath, osuFile)
-        {
-        }
-        protected override void InitVolume()
-        {
-            Engine.Volume = 1f * PlayerConfig.Current.Volume.Sample * PlayerConfig.Current.Volume.Main;
-        }
-
-        protected override void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            Engine.Volume = 1f * PlayerConfig.Current.Volume.Sample * PlayerConfig.Current.Volume.Main;
-        }
-
-        protected override List<HitsoundElement> FillHitsoundList(OsuFile osuFile, DirectoryInfo dirInfo)
-        {
-            List<HitsoundElement> hitsoundList = new List<HitsoundElement>();
-            var sampleList = osuFile.Events.SampleInfo;
-            if (sampleList == null)
-                return hitsoundList;
-            foreach (var sampleData in sampleList)
-            {
-                var element = new HitsoundElement(
-                    mapFolderName: dirInfo.FullName,
-                    mapWaveFiles: new string [0],
-                    gameMode: osuFile.General.Mode,
-                    offset: sampleData.Offset,
-                    track: -1,
-                    lineSample: OSharp.Beatmap.Sections.Timing.TimingSamplesetType.None,
-                    hitsound: OSharp.Beatmap.Sections.HitObject.HitsoundType.Normal,
-                    sample: OSharp.Beatmap.Sections.HitObject.ObjectSamplesetType.Auto,
-                    addition: OSharp.Beatmap.Sections.HitObject.ObjectSamplesetType.Auto,
-                    customFile: sampleData.Filename,
-                    volume: sampleData.Volume / 100f
-                );
-
-                hitsoundList.Add(element);
-            }
-
-            return hitsoundList;
         }
     }
 }
