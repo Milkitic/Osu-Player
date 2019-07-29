@@ -1,18 +1,21 @@
-﻿<Page x:Class="Milky.OsuPlayer.Pages.ExportPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:beatmaps="clr-namespace:osu_database_reader.Components.Beatmaps;assembly=osu-database-reader"
-      xmlns:models="clr-namespace:Milky.OsuPlayer"
-      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-      xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib"
-      xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
-      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-      xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
-      mc:Ignorable="d"
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="ExportPage" Loaded="Page_Loaded">
+﻿<Page
+    x:Class="Milky.OsuPlayer.Pages.ExportPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:beatmaps="clr-namespace:osu_database_reader.Components.Beatmaps;assembly=osu-database-reader"
+    xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:Milky.OsuPlayer"
+    xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+    Title="ExportPage"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Loaded="Page_Loaded"
+    mc:Ignorable="d">
     <Page.DataContext>
         <viewModels:ExportPageViewModel />
     </Page.DataContext>
@@ -23,36 +26,45 @@
     </i:Interaction.Triggers>-->
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
-            <TabItem Style="{StaticResource PinkTabItem}"
-                     WindowChrome.IsHitTestVisibleInChrome="True"
-                     Cursor="Hand">
+            <TabItem
+                Cursor="Hand"
+                Style="{StaticResource PinkTabItem}"
+                WindowChrome.IsHitTestVisibleInChrome="True">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding UiStrExported}" FontSize="16" />
+                    <TextBlock FontSize="16" Text="{Binding UiStrExported}" />
                 </TabItem.Header>
-                <Grid Background="Transparent"
-                      Cursor="Arrow">
+                <Grid Background="Transparent" Cursor="Arrow">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
                     <!--<Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="#10303030"/>-->
                     <Grid Grid.Row="0" Margin="10">
-                       <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition/>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <dms:DMButton Grid.Column="0" x:Name="BtnExportAll" Width="auto" Margin="5" Height="28"
-                                      CornerRadius="5"
-                                      BorderThickness="1"
-                                      Command="{Binding ItemFolderCommand}"
-                                      CommandParameter="{Binding ExportPath}"
-                                      Cursor="Hand" Background="#FAFAFB">
-                            <StackPanel Orientation="Horizontal" Margin="10,0">
-                                <Viewbox Stretch="Uniform" Width="16" Height="16">
+                        <dms:DMButton
+                            x:Name="BtnExportAll"
+                            Grid.Column="0"
+                            Width="auto"
+                            Height="28"
+                            Margin="5"
+                            Background="#FAFAFB"
+                            BorderThickness="1"
+                            Command="{Binding ItemFolderCommand}"
+                            CommandParameter="{Binding ExportPath}"
+                            CornerRadius="5"
+                            Cursor="Hand">
+                            <StackPanel Margin="10,0" Orientation="Horizontal">
+                                <Viewbox
+                                    Width="16"
+                                    Height="16"
+                                    Stretch="Uniform">
                                     <Canvas Width="1000" Height="1000">
                                         <Path Fill="#303030">
                                             <Path.Data>
-                                                <PathGeometry Figures="M102.5 919.2c-51 0-92.5-41.5-92.5-92.5V173.3c0-51 41.5-92.5 92.5-92.5h287.1c47.7 0 87.3 35.8 92 83.2l0.3 4.5c2.1 20.4 19.2 35.8 39.8 35.8h375.8c51 0 92.5 41.5 92.5 92.5v530c0 51-41.5 92.5-92.5 92.5H102.5z M80.3 809.4c0 22 17.9 40 40 40h758.6c22.1 0 40-18 40-40V388.7H80.3V809.4z M918.7 317.9c0-24.6-8.8-45.5-39.8-45.5H521.7c-46.4 0-85.1-33.8-91.6-79.3l-0.8-8.4c-2.1-20.4-19.2-35.8-39.8-35.8H120.3c-22.1 0-40 18-40 40v129H918.7z" FillRule="NonZero"/>
+                                                <PathGeometry Figures="M102.5 919.2c-51 0-92.5-41.5-92.5-92.5V173.3c0-51 41.5-92.5 92.5-92.5h287.1c47.7 0 87.3 35.8 92 83.2l0.3 4.5c2.1 20.4 19.2 35.8 39.8 35.8h375.8c51 0 92.5 41.5 92.5 92.5v530c0 51-41.5 92.5-92.5 92.5H102.5z M80.3 809.4c0 22 17.9 40 40 40h758.6c22.1 0 40-18 40-40V388.7H80.3V809.4z M918.7 317.9c0-24.6-8.8-45.5-39.8-45.5H521.7c-46.4 0-85.1-33.8-91.6-79.3l-0.8-8.4c-2.1-20.4-19.2-35.8-39.8-35.8H120.3c-22.1 0-40 18-40 40v129H918.7z" FillRule="NonZero" />
                                             </Path.Data>
                                         </Path>
                                     </Canvas>
@@ -60,85 +72,113 @@
                                 <Label Content="打开目录" />
                             </StackPanel>
                         </dms:DMButton>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                            <Label Content="{Binding UiStrExportPath}"
-                                   Foreground="#303030"
-                                   Margin="0,0,-10,0"/>
-                            <Label Content=": " Foreground="#303030" Margin="0,0,-10,0"/>
+                        <StackPanel
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Label
+                                Margin="0,0,-10,0"
+                                Content="{Binding UiStrExportPath}"
+                                Foreground="#303030" />
+                            <Label
+                                Margin="0,0,-10,0"
+                                Content=": "
+                                Foreground="#303030" />
                             <Label Content="{Binding ExportPath}" Foreground="#303030" />
                         </StackPanel>
                     </Grid>
-                    <ListView Grid.Row="1" x:Name="ExportList"
-                              Margin="0,0,0,0"
-                              Background="{StaticResource WhiteBrush80}" BorderThickness="0"
-                              ItemsSource="{Binding DataModelList, Mode=OneWay}" 
-                              ItemContainerStyle="{StaticResource GridView}">
+                    <ListView
+                        x:Name="ExportList"
+                        Grid.Row="1"
+                        Margin="0,0,0,0"
+                        Background="{StaticResource WhiteBrush80}"
+                        BorderThickness="0"
+                        ItemContainerStyle="{StaticResource GridView}"
+                        ItemsSource="{Binding DataModelList, Mode=OneWay}">
                         <ListView.ContextMenu>
-                            <ContextMenu Style="{StaticResource DefaultContextMenu}" x:Name="Menu">
-                                <MenuItem x:Name="ItemOpenFolder" Header="{Binding UiStrOpenFolder}"
-                                          Command="{Binding ItemFolderCommand}"
-                                          CommandParameter="{Binding Path=PlacementTarget.SelectedItem,
-                                            RelativeSource= {RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"
-                                          Style="{DynamicResource DefaultMenuItem}">
-                                </MenuItem>
+                            <ContextMenu x:Name="Menu" Style="{StaticResource DefaultContextMenu}">
+                                <MenuItem
+                                    x:Name="ItemOpenFolder"
+                                    Command="{Binding ItemFolderCommand}"
+                                    CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                    Header="{Binding UiStrOpenFolder}"
+                                    Style="{DynamicResource DefaultMenuItem}" />
                                 <Separator />
-                                <MenuItem x:Name="ItemRexport" Header="{Binding UiStrExportAgain}" 
-                                          Command="{Binding ItemReExportCommand}"
-                                          CommandParameter="{Binding Path=PlacementTarget,
-                                            RelativeSource= {RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"
-                                          Style="{DynamicResource DefaultMenuItem}" />
-                                <MenuItem x:Name="ItemDelete" Header="{Binding UiStrDeleteExported}"
-                                          Command="{Binding ItemDeleteCommand}"
-                                          CommandParameter="{Binding Path=PlacementTarget,
-                                            RelativeSource= {RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"
-                                          Style="{DynamicResource DefaultMenuItem}" />
+                                <MenuItem
+                                    x:Name="ItemRexport"
+                                    Command="{Binding ItemReExportCommand}"
+                                    CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                    Header="{Binding UiStrExportAgain}"
+                                    Style="{DynamicResource DefaultMenuItem}" />
+                                <MenuItem
+                                    x:Name="ItemDelete"
+                                    Command="{Binding ItemDeleteCommand}"
+                                    CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"
+                                    Header="{Binding UiStrDeleteExported}"
+                                    Style="{DynamicResource DefaultMenuItem}" />
                             </ContextMenu>
                         </ListView.ContextMenu>
                         <ListView.Resources>
                             <DataTemplate x:Key="IdDt">
-                                <Label VerticalAlignment="Center"
-                                       Margin="0,3,0,3"
-                                       Content="{Binding Index,Mode=OneWay,Converter={StaticResource IndexToStringConverter}}" 
-                                       Foreground="#FF9C9C9C" />
+                                <Label
+                                    Margin="0,3,0,3"
+                                    VerticalAlignment="Center"
+                                    Content="{Binding Index, Mode=OneWay, Converter={StaticResource IndexToStringConverter}}"
+                                    Foreground="#FF9C9C9C" />
                             </DataTemplate>
                             <DataTemplate x:Key="TitleDt">
                                 <Label VerticalAlignment="Center" Content="{Binding AutoTitle}" />
                             </DataTemplate>
                             <DataTemplate x:Key="ArtistDt">
-                                <Label VerticalAlignment="Center" Content="{Binding AutoArtist, Mode=OneWay}"
-                                       Foreground="#FF9C9C9C" />
+                                <Label
+                                    VerticalAlignment="Center"
+                                    Content="{Binding AutoArtist, Mode=OneWay}"
+                                    Foreground="#FF9C9C9C" />
                             </DataTemplate>
                             <DataTemplate x:Key="SizeDt">
-                                <Label VerticalAlignment="Center" Content="{Binding FileSize, Mode=OneWay}"
-                                       Foreground="#FF9C9C9C" />
+                                <Label
+                                    VerticalAlignment="Center"
+                                    Content="{Binding FileSize, Mode=OneWay}"
+                                    Foreground="#FF9C9C9C" />
                             </DataTemplate>
                             <DataTemplate x:Key="TimeDt">
-                                <Label VerticalAlignment="Center" x:Name="CheckBocHasJob"
-                                       Content="{Binding ExportTime, Mode=OneWay}" />
+                                <Label
+                                    x:Name="CheckBocHasJob"
+                                    VerticalAlignment="Center"
+                                    Content="{Binding ExportTime, Mode=OneWay}" />
                             </DataTemplate>
                         </ListView.Resources>
                         <ListView.View>
                             <GridView ColumnHeaderContainerStyle="{StaticResource MyHeaderStyle}">
                                 <GridViewColumn Width="40" CellTemplate="{StaticResource IdDt}" />
-                                <GridViewColumn Header="{Binding UiStrTitle}" Width="300"
-                                                CellTemplate="{StaticResource TitleDt}" />
-                                <GridViewColumn Header="{Binding UiStrArtist}" Width="200"
-                                                CellTemplate="{StaticResource ArtistDt}" />
-                                <GridViewColumn Header="{Binding UiStrFileSize}" Width="100"
-                                                CellTemplate="{StaticResource SizeDt}" />
-                                <GridViewColumn Header="{Binding UiStrExportTime}" Width="150"
-                                                CellTemplate="{StaticResource TimeDt}" />
+                                <GridViewColumn
+                                    Width="300"
+                                    CellTemplate="{StaticResource TitleDt}"
+                                    Header="{Binding UiStrTitle}" />
+                                <GridViewColumn
+                                    Width="200"
+                                    CellTemplate="{StaticResource ArtistDt}"
+                                    Header="{Binding UiStrArtist}" />
+                                <GridViewColumn
+                                    Width="100"
+                                    CellTemplate="{StaticResource SizeDt}"
+                                    Header="{Binding UiStrFileSize}" />
+                                <GridViewColumn
+                                    Width="150"
+                                    CellTemplate="{StaticResource TimeDt}"
+                                    Header="{Binding UiStrExportTime}" />
                             </GridView>
                         </ListView.View>
                     </ListView>
                 </Grid>
 
             </TabItem>
-            <TabItem Style="{StaticResource PinkTabItem}"
-                     WindowChrome.IsHitTestVisibleInChrome="True"
-                     Cursor="Hand">
+            <TabItem
+                Cursor="Hand"
+                Style="{StaticResource PinkTabItem}"
+                WindowChrome.IsHitTestVisibleInChrome="True">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding UiStrExporting}" FontSize="16" />
+                    <TextBlock FontSize="16" Text="{Binding UiStrExporting}" />
                 </TabItem.Header>
                 <Grid Background="Transparent" Cursor="Arrow" />
             </TabItem>
