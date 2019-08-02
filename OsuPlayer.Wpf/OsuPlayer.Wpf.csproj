@@ -167,8 +167,10 @@
     <Compile Include="Control\Notification\NotifyOverlay.xaml.cs">
       <DependentUpon>NotifyOverlay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Control\WelcomeControl.xaml.cs">
+      <DependentUpon>WelcomeControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\ListPageViewModel.cs" />
-    <Compile Include="ViewModels\WelcomeViewModel.cs" />
     <Compile Include="Windows\PageParts.cs" />
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -295,6 +297,10 @@
     <Page Include="Control\Notification\NotifyOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Control\WelcomeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\EditCollectionPage.xaml">
       <Generator>MSBuild:Compile</Generator>

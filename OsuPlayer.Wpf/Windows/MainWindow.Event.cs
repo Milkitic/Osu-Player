@@ -30,7 +30,7 @@ namespace Milky.OsuPlayer.Windows
             //BtnRecent_Click(sender, e);
             if (PlayerConfig.Current.General.FirstOpen)
             {
-                WelcomeViewModel.ShowWelcome = true;
+                WelcomeControl.Show();
                 await LoadLocalDbAsync();
             }
             else

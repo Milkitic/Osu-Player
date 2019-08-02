@@ -1,0 +1,60 @@
+﻿<UserControl
+    x:Class="Milky.OsuPlayer.Control.WelcomeControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Milky.OsuPlayer.Control"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Border
+        x:Name="WelcomeArea"
+        Background="{StaticResource WhiteBrushB0}"
+        Visibility="{Binding ShowWelcome, Converter={StaticResource TrueToVisibleConverter}}">
+        <Border.DataContext>
+            <local:WelcomeControlVm />
+        </Border.DataContext>
+        <StackPanel
+            x:Name="VerticalWelcomeStackPanel"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <Label
+                Margin="0,3,0,0"
+                HorizontalContentAlignment="Center"
+                Content="欢迎"
+                FontSize="35"
+                FontWeight="Bold"
+                Foreground="{StaticResource SliderBackground}" />
+            <Label
+                Margin="0,0,0,3"
+                HorizontalContentAlignment="Center"
+                Content="选择以下项目，开启精彩音乐世界……"
+                FontSize="12"
+                Foreground="{StaticResource SliderBackground}" />
+            <custom:Loader
+                Width="30"
+                Height="30"
+                FillColor="#303030"
+                Visibility="{Binding GuideSyncing, Converter={StaticResource TrueToVisibleConverter}}" />
+            <CheckBox
+                x:Name="Step1"
+                Margin="0,3"
+                Command="{Binding SelectDbCommand}"
+                Content="选择osu!db，同步曲库"
+                IsChecked="{Binding GuideSelectedDb, Mode=TwoWay}" />
+            <CheckBox
+                x:Name="Step2"
+                Margin="0,3"
+                Content="开启曲库目录监听服务，减少同步与扫描时间"
+                Visibility="Collapsed" />
+            <Button
+                Margin="0,30,0,0"
+                HorizontalContentAlignment="Center"
+                Command="{Binding SkipCommand}"
+                Content="Skip this step" />
+        </StackPanel>
+    </Border>
+</UserControl>

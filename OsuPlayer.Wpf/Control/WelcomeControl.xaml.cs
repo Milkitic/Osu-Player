@@ -1,17 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Utils;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
-using System;
-using System.Windows;
-using System.Windows.Input;
 
-namespace Milky.OsuPlayer.ViewModels
+namespace Milky.OsuPlayer.Control
 {
-    public class WelcomeViewModel : ViewModelBase
+    public class WelcomeControlVm : ViewModelBase
     {
         private bool _guideSyncing;
         private bool _guideSelectedDb;
@@ -22,6 +32,7 @@ namespace Milky.OsuPlayer.ViewModels
             get => _guideSyncing;
             set
             {
+                if (_guideSyncing == value) return;
                 _guideSyncing = value;
                 OnPropertyChanged();
             }
@@ -32,12 +43,24 @@ namespace Milky.OsuPlayer.ViewModels
             get => _guideSelectedDb;
             set
             {
+                if (_guideSelectedDb == value) return;
                 _guideSelectedDb = value;
                 OnPropertyChanged();
             }
         }
 
-        public ICommand Step1Command
+        public bool ShowWelcome
+        {
+            get => _showWelcome;
+            set
+            {
+                if (_showWelcome == value) return;
+                _showWelcome = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand SelectDbCommand
         {
             get
             {
@@ -66,6 +89,7 @@ namespace Milky.OsuPlayer.ViewModels
                 });
             }
         }
+
         public ICommand SkipCommand
         {
             get
@@ -78,16 +102,24 @@ namespace Milky.OsuPlayer.ViewModels
                 });
             }
         }
+    }
 
-        public bool ShowWelcome
+    /// <summary>
+    /// WelcomeControl.xaml 的交互逻辑
+    /// </summary>
+    public partial class WelcomeControl : UserControl
+    {
+        public WelcomeControlVm ViewModel { get; }
+
+        public WelcomeControl()
         {
-            get => _showWelcome;
-            set
-            {
-                _showWelcome = value;
-                OnPropertyChanged();
-            }
+            InitializeComponent();
+            ViewModel = (WelcomeControlVm)WelcomeArea.DataContext;
         }
 
+        public void Show()
+        {
+            ViewModel.ShowWelcome = true;
+        }
     }
 }
