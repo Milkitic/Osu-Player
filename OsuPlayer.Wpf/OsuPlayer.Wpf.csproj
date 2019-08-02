@@ -151,6 +151,22 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Control\FrontDialog\FrontDialogOverlay.xaml.cs">
+      <DependentUpon>FrontDialogOverlay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Control\Notification\Converters\EmptyToVisibleConverter.cs" />
+    <Compile Include="Control\Notification\Converters\FontColorConverter.cs" />
+    <Compile Include="Control\Notification\Converters\MixColorConverter.cs" />
+    <Compile Include="Control\Notification\Converters\NotificationTypeConverter.cs" />
+    <Compile Include="Control\Notification\Converters\NotificationTypeToCursorConverter.cs" />
+    <Compile Include="Control\Notification\NotificationOption.cs" />
+    <Compile Include="Control\Notification\NotificationType.cs" />
+    <Compile Include="Control\Notification\NotifyControl.xaml.cs">
+      <DependentUpon>NotifyControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Control\Notification\NotifyOverlay.xaml.cs">
+      <DependentUpon>NotifyOverlay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\ListPageViewModel.cs" />
     <Compile Include="ViewModels\WelcomeViewModel.cs" />
     <Compile Include="Windows\PageParts.cs" />
@@ -268,6 +284,18 @@
     <Compile Include="Utils\KeyConverter.cs" />
     <Compile Include="Instances\Updater.cs" />
     <Compile Include="ViewModels\ExportPageViewModel.cs" />
+    <Page Include="Control\FrontDialog\FrontDialogOverlay.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Control\Notification\NotifyControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Control\Notification\NotifyOverlay.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Pages\EditCollectionPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

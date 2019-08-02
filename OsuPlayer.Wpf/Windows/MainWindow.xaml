@@ -2,31 +2,35 @@
     x:Class="Milky.OsuPlayer.Windows.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:tb="http://www.hardcodet.net/taskbar"
-    xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
-    xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
+    xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+    xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:osuPlayer="clr-namespace:Milky.OsuPlayer"
+    xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
-    xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
-    xmlns:osuPlayer="clr-namespace:Milky.OsuPlayer"
-    mc:Ignorable="d"
+    Closing="Window_Closing"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
-    Loaded="Window_Loaded" Closing="Window_Closing" SizeChanged="Window_SizeChanged"
-    WindowStartupLocation="CenterScreen">
-    <!--Width="998" Height="759" MinWidth="878" MinHeight="138"-->
+    Loaded="Window_Loaded"
+    SizeChanged="Window_SizeChanged"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <!--  Width="998" Height="759" MinWidth="878" MinHeight="138"  -->
     <wpfApi:WindowBase.Style>
         <Style TargetType="wpfApi:WindowBase">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding IsMiniMode,Converter={StaticResource MiniWindowConverter}}" Value="False">
+                <DataTrigger Binding="{Binding IsMiniMode, Converter={StaticResource MiniWindowConverter}}" Value="False">
                     <Setter Property="Topmost" Value="False" />
                     <Setter Property="ResizeMode" Value="CanResize" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding IsMiniMode,Converter={StaticResource MiniWindowConverter}}" Value="True"
-                             wpfApi:TriggerTracing.TriggerName="MainWindow -> IsMiniMode"
-                             wpfApi:TriggerTracing.TraceEnabled="True">
+                <DataTrigger
+                    wpfApi:TriggerTracing.TraceEnabled="True"
+                    wpfApi:TriggerTracing.TriggerName="MainWindow -&gt; IsMiniMode"
+                    Binding="{Binding IsMiniMode, Converter={StaticResource MiniWindowConverter}}"
+                    Value="True">
                     <Setter Property="Topmost" Value="True" />
                     <Setter Property="ResizeMode" Value="NoResize" />
                 </DataTrigger>
@@ -34,11 +38,12 @@
         </Style>
     </wpfApi:WindowBase.Style>
     <WindowChrome.WindowChrome>
-        <WindowChrome CornerRadius="0"
-                      CaptionHeight="46"
-                      GlassFrameThickness="1,1,1,1"
-                      UseAeroCaptionButtons="False"
-                      ResizeBorderThickness="3" />
+        <WindowChrome
+            CaptionHeight="46"
+            CornerRadius="0"
+            GlassFrameThickness="1,1,1,1"
+            ResizeBorderThickness="3"
+            UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
     <wpfApi:WindowBase.DataContext>
         <viewModels:MainWindowViewModel />
@@ -55,14 +60,20 @@
     </wpfApi:WindowBase.Resources>
     <Grid>
         <Grid.Background>
-            <ImageBrush ImageSource="{StaticResource TextrueSource1}" Viewport="0,0,500,500" ViewportUnits="Absolute"
-                        TileMode="Tile" />
+            <ImageBrush
+                ImageSource="{StaticResource TextrueSource1}"
+                TileMode="Tile"
+                Viewport="0,0,500,500"
+                ViewportUnits="Absolute" />
         </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <DockPanel x:Name="TitleBarAreaBack" Grid.Row="0" Height="50">
+        <DockPanel
+            x:Name="TitleBarAreaBack"
+            Grid.Row="0"
+            Height="50">
             <DockPanel.Style>
                 <Style TargetType="FrameworkElement">
                     <Style.Triggers>
@@ -75,9 +86,13 @@
                     </Style.Triggers>
                 </Style>
             </DockPanel.Style>
-            <Image Source="{StaticResource TitleLogo}" Height="32" HorizontalAlignment="Left" Margin="8,0,0,0" />
+            <Image
+                Height="32"
+                Margin="8,0,0,0"
+                HorizontalAlignment="Left"
+                Source="{StaticResource TitleLogo}" />
         </DockPanel>
-        <Grid Grid.Row="1" x:Name="MainGrid">
+        <Grid x:Name="MainGrid" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="auto" MinHeight="48" />
@@ -90,14 +105,23 @@
                     </LinearGradientBrush>
                 </Border.BorderBrush>
             </Border>
-            <DockPanel x:Name="MainArea" Grid.Row="0" Margin="0,0,1,0" Width="Auto" Height="Auto">
+            <DockPanel
+                x:Name="MainArea"
+                Grid.Row="0"
+                Width="Auto"
+                Height="Auto"
+                Margin="0,0,1,0">
                 <!--<DockPanel.Effect>
                     <DropShadowEffect ShadowDepth="0" BlurRadius="10" Opacity="0.24" />
                 </DockPanel.Effect>-->
-                <DockPanel x:Name="Navigation" Height="{Binding ElementName=MainArea,Path=ActualHeight}"
-                           Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}">
-                    <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto"
-                                  Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}">
+                <DockPanel
+                    x:Name="Navigation"
+                    Width="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavigationWidth}}"
+                    Height="{Binding ElementName=MainArea, Path=ActualHeight}">
+                    <ScrollViewer
+                        Width="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavigationWidth}}"
+                        HorizontalScrollBarVisibility="Hidden"
+                        VerticalScrollBarVisibility="Auto">
                         <Grid>
                             <Grid.Resources>
                                 <converter:NavigationColorConverter x:Key="CvtColor" />
@@ -109,95 +133,104 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <dms:DMButton
-                                Command="{Binding CollapseCommand}"
-                                HorizontalAlignment="Left"
                                 Width="30"
                                 Height="{Binding ActualWidth, Mode=OneWay, RelativeSource={RelativeSource Self}}"
+                                Margin="8,0,0,0"
+                                HorizontalAlignment="Left"
                                 Background="Transparent"
                                 BorderThickness="0"
-                                Margin="8,0,0,0"
+                                Command="{Binding CollapseCommand}"
                                 Cursor="Hand">
-                                <Viewbox Stretch="Uniform" Width="20" Height="20">
+                                <Viewbox
+                                    Width="20"
+                                    Height="20"
+                                    Stretch="Uniform">
                                     <Canvas Width="1000" Height="1000">
                                         <Path Fill="White">
                                             <Path.Data>
-                                                <PathGeometry
-                                                    Figures="M935.6 255H64.4C31.8 255 10 233.2 10 200.6c0-32.7 21.8-54.4 54.4-54.4h871.1c32.7 0 54.4 21.8 54.4 54.4C990 233.2 968.2 255 935.6 255z"
-                                                    FillRule="NonZero" />
+                                                <PathGeometry Figures="M935.6 255H64.4C31.8 255 10 233.2 10 200.6c0-32.7 21.8-54.4 54.4-54.4h871.1c32.7 0 54.4 21.8 54.4 54.4C990 233.2 968.2 255 935.6 255z" FillRule="NonZero" />
                                             </Path.Data>
                                         </Path>
                                         <Path Fill="White">
                                             <Path.Data>
-                                                <PathGeometry
-                                                    Figures="M935.6 853.9H64.4c-32.7 0-54.4-21.8-54.4-54.4c0-32.7 21.8-54.4 54.4-54.4h871.1c32.7 0 54.4 21.8 54.4 54.4C990 832.1 968.2 853.9 935.6 853.9z"
-                                                    FillRule="NonZero" />
+                                                <PathGeometry Figures="M935.6 853.9H64.4c-32.7 0-54.4-21.8-54.4-54.4c0-32.7 21.8-54.4 54.4-54.4h871.1c32.7 0 54.4 21.8 54.4 54.4C990 832.1 968.2 853.9 935.6 853.9z" FillRule="NonZero" />
                                             </Path.Data>
                                         </Path>
                                         <Path Fill="White">
                                             <Path.Data>
-                                                <PathGeometry
-                                                    Figures="M935.6 554.4H64.4C31.8 554.4 10 532.7 10 500c0-32.7 21.8-54.4 54.4-54.4h871.1c32.7 0 54.4 21.8 54.4 54.4C990 532.7 968.2 554.4 935.6 554.4z"
-                                                    FillRule="NonZero" />
+                                                <PathGeometry Figures="M935.6 554.4H64.4C31.8 554.4 10 532.7 10 500c0-32.7 21.8-54.4 54.4-54.4h871.1c32.7 0 54.4 21.8 54.4 54.4C990 532.7 968.2 554.4 935.6 554.4z" FillRule="NonZero" />
                                             </Path.Data>
                                         </Path>
                                     </Canvas>
                                 </Viewbox>
                             </dms:DMButton>
-                            <StackPanel Grid.Row="1"
-                                        Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}">
-                                <Label Style="{StaticResource NavigationLabelStyle}"
-                                       Visibility="{Binding IsNavigationCollapsed,Converter={StaticResource CvtTitleVisible}}"
-                                       Height="30">
+                            <StackPanel Grid.Row="1" Width="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavigationWidth}}">
+                                <Label
+                                    Height="30"
+                                    Style="{StaticResource NavigationLabelStyle}"
+                                    Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
                                     <TextBlock Margin="5,0,0,0">库</TextBlock>
                                 </Label>
                                 <Canvas Height="40">
-                                    <ToggleButton x:Name="BtnSearch"
-                                                  Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}"
-                                                  Height="40" Click="BtnSearch_Click"
-                                                  Content="搜索"
-                                                  Style="{StaticResource NavigationButtonStyle}"
-                                                  Unchecked="BtnNavigate_Unchecked"
-                                                  Checked="BtnNavigate_Checked" />
-                                    <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
-                                             Canvas.Top="10"
-                                             Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
-                                        <Path
-                                            Fill="{Binding ElementName=BtnSearch,Path=Foreground,Converter={StaticResource CvtColor}}"
-                                            Data="{StaticResource Search}" />
+                                    <ToggleButton
+                                        x:Name="BtnSearch"
+                                        Width="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavigationWidth}}"
+                                        Height="40"
+                                        Checked="BtnNavigate_Checked"
+                                        Click="BtnSearch_Click"
+                                        Content="搜索"
+                                        Style="{StaticResource NavigationButtonStyle}"
+                                        Unchecked="BtnNavigate_Unchecked" />
+                                    <Viewbox
+                                        Canvas.Top="10"
+                                        Width="20"
+                                        Height="20"
+                                        Margin="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
+                                        HorizontalAlignment="Left"
+                                        Stretch="Uniform">
+                                        <Path Data="{StaticResource Search}" Fill="{Binding ElementName=BtnSearch, Path=Foreground, Converter={StaticResource CvtColor}}" />
                                     </Viewbox>
                                 </Canvas>
                                 <Canvas Height="40" Visibility="Collapsed">
-                                    <ToggleButton x:Name="BtnFind"
-                                                  Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}"
-                                                  Height="40" Click="BtnFind_Click"
-                                                  Content="发现"
-                                                  Style="{StaticResource NavigationButtonStyle}"
-                                                  Unchecked="BtnNavigate_Unchecked"
-                                                  Checked="BtnNavigate_Checked" />
-                                    <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
-                                             Canvas.Top="10"
-                                             Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
+                                    <ToggleButton
+                                        x:Name="BtnFind"
+                                        Width="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavigationWidth}}"
+                                        Height="40"
+                                        Checked="BtnNavigate_Checked"
+                                        Click="BtnFind_Click"
+                                        Content="发现"
+                                        Style="{StaticResource NavigationButtonStyle}"
+                                        Unchecked="BtnNavigate_Unchecked" />
+                                    <Viewbox
+                                        Canvas.Top="10"
+                                        Width="20"
+                                        Height="20"
+                                        Margin="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
+                                        HorizontalAlignment="Left"
+                                        Stretch="Uniform">
                                         <Canvas Width="1000" Height="1000">
-                                            <Path
-                                                Fill="{Binding ElementName=BtnFind,Path=Foreground,Converter={StaticResource CvtColor}}"
-                                                Data="{StaticResource Compass1}" />
-                                            <Path
-                                                Fill="{Binding ElementName=BtnFind,Path=Foreground,Converter={StaticResource CvtColor}}"
-                                                Data="{StaticResource Compass2}" />
+                                            <Path Data="{StaticResource Compass1}" Fill="{Binding ElementName=BtnFind, Path=Foreground, Converter={StaticResource CvtColor}}" />
+                                            <Path Data="{StaticResource Compass2}" Fill="{Binding ElementName=BtnFind, Path=Foreground, Converter={StaticResource CvtColor}}" />
                                         </Canvas>
                                     </Viewbox>
                                 </Canvas>
                                 <Canvas Height="40">
-                                    <ToggleButton x:Name="BtnSb"
-                                                  Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}"
-                                                  Height="40" Click="Storyboard_Click"
-                                                  Content="故事板"
-                                                  Style="{StaticResource NavigationButtonStyle}"
-                                                  Unchecked="BtnNavigate_Unchecked"
-                                                  Checked="BtnNavigate_Checked" />
-                                    <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
-                                             Canvas.Top="10"
-                                             Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
+                                    <ToggleButton
+                                        x:Name="BtnSb"
+                                        Width="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavigationWidth}}"
+                                        Height="40"
+                                        Checked="BtnNavigate_Checked"
+                                        Click="Storyboard_Click"
+                                        Content="故事板"
+                                        Style="{StaticResource NavigationButtonStyle}"
+                                        Unchecked="BtnNavigate_Unchecked" />
+                                    <Viewbox
+                                        Canvas.Top="10"
+                                        Width="20"
+                                        Height="20"
+                                        Margin="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
+                                        HorizontalAlignment="Left"
+                                        Stretch="Uniform">
                                         <Canvas Width="1000" Height="1000">
                                             <Canvas.RenderTransform>
                                                 <TransformGroup>
@@ -205,46 +238,55 @@
                                                     <TranslateTransform X="0.000000" Y="496.000000" />
                                                 </TransformGroup>
                                             </Canvas.RenderTransform>
-                                            <Path
-                                                Fill="{Binding ElementName=BtnSb,Path=Foreground,Converter={StaticResource CvtColor}}"
-                                                Data="{StaticResource Film}" />
+                                            <Path Data="{StaticResource Film}" Fill="{Binding ElementName=BtnSb, Path=Foreground, Converter={StaticResource CvtColor}}" />
                                         </Canvas>
                                     </Viewbox>
                                 </Canvas>
                             </StackPanel>
                             <StackPanel Grid.Row="2">
-                                <Label Style="{StaticResource NavigationLabelStyle}"
-                                       Visibility="{Binding IsNavigationCollapsed,Converter={StaticResource CvtTitleVisible}}"
-                                       Height="30">
+                                <Label
+                                    Height="30"
+                                    Style="{StaticResource NavigationLabelStyle}"
+                                    Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
                                     <TextBlock Margin="5,0,0,0">我的</TextBlock>
                                 </Label>
                                 <Canvas Height="40">
-                                    <ToggleButton x:Name="BtnRecent"
-                                                  Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}"
-                                                  Height="40" Click="BtnRecent_Click"
-                                                  Content="最近播放"
-                                                  Style="{StaticResource NavigationButtonStyle}"
-                                                  Unchecked="BtnNavigate_Unchecked"
-                                                  Checked="BtnNavigate_Checked" />
-                                    <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
-                                             Canvas.Top="10"
-                                             Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
-                                        <Path
-                                            Fill="{Binding ElementName=BtnRecent,Path=Foreground,Converter={StaticResource CvtColor}}"
-                                            Data="{StaticResource History}" />
+                                    <ToggleButton
+                                        x:Name="BtnRecent"
+                                        Width="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavigationWidth}}"
+                                        Height="40"
+                                        Checked="BtnNavigate_Checked"
+                                        Click="BtnRecent_Click"
+                                        Content="最近播放"
+                                        Style="{StaticResource NavigationButtonStyle}"
+                                        Unchecked="BtnNavigate_Unchecked" />
+                                    <Viewbox
+                                        Canvas.Top="10"
+                                        Width="20"
+                                        Height="20"
+                                        Margin="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
+                                        HorizontalAlignment="Left"
+                                        Stretch="Uniform">
+                                        <Path Data="{StaticResource History}" Fill="{Binding ElementName=BtnRecent, Path=Foreground, Converter={StaticResource CvtColor}}" />
                                     </Viewbox>
                                 </Canvas>
                                 <Canvas Height="40">
-                                    <ToggleButton x:Name="BtnExport"
-                                                  Width="{Binding IsNavigationCollapsed,Converter={StaticResource CvtNavigationWidth}}"
-                                                  Height="40" Click="BtnExport_Click"
-                                                  Content="导出管理"
-                                                  Style="{StaticResource NavigationButtonStyle}"
-                                                  Unchecked="BtnNavigate_Unchecked"
-                                                  Checked="BtnNavigate_Checked" />
-                                    <Viewbox Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Left"
-                                             Canvas.Top="10"
-                                             Margin="{Binding IsNavigationCollapsed,Converter={StaticResource CvtIconMargin}}">
+                                    <ToggleButton
+                                        x:Name="BtnExport"
+                                        Width="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavigationWidth}}"
+                                        Height="40"
+                                        Checked="BtnNavigate_Checked"
+                                        Click="BtnExport_Click"
+                                        Content="导出管理"
+                                        Style="{StaticResource NavigationButtonStyle}"
+                                        Unchecked="BtnNavigate_Unchecked" />
+                                    <Viewbox
+                                        Canvas.Top="10"
+                                        Width="20"
+                                        Height="20"
+                                        Margin="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
+                                        HorizontalAlignment="Left"
+                                        Stretch="Uniform">
                                         <Canvas Width="1000" Height="1000">
                                             <Canvas.RenderTransform>
                                                 <TransformGroup>
@@ -252,28 +294,27 @@
                                                     <TranslateTransform X="0.000000" Y="496.000000" />
                                                 </TransformGroup>
                                             </Canvas.RenderTransform>
-                                            <Path
-                                                Fill="{Binding ElementName=BtnExport,Path=Foreground,Converter={StaticResource CvtColor}}"
-                                                Data="{StaticResource Export}" />
+                                            <Path Data="{StaticResource Export}" Fill="{Binding ElementName=BtnExport, Path=Foreground, Converter={StaticResource CvtColor}}" />
                                         </Canvas>
                                     </Viewbox>
                                 </Canvas>
                             </StackPanel>
                             <StackPanel Grid.Row="3">
-                                <Canvas Height="40"
-                                        Visibility="{Binding IsNavigationCollapsed,Converter={StaticResource CvtTitleVisible}}">
-                                    <Label Style="{StaticResource NavigationLabelStyle}"
-                                           Height="30">
+                                <Canvas Height="40" Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
+                                    <Label Height="30" Style="{StaticResource NavigationLabelStyle}">
                                         <TextBlock Margin="5,0,0,0">收藏夹</TextBlock>
                                     </Label>
-                                    <dms:DMButton x:Name="BtnAddCollection"
-                                                  Width="20" Height="20"
-                                                  Canvas.Right="5" Canvas.Top="15"
-                                                  Click="BtnAddCollection_Click"
-                                                  BorderThickness="0"
-                                                  Background="Transparent"
-                                                  Cursor="Hand"
-                                                  HorizontalAlignment="Right">
+                                    <dms:DMButton
+                                        x:Name="BtnAddCollection"
+                                        Canvas.Top="15"
+                                        Canvas.Right="5"
+                                        Width="20"
+                                        Height="20"
+                                        HorizontalAlignment="Right"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Click="BtnAddCollection_Click"
+                                        Cursor="Hand">
                                         <Viewbox Stretch="Uniform">
                                             <Canvas Width="1000" Height="1000">
                                                 <Canvas.RenderTransform>
@@ -284,40 +325,44 @@
                                                 </Canvas.RenderTransform>
                                                 <Path Fill="{StaticResource ExtraLightBrush}">
                                                     <Path.Data>
-                                                        <PathGeometry
-                                                            Figures="M4553.8 4991c-1176.2-110.4-2251.6-627.8-3073.2-1472.7C889.6 2906 471 2167.7 263.7 1363.6c-395.3-1521.1-67.8-3081 906.8-4315.3c145.3-184.1 579.4-620.1 757.7-759.6c955.3-747.9 2073.4-1120 3236-1073.5c1085.1 42.6 2044.3 395.3 2906.6 1073.5c174.4 137.6 612.3 575.5 749.9 749.9c976.6 1242.1 1308 2790.3 922.3 4301.7c-168.6 658.8-474.7 1267.3-922.3 1840.8c-139.5 178.3-575.5 612.3-759.6 757.7c-773.2 610.4-1658.7 963-2645 1054.1C5173.9 5014.3 4796 5014.3 4553.8 4991z M5319.2 3772.2c1472.7-139.5 2701.2-1112.3 3166.2-2509.3c253.8-759.6 253.8-1546.3 0-2305.9c-368.2-1110.3-1222.7-1964.9-2333-2333c-759.6-253.8-1546.3-253.8-2305.9 0c-1253.7 416.6-2183.8 1463-2449.3 2759.3c-164.7 800.3-46.5 1654.8 331.4 2393.1c352.7 691.8 899.1 1242.1 1585 1594.7c389.5 201.5 811.9 335.2 1201.4 379.8c100.8 11.6 211.2 25.2 242.2 29.1C4883.2 3793.5 5115.8 3789.6 5319.2 3772.2z"
-                                                            FillRule="NonZero" />
+                                                        <PathGeometry Figures="M4553.8 4991c-1176.2-110.4-2251.6-627.8-3073.2-1472.7C889.6 2906 471 2167.7 263.7 1363.6c-395.3-1521.1-67.8-3081 906.8-4315.3c145.3-184.1 579.4-620.1 757.7-759.6c955.3-747.9 2073.4-1120 3236-1073.5c1085.1 42.6 2044.3 395.3 2906.6 1073.5c174.4 137.6 612.3 575.5 749.9 749.9c976.6 1242.1 1308 2790.3 922.3 4301.7c-168.6 658.8-474.7 1267.3-922.3 1840.8c-139.5 178.3-575.5 612.3-759.6 757.7c-773.2 610.4-1658.7 963-2645 1054.1C5173.9 5014.3 4796 5014.3 4553.8 4991z M5319.2 3772.2c1472.7-139.5 2701.2-1112.3 3166.2-2509.3c253.8-759.6 253.8-1546.3 0-2305.9c-368.2-1110.3-1222.7-1964.9-2333-2333c-759.6-253.8-1546.3-253.8-2305.9 0c-1253.7 416.6-2183.8 1463-2449.3 2759.3c-164.7 800.3-46.5 1654.8 331.4 2393.1c352.7 691.8 899.1 1242.1 1585 1594.7c389.5 201.5 811.9 335.2 1201.4 379.8c100.8 11.6 211.2 25.2 242.2 29.1C4883.2 3793.5 5115.8 3789.6 5319.2 3772.2z" FillRule="NonZero" />
                                                     </Path.Data>
                                                 </Path>
                                                 <Path Fill="{StaticResource ExtraLightBrush}">
                                                     <Path.Data>
-                                                        <PathGeometry
-                                                            Figures="M4896.8 2549.5c-197.7-31-377.9-170.5-465.1-362.3c-40.7-87.2-42.6-122.1-48.4-773.2l-5.8-682.1l-672.4-5.8c-786.7-7.7-796.4-9.7-974.7-188c-126-126-176.3-250-176.3-428.2c0-240.3 131.8-449.6 348.8-556.1l110.5-54.3l682.1-5.8l682.1-5.8l5.8-682.1l5.8-682.1l54.3-110.4c106.6-217 315.9-348.8 556.1-348.8c178.3 0 302.3 50.4 428.2 176.3c178.3 178.3 180.2 188 187.9 974.7l5.8 672.4l672.4 5.8c786.7 7.8 796.4 9.7 974.7 188c126 126 176.3 250 176.3 428.2c0 296.5-197.7 538.7-484.4 598.8c-62 13.6-346.9 21.3-720.8 21.3h-618.1l-5.8 684l-5.8 682.1l-54.3 110.5C5433.6 2456.5 5170 2592.1 4896.8 2549.5z"
-                                                            FillRule="NonZero" />
+                                                        <PathGeometry Figures="M4896.8 2549.5c-197.7-31-377.9-170.5-465.1-362.3c-40.7-87.2-42.6-122.1-48.4-773.2l-5.8-682.1l-672.4-5.8c-786.7-7.7-796.4-9.7-974.7-188c-126-126-176.3-250-176.3-428.2c0-240.3 131.8-449.6 348.8-556.1l110.5-54.3l682.1-5.8l682.1-5.8l5.8-682.1l5.8-682.1l54.3-110.4c106.6-217 315.9-348.8 556.1-348.8c178.3 0 302.3 50.4 428.2 176.3c178.3 178.3 180.2 188 187.9 974.7l5.8 672.4l672.4 5.8c786.7 7.8 796.4 9.7 974.7 188c126 126 176.3 250 176.3 428.2c0 296.5-197.7 538.7-484.4 598.8c-62 13.6-346.9 21.3-720.8 21.3h-618.1l-5.8 684l-5.8 682.1l-54.3 110.5C5433.6 2456.5 5170 2592.1 4896.8 2549.5z" FillRule="NonZero" />
                                                     </Path.Data>
                                                 </Path>
                                             </Canvas>
                                         </Viewbox>
                                     </dms:DMButton>
                                 </Canvas>
-                                <ListView x:Name="CollectionList" Margin="0,0,-1,0" Background="Transparent"
-                                          Visibility="{Binding IsNavigationCollapsed,Converter={StaticResource CvtTitleVisible}}"
-                                          BorderThickness="0"
-                                          ItemsSource="{Binding Collection, Mode=OneWay}">
+                                <ListView
+                                    x:Name="CollectionList"
+                                    Margin="0,0,-1,0"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    ItemsSource="{Binding Collection, Mode=OneWay}"
+                                    Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
                                     <ListView.Resources>
                                         <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
-                                            <ToggleButton x:Name="BtnCollection" VerticalAlignment="Center"
-                                                          Height="35"
-                                                          Style="{StaticResource NavigationButtonStyle}"
-                                                          Margin="-5,0,0,1"
-                                                          Tag="{Binding Id}" Click="BtnCollection_Click"
-                                                          Unchecked="BtnNavigate_Unchecked"
-                                                          Checked="BtnNavigate_Checked">
-                                                <Label MaxWidth="120" HorizontalAlignment="Left"
-                                                       Margin="0,-7"
-                                                       Foreground="{Binding ElementName=BtnCollection, Path=Foreground}"
-                                                       FontSize="13px" Content="{Binding Name}">
-                                                </Label>
+                                            <ToggleButton
+                                                x:Name="BtnCollection"
+                                                Height="35"
+                                                Margin="-5,0,0,1"
+                                                VerticalAlignment="Center"
+                                                Checked="BtnNavigate_Checked"
+                                                Click="BtnCollection_Click"
+                                                Style="{StaticResource NavigationButtonStyle}"
+                                                Tag="{Binding Id}"
+                                                Unchecked="BtnNavigate_Unchecked">
+                                                <Label
+                                                    MaxWidth="120"
+                                                    Margin="0,-7"
+                                                    HorizontalAlignment="Left"
+                                                    Content="{Binding Name}"
+                                                    FontSize="13px"
+                                                    Foreground="{Binding ElementName=BtnCollection, Path=Foreground}" />
                                             </ToggleButton>
                                         </ControlTemplate>
                                         <Style TargetType="{x:Type ListViewItem}">
@@ -332,13 +377,21 @@
                 </DockPanel>
                 <Grid>
                     <Grid x:Name="BgArea" Margin="0">
-                        <Image x:Name="BlurScene" Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center"
-                               VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality">
+                        <Image
+                            x:Name="BlurScene"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Opacity="1"
+                            RenderOptions.BitmapScalingMode="HighQuality"
+                            Stretch="UniformToFill">
                             <!--<Image.Effect>
                                 <BlurEffect Radius="100" />
                             </Image.Effect>-->
                         </Image>
-                        <Rectangle x:Name="WhiteCover" Fill="{StaticResource WhiteBrush}" Opacity="0.833333333" />
+                        <Rectangle
+                            x:Name="WhiteCover"
+                            Fill="{StaticResource WhiteBrush}"
+                            Opacity="0.833333333" />
                         <Grid.Style>
                             <Style TargetType="{x:Type Grid}">
                                 <Setter Property="Background">
@@ -376,73 +429,69 @@
                     </Frame>
                 </Grid>
             </DockPanel>
-            <Grid x:Name="FullModeArea" Grid.Row="0" Margin="1,0,1,0"
-                  Visibility="{Binding Player.EnableVideo,Converter={StaticResource CvtVideoShow}}">
+            <Grid
+                x:Name="FullModeArea"
+                Grid.Row="0"
+                Margin="1,0,1,0"
+                Visibility="{Binding Player.EnableVideo, Converter={StaticResource CvtVideoShow}}">
                 <Border x:Name="ResizableArea">
                     <Grid>
-                        <Image Stretch="UniformToFill" Opacity="1" HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               RenderOptions.BitmapScalingMode="HighQuality"
-                               Source="{Binding Source, ElementName=BlurScene}" />
+                        <Image
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Opacity="1"
+                            RenderOptions.BitmapScalingMode="HighQuality"
+                            Source="{Binding Source, ElementName=BlurScene}"
+                            Stretch="UniformToFill" />
                         <Grid x:Name="VideoElementBorder" Background="#E0000000">
-                            <ffme:MediaElement x:Name="VideoElement" IsMuted="True" LoadedBehavior="Manual" />
+                            <ffme:MediaElement
+                                x:Name="VideoElement"
+                                IsMuted="True"
+                                LoadedBehavior="Manual" />
                         </Grid>
-                        <Border Background="{StaticResource ExtraLightBrush20}"
-                                HorizontalAlignment="Right" VerticalAlignment="Top"
-                                Margin="5"
-                                Cursor="Hand">
+                        <Border
+                            Margin="5"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Background="{StaticResource ExtraLightBrush20}"
+                            Cursor="Hand">
                             <dms:DMSystemButton
+                                Click="BtnHideFullScr_Click"
                                 DMSystemButtonForeground="#505050"
                                 DMSystemButtonHoverColor="{StaticResource ExtraLightBrush80}"
                                 DMSystemButtonHoverForeground="#303030"
                                 DMSystemButtonSize="25"
                                 Icon="{StaticResource No}"
-                                IconHeight="14" IconWidth="14"
-                                Click="BtnHideFullScr_Click" />
+                                IconHeight="14"
+                                IconWidth="14" />
                         </Border>
                     </Grid>
                 </Border>
             </Grid>
-            <Grid x:Name="ToolControl" Grid.Row="1" Background="White">
+            <Grid
+                x:Name="ToolControl"
+                Grid.Row="1"
+                Background="White">
                 <Grid.Resources>
-                    <ImageBrush x:Key="Loop"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop.png" />
-                    <ImageBrush x:Key="Normal"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_normal.png" />
-                    <ImageBrush x:Key="Random"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random.png" />
-                    <ImageBrush x:Key="LoopRandom"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random_loop.png" />
-                    <ImageBrush x:Key="Single"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single.png" />
-                    <ImageBrush x:Key="SingleLoop"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single_loop.png" />
-                    <ImageBrush x:Key="LoopS"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop_s.png" />
-                    <ImageBrush x:Key="NormalS"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_normal_s.png" />
-                    <ImageBrush x:Key="RandomS"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random_s.png" />
-                    <ImageBrush x:Key="LoopRandomS"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random_loop_s.png" />
-                    <ImageBrush x:Key="SingleS"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single_s.png" />
-                    <ImageBrush x:Key="SingleLoopS"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single_loop_s.png" />
-                    <ImageBrush x:Key="Fav"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_disable.png" />
-                    <ImageBrush x:Key="FavS"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_disable_s.png" />
-                    <ImageBrush x:Key="Faved"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart.png" />
-                    <ImageBrush x:Key="FavedS"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_s.png" />
-                    <ImageBrush x:Key="Volume"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/volume.png" />
-                    <ImageBrush x:Key="VolumeS"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/volume_s.png" />
-                    <ImageBrush x:Key="FullscreenS"
-                                ImageSource="pack://application:,,,/OsuPlayer;component/Resources/fullscreen_s.png" />
+                    <ImageBrush x:Key="Loop" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop.png" />
+                    <ImageBrush x:Key="Normal" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_normal.png" />
+                    <ImageBrush x:Key="Random" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random.png" />
+                    <ImageBrush x:Key="LoopRandom" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random_loop.png" />
+                    <ImageBrush x:Key="Single" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single.png" />
+                    <ImageBrush x:Key="SingleLoop" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single_loop.png" />
+                    <ImageBrush x:Key="LoopS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop_s.png" />
+                    <ImageBrush x:Key="NormalS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_normal_s.png" />
+                    <ImageBrush x:Key="RandomS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random_s.png" />
+                    <ImageBrush x:Key="LoopRandomS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random_loop_s.png" />
+                    <ImageBrush x:Key="SingleS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single_s.png" />
+                    <ImageBrush x:Key="SingleLoopS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single_loop_s.png" />
+                    <ImageBrush x:Key="Fav" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_disable.png" />
+                    <ImageBrush x:Key="FavS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_disable_s.png" />
+                    <ImageBrush x:Key="Faved" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart.png" />
+                    <ImageBrush x:Key="FavedS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_s.png" />
+                    <ImageBrush x:Key="Volume" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/volume.png" />
+                    <ImageBrush x:Key="VolumeS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/volume_s.png" />
+                    <ImageBrush x:Key="FullscreenS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/fullscreen_s.png" />
                 </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -450,11 +499,21 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Grid Margin="1" MaxHeight="46" MaxWidth="61.333333">
-                    <Button x:Name="ThumbArea" Click="ThumbButton_Click" Cursor="Hand">
-                        <Image x:Name="Thumb" RenderOptions.BitmapScalingMode="HighQuality"
-                               Source="{Binding Source, ElementName=BlurScene}" Stretch="UniformToFill"
-                               VerticalAlignment="Center" HorizontalAlignment="Center" />
+                <Grid
+                    MaxWidth="61.333333"
+                    MaxHeight="46"
+                    Margin="1">
+                    <Button
+                        x:Name="ThumbArea"
+                        Click="ThumbButton_Click"
+                        Cursor="Hand">
+                        <Image
+                            x:Name="Thumb"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            RenderOptions.BitmapScalingMode="HighQuality"
+                            Source="{Binding Source, ElementName=BlurScene}"
+                            Stretch="UniformToFill" />
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
                                 <Setter Property="Template">
@@ -462,15 +521,18 @@
                                         <ControlTemplate TargetType="{x:Type Button}">
                                             <Grid>
                                                 <ContentPresenter />
-                                                <Border x:Name="FullScr" Opacity="0" Background="#40000000">
-                                                    <Viewbox Stretch="Uniform"
-                                                             Width="30" Height="30">
+                                                <Border
+                                                    x:Name="FullScr"
+                                                    Background="#40000000"
+                                                    Opacity="0">
+                                                    <Viewbox
+                                                        Width="30"
+                                                        Height="30"
+                                                        Stretch="Uniform">
                                                         <Canvas Width="1000" Height="1000">
                                                             <Path Fill="{StaticResource ExtraLightBrushF0}">
                                                                 <Path.Data>
-                                                                    <PathGeometry
-                                                                            Figures="M602.1 500l226.5 226.5l91.9-91.9c11.5-12.1 29.4-15.3 44.7-8.9c14.7 6.4 24.9 21.1 24.9 37.6v285.8c0 22.3-18.5 40.8-40.8 40.8H663.3c-16.6 0-31.3-10.2-37.6-25.5c-6.4-14.7-3.2-32.5 8.9-44l91.9-91.9L500 602.1L273.5 828.6l91.9 91.9c12.1 11.5 15.3 29.4 8.9 44c-6.4 15.3-21.1 25.5-37.6 25.5H50.8C28.5 990 10 971.5 10 949.2V663.3c0-16.6 10.2-31.3 25.5-37.6c14.7-6.4 32.5-3.2 44 8.9l91.9 91.9L397.9 500L171.4 273.5l-91.9 91.9c-7.7 7.7-17.9 12.1-28.7 12.1c-5.1 0-10.8-1.3-15.3-3.2C20.2 367.9 10 353.3 10 336.7V50.8C10 28.5 28.5 10 50.8 10h285.8c16.6 0 31.3 10.2 37.6 25.5c6.4 14.7 3.2 32.5-8.9 44l-91.9 91.9L500 397.9l226.5-226.5l-91.9-91.9c-12.1-11.5-15.3-29.3-8.9-44c6.4-15.3 21.1-25.5 37.6-25.5h285.8c22.3 0 40.8 18.5 40.8 40.8v285.8c0 16.6-10.2 31.3-24.9 37.6c-5.1 1.9-10.8 3.2-16 3.2c-10.8 0-21.1-4.5-28.7-12.1l-91.9-91.9L602.1 500z"
-                                                                            FillRule="NonZero" />
+                                                                    <PathGeometry Figures="M602.1 500l226.5 226.5l91.9-91.9c11.5-12.1 29.4-15.3 44.7-8.9c14.7 6.4 24.9 21.1 24.9 37.6v285.8c0 22.3-18.5 40.8-40.8 40.8H663.3c-16.6 0-31.3-10.2-37.6-25.5c-6.4-14.7-3.2-32.5 8.9-44l91.9-91.9L500 602.1L273.5 828.6l91.9 91.9c12.1 11.5 15.3 29.4 8.9 44c-6.4 15.3-21.1 25.5-37.6 25.5H50.8C28.5 990 10 971.5 10 949.2V663.3c0-16.6 10.2-31.3 25.5-37.6c14.7-6.4 32.5-3.2 44 8.9l91.9 91.9L397.9 500L171.4 273.5l-91.9 91.9c-7.7 7.7-17.9 12.1-28.7 12.1c-5.1 0-10.8-1.3-15.3-3.2C20.2 367.9 10 353.3 10 336.7V50.8C10 28.5 28.5 10 50.8 10h285.8c16.6 0 31.3 10.2 37.6 25.5c6.4 14.7 3.2 32.5-8.9 44l-91.9 91.9L500 397.9l226.5-226.5l-91.9-91.9c-12.1-11.5-15.3-29.3-8.9-44c6.4-15.3 21.1-25.5 37.6-25.5h285.8c22.3 0 40.8 18.5 40.8 40.8v285.8c0 16.6-10.2 31.3-24.9 37.6c-5.1 1.9-10.8 3.2-16 3.2c-10.8 0-21.1-4.5-28.7-12.1l-91.9-91.9L602.1 500z" FillRule="NonZero" />
                                                                 </Path.Data>
                                                             </Path>
                                                         </Canvas>
@@ -479,7 +541,7 @@
                                             </Grid>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="FullScr" Property="Opacity" Value="1"></Setter>
+                                                    <Setter TargetName="FullScr" Property="Opacity" Value="1" />
                                                 </Trigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
@@ -497,16 +559,22 @@
                         </Button.Style>
                     </Button>
                 </Grid>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
+                <StackPanel
+                    Grid.Column="1"
+                    Margin="10,0,10,0"
+                    Orientation="Horizontal">
                     <custom:PlayerControlButton
                         x:Name="PrevButton"
-                        IsTabStop="False"
-                        ImageWidth="24" ImageHeight="24"
-                        Width="28" Height="28"
-                        BorderRadius="7"
+                        Width="28"
+                        Height="28"
                         Background="{StaticResource TextureBrush}"
+                        BorderBrush="White"
+                        BorderRadius="7"
+                        BorderThickness="1"
                         Click="BtnPrev_Click"
-                        BorderBrush="White" BorderThickness="1"
+                        ImageHeight="24"
+                        ImageWidth="24"
+                        IsTabStop="False"
                         WindowChrome.IsHitTestVisibleInChrome="True">
                         <ContentPresenter x:Name="PrevIcon" Content="{StaticResource WhitePrevIcon}" />
                         <Button.Style>
@@ -524,12 +592,14 @@
                     </custom:PlayerControlButton>
                     <custom:PlayerControlButton
                         x:Name="PlayButton"
-                        IsTabStop="False"
-                        Width="32" Height="32"
-                        BorderRadius="8"
+                        Width="32"
+                        Height="32"
                         Background="{StaticResource TextureBrush}"
+                        BorderBrush="White"
+                        BorderRadius="8"
+                        BorderThickness="1"
                         Click="BtnPlay_Click"
-                        BorderBrush="White" BorderThickness="1"
+                        IsTabStop="False"
                         WindowChrome.IsHitTestVisibleInChrome="True">
                         <ContentPresenter x:Name="PlayIcon">
                             <ContentPresenter.Content>
@@ -564,13 +634,16 @@
                     </custom:PlayerControlButton>
                     <custom:PlayerControlButton
                         x:Name="NextButton"
-                        IsTabStop="False"
-                        ImageWidth="24" ImageHeight="24"
-                        Width="28" Height="28"
-                        BorderRadius="7"
+                        Width="28"
+                        Height="28"
                         Background="{StaticResource TextureBrush}"
+                        BorderBrush="White"
+                        BorderRadius="7"
+                        BorderThickness="1"
                         Click="BtnNext_Click"
-                        BorderBrush="White" BorderThickness="1"
+                        ImageHeight="24"
+                        ImageWidth="24"
+                        IsTabStop="False"
                         WindowChrome.IsHitTestVisibleInChrome="True">
                         <ContentPresenter x:Name="NextIcon" Content="{StaticResource WhiteNextIcon}" />
                         <Button.Style>
@@ -588,12 +661,18 @@
                     </custom:PlayerControlButton>
                     <custom:PlayerControlButton
                         x:Name="OpenButton"
-                        IsTabStop="False"
-                        ImageWidth="24" ImageHeight="24"
-                        Width="28" Height="28"
+                        Width="28"
+                        Height="28"
+                        Margin="8"
+                        Background="#5d9cec"
+                        BorderBrush="White"
                         BorderRadius="14"
-                        BorderBrush="White" BorderThickness="2" Background="#5d9cec" ShadowColor="#5d9cec"
-                        Click="BtnOpen_Click" Margin="8">
+                        BorderThickness="2"
+                        Click="BtnOpen_Click"
+                        ImageHeight="24"
+                        ImageWidth="24"
+                        IsTabStop="False"
+                        ShadowColor="#5d9cec">
                         <ContentPresenter x:Name="OpenIcon" Content="{StaticResource WhiteOpenIcon}" />
                         <Button.Style>
                             <Style TargetType="custom:PlayerControlButton">
@@ -614,7 +693,10 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <StackPanel x:Name="LblMeta" Grid.Row="0" Margin="0,3,0,-3">
+                    <StackPanel
+                        x:Name="LblMeta"
+                        Grid.Row="0"
+                        Margin="0,3,0,-3">
                         <StackPanel.Style>
                             <Style TargetType="StackPanel">
                                 <Style.Triggers>
@@ -627,7 +709,10 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Style>
-                        <Label x:Name="LblTitle" Content="Title" Foreground="#777">
+                        <Label
+                            x:Name="LblTitle"
+                            Content="Title"
+                            Foreground="#777">
                             <Label.Style>
                                 <Style TargetType="FrameworkElement">
                                     <Style.Triggers>
@@ -641,7 +726,11 @@
                                 </Style>
                             </Label.Style>
                         </Label>
-                        <Label x:Name="LblSeperate" Content="-" Foreground="#858585" Margin="-5,0,-5,0" >
+                        <Label
+                            x:Name="LblSeperate"
+                            Margin="-5,0,-5,0"
+                            Content="-"
+                            Foreground="#858585">
                             <Label.Style>
                                 <Style TargetType="FrameworkElement">
                                     <Style.Triggers>
@@ -655,7 +744,10 @@
                                 </Style>
                             </Label.Style>
                         </Label>
-                        <Label x:Name="LblArtist" Content="Artist" Foreground="#AAA">
+                        <Label
+                            x:Name="LblArtist"
+                            Content="Artist"
+                            Foreground="#AAA">
                             <Label.Style>
                                 <Style TargetType="FrameworkElement">
                                     <Style.Triggers>
@@ -670,8 +762,12 @@
                             </Label.Style>
                         </Label>
                     </StackPanel>
-                    <StackPanel x:Name="LblProgress" Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,-3"
-                                HorizontalAlignment="Right">
+                    <StackPanel
+                        x:Name="LblProgress"
+                        Grid.Row="0"
+                        Margin="0,3,0,-3"
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal">
                         <StackPanel.Style>
                             <Style TargetType="FrameworkElement">
                                 <Style.Triggers>
@@ -684,32 +780,66 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Style>
-                        <Label x:Name="LblNow" Content="{Binding Player.Position, Mode=OneWay, Converter={StaticResource MsToStringConverter}}" Foreground="#777" />
-                        <Label Content="/" Foreground="#858585" Margin="-5,0,-5,0" />
-                        <Label x:Name="LblTotal" Content="{Binding Player.Duration, Mode=OneWay, Converter={StaticResource MsToStringConverter}}" Foreground="#AAA" />
+                        <Label
+                            x:Name="LblNow"
+                            Content="{Binding Player.Position, Mode=OneWay, Converter={StaticResource MsToStringConverter}}"
+                            Foreground="#777" />
+                        <Label
+                            Margin="-5,0,-5,0"
+                            Content="/"
+                            Foreground="#858585" />
+                        <Label
+                            x:Name="LblTotal"
+                            Content="{Binding Player.Duration, Mode=OneWay, Converter={StaticResource MsToStringConverter}}"
+                            Foreground="#AAA" />
                     </StackPanel>
-                    <Slider x:Name="PlayProgress" Grid.Row="1" Margin="3"
-                            Minimum="0"
-                            Maximum="{Binding Player.Duration, Mode=OneWay}"
-                            Value="{Binding Player.Position, Mode=OneWay}"
-                            Style="{StaticResource HorizontalSliderPinkStyle}"
-                            Thumb.DragStarted="PlayProgress_DragStarted"
-                            Thumb.DragCompleted="PlayProgress_DragCompleted" />
+                    <Slider
+                        x:Name="PlayProgress"
+                        Grid.Row="1"
+                        Margin="3"
+                        Maximum="{Binding Player.Duration, Mode=OneWay}"
+                        Minimum="0"
+                        Style="{StaticResource HorizontalSliderPinkStyle}"
+                        Thumb.DragCompleted="PlayProgress_DragCompleted"
+                        Thumb.DragStarted="PlayProgress_DragStarted"
+                        Value="{Binding Player.Position, Mode=OneWay}" />
                 </Grid>
                 <Grid Grid.Column="3">
-                    <StackPanel x:Name="FuncPanel" Margin="10,0,10,0"
-                                VerticalAlignment="Center" Orientation="Horizontal">
+                    <StackPanel
+                        x:Name="FuncPanel"
+                        Margin="10,0,10,0"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
                         <StackPanel Orientation="Horizontal">
-                            <WrapPanel Orientation="Horizontal" Width="100" Visibility="Collapsed">
-                                <RadioButton x:Name="ModNone" Content="none" Checked="Mod_CheckChanged" />
-                                <RadioButton x:Name="ModDt" Content="dt" Checked="Mod_CheckChanged" />
-                                <RadioButton x:Name="ModHt" Content="ht" Checked="Mod_CheckChanged" />
-                                <RadioButton x:Name="ModNc" Content="nc" Checked="Mod_CheckChanged" />
-                                <RadioButton x:Name="ModDc" Content="dc" Checked="Mod_CheckChanged" />
+                            <WrapPanel
+                                Width="100"
+                                Orientation="Horizontal"
+                                Visibility="Collapsed">
+                                <RadioButton
+                                    x:Name="ModNone"
+                                    Checked="Mod_CheckChanged"
+                                    Content="none" />
+                                <RadioButton
+                                    x:Name="ModDt"
+                                    Checked="Mod_CheckChanged"
+                                    Content="dt" />
+                                <RadioButton
+                                    x:Name="ModHt"
+                                    Checked="Mod_CheckChanged"
+                                    Content="ht" />
+                                <RadioButton
+                                    x:Name="ModNc"
+                                    Checked="Mod_CheckChanged"
+                                    Content="nc" />
+                                <RadioButton
+                                    x:Name="ModDc"
+                                    Checked="Mod_CheckChanged"
+                                    Content="dc" />
                             </WrapPanel>
                             <custom:BitmapButton
                                 x:Name="ModeButton"
-                                Background="{StaticResource Loop}" Click="BtnMode_Click"
+                                Background="{StaticResource Loop}"
+                                Click="BtnMode_Click"
                                 WindowChrome.IsHitTestVisibleInChrome="True">
                                 <Button.Style>
                                     <Style TargetType="custom:BitmapButton">
@@ -729,14 +859,17 @@
                                 </Button.Style>
                             </custom:BitmapButton>
                             <custom:BitmapButton
-                                x:Name="LikeButton" Click="BtnLike_Click"
+                                x:Name="LikeButton"
+                                Click="BtnLike_Click"
                                 WindowChrome.IsHitTestVisibleInChrome="True">
                                 <Button.Style>
                                     <Style TargetType="custom:BitmapButton">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavorite}" Value="True"
-                                                         wpfApi:TriggerTracing.TriggerName="LikeButton -> CurrentMusic"
-                                                         wpfApi:TriggerTracing.TraceEnabled="True">
+                                            <DataTrigger
+                                                wpfApi:TriggerTracing.TraceEnabled="True"
+                                                wpfApi:TriggerTracing.TriggerName="LikeButton -&gt; CurrentMusic"
+                                                Binding="{Binding Player.CurrentInfo.IsFavorite}"
+                                                Value="True">
                                                 <Setter Property="Background" Value="{StaticResource Faved}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Player.CurrentInfo}" Value="{x:Null}">
@@ -810,8 +943,12 @@
                         </StackPanel>
                     </StackPanel>
                 </Grid>
-                <Border x:Name="BorderMini" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="#60dc498d"
-                        BorderThickness="1">
+                <Border
+                    x:Name="BorderMini"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    BorderBrush="#60dc498d"
+                    BorderThickness="1">
                     <Border.Style>
                         <Style TargetType="FrameworkElement">
                             <Style.Triggers>
@@ -826,10 +963,18 @@
                     </Border.Style>
                 </Border>
             </Grid>
-            <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="Pop" PopupAnimation="Fade"
-                   Width="160" HorizontalOffset="-113"
-                   PlacementTarget="{Binding ElementName=VolumeButton}" Placement="Top" AllowsTransparency="True"
-                   StaysOpen="False">
+            <Popup
+                x:Name="Pop"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                Grid.Column="0"
+                Width="160"
+                AllowsTransparency="True"
+                HorizontalOffset="-113"
+                Placement="Top"
+                PlacementTarget="{Binding ElementName=VolumeButton}"
+                PopupAnimation="Fade"
+                StaysOpen="False">
                 <Grid Margin="5">
                     <Border BorderBrush="#cccccc" BorderThickness="1">
                         <!--<Border.Effect>
@@ -838,8 +983,11 @@
                     </Border>
                     <Border>
                         <Border.Background>
-                            <ImageBrush ImageSource="{StaticResource TextrueSource1}" Viewport="0,0,500,500"
-                                        ViewportUnits="Absolute" TileMode="Tile" />
+                            <ImageBrush
+                                ImageSource="{StaticResource TextrueSource1}"
+                                TileMode="Tile"
+                                Viewport="0,0,500,500"
+                                ViewportUnits="Absolute" />
                         </Border.Background>
                         <Grid Margin="5">
                             <Grid.RowDefinitions>
@@ -854,118 +1002,211 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <Slider x:Name="MasterVolume" Orientation="Vertical" HorizontalAlignment="Center"
-                                            Margin="10,5"
-                                            Maximum="1" Value="{Binding Player.CurrentVolume.Main,Mode=TwoWay}"
-                                            Style="{StaticResource VerticalSliderWhiteStyle}"
-                                            Thumb.DragCompleted="MasterVolume_DragComplete" Height="70" />
-                                    <Label Content="总体" Margin="0,-5,0,0" HorizontalAlignment="Center"
-                                           Foreground="White" />
+                                    <Slider
+                                        x:Name="MasterVolume"
+                                        Height="70"
+                                        Margin="10,5"
+                                        HorizontalAlignment="Center"
+                                        Maximum="1"
+                                        Orientation="Vertical"
+                                        Style="{StaticResource VerticalSliderWhiteStyle}"
+                                        Thumb.DragCompleted="MasterVolume_DragComplete"
+                                        Value="{Binding Player.CurrentVolume.Main, Mode=TwoWay}" />
+                                    <Label
+                                        Margin="0,-5,0,0"
+                                        HorizontalAlignment="Center"
+                                        Content="总体"
+                                        Foreground="White" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
-                                    <Slider x:Name="MusicVolume" Orientation="Vertical" HorizontalAlignment="Center"
-                                            Margin="10,5"
-                                            Maximum="1" Value="{Binding Player.CurrentVolume.Music,Mode=TwoWay}"
-                                            Style="{StaticResource VerticalSliderWhiteStyle}"
-                                            Thumb.DragCompleted="MusicVolume_DragComplete" Height="70" />
-                                    <Label Content="音乐" Margin="0,-5,0,0" HorizontalAlignment="Center"
-                                           Foreground="White" />
+                                    <Slider
+                                        x:Name="MusicVolume"
+                                        Height="70"
+                                        Margin="10,5"
+                                        HorizontalAlignment="Center"
+                                        Maximum="1"
+                                        Orientation="Vertical"
+                                        Style="{StaticResource VerticalSliderWhiteStyle}"
+                                        Thumb.DragCompleted="MusicVolume_DragComplete"
+                                        Value="{Binding Player.CurrentVolume.Music, Mode=TwoWay}" />
+                                    <Label
+                                        Margin="0,-5,0,0"
+                                        HorizontalAlignment="Center"
+                                        Content="音乐"
+                                        Foreground="White" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
-                                    <Slider x:Name="HitsoundVolume" Orientation="Vertical" HorizontalAlignment="Center"
-                                            Margin="10,5"
-                                            Maximum="1" Value="{Binding Player.CurrentVolume.Hitsound, Mode=TwoWay}"
-                                            Style="{StaticResource VerticalSliderWhiteStyle}"
-                                            Thumb.DragCompleted="HitsoundVolume_DragComplete" Height="70" />
-                                    <Label Content="音效" Margin="0,-5,0,0" HorizontalAlignment="Center"
-                                           Foreground="White" />
+                                    <Slider
+                                        x:Name="HitsoundVolume"
+                                        Height="70"
+                                        Margin="10,5"
+                                        HorizontalAlignment="Center"
+                                        Maximum="1"
+                                        Orientation="Vertical"
+                                        Style="{StaticResource VerticalSliderWhiteStyle}"
+                                        Thumb.DragCompleted="HitsoundVolume_DragComplete"
+                                        Value="{Binding Player.CurrentVolume.Hitsound, Mode=TwoWay}" />
+                                    <Label
+                                        Margin="0,-5,0,0"
+                                        HorizontalAlignment="Center"
+                                        Content="音效"
+                                        Foreground="White" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="3">
-                                    <Slider x:Name="SampleVolume" Orientation="Vertical" HorizontalAlignment="Center"
-                                            Margin="10,5"
-                                            Maximum="1" Value="{Binding Player.CurrentVolume.Sample, Mode=TwoWay}"
-                                            Style="{StaticResource VerticalSliderWhiteStyle}"
-                                            Thumb.DragCompleted="SampleVolume_DragComplete" Height="70" />
-                                    <Label Content="音轨" Margin="0,-5,0,0" HorizontalAlignment="Center"
-                                           Foreground="White" />
+                                    <Slider
+                                        x:Name="SampleVolume"
+                                        Height="70"
+                                        Margin="10,5"
+                                        HorizontalAlignment="Center"
+                                        Maximum="1"
+                                        Orientation="Vertical"
+                                        Style="{StaticResource VerticalSliderWhiteStyle}"
+                                        Thumb.DragCompleted="SampleVolume_DragComplete"
+                                        Value="{Binding Player.CurrentVolume.Sample, Mode=TwoWay}" />
+                                    <Label
+                                        Margin="0,-5,0,0"
+                                        HorizontalAlignment="Center"
+                                        Content="音轨"
+                                        Foreground="White" />
                                 </StackPanel>
                             </Grid>
                             <Grid Grid.Row="1">
                                 <StackPanel>
-                                    <Slider x:Name="Balance" Orientation="Horizontal" Margin="10,5"
-                                            Style="{StaticResource HorizontalSliderWhiteStyle}"
-                                            Value="{Binding Player.CurrentVolume.BalanceFactor, Mode=TwoWay}"
-                                            Thumb.DragCompleted="Balance_DragComplete" 
-                                            Minimum="0"
-                                            Maximum="100"
-                                            TickFrequency="1"
-                                            AutoToolTipPlacement="BottomRight" />
-                                    <Label Content="3D差异度" Margin="0,-5,0,0" HorizontalAlignment="Center"
-                                           Foreground="White" />
-                                    <Slider x:Name="Offset" Orientation="Horizontal" Margin="10,5"
-                                            Maximum="200" Style="{StaticResource HorizontalSliderWhiteStyle}"
-                                            Thumb.DragDelta="Offset_DragDelta" Minimum="-200"
-                                            AutoToolTipPlacement="BottomRight" />
-                                    <Label Content="单曲偏移" Margin="0,-5,0,0" HorizontalAlignment="Center"
-                                           Foreground="White" />
+                                    <Slider
+                                        x:Name="Balance"
+                                        Margin="10,5"
+                                        AutoToolTipPlacement="BottomRight"
+                                        Maximum="100"
+                                        Minimum="0"
+                                        Orientation="Horizontal"
+                                        Style="{StaticResource HorizontalSliderWhiteStyle}"
+                                        Thumb.DragCompleted="Balance_DragComplete"
+                                        TickFrequency="1"
+                                        Value="{Binding Player.CurrentVolume.BalanceFactor, Mode=TwoWay}" />
+                                    <Label
+                                        Margin="0,-5,0,0"
+                                        HorizontalAlignment="Center"
+                                        Content="3D差异度"
+                                        Foreground="White" />
+                                    <Slider
+                                        x:Name="Offset"
+                                        Margin="10,5"
+                                        AutoToolTipPlacement="BottomRight"
+                                        Maximum="200"
+                                        Minimum="-200"
+                                        Orientation="Horizontal"
+                                        Style="{StaticResource HorizontalSliderWhiteStyle}"
+                                        Thumb.DragDelta="Offset_DragDelta" />
+                                    <Label
+                                        Margin="0,-5,0,0"
+                                        HorizontalAlignment="Center"
+                                        Content="单曲偏移"
+                                        Foreground="White" />
                                 </StackPanel>
                             </Grid>
                         </Grid>
                     </Border>
                 </Grid>
             </Popup>
-            <Popup Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="PopMode" PopupAnimation="Fade"
-                   HorizontalOffset="-27"
-                   PlacementTarget="{Binding ElementName=ModeButton}" Placement="Top" AllowsTransparency="True"
-                   StaysOpen="False">
+            <Popup
+                x:Name="PopMode"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                Grid.Column="0"
+                AllowsTransparency="True"
+                HorizontalOffset="-27"
+                Placement="Top"
+                PlacementTarget="{Binding ElementName=ModeButton}"
+                PopupAnimation="Fade"
+                StaysOpen="False">
                 <Grid Margin="5">
                     <Border BorderBrush="#cccccc" BorderThickness="1">
                         <!--<Border.Effect>
                             <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="#000000" Opacity="0.5" />
                         </Border.Effect>-->
                     </Border>
-                    <Border HorizontalAlignment="Center" BorderBrush="#cccccc" BorderThickness="1">
+                    <Border
+                        HorizontalAlignment="Center"
+                        BorderBrush="#cccccc"
+                        BorderThickness="1">
                         <Border.Background>
-                            <ImageBrush ImageSource="{StaticResource TextrueSource1}" Viewport="0,0,500,500"
-                                        ViewportUnits="Absolute" TileMode="Tile" />
+                            <ImageBrush
+                                ImageSource="{StaticResource TextrueSource1}"
+                                TileMode="Tile"
+                                Viewport="0,0,500,500"
+                                ViewportUnits="Absolute" />
                         </Border.Background>
                         <StackPanel Width="75">
-                            <ToggleButton x:Name="Single" Content="单曲播放" Height="25"
-                                          Checked="PlayMode_Checked" Unchecked="PlayMode_UnChecked"
-                                          Click="PlayMode_Click"
-                                          Style="{StaticResource PopupButtonStyle}" />
-                            <ToggleButton x:Name="SingleLoop" Content="单曲循环" Height="25"
-                                          Checked="PlayMode_Checked" Unchecked="PlayMode_UnChecked"
-                                          Click="PlayMode_Click"
-                                          Style="{StaticResource PopupButtonStyle}" />
-                            <ToggleButton x:Name="Normal" Content="顺序播放" Height="25"
-                                          Checked="PlayMode_Checked" Unchecked="PlayMode_UnChecked"
-                                          Click="PlayMode_Click"
-                                          Style="{StaticResource PopupButtonStyle}" />
-                            <ToggleButton x:Name="Random" Content="随机播放" Height="25"
-                                          Checked="PlayMode_Checked" Unchecked="PlayMode_UnChecked"
-                                          Click="PlayMode_Click"
-                                          Style="{StaticResource PopupButtonStyle}" />
-                            <ToggleButton x:Name="Loop" Content="循环列表" Height="25"
-                                          Checked="PlayMode_Checked" Unchecked="PlayMode_UnChecked"
-                                          Click="PlayMode_Click"
-                                          Style="{StaticResource PopupButtonStyle}" />
-                            <ToggleButton x:Name="LoopRandom" Content="随机循环" Height="25"
-                                          Checked="PlayMode_Checked" Unchecked="PlayMode_UnChecked"
-                                          Click="PlayMode_Click"
-                                          Style="{StaticResource PopupButtonStyle}" />
+                            <ToggleButton
+                                x:Name="Single"
+                                Height="25"
+                                Checked="PlayMode_Checked"
+                                Click="PlayMode_Click"
+                                Content="单曲播放"
+                                Style="{StaticResource PopupButtonStyle}"
+                                Unchecked="PlayMode_UnChecked" />
+                            <ToggleButton
+                                x:Name="SingleLoop"
+                                Height="25"
+                                Checked="PlayMode_Checked"
+                                Click="PlayMode_Click"
+                                Content="单曲循环"
+                                Style="{StaticResource PopupButtonStyle}"
+                                Unchecked="PlayMode_UnChecked" />
+                            <ToggleButton
+                                x:Name="Normal"
+                                Height="25"
+                                Checked="PlayMode_Checked"
+                                Click="PlayMode_Click"
+                                Content="顺序播放"
+                                Style="{StaticResource PopupButtonStyle}"
+                                Unchecked="PlayMode_UnChecked" />
+                            <ToggleButton
+                                x:Name="Random"
+                                Height="25"
+                                Checked="PlayMode_Checked"
+                                Click="PlayMode_Click"
+                                Content="随机播放"
+                                Style="{StaticResource PopupButtonStyle}"
+                                Unchecked="PlayMode_UnChecked" />
+                            <ToggleButton
+                                x:Name="Loop"
+                                Height="25"
+                                Checked="PlayMode_Checked"
+                                Click="PlayMode_Click"
+                                Content="循环列表"
+                                Style="{StaticResource PopupButtonStyle}"
+                                Unchecked="PlayMode_UnChecked" />
+                            <ToggleButton
+                                x:Name="LoopRandom"
+                                Height="25"
+                                Checked="PlayMode_Checked"
+                                Click="PlayMode_Click"
+                                Content="随机循环"
+                                Style="{StaticResource PopupButtonStyle}"
+                                Unchecked="PlayMode_UnChecked" />
                         </StackPanel>
                     </Border>
                 </Grid>
             </Popup>
         </Grid>
-        <Frame Name="FramePop" 
-               Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" 
-               NavigationUIVisibility="Hidden" />
-        <Border x:Name="MsgBoxCover" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
-                Background="{StaticResource WhiteBrush80}"
-                Visibility="Hidden" />
-        <DockPanel x:Name="TitleBarArea" Grid.Row="0" Height="50">
+        <Frame
+            Name="FramePop"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            NavigationUIVisibility="Hidden" />
+        <Border
+            x:Name="MsgBoxCover"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Background="{StaticResource WhiteBrush80}"
+            Visibility="Hidden" />
+        <DockPanel
+            x:Name="TitleBarArea"
+            Grid.Row="0"
+            Height="50">
             <DockPanel.Style>
                 <Style TargetType="FrameworkElement">
                     <Style.Triggers>
@@ -978,41 +1219,47 @@
                     </Style.Triggers>
                 </Style>
             </DockPanel.Style>
-            <Canvas HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Width="200" Height="40" Margin="0,0,5,0">
+            <Canvas
+                Width="200"
+                Height="40"
+                Margin="0,0,5,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center">
                 <dms:DMSystemButton
-                    WindowChrome.IsHitTestVisibleInChrome="True"
                     x:Name="BtnSettings"
+                    Click="BtnSettings_Click"
                     DMSystemButtonForeground="#E0EEEEEE"
                     DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
-                    Icon="{StaticResource Gear}"
                     DMSystemButtonSize="40"
-                    Click="BtnSettings_Click" />
+                    Icon="{StaticResource Gear}"
+                    WindowChrome.IsHitTestVisibleInChrome="True" />
                 <dms:DMSystemButton
-                    WindowChrome.IsHitTestVisibleInChrome="True"
-                    DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
-                    Icon="{StaticResource Mini}"
-                    DMSystemButtonSize="40" Canvas.Left="40"
+                    Canvas.Left="40"
                     Click="BtnMini_Click"
-                    IsEnabled="{Binding Content, ElementName=FramePop,Converter={StaticResource CvtMiniEnabled}}">
-                </dms:DMSystemButton>
+                    DMSystemButtonForeground="#E0EEEEEE"
+                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
+                    DMSystemButtonSize="40"
+                    Icon="{StaticResource Mini}"
+                    IsEnabled="{Binding Content, ElementName=FramePop, Converter={StaticResource CvtMiniEnabled}}"
+                    WindowChrome.IsHitTestVisibleInChrome="True" />
                 <dms:DMSystemMinButton
-                    WindowChrome.IsHitTestVisibleInChrome="True"
+                    Canvas.Left="80"
                     DMSystemButtonForeground="#E0EEEEEE"
                     DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
-                    DMSystemButtonSize="40" Canvas.Left="80" />
+                    DMSystemButtonSize="40"
+                    WindowChrome.IsHitTestVisibleInChrome="True" />
                 <dms:DMSystemMaxButton
-                    WindowChrome.IsHitTestVisibleInChrome="True"
+                    Canvas.Left="120"
                     DMSystemButtonForeground="#E0EEEEEE"
                     DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
-                    DMSystemButtonSize="40" Canvas.Left="120" />
+                    DMSystemButtonSize="40"
+                    WindowChrome.IsHitTestVisibleInChrome="True" />
                 <dms:DMSystemCloseButton
-                    WindowChrome.IsHitTestVisibleInChrome="True"
+                    Canvas.Left="160"
                     DMSystemButtonForeground="#E0EEEEEE"
                     DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
-                    DMSystemButtonSize="40" Canvas.Left="160" />
+                    DMSystemButtonSize="40"
+                    WindowChrome.IsHitTestVisibleInChrome="True" />
             </Canvas>
         </DockPanel>
         <!--<Border Grid.Row="1" Background="{StaticResource WhiteBrush80}"
@@ -1024,61 +1271,81 @@
                 Width="40" Height="40" />
         </Border>-->
 
-        <Border x:Name="WelcomeArea" Grid.Row="1"
-                Background="{StaticResource WhiteBrushB0}"
-                Visibility="{Binding ShowWelcome,Converter={StaticResource TrueToVisibleConverter}}">
+        <Border
+            x:Name="WelcomeArea"
+            Grid.Row="1"
+            Background="{StaticResource WhiteBrushB0}"
+            Visibility="{Binding ShowWelcome, Converter={StaticResource TrueToVisibleConverter}}">
             <Border.DataContext>
-                <viewModels:WelcomeViewModel/>
+                <viewModels:WelcomeViewModel />
             </Border.DataContext>
-            <StackPanel x:Name="VerticalWelcomeStackPanel" VerticalAlignment="Center"
-                        HorizontalAlignment="Center">
-                <Label Content="欢迎"
-                       HorizontalContentAlignment="Center"
-                       FontSize="35"
-                       Margin="0,3,0,0"
-                       FontWeight="Bold" 
-                       Foreground="{StaticResource SliderBackground}" />
-                <Label Content="选择以下项目，开启精彩音乐世界……"
-                       Margin="0,0,0,3"
-                       HorizontalContentAlignment="Center"
-                       FontSize="12"
-                       Foreground="{StaticResource SliderBackground}" />
-                <custom:Loader Width="30" Height="30" FillColor="#303030" Visibility="{Binding GuideSyncing,Converter={StaticResource TrueToVisibleConverter}}" />
+            <StackPanel
+                x:Name="VerticalWelcomeStackPanel"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+                <Label
+                    Margin="0,3,0,0"
+                    HorizontalContentAlignment="Center"
+                    Content="欢迎"
+                    FontSize="35"
+                    FontWeight="Bold"
+                    Foreground="{StaticResource SliderBackground}" />
+                <Label
+                    Margin="0,0,0,3"
+                    HorizontalContentAlignment="Center"
+                    Content="选择以下项目，开启精彩音乐世界……"
+                    FontSize="12"
+                    Foreground="{StaticResource SliderBackground}" />
+                <custom:Loader
+                    Width="30"
+                    Height="30"
+                    FillColor="#303030"
+                    Visibility="{Binding GuideSyncing, Converter={StaticResource TrueToVisibleConverter}}" />
                 <dms:DMCheckBox
-                    x:Name="Step1" Margin="0,3"
-                    IsChecked="{Binding GuideSelectedDb, Mode=TwoWay}"
-                    Content="选择osu!db，同步曲库"
+                    x:Name="Step1"
+                    Margin="0,3"
                     Command="{Binding Step1Command}"
-                    IconColor="{StaticResource PinkBrushOsu}" />
+                    Content="选择osu!db，同步曲库"
+                    IconColor="{StaticResource PinkBrushOsu}"
+                    IsChecked="{Binding GuideSelectedDb, Mode=TwoWay}" />
                 <dms:DMCheckBox
-                    Visibility="Collapsed"
-                    x:Name="Step2" Margin="0,3"
+                    x:Name="Step2"
+                    Margin="0,3"
                     Content="开启曲库目录监听服务，减少同步与扫描时间"
-                    IconColor="{StaticResource PinkBrushOsu}" />
+                    IconColor="{StaticResource PinkBrushOsu}"
+                    Visibility="Collapsed" />
                 <dms:DMLinkButton
-                    HorizontalContentAlignment="Center" Margin="0,30,0,0"
-                    DMSystemButtonHoverColor="Transparent"
-                    DMSystemButtonHoverForeground="#949494"
+                    Margin="0,30,0,0"
+                    HorizontalContentAlignment="Center"
+                    Command="{Binding SkipCommand}"
                     Content="Skip this step"
-                    Command="{Binding SkipCommand}"/>
+                    DMSystemButtonHoverColor="Transparent"
+                    DMSystemButtonHoverForeground="#949494" />
             </StackPanel>
         </Border>
-        <tb:TaskbarIcon Grid.Row="0" x:Name="NotifyIcon"
-                        Visibility="Visible"
-                        IconSource="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
-                        ContextMenu="{DynamicResource TrayMenu}"
-                        MenuActivation="LeftOrRightClick"
-                        TrayToolTip="{DynamicResource TrayToolTip}"
-                        TrayMouseDoubleClick="NotifyIcon_TrayMouseDoubleClick" />
+        <tb:TaskbarIcon
+            x:Name="NotifyIcon"
+            Grid.Row="0"
+            ContextMenu="{DynamicResource TrayMenu}"
+            IconSource="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
+            MenuActivation="LeftOrRightClick"
+            TrayMouseDoubleClick="NotifyIcon_TrayMouseDoubleClick"
+            TrayToolTip="{DynamicResource TrayToolTip}"
+            Visibility="Visible" />
         <Grid.Resources>
             <ToolTip x:Key="TrayToolTip" />
             <!--<Popup x:Key="TrayStatusPopup"></Popup>-->
             <ContextMenu x:Key="TrayMenu" Style="{StaticResource DefaultContextMenu}">
                 <!--<ContextMenu x:Key="TrayMenu">-->
-                <MenuItem Header="播放" Style="{DynamicResource DefaultMenuItem}"
-                          Click="BtnPlay_Click">
+                <MenuItem
+                    Click="BtnPlay_Click"
+                    Header="播放"
+                    Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
-                        <Viewbox Stretch="Uniform" Width="16" Height="16">
+                        <Viewbox
+                            Width="16"
+                            Height="16"
+                            Stretch="Uniform">
                             <Canvas Width="1000" Height="1000">
                                 <Canvas.RenderTransform>
                                     <TranslateTransform X="0" Y="0" />
@@ -1086,9 +1353,7 @@
                                 <Canvas>
                                     <Path Fill="{StaticResource PinkBrushOsu}">
                                         <Path.Data>
-                                            <PathGeometry
-                                                Figures="M853.2 597.5L253.5 973.4l-0.5-0.7c-4.3 2.7-8.8 5.1-13.4 7.2c-0.1 0.1-0.3 0.1-0.5 0.3c-4.5 2-9.2 3.8-14 5.2c-0.3 0.1-0.7 0.1-1 0.3c-2.1 0.6-4.2 1.1-6.3 1.5c-0.4 0.1-0.7 0.2-1.1 0.3c-2.4 0.6-4.8 1-7.2 1.3c-0.4 0.1-0.8 0.1-1.2 0.1c-2 0.3-4 0.6-6.1 0.7c-0.6 0.1-1.3 0.1-1.9 0.1c-2.4 0.1-4.9 0.3-7.4 0.3C130.4 990 91 923.3 91 860.9l0 0l0 0l0-720.9l0 0C91 77.6 130.4 10 192.8 10c23.7 0 45.6 7.3 63.8 19.7l595.6 372.2c34 19.5 56.8 56.1 56.8 98.1C909 541.6 886.6 577.9 853.2 597.5z"
-                                                FillRule="NonZero" />
+                                            <PathGeometry Figures="M853.2 597.5L253.5 973.4l-0.5-0.7c-4.3 2.7-8.8 5.1-13.4 7.2c-0.1 0.1-0.3 0.1-0.5 0.3c-4.5 2-9.2 3.8-14 5.2c-0.3 0.1-0.7 0.1-1 0.3c-2.1 0.6-4.2 1.1-6.3 1.5c-0.4 0.1-0.7 0.2-1.1 0.3c-2.4 0.6-4.8 1-7.2 1.3c-0.4 0.1-0.8 0.1-1.2 0.1c-2 0.3-4 0.6-6.1 0.7c-0.6 0.1-1.3 0.1-1.9 0.1c-2.4 0.1-4.9 0.3-7.4 0.3C130.4 990 91 923.3 91 860.9l0 0l0 0l0-720.9l0 0C91 77.6 130.4 10 192.8 10c23.7 0 45.6 7.3 63.8 19.7l595.6 372.2c34 19.5 56.8 56.1 56.8 98.1C909 541.6 886.6 577.9 853.2 597.5z" FillRule="NonZero" />
                                         </Path.Data>
                                     </Path>
                                 </Canvas>
@@ -1096,10 +1361,15 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="上一首" Style="{DynamicResource DefaultMenuItem}"
-                          Click="BtnPrev_Click">
+                <MenuItem
+                    Click="BtnPrev_Click"
+                    Header="上一首"
+                    Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
-                        <Viewbox Stretch="Uniform" Width="16" Height="16">
+                        <Viewbox
+                            Width="16"
+                            Height="16"
+                            Stretch="Uniform">
                             <Canvas Width="1000" Height="1000">
                                 <Canvas.RenderTransform>
                                     <RotateTransform Angle="180" CenterX="500" CenterY="500" />
@@ -1107,9 +1377,7 @@
                                 <Canvas>
                                     <Path Fill="{StaticResource PinkBrushOsu}">
                                         <Path.Data>
-                                            <PathGeometry
-                                                Figures="M905.9 16.1h-52.6c-24.7 0-44.8 20-44.8 44.8v361.9c-5.1-4.3-10.8-8.3-17-12.2L176.2 29.3C106.4-13.9 49.3 17.9 49.3 100v801.4c0 82.1 56.4 112.8 125.3 68.3l618.5-399.4c5.6-3.6 10.8-7.4 15.5-11.4v380.4c0 24.7 20 44.8 44.8 44.8h52.6c24.7 0 44.8-20 44.8-44.8V60.9C950.7 36.2 930.6 16.1 905.9 16.1z"
-                                                FillRule="NonZero" />
+                                            <PathGeometry Figures="M905.9 16.1h-52.6c-24.7 0-44.8 20-44.8 44.8v361.9c-5.1-4.3-10.8-8.3-17-12.2L176.2 29.3C106.4-13.9 49.3 17.9 49.3 100v801.4c0 82.1 56.4 112.8 125.3 68.3l618.5-399.4c5.6-3.6 10.8-7.4 15.5-11.4v380.4c0 24.7 20 44.8 44.8 44.8h52.6c24.7 0 44.8-20 44.8-44.8V60.9C950.7 36.2 930.6 16.1 905.9 16.1z" FillRule="NonZero" />
                                         </Path.Data>
                                     </Path>
                                 </Canvas>
@@ -1117,10 +1385,15 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="下一首" Style="{DynamicResource DefaultMenuItem}"
-                          Click="BtnNext_Click">
+                <MenuItem
+                    Click="BtnNext_Click"
+                    Header="下一首"
+                    Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
-                        <Viewbox Stretch="Uniform" Width="16" Height="16">
+                        <Viewbox
+                            Width="16"
+                            Height="16"
+                            Stretch="Uniform">
                             <Canvas Width="1000" Height="1000">
                                 <Canvas.RenderTransform>
                                     <TranslateTransform X="0" Y="0" />
@@ -1128,9 +1401,7 @@
                                 <Canvas>
                                     <Path Fill="{StaticResource PinkBrushOsu}">
                                         <Path.Data>
-                                            <PathGeometry
-                                                Figures="M905.9 16.1h-52.6c-24.7 0-44.8 20-44.8 44.8v361.9c-5.1-4.3-10.8-8.3-17-12.2L176.2 29.3C106.4-13.9 49.3 17.9 49.3 100v801.4c0 82.1 56.4 112.8 125.3 68.3l618.5-399.4c5.6-3.6 10.8-7.4 15.5-11.4v380.4c0 24.7 20 44.8 44.8 44.8h52.6c24.7 0 44.8-20 44.8-44.8V60.9C950.7 36.2 930.6 16.1 905.9 16.1z"
-                                                FillRule="NonZero" />
+                                            <PathGeometry Figures="M905.9 16.1h-52.6c-24.7 0-44.8 20-44.8 44.8v361.9c-5.1-4.3-10.8-8.3-17-12.2L176.2 29.3C106.4-13.9 49.3 17.9 49.3 100v801.4c0 82.1 56.4 112.8 125.3 68.3l618.5-399.4c5.6-3.6 10.8-7.4 15.5-11.4v380.4c0 24.7 20 44.8 44.8 44.8h52.6c24.7 0 44.8-20 44.8-44.8V60.9C950.7 36.2 930.6 16.1 905.9 16.1z" FillRule="NonZero" />
                                         </Path.Data>
                                     </Path>
                                 </Canvas>
@@ -1140,33 +1411,48 @@
                 </MenuItem>
                 <!--<Button Content="循环模式" Style="{DynamicResource DefaultMenuItem}"/>-->
                 <MenuItem
-                    Header="{Binding LyricWindowViewModel.IsLyricWindowShown,Converter={StaticResource CvtLyricWindowShown},ConverterParameter=string}"
-                    Style="{DynamicResource DefaultMenuItem}" Click="MenuOpenHideLyric_Click" />
-                <MenuItem Header="{Binding IsLyricWindowLocked,Converter={StaticResource CvtLyricWindowLocked}}"
-                          Style="{DynamicResource DefaultMenuItem}"
-                          IsEnabled="{Binding LyricWindowViewModel.IsLyricWindowShown,Converter={StaticResource CvtLyricWindowShown},ConverterParameter=bool}"
-                          Click="MenuLockLyric_Click" />
+                    Click="MenuOpenHideLyric_Click"
+                    Header="{Binding LyricWindowViewModel.IsLyricWindowShown, Converter={StaticResource CvtLyricWindowShown}, ConverterParameter=string}"
+                    Style="{DynamicResource DefaultMenuItem}" />
+                <MenuItem
+                    Click="MenuLockLyric_Click"
+                    Header="{Binding IsLyricWindowLocked, Converter={StaticResource CvtLyricWindowLocked}}"
+                    IsEnabled="{Binding LyricWindowViewModel.IsLyricWindowShown, Converter={StaticResource CvtLyricWindowShown}, ConverterParameter=bool}"
+                    Style="{DynamicResource DefaultMenuItem}" />
                 <Separator />
-                <MenuItem x:Name="MenuConfig" Header="设置" Style="{DynamicResource DefaultMenuItem}"
-                          Click="MenuConfig_Click">
+                <MenuItem
+                    x:Name="MenuConfig"
+                    Click="MenuConfig_Click"
+                    Header="设置"
+                    Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
-                        <Viewbox Stretch="Uniform" Width="16" Height="16" Margin="-3,-2,0,0">
+                        <Viewbox
+                            Width="16"
+                            Height="16"
+                            Margin="-3,-2,0,0"
+                            Stretch="Uniform">
                             <Canvas Width="240" Height="237">
                                 <Canvas.RenderTransform>
                                     <TranslateTransform X="0" Y="0" />
                                 </Canvas.RenderTransform>
                                 <Canvas>
-                                    <Path Fill="#303030" Data="{StaticResource Gear}" />
+                                    <Path Data="{StaticResource Gear}" Fill="#303030" />
                                 </Canvas>
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem x:Name="MenuExit" Header="退出" Style="{DynamicResource DefaultMenuItem}"
-                          Click="MenuExit_Click">
+                <MenuItem
+                    x:Name="MenuExit"
+                    Click="MenuExit_Click"
+                    Header="退出"
+                    Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
-                        <Viewbox Stretch="Uniform" Width="16" Height="16">
+                        <Viewbox
+                            Width="16"
+                            Height="16"
+                            Stretch="Uniform">
                             <Canvas Width="1000" Height="1000">
                                 <Canvas.RenderTransform>
                                     <TranslateTransform X="0" Y="0" />
@@ -1174,9 +1460,7 @@
                                 <Canvas>
                                     <Path Fill="#7a7a7a">
                                         <Path.Data>
-                                            <PathGeometry
-                                                Figures="M981.1 474.5L817.7 270.3c-7.9-9.9-19.7-15.3-31.9-15.3c-4.5 0-9.1 0.8-13.5 2.3C756 263 745 278.5 745 295.8v122.5H418.3c-45.1 0-81.7 36.6-81.7 81.7c0 45.1 36.6 81.7 81.7 81.7H745v122.5c0 17.3 11 32.8 27.3 38.5c4.4 1.6 9 2.3 13.5 2.3c12.2 0 24-5.4 31.9-15.3l163.3-204.2C993 510.6 993 489.4 981.1 474.5z M581.7 826.7H255v0c-0.2 0-0.4 0-0.6 0c-44.8 0-81-36.6-81-81.7V255h0c0-0.2 0-0.4 0-0.6c0-44.8 36.6-81 81.7-81h326.7c45.1 0 81.7-36.6 81.7-81.7c0-45.1-36.6-81.7-81.7-81.7H173.3C83.1 10 10 83.1 10 173.3v653.3C10 916.9 83.1 990 173.3 990h408.3c45.1 0 81.7-36.6 81.7-81.7C663.3 863.2 626.8 826.7 581.7 826.7z"
-                                                FillRule="NonZero" />
+                                            <PathGeometry Figures="M981.1 474.5L817.7 270.3c-7.9-9.9-19.7-15.3-31.9-15.3c-4.5 0-9.1 0.8-13.5 2.3C756 263 745 278.5 745 295.8v122.5H418.3c-45.1 0-81.7 36.6-81.7 81.7c0 45.1 36.6 81.7 81.7 81.7H745v122.5c0 17.3 11 32.8 27.3 38.5c4.4 1.6 9 2.3 13.5 2.3c12.2 0 24-5.4 31.9-15.3l163.3-204.2C993 510.6 993 489.4 981.1 474.5z M581.7 826.7H255v0c-0.2 0-0.4 0-0.6 0c-44.8 0-81-36.6-81-81.7V255h0c0-0.2 0-0.4 0-0.6c0-44.8 36.6-81 81.7-81h326.7c45.1 0 81.7-36.6 81.7-81.7c0-45.1-36.6-81.7-81.7-81.7H173.3C83.1 10 10 83.1 10 173.3v653.3C10 916.9 83.1 990 173.3 990h408.3c45.1 0 81.7-36.6 81.7-81.7C663.3 863.2 626.8 826.7 581.7 826.7z" FillRule="NonZero" />
                                         </Path.Data>
                                     </Path>
                                 </Canvas>
