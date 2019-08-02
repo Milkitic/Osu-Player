@@ -31,15 +31,15 @@ namespace Milky.OsuPlayer
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
             StartupConfig.Startup();
 
-            InstanceManage.TryAddInstance(new UiMetadata());
-            InstanceManage.TryAddInstance(new PlayerList());
-            InstanceManage.TryAddInstance(new OsuDbInst());
-            InstanceManage.TryAddInstance(new PlayersInst());
-            InstanceManage.TryAddInstance(new LyricsInst());
-            InstanceManage.TryAddInstance(new Updater());
-            InstanceManage.TryAddInstance(new OsuFileScanner());
+            Services.TryAddInstance(new UiMetadata());
+            Services.TryAddInstance(new PlayerList());
+            Services.TryAddInstance(new OsuDbInst());
+            Services.TryAddInstance(new PlayersInst());
+            Services.TryAddInstance(new LyricsInst());
+            Services.TryAddInstance(new Updater());
+            Services.TryAddInstance(new OsuFileScanner());
 
-            InstanceManage.GetInstance<LyricsInst>().ReloadLyricProvider();
+            Services.Get<LyricsInst>().ReloadLyricProvider();
 
             var app = new App();
             app.InitializeComponent();

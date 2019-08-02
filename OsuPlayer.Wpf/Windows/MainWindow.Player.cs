@@ -67,8 +67,8 @@ namespace Milky.OsuPlayer.Windows
         {
             var sw = Stopwatch.StartNew();
 
-            var playerInst = InstanceManage.GetInstance<PlayersInst>();
-            var dbInst = InstanceManage.GetInstance<OsuDbInst>();
+            var playerInst = Services.Get<PlayersInst>();
+            var dbInst = Services.Get<OsuDbInst>();
             ComponentPlayer audioPlayer = null;
 
             if (path == null)
@@ -123,7 +123,7 @@ namespace Milky.OsuPlayer.Windows
                         mapInfo,
                         beatmap,
                         isFavorite); // 20 ms
-                    InstanceManage.GetInstance<PlayerList>().CurrentInfo = currentInfo;
+                    Services.Get<PlayerList>().CurrentInfo = currentInfo;
                     ViewModel.Player.CurrentInfo = currentInfo;
 
                     /*start of ui*/
@@ -140,7 +140,7 @@ namespace Milky.OsuPlayer.Windows
                     PlayProgress.Maximum = audioPlayer.Duration;
                     PlayProgress.Value = 0;
 
-                    PlayerViewModel.Current.Duration = InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Duration;
+                    PlayerViewModel.Current.Duration = Services.Get<PlayersInst>().AudioPlayer.Duration;
 
                     /* Set Storyboard */
                     if (true)
@@ -419,13 +419,13 @@ namespace Milky.OsuPlayer.Windows
         {
             if (_forcePaused)
                 return;
-            InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Play();
+            Services.Get<PlayersInst>().AudioPlayer.Play();
             // Todo: Set Storyboard
         }
 
         private void PauseMedia()
         {
-            InstanceManage.GetInstance<PlayersInst>().AudioPlayer.Pause();
+            Services.Get<PlayersInst>().AudioPlayer.Pause();
             // Todo: Set Storyboard
         }
 
@@ -437,9 +437,9 @@ namespace Milky.OsuPlayer.Windows
         /// <param name="isNext"></param>
         private async Task PlayNextAsync(bool isManual, bool isNext)
         {
-            if (InstanceManage.GetInstance<PlayersInst>().AudioPlayer == null)
+            if (Services.Get<PlayersInst>().AudioPlayer == null)
                 return;
-            (PlayerList.ChangeType result, Beatmap map) = await InstanceManage.GetInstance<PlayerList>().PlayToAsync(isNext, isManual);
+            (PlayerList.ChangeType result, Beatmap map) = await Services.Get<PlayerList>().PlayToAsync(isNext, isManual);
             switch (result)
             {
                 //case PlayerList.ChangeType.Keep:
@@ -466,7 +466,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void ClearHitsoundPlayer()
         {
-            InstanceManage.GetInstance<PlayersInst>()?.ClearAudioPlayer();
+            Services.Get<PlayersInst>()?.ClearAudioPlayer();
         }
     }
 

@@ -56,12 +56,12 @@ namespace Milky.OsuPlayer.Windows
 
                 _searchLyricTask = Task.Run(async () =>
                 {
-                    var player = InstanceManage.GetInstance<PlayersInst>().AudioPlayer;
+                    var player = Services.Get<PlayersInst>().AudioPlayer;
                     if (player == null)
                         return;
 
                     var meta = player.OsuFile.Metadata;
-                    var lyricInst = InstanceManage.GetInstance<LyricsInst>();
+                    var lyricInst = Services.Get<LyricsInst>();
                     var lyric = await lyricInst.LyricProvider.GetLyricAsync(meta.ArtistMeta.ToUnicodeString(),
                         meta.TitleMeta.ToUnicodeString(), player.Duration);
                     LyricWindow.SetNewLyric(lyric, player.OsuFile);

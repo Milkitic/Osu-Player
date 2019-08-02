@@ -97,7 +97,7 @@
     <Compile Include="Data\IdentifiableExtension.cs" />
     <Compile Include="DictionaryExtension.cs" />
     <Compile Include="I18N\UiMetadata.cs" />
-    <Compile Include="InstanceManage.cs" />
+    <Compile Include="Services.cs" />
     <Compile Include="Metadata\BeatmapDataModel.cs" />
     <Compile Include="Metadata\DataModelComparer.cs" />
     <Compile Include="Metadata\LyricSource.cs" />

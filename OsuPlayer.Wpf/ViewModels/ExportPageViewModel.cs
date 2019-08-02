@@ -24,7 +24,7 @@ namespace Milky.OsuPlayer.ViewModels
     {
         public ExportPageViewModel()
         {
-            _uiMetadata = InstanceManage.GetInstance<UiMetadata>();
+            _uiMetadata = Services.Get<UiMetadata>();
         }
 
         private string _exportPath;

@@ -44,7 +44,7 @@ namespace Milky.OsuPlayer.Pages
         {
             UpdateList();
             var item = DataModels.FirstOrDefault(k =>
-                k.GetIdentity().Equals(InstanceManage.GetInstance<PlayerList>().CurrentInfo.Identity));
+                k.GetIdentity().Equals(Services.Get<PlayerList>().CurrentInfo.Identity));
             RecentList.SelectedItem = item;
         }
 
@@ -70,7 +70,7 @@ namespace Milky.OsuPlayer.Pages
                 DbOperate.RemoveFromRecent(entry.GetIdentity());
             }
             UpdateList();
-            await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+            await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
         }
 
         private void BtnDelAll_Click(object sender, RoutedEventArgs e)
@@ -150,7 +150,7 @@ namespace Milky.OsuPlayer.Pages
             //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
             //       map.BeatmapFileName));
             await _mainWindow.PlayNewFile(map);
-            await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.RecentList);
+            await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.RecentList);
         }
 
         private Beatmap GetSelected()

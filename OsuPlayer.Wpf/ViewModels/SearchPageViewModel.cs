@@ -89,7 +89,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         public async Task PlayListQueryAsync()
         {
-            //if (InstanceManage.GetInstance<OsuDbInst>().Beatmaps == null)
+            //if (Services.Get<OsuDbInst>().Beatmaps == null)
             //    return;
 
             //SortEnum sortEnum = (SortEnum)cbSortType.SelectedItem;

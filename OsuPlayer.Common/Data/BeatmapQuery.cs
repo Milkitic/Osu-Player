@@ -18,7 +18,7 @@ namespace Milky.OsuPlayer.Common.Data
     public static class BeatmapQuery
     {
         private static readonly ConcurrentRandom Random = new ConcurrentRandom();
-        private static HashSet<Beatmap> Beatmaps => InstanceManage.GetInstance<OsuDbInst>().Beatmaps;
+        private static HashSet<Beatmap> Beatmaps => Services.Get<OsuDbInst>().Beatmaps;
 
         public static List<Beatmap> FilterByTitleArtist(string title, string artist)
         {

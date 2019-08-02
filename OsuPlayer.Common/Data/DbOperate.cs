@@ -239,7 +239,7 @@ namespace Milky.OsuPlayer.Common.Data
                     context.SaveChanges();
 
                     //todo: not suitable position
-                    var currentInfo = InstanceManage.GetInstance<PlayerList>().CurrentInfo;
+                    var currentInfo = Services.Get<PlayerList>().CurrentInfo;
                     if (currentInfo != null)
                     {
                         if (collection.Locked &&
@@ -416,7 +416,7 @@ namespace Milky.OsuPlayer.Common.Data
                     context.SaveChanges();
 
                     //todo: not suitable position
-                    var currentInfo = InstanceManage.GetInstance<PlayerList>().CurrentInfo;
+                    var currentInfo = Services.Get<PlayerList>().CurrentInfo;
                     if (currentInfo != null)
                     {
                         if (collection.Locked &&

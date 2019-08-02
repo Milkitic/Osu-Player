@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Milky.OsuPlayer.Common
 {
-    public static class InstanceManage
+    public static class Services
     {
         private static readonly ConcurrentDictionary<Type, object> InstanceObjects = new ConcurrentDictionary<Type, object>();
 
@@ -19,7 +19,7 @@ namespace Milky.OsuPlayer.Common
             InstanceObjects.AddOrUpdate(typeof(T), instance, updateValueFactory);
         }
 
-        public static T GetInstance<T>()
+        public static T Get<T>()
         {
             return (T)InstanceObjects.FirstOrDefault(k => k.Key == typeof(T)).Value;
         }

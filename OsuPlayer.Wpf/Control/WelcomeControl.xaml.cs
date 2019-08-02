@@ -76,7 +76,7 @@ namespace Milky.OsuPlayer.Control
                     try
                     {
                         GuideSyncing = true;
-                        await InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(path, false);
+                        await Services.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
                         GuideSyncing = false;
                     }
                     catch (Exception ex)

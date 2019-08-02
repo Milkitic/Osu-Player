@@ -28,7 +28,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             _mainWindow = mainWindow;
             _configWindow = configWindow;
             InitializeComponent();
-            ScannerViewModel = InstanceManage.GetInstance<OsuFileScanner>().ViewModel;
+            ScannerViewModel = Services.Get<OsuFileScanner>().ViewModel;
         }
 
         private void RunOnStartup_CheckChanged(object sender, RoutedEventArgs e)
@@ -90,7 +90,7 @@ namespace Milky.OsuPlayer.Pages.Settings
                 return;
             try
             {
-                await InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(path, false);
+                await Services.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
                 TbDbPath.Text = path;
                 PlayerConfig.Current.General.DbPath = path;
                 PlayerConfig.SaveCurrent();
@@ -125,8 +125,8 @@ namespace Milky.OsuPlayer.Pages.Settings
             try
             {
                 TbCustomPath.Text = path;
-                await InstanceManage.GetInstance<OsuFileScanner>().CancelTaskAsync();
-                await InstanceManage.GetInstance<OsuFileScanner>().NewScanAndAddAsync(path);
+                await Services.Get<OsuFileScanner>().CancelTaskAsync();
+                await Services.Get<OsuFileScanner>().NewScanAndAddAsync(path);
                 PlayerConfig.Current.General.CustomSongsPath = path;
                 PlayerConfig.SaveCurrent();
             }
@@ -138,7 +138,7 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private async void CancelScan_Click(object sender, RoutedEventArgs e)
         {
-            await InstanceManage.GetInstance<OsuFileScanner>().CancelTaskAsync();
+            await Services.Get<OsuFileScanner>().CancelTaskAsync();
         }
     }
 }

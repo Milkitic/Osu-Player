@@ -35,9 +35,9 @@ namespace Milky.OsuPlayer.Windows
             }
             else
             {
-                await InstanceManage.GetInstance<OsuFileScanner>().NewScanAndAddAsync(PlayerConfig.Current.General.CustomSongsPath);
-                await InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(PlayerConfig.Current.General.DbPath, true);
-                await InstanceManage.GetInstance<OsuDbInst>().LoadLocalDbAsync();
+                await Services.Get<OsuFileScanner>().NewScanAndAddAsync(PlayerConfig.Current.General.CustomSongsPath);
+                await Services.Get<OsuDbInst>().SyncOsuDbAsync(PlayerConfig.Current.General.DbPath, true);
+                await Services.Get<OsuDbInst>().LoadLocalDbAsync();
                 //ScanSynchronously();
                 //SyncSynchronously();
             }
@@ -48,7 +48,7 @@ namespace Milky.OsuPlayer.Windows
             if (PlayerConfig.Current.CurrentPath != null && PlayerConfig.Current.Play.Memory)
             {
                 var entries = BeatmapQuery.FilterByIdentities(PlayerConfig.Current.CurrentList);
-                await InstanceManage.GetInstance<PlayerList>()
+                await Services.Get<PlayerList>()
                     .RefreshPlayListAsync(PlayerList.FreshType.All, beatmaps: entries);
 
                 bool play = PlayerConfig.Current.Play.AutoPlay;
@@ -66,7 +66,7 @@ namespace Milky.OsuPlayer.Windows
             //    ViewModel.ShowWelcome = true;
             //}
 
-            var updater = InstanceManage.GetInstance<Updater>();
+            var updater = Services.Get<Updater>();
             bool? hasUpdate = await updater.CheckUpdateAsync();
             if (hasUpdate == true && updater.NewRelease.NewVerString != PlayerConfig.Current.IgnoredVer)
             {
@@ -77,17 +77,17 @@ namespace Milky.OsuPlayer.Windows
 
         private static void ScanSynchronously()
         {
-            Task.Run(() => InstanceManage.GetInstance<OsuFileScanner>().NewScanAndAddAsync(PlayerConfig.Current.General.CustomSongsPath));
+            Task.Run(() => Services.Get<OsuFileScanner>().NewScanAndAddAsync(PlayerConfig.Current.General.CustomSongsPath));
         }
 
         private static async Task LoadLocalDbAsync()
         {
-            await InstanceManage.GetInstance<OsuDbInst>().LoadLocalDbAsync();
+            await Services.Get<OsuDbInst>().LoadLocalDbAsync();
         }
 
         private static void SyncSynchronously()
         {
-            Task.Run(() => InstanceManage.GetInstance<OsuDbInst>().SyncOsuDbAsync(PlayerConfig.Current.General.DbPath, true));
+            Task.Run(() => Services.Get<OsuDbInst>().SyncOsuDbAsync(PlayerConfig.Current.General.DbPath, true));
         }
 
         /// <summary>
@@ -334,7 +334,7 @@ namespace Milky.OsuPlayer.Windows
             if (path != null)
             {
                 await PlayNewFile(path);
-                await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None);
+                await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None);
             }
         }
 
@@ -358,7 +358,7 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private async void BtnLike_Click(object sender, RoutedEventArgs e)
         {
-            var entry = BeatmapQuery.FilterByIdentity(InstanceManage.GetInstance<PlayerList>().CurrentIdentity);
+            var entry = BeatmapQuery.FilterByIdentity(Services.Get<PlayerList>().CurrentIdentity);
             //var entry = App.PlayerList?.CurrentInfo.Beatmap;
             if (entry == null)
             {
@@ -371,19 +371,19 @@ namespace Milky.OsuPlayer.Windows
             else
             {
                 var collection = DbOperate.GetCollections().First(k => k.Locked);
-                if (InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFavorite)
+                if (Services.Get<PlayerList>().CurrentInfo.IsFavorite)
                 {
                     DbOperate.RemoveMapFromCollection(entry, collection);
-                    InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFavorite = false;
+                    Services.Get<PlayerList>().CurrentInfo.IsFavorite = false;
                 }
                 else
                 {
                     await SelectCollectionPage.AddToCollectionAsync(collection, entry);
-                    InstanceManage.GetInstance<PlayerList>().CurrentInfo.IsFavorite = true;
+                    Services.Get<PlayerList>().CurrentInfo.IsFavorite = true;
                 }
             }
 
-            IsMapFavorite(InstanceManage.GetInstance<PlayerList>().CurrentInfo.Identity);
+            IsMapFavorite(Services.Get<PlayerList>().CurrentInfo.Identity);
         }
 
         private void BtnVolume_Click(object sender, RoutedEventArgs e)
@@ -472,10 +472,10 @@ namespace Milky.OsuPlayer.Windows
 
             string flag = ViewModel.IsMiniMode ? "S" : "";
             ModeButton.Background = (ImageBrush)ToolControl.FindResource(playMode + flag);
-            if (playMode == InstanceManage.GetInstance<PlayerList>().PlayerMode)
+            if (playMode == Services.Get<PlayerList>().PlayerMode)
                 return;
-            InstanceManage.GetInstance<PlayerList>().PlayerMode = playMode;
-            await InstanceManage.GetInstance<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.IndexOnly);
+            Services.Get<PlayerList>().PlayerMode = playMode;
+            await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.IndexOnly);
             PlayerConfig.Current.Play.PlayListMode = playMode;
             PlayerConfig.SaveCurrent();
         }
@@ -607,7 +607,7 @@ namespace Milky.OsuPlayer.Windows
             if (ComponentPlayer.Current == null)
                 return;
             ComponentPlayer.Current.HitsoundOffset = (int)Offset.Value;
-            DbOperate.UpdateMap(InstanceManage.GetInstance<PlayerList>().CurrentInfo.Identity, ComponentPlayer.Current.HitsoundOffset);
+            DbOperate.UpdateMap(Services.Get<PlayerList>().CurrentInfo.Identity, ComponentPlayer.Current.HitsoundOffset);
         }
 
         #endregion Popup events

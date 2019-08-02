@@ -108,7 +108,7 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void ReloadLyric()
         {
-            InstanceManage.GetInstance<LyricsInst>().ReloadLyricProvider();
+            Services.Get<LyricsInst>().ReloadLyricProvider();
             _mainWindow.SetLyricSynchronously();
         }
     }
