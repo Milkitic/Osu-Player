@@ -80,6 +80,9 @@
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
+    <Reference Include="LinqKit, Version=1.1.16.0, Culture=neutral, PublicKeyToken=bc217f8844052a91, processorArchitecture=MSIL">
+      <HintPath>..\packages\LinqKit.1.1.16\lib\net45\LinqKit.dll</HintPath>
+    </Reference>
     <Reference Include="Markdig, Version=0.16.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Markdig.0.16.0\lib\net40\Markdig.dll</HintPath>
     </Reference>

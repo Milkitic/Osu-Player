@@ -16,10 +16,10 @@ namespace Milky.OsuPlayer.Instances
 
         public void ReloadLyricProvider(bool useStrict = true)
         {
-            PlayerConfig.Current.Lyric.StrictMode = useStrict;
+            AppSettings.Current.Lyric.StrictMode = useStrict;
             Settings.StrictMatch = useStrict;
             SourceProviderBase provider;
-            switch (PlayerConfig.Current.Lyric.LyricSource)
+            switch (AppSettings.Current.Lyric.LyricSource)
             {
                 case LyricSource.Auto:
                     provider = new AutoSourceProvider(new SourceProviderBase[]

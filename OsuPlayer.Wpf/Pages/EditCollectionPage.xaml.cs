@@ -15,6 +15,7 @@ namespace Milky.OsuPlayer.Pages
     {
         private readonly MainWindow _mainWindow;
         private readonly Collection _collection;
+        private AppDbOperator _appDbOperator = new AppDbOperator();
 
         public EditCollectionPage(MainWindow mainWindow, Collection collection)
         {
@@ -50,7 +51,7 @@ namespace Milky.OsuPlayer.Pages
             _collection.Description = ViewModel.Description;
             _collection.ImagePath = ViewModel.CoverPath;
 
-            DbOperate.UpdateCollection(_collection);
+            _appDbOperator.UpdateCollection(_collection);
             BtnClose_Click(sender, e);
         }
 

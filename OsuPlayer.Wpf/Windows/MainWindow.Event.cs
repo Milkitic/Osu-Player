@@ -17,58 +17,56 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
+using Milky.OsuPlayer.Common.Data.EF;
+using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 
 namespace Milky.OsuPlayer.Windows
 {
     partial class MainWindow
     {
+        private static BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private AppDbOperator _appDbOperator = new AppDbOperator();
         #region Window events
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //// todo: This should be kept since the application exit last time.
-            //BtnRecent_Click(sender, e);
-            if (PlayerConfig.Current.General.FirstOpen)
+            if (AppSettings.Current.General.FirstOpen)
             {
                 WelcomeControl.Show();
-                await LoadLocalDbAsync();
+                await Services.Get<OsuDbInst>().LoadLocalDbAsync();
             }
             else
             {
-                await Services.Get<OsuFileScanner>().NewScanAndAddAsync(PlayerConfig.Current.General.CustomSongsPath);
-                await Services.Get<OsuDbInst>().SyncOsuDbAsync(PlayerConfig.Current.General.DbPath, true);
-                await Services.Get<OsuDbInst>().LoadLocalDbAsync();
-                //ScanSynchronously();
-                //SyncSynchronously();
+                await Services.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Current.General.CustomSongsPath);
+                if (DateTime.Now - AppSettings.Current.LastTimeScanOsuDb > TimeSpan.FromDays(1))
+                {
+                    await Services.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Current.General.DbPath, true);
+                    AppSettings.Current.LastTimeScanOsuDb = DateTime.Now;
+                    AppSettings.SaveCurrent();
+                }
             }
 
             UpdateCollections();
-            //LoadSurfaceSettings();
 
-            if (PlayerConfig.Current.CurrentPath != null && PlayerConfig.Current.Play.Memory)
+            if (AppSettings.Current.CurrentPath != null && AppSettings.Current.Play.Memory)
             {
-                var entries = BeatmapQuery.FilterByIdentities(PlayerConfig.Current.CurrentList);
+                var entries = _beatmapDbOperator.GetBeatmapsByIdentifiable(AppSettings.Current.CurrentList);
                 await Services.Get<PlayerList>()
                     .RefreshPlayListAsync(PlayerList.FreshType.All, beatmaps: entries);
 
-                bool play = PlayerConfig.Current.Play.AutoPlay;
-                await PlayNewFile(PlayerConfig.Current.CurrentPath, play);
+                bool play = AppSettings.Current.Play.AutoPlay;
+                await PlayNewFile(AppSettings.Current.CurrentPath, play);
             }
 
-            await SetPlayMode(PlayerConfig.Current.Play.PlayListMode);
+            await SetPlayMode(AppSettings.Current.Play.PlayListMode);
 
             var helper = new WindowInteropHelper(this);
             var source = HwndSource.FromHwnd(helper.Handle);
             source?.AddHook(HwndMessageHook);
 
-            //if (PlayerConfig.Current.General.FirstOpen)
-            //{
-            //    ViewModel.ShowWelcome = true;
-            //}
-
             var updater = Services.Get<Updater>();
             bool? hasUpdate = await updater.CheckUpdateAsync();
-            if (hasUpdate == true && updater.NewRelease.NewVerString != PlayerConfig.Current.IgnoredVer)
+            if (hasUpdate == true && updater.NewRelease.NewVerString != AppSettings.Current.IgnoredVer)
             {
                 var newVersionWindow = new NewVersionWindow(updater.NewRelease, this);
                 newVersionWindow.ShowDialog();
@@ -77,17 +75,12 @@ namespace Milky.OsuPlayer.Windows
 
         private static void ScanSynchronously()
         {
-            Task.Run(() => Services.Get<OsuFileScanner>().NewScanAndAddAsync(PlayerConfig.Current.General.CustomSongsPath));
-        }
-
-        private static async Task LoadLocalDbAsync()
-        {
-            await Services.Get<OsuDbInst>().LoadLocalDbAsync();
+            Task.Run(() => Services.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Current.General.CustomSongsPath));
         }
 
         private static void SyncSynchronously()
         {
-            Task.Run(() => Services.Get<OsuDbInst>().SyncOsuDbAsync(PlayerConfig.Current.General.DbPath, true));
+            Task.Run(() => Services.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Current.General.DbPath, true));
         }
 
         /// <summary>
@@ -95,13 +88,13 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (PlayerConfig.Current.General.ExitWhenClosed == null && !ForceExit)
+            if (AppSettings.Current.General.ExitWhenClosed == null && !ForceExit)
             {
                 e.Cancel = true;
                 FramePop.Navigate(new ClosingPage(this));
                 return;
             }
-            else if (PlayerConfig.Current.General.ExitWhenClosed == false && !ForceExit)
+            else if (AppSettings.Current.General.ExitWhenClosed == false && !ForceExit)
             {
                 WindowState = WindowState.Minimized;
                 Hide();
@@ -190,12 +183,12 @@ namespace Milky.OsuPlayer.Windows
             var btn = (ToggleButton)sender;
             var colId = (string)btn.Tag;
             if (MainFrame.Content?.GetType() != typeof(CollectionPage))
-                MainFrame.Navigate(new CollectionPage(this, DbOperate.GetCollectionById(colId)));
+                MainFrame.Navigate(new CollectionPage(this, _appDbOperator.GetCollectionById(colId)));
             if (MainFrame.Content?.GetType() == typeof(CollectionPage))
             {
                 var sb = (CollectionPage)MainFrame.Content;
                 if (sb.Id != colId)
-                    MainFrame.Navigate(new CollectionPage(this, DbOperate.GetCollectionById(colId)));
+                    MainFrame.Navigate(new CollectionPage(this, _appDbOperator.GetCollectionById(colId)));
             }
         }
 
@@ -358,7 +351,7 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private async void BtnLike_Click(object sender, RoutedEventArgs e)
         {
-            var entry = BeatmapQuery.FilterByIdentity(Services.Get<PlayerList>().CurrentIdentity);
+            var entry = _beatmapDbOperator.GetBeatmapByIdentifiable(Services.Get<PlayerList>().CurrentIdentity);
             //var entry = App.PlayerList?.CurrentInfo.Beatmap;
             if (entry == null)
             {
@@ -370,10 +363,10 @@ namespace Milky.OsuPlayer.Windows
                 FramePop.Navigate(new SelectCollectionPage(this, entry));
             else
             {
-                var collection = DbOperate.GetCollections().First(k => k.Locked);
+                var collection = _appDbOperator.GetCollections().First(k => k.Locked);
                 if (Services.Get<PlayerList>().CurrentInfo.IsFavorite)
                 {
-                    DbOperate.RemoveMapFromCollection(entry, collection);
+                    _appDbOperator.RemoveMapFromCollection(entry, collection);
                     Services.Get<PlayerList>().CurrentInfo.IsFavorite = false;
                 }
                 else
@@ -476,8 +469,8 @@ namespace Milky.OsuPlayer.Windows
                 return;
             Services.Get<PlayerList>().PlayerMode = playMode;
             await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.IndexOnly);
-            PlayerConfig.Current.Play.PlayListMode = playMode;
-            PlayerConfig.SaveCurrent();
+            AppSettings.Current.Play.PlayListMode = playMode;
+            AppSettings.SaveCurrent();
         }
 
         private void BtnMax_Click(object sender, RoutedEventArgs e)
@@ -545,7 +538,7 @@ namespace Milky.OsuPlayer.Windows
             else
                 throw new ArgumentOutOfRangeException();
 
-            PlayerConfig.Current.Play.PlayMod = mod;
+            AppSettings.Current.Play.PlayMod = mod;
             ComponentPlayer.Current.SetPlayMod(mod, ComponentPlayer.Current.PlayerStatus == PlayerStatus.Playing);
         }
 
@@ -562,8 +555,8 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void MasterVolume_DragComplete(object sender, DragCompletedEventArgs e)
         {
-            //PlayerConfig.Current.Volume.Main = (float)(MasterVolume.Value / 100);
-            PlayerConfig.SaveCurrent();
+            //AppSettings.Current.Volume.Main = (float)(MasterVolume.Value / 100);
+            AppSettings.SaveCurrent();
         }
 
         /// <summary>
@@ -571,8 +564,8 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void MusicVolume_DragComplete(object sender, DragCompletedEventArgs e)
         {
-            //PlayerConfig.Current.Volume.Music = (float)(MusicVolume.Value / 100);
-            PlayerConfig.SaveCurrent();
+            //AppSettings.Current.Volume.Music = (float)(MusicVolume.Value / 100);
+            AppSettings.SaveCurrent();
         }
 
         /// <summary>
@@ -580,7 +573,7 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void HitsoundVolume_DragComplete(object sender, DragCompletedEventArgs e)
         {
-            PlayerConfig.SaveCurrent();
+            AppSettings.SaveCurrent();
         }
 
         /// <summary>
@@ -588,7 +581,7 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void SampleVolume_DragComplete(object sender, DragCompletedEventArgs e)
         {
-            PlayerConfig.SaveCurrent();
+            AppSettings.SaveCurrent();
         }
 
         /// <summary>
@@ -596,7 +589,7 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void Balance_DragComplete(object sender, DragCompletedEventArgs e)
         {
-            PlayerConfig.SaveCurrent();
+            AppSettings.SaveCurrent();
         }
 
         /// <summary>
@@ -607,7 +600,7 @@ namespace Milky.OsuPlayer.Windows
             if (ComponentPlayer.Current == null)
                 return;
             ComponentPlayer.Current.HitsoundOffset = (int)Offset.Value;
-            DbOperate.UpdateMap(Services.Get<PlayerList>().CurrentInfo.Identity, ComponentPlayer.Current.HitsoundOffset);
+            _appDbOperator.UpdateMap(Services.Get<PlayerList>().CurrentInfo.Identity, ComponentPlayer.Current.HitsoundOffset);
         }
 
         #endregion Popup events

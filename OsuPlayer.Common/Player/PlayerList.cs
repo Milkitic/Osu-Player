@@ -5,12 +5,16 @@ using Milky.OsuPlayer.Common.Instances;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Common.Data.EF;
+using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 
 namespace Milky.OsuPlayer.Common.Player
 {
     public class PlayerList
     {
         private int _pointer;
+        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private AppDbOperator _appDbOperator = new AppDbOperator();
         public PlayerMode PlayerMode { get; set; } = PlayerMode.Loop;
         public PlayListMode PlayListMode { get; set; }
         public List<Beatmap> Entries { get; set; } = new List<Beatmap>();
@@ -49,7 +53,8 @@ namespace Milky.OsuPlayer.Common.Player
                 switch (PlayListMode)
                 {
                     case PlayListMode.RecentList:
-                        Entries = BeatmapQuery.GetRecentListFromDb().ToList();
+                        var mapInfos = _appDbOperator.GetRecentList();
+                        Entries = _beatmapDbOperator.GetBeatmapsByMapInfo(mapInfos, TimeSortMode.PlayTime); ;
                         break;
                     default:
                     case PlayListMode.Collection:
@@ -74,8 +79,8 @@ namespace Milky.OsuPlayer.Common.Player
             Pointer = 0;
             if (!finishList && CurrentInfo != null) RedirectPointer();
 
-            PlayerConfig.Current.CurrentList = Entries.Select(k => k.GetIdentity()).ToList();
-            PlayerConfig.SaveCurrent();
+            AppSettings.Current.CurrentList = Entries.Select(k => k.GetIdentity()).ToList();
+            AppSettings.SaveCurrent();
         }
 
         public void RedirectPointer()

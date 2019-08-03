@@ -51,7 +51,7 @@ namespace Milky.OsuPlayer.Windows
             PlayerViewModel.InitViewModel();
             ViewModel.Player = PlayerViewModel.Current;
             LyricWindow = new LyricWindow(this);
-            if (PlayerConfig.Current.Lyric.EnableLyric)
+            if (AppSettings.Current.Lyric.EnableLyric)
                 LyricWindow.Show();
 
             OverallKeyHook = new OverallKeyHook(this);
@@ -68,8 +68,8 @@ namespace Milky.OsuPlayer.Windows
                 //TODO
             });
             OverallKeyHook.AddKeyHook(page.Next.Name, () => { BtnNext_Click(null, null); });
-            OverallKeyHook.AddKeyHook(page.VolumeUp.Name, () => { PlayerConfig.Current.Volume.Main += 0.05f; });
-            OverallKeyHook.AddKeyHook(page.VolumeDown.Name, () => { PlayerConfig.Current.Volume.Main -= 0.05f; });
+            OverallKeyHook.AddKeyHook(page.VolumeUp.Name, () => { AppSettings.Current.Volume.Main += 0.05f; });
+            OverallKeyHook.AddKeyHook(page.VolumeDown.Name, () => { AppSettings.Current.Volume.Main -= 0.05f; });
             OverallKeyHook.AddKeyHook(page.FullMini.Name, () =>
             {
                 //TODO

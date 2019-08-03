@@ -6,16 +6,28 @@ using Milky.WpfApi;
 using Milky.WpfApi.Commands;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using LinqKit;
+using Milky.OsuPlayer.Common.Data.EF;
+using Milky.OsuPlayer.Common.Data.EF.Model;
+using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 
 namespace Milky.OsuPlayer.ViewModels
 {
     public class SearchPageViewModel : ViewModelBase
     {
+        private BeatmapDbOperator _dbOperator;
+
+        public SearchPageViewModel()
+        {
+            _dbOperator = new BeatmapDbOperator();
+        }
+
         private const int MaxListCount = 100;
         private IEnumerable<BeatmapDataModel> _searchedMaps;
         private IEnumerable<BeatmapDataModel> _displayedMaps;
@@ -82,18 +94,18 @@ namespace Milky.OsuPlayer.ViewModels
                 OnPropertyChanged();
             }
         }
-        
+
         private readonly Stopwatch _querySw = new Stopwatch();
         private bool _isQuerying;
         private static readonly object QueryLock = new object();
 
-        public async Task PlayListQueryAsync()
+        public async Task PlayListQueryAsync(int startIndex = 0)
         {
             //if (Services.Get<OsuDbInst>().Beatmaps == null)
             //    return;
 
             //SortEnum sortEnum = (SortEnum)cbSortType.SelectedItem;
-            SortMode sortMode = SortMode.Artist;
+            var sortMode = SortMode.Artist;
             _querySw.Restart();
 
             lock (QueryLock)
@@ -109,9 +121,10 @@ namespace Milky.OsuPlayer.ViewModels
                     Thread.Sleep(1);
                 _querySw.Stop();
 
-                var sorted = string.IsNullOrWhiteSpace(SearchText)
-                    ? BeatmapQuery.GetWholeList().SortBy(sortMode).ToDataModels(true).ToList()
-                    : BeatmapQuery.FilterByKeyword(SearchText).SortBy(sortMode).ToDataModels(true);
+                List<BeatmapDataModel> sorted = _dbOperator
+                    .SearchBeatmapByOptions(SearchText, SortMode.Artist, startIndex, MaxListCount)
+                    .ToDataModelList(true);
+
 
                 SearchedMaps = sorted;
                 SetPage(SearchedMaps.Count(), 0);

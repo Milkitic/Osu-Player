@@ -40,27 +40,27 @@ namespace Milky.OsuPlayer.Pages.Settings
                 if (isRunOnStartup)
                 {
                     rKey?.SetValue("OsuPlayer", Process.GetCurrentProcess().MainModule.FileName);
-                    PlayerConfig.Current.General.RunOnStartup = true;
+                    AppSettings.Current.General.RunOnStartup = true;
                 }
                 else
                 {
                     rKey?.DeleteValue("OsuPlayer", false);
-                    PlayerConfig.Current.General.RunOnStartup = false;
+                    AppSettings.Current.General.RunOnStartup = false;
                 }
             }
 
-            PlayerConfig.SaveCurrent();
+            AppSettings.SaveCurrent();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            RunOnStartup.IsChecked = PlayerConfig.Current.General.RunOnStartup;
-            TbDbPath.Text = PlayerConfig.Current.General.DbPath;
-            TbCustomPath.Text = PlayerConfig.Current.General.CustomSongsPath;
+            RunOnStartup.IsChecked = AppSettings.Current.General.RunOnStartup;
+            TbDbPath.Text = AppSettings.Current.General.DbPath;
+            TbCustomPath.Text = AppSettings.Current.General.CustomSongsPath;
 
-            if (PlayerConfig.Current.General.ExitWhenClosed.HasValue)
+            if (AppSettings.Current.General.ExitWhenClosed.HasValue)
             {
-                if (PlayerConfig.Current.General.ExitWhenClosed.Value)
+                if (AppSettings.Current.General.ExitWhenClosed.Value)
                     RadioExit.IsChecked = true;
                 else
                     RadioMinimum.IsChecked = true;
@@ -75,12 +75,12 @@ namespace Milky.OsuPlayer.Pages.Settings
         private void Radio_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (RadioExit.IsChecked.HasValue && RadioExit.IsChecked.Value)
-                PlayerConfig.Current.General.ExitWhenClosed = true;
+                AppSettings.Current.General.ExitWhenClosed = true;
             else if (RadioMinimum.IsChecked.HasValue && RadioMinimum.IsChecked.Value)
-                PlayerConfig.Current.General.ExitWhenClosed = false;
+                AppSettings.Current.General.ExitWhenClosed = false;
 
             AsDefault.IsChecked = true;
-            PlayerConfig.SaveCurrent();
+            AppSettings.SaveCurrent();
         }
 
         private async void BrowseDb_Click(object sender, RoutedEventArgs e)
@@ -92,8 +92,8 @@ namespace Milky.OsuPlayer.Pages.Settings
             {
                 await Services.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
                 TbDbPath.Text = path;
-                PlayerConfig.Current.General.DbPath = path;
-                PlayerConfig.SaveCurrent();
+                AppSettings.Current.General.DbPath = path;
+                AppSettings.SaveCurrent();
             }
             catch (Exception ex)
             {
@@ -104,10 +104,10 @@ namespace Milky.OsuPlayer.Pages.Settings
         private void AsDefault_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (AsDefault.IsChecked.HasValue && !AsDefault.IsChecked.Value)
-                PlayerConfig.Current.General.ExitWhenClosed = null;
+                AppSettings.Current.General.ExitWhenClosed = null;
             else
                 Radio_CheckChanged(sender, e);
-            PlayerConfig.SaveCurrent();
+            AppSettings.SaveCurrent();
         }
 
         private async void BrowseCustom_Click(object sender, RoutedEventArgs e)
@@ -127,8 +127,8 @@ namespace Milky.OsuPlayer.Pages.Settings
                 TbCustomPath.Text = path;
                 await Services.Get<OsuFileScanner>().CancelTaskAsync();
                 await Services.Get<OsuFileScanner>().NewScanAndAddAsync(path);
-                PlayerConfig.Current.General.CustomSongsPath = path;
-                PlayerConfig.SaveCurrent();
+                AppSettings.Current.General.CustomSongsPath = path;
+                AppSettings.SaveCurrent();
             }
             catch (Exception ex)
             {

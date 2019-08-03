@@ -12,6 +12,7 @@ namespace Milky.OsuPlayer.Pages
     {
         private readonly MainWindow _window;
         private readonly SelectCollectionPage _page;
+        private AppDbOperator _appDbOperator = new AppDbOperator();
 
         public AddCollectionPage(MainWindow window, SelectCollectionPage page)
         {
@@ -42,7 +43,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnNew_Click(object sender, RoutedEventArgs e)
         {
-            DbOperate.AddCollection(CollectionName.Text);
+            _appDbOperator.AddCollection(CollectionName.Text);
             _window.UpdateCollections();
             Dispose();
             _page?.RefreshList();

@@ -18,21 +18,21 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            LblMp3Path.Text = PlayerConfig.Current.Export.MusicPath;
-            LblBgPath.Text = PlayerConfig.Current.Export.BgPath;
-            if (PlayerConfig.Current.Export.NamingStyle == NamingStyle.Title)
+            LblMp3Path.Text = AppSettings.Current.Export.MusicPath;
+            LblBgPath.Text = AppSettings.Current.Export.BgPath;
+            if (AppSettings.Current.Export.NamingStyle == NamingStyle.Title)
                 RadioT.IsChecked = true;
-            else if (PlayerConfig.Current.Export.NamingStyle == NamingStyle.ArtistTitle)
+            else if (AppSettings.Current.Export.NamingStyle == NamingStyle.ArtistTitle)
                 RadioAt.IsChecked = true;
-            else if (PlayerConfig.Current.Export.NamingStyle == NamingStyle.TitleArtist)
+            else if (AppSettings.Current.Export.NamingStyle == NamingStyle.TitleArtist)
                 RadioTa.IsChecked = true;
-            if (PlayerConfig.Current.Export.SortStyle == SortStyle.None)
+            if (AppSettings.Current.Export.SortStyle == SortStyle.None)
                 SortNone.IsChecked = true;
-            else if (PlayerConfig.Current.Export.SortStyle == SortStyle.Artist)
+            else if (AppSettings.Current.Export.SortStyle == SortStyle.Artist)
                 SortArtist.IsChecked = true;
-            else if (PlayerConfig.Current.Export.SortStyle == SortStyle.Mapper)
+            else if (AppSettings.Current.Export.SortStyle == SortStyle.Mapper)
                 SortMapper.IsChecked = true;
-            else if (PlayerConfig.Current.Export.SortStyle == SortStyle.Source)
+            else if (AppSettings.Current.Export.SortStyle == SortStyle.Source)
                 SortSource.IsChecked = true;
         }
 
@@ -45,9 +45,9 @@ namespace Milky.OsuPlayer.Pages.Settings
             };
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK) return;
-            PlayerConfig.Current.Export.MusicPath = dialog.SelectedPath;
-            LblMp3Path.Text = PlayerConfig.Current.Export.MusicPath;
-            PlayerConfig.SaveCurrent();
+            AppSettings.Current.Export.MusicPath = dialog.SelectedPath;
+            LblMp3Path.Text = AppSettings.Current.Export.MusicPath;
+            AppSettings.SaveCurrent();
         }
 
         private void BtnBgPath_Click(object sender, RoutedEventArgs e)
@@ -59,33 +59,33 @@ namespace Milky.OsuPlayer.Pages.Settings
             };
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK) return;
-            PlayerConfig.Current.Export.BgPath = dialog.SelectedPath;
-            LblBgPath.Text = PlayerConfig.Current.Export.BgPath;
-            PlayerConfig.SaveCurrent();
+            AppSettings.Current.Export.BgPath = dialog.SelectedPath;
+            LblBgPath.Text = AppSettings.Current.Export.BgPath;
+            AppSettings.SaveCurrent();
         }
 
         private void Naming_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (RadioT.IsChecked.HasValue && RadioT.IsChecked.Value)
-                PlayerConfig.Current.Export.NamingStyle = NamingStyle.Title;
+                AppSettings.Current.Export.NamingStyle = NamingStyle.Title;
             else if (RadioAt.IsChecked.HasValue && RadioAt.IsChecked.Value)
-                PlayerConfig.Current.Export.NamingStyle = NamingStyle.ArtistTitle;
+                AppSettings.Current.Export.NamingStyle = NamingStyle.ArtistTitle;
             else if (RadioTa.IsChecked.HasValue && RadioTa.IsChecked.Value)
-                PlayerConfig.Current.Export.NamingStyle = NamingStyle.TitleArtist;
-            PlayerConfig.SaveCurrent();
+                AppSettings.Current.Export.NamingStyle = NamingStyle.TitleArtist;
+            AppSettings.SaveCurrent();
         }
 
         private void Sort_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (SortNone.IsChecked.HasValue && SortNone.IsChecked.Value)
-                PlayerConfig.Current.Export.SortStyle = SortStyle.None;
+                AppSettings.Current.Export.SortStyle = SortStyle.None;
             else if (SortArtist.IsChecked.HasValue && SortArtist.IsChecked.Value)
-                PlayerConfig.Current.Export.SortStyle = SortStyle.Artist;
+                AppSettings.Current.Export.SortStyle = SortStyle.Artist;
             else if (SortMapper.IsChecked.HasValue && SortMapper.IsChecked.Value)
-                PlayerConfig.Current.Export.SortStyle = SortStyle.Mapper;
+                AppSettings.Current.Export.SortStyle = SortStyle.Mapper;
             else if (SortSource.IsChecked.HasValue && SortSource.IsChecked.Value)
-                PlayerConfig.Current.Export.SortStyle = SortStyle.Source;
-            PlayerConfig.SaveCurrent();
+                AppSettings.Current.Export.SortStyle = SortStyle.Source;
+            AppSettings.SaveCurrent();
         }
     }
 }

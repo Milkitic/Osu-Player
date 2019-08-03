@@ -23,6 +23,7 @@ namespace Milky.OsuPlayer.Pages
 
         private readonly MainWindow _mainWindow;
         private readonly Beatmap _entry;
+        private static AppDbOperator _appDbOperator = new AppDbOperator();
 
         public SelectCollectionPage(MainWindow mainWindow, Beatmap entry)
         {
@@ -52,7 +53,7 @@ namespace Milky.OsuPlayer.Pages
         public void RefreshList()
         {
             ViewModel.Collections = new ObservableCollection<CollectionViewModel>(
-                CollectionViewModel.CopyFrom(DbOperate.GetCollections().OrderByDescending(k => k.CreateTime)));
+                CollectionViewModel.CopyFrom(_appDbOperator.GetCollections().OrderByDescending(k => k.CreateTime)));
         }
 
         public static async Task AddToCollectionAsync(Collection col, Beatmap entry)
@@ -68,12 +69,12 @@ namespace Milky.OsuPlayer.Pages
                     if (File.Exists(imgPath))
                     {
                         col.ImagePath = imgPath;
-                        DbOperate.UpdateCollection(col);
+                        _appDbOperator.UpdateCollection(col);
                     }
                 }
             }
 
-            DbOperate.AddMapToCollection(entry, col);
+            _appDbOperator.AddMapToCollection(entry, col);
         }
     }
 }

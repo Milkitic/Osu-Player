@@ -97,8 +97,8 @@ namespace Milky.OsuPlayer.Control
                 return new DelegateCommand(arg =>
                 {
                     ShowWelcome = false;
-                    PlayerConfig.Current.General.FirstOpen = false;
-                    PlayerConfig.SaveCurrent();
+                    AppSettings.Current.General.FirstOpen = false;
+                    AppSettings.SaveCurrent();
                 });
             }
         }

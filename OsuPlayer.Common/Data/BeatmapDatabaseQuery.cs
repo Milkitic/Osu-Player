@@ -156,7 +156,7 @@ namespace Milky.OsuPlayer.Common.Data
         {
             throw new NotImplementedException();
         }
-        public static IEnumerable<Beatmap> GetBeatmapsByIdentifiable(IEnumerable<IMapIdentifiable> enumerable, bool playedOrAddedTime = true)
+        public static IEnumerable<Beatmap> GetBeatmapsByMapInfo(IEnumerable<IMapIdentifiable> enumerable, bool playedOrAddedTime = true)
         {
             if (enumerable is IEnumerable<Beatmap> foo)
                 return foo;

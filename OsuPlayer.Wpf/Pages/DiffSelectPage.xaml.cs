@@ -35,7 +35,7 @@ namespace Milky.OsuPlayer.Pages
             ViewModel = (DiffSelectPageViewModel)DataContext;
             _mainWindow = mainWindow;
             ViewModel.Entries = entries;
-            ViewModel.DataModels = new NumberableObservableCollection<BeatmapDataModel>(ViewModel.Entries.ToDataModels(false));
+            ViewModel.DataModels = new NumberableObservableCollection<BeatmapDataModel>(ViewModel.Entries.ToDataModelList(false));
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)

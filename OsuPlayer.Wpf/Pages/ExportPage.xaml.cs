@@ -26,6 +26,7 @@ namespace Milky.OsuPlayer.Pages
         //Page view model
         private static bool _hasTaskSuccess;
         private readonly MainWindow _mainWindow;
+        private static AppDbOperator _appDbOperator = new AppDbOperator();
 
         public ExportPageViewModel ViewModel { get; }
         public static readonly ConcurrentQueue<Beatmap> TaskQueue = new ConcurrentQueue<Beatmap>();
@@ -51,7 +52,7 @@ namespace Milky.OsuPlayer.Pages
             InitializeComponent();
             _mainWindow = mainWindow;
             ViewModel = (ExportPageViewModel)DataContext;
-            ViewModel.ExportPath = PlayerConfig.Current.Export.MusicPath;
+            ViewModel.ExportPath = AppSettings.Current.Export.MusicPath;
         }
 
         public static void QueueEntries(IEnumerable<Beatmap> entries)
@@ -112,57 +113,57 @@ namespace Milky.OsuPlayer.Pages
             if (bgFileInfo.Exists)
                 Export(bgFileInfo, exportBgFolder, exportBgName);
             if (mp3FileInfo.Exists || bgFileInfo.Exists)
-                DbOperate.AddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
+                _appDbOperator.AddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
         }
 
         private static void GetExportFolder(out string exportMp3Folder, out string exportBgFolder,
             MetaString artist, string creator, string source)
         {
-            switch (PlayerConfig.Current.Export.SortStyle)
+            switch (AppSettings.Current.Export.SortStyle)
             {
                 case SortStyle.None:
                     exportMp3Folder = Domain.MusicPath;
                     exportBgFolder = Domain.BackgroundPath;
                     break;
                 case SortStyle.Artist:
-                {
-                    var escArtistAsc = Escape(artist.Origin);
-                    var escArtistUtf = Escape(artist.Unicode);
-                    if (string.IsNullOrEmpty(escArtistAsc))
-                        escArtistAsc = "未知艺术家";
-                    if (string.IsNullOrEmpty(escArtistUtf))
-                        escArtistUtf = "未知艺术家";
+                    {
+                        var escArtistAsc = Escape(artist.Origin);
+                        var escArtistUtf = Escape(artist.Unicode);
+                        if (string.IsNullOrEmpty(escArtistAsc))
+                            escArtistAsc = "未知艺术家";
+                        if (string.IsNullOrEmpty(escArtistUtf))
+                            escArtistUtf = "未知艺术家";
 
-                    if (Directory.Exists(Path.Combine(Domain.MusicPath, escArtistUtf)))
-                        exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistUtf);
-                    else if (Directory.Exists(Path.Combine(Domain.MusicPath, escArtistAsc)))
-                        exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistAsc);
-                    else
-                        exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistUtf);
+                        if (Directory.Exists(Path.Combine(Domain.MusicPath, escArtistUtf)))
+                            exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistUtf);
+                        else if (Directory.Exists(Path.Combine(Domain.MusicPath, escArtistAsc)))
+                            exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistAsc);
+                        else
+                            exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistUtf);
 
-                    exportBgFolder = Path.Combine(Domain.BackgroundPath, escArtistUtf);
-                    break;
-                }
+                        exportBgFolder = Path.Combine(Domain.BackgroundPath, escArtistUtf);
+                        break;
+                    }
                 case SortStyle.Mapper:
-                {
-                    var escCreator = Escape(creator);
-                    if (string.IsNullOrEmpty(escCreator))
-                        escCreator = "未知作者";
+                    {
+                        var escCreator = Escape(creator);
+                        if (string.IsNullOrEmpty(escCreator))
+                            escCreator = "未知作者";
 
-                    exportMp3Folder = Path.Combine(Domain.MusicPath, escCreator);
-                    exportBgFolder = Path.Combine(Domain.BackgroundPath, escCreator);
-                    break;
-                }
+                        exportMp3Folder = Path.Combine(Domain.MusicPath, escCreator);
+                        exportBgFolder = Path.Combine(Domain.BackgroundPath, escCreator);
+                        break;
+                    }
                 case SortStyle.Source:
-                {
-                    var escSource = Escape(source);
-                    if (string.IsNullOrEmpty(escSource))
-                        escSource = "未知来源";
+                    {
+                        var escSource = Escape(source);
+                        if (string.IsNullOrEmpty(escSource))
+                            escSource = "未知来源";
 
-                    exportMp3Folder = Path.Combine(Domain.MusicPath, escSource);
-                    exportBgFolder = Path.Combine(Domain.BackgroundPath, escSource);
-                    break;
-                }
+                        exportMp3Folder = Path.Combine(Domain.MusicPath, escSource);
+                        exportBgFolder = Path.Combine(Domain.BackgroundPath, escSource);
+                        break;
+                    }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -171,7 +172,7 @@ namespace Milky.OsuPlayer.Pages
         private static void ConstructNameWithEscaping(out string originAudio, out string originBack,
             string title, string artist, string creator, string version)
         {
-            switch (PlayerConfig.Current.Export.NamingStyle)
+            switch (AppSettings.Current.Export.NamingStyle)
             {
                 case NamingStyle.Title:
                     originAudio = Escape($"{title}");

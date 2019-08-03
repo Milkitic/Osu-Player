@@ -31,8 +31,8 @@ namespace Milky.OsuPlayer.Windows
             }
             else if (p == "ignore")
             {
-                PlayerConfig.Current.IgnoredVer = _release.NewVerString;
-                PlayerConfig.SaveCurrent();
+                AppSettings.Current.IgnoredVer = _release.NewVerString;
+                AppSettings.SaveCurrent();
                 Close();
             }
             else if (p == "update")

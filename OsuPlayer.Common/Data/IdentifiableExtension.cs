@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Metadata;
@@ -11,6 +13,7 @@ namespace Milky.OsuPlayer.Common.Data
 {
     public static class IdentifiableExtension
     {
+        private static EF.BeatmapDbOperator _beatmapDbOperator = new EF.BeatmapDbOperator();
         public static bool EqualsTo(this IMapIdentifiable id1, IMapIdentifiable id2) =>
             id1.FolderName == id2.FolderName && id1.Version == id2.Version;
 
@@ -21,27 +24,34 @@ namespace Milky.OsuPlayer.Common.Data
                 ? new MapIdentity(identifiable.FolderName, identifiable.Version)
                 : default;
 
-        public static IEnumerable<BeatmapDataModel> ToDataModels(this IEnumerable<IMapIdentifiable> identifiable, bool distinctByVersion = false)
+        public static List<BeatmapDataModel> ToDataModelList(this IEnumerable<IMapIdentifiable> identifiable, bool distinctByVersion = false)
         {
-            IEnumerable<BeatmapDataModel> ret;
+            List<BeatmapDataModel> ret;
             switch (identifiable)
             {
-                case IEnumerable<Beatmap> beatmaps:
-                    ret = beatmaps.ToDataModels();
+                case ObservableCollection<Beatmap> beatmaps1:
+                    ret = beatmaps1.InnerToDataModelList();
                     break;
-                case IEnumerable<BeatmapDataModel> dataModels:
+                case List<Beatmap> beatmaps:
+                    ret = beatmaps.InnerToDataModelList();
+                    break;
+                case ObservableCollection<BeatmapDataModel> dataModels1:
+                    ret = dataModels1.ToList();
+                    break;
+                case List<BeatmapDataModel> dataModels:
                     ret = dataModels;
                     break;
-                case IEnumerable<MapInfo> infos:
-                    ret = BeatmapQuery.GetBeatmapsByIdentifiable(infos).ToDataModels();
+                case List<MapInfo> infos:
+                    ret = _beatmapDbOperator.GetBeatmapsByIdentifiable(infos).InnerToDataModelList();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(identifiable));
             }
 
-            return ret.Distinct(new DataModelComparer(distinctByVersion));
+            return ret.Distinct(new DataModelComparer(distinctByVersion)).ToList();
         }
-        public static IEnumerable<BeatmapDataModel> ToDataModels(this IEnumerable<Beatmap> beatmaps)
+
+        private static List<BeatmapDataModel> InnerToDataModelList(this IEnumerable<Beatmap> beatmaps)
         {
             return beatmaps.Select((beatmap, i) =>
             {
@@ -85,7 +95,7 @@ namespace Milky.OsuPlayer.Common.Data
                 }
 
                 return model;
-            });
+            }).ToList();
         }
 
         public static bool TryGetValue<T>(this HashSet<T> hs, Func<T, bool> predicate, out IEnumerable<T> actualValues)

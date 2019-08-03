@@ -13,6 +13,8 @@ namespace Milky.OsuPlayer.ViewModels
 {
     public class CollectionViewModel : ViewModelBase
     {
+        private AppDbOperator _appDbOperator = new AppDbOperator();
+
         public string Id { get; set; }
         public string Name { get; set; }
         public int Index { get; set; }
@@ -28,7 +30,7 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(async obj =>
                 {
                     var entry = (Beatmap)obj;
-                    var col = DbOperate.GetCollectionById(Id);
+                    var col = _appDbOperator.GetCollectionById(Id);
                     await SelectCollectionPage.AddToCollectionAsync(col, entry);
                 });
             }

@@ -22,14 +22,14 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         public void UpdateCollections()
         {
-            var list = (List<Collection>)DbOperate.GetCollections();
+            var list = (List<Collection>)_appDbOperator.GetCollections();
             list.Reverse();
             ViewModel.Collection = new ObservableCollection<Collection>(list);
         }
 
         private bool IsMapFavorite(MapInfo info)
         {
-            var album = DbOperate.GetCollectionsByMap(info);
+            var album = _appDbOperator.GetCollectionsByMap(info);
             bool isFavorite = album != null && album.Any(k => k.Locked);
 
             return isFavorite;
@@ -37,7 +37,7 @@ namespace Milky.OsuPlayer.Windows
 
         private bool IsMapFavorite(MapIdentity identity)
         {
-            var info = DbOperate.GetMapFromDb(identity);
+            var info = _appDbOperator.GetMapFromDb(identity);
             return IsMapFavorite(info);
         }
 
@@ -75,9 +75,9 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void LoadSurfaceSettings()
         {
-            MasterVolume.Value = PlayerConfig.Current.Volume.Main * 100;
-            MusicVolume.Value = PlayerConfig.Current.Volume.Music * 100;
-            HitsoundVolume.Value = PlayerConfig.Current.Volume.Hitsound * 100;
+            MasterVolume.Value = AppSettings.Current.Volume.Main * 100;
+            MusicVolume.Value = AppSettings.Current.Volume.Music * 100;
+            HitsoundVolume.Value = AppSettings.Current.Volume.Hitsound * 100;
         }
 
         private void ToMiniMode()

@@ -111,12 +111,12 @@ namespace Milky.OsuPlayer.Pages.Settings
 
             var textBox = (TextBox)sender;
             GetHotKeyValue(textBox);
-            PlayerConfig.SaveCurrent();
+            AppSettings.SaveCurrent();
         }
 
         private static void GetHotKeyValue(TextBox textBox)
         {
-            var hotKey = PlayerConfig.Current.HotKeys.First(k => k.Name == textBox.Name);
+            var hotKey = AppSettings.Current.HotKeys.First(k => k.Name == textBox.Name);
             var strList = new List<string>();
 
             if (hotKey.UseControlKey)

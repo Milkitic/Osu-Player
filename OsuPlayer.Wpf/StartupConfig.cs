@@ -14,6 +14,7 @@ namespace Milky.OsuPlayer
 {
     public static class StartupConfig
     {
+        private static AppDbOperator _appDbOperator = new AppDbOperator();
         public static void Startup()
         {
             if (!LoadConfig())
@@ -32,14 +33,14 @@ namespace Milky.OsuPlayer
             var file = Domain.ConfigFile;
             if (!File.Exists(file))
             {
-                PlayerConfig.CreateNewConfig();
+                AppSettings.CreateNewConfig();
             }
             else
             {
                 try
                 {
                     var content = ConcurrentFile.ReadAllText(file);
-                    PlayerConfig.Load(JsonConvert.DeserializeObject<PlayerConfig>(content));
+                    AppSettings.Load(JsonConvert.DeserializeObject<AppSettings>(content));
                 }
                 catch (JsonException e)
                 {
@@ -47,7 +48,7 @@ namespace Milky.OsuPlayer
                         "Osu Player", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
-                        PlayerConfig.CreateNewConfig();
+                        AppSettings.CreateNewConfig();
                     }
                     else
                         return false;
@@ -59,13 +60,13 @@ namespace Milky.OsuPlayer
 
         private static void InitLocalDb()
         {
-            var defCol = DbOperate.GetCollections().Where(k => k.Locked);
-            if (!defCol.Any()) DbOperate.AddCollection("最喜爱的", true);
+            var defCol = _appDbOperator.GetCollections().Where(k => k.Locked);
+            if (!defCol.Any()) _appDbOperator.AddCollection("最喜爱的", true);
         }
 
         private static void SetDbPath()
         {
-            string dbPath = PlayerConfig.Current.General.DbPath;
+            string dbPath = AppSettings.Current.General.DbPath;
             if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath))
             {
                 var osuProcess = Process.GetProcesses().Where(x => x.ProcessName == "osu!").ToArray();
@@ -96,7 +97,7 @@ namespace Milky.OsuPlayer
                 }
 
                 //if (dbPath == null) return;
-                PlayerConfig.Current.General.DbPath = dbPath;
+                AppSettings.Current.General.DbPath = dbPath;
             }
         }
     }

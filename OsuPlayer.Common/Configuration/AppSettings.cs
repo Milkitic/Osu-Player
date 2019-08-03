@@ -5,9 +5,9 @@ using System.IO;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
-    public class PlayerConfig
+    public class AppSettings
     {
-        public PlayerConfig()
+        public AppSettings()
         {
             if (Current != null)
             {
@@ -28,21 +28,23 @@ namespace Milky.OsuPlayer.Common.Configuration
         public DateTime? LastUpdateCheck { get; set; } = null;
         public string IgnoredVer { get; set; } = null;
 
-        public static PlayerConfig Current { get; private set; }
+        public static AppSettings Current { get; private set; }
+
+        public DateTime LastTimeScanOsuDb { get; set; }
 
         public static void SaveCurrent()
         {
             ConcurrentFile.WriteAllText(Domain.ConfigFile, JsonConvert.SerializeObject(Current, Formatting.Indented));
         }
 
-        public static void Load(PlayerConfig config)
+        public static void Load(AppSettings config)
         {
             Current = config;
         }
 
         public static void LoadNew()
         {
-            Load(new PlayerConfig());
+            Load(new AppSettings());
         }
 
         public static void CreateNewConfig()

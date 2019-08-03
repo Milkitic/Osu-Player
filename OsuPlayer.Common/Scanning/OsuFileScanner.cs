@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Common.Data.EF;
 
 namespace Milky.OsuPlayer.Common.Scanning
 {
@@ -14,6 +15,8 @@ namespace Milky.OsuPlayer.Common.Scanning
     {
         public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();
         private CancellationTokenSource _scanCts;
+        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+
         private static readonly object ScanObject = new object();
         private static readonly object CancelObject = new object();
 
@@ -27,7 +30,7 @@ namespace Milky.OsuPlayer.Common.Scanning
             }
 
             _scanCts = new CancellationTokenSource();
-            await BeatmapDbOperator.RemoveLocalAllAsync();
+            await _beatmapDbOperator.RemoveLocalAllAsync();
             var dirInfo = new DirectoryInfo(path);
 
             foreach (var privateFolder in dirInfo.EnumerateDirectories(searchPattern: "*.*", searchOption: SearchOption.TopDirectoryOnly))
@@ -70,27 +73,25 @@ namespace Milky.OsuPlayer.Common.Scanning
 
         private async Task ScanPrivateFolderAsync(DirectoryInfo privateFolder)
         {
-            using (var dbOperator = new BeatmapDbOperator())
-            {
-                foreach (var fileInfo in privateFolder.EnumerateFiles(searchPattern: "*.osu", searchOption: SearchOption.TopDirectoryOnly))
-                {
-                    if (_scanCts.IsCancellationRequested)
-                        return;
 
-                    var osuFile = await OsuFile.ReadFromFileAsync(fileInfo.FullName);
-                    await AddFileAsync(dbOperator, osuFile, fileInfo);
-                }
+            foreach (var fileInfo in privateFolder.EnumerateFiles(searchPattern: "*.osu", searchOption: SearchOption.TopDirectoryOnly))
+            {
+                if (_scanCts.IsCancellationRequested)
+                    return;
+
+                var osuFile = await OsuFile.ReadFromFileAsync(fileInfo.FullName);
+                await AddFileAsync(osuFile, fileInfo);
             }
         }
 
-        private async Task AddFileAsync(BeatmapDbOperator dbOperator, OsuFile osuFile, FileInfo fileInfo)
+        private async Task AddFileAsync(OsuFile osuFile, FileInfo fileInfo)
         {
             var beatmap = Data.EF.Model.Beatmap.ParseFromOSharp(osuFile);
             beatmap.BeatmapFileName = fileInfo.Name;
             beatmap.LastModifiedTime = fileInfo.LastWriteTime;
             beatmap.FolderName = fileInfo.Directory.Name;
             beatmap.InOwnFolder = true;
-            await dbOperator.AddNewMapAsync(beatmap);
+            await _beatmapDbOperator.AddNewMapAsync(beatmap);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         public override int ProgressRefreshInterval { get; set; }
 
-        private static bool UseSoundTouch => PlayerConfig.Current.Play.UsePlayerV2;
+        private static bool UseSoundTouch => AppSettings.Current.Play.UsePlayerV2;
 
         public override PlayerStatus PlayerStatus
         {
@@ -101,20 +101,20 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 Engine.CreateCacheSounds(allPaths);
             });
             PlayerStatus = PlayerStatus.Ready;
-            SetPlayMod(PlayerConfig.Current.Play.PlayMod, false);
+            SetPlayMod(AppSettings.Current.Play.PlayMod, false);
             InitVolume();
-            PlayerConfig.Current.Volume.PropertyChanged += Volume_PropertyChanged;
+            AppSettings.Current.Volume.PropertyChanged += Volume_PropertyChanged;
             RaisePlayerLoadedEvent(this, new EventArgs());
         }
 
         protected virtual void InitVolume()
         {
-            Engine.Volume = 1f * PlayerConfig.Current.Volume.Hitsound * PlayerConfig.Current.Volume.Main;
+            Engine.Volume = 1f * AppSettings.Current.Volume.Hitsound * AppSettings.Current.Volume.Main;
         }
 
         protected virtual void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            Engine.Volume = 1f * PlayerConfig.Current.Volume.Hitsound * PlayerConfig.Current.Volume.Main;
+            Engine.Volume = 1f * AppSettings.Current.Volume.Hitsound * AppSettings.Current.Volume.Main;
         }
 
 
@@ -208,7 +208,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             _cts?.Dispose();
             Engine?.Dispose();
 
-            PlayerConfig.Current.Volume.PropertyChanged -= Volume_PropertyChanged;
+            AppSettings.Current.Volume.PropertyChanged -= Volume_PropertyChanged;
 
             GC.Collect();
         }
@@ -245,7 +245,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                         foreach (var path in hs.FilePaths)
                         {
                             Engine.PlaySound(path, hs.Volume * 1f,
-                                hs.Balance * PlayerConfig.Current.Volume.BalanceFactor / 100f);
+                                hs.Balance * AppSettings.Current.Volume.BalanceFactor / 100f);
                             //Task.Run(() =>);
                         }
                     }
@@ -276,7 +276,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                         {
                             preMs = playerMs;
                             var d = playerMs - (PlayTime + SingleOffset + (UseSoundTouch ? 480 : 0));
-                            var r = PlayerConfig.Current.Play.GeneralOffset - d;
+                            var r = AppSettings.Current.Play.GeneralOffset - d;
                             if (Math.Abs(r) > 5)
                             {
                                 //Console.WriteLine($@"music: {App.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
@@ -388,7 +388,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
             float GetObjectBalance(float x)
             {
-                if (osuFile.General.Mode != GameMode.Circle && osuFile.General.Mode != GameMode.Catch)
+                if (osuFile.General.Mode != GameMode.Circle &&
+                    osuFile.General.Mode != GameMode.Catch &&
+                    osuFile.General.Mode != GameMode.Mania)
                 {
                     return 1;
                 }

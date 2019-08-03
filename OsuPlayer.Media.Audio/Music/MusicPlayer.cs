@@ -16,7 +16,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
     internal sealed class MusicPlayer : Player, IDisposable
     {
         private const int Latency = 5;
-        private static bool UseSoundTouch => PlayerConfig.Current.Play.UsePlayerV2;
+        private static bool UseSoundTouch => AppSettings.Current.Play.UsePlayerV2;
         private static bool WaitingMode => true;
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
@@ -45,7 +45,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
             _reader = new MyAudioFileReader(_filePath)
             {
-                Volume = 1f * PlayerConfig.Current.Volume.Music * PlayerConfig.Current.Volume.Main
+                Volume = 1f * AppSettings.Current.Volume.Music * AppSettings.Current.Volume.Main
             };
 
             _device = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, Latency);
@@ -57,7 +57,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
             _device.Init(_reader);
 
-            PlayerConfig.Current.Volume.PropertyChanged += Volume_PropertyChanged;
+            AppSettings.Current.Volume.PropertyChanged += Volume_PropertyChanged;
             Task.Factory.StartNew(UpdateProgress, TaskCreationOptions.LongRunning);
 
             PlayerStatus = PlayerStatus.Ready;
@@ -80,7 +80,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         private void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            _reader.Volume = 1f * PlayerConfig.Current.Volume.Music * PlayerConfig.Current.Volume.Main;
+            _reader.Volume = 1f * AppSettings.Current.Volume.Music * AppSettings.Current.Volume.Main;
         }
 
         public override void Play()
@@ -150,7 +150,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             _reader = null;
             _cts?.Dispose();
 
-            PlayerConfig.Current.Volume.PropertyChanged -= Volume_PropertyChanged;
+            AppSettings.Current.Volume.PropertyChanged -= Volume_PropertyChanged;
         }
         
         #region Properties

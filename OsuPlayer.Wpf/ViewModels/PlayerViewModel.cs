@@ -24,7 +24,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private PlayerViewModel()
         {
-            CurrentVolume = PlayerConfig.Current.Volume;
+            CurrentVolume = AppSettings.Current.Volume;
         }
 
         private bool _isPlaying;

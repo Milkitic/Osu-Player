@@ -314,16 +314,16 @@ namespace Milky.OsuPlayer.Windows
 
         public new void Show()
         {
-            PlayerConfig.Current.Lyric.EnableLyric = true;
-            PlayerConfig.SaveCurrent();
+            AppSettings.Current.Lyric.EnableLyric = true;
+            AppSettings.SaveCurrent();
             ViewModel.IsLyricWindowShown = true;
             base.Show();
         }
 
         public new void Hide()
         {
-            PlayerConfig.Current.Lyric.EnableLyric = false;
-            PlayerConfig.SaveCurrent();
+            AppSettings.Current.Lyric.EnableLyric = false;
+            AppSettings.SaveCurrent();
             ViewModel.IsLyricWindowShown = false;
             base.Hide();
         }

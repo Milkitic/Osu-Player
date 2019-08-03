@@ -95,8 +95,8 @@ namespace Milky.OsuPlayer.Windows
                     /* Set Meta */
                     var nowIdentity = new MapIdentity(fi.Directory.Name, osuFile.Metadata.Version);
 
-                    MapInfo mapInfo = DbOperate.GetMapFromDb(nowIdentity);
-                    Beatmap beatmap = BeatmapQuery.FilterByIdentity(nowIdentity);
+                    MapInfo mapInfo = _appDbOperator.GetMapFromDb(nowIdentity);
+                    Beatmap beatmap = _beatmapDbOperator.GetBeatmapByIdentifiable(nowIdentity);
 
                     bool isFavorite = IsMapFavorite(mapInfo); //50 ms
 
@@ -228,10 +228,10 @@ namespace Milky.OsuPlayer.Windows
 
                     //if (!App.PlayerList.Entries.Any(k => k.GetIdentity().Equals(nowIdentity)))
                     //    App.PlayerList.Entries.Add(entry);
-                    PlayerConfig.Current.CurrentPath = path;
-                    PlayerConfig.SaveCurrent();
+                    AppSettings.Current.CurrentPath = path;
+                    AppSettings.SaveCurrent();
 
-                    DbOperate.UpdateMap(nowIdentity);
+                    _appDbOperator.UpdateMap(nowIdentity);
                 }
                 catch (Exception ex)
                 {
@@ -456,7 +456,7 @@ namespace Milky.OsuPlayer.Windows
                     break;
                 case PlayerList.ChangeType.Change:
                 default:
-                    //var path = Path.Combine(new FileInfo(PlayerConfig.Current.General.DbPath).Directory.FullName, "Songs",
+                    //var path = Path.Combine(new FileInfo(AppSettings.Current.General.DbPath).Directory.FullName, "Songs",
                     //    entry.FolderName, entry.BeatmapFileName);
                     //await PlayNewFile(path);
                     await PlayNewFile(map);

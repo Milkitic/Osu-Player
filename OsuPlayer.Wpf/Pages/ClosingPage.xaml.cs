@@ -27,8 +27,8 @@ namespace Milky.OsuPlayer.Pages
         {
             if (AsDefault.IsChecked == true)
             {
-                PlayerConfig.Current.General.ExitWhenClosed = RadioMinimum.IsChecked != true;
-                PlayerConfig.SaveCurrent();
+                AppSettings.Current.General.ExitWhenClosed = RadioMinimum.IsChecked != true;
+                AppSettings.SaveCurrent();
             }
 
             _mainWindow.FramePop.Navigate(null);

@@ -18,6 +18,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common.Data.EF;
+using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.Pages
@@ -29,6 +31,8 @@ namespace Milky.OsuPlayer.Pages
     {
         private readonly MainWindow _mainWindow;
         private IEnumerable<Beatmap> _entries;
+        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private AppDbOperator _appDbOperator = new AppDbOperator();
         public CollectionPageViewModel ViewModel { get; set; }
         public string Id { get; set; }
 
@@ -39,9 +43,9 @@ namespace Milky.OsuPlayer.Pages
 
             ViewModel = (CollectionPageViewModel)this.DataContext;
             ViewModel.CollectionInfo = collectionInfo;
-            var infos = (List<MapInfo>)DbOperate.GetMapsFromCollection(collectionInfo);
-            _entries = BeatmapQuery.GetBeatmapsByIdentifiable(infos, false);
-            ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModels(false));
+            var infos = (List<MapInfo>)_appDbOperator.GetMapsFromCollection(collectionInfo);
+            _entries = _beatmapDbOperator.GetBeatmapsByMapInfo(infos, TimeSortMode.AddTime);
+            ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModelList(false));
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -61,8 +65,8 @@ namespace Milky.OsuPlayer.Pages
                 UpdateList();
             else
             {
-                var query = BeatmapQuery.FilterByKeyword(keyword);
-                UpdateView(query);
+                //var query = AppDbOperatorExt.FilterByKeyword(keyword);
+                //UpdateView(query);
             }
         }
 
@@ -76,7 +80,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void UpdateView(IEnumerable<Beatmap> entries)
         {
-            //ViewModel.Beatmaps = new ObservableCollection<BeatmapDataModel>(entries.ToDataModels(false));
+            //ViewModel.Beatmaps = new ObservableCollection<BeatmapDataModel>(entries.ToDataModelList(false));
             //ListCount.Content = ViewModel.Beatmaps.Count;
         }
 
@@ -108,7 +112,7 @@ namespace Milky.OsuPlayer.Pages
             var entries = ConvertToEntries(selected.Cast<BeatmapDataModel>());
             foreach (var entry in entries)
             {
-                DbOperate.RemoveMapFromCollection(entry.GetIdentity(), ViewModel.CollectionInfo);
+                _appDbOperator.RemoveMapFromCollection(entry.GetIdentity(), ViewModel.CollectionInfo);
             }
             //var dataModel = (BeatmapDataModel)MapList.SelectedItem;
             UpdateList();
@@ -121,7 +125,7 @@ namespace Milky.OsuPlayer.Pages
                 MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
-                DbOperate.RemoveCollection(ViewModel.CollectionInfo);
+                _appDbOperator.RemoveCollection(ViewModel.CollectionInfo);
                 _mainWindow.MainFrame.Navigate(_mainWindow.Pages.RecentPlayPage);
                 _mainWindow.UpdateCollections();
             }
@@ -205,7 +209,7 @@ namespace Milky.OsuPlayer.Pages
             if (MapList.SelectedItem == null)
                 return null;
             var selectedItem = (BeatmapDataModel)MapList.SelectedItem;
-            return BeatmapQuery.FilterByFolder(selectedItem.FolderName)
+            return _beatmapDbOperator.GetBeatmapsFromFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
 
@@ -216,7 +220,7 @@ namespace Milky.OsuPlayer.Pages
 
         private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return BeatmapQuery.FilterByFolder(dataModel.FolderName)
+            return _beatmapDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 

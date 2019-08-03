@@ -9,12 +9,15 @@ using Milky.OsuPlayer.Windows;
 using Milky.WpfApi.Collections;
 using OSharp.Beatmap;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common.Data.EF;
+using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -23,20 +26,24 @@ namespace Milky.OsuPlayer.Pages
     /// </summary>
     public partial class RecentPlayPage : Page
     {
-        private IEnumerable<Beatmap> _entries;
+        private ObservableCollection<Beatmap> _recentBeatmaps;
         public NumberableObservableCollection<BeatmapDataModel> DataModels;
         private readonly MainWindow _mainWindow;
+        private BeatmapDbOperator _beatmapOperator = new BeatmapDbOperator();
+        private  AppDbOperator _appDbOperator = new AppDbOperator();
 
         public RecentPlayPage(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
+        
             InitializeComponent();
         }
 
         public void UpdateList()
         {
-            _entries = BeatmapQuery.GetRecentListFromDb();
-            DataModels = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModels(false));
+            _recentBeatmaps = new ObservableCollection<Beatmap>(
+                _beatmapOperator.GetBeatmapsByMapInfo(_appDbOperator.GetRecentList(), TimeSortMode.PlayTime));
+            DataModels = new NumberableObservableCollection<BeatmapDataModel>(_recentBeatmaps.ToDataModelList(false));
             RecentList.DataContext = DataModels.ToList();
         }
 
@@ -44,7 +51,7 @@ namespace Milky.OsuPlayer.Pages
         {
             UpdateList();
             var item = DataModels.FirstOrDefault(k =>
-                k.GetIdentity().Equals(Services.Get<PlayerList>().CurrentInfo.Identity));
+                k.GetIdentity().Equals(Services.Get<PlayerList>().CurrentInfo?.Identity));
             RecentList.SelectedItem = item;
         }
 
@@ -67,7 +74,7 @@ namespace Milky.OsuPlayer.Pages
             //var searchInfo = (BeatmapDataModel)RecentList.SelectedItem;
             foreach (var entry in entries)
             {
-                DbOperate.RemoveFromRecent(entry.GetIdentity());
+                _appDbOperator.RemoveFromRecent(entry.GetIdentity());
             }
             UpdateList();
             await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
@@ -79,7 +86,7 @@ namespace Milky.OsuPlayer.Pages
                 MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
-                DbOperate.ClearRecent();
+                _appDbOperator.ClearRecent();
                 UpdateList();
             }
         }
@@ -158,14 +165,19 @@ namespace Milky.OsuPlayer.Pages
             if (RecentList.SelectedItem == null)
                 return null;
             var selectedItem = (BeatmapDataModel)RecentList.SelectedItem;
-            return BeatmapQuery.FilterByFolder(selectedItem.FolderName)
-                .FirstOrDefault(k => k.Version == selectedItem.Version);
+
+            return _recentBeatmaps.FirstOrDefault(k =>
+                k.FolderName == selectedItem.FolderName &&
+                k.Version == selectedItem.Version
+            );
         }
 
         private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return BeatmapQuery.FilterByFolder(dataModel.FolderName)
-                .FirstOrDefault(k => k.Version == dataModel.Version);
+            return _recentBeatmaps.FirstOrDefault(k =>
+                k.FolderName == dataModel.FolderName &&
+                k.Version == dataModel.Version
+            );
         }
 
         private IEnumerable<Beatmap> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)

@@ -17,6 +17,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common.Data.EF;
+using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -31,6 +33,8 @@ namespace Milky.OsuPlayer.ViewModels
         private NumberableObservableCollection<BeatmapDataModel> _dataModelList;
         private IEnumerable<Beatmap> _entries;
         private readonly UiMetadata _uiMetadata;
+        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private AppDbOperator _appDbOperator = new AppDbOperator();
 
         public string UiStrExported => _uiMetadata.Exported;
         public string UiStrExporting => _uiMetadata.Exporting;
@@ -142,7 +146,7 @@ namespace Milky.OsuPlayer.ViewModels
                                 dir.Delete();
                         }
 
-                        DbOperate.AddMapExport(dataModel.GetIdentity(), null);
+                        _appDbOperator.AddMapExport(dataModel.GetIdentity(), null);
                     }
 
                     Execute.OnUiThread(InnerUpdate);
@@ -154,7 +158,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return BeatmapQuery.FilterByFolder(dataModel.FolderName)
+            return _beatmapDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 
@@ -165,7 +169,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private void InnerUpdate()
         {
-            var maps = (List<MapInfo>)DbOperate.GetExportedMaps();
+            var maps = (List<MapInfo>)_appDbOperator.GetExportedMaps();
             List<(MapIdentity MapIdentity, string path, string time, string size)> list =
                 new List<(MapIdentity, string, string, string)>();
             foreach (var map in maps)
@@ -176,8 +180,8 @@ namespace Milky.OsuPlayer.ViewModels
                     : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), Util.CountSize(fi.Length)));
             }
 
-            _entries = BeatmapQuery.GetBeatmapsByIdentifiable(maps);
-            var viewModels = _entries.ToDataModels(true).ToList();
+            _entries = _beatmapDbOperator.GetBeatmapsByIdentifiable(maps);
+            var viewModels = _entries.ToDataModelList(true).ToList();
             for (var i = 0; i < viewModels.Count; i++)
             {
                 var sb = list.First(k => k.MapIdentity.Equals(viewModels[i].GetIdentity()));
