@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Control.Notification;
 using Milky.OsuPlayer.Utils;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
@@ -81,7 +82,10 @@ namespace Milky.OsuPlayer.Control
                     }
                     catch (Exception ex)
                     {
-                        MsgBox.Show(ex.Message, "", MessageBoxButton.OK, MessageBoxImage.Error);
+                        App.NotificationList.Add(new NotificationOption
+                        {
+                            Content = ex.Message
+                        });
                         GuideSelectedDb = false;
                     }
 

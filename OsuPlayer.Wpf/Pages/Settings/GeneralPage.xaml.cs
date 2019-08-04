@@ -97,7 +97,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             }
             catch (Exception ex)
             {
-                MsgBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -132,7 +132,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             }
             catch (Exception ex)
             {
-                MsgBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

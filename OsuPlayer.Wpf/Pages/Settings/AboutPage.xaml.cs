@@ -60,7 +60,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             CheckUpdate.IsEnabled = true;
             if (hasNew == null)
             {
-                MsgBox.Show(_configWindow, "检查更新时出错。", _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(_configWindow, "检查更新时出错。", _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -74,7 +74,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             }
             else
             {
-                MsgBox.Show(_configWindow, "已是最新版本。", _configWindow.Title, MessageBoxButton.OK,
+                MessageBox.Show(_configWindow, "已是最新版本。", _configWindow.Title, MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
         }
@@ -94,7 +94,7 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void LinkPrivacy_Click(object sender, RoutedEventArgs e)
         {
-            MsgBox.Show("This software will NOT collect any user information.");
+            MessageBox.Show("This software will NOT collect any user information.");
         }
     }
 }

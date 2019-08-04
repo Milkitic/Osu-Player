@@ -9,6 +9,7 @@
     xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
     xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:notification="clr-namespace:Milky.OsuPlayer.Control.Notification"
     xmlns:osuPlayer="clr-namespace:Milky.OsuPlayer"
     xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
@@ -74,7 +75,7 @@
         <DockPanel
             x:Name="TitleBarAreaBack"
             Grid.Row="0"
-            Height="50">
+            Height="40">
             <DockPanel.Style>
                 <Style TargetType="FrameworkElement">
                     <Style.Triggers>
@@ -88,7 +89,7 @@
                 </Style>
             </DockPanel.Style>
             <Image
-                Height="32"
+                Height="28"
                 Margin="8,0,0,0"
                 HorizontalAlignment="Left"
                 Source="{StaticResource TitleLogo}" />
@@ -469,727 +470,7 @@
                     </Grid>
                 </Border>
             </Grid>
-            <Grid
-                x:Name="ToolControl"
-                Grid.Row="1"
-                Background="White">
-                <Grid.Resources>
-                    <ImageBrush x:Key="Loop" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop.png" />
-                    <ImageBrush x:Key="Normal" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_normal.png" />
-                    <ImageBrush x:Key="Random" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random.png" />
-                    <ImageBrush x:Key="LoopRandom" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random_loop.png" />
-                    <ImageBrush x:Key="Single" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single.png" />
-                    <ImageBrush x:Key="SingleLoop" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single_loop.png" />
-                    <ImageBrush x:Key="LoopS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_loop_s.png" />
-                    <ImageBrush x:Key="NormalS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_normal_s.png" />
-                    <ImageBrush x:Key="RandomS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random_s.png" />
-                    <ImageBrush x:Key="LoopRandomS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_random_loop_s.png" />
-                    <ImageBrush x:Key="SingleS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single_s.png" />
-                    <ImageBrush x:Key="SingleLoopS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/mode_single_loop_s.png" />
-                    <ImageBrush x:Key="Fav" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_disable.png" />
-                    <ImageBrush x:Key="FavS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_disable_s.png" />
-                    <ImageBrush x:Key="Faved" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart.png" />
-                    <ImageBrush x:Key="FavedS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/heart_s.png" />
-                    <ImageBrush x:Key="Volume" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/volume.png" />
-                    <ImageBrush x:Key="VolumeS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/volume_s.png" />
-                    <ImageBrush x:Key="FullscreenS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/fullscreen_s.png" />
-                </Grid.Resources>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Grid
-                    MaxWidth="61.333333"
-                    MaxHeight="46"
-                    Margin="1">
-                    <Button
-                        x:Name="ThumbArea"
-                        Click="ThumbButton_Click"
-                        Cursor="Hand">
-                        <Image
-                            x:Name="Thumb"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            RenderOptions.BitmapScalingMode="HighQuality"
-                            Source="{Binding Source, ElementName=BlurScene}"
-                            Stretch="UniformToFill" />
-                        <Button.Style>
-                            <Style TargetType="{x:Type Button}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type Button}">
-                                            <Grid>
-                                                <ContentPresenter />
-                                                <Border
-                                                    x:Name="FullScr"
-                                                    Background="#40000000"
-                                                    Opacity="0">
-                                                    <Viewbox
-                                                        Width="30"
-                                                        Height="30"
-                                                        Stretch="Uniform">
-                                                        <Canvas Width="1000" Height="1000">
-                                                            <Path Fill="{StaticResource ExtraLightBrushF0}">
-                                                                <Path.Data>
-                                                                    <PathGeometry Figures="M602.1 500l226.5 226.5l91.9-91.9c11.5-12.1 29.4-15.3 44.7-8.9c14.7 6.4 24.9 21.1 24.9 37.6v285.8c0 22.3-18.5 40.8-40.8 40.8H663.3c-16.6 0-31.3-10.2-37.6-25.5c-6.4-14.7-3.2-32.5 8.9-44l91.9-91.9L500 602.1L273.5 828.6l91.9 91.9c12.1 11.5 15.3 29.4 8.9 44c-6.4 15.3-21.1 25.5-37.6 25.5H50.8C28.5 990 10 971.5 10 949.2V663.3c0-16.6 10.2-31.3 25.5-37.6c14.7-6.4 32.5-3.2 44 8.9l91.9 91.9L397.9 500L171.4 273.5l-91.9 91.9c-7.7 7.7-17.9 12.1-28.7 12.1c-5.1 0-10.8-1.3-15.3-3.2C20.2 367.9 10 353.3 10 336.7V50.8C10 28.5 28.5 10 50.8 10h285.8c16.6 0 31.3 10.2 37.6 25.5c6.4 14.7 3.2 32.5-8.9 44l-91.9 91.9L500 397.9l226.5-226.5l-91.9-91.9c-12.1-11.5-15.3-29.3-8.9-44c6.4-15.3 21.1-25.5 37.6-25.5h285.8c22.3 0 40.8 18.5 40.8 40.8v285.8c0 16.6-10.2 31.3-24.9 37.6c-5.1 1.9-10.8 3.2-16 3.2c-10.8 0-21.1-4.5-28.7-12.1l-91.9-91.9L602.1 500z" FillRule="NonZero" />
-                                                                </Path.Data>
-                                                            </Path>
-                                                        </Canvas>
-                                                    </Viewbox>
-                                                </Border>
-                                            </Grid>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="FullScr" Property="Opacity" Value="1" />
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                </Grid>
-                <StackPanel
-                    Grid.Column="1"
-                    Margin="10,0,10,0"
-                    Orientation="Horizontal">
-                    <custom:PlayerControlButton
-                        x:Name="PrevButton"
-                        Width="28"
-                        Height="28"
-                        Background="{StaticResource TextureBrush}"
-                        BorderBrush="White"
-                        BorderRadius="7"
-                        BorderThickness="1"
-                        Click="BtnPrev_Click"
-                        ImageHeight="24"
-                        ImageWidth="24"
-                        IsTabStop="False"
-                        WindowChrome.IsHitTestVisibleInChrome="True">
-                        <ContentPresenter x:Name="PrevIcon" Content="{StaticResource WhitePrevIcon}" />
-                        <Button.Style>
-                            <Style TargetType="custom:PlayerControlButton">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                        <Setter Property="Margin" Value="8" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                        <Setter Property="Margin" Value="5" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </custom:PlayerControlButton>
-                    <custom:PlayerControlButton
-                        x:Name="PlayButton"
-                        Width="32"
-                        Height="32"
-                        Background="{StaticResource TextureBrush}"
-                        BorderBrush="White"
-                        BorderRadius="8"
-                        BorderThickness="1"
-                        Click="BtnPlay_Click"
-                        IsTabStop="False"
-                        WindowChrome.IsHitTestVisibleInChrome="True">
-                        <ContentPresenter x:Name="PlayIcon">
-                            <ContentPresenter.Content>
-                                <MultiBinding Converter="{StaticResource PlayingConverter}">
-                                    <Binding Path="Player.IsPlaying" />
-                                    <Binding RelativeSource="{RelativeSource Self}" />
-                                </MultiBinding>
-                            </ContentPresenter.Content>
-                        </ContentPresenter>
-                        <Button.Style>
-                            <Style TargetType="custom:PlayerControlButton">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Player.IsPlaying}" Value="True">
-                                        <Setter Property="ImageMargin" Value="0" />
-                                        <Setter Property="ImageWidth" Value="16" />
-                                        <Setter Property="ImageHeight" Value="16" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Player.IsPlaying}" Value="False">
-                                        <Setter Property="ImageMargin" Value="2,0,0,0" />
-                                        <Setter Property="ImageWidth" Value="20" />
-                                        <Setter Property="ImageHeight" Value="20" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                        <Setter Property="Margin" Value="8" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                        <Setter Property="Margin" Value="5" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </custom:PlayerControlButton>
-                    <custom:PlayerControlButton
-                        x:Name="NextButton"
-                        Width="28"
-                        Height="28"
-                        Background="{StaticResource TextureBrush}"
-                        BorderBrush="White"
-                        BorderRadius="7"
-                        BorderThickness="1"
-                        Click="BtnNext_Click"
-                        ImageHeight="24"
-                        ImageWidth="24"
-                        IsTabStop="False"
-                        WindowChrome.IsHitTestVisibleInChrome="True">
-                        <ContentPresenter x:Name="NextIcon" Content="{StaticResource WhiteNextIcon}" />
-                        <Button.Style>
-                            <Style TargetType="custom:PlayerControlButton">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                        <Setter Property="Margin" Value="8" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                        <Setter Property="Margin" Value="5" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </custom:PlayerControlButton>
-                    <custom:PlayerControlButton
-                        x:Name="OpenButton"
-                        Width="28"
-                        Height="28"
-                        Margin="8"
-                        Background="#5d9cec"
-                        BorderBrush="White"
-                        BorderRadius="14"
-                        BorderThickness="2"
-                        Click="BtnOpen_Click"
-                        ImageHeight="24"
-                        ImageWidth="24"
-                        IsTabStop="False"
-                        ShadowColor="#5d9cec">
-                        <ContentPresenter x:Name="OpenIcon" Content="{StaticResource WhiteOpenIcon}" />
-                        <Button.Style>
-                            <Style TargetType="custom:PlayerControlButton">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </custom:PlayerControlButton>
-                </StackPanel>
-                <Grid Grid.Column="2" Background="White">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <StackPanel
-                        x:Name="LblMeta"
-                        Grid.Row="0"
-                        Margin="0,3,0,-3">
-                        <StackPanel.Style>
-                            <Style TargetType="StackPanel">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                        <Setter Property="Orientation" Value="Horizontal" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                        <Setter Property="Orientation" Value="Vertical" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StackPanel.Style>
-                        <Label
-                            x:Name="LblTitle"
-                            Content="Title"
-                            Foreground="#777">
-                            <Label.Style>
-                                <Style TargetType="FrameworkElement">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                            <Setter Property="Margin" Value="0" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                            <Setter Property="Margin" Value="0,-2" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Label.Style>
-                        </Label>
-                        <Label
-                            x:Name="LblSeperate"
-                            Margin="-5,0,-5,0"
-                            Content="-"
-                            Foreground="#858585">
-                            <Label.Style>
-                                <Style TargetType="FrameworkElement">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Label.Style>
-                        </Label>
-                        <Label
-                            x:Name="LblArtist"
-                            Content="Artist"
-                            Foreground="#AAA">
-                            <Label.Style>
-                                <Style TargetType="FrameworkElement">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                            <Setter Property="Margin" Value="0" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                            <Setter Property="Margin" Value="0,-2" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Label.Style>
-                        </Label>
-                    </StackPanel>
-                    <StackPanel
-                        x:Name="LblProgress"
-                        Grid.Row="0"
-                        Margin="0,3,0,-3"
-                        HorizontalAlignment="Right"
-                        Orientation="Horizontal">
-                        <StackPanel.Style>
-                            <Style TargetType="FrameworkElement">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StackPanel.Style>
-                        <Label
-                            x:Name="LblNow"
-                            Content="{Binding Player.Position, Mode=OneWay, Converter={StaticResource MsToStringConverter}}"
-                            Foreground="#777" />
-                        <Label
-                            Margin="-5,0,-5,0"
-                            Content="/"
-                            Foreground="#858585" />
-                        <Label
-                            x:Name="LblTotal"
-                            Content="{Binding Player.Duration, Mode=OneWay, Converter={StaticResource MsToStringConverter}}"
-                            Foreground="#AAA" />
-                    </StackPanel>
-                    <Slider
-                        x:Name="PlayProgress"
-                        Grid.Row="1"
-                        Margin="3"
-                        Maximum="{Binding Player.Duration, Mode=OneWay}"
-                        Minimum="0"
-                        Style="{StaticResource HorizontalSliderPinkStyle}"
-                        Thumb.DragCompleted="PlayProgress_DragCompleted"
-                        Thumb.DragStarted="PlayProgress_DragStarted"
-                        Value="{Binding Player.Position, Mode=OneWay}" />
-                </Grid>
-                <Grid Grid.Column="3">
-                    <StackPanel
-                        x:Name="FuncPanel"
-                        Margin="10,0,10,0"
-                        VerticalAlignment="Center"
-                        Orientation="Horizontal">
-                        <StackPanel Orientation="Horizontal">
-                            <WrapPanel
-                                Width="100"
-                                Orientation="Horizontal"
-                                Visibility="Collapsed">
-                                <RadioButton
-                                    x:Name="ModNone"
-                                    Checked="Mod_CheckChanged"
-                                    Content="none" />
-                                <RadioButton
-                                    x:Name="ModDt"
-                                    Checked="Mod_CheckChanged"
-                                    Content="dt" />
-                                <RadioButton
-                                    x:Name="ModHt"
-                                    Checked="Mod_CheckChanged"
-                                    Content="ht" />
-                                <RadioButton
-                                    x:Name="ModNc"
-                                    Checked="Mod_CheckChanged"
-                                    Content="nc" />
-                                <RadioButton
-                                    x:Name="ModDc"
-                                    Checked="Mod_CheckChanged"
-                                    Content="dc" />
-                            </WrapPanel>
-                            <custom:BitmapButton
-                                x:Name="ModeButton"
-                                Background="{StaticResource Loop}"
-                                Click="BtnMode_Click"
-                                WindowChrome.IsHitTestVisibleInChrome="True">
-                                <Button.Style>
-                                    <Style TargetType="custom:BitmapButton">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                                <Setter Property="Margin" Value="8" />
-                                                <Setter Property="Width" Value="24" />
-                                                <Setter Property="Height" Value="24" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                                <Setter Property="Margin" Value="2" />
-                                                <Setter Property="Width" Value="18" />
-                                                <Setter Property="Height" Value="18" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </custom:BitmapButton>
-                            <custom:BitmapButton
-                                x:Name="LikeButton"
-                                Click="BtnLike_Click"
-                                WindowChrome.IsHitTestVisibleInChrome="True">
-                                <Button.Style>
-                                    <Style TargetType="custom:BitmapButton">
-                                        <Style.Triggers>
-                                            <DataTrigger
-                                                wpfApi:TriggerTracing.TraceEnabled="True"
-                                                wpfApi:TriggerTracing.TriggerName="LikeButton -&gt; CurrentMusic"
-                                                Binding="{Binding Player.CurrentInfo.IsFavorite}"
-                                                Value="True">
-                                                <Setter Property="Background" Value="{StaticResource Faved}" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Player.CurrentInfo}" Value="{x:Null}">
-                                                <Setter Property="Background" Value="{StaticResource Fav}" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Player.CurrentInfo.IsFavorite}" Value="False">
-                                                <Setter Property="Background" Value="{StaticResource Fav}" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                                <Setter Property="Margin" Value="8" />
-                                                <Setter Property="Width" Value="24" />
-                                                <Setter Property="Height" Value="24" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                                <Setter Property="Margin" Value="2" />
-                                                <Setter Property="Width" Value="18" />
-                                                <Setter Property="Height" Value="18" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </custom:BitmapButton>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <custom:BitmapButton
-                                x:Name="VolumeButton"
-                                Background="{StaticResource Volume}"
-                                Click="BtnVolume_Click"
-                                WindowChrome.IsHitTestVisibleInChrome="True">
-                                <Button.Style>
-                                    <Style TargetType="custom:BitmapButton">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                                <Setter Property="Margin" Value="8" />
-                                                <Setter Property="Width" Value="24" />
-                                                <Setter Property="Height" Value="24" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                                <Setter Property="Margin" Value="2" />
-                                                <Setter Property="Width" Value="18" />
-                                                <Setter Property="Height" Value="18" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </custom:BitmapButton>
-                            <custom:BitmapButton
-                                x:Name="MaxButton"
-                                Background="{StaticResource FullscreenS}"
-                                Click="BtnMax_Click"
-                                WindowChrome.IsHitTestVisibleInChrome="True">
-                                <Button.Style>
-                                    <Style TargetType="custom:BitmapButton">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                                <Setter Property="Margin" Value="8" />
-                                                <Setter Property="Width" Value="24" />
-                                                <Setter Property="Height" Value="24" />
-                                                <Setter Property="Visibility" Value="Collapsed" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                                <Setter Property="Margin" Value="2" />
-                                                <Setter Property="Width" Value="18" />
-                                                <Setter Property="Height" Value="18" />
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </custom:BitmapButton>
-                        </StackPanel>
-                    </StackPanel>
-                </Grid>
-                <Border
-                    x:Name="BorderMini"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="4"
-                    BorderBrush="#60dc498d"
-                    BorderThickness="1">
-                    <Border.Style>
-                        <Style TargetType="FrameworkElement">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                    <Setter Property="Visibility" Value="Hidden" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                </Border>
-            </Grid>
-            <Popup
-                x:Name="Pop"
-                Grid.Row="0"
-                Grid.RowSpan="2"
-                Grid.Column="0"
-                Width="160"
-                AllowsTransparency="True"
-                HorizontalOffset="-113"
-                Placement="Top"
-                PlacementTarget="{Binding ElementName=VolumeButton}"
-                PopupAnimation="Fade"
-                StaysOpen="False">
-                <Grid Margin="5">
-                    <Border BorderBrush="#cccccc" BorderThickness="1">
-                        <!--<Border.Effect>
-                            <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="#000000" Opacity="1" />
-                        </Border.Effect>-->
-                    </Border>
-                    <Border>
-                        <Border.Background>
-                            <ImageBrush
-                                ImageSource="{StaticResource TextrueSource1}"
-                                TileMode="Tile"
-                                Viewport="0,0,500,500"
-                                ViewportUnits="Absolute" />
-                        </Border.Background>
-                        <Grid Margin="5">
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <Grid Grid.Row="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <Slider
-                                        x:Name="MasterVolume"
-                                        Height="70"
-                                        Margin="10,5"
-                                        HorizontalAlignment="Center"
-                                        Maximum="1"
-                                        Orientation="Vertical"
-                                        Style="{StaticResource VerticalSliderWhiteStyle}"
-                                        Thumb.DragCompleted="MasterVolume_DragComplete"
-                                        Value="{Binding Player.CurrentVolume.Main, Mode=TwoWay}" />
-                                    <Label
-                                        Margin="0,-5,0,0"
-                                        HorizontalAlignment="Center"
-                                        Content="总体"
-                                        Foreground="White" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="1">
-                                    <Slider
-                                        x:Name="MusicVolume"
-                                        Height="70"
-                                        Margin="10,5"
-                                        HorizontalAlignment="Center"
-                                        Maximum="1"
-                                        Orientation="Vertical"
-                                        Style="{StaticResource VerticalSliderWhiteStyle}"
-                                        Thumb.DragCompleted="MusicVolume_DragComplete"
-                                        Value="{Binding Player.CurrentVolume.Music, Mode=TwoWay}" />
-                                    <Label
-                                        Margin="0,-5,0,0"
-                                        HorizontalAlignment="Center"
-                                        Content="音乐"
-                                        Foreground="White" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="2">
-                                    <Slider
-                                        x:Name="HitsoundVolume"
-                                        Height="70"
-                                        Margin="10,5"
-                                        HorizontalAlignment="Center"
-                                        Maximum="1"
-                                        Orientation="Vertical"
-                                        Style="{StaticResource VerticalSliderWhiteStyle}"
-                                        Thumb.DragCompleted="HitsoundVolume_DragComplete"
-                                        Value="{Binding Player.CurrentVolume.Hitsound, Mode=TwoWay}" />
-                                    <Label
-                                        Margin="0,-5,0,0"
-                                        HorizontalAlignment="Center"
-                                        Content="音效"
-                                        Foreground="White" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="3">
-                                    <Slider
-                                        x:Name="SampleVolume"
-                                        Height="70"
-                                        Margin="10,5"
-                                        HorizontalAlignment="Center"
-                                        Maximum="1"
-                                        Orientation="Vertical"
-                                        Style="{StaticResource VerticalSliderWhiteStyle}"
-                                        Thumb.DragCompleted="SampleVolume_DragComplete"
-                                        Value="{Binding Player.CurrentVolume.Sample, Mode=TwoWay}" />
-                                    <Label
-                                        Margin="0,-5,0,0"
-                                        HorizontalAlignment="Center"
-                                        Content="音轨"
-                                        Foreground="White" />
-                                </StackPanel>
-                            </Grid>
-                            <Grid Grid.Row="1">
-                                <StackPanel>
-                                    <Slider
-                                        x:Name="Balance"
-                                        Margin="10,5"
-                                        AutoToolTipPlacement="BottomRight"
-                                        Maximum="100"
-                                        Minimum="0"
-                                        Orientation="Horizontal"
-                                        Style="{StaticResource HorizontalSliderWhiteStyle}"
-                                        Thumb.DragCompleted="Balance_DragComplete"
-                                        TickFrequency="1"
-                                        Value="{Binding Player.CurrentVolume.BalanceFactor, Mode=TwoWay}" />
-                                    <Label
-                                        Margin="0,-5,0,0"
-                                        HorizontalAlignment="Center"
-                                        Content="3D差异度"
-                                        Foreground="White" />
-                                    <Slider
-                                        x:Name="Offset"
-                                        Margin="10,5"
-                                        AutoToolTipPlacement="BottomRight"
-                                        Maximum="200"
-                                        Minimum="-200"
-                                        Orientation="Horizontal"
-                                        Style="{StaticResource HorizontalSliderWhiteStyle}"
-                                        Thumb.DragDelta="Offset_DragDelta" />
-                                    <Label
-                                        Margin="0,-5,0,0"
-                                        HorizontalAlignment="Center"
-                                        Content="单曲偏移"
-                                        Foreground="White" />
-                                </StackPanel>
-                            </Grid>
-                        </Grid>
-                    </Border>
-                </Grid>
-            </Popup>
-            <Popup
-                x:Name="PopMode"
-                Grid.Row="0"
-                Grid.RowSpan="2"
-                Grid.Column="0"
-                AllowsTransparency="True"
-                HorizontalOffset="-27"
-                Placement="Top"
-                PlacementTarget="{Binding ElementName=ModeButton}"
-                PopupAnimation="Fade"
-                StaysOpen="False">
-                <Grid Margin="5">
-                    <Border BorderBrush="#cccccc" BorderThickness="1">
-                        <!--<Border.Effect>
-                            <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="#000000" Opacity="0.5" />
-                        </Border.Effect>-->
-                    </Border>
-                    <Border
-                        HorizontalAlignment="Center"
-                        BorderBrush="#cccccc"
-                        BorderThickness="1">
-                        <Border.Background>
-                            <ImageBrush
-                                ImageSource="{StaticResource TextrueSource1}"
-                                TileMode="Tile"
-                                Viewport="0,0,500,500"
-                                ViewportUnits="Absolute" />
-                        </Border.Background>
-                        <StackPanel Width="75">
-                            <ToggleButton
-                                x:Name="Single"
-                                Height="25"
-                                Checked="PlayMode_Checked"
-                                Click="PlayMode_Click"
-                                Content="单曲播放"
-                                Style="{StaticResource PopupButtonStyle}"
-                                Unchecked="PlayMode_UnChecked" />
-                            <ToggleButton
-                                x:Name="SingleLoop"
-                                Height="25"
-                                Checked="PlayMode_Checked"
-                                Click="PlayMode_Click"
-                                Content="单曲循环"
-                                Style="{StaticResource PopupButtonStyle}"
-                                Unchecked="PlayMode_UnChecked" />
-                            <ToggleButton
-                                x:Name="Normal"
-                                Height="25"
-                                Checked="PlayMode_Checked"
-                                Click="PlayMode_Click"
-                                Content="顺序播放"
-                                Style="{StaticResource PopupButtonStyle}"
-                                Unchecked="PlayMode_UnChecked" />
-                            <ToggleButton
-                                x:Name="Random"
-                                Height="25"
-                                Checked="PlayMode_Checked"
-                                Click="PlayMode_Click"
-                                Content="随机播放"
-                                Style="{StaticResource PopupButtonStyle}"
-                                Unchecked="PlayMode_UnChecked" />
-                            <ToggleButton
-                                x:Name="Loop"
-                                Height="25"
-                                Checked="PlayMode_Checked"
-                                Click="PlayMode_Click"
-                                Content="循环列表"
-                                Style="{StaticResource PopupButtonStyle}"
-                                Unchecked="PlayMode_UnChecked" />
-                            <ToggleButton
-                                x:Name="LoopRandom"
-                                Height="25"
-                                Checked="PlayMode_Checked"
-                                Click="PlayMode_Click"
-                                Content="随机循环"
-                                Style="{StaticResource PopupButtonStyle}"
-                                Unchecked="PlayMode_UnChecked" />
-                        </StackPanel>
-                    </Border>
-                </Grid>
-            </Popup>
+            <control:PlayController x:Name="PlayController" Grid.Row="1" />
         </Grid>
         <Frame
             Name="FramePop"
@@ -1207,7 +488,7 @@
         <DockPanel
             x:Name="TitleBarArea"
             Grid.Row="0"
-            Height="50">
+            Height="40">
             <DockPanel.Style>
                 <Style TargetType="FrameworkElement">
                     <Style.Triggers>
@@ -1220,58 +501,57 @@
                     </Style.Triggers>
                 </Style>
             </DockPanel.Style>
-            <Canvas
-                Width="200"
+            <StackPanel
                 Height="40"
                 Margin="0,0,5,0"
                 HorizontalAlignment="Right"
-                VerticalAlignment="Center">
-                <dms:DMSystemButton
-                    x:Name="BtnSettings"
-                    Click="BtnSettings_Click"
-                    DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
-                    DMSystemButtonSize="40"
-                    Icon="{StaticResource Gear}"
-                    WindowChrome.IsHitTestVisibleInChrome="True" />
-                <dms:DMSystemButton
-                    Canvas.Left="40"
-                    Click="BtnMini_Click"
-                    DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
-                    DMSystemButtonSize="40"
-                    Icon="{StaticResource Mini}"
-                    IsEnabled="{Binding Content, ElementName=FramePop, Converter={StaticResource CvtMiniEnabled}}"
-                    WindowChrome.IsHitTestVisibleInChrome="True" />
-                <dms:DMSystemMinButton
-                    Canvas.Left="80"
-                    DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
-                    DMSystemButtonSize="40"
-                    WindowChrome.IsHitTestVisibleInChrome="True" />
-                <dms:DMSystemMaxButton
-                    Canvas.Left="120"
-                    DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
-                    DMSystemButtonSize="40"
-                    WindowChrome.IsHitTestVisibleInChrome="True" />
-                <dms:DMSystemCloseButton
-                    Canvas.Left="160"
-                    DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
-                    DMSystemButtonSize="40"
-                    WindowChrome.IsHitTestVisibleInChrome="True" />
-            </Canvas>
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <Border
+                    Height="32"
+                    Margin="0,0,10,0"
+                    Padding="10,2"
+                    VerticalAlignment="Center"
+                    BorderBrush="#60dddddd"
+                    BorderThickness="0.3"
+                    CornerRadius="16">
+                    <StackPanel Orientation="Horizontal">
+                        <!--<TextBox
+                            Width="100"
+                            Margin="3,0"
+                            VerticalAlignment="Center"
+                            WindowChrome.IsHitTestVisibleInChrome="True" />-->
+                        <control:SystemButton
+                            Width="25"
+                            Height="25"
+                            Margin="3,0"
+                            Click="BtnSettings_Click"
+                            IconSize="21"
+                            IconTemplate="{StaticResource SettingsTempl}"
+                            WindowChrome.IsHitTestVisibleInChrome="True" />
+                        <control:SystemButton
+                            Width="25"
+                            Height="25"
+                            Margin="3,0"
+                            Click="BtnMini_Click"
+                            IconSize="16"
+                            IconTemplate="{StaticResource MiniModeTempl}"
+                            WindowChrome.IsHitTestVisibleInChrome="True" />
+                    </StackPanel>
+                </Border>
+                <control:MinButton IconSize="22" WindowChrome.IsHitTestVisibleInChrome="True" />
+                <control:MaxButton WindowChrome.IsHitTestVisibleInChrome="True" />
+                <control:CloseButton WindowChrome.IsHitTestVisibleInChrome="True" />
+            </StackPanel>
         </DockPanel>
-        <!--<Border Grid.Row="1" Background="{StaticResource WhiteBrush80}"
-                Visibility="{Binding IsSyncing,Converter={StaticResource TrueToVisibleConverter}}">
-            <loaders:ChromeLoader
-                Foreground="{StaticResource SliderBackground}"
-                Thickness="3"
-                IsIndeterminate="{Binding IsSyncing}"
-                Width="40" Height="40" />
-        </Border>-->
         <control:WelcomeControl x:Name="WelcomeControl" Grid.Row="1" />
+        <notification:NotifyOverlay
+            x:Name="Notification"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Width="50"
+            HorizontalAlignment="Right" />
         <tb:TaskbarIcon
             x:Name="NotifyIcon"
             Grid.Row="0"
@@ -1286,10 +566,7 @@
             <!--<Popup x:Key="TrayStatusPopup"></Popup>-->
             <ContextMenu x:Key="TrayMenu" Style="{StaticResource DefaultContextMenu}">
                 <!--<ContextMenu x:Key="TrayMenu">-->
-                <MenuItem
-                    Click="BtnPlay_Click"
-                    Header="播放"
-                    Style="{DynamicResource DefaultMenuItem}">
+                <MenuItem Header="播放" Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
                         <Viewbox
                             Width="16"
@@ -1310,10 +587,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem
-                    Click="BtnPrev_Click"
-                    Header="上一首"
-                    Style="{DynamicResource DefaultMenuItem}">
+                <MenuItem Header="上一首" Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
                         <Viewbox
                             Width="16"
@@ -1334,10 +608,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem
-                    Click="BtnNext_Click"
-                    Header="下一首"
-                    Style="{DynamicResource DefaultMenuItem}">
+                <MenuItem Header="下一首" Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
                         <Viewbox
                             Width="16"

@@ -30,12 +30,12 @@ namespace Milky.OsuPlayer.Pages
         public NumberableObservableCollection<BeatmapDataModel> DataModels;
         private readonly MainWindow _mainWindow;
         private BeatmapDbOperator _beatmapOperator = new BeatmapDbOperator();
-        private  AppDbOperator _appDbOperator = new AppDbOperator();
+        private AppDbOperator _appDbOperator = new AppDbOperator();
 
         public RecentPlayPage(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
-        
+
             InitializeComponent();
         }
 
@@ -82,7 +82,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnDelAll_Click(object sender, RoutedEventArgs e)
         {
-            var result = MsgBox.Show(_mainWindow, "真的要删除全部吗？", _mainWindow.Title, MessageBoxButton.YesNo,
+            var result = MessageBox.Show(_mainWindow, "真的要删除全部吗？", _mainWindow.Title, MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
@@ -97,7 +97,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void ItemCollect_Click(object sender, RoutedEventArgs e)
         {
-            _mainWindow.FramePop.Navigate(new SelectCollectionPage(_mainWindow, GetSelected()));
+            _mainWindow.FramePop.Navigate(new SelectCollectionPage(GetSelected()));
         }
 
         private void ItemExport_Click(object sender, RoutedEventArgs e)
@@ -156,7 +156,7 @@ namespace Milky.OsuPlayer.Pages
 
             //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
             //       map.BeatmapFileName));
-            await _mainWindow.PlayNewFile(map);
+            await PlayController.Default.PlayNewFile(map);
             await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.RecentList);
         }
 

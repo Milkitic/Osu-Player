@@ -55,19 +55,19 @@ namespace Milky.OsuPlayer.Windows
                 LyricWindow.Show();
 
             OverallKeyHook = new OverallKeyHook(this);
-            TryBindHotkeys();
+            TryBindHotKeys();
             Unosquare.FFME.Library.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg");
         }
 
-        private void TryBindHotkeys()
+        private void TryBindHotKeys()
         {
             var page = new Pages.Settings.HotKeyPage(this);
-            OverallKeyHook.AddKeyHook(page.PlayPause.Name, () => { BtnPlay_Click(null, null); });
+            OverallKeyHook.AddKeyHook(page.PlayPause.Name, () => { PlayController.Default.TogglePlay(); });
             OverallKeyHook.AddKeyHook(page.Previous.Name, () =>
             {
                 //TODO
             });
-            OverallKeyHook.AddKeyHook(page.Next.Name, () => { BtnNext_Click(null, null); });
+            OverallKeyHook.AddKeyHook(page.Next.Name, async () => { await PlayController.Default.PlayNext(); });
             OverallKeyHook.AddKeyHook(page.VolumeUp.Name, () => { AppSettings.Current.Volume.Main += 0.05f; });
             OverallKeyHook.AddKeyHook(page.VolumeDown.Name, () => { AppSettings.Current.Volume.Main -= 0.05f; });
             OverallKeyHook.AddKeyHook(page.FullMini.Name, () =>
@@ -97,7 +97,6 @@ namespace Milky.OsuPlayer.Windows
                     if (Height <= MinHeight && !ViewModel.IsMiniMode)
                     {
                         ViewModel.IsMiniMode = true;
-                        ToMiniMode();
                     }
 
                     handled = true;

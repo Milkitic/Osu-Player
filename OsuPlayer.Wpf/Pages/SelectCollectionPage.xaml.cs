@@ -25,13 +25,13 @@ namespace Milky.OsuPlayer.Pages
         private readonly Beatmap _entry;
         private static AppDbOperator _appDbOperator = new AppDbOperator();
 
-        public SelectCollectionPage(MainWindow mainWindow, Beatmap entry)
+        public SelectCollectionPage(Beatmap entry)
         {
             InitializeComponent();
             ViewModel = (SelectCollectionPageViewModel)DataContext;
             _entry = entry;
             ViewModel.Entry = entry;
-            _mainWindow = mainWindow;
+            _mainWindow = (MainWindow)Application.Current.MainWindow;
             RefreshList();
         }
 

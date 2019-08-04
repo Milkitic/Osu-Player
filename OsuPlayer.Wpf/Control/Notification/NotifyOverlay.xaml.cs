@@ -15,7 +15,10 @@ namespace Milky.OsuPlayer.Control.Notification
         public NotifyOverlay()
         {
             InitializeComponent();
+            Default = this;
         }
+
+        public static NotifyOverlay Default { get; set; }
 
         public ObservableCollection<NotificationOption> ItemsSource
         {

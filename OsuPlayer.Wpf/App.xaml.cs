@@ -9,7 +9,9 @@ using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using System;
+using System.Collections.ObjectModel;
 using System.Windows;
+using Milky.OsuPlayer.Control.Notification;
 
 #if !DEBUG
 using Sentry;
@@ -78,5 +80,7 @@ namespace Milky.OsuPlayer
                 Environment.Exit(1);
             }
         }
+
+        public static ObservableCollection<NotificationOption> NotificationList { get; set; }
     }
 }

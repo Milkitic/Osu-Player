@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data.EF;
+using Milky.OsuPlayer.Control;
 using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 
 namespace Milky.OsuPlayer.Pages
@@ -70,7 +71,7 @@ namespace Milky.OsuPlayer.Pages
                 //await ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, page.SelectedMap.FolderName,
                 //      page.SelectedMap.BeatmapFileName));
                 var map = _beatmapDbOperator.GetBeatmapByIdentifiable(page.SelectedMap);
-                await ParentWindow.PlayNewFile(map);
+                await PlayController.Default.PlayNewFile(map);
                 await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
                 ParentWindow.FramePop.Navigate(null);
             };
@@ -128,9 +129,10 @@ namespace Milky.OsuPlayer.Pages
                 _beatmapDbOperator.GetBeatmapsFromFolder(ok.GetIdentity().FolderName));
             page.Callback = () =>
             {
-                ParentWindow.FramePop.Navigate(new SelectCollectionPage(ParentWindow,
+                ParentWindow.FramePop.Navigate(new SelectCollectionPage(
                     _beatmapDbOperator.GetBeatmapsFromFolder(page.SelectedMap.FolderName)
-                        .FirstOrDefault(k => k.Version == page.SelectedMap.Version)));
+                        .FirstOrDefault(k => k.Version == page.SelectedMap.Version))
+                );
             };
             ParentWindow.FramePop.Navigate(page);
         }
@@ -154,7 +156,7 @@ namespace Milky.OsuPlayer.Pages
                 return;
             //await ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
             //    map.BeatmapFileName));
-            await ParentWindow.PlayNewFile(map);
+            await PlayController.Default.PlayNewFile(map);
             await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
         }
 

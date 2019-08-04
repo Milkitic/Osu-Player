@@ -46,7 +46,7 @@ namespace Milky.OsuPlayer
             }
             catch (Exception ex)
             {
-                MsgBox.Show(this, "更新出错，请重启软件重试：" + ex.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(this, "更新出错，请重启软件重试：" + ex.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

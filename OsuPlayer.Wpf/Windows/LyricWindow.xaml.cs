@@ -21,6 +21,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using Milky.OsuPlayer.Control;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
@@ -247,7 +248,7 @@ namespace Milky.OsuPlayer.Windows
                     g.FillPath(b, gp);
                 }
             }
-            
+
             Execute.ToUiThread(() =>
             {
                 using (var ms = new MemoryStream())
@@ -339,19 +340,19 @@ namespace Milky.OsuPlayer.Windows
             IsLocked = true;
         }
 
-        private void BtnPrev_Click(object sender, RoutedEventArgs e)
+        private async void BtnPrev_Click(object sender, RoutedEventArgs e)
         {
-            _mainWindow.BtnPrev_Click(sender, e);
+            await PlayController.Default.PlayPrev();
         }
 
         private void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
-            _mainWindow.BtnPlay_Click(sender, e);
+            PlayController.Default.TogglePlay();
         }
 
-        private void BtnNext_Click(object sender, RoutedEventArgs e)
+        private async void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            _mainWindow.BtnNext_Click(sender, e);
+            await PlayController.Default.PlayNext();
         }
     }
 }

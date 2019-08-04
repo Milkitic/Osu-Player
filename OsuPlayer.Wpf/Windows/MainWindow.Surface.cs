@@ -70,28 +70,5 @@ namespace Milky.OsuPlayer.Windows
             });
         }
 
-        /// <summary>
-        /// Initialize default player settings.
-        /// </summary>
-        private void LoadSurfaceSettings()
-        {
-            MasterVolume.Value = AppSettings.Current.Volume.Main * 100;
-            MusicVolume.Value = AppSettings.Current.Volume.Music * 100;
-            HitsoundVolume.Value = AppSettings.Current.Volume.Hitsound * 100;
-        }
-
-        private void ToMiniMode()
-        {
-            FuncPanel.Orientation = Orientation.Vertical;
-            // modules
-            PlayProgress.Visibility = Visibility.Collapsed;
-        }
-
-        private void ToNormalMode()
-        {
-            FuncPanel.Orientation = Orientation.Horizontal;
-            // modules
-            PlayProgress.Visibility = Visibility.Visible;
-        }
     }
 }

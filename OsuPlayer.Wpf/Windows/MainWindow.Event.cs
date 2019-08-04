@@ -10,6 +10,7 @@ using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,6 +19,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
 using Milky.OsuPlayer.Common.Data.EF;
+using Milky.OsuPlayer.Control.Notification;
 using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 
 namespace Milky.OsuPlayer.Windows
@@ -30,6 +32,8 @@ namespace Milky.OsuPlayer.Windows
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            App.NotificationList = new ObservableCollection<NotificationOption>();
+            Notification.ItemsSource = App.NotificationList;
             if (AppSettings.Current.General.FirstOpen)
             {
                 WelcomeControl.Show();
@@ -55,10 +59,13 @@ namespace Milky.OsuPlayer.Windows
                     .RefreshPlayListAsync(PlayerList.FreshType.All, beatmaps: entries);
 
                 bool play = AppSettings.Current.Play.AutoPlay;
-                await PlayNewFile(AppSettings.Current.CurrentPath, play);
+                await PlayController.Default.PlayNewFile(AppSettings.Current.CurrentPath, play);
             }
 
-            await SetPlayMode(AppSettings.Current.Play.PlayListMode);
+            PlayController.Default.OnNewFileLoaded += Controller_OnNewFileLoaded;
+            PlayController.Default.OnProgressDragComplete += Controller_OnProgressDragComplete;
+            PlayController.Default.OnLikeClick += Controller_OnLikeClick;
+            PlayController.Default.OnThumbClick += Controller_OnThumbClick;
 
             var helper = new WindowInteropHelper(this);
             var source = HwndSource.FromHwnd(helper.Handle);
@@ -102,7 +109,7 @@ namespace Milky.OsuPlayer.Windows
                 return;
             }
 
-            ClearHitsoundPlayer();
+            PlayController.Default?.Dispose();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
             if (ConfigWindow == null || ConfigWindow.IsClosed)
@@ -140,7 +147,11 @@ namespace Milky.OsuPlayer.Windows
         private void BtnFind_Click(object sender, RoutedEventArgs e)
         {
             //MainFrame.Navigate(Pages.FindPage);
-            MsgBox.Show(this, "功能完善中，敬请期待~", Title, MessageBoxButton.OK, MessageBoxImage.Information);
+            App.NotificationList.Add(new NotificationOption
+            {
+                Title = Title,
+                Content = "功能完善中，敬请期待~"
+            });
             //bool? b = await PageBox.ShowDialog(Title, "功能完善中，敬请期待~");
         }
 
@@ -235,25 +246,11 @@ namespace Milky.OsuPlayer.Windows
         private void BtnMini_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.IsMiniMode = true;
-            ToMiniMode();
         }
 
         #endregion Title events
 
         #region Play control events
-
-        private void ThumbButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (!PlayerViewModel.Current.EnableVideo)
-                PlayerViewModel.Current.EnableVideo = true;
-            else if (PlayerViewModel.Current.EnableVideo)
-            {
-                if (ResizableArea.Margin == new Thickness(5))
-                    SetFullScr();
-                else
-                    SetFullScrMini();
-            }
-        }
 
         private void SetFullScrMini()
         {
@@ -291,319 +288,12 @@ namespace Milky.OsuPlayer.Windows
             ResizableArea.ClearValue(Border.MarginProperty);
         }
 
-        /// <summary>
-        /// Play next song in playlist.
-        /// </summary>
-        public async void BtnPlay_Click(object sender, RoutedEventArgs e)
-        {
-            _videoPlay = true;
-            _forcePaused = false;
-            if (ComponentPlayer.Current == null)
-            {
-                BtnOpen_Click(sender, e);
-                return;
-            }
-
-            switch (ComponentPlayer.Current.PlayerStatus)
-            {
-                case PlayerStatus.Playing:
-                    if (VideoElement?.Source != null)
-                        await VideoElement.Pause();
-                    PauseMedia();
-                    break;
-                case PlayerStatus.Ready:
-                case PlayerStatus.Stopped:
-                case PlayerStatus.Paused:
-                    if (VideoElement?.Source != null)
-                        await VideoElement.Play();
-                    PlayMedia();
-                    break;
-            }
-        }
-
-        private async void BtnOpen_Click(object sender, RoutedEventArgs e)
-        {
-            var path = LoadFile();
-            if (path != null)
-            {
-                await PlayNewFile(path);
-                await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None);
-            }
-        }
-
-        public async void BtnPrev_Click(object sender, RoutedEventArgs e)
-        {
-            await PlayNextAsync(true, false);
-        }
-
-        public async void BtnNext_Click(object sender, RoutedEventArgs e)
-        {
-            await PlayNextAsync(true, true);
-        }
-
-        private void BtnMode_Click(object sender, RoutedEventArgs e)
-        {
-            PopMode.IsOpen = true;
-        }
-
-        /// <summary>
-        /// Popup a dialog for adding music to a collection.
-        /// </summary>
         private async void BtnLike_Click(object sender, RoutedEventArgs e)
         {
-            var entry = _beatmapDbOperator.GetBeatmapByIdentifiable(Services.Get<PlayerList>().CurrentIdentity);
-            //var entry = App.PlayerList?.CurrentInfo.Beatmap;
-            if (entry == null)
-            {
-                MsgBox.Show(this, "该图不存在于该osu!db中。", Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                return;
-            }
 
-            if (!ViewModel.IsMiniMode)
-                FramePop.Navigate(new SelectCollectionPage(this, entry));
-            else
-            {
-                var collection = _appDbOperator.GetCollections().First(k => k.Locked);
-                if (Services.Get<PlayerList>().CurrentInfo.IsFavorite)
-                {
-                    _appDbOperator.RemoveMapFromCollection(entry, collection);
-                    Services.Get<PlayerList>().CurrentInfo.IsFavorite = false;
-                }
-                else
-                {
-                    await SelectCollectionPage.AddToCollectionAsync(collection, entry);
-                    Services.Get<PlayerList>().CurrentInfo.IsFavorite = true;
-                }
-            }
-
-            IsMapFavorite(Services.Get<PlayerList>().CurrentInfo.Identity);
-        }
-
-        private void BtnVolume_Click(object sender, RoutedEventArgs e)
-        {
-            Pop.IsOpen = true;
-        }
-
-        private void PlayMode_Checked(object sender, RoutedEventArgs e)
-        {
-            if (_ischanging)
-                return;
-            _ischanging = true;
-            var btn = (ToggleButton)sender;
-            _modeOptionContainer.Switch(btn);
-            _ischanging = false;
-        }
-
-        private void PlayMode_UnChecked(object sender, RoutedEventArgs e)
-        {
-            if (_ischanging)
-                return;
-            _ischanging = true;
-            ((ToggleButton)sender).IsChecked = true;
-            _ischanging = false;
-        }
-        private async void PlayMode_Click(object sender, RoutedEventArgs e)
-        {
-            var btn = (ToggleButton)sender;
-            PlayerMode playmode;
-            switch (btn.Name)
-            {
-                case "Single":
-                    //BtnMode.Content = "单曲播放";
-                    playmode = PlayerMode.Single;
-                    break;
-                case "SingleLoop":
-                    //BtnMode.Content = "单曲循环";
-                    playmode = PlayerMode.SingleLoop;
-                    break;
-                case "Normal":
-                    //BtnMode.Content = "顺序播放";
-                    playmode = PlayerMode.Normal;
-                    break;
-                case "Random":
-                    //BtnMode.Content = "随机播放";
-                    playmode = PlayerMode.Random;
-                    break;
-                case "Loop":
-                    //BtnMode.Content = "循环列表";
-                    playmode = PlayerMode.Loop;
-                    break;
-                default:
-                case "LoopRandom":
-                    //BtnMode.Content = "随机循环";
-                    playmode = PlayerMode.LoopRandom;
-                    break;
-            }
-
-            await SetPlayMode(playmode);
-            PopMode.IsOpen = false;
-        }
-
-        private async Task SetPlayMode(PlayerMode playMode)
-        {
-            switch (playMode)
-            {
-                case PlayerMode.Normal:
-                    Normal.IsChecked = true;
-                    break;
-                case PlayerMode.Random:
-                    Random.IsChecked = true;
-                    break;
-                case PlayerMode.Loop:
-                    Loop.IsChecked = true;
-                    break;
-                case PlayerMode.LoopRandom:
-                    LoopRandom.IsChecked = true;
-                    break;
-                case PlayerMode.Single:
-                    Single.IsChecked = true;
-                    break;
-                case PlayerMode.SingleLoop:
-                    SingleLoop.IsChecked = true;
-                    break;
-            }
-
-            string flag = ViewModel.IsMiniMode ? "S" : "";
-            ModeButton.Background = (ImageBrush)ToolControl.FindResource(playMode + flag);
-            if (playMode == Services.Get<PlayerList>().PlayerMode)
-                return;
-            Services.Get<PlayerList>().PlayerMode = playMode;
-            await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.IndexOnly);
-            AppSettings.Current.Play.PlayListMode = playMode;
-            AppSettings.SaveCurrent();
-        }
-
-        private void BtnMax_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.IsMiniMode = false;
-            ToNormalMode();
-        }
-
-        private void PlayProgress_DragStarted(object sender, DragStartedEventArgs e)
-        {
-            _scrollLock = true;
-        }
-
-        /// <summary>
-        /// Play progress control.
-        /// While drag started, slider's updating should be recoverd.
-        /// </summary>
-        private async void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
-        {
-            if (ComponentPlayer.Current != null)
-            {
-                switch (ComponentPlayer.Current.PlayerStatus)
-                {
-                    case PlayerStatus.Playing:
-                        if (VideoElement.Source != null)
-                        {
-                            ComponentPlayer.Current.SetTime((int)PlayProgress.Value, false);
-                            // Todo: Set Storyboard Progress
-                            _forcePaused = false;
-                            await VideoJumpTo((int)PlayProgress.Value);
-                        }
-                        else
-                        {
-                            ComponentPlayer.Current.SetTime((int)PlayProgress.Value);
-                            // Todo: Set Storyboard Progress
-                        }
-                        break;
-                    case PlayerStatus.Paused:
-                    case PlayerStatus.Stopped:
-                        _forcePaused = true;
-                        if (VideoElement.Source != null)
-                            await VideoJumpTo((int)PlayProgress.Value);
-                        ComponentPlayer.Current.SetTime((int)PlayProgress.Value, false);
-                        // Todo: Set Storyboard Progress
-                        break;
-                }
-            }
-
-            _scrollLock = false;
-        }
-
-        private void Mod_CheckChanged(object sender, RoutedEventArgs e)
-        {
-            PlayMod mod;
-            if (ModNone.IsChecked == true)
-                mod = PlayMod.None;
-            else if (ModDt.IsChecked == true)
-                mod = PlayMod.DoubleTime;
-            else if (ModHt.IsChecked == true)
-                mod = PlayMod.HalfTime;
-            else if (ModNc.IsChecked == true)
-                mod = PlayMod.NightCore;
-            else if (ModDc.IsChecked == true)
-                mod = PlayMod.DayCore;
-            else
-                throw new ArgumentOutOfRangeException();
-
-            AppSettings.Current.Play.PlayMod = mod;
-            ComponentPlayer.Current.SetPlayMod(mod, ComponentPlayer.Current.PlayerStatus == PlayerStatus.Playing);
         }
 
         #endregion Play control events
-
-        #region Popup events
-
-        /// <summary>
-        /// Play progress control.
-        /// While drag started, slider's updating should be paused.
-        /// </summary>
-        /// <summary>
-        /// Master Volume Settings
-        /// </summary>
-        private void MasterVolume_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            //AppSettings.Current.Volume.Main = (float)(MasterVolume.Value / 100);
-            AppSettings.SaveCurrent();
-        }
-
-        /// <summary>
-        /// Music Volume Settings
-        /// </summary>
-        private void MusicVolume_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            //AppSettings.Current.Volume.Music = (float)(MusicVolume.Value / 100);
-            AppSettings.SaveCurrent();
-        }
-
-        /// <summary>
-        /// Effect Volume Settings
-        /// </summary>
-        private void HitsoundVolume_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            AppSettings.SaveCurrent();
-        }
-
-        /// <summary>
-        /// Sample Volume Settings
-        /// </summary>
-        private void SampleVolume_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            AppSettings.SaveCurrent();
-        }
-
-        /// <summary>
-        /// Balance Settings
-        /// </summary>
-        private void Balance_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            AppSettings.SaveCurrent();
-        }
-
-        /// <summary>
-        /// Offset Settings
-        /// </summary>
-        private void Offset_DragDelta(object sender, DragDeltaEventArgs e)
-        {
-            if (ComponentPlayer.Current == null)
-                return;
-            ComponentPlayer.Current.HitsoundOffset = (int)Offset.Value;
-            _appDbOperator.UpdateMap(Services.Get<PlayerList>().CurrentInfo.Identity, ComponentPlayer.Current.HitsoundOffset);
-        }
-
-        #endregion Popup events
 
         #region Notification events
 

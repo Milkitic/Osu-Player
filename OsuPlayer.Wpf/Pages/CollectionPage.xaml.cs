@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data.EF;
+using Milky.OsuPlayer.Control.Notification;
 using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
@@ -121,7 +122,11 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnDelCol_Click(object sender, RoutedEventArgs e)
         {
-            var result = MsgBox.Show(_mainWindow, "确认删除收藏夹？", _mainWindow.Title, MessageBoxButton.YesNo,
+            App.NotificationList.Add(new NotificationOption
+            {
+                Content = "确认删除收藏夹？"
+            });
+            var result = MessageBox.Show(_mainWindow, "确认删除收藏夹？", _mainWindow.Title, MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
@@ -175,7 +180,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void ItemCollect_Click(object sender, RoutedEventArgs e)
         {
-            _mainWindow.FramePop.Navigate(new SelectCollectionPage(_mainWindow, GetSelected()));
+            _mainWindow.FramePop.Navigate(new SelectCollectionPage(GetSelected()));
         }
 
         private void ItemSet_Click(object sender, RoutedEventArgs e)
@@ -200,7 +205,7 @@ namespace Milky.OsuPlayer.Pages
             if (map == null) return;
             //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
             //     map.BeatmapFileName));
-            await _mainWindow.PlayNewFile(map);
+            await PlayController.Default.PlayNewFile(map);
             await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.Collection, _entries);
         }
 
