@@ -56,7 +56,6 @@ namespace Milky.OsuPlayer.Windows
 
             OverallKeyHook = new OverallKeyHook(this);
             TryBindHotKeys();
-            Unosquare.FFME.Library.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg");
         }
 
         private void TryBindHotKeys()

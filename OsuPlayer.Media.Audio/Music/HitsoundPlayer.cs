@@ -17,6 +17,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 {
     internal class HitsoundPlayer : Player, IDisposable
     {
+        protected virtual string Flag { get; } = "Hitsound";
         static HitsoundPlayer()
         {
             CachedSound.CachePath = Path.Combine(Domain.CachePath, "_temp.sound");
@@ -31,7 +32,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             get => _playerStatus;
             protected set
             {
-                Console.WriteLine(@"Hitsound: " + value);
+                Console.WriteLine(Flag + ": " + value);
                 _playerStatus = value;
             }
         }

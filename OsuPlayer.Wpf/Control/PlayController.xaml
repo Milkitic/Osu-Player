@@ -135,7 +135,7 @@
                         </MultiBinding>
                     </ContentPresenter.Content>
                 </ContentPresenter>
-                <!--<Button.Style>
+                <Button.Style>
                     <Style TargetType="custom:PlayerControlButton">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Player.IsPlaying}" Value="True">
@@ -148,15 +148,9 @@
                                 <Setter Property="ImageWidth" Value="20" />
                                 <Setter Property="ImageHeight" Value="20" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                <Setter Property="Margin" Value="8" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                <Setter Property="Margin" Value="5" />
-                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </Button.Style>-->
+                </Button.Style>
             </custom:PlayerControlButton>
             <custom:PlayerControlButton
                 x:Name="NextButton"
@@ -231,7 +225,7 @@
                 <StackPanel Orientation="Horizontal">
                     <Label
                         x:Name="LblTitle"
-                        Content="Title"
+                        Content="{Binding Player.CurrentInfo.TitleAuto, Mode=TwoWay}"
                         Foreground="#777" />
                     <Label
                         x:Name="LblSeperate"
@@ -240,7 +234,7 @@
                         Foreground="#858585" />
                     <Label
                         x:Name="LblArtist"
-                        Content="Artist"
+                        Content="{Binding Player.CurrentInfo.ArtistAuto, Mode=TwoWay}"
                         Foreground="#AAA" />
                 </StackPanel>
                 <StackPanel

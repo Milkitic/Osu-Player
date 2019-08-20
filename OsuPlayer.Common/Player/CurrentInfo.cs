@@ -2,6 +2,7 @@
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.WpfApi;
 using System.Collections.Generic;
+using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Common.Player
 {
@@ -40,6 +41,8 @@ namespace Milky.OsuPlayer.Common.Player
         public string ArtistUnicode { get; set; }
         public string Title { get; set; }
         public string TitleUnicode { get; set; }
+        public string ArtistAuto =>MetaString
+        public string TitleAuto { get; set; }
         public string Creator { get; set; }
         public string Source { get; set; }
         public List<string> Tags { get; set; }

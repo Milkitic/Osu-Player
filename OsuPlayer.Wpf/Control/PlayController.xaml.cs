@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,7 @@ using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
+using Milky.WpfApi;
 using OSharp.Beatmap;
 using Unosquare.FFME.Common;
 
@@ -112,30 +114,31 @@ namespace Milky.OsuPlayer.Control
             remove => RemoveHandler(OnLikeClickEvent, value);
         }
 
-        public static readonly RoutedEvent OnProgressDragCompleteEvent = EventManager.RegisterRoutedEvent(
-            "OnProgressDragComplete",
-            RoutingStrategy.Bubble,
-            typeof(RoutedPropertyChangedEventArgs<object>),
-            typeof(PlayController));
+        //public static readonly RoutedEvent OnProgressDragCompleteEvent = EventManager.RegisterRoutedEvent(
+        //    "OnProgressDragComplete",
+        //    RoutingStrategy.Bubble,
+        //    typeof(RoutedPropertyChangedEventArgs<object>),
+        //    typeof(PlayController));
 
-        public event RoutedEventHandler OnProgressDragComplete
-        {
-            add => AddHandler(OnProgressDragCompleteEvent, value);
-            remove => RemoveHandler(OnProgressDragCompleteEvent, value);
-        }
+        //public event RoutedEventHandler OnProgressDragComplete
+        //{
+        //    add => AddHandler(OnProgressDragCompleteEvent, value);
+        //    remove => RemoveHandler(OnProgressDragCompleteEvent, value);
+        //}
+        public event EventHandler<DragCompleteEventArgs> OnProgressDragComplete;
 
-        public static readonly RoutedEvent OnNewFileLoadedEvent = EventManager.RegisterRoutedEvent(
-            "OnNewFileLoaded",
-            RoutingStrategy.Bubble,
-            typeof(RoutedPropertyChangedEventArgs<object>),
-            typeof(PlayController));
+        //public static readonly RoutedEvent OnNewFileLoadedEvent = EventManager.RegisterRoutedEvent(
+        //    "OnNewFileLoaded",
+        //    RoutingStrategy.Bubble,
+        //    typeof(RoutedPropertyChangedEventArgs<object>),
+        //    typeof(PlayController));
 
-        public event RoutedEventHandler OnNewFileLoaded
-        {
-            add => AddHandler(OnNewFileLoadedEvent, value);
-            remove => RemoveHandler(OnNewFileLoadedEvent, value);
-        }
-
+        //public event RoutedEventHandler OnNewFileLoaded
+        //{
+        //    add => AddHandler(OnNewFileLoadedEvent, value);
+        //    remove => RemoveHandler(OnNewFileLoadedEvent, value);
+        //}
+        public event EventHandler<HandledEventArgs> OnNewFileLoaded;
         #endregion
 
 
@@ -347,12 +350,6 @@ namespace Milky.OsuPlayer.Control
 
                     PlayerViewModel.Current.Duration = Services.Get<PlayersInst>().AudioPlayer.Duration;
 
-                    /* Set Storyboard */
-                    if (true)
-                    {
-                        // Todo: Set Storyboard
-                    }
-
                     /* Set Thumb */
                     if (osuFile.Events.BackgroundInfo != null)
                     {
@@ -361,12 +358,19 @@ namespace Milky.OsuPlayer.Control
                     }
 
                     /* Start Play */
-                    var args = new RoutedEventArgs(OnNewFileLoadedEvent, this);
-                    RaiseEvent(args);
-                    if (!args.Handled)
+                    //var args = new RoutedEventArgs(OnNewFileLoadedEvent, this);
+                    //RaiseEvent(args);
+                    var args = new HandledEventArgs();
+                    OnNewFileLoaded?.BeginInvoke(this, args, obj =>
                     {
-                        audioPlayer.Play();
-                    }
+                        if (!args.Handled)
+                        {
+                            if (play)
+                            {
+                                audioPlayer.Play();
+                            }
+                        }
+                    }, null);
 
                     AppSettings.Current.CurrentPath = path;
                     AppSettings.SaveCurrent();
@@ -484,6 +488,7 @@ namespace Milky.OsuPlayer.Control
         private void ClearHitsoundPlayer()
         {
             Services.Get<PlayersInst>()?.ClearAudioPlayer();
+            _forcePaused = false;
         }
 
         /// <summary>
@@ -538,39 +543,27 @@ namespace Milky.OsuPlayer.Control
         /// </summary>
         private void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
         {
+            var progress = (int)PlayProgress.Value;
+            var args = new DragCompleteEventArgs(ComponentPlayer.Current.PlayerStatus, progress);
+            OnProgressDragComplete?.Invoke(this, args);
+            if (!args.Handled)
+            {
+                switch (ComponentPlayer.Current.PlayerStatus)
+                {
+                    case PlayerStatus.Playing:
+                        ComponentPlayer.Current.SetTime(progress, false);
+                        ComponentPlayer.Current.Play();
+                        break;
+                    case PlayerStatus.Paused:
+                    case PlayerStatus.Stopped:
+                        _forcePaused = true;
+                        ComponentPlayer.Current.SetTime(progress, false);
+                        ComponentPlayer.Current.Pause();
+                        break;
+                }
+            }
+
             _scrollLock = false;
-
-            if (ComponentPlayer.Current == null)
-            {
-                return;
-            }
-
-            var args = new DragCompleteRoutedEventArgs(ComponentPlayer.Current.PlayerStatus,
-                ComponentPlayer.Current.PlayTime,
-                OnProgressDragCompleteEvent, this);
-
-            switch (ComponentPlayer.Current.PlayerStatus)
-            {
-                case PlayerStatus.Playing:
-                    RaiseEvent(args);
-                    if (!args.Handled)
-                    {
-                        ComponentPlayer.Current.SetTime((int)PlayProgress.Value);
-                    }
-
-                    break;
-                case PlayerStatus.Paused:
-                case PlayerStatus.Stopped:
-                    _forcePaused = true;
-
-                    RaiseEvent(args);
-                    if (!args.Handled)
-                    {
-                        ComponentPlayer.Current.SetTime((int)PlayProgress.Value, false);
-                    }
-
-                    break;
-            }
         }
 
         private void ModeButton_Click(object sender, RoutedEventArgs e)
@@ -636,7 +629,6 @@ namespace Milky.OsuPlayer.Control
         /// </summary>
         private void MasterVolume_DragComplete(object sender, DragCompletedEventArgs e)
         {
-            AppSettings.Current.Volume.Main = (float)(MasterVolume.Value / 100);
             AppSettings.SaveCurrent();
         }
 
@@ -645,7 +637,6 @@ namespace Milky.OsuPlayer.Control
         /// </summary>
         private void MusicVolume_DragComplete(object sender, DragCompletedEventArgs e)
         {
-            AppSettings.Current.Volume.Music = (float)(MusicVolume.Value / 100);
             AppSettings.SaveCurrent();
         }
 
@@ -693,21 +684,14 @@ namespace Milky.OsuPlayer.Control
         }
     }
 
-    public class DragCompleteRoutedEventArgs : RoutedEventArgs
+    public class DragCompleteEventArgs : HandledEventArgs
     {
-        public DragCompleteRoutedEventArgs(PlayerStatus playerStatus)
+        public DragCompleteEventArgs(PlayerStatus playerStatus)
         {
             PlayerStatus = playerStatus;
         }
 
-        public DragCompleteRoutedEventArgs(PlayerStatus playerStatus, RoutedEvent routedEvent) : base(routedEvent)
-        {
-            PlayerStatus = playerStatus;
-        }
-
-        public DragCompleteRoutedEventArgs(PlayerStatus playerStatus, int currentPlayTime, RoutedEvent routedEvent,
-            object source) : base(
-            routedEvent, source)
+        public DragCompleteEventArgs(PlayerStatus playerStatus, int currentPlayTime)
         {
             PlayerStatus = playerStatus;
             CurrentPlayTime = currentPlayTime;

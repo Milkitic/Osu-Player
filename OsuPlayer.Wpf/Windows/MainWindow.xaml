@@ -448,8 +448,8 @@
                         <Grid x:Name="VideoElementBorder" Background="#E0000000">
                             <ffme:MediaElement
                                 x:Name="VideoElement"
-                                IsMuted="True"
-                                LoadedBehavior="Manual" />
+                                LoadedBehavior="Manual"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
                         </Grid>
                         <Border
                             Margin="5"
@@ -547,11 +547,12 @@
         <control:WelcomeControl x:Name="WelcomeControl" Grid.Row="1" />
         <notification:NotifyOverlay
             x:Name="Notification"
-            Grid.Row="0"
-            Grid.RowSpan="2"
+            Grid.Row="1"
             Grid.Column="0"
-            Width="50"
-            HorizontalAlignment="Right" />
+            Width="400"
+            Margin="10"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom" />
         <tb:TaskbarIcon
             x:Name="NotifyIcon"
             Grid.Row="0"

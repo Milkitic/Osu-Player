@@ -125,6 +125,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             }
             //PlayerStatus = PlayerStatus.Playing;
             if (!play) PauseWithoutNotify();
+            //else PlayWithoutNotify();
         }
 
         public override void Stop()

@@ -13,6 +13,7 @@ using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.ViewModels;
 using OSharp.Beatmap;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Milky.OsuPlayer.Control.Notification;
+using Milky.WpfApi;
 using Unosquare.FFME.Common;
 
 namespace Milky.OsuPlayer.Windows
@@ -34,131 +36,139 @@ namespace Milky.OsuPlayer.Windows
 
         private Action _waitAction;
         private MyCancellationTokenSource _waitActionCts;
-        private TimeSpan _position;
+        private TimeSpan _initialVideoPosition;
+        private bool _playAfterSeek;
 
-        private bool _videoPlay;
-
-        private bool PlayVideo => PlayerViewModel.Current.EnableVideo && !ViewModel.IsMiniMode;
-        private async void Controller_OnNewFileLoaded(object sender, RoutedEventArgs e)
+        private bool EnableVideo => PlayerViewModel.Current.EnableVideo && !ViewModel.IsMiniMode;
+        private bool IsVideoPlaying => VideoElement.Source != null;
+        private void Controller_OnNewFileLoaded(object sender, HandledEventArgs e)
         {
             var osuFile = _playerInst.AudioPlayer.OsuFile;
             var path = _playList.CurrentInfo.Path;
             var dir = Path.GetDirectoryName(path);
-            try
+
+            Execute.OnUiThread(() =>
             {
-                /* Set Lyric */
-                SetLyricSynchronously();
-
-                /* Set Storyboard */
-                if (true)
+                Console.WriteLine("id:" + Thread.CurrentThread.ManagedThreadId);
+                try
                 {
-                    // Todo: Set Storyboard
-                }
+                    /* Set Lyric */
+                    SetLyricSynchronously();
 
-                /* Set Video */
-                if (VideoElement != null)
-                {
-                    await SafelyRecreateVideoElement(PlayVideo);
-
-                    if (PlayVideo)
+                    /* Set Storyboard */
+                    if (true)
                     {
-                        var videoName = osuFile.Events.VideoInfo?.Filename;
-                        if (videoName == null)
+                        // Todo: Set Storyboard
+                    }
+
+                    /* Set Video */
+                    if (VideoElement != null)
+                    {
+                        SafelyRecreateVideoElement(EnableVideo).Wait();
+
+                        if (EnableVideo)
                         {
-                            VideoElement.Source = null;
-                            VideoElementBorder.Visibility = Visibility.Hidden;
-                        }
-                        else
-                        {
-                            var vPath = Path.Combine(dir, videoName);
-                            if (File.Exists(vPath))
-                            {
-                                VideoElement.Source = new Uri(vPath);
-                                _videoOffset = -(osuFile.Events.VideoInfo.Offset);
-                                if (_videoOffset >= 0)
-                                {
-                                    _waitAction = () => { };
-                                    _position = TimeSpan.FromMilliseconds(_videoOffset);
-                                }
-                                else
-                                {
-                                    _waitAction = () => { Thread.Sleep(TimeSpan.FromMilliseconds(-_videoOffset)); };
-                                }
-                            }
-                            else
+                            var videoName = osuFile.Events.VideoInfo?.Filename;
+                            if (videoName == null)
                             {
                                 VideoElement.Source = null;
                                 VideoElementBorder.Visibility = Visibility.Hidden;
                             }
+                            else
+                            {
+                                var vPath = Path.Combine(dir, videoName);
+                                if (File.Exists(vPath))
+                                {
+                                    _playAfterSeek = true;
+                                    VideoElement.Source = new Uri(vPath);
+
+                                    _videoOffset = -(osuFile.Events.VideoInfo.Offset);
+                                    if (_videoOffset >= 0)
+                                    {
+                                        _waitAction = () => { };
+                                        _initialVideoPosition = TimeSpan.FromMilliseconds(_videoOffset);
+                                    }
+                                    else
+                                    {
+                                        _waitAction = () => { Thread.Sleep(TimeSpan.FromMilliseconds(-_videoOffset)); };
+                                    }
+                                }
+                                else
+                                {
+                                    VideoElement.Source = null;
+                                    VideoElementBorder.Visibility = Visibility.Hidden;
+                                }
+                            }
                         }
                     }
-                }
 
-                /* Set Background */
-                if (osuFile.Events.BackgroundInfo != null)
-                {
-                    var bgPath = Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
-                    BlurScene.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
-                }
-                else
-                {
-                    BlurScene.Source = null;
-                }
+                    /* Set Background */
+                    if (osuFile.Events.BackgroundInfo != null)
+                    {
+                        var bgPath = Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
+                        BlurScene.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
+                    }
+                    else
+                    {
+                        BlurScene.Source = null;
+                    }
 
-                if (PlayVideo && VideoElement?.Source != null)
-                {
-                    // use event to control here.
-                    //VideoPlay();
-                }
+                    if (EnableVideo && VideoElement?.Source != null)
+                    {
+                        e.Handled = true;
+                        // use event to control here.
+                        //VideoPlay();
+                    }
 
-            }
-            catch (Exception ex)
-            {
-                App.NotificationList.Add(new NotificationOption
+                }
+                catch (Exception ex)
                 {
-                    Content = @"发生未处理的错误：" + (ex.InnerException ?? ex)
-                });
-            }
+                    App.NotificationList.Add(new NotificationOption
+                    {
+                        Content = @"发生未处理的错误：" + (ex.InnerException ?? ex)
+                    });
+                }
+            });
         }
 
-        private async void Controller_OnProgressDragComplete(object sender, RoutedEventArgs e)
+        private async void Controller_OnProgressDragComplete(object sender, DragCompleteEventArgs e)
         {
-            if (PlayVideo)
+            bool isVideoPlaying = false;
+            isVideoPlaying = IsVideoPlaying;
+            if (isVideoPlaying)
             {
                 e.Handled = true;
 
-                if (e is DragCompleteRoutedEventArgs e1)
+                Services.Get<PlayersInst>().AudioPlayer.Pause();
+                var milliseconds = e.CurrentPlayTime;
+                _waitActionCts = new MyCancellationTokenSource();
+                Guid? guid = _waitActionCts?.Guid;
+                var trueOffset = milliseconds + _videoOffset;
+                if (trueOffset < 0)
                 {
-                    var milliseconds = e1.CurrentPlayTime;
-                    _waitActionCts = new MyCancellationTokenSource();
-                    Guid? guid = _waitActionCts?.Guid;
-                    var trueOffset = milliseconds + _videoOffset;
-                    if (trueOffset < 0)
-                    {
-                        await VideoElement.Pause();
-                        VideoElement.Position = TimeSpan.FromMilliseconds(0);
+                    await VideoElement.Pause();
+                    VideoElement.Position = TimeSpan.FromMilliseconds(0);
 
-                        await Task.Run(() => { Thread.Sleep(TimeSpan.FromMilliseconds(-trueOffset)); });
-                        if (_waitActionCts?.Guid != guid || _waitActionCts?.IsCancellationRequested == true)
-                            return;
-                    }
+                    await Task.Run(() => { Thread.Sleep(TimeSpan.FromMilliseconds(-trueOffset)); });
+                    if (_waitActionCts?.Guid != guid || _waitActionCts?.IsCancellationRequested == true)
+                        return;
+                }
 
 
-                    if (trueOffset >= 0)
-                    {
-                        VideoElement.Position = TimeSpan.FromMilliseconds(trueOffset);
-                    }
+                if (trueOffset >= 0)
+                {
+                    VideoElement.Position = TimeSpan.FromMilliseconds(trueOffset);
+                }
 
-                    switch (e1.PlayerStatus)
-                    {
-                        case PlayerStatus.Playing:
-                            await VideoElement.Play();
-                            break;
-                        case PlayerStatus.Paused:
-                        case PlayerStatus.Stopped:
-                            await VideoElement.Pause();
-                            break;
-                    }
+                switch (e.PlayerStatus)
+                {
+                    case PlayerStatus.Playing:
+                        _playAfterSeek = true;
+                        break;
+                    case PlayerStatus.Paused:
+                    case PlayerStatus.Stopped:
+                        _playAfterSeek = false;
+                        break;
                 }
             }
         }
@@ -212,61 +222,35 @@ namespace Milky.OsuPlayer.Windows
 
         private async Task SafelyRecreateVideoElement(bool showVideo)
         {
-            await Task.Run(async () =>
+            if (Execute.CheckDispatcherAccess())
+            {
+                VideoElement.Stop();
+                BindVideoElement();
+            }
+            else
             {
                 await VideoElement.Stop();
-                Dispatcher.Invoke(() =>
-                {
-                    VideoElement.Position = TimeSpan.Zero;
-                    VideoElement.Source = null;
-
-                    VideoElement.MediaOpened -= OnMediaOpened;
-                    VideoElement.MediaFailed -= OnMediaFailed;
-                    VideoElement.MediaEnded -= OnMediaEnded;
-                    VideoElement.SeekingStarted -= OnSeekingStarted;
-                    VideoElement.SeekingEnded -= OnSeekingEnded;
-
-                    //VideoElement.Dispose();
-                    VideoElement = null;
-                    VideoElementBorder.Visibility = Visibility.Hidden;
-                    VideoElement = new Unosquare.FFME.MediaElement
-                    {
-                        IsMuted = true,
-                        LoadedBehavior = MediaPlaybackState.Manual,
-                        Visibility = Visibility.Visible,
-                    };
-                    VideoElement.MediaOpened += OnMediaOpened;
-                    VideoElement.MediaFailed += OnMediaFailed;
-                    VideoElement.MediaEnded += OnMediaEnded;
-
-                    if (showVideo)
-                    {
-                        VideoElement.SeekingStarted += OnSeekingStarted;
-                        VideoElement.SeekingEnded += OnSeekingEnded;
-                    }
-
-                    VideoElementBorder.Children.Add(VideoElement);
-                });
-            });
+                Execute.OnUiThread(BindVideoElement);
+            }
 
             async void OnMediaOpened(object sender, MediaOpenedEventArgs e)
             {
                 VideoElementBorder.Visibility = Visibility.Visible;
-                if (!_videoPlay)
+                if (!EnableVideo)
                     return;
                 await Task.Run(() => _waitAction?.Invoke());
 
                 if (VideoElement == null/* || VideoElement.IsDisposed*/)
                     return;
                 await VideoElement.Play();
-                VideoElement.Position = _position;
+                VideoElement.Position = _initialVideoPosition;
             }
 
             async void OnMediaFailed(object sender, MediaFailedEventArgs e)
             {
                 VideoElementBorder.Visibility = Visibility.Hidden;
                 //MsgBox.Show(this, e.ErrorException.ToString(), "不支持的视频格式", MessageBoxButton.OK, MessageBoxImage.Error);
-                if (!_videoPlay)
+                if (!EnableVideo)
                     return;
                 await SafelyRecreateVideoElement(false);
                 PlayController.TogglePlay();
@@ -284,9 +268,47 @@ namespace Milky.OsuPlayer.Windows
 
             void OnSeekingEnded(object sender, EventArgs e)
             {
-                if (!_videoPlay)
+                if (!EnableVideo)
                     return;
-                PlayController.TogglePlay();
+                Services.Get<PlayersInst>().AudioPlayer.SetTime((int)(VideoElement.Position.TotalMilliseconds - _videoOffset), false);
+                if (_playAfterSeek)
+                {
+                    Services.Get<PlayersInst>().AudioPlayer.Play();
+                    VideoElement.Play();
+                }
+                else
+                {
+                    Services.Get<PlayersInst>().AudioPlayer.Pause();
+                    VideoElement.Pause();
+                }
+            }
+
+            void BindVideoElement()
+            {
+                VideoElement.Position = TimeSpan.Zero;
+                VideoElement.Source = null;
+
+                VideoElement.MediaOpened -= OnMediaOpened;
+                VideoElement.MediaFailed -= OnMediaFailed;
+                VideoElement.MediaEnded -= OnMediaEnded;
+                VideoElement.SeekingStarted -= OnSeekingStarted;
+                VideoElement.SeekingEnded -= OnSeekingEnded;
+
+                //VideoElement.Dispose();
+                VideoElement = null;
+                VideoElementBorder.Visibility = Visibility.Hidden;
+                VideoElement = new Unosquare.FFME.MediaElement { IsMuted = true, LoadedBehavior = MediaPlaybackState.Manual, Visibility = Visibility.Visible, };
+                VideoElement.MediaOpened += OnMediaOpened;
+                VideoElement.MediaFailed += OnMediaFailed;
+                VideoElement.MediaEnded += OnMediaEnded;
+
+                if (showVideo)
+                {
+                    VideoElement.SeekingStarted += OnSeekingStarted;
+                    VideoElement.SeekingEnded += OnSeekingEnded;
+                }
+
+                VideoElementBorder.Children.Add(VideoElement);
             }
         }
     }

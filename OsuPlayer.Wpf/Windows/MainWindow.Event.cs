@@ -68,8 +68,8 @@ namespace Milky.OsuPlayer.Windows
             PlayController.Default.OnThumbClick += Controller_OnThumbClick;
 
             var helper = new WindowInteropHelper(this);
-            var source = HwndSource.FromHwnd(helper.Handle);
-            source?.AddHook(HwndMessageHook);
+            //var source = HwndSource.FromHwnd(helper.Handle);
+            //source?.AddHook(HwndMessageHook);
 
             var updater = Services.Get<Updater>();
             bool? hasUpdate = await updater.CheckUpdateAsync();
