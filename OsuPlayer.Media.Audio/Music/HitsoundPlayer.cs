@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OSharp.Beatmap.Sections.GamePlay;
+using OSharp.Beatmap.Sections.Timing;
 
 namespace Milky.OsuPlayer.Media.Audio.Music
 {
@@ -352,7 +353,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                             addition: item.EdgeAddition,
                             customFile: obj.FileName,
                             volume: (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f,
-                            balance: balance
+                            balance: balance,
+                            forceTrack: 0,
+                            fullHitsoundType: obj.SliderInfo.EdgeHitsounds == null ? obj.Hitsound : (HitsoundType?)null
                         );
 
                         hitsoundList.Add(element);
@@ -361,8 +364,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 else
                 {
                     //var currentTiming = file.TimingPoints.GetRedLine(obj.Offset);
-                    var currentLine = _osuFile.TimingPoints.GetLine(obj.Offset);
-                    var offset = obj.Offset; //todo: Spinner & hold
+                    var offset = obj.ObjectType == HitObjectType.Spinner ? obj.HoldEnd : obj.Offset;
+                    var currentLine = _osuFile.TimingPoints.GetLine(offset);
 
                     float balance = GetObjectBalance(obj.X);
 
@@ -378,7 +381,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                         addition: obj.AdditionSet,
                         customFile: obj.FileName,
                         volume: (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f,
-                        balance: balance
+                        balance: balance,
+                        forceTrack: obj.CustomIndex,
+                        fullHitsoundType: null
                     );
 
                     hitsoundList.Add(element);

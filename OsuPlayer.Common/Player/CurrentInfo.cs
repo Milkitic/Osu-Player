@@ -41,8 +41,8 @@ namespace Milky.OsuPlayer.Common.Player
         public string ArtistUnicode { get; set; }
         public string Title { get; set; }
         public string TitleUnicode { get; set; }
-        public string ArtistAuto =>MetaString
-        public string TitleAuto { get; set; }
+        public string ArtistAuto => MetaString.GetUnicode(Artist, ArtistUnicode);
+        public string TitleAuto  => MetaString.GetUnicode(Title, TitleUnicode);
         public string Creator { get; set; }
         public string Source { get; set; }
         public List<string> Tags { get; set; }

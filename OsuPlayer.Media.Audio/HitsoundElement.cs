@@ -13,12 +13,13 @@ namespace Milky.OsuPlayer.Media.Audio
     {
         private readonly string _mapFolderName;
         private readonly string[] _mapWaveFiles;
+        private readonly int _forceTrack;
+        private readonly HitsoundType? _fullHitsoundType;
         private string[] _fileNamesWithoutTrack;
         private string _wavExtension = ".wav";
         private string _oggExtension = ".ogg";
 
-        public HitsoundElement(
-            string mapFolderName,
+        public HitsoundElement(string mapFolderName,
             string[] mapWaveFiles,
             GameMode gameMode,
             double offset,
@@ -29,10 +30,14 @@ namespace Milky.OsuPlayer.Media.Audio
             ObjectSamplesetType addition,
             string customFile,
             float volume,
-            float balance)
+            float balance,
+            int forceTrack,
+            HitsoundType? fullHitsoundType)
         {
             _mapFolderName = mapFolderName;
             _mapWaveFiles = mapWaveFiles;
+            _forceTrack = forceTrack;
+            _fullHitsoundType = fullHitsoundType;
             GameMode = gameMode;
             Offset = offset;
             Track = track;
@@ -65,7 +70,20 @@ namespace Milky.OsuPlayer.Media.Audio
             FilePaths = new string[_fileNamesWithoutTrack.Length];
             for (var i = 0; i < _fileNamesWithoutTrack.Length; i++)
             {
-                var name = _fileNamesWithoutTrack[i] + (Track > 1 && string.IsNullOrWhiteSpace(CustomFile) ? Track.ToString() : "");
+                string trackStr;
+                if (!string.IsNullOrWhiteSpace(CustomFile))
+                {
+
+                }
+                if (_forceTrack > 0)
+                {
+                    trackStr = (_forceTrack > 1 ? _forceTrack.ToString() : "");
+                }
+                else
+                {
+                    trackStr = (Track > 1 ? Track.ToString() : "");
+                }
+                var name = _fileNamesWithoutTrack[i] + trackStr;
                 if (_mapWaveFiles.Contains(name))
                 {
                     var path = Path.Combine(_mapFolderName, name + _wavExtension);
@@ -99,27 +117,43 @@ namespace Milky.OsuPlayer.Media.Audio
 
             string sample = GetFromLineSample();
             AdjustObjectSample(ref sample);
-            string addition = GetObjectAddition(sample);
+            string addition;
 
-            if (Hitsound == 0)
-                tracks.Add($"{sample}-hitnormal");
+            addition = GetObjectAddition(sample);
+
+            if (_fullHitsoundType == null)
+            {
+                if (Hitsound == 0)
+                    tracks.Add($"{sample}-hitnormal");
+                else
+                {
+                    AddToTrack(Hitsound);
+                }
+            }
             else
             {
-                if (Hitsound.HasFlag(HitsoundType.Whistle))
-                    tracks.Add($"{addition}-hitwhistle");
-                if (Hitsound.HasFlag(HitsoundType.Clap))
-                    tracks.Add($"{addition}-hitclap");
-                if (Hitsound.HasFlag(HitsoundType.Finish))
-                    tracks.Add($"{addition}-hitfinish");
-                if (Hitsound.HasFlag(HitsoundType.Normal) ||
-                    (Hitsound & HitsoundType.Normal) == 0)
-                {
-                    if (GameMode != GameMode.Mania)
-                        tracks.Add($"{sample}-hitnormal");
-                }
+                AddToTrack(_fullHitsoundType.Value);
             }
 
             _fileNamesWithoutTrack = tracks.ToArray();
+
+            void AddToTrack(HitsoundType type)
+            {
+                if (type.HasFlag(HitsoundType.Whistle))
+                    tracks.Add($"{addition}-hitwhistle");
+                if (type.HasFlag(HitsoundType.Clap))
+                    tracks.Add($"{addition}-hitclap");
+                if (type.HasFlag(HitsoundType.Finish))
+                    tracks.Add($"{addition}-hitfinish");
+                if (type.HasFlag(HitsoundType.Normal) ||
+                    (type & HitsoundType.Normal) == 0)
+                {
+                    if (GameMode != GameMode.Mania)
+                    {
+                        tracks.Add($"{sample}-hitnormal");
+                    }
+                }
+            }
         }
 
         private string GetObjectAddition(string sample)

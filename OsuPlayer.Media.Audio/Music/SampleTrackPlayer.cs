@@ -42,7 +42,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                     addition: OSharp.Beatmap.Sections.HitObject.ObjectSamplesetType.Auto,
                     customFile: sampleData.Filename,
                     volume: sampleData.Volume / 100f,
-                    balance: 0
+                    balance: 0,
+                    forceTrack: 0,
+                    fullHitsoundType: null
                 );
 
                 hitsoundList.Add(element);

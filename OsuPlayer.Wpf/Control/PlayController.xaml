@@ -225,7 +225,7 @@
                 <StackPanel Orientation="Horizontal">
                     <Label
                         x:Name="LblTitle"
-                        Content="{Binding Player.CurrentInfo.TitleAuto, Mode=TwoWay}"
+                        Content="{Binding Player.CurrentInfo.TitleAuto, Mode=OneWay}"
                         Foreground="#777" />
                     <Label
                         x:Name="LblSeperate"
@@ -234,7 +234,7 @@
                         Foreground="#858585" />
                     <Label
                         x:Name="LblArtist"
-                        Content="{Binding Player.CurrentInfo.ArtistAuto, Mode=TwoWay}"
+                        Content="{Binding Player.CurrentInfo.ArtistAuto, Mode=OneWay}"
                         Foreground="#AAA" />
                 </StackPanel>
                 <StackPanel
