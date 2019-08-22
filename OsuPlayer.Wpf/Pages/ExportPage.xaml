@@ -149,7 +149,7 @@
                             </DataTemplate>
                         </ListView.Resources>
                         <ListView.View>
-                            <GridView ColumnHeaderContainerStyle="{StaticResource MyHeaderStyle}">
+                            <GridView ColumnHeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle}">
                                 <GridViewColumn Width="40" CellTemplate="{StaticResource IdDt}" />
                                 <GridViewColumn
                                     Width="300"
