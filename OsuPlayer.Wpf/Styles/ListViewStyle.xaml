@@ -79,6 +79,7 @@
                             Height="24"
                             Background="#fafafa"
                             BorderBrush="#e1e1e2"
+                            Padding="5,0,0,0"
                             BorderThickness="1,1,0,1">
                             <ContentPresenter
                                 Name="HeaderContent"
