@@ -145,7 +145,7 @@ namespace Milky.OsuPlayer.Common.Data.EF
             var keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
             var predicate = keywords.Aggregate(PredicateBuilder.New<Beatmap>(), (current, keyword) =>
-                current.Or(k => k.Title != null && k.Title.ToLower().Contains(keyword) ||
+                current.And(k => k.Title != null && k.Title.ToLower().Contains(keyword) ||
                                 k.TitleUnicode != null && k.TitleUnicode.ToLower().Contains(keyword) ||
                                 k.Artist != null && k.Artist.ToLower().Contains(keyword) ||
                                 k.ArtistUnicode != null && k.ArtistUnicode.ToLower().Contains(keyword) ||
