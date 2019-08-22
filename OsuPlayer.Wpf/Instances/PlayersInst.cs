@@ -2,6 +2,7 @@
 using OSharp.Beatmap;
 using System.Linq;
 using System.Text;
+using Milky.OsuPlayer.Media.Audio.Music;
 
 namespace Milky.OsuPlayer.Instances
 {
@@ -19,6 +20,10 @@ namespace Milky.OsuPlayer.Instances
             AudioPlayer?.Stop();
             AudioPlayer?.Dispose();
             AudioPlayer = null;
+        }
+        public void ClearHitsoundCache()
+        {
+            AudioPlaybackEngine.ClearCacheSounds();
         }
     }
 }

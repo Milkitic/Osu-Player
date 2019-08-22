@@ -23,6 +23,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Milky.OsuPlayer.Control.Notification;
+using Milky.OsuPlayer.Media.Audio.Music;
 using Milky.WpfApi;
 using Unosquare.FFME.Common;
 
@@ -131,10 +132,25 @@ namespace Milky.OsuPlayer.Windows
             });
         }
 
+        private void Controller_OnPlayClick()
+        {
+            if (IsVideoPlaying)
+            {
+                VideoElement.Play();
+            }
+        }
+
+        private void Controller_OnPauseClick()
+        {
+            if (IsVideoPlaying)
+            {
+                VideoElement.Pause();
+            }
+        }
+
         private async void Controller_OnProgressDragComplete(object sender, DragCompleteEventArgs e)
         {
-            bool isVideoPlaying = false;
-            isVideoPlaying = IsVideoPlaying;
+            var isVideoPlaying = IsVideoPlaying;
             if (isVideoPlaying)
             {
                 e.Handled = true;
@@ -260,7 +276,7 @@ namespace Milky.OsuPlayer.Windows
             {
                 if (VideoElement == null /*|| VideoElement.IsDisposed*/)
                     return;
-                VideoElement.Position = TimeSpan.Zero;
+                //VideoElement.Position = TimeSpan.Zero;
             }
 
             void OnSeekingStarted(object sender, EventArgs e)
@@ -293,7 +309,8 @@ namespace Milky.OsuPlayer.Windows
                 VideoElement.MediaEnded -= OnMediaEnded;
                 VideoElement.SeekingStarted -= OnSeekingStarted;
                 VideoElement.SeekingEnded -= OnSeekingEnded;
-
+                Services.Get<PlayersInst>().AudioPlayer.PlayerStarted -= OnAudioPlayerOnPlayerStarted;
+                Services.Get<PlayersInst>().AudioPlayer.PlayerPaused -= OnAudioPlayerOnPlayerPaused;
                 //VideoElement.Dispose();
                 VideoElement = null;
                 VideoElementBorder.Visibility = Visibility.Hidden;
@@ -306,9 +323,22 @@ namespace Milky.OsuPlayer.Windows
                 {
                     VideoElement.SeekingStarted += OnSeekingStarted;
                     VideoElement.SeekingEnded += OnSeekingEnded;
+
+                    Services.Get<PlayersInst>().AudioPlayer.PlayerStarted += OnAudioPlayerOnPlayerStarted;
+                    Services.Get<PlayersInst>().AudioPlayer.PlayerPaused += OnAudioPlayerOnPlayerPaused;
                 }
 
                 VideoElementBorder.Children.Add(VideoElement);
+            }
+
+            void OnAudioPlayerOnPlayerPaused(object sender, ProgressEventArgs e)
+            {
+                //VideoElement.Pause();
+            }
+
+            void OnAudioPlayerOnPlayerStarted(object sender, ProgressEventArgs e)
+            {
+                //VideoElement.Play();
             }
         }
     }

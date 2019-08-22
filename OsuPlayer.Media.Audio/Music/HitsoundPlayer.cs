@@ -236,6 +236,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                     return;
                 }
 
+                //_sw.Start();
+
                 // Loop
                 if (_mod == PlayMod.None)
                 {

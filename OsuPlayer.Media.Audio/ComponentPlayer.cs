@@ -32,7 +32,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public override int Duration
         {
-            get => HitsoundPlayer?.Duration ?? 0;
+            get => Math.Max(HitsoundPlayer?.Duration ?? 0, SampleTrackPlayer?.Duration ?? 0);
             protected set => throw new InvalidOperationException();
         }
 

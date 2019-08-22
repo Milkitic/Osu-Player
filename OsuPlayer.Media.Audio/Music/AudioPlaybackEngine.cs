@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using Milky.OsuPlayer.Media.Audio.Music.SampleProviders;
 using Milky.OsuPlayer.Media.Audio.Music.WaveProviders;
 using NAudio.Wave;
@@ -10,11 +11,13 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 {
     public class AudioPlaybackEngine : IDisposable
     {
-        ConcurrentDictionary<string, CachedSound> _cachedDictionary = new ConcurrentDictionary<string, CachedSound>();
+        static ConcurrentDictionary<string, CachedSound> _cachedDictionary = new ConcurrentDictionary<string, CachedSound>();
 
         private readonly IWavePlayer _outputDevice;
         private readonly MixingSampleProvider _mixer;
         private VolumeSampleProvider _volumeProvider;
+
+        private static string[] _supportExtensions = { ".wav", ".mp3", ".ogg" };
 
         public bool Enable3dEffect { get; } = true;
 
@@ -47,7 +50,44 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         public void CreateCacheSound(string path)
         {
-            _cachedDictionary.TryAdd(path, new CachedSound(path)); // Cache each file once before play.
+            string newPath = path;
+            if (!File.Exists(newPath))
+            {
+                newPath = TryGetPath(newPath);
+            }
+
+            if (!File.Exists(newPath))
+            {
+                newPath = TryGetPath(Path.Combine(Path.GetDirectoryName(newPath), Path.GetFileNameWithoutExtension(newPath)));
+            }
+
+            if (_cachedDictionary.ContainsKey(path))
+            {
+                return;
+            }
+
+            if (!File.Exists(newPath))
+            {
+                _cachedDictionary.TryAdd(path, null);
+                return;
+            }
+
+            _cachedDictionary.TryAdd(path, new CachedSound(newPath)); // Cache each file once before play.
+        }
+
+        private static string TryGetPath(string path)
+        {
+            foreach (var ext in _supportExtensions)
+            {
+                var autoAudioFile = path + ext;
+                if (!File.Exists(autoAudioFile))
+                    continue;
+
+                path = autoAudioFile;
+                break;
+            }
+
+            return path;
         }
 
         public void PlaySound(string path, float volume, float balance = 0f)
@@ -62,6 +102,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         private void PlaySound(CachedSound sound, float volume, float balance)
         {
+            if (sound == null) return;
             AddMixerInput(new CachedSoundSampleProvider(sound), volume, balance);
         }
 
@@ -99,6 +140,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         public void Dispose()
         {
             _outputDevice?.Dispose();
+        }
+
+        public static void ClearCacheSounds()
+        {
+            _cachedDictionary.Clear();
         }
     }
 }

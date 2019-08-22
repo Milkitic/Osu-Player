@@ -66,7 +66,8 @@ namespace Milky.OsuPlayer.Windows
             PlayController.Default.OnProgressDragComplete += Controller_OnProgressDragComplete;
             PlayController.Default.OnLikeClick += Controller_OnLikeClick;
             PlayController.Default.OnThumbClick += Controller_OnThumbClick;
-
+            PlayController.Default.OnPlayClick += Controller_OnPlayClick;
+            PlayController.Default.OnPauseClick += Controller_OnPauseClick;
             var helper = new WindowInteropHelper(this);
             //var source = HwndSource.FromHwnd(helper.Handle);
             //source?.AddHook(HwndMessageHook);

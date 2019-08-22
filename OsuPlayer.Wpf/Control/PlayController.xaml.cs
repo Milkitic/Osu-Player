@@ -150,6 +150,9 @@ namespace Milky.OsuPlayer.Control
         private bool _forcePaused;
         private bool _scrollLock;
 
+        public event Action OnPlayClick;
+        public event Action OnPauseClick;
+
         public PlayController()
         {
             InitializeComponent();
@@ -303,12 +306,11 @@ namespace Milky.OsuPlayer.Control
 
                     /* Clear */
                     ClearHitsoundPlayer();
-
-                    /* Set new hitsound player*/
-                    playerInst.SetAudioPlayer(path, osuFile);
-                    audioPlayer = playerInst.AudioPlayer;
-                    SignUpPlayerEvent(audioPlayer);
-                    await audioPlayer.InitializeAsync(); //700 ms
+                    if (System.IO.Path.GetDirectoryName(AppSettings.Current.CurrentPath) !=
+                        System.IO.Path.GetDirectoryName(path))
+                    {
+                        Services.Get<PlayersInst>()?.ClearHitsoundCache();
+                    }
 
                     /* Set Meta */
                     var nowIdentity = new MapIdentity(fi.Directory.Name, osuFile.Metadata.Version);
@@ -318,6 +320,32 @@ namespace Milky.OsuPlayer.Control
 
                     bool isFavorite = IsMapFavorite(mapInfo); //50 ms
 
+                    var info = Services.Get<PlayerList>().CurrentInfo;
+                    if (info != null)
+                    {
+                        info.Artist = osuFile.Metadata.Artist;
+                        info.ArtistUnicode = osuFile.Metadata.ArtistUnicode;
+                        info.Title = osuFile.Metadata.Title;
+                        info.TitleUnicode = osuFile.Metadata.TitleUnicode;
+                    }
+
+                    LblNow.Visibility = Visibility.Hidden;
+                    LblTotal.Visibility = Visibility.Hidden;
+                    PlayProgress.Maximum = 1;
+                    PlayProgress.Value = 0;
+
+                    /* Set Thumb */
+                    if (osuFile.Events.BackgroundInfo != null)
+                    {
+                        var bgPath = System.IO.Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
+                        Thumb.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
+                    }
+
+                    /* Set new hitsound player*/
+                    playerInst.SetAudioPlayer(path, osuFile);
+                    audioPlayer = playerInst.AudioPlayer;
+                    SignUpPlayerEvent(audioPlayer);
+                    await audioPlayer.InitializeAsync(); //700 ms
                     audioPlayer.HitsoundOffset = mapInfo.Offset;
                     Offset.Value = audioPlayer.HitsoundOffset;
 
@@ -350,13 +378,6 @@ namespace Milky.OsuPlayer.Control
 
                     PlayerViewModel.Current.Duration = Services.Get<PlayersInst>().AudioPlayer.Duration;
 
-                    /* Set Thumb */
-                    if (osuFile.Events.BackgroundInfo != null)
-                    {
-                        var bgPath = System.IO.Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
-                        Thumb.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
-                    }
-
                     /* Start Play */
                     //var args = new RoutedEventArgs(OnNewFileLoadedEvent, this);
                     //RaiseEvent(args);
@@ -372,6 +393,8 @@ namespace Milky.OsuPlayer.Control
                         }
                     }, null);
 
+                    LblNow.Visibility = Visibility.Visible;
+                    LblTotal.Visibility = Visibility.Visible;
                     AppSettings.Current.CurrentPath = path;
                     AppSettings.SaveCurrent();
 
@@ -411,11 +434,13 @@ namespace Milky.OsuPlayer.Control
             }
 
             Services.Get<PlayersInst>().AudioPlayer.Play();
+            OnPlayClick?.Invoke();
         }
 
         private void PauseAudio()
         {
             Services.Get<PlayersInst>().AudioPlayer.Pause();
+            OnPauseClick?.Invoke();
         }
 
         private void SignUpPlayerEvent(ComponentPlayer audioPlayer)

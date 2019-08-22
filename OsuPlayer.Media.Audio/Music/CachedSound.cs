@@ -14,22 +14,10 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         public static string CachePath = "_temp.wav";
 
-        private static string[] _supportExtensions = {".wav", ".mp3"};
         public CachedSound(string audioFileName)
         {
             var newFileName = CachePath;
-            if (!File.Exists(audioFileName))
-            {
-                foreach (var ext in _supportExtensions)
-                {
-                    var autoAudioFile = audioFileName + ext;
-                    if (!File.Exists(autoAudioFile))
-                        continue;
-
-                    audioFileName = autoAudioFile;
-                    break;
-                }
-            }
+        
 
             try
             {
@@ -49,7 +37,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 Console.WriteLine(audioFileName);
                 throw;
             }
-           
+
 
             using (var audioFileReader = new AudioFileReader(newFileName))
             {

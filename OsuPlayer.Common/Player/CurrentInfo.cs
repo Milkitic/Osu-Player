@@ -9,6 +9,10 @@ namespace Milky.OsuPlayer.Common.Player
     public class CurrentInfo : ViewModelBase
     {
         private bool _isFavorite;
+        private string _artist;
+        private string _artistUnicode;
+        private string _title;
+        private string _titleUnicode;
         public CurrentInfo() { }
 
         public CurrentInfo(string artist, string artistUnicode, string title, string titleUnicode, string creator,
@@ -37,12 +41,53 @@ namespace Milky.OsuPlayer.Common.Player
             Path = path;
         }
 
-        public string Artist { get; set; }
-        public string ArtistUnicode { get; set; }
-        public string Title { get; set; }
-        public string TitleUnicode { get; set; }
+        public string Artist
+        {
+            get => _artist;
+            set
+            {
+                _artist = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ArtistAuto));
+            }
+        }
+
+        public string ArtistUnicode
+        {
+            get => _artistUnicode;
+            set
+            {
+                _artistUnicode = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ArtistAuto));
+            }
+        }
+
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                _title = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(TitleAuto));
+            }
+        }
+
+        public string TitleUnicode
+        {
+            get => _titleUnicode;
+            set
+            {
+                _titleUnicode = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(TitleAuto));
+            }
+        }
+
         public string ArtistAuto => MetaString.GetUnicode(Artist, ArtistUnicode);
-        public string TitleAuto  => MetaString.GetUnicode(Title, TitleUnicode);
+        public string TitleAuto => MetaString.GetUnicode(Title, TitleUnicode);
+
         public string Creator { get; set; }
         public string Source { get; set; }
         public List<string> Tags { get; set; }
@@ -71,6 +116,7 @@ namespace Milky.OsuPlayer.Common.Player
                 OnPropertyChanged();
             }
         }
+
         public string Path { get; set; }
     }
 }

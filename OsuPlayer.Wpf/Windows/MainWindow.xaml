@@ -216,7 +216,7 @@
                                         </Canvas>
                                     </Viewbox>
                                 </Canvas>
-                                <Canvas Height="40">
+                                <Canvas Height="40" Visibility="Collapsed">
                                     <ToggleButton
                                         x:Name="BtnSb"
                                         Width="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavigationWidth}}"
