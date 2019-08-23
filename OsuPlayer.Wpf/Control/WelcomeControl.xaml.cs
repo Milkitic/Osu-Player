@@ -82,10 +82,7 @@ namespace Milky.OsuPlayer.Control
                     }
                     catch (Exception ex)
                     {
-                        App.NotificationList.Add(new NotificationOption
-                        {
-                            Content = ex.Message
-                        });
+                        OsuPlayer.Notification.Show("该图不存在于该osu!db中");
                         GuideSelectedDb = false;
                     }
 

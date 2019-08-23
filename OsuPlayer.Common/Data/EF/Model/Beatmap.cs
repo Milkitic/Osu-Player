@@ -147,6 +147,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
             SongSource = entry.SongSource;
             SongTags = entry.SongTags;
             FolderName = entry.FolderName;
+            AudioFileName = entry.AudioFileName;
 
             return this;
         }
@@ -192,6 +193,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
             SongSource = osuFile.Metadata.Source;
             SongTags = string.Join(" ", osuFile.Metadata.TagList);
             //FolderName = osuFile.FolderName;
+            AudioFileName = osuFile.General.AudioFilename;
 
             return this;
         }

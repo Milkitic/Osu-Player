@@ -124,10 +124,7 @@ namespace Milky.OsuPlayer.Windows
                 }
                 catch (Exception ex)
                 {
-                    App.NotificationList.Add(new NotificationOption
-                    {
-                        Content = @"发生未处理的错误：" + (ex.InnerException ?? ex)
-                    });
+                    Notification.Show(@"发生未处理的错误：" + (ex.InnerException ?? ex));
                 }
             });
         }
@@ -208,11 +205,7 @@ namespace Milky.OsuPlayer.Windows
             //var entry = App.PlayerList?.CurrentInfo.Beatmap;
             if (entry == null)
             {
-                App.NotificationList.Add(new NotificationOption
-                {
-                    Title = Title,
-                    Content = "该图不存在于该osu!db中。"
-                });
+                Notification.Show("该图不存在于该osu!db中", Title);
                 return;
             }
 

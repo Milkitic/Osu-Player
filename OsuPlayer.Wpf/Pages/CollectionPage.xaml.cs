@@ -122,10 +122,10 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnDelCol_Click(object sender, RoutedEventArgs e)
         {
-            App.NotificationList.Add(new NotificationOption
-            {
-                Content = "确认删除收藏夹？"
-            });
+            //App.NotificationList.Add(new NotificationOption
+            //{
+            //    Content = "确认删除收藏夹？"
+            //});
             var result = MessageBox.Show(_mainWindow, "确认删除收藏夹？", _mainWindow.Title, MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)

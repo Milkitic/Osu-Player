@@ -11,6 +11,7 @@ using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,7 +34,7 @@ namespace Milky.OsuPlayer.Windows
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             App.NotificationList = new ObservableCollection<NotificationOption>();
-            Notification.ItemsSource = App.NotificationList;
+            NotificationOverlay.ItemsSource = App.NotificationList;
             if (AppSettings.Current.General.FirstOpen)
             {
                 WelcomeControl.Show();
@@ -148,11 +149,7 @@ namespace Milky.OsuPlayer.Windows
         private void BtnFind_Click(object sender, RoutedEventArgs e)
         {
             //MainFrame.Navigate(Pages.FindPage);
-            App.NotificationList.Add(new NotificationOption
-            {
-                Title = Title,
-                Content = "功能完善中，敬请期待~"
-            });
+            Notification.Show("功能完善中，敬请期待~", Title);
             //bool? b = await PageBox.ShowDialog(Title, "功能完善中，敬请期待~");
         }
 

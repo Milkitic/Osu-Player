@@ -1,74 +1,135 @@
-﻿<Page x:Class="Milky.OsuPlayer.Pages.Settings.GeneralPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:Milky.OsuPlayer.Pages.Settings"
-      xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
-      xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
-      xmlns:scanning="clr-namespace:Milky.OsuPlayer.Common.Scanning;assembly=OsuPlayer.Common"
-      mc:Ignorable="d"
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="GeneralPage" Loaded="Page_Loaded">
+﻿<Page
+    x:Class="Milky.OsuPlayer.Pages.Settings.GeneralPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+    xmlns:local="clr-namespace:Milky.OsuPlayer.Pages.Settings"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:scanning="clr-namespace:Milky.OsuPlayer.Common.Scanning;assembly=OsuPlayer.Common"
+    Title="GeneralPage"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Loaded="Page_Loaded"
+    mc:Ignorable="d">
     <Page.DataContext>
         <scanning:FileScannerViewModel />
     </Page.DataContext>
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="启动：" HorizontalAlignment="Left" />
-                <dms:DMCheckBox IconColor="#FF1E9FFF" Margin="8,0"
-                                x:Name="RunOnStartup" Content="开机自动运行"
-                                HorizontalAlignment="Left" Checked="RunOnStartup_CheckChanged"
-                                Unchecked="RunOnStartup_CheckChanged" />
-                <Label Style="{StaticResource ConfigTitleStyle}"
-                       Content="osu!db位置：" HorizontalAlignment="Left" />
+                <Label
+                    HorizontalAlignment="Left"
+                    Content="启动："
+                    Style="{StaticResource ConfigTitleStyle}" />
+                <dms:DMCheckBox
+                    x:Name="RunOnStartup"
+                    Margin="8,0"
+                    HorizontalAlignment="Left"
+                    Checked="RunOnStartup_CheckChanged"
+                    Content="开机自动运行"
+                    IconColor="#FF1E9FFF"
+                    Unchecked="RunOnStartup_CheckChanged" />
+                <Label
+                    HorizontalAlignment="Left"
+                    Content="osu!db位置："
+                    Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
-                    <dms:DMTextBox x:Name="TbDbPath" Margin="5,0"
-                                   Text="D:\asdf\asdf" Width="250" Height="27"
-                                   VerticalContentAlignment="Center" 
-                                   Background="White" BorderBrush="#33999999"
-                                   CornerRadius="5"
-                                   IsReadOnly="True" />
-                    <dms:DMButton Width="25" Height="25" CornerRadius="100"
-                                  Background="#E3E3E3" Foreground="Black"
-                                  x:Name="BrowseDb" Content="..." 
-                                  Click="BrowseDb_Click" 
-                                  IsEnabled="{Binding IsScanning,Converter={StaticResource NegativeBooleanConverter}}" />
+                    <dms:DMTextBox
+                        x:Name="TbDbPath"
+                        Width="250"
+                        Height="27"
+                        Margin="5,0"
+                        VerticalContentAlignment="Center"
+                        Background="White"
+                        BorderBrush="#33999999"
+                        CornerRadius="5"
+                        IsReadOnly="True"
+                        Text="D:\asdf\asdf" />
+                    <dms:DMButton
+                        x:Name="BrowseDb"
+                        Width="25"
+                        Height="25"
+                        Background="#E3E3E3"
+                        Click="BrowseDb_Click"
+                        Content="..."
+                        CornerRadius="100"
+                        Foreground="Black"
+                        IsEnabled="{Binding IsScanning, Converter={StaticResource NegativeBooleanConverter}}" />
                 </StackPanel>
-                <Label Style="{StaticResource ConfigTitleStyle}"
-                       Content="自定义曲库路径：" HorizontalAlignment="Left" />
+                <Label
+                    HorizontalAlignment="Left"
+                    Content="自定义曲库路径："
+                    Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
-                    <dms:DMTextBox x:Name="TbCustomPath" Margin="5,0"
-                                   Text="D:\asdf\asdf" Width="250" Height="27"
-                                   VerticalContentAlignment="Center" 
-                                   Background="White" BorderBrush="#33999999"
-                                   CornerRadius="5"
-                                   IsReadOnly="True"/>
-                    <dms:DMButton Width="25" Height="25" CornerRadius="100"
-                                  Background="#E3E3E3" Foreground="Black"
-                                  x:Name="BrowseCustom" Content="..." 
-                                  Click="BrowseCustom_Click" />
-                    <custom:Loader Width="25" Height="25" FillColor="#303030" Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
-                    <Label Content="正在扫描..." Foreground="#303030" Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
-                    <dms:DMButton Width="25" Height="25" CornerRadius="100"
-                                  Background="#E3E3E3" Foreground="Black"
-                                  x:Name="CancelScan" Content="..." 
-                                  Click="CancelScan_Click"
-                                  IsEnabled="{Binding IsCanceling,Converter={StaticResource NegativeBooleanConverter}}"/>
+                    <dms:DMTextBox
+                        x:Name="TbCustomPath"
+                        Width="250"
+                        Height="27"
+                        Margin="5,0"
+                        VerticalContentAlignment="Center"
+                        Background="White"
+                        BorderBrush="#33999999"
+                        CornerRadius="5"
+                        IsReadOnly="True"
+                        Text="D:\asdf\asdf" />
+                    <dms:DMButton
+                        x:Name="BrowseCustom"
+                        Width="25"
+                        Height="25"
+                        Background="#E3E3E3"
+                        Click="BrowseCustom_Click"
+                        Content="..."
+                        CornerRadius="100"
+                        Foreground="Black" />
+                    <custom:Loader
+                        Width="25"
+                        Height="25"
+                        FillColor="#303030"
+                        Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
+                    <Label
+                        Content="正在扫描..."
+                        Foreground="#303030"
+                        Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
+                    <dms:DMButton
+                        x:Name="CancelScan"
+                        Width="25"
+                        Height="25"
+                        Background="#E3E3E3"
+                        Click="CancelScan_Click"
+                        Content="..."
+                        CornerRadius="100"
+                        Foreground="Black"
+                        IsEnabled="{Binding IsCanceling, Converter={StaticResource NegativeBooleanConverter}}" />
                 </StackPanel>
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="关闭窗体：" HorizontalAlignment="Left" />
+                <Label
+                    HorizontalAlignment="Left"
+                    Content="关闭窗体："
+                    Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel HorizontalAlignment="Left">
-                    <dms:DMRadioButton IconColor="#FF1E9FFF" Margin="8,0"
-                                       x:Name="RadioMinimum" Content="最小化到系统托盘"
-                                       HorizontalAlignment="Left" Checked="Radio_CheckChanged" />
-                    <dms:DMRadioButton IconColor="#FF1E9FFF" Margin="8,0"
-                                       x:Name="RadioExit"  Content="退出程序"
-                                       HorizontalAlignment="Left" Checked="Radio_CheckChanged" />
-                    <dms:DMCheckBox IconColor="#FF1E9FFF" Margin="8,10"
-                                    x:Name="AsDefault"  Content="设置默认选项"
-                                    HorizontalAlignment="Left" Checked="AsDefault_CheckChanged"
-                                    Unchecked="AsDefault_CheckChanged" />
+                    <dms:DMRadioButton
+                        x:Name="RadioMinimum"
+                        Margin="8,0"
+                        HorizontalAlignment="Left"
+                        Checked="Radio_CheckChanged"
+                        Content="最小化到系统托盘"
+                        IconColor="#FF1E9FFF" />
+                    <dms:DMRadioButton
+                        x:Name="RadioExit"
+                        Margin="8,0"
+                        HorizontalAlignment="Left"
+                        Checked="Radio_CheckChanged"
+                        Content="退出程序"
+                        IconColor="#FF1E9FFF" />
+                    <dms:DMCheckBox
+                        x:Name="AsDefault"
+                        Margin="8,10"
+                        HorizontalAlignment="Left"
+                        Checked="AsDefault_CheckChanged"
+                        Content="设置默认选项"
+                        IconColor="#FF1E9FFF"
+                        Unchecked="AsDefault_CheckChanged" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

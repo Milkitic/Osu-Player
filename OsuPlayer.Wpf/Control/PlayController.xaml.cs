@@ -402,10 +402,7 @@ namespace Milky.OsuPlayer.Control
                 }
                 catch (Exception ex)
                 {
-                    App.NotificationList.Add(new NotificationOption
-                    {
-                        Content = @"发生未处理的错误：" + (ex.InnerException ?? ex)
-                    });
+                    OsuPlayer.Notification.Show(@"发生未处理的错误：" + (ex.InnerException ?? ex));
 
                     if (audioPlayer == null) return;
                     if (audioPlayer.PlayerStatus != PlayerStatus.Playing)
@@ -416,10 +413,7 @@ namespace Milky.OsuPlayer.Control
             }
             else
             {
-                App.NotificationList.Add(new NotificationOption
-                {
-                    Content = @"所选文件不存在，可能是db没有及时更新。请尝试手动同步osu db后重试。"
-                });
+                OsuPlayer.Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
             }
 
             sw.Stop();

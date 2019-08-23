@@ -3,52 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Milky.OsuPlayer">
     <!--  List View  -->
-    <!--<Style x:Key="MyHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
-                    <Border
-                        Width="{TemplateBinding Width}"
-                        Height="30"
-                        Background="#fafafa"
-                        BorderBrush="#e1e1e2"
-                        BorderThickness="1,1,0,1">
-                        <TextBlock
-                            Padding="5"
-                            VerticalAlignment="Center"
-                            Text="{TemplateBinding Content}" />
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    -->
-    <!--<Setter Property="Background" Value="#fafafa"/>-->
-    <!--
-        <Setter Property="Padding" Value="5" />
-        <Setter Property="MinWidth" Value="50" />
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
-                            <Grid>
-                                <Border
-                                    Height="30"
-                                    Background="#ebeced"
-                                    BorderBrush="#e1e1e2"
-                                    BorderThickness="1,1,0,1">
-                                    <TextBlock
-                                        Padding="5"
-                                        VerticalAlignment="Center"
-                                        Text="{TemplateBinding Content}" />
-                                </Border>
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Trigger>
-        </Style.Triggers>
-    </Style>-->
     <Style x:Key="HiddenHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
         <Setter Property="Visibility" Value="Collapsed" />
     </Style>
@@ -77,9 +31,9 @@
                         <Border
                             Name="HeaderBorder"
                             Height="24"
+                            Padding="5,0,0,0"
                             Background="#fafafa"
                             BorderBrush="#e1e1e2"
-                            Padding="5,0,0,0"
                             BorderThickness="1,1,0,1">
                             <ContentPresenter
                                 Name="HeaderContent"

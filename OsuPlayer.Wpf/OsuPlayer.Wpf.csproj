@@ -186,6 +186,7 @@
     <Compile Include="Control\WelcomeControl.xaml.cs">
       <DependentUpon>WelcomeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Notification.cs" />
     <Compile Include="ViewModels\ListPageViewModel.cs" />
     <Compile Include="Windows\PageParts.cs" />
     <Page Include="App.xaml">

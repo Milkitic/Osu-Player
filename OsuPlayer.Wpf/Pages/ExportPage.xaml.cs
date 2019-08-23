@@ -87,33 +87,40 @@ namespace Milky.OsuPlayer.Pages
 
         private static async Task CopyFileAsync(Beatmap entry)
         {
-            string folder = Path.Combine(Domain.OsuSongPath, entry.FolderName);
-            var mp3FileInfo = new FileInfo(Path.Combine(folder, entry.AudioFileName));
-            var osuFile = await OsuFile.ReadFromFileAsync(Path.Combine(folder, entry.BeatmapFileName));
-            var bgFileInfo = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));
+            try
+            {
+                string folder = Path.Combine(Domain.OsuSongPath, entry.FolderName);
+                var mp3FileInfo = new FileInfo(Path.Combine(folder, entry.AudioFileName));
+                var osuFile = await OsuFile.ReadFromFileAsync(Path.Combine(folder, entry.BeatmapFileName));
+                var bgFileInfo = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));
 
-            var artistUtf = MetaString.GetUnicode(entry.Artist, entry.ArtistUnicode);
-            var titleUtf = MetaString.GetUnicode(entry.Title, entry.TitleUnicode);
-            var artistAsc = MetaString.GetOriginal(entry.Artist, entry.ArtistUnicode);
-            var creator = entry.Creator;
-            var version = entry.Version;
-            var source = entry.SongSource;
+                var artistUtf = MetaString.GetUnicode(entry.Artist, entry.ArtistUnicode);
+                var titleUtf = MetaString.GetUnicode(entry.Title, entry.TitleUnicode);
+                var artistAsc = MetaString.GetOriginal(entry.Artist, entry.ArtistUnicode);
+                var creator = entry.Creator;
+                var version = entry.Version;
+                var source = entry.SongSource;
 
-            ConstructNameWithEscaping(out var escapedMp3, out var escapedBg,
-                titleUtf, artistUtf, creator, version);
+                ConstructNameWithEscaping(out var escapedMp3, out var escapedBg,
+                    titleUtf, artistUtf, creator, version);
 
-            GetExportFolder(out var exportMp3Folder, out var exportBgFolder,
-                new MetaString(artistAsc, artistUtf), creator, source);
+                GetExportFolder(out var exportMp3Folder, out var exportBgFolder,
+                    new MetaString(artistAsc, artistUtf), creator, source);
 
-            string exportMp3Name = ValidateFilename(escapedMp3, Domain.MusicPath, mp3FileInfo.Extension);
-            string exportBgName = ValidateFilename(escapedBg, Domain.BackgroundPath, bgFileInfo.Extension);
+                string exportMp3Name = ValidateFilename(escapedMp3, Domain.MusicPath, mp3FileInfo.Extension);
+                string exportBgName = ValidateFilename(escapedBg, Domain.BackgroundPath, bgFileInfo.Extension);
 
-            if (mp3FileInfo.Exists)
-                Export(mp3FileInfo, exportMp3Folder, exportMp3Name);
-            if (bgFileInfo.Exists)
-                Export(bgFileInfo, exportBgFolder, exportBgName);
-            if (mp3FileInfo.Exists || bgFileInfo.Exists)
-                _appDbOperator.AddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
+                if (mp3FileInfo.Exists)
+                    Export(mp3FileInfo, exportMp3Folder, exportMp3Name);
+                if (bgFileInfo.Exists)
+                    Export(bgFileInfo, exportBgFolder, exportBgName);
+                if (mp3FileInfo.Exists || bgFileInfo.Exists)
+                    _appDbOperator.AddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
+            }
+            catch (Exception e)
+            {
+                Notification.Show("导出时出现错误：" + e.Message);
+            }
         }
 
         private static void GetExportFolder(out string exportMp3Folder, out string exportBgFolder,

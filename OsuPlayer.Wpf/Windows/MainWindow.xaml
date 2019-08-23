@@ -546,7 +546,7 @@
         </DockPanel>
         <control:WelcomeControl x:Name="WelcomeControl" Grid.Row="1" />
         <notification:NotifyOverlay
-            x:Name="Notification"
+            x:Name="NotificationOverlay"
             Grid.Row="1"
             Grid.Column="0"
             Width="400"
