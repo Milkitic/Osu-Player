@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Common;
+﻿using System;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
@@ -169,15 +170,24 @@ namespace Milky.OsuPlayer.ViewModels
 
         private void InnerUpdate()
         {
-            var maps = (List<MapInfo>)_appDbOperator.GetExportedMaps();
+            var maps = _appDbOperator.GetExportedMaps();
             List<(MapIdentity MapIdentity, string path, string time, string size)> list =
                 new List<(MapIdentity, string, string, string)>();
             foreach (var map in maps)
             {
-                var fi = new FileInfo(map.ExportFile);
-                list.Add(!fi.Exists
-                    ? (map.GetIdentity(), map.ExportFile, "已从目录移除", "已从目录移除")
-                    : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), Util.CountSize(fi.Length)));
+                try
+                {
+                    var fi = new FileInfo(map.ExportFile);
+                    list.Add(!fi.Exists
+                        ? (map.GetIdentity(), map.ExportFile, "已从目录移除", "已从目录移除")
+                        : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), Util.CountSize(fi.Length)));
+
+                }
+                catch (Exception e)
+                {
+                    list.Add((map.GetIdentity(), map.ExportFile, new DateTime().ToString("g"), "0 B"));
+                    Console.WriteLine(e);
+                }
             }
 
             _entries = _beatmapDbOperator.GetBeatmapsByIdentifiable(maps);

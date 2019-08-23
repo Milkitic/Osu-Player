@@ -140,5 +140,19 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             await Services.Get<OsuFileScanner>().CancelTaskAsync();
         }
+
+        private async void SyncNow_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await Services.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Current.General.DbPath, false);
+                AppSettings.Current.LastTimeScanOsuDb = DateTime.Now;
+                AppSettings.SaveCurrent();
+            }
+            catch (Exception ex)
+            {
+                Notification.Show(ex.Message);
+            }
+        }
     }
 }

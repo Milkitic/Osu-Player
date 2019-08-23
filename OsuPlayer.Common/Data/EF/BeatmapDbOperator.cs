@@ -150,7 +150,7 @@ namespace Milky.OsuPlayer.Common.Data.EF
                                 k.Artist != null && k.Artist.ToLower().Contains(keyword) ||
                                 k.ArtistUnicode != null && k.ArtistUnicode.ToLower().Contains(keyword) ||
                                 k.SongTags != null && k.SongTags.ToLower().Contains(keyword) ||
-                                k.SongSource != null && k.SongSource.Contains(keyword) ||
+                                k.SongSource != null && k.SongSource.ToLower().Contains(keyword) ||
                                 k.Creator != null && k.Creator.ToLower().Contains(keyword) ||
                                 k.Version != null && k.Version.ToLower().Contains(keyword)
                 )

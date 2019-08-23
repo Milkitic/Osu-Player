@@ -28,6 +28,16 @@ namespace Milky.OsuPlayer.Common.Data.EF
             //modelBuilder.Conventions
             //    .Remove<System.Data.Entity.ModelConfiguration.Conventions.PluralizingTableNameConvention>();
             modelBuilder.Configurations.Add(new BeatmapDbConfiguration());
+            //const string insensitiveFlag = "TEXT COLLATE NOCASE";
+            //modelBuilder.Entity<Beatmap>().Property(x => x.Title).HasColumnType(insensitiveFlag);
+            //modelBuilder.Entity<Beatmap>().Property(x => x.TitleUnicode).HasColumnType(insensitiveFlag);
+            //modelBuilder.Entity<Beatmap>().Property(x => x.Artist).HasColumnType(insensitiveFlag);
+            //modelBuilder.Entity<Beatmap>().Property(x => x.ArtistUnicode).HasColumnType(insensitiveFlag);
+            //modelBuilder.Entity<Beatmap>().Property(x => x.SongTags).HasColumnType(insensitiveFlag);
+            //modelBuilder.Entity<Beatmap>().Property(x => x.SongSource).HasColumnType(insensitiveFlag);
+            //modelBuilder.Entity<Beatmap>().Property(x => x.Creator).HasColumnType(insensitiveFlag);
+            //modelBuilder.Entity<Beatmap>().Property(x => x.Version).HasColumnType(insensitiveFlag);
+
             base.OnModelCreating(modelBuilder);
         }
     }

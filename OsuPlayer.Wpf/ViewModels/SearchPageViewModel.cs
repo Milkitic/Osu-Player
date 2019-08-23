@@ -122,7 +122,7 @@ namespace Milky.OsuPlayer.ViewModels
                 _querySw.Stop();
 
                 List<BeatmapDataModel> sorted = _dbOperator
-                    .SearchBeatmapByOptions(SearchText, SortMode.Artist, startIndex, MaxListCount)
+                    .SearchBeatmapByOptions(SearchText, SortMode.Artist, startIndex, int.MaxValue)
                     .ToDataModelList(true);
 
 

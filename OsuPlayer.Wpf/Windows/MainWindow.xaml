@@ -8,6 +8,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
     xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
+    xmlns:local="clr-namespace:Milky.OsuPlayer.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:notification="clr-namespace:Milky.OsuPlayer.Control.Notification"
     xmlns:osuPlayer="clr-namespace:Milky.OsuPlayer"
@@ -60,7 +61,7 @@
         <converter:VideoShowConverter x:Key="CvtVideoShow" />
         <converter:MsToStringConverter x:Key="MsToStringConverter" />
     </wpfApi:WindowBase.Resources>
-    <Grid>
+    <Grid Margin="{Binding WindowState, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource WindowMarginConverter}}">
         <Grid.Background>
             <ImageBrush
                 ImageSource="{StaticResource TextrueSource1}"

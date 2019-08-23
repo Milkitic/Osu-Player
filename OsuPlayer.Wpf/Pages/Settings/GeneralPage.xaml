@@ -57,6 +57,17 @@
                         CornerRadius="100"
                         Foreground="Black"
                         IsEnabled="{Binding IsScanning, Converter={StaticResource NegativeBooleanConverter}}" />
+                    <dms:DMButton
+                        x:Name="SyncNow"
+                        Height="25"
+                        Margin="6,0,0,0"
+                        Padding="5,0"
+                        Background="#E3E3E3"
+                        Click="SyncNow_Click"
+                        Content="手动同步"
+                        CornerRadius="5"
+                        Foreground="Black"
+                        IsEnabled="{Binding IsScanning, Converter={StaticResource NegativeBooleanConverter}}" />
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
