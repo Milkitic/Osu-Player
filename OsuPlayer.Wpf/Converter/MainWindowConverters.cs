@@ -10,7 +10,7 @@ namespace Milky.OsuPlayer.Converter
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var state = (WindowState)value;
-            return state == WindowState.Maximized ? new Thickness(8) : new Thickness(0);
+            return state == WindowState.Maximized ? new Thickness(7) : new Thickness(0);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
