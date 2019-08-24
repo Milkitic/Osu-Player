@@ -20,14 +20,7 @@ namespace Milky.OsuPlayer.Windows
     /// </summary>
     public partial class MainWindow : WindowBase
     {
-        public PageParts Pages => new PageParts
-        {
-            SearchPage = new SearchPage(this),
-            RecentPlayPage = new RecentPlayPage(this),
-            FindPage = new FindPage(this),
-            StoryboardPage = new StoryboardPage(this),
-            ExportPage = new ExportPage(this),
-        };
+        public PageParts Pages { get; } 
         internal MainWindowViewModel ViewModel { get; }
 
         public readonly LyricWindow LyricWindow;
@@ -46,6 +39,16 @@ namespace Milky.OsuPlayer.Windows
 
         public MainWindow()
         {
+            Pages = new PageParts
+            {
+                SearchPage = new SearchPage(this),
+                RecentPlayPage = new RecentPlayPage(this),
+                FindPage = new FindPage(this),
+                StoryboardPage = new StoryboardPage(this),
+                CollectionPage = new CollectionPage(this),
+                ExportPage = new ExportPage(this),
+            };
+
             InitializeComponent();
             ViewModel = (MainWindowViewModel)DataContext;
             PlayerViewModel.InitViewModel();

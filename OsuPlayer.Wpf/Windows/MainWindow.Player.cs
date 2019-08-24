@@ -40,7 +40,7 @@ namespace Milky.OsuPlayer.Windows
         private TimeSpan _initialVideoPosition;
         private bool _playAfterSeek;
 
-        private bool EnableVideo => PlayerViewModel.Current.EnableVideo && !ViewModel.IsMiniMode;
+        //private bool EnableVideo => PlayerViewModel.Current.EnableVideo;
         private bool IsVideoPlaying => VideoElement.Source != null;
         private void Controller_OnNewFileLoaded(object sender, HandledEventArgs e)
         {
@@ -65,15 +65,15 @@ namespace Milky.OsuPlayer.Windows
                     /* Set Video */
                     if (VideoElement != null)
                     {
-                        SafelyRecreateVideoElement(EnableVideo).Wait();
+                        SafelyRecreateVideoElement(ViewModel.Player.EnableVideo).Wait();
 
-                        if (EnableVideo)
+                        if (PlayerViewModel.Current.EnableVideo)
                         {
                             var videoName = osuFile.Events.VideoInfo?.Filename;
                             if (videoName == null)
                             {
                                 VideoElement.Source = null;
-                                VideoElementBorder.Visibility = Visibility.Hidden;
+                                //VideoElementBorder.Visibility = Visibility.Hidden;
                             }
                             else
                             {
@@ -97,7 +97,7 @@ namespace Milky.OsuPlayer.Windows
                                 else
                                 {
                                     VideoElement.Source = null;
-                                    VideoElementBorder.Visibility = Visibility.Hidden;
+                                    //VideoElementBorder.Visibility = Visibility.Hidden;
                                 }
                             }
                         }
@@ -107,18 +107,23 @@ namespace Milky.OsuPlayer.Windows
                     if (osuFile.Events.BackgroundInfo != null)
                     {
                         var bgPath = Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
-                        BlurScene.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
+                        BackImage.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
                     }
                     else
                     {
-                        BlurScene.Source = null;
+                        BackImage.Source = null;
                     }
 
-                    if (EnableVideo && VideoElement?.Source != null)
+                    if (ViewModel.Player.EnableVideo && VideoElement?.Source != null)
                     {
+                        BackImage.Opacity = 0.15;
+                        BlendBorder.Visibility = Visibility.Visible;
                         e.Handled = true;
-                        // use event to control here.
-                        //VideoPlay();
+                    }
+                    else
+                    {
+                        BackImage.Opacity = 1;
+                        BlendBorder.Visibility = Visibility.Collapsed;
                     }
 
                 }
@@ -188,15 +193,16 @@ namespace Milky.OsuPlayer.Windows
 
         private void Controller_OnThumbClick(object sender, RoutedEventArgs e)
         {
-            if (!PlayerViewModel.Current.EnableVideo)
-                PlayerViewModel.Current.EnableVideo = true;
-            else if (PlayerViewModel.Current.EnableVideo)
-            {
-                if (ResizableArea.Margin == new Thickness(5))
-                    SetFullScr();
-                else
-                    SetFullScrMini();
-            }
+            MainFrame.Content = null;
+            //if (!PlayerViewModel.Current.EnableVideo)
+            //    PlayerViewModel.Current.EnableVideo = true;
+            //else if (PlayerViewModel.Current.EnableVideo)
+            //{
+            //    if (ResizableArea.Margin == new Thickness(5))
+            //        SetFullScr();
+            //    else
+            //        SetFullScrMini();
+            //}
         }
 
         private async void Controller_OnLikeClick(object sender, RoutedEventArgs e)
@@ -245,7 +251,7 @@ namespace Milky.OsuPlayer.Windows
             async void OnMediaOpened(object sender, MediaOpenedEventArgs e)
             {
                 VideoElementBorder.Visibility = Visibility.Visible;
-                if (!EnableVideo)
+                if (!PlayerViewModel.Current.EnableVideo)
                     return;
                 await Task.Run(() => _waitAction?.Invoke());
 
@@ -259,7 +265,7 @@ namespace Milky.OsuPlayer.Windows
             {
                 VideoElementBorder.Visibility = Visibility.Hidden;
                 //MsgBox.Show(this, e.ErrorException.ToString(), "不支持的视频格式", MessageBoxButton.OK, MessageBoxImage.Error);
-                if (!EnableVideo)
+                if (!PlayerViewModel.Current.EnableVideo)
                     return;
                 await SafelyRecreateVideoElement(false);
                 PlayController.TogglePlay();
@@ -277,7 +283,7 @@ namespace Milky.OsuPlayer.Windows
 
             void OnSeekingEnded(object sender, EventArgs e)
             {
-                if (!EnableVideo)
+                if (!PlayerViewModel.Current.EnableVideo)
                     return;
                 Services.Get<PlayersInst>().AudioPlayer.SetTime((int)(VideoElement.Position.TotalMilliseconds - _videoOffset), false);
                 if (_playAfterSeek)
@@ -304,9 +310,10 @@ namespace Milky.OsuPlayer.Windows
                 VideoElement.SeekingEnded -= OnSeekingEnded;
                 Services.Get<PlayersInst>().AudioPlayer.PlayerStarted -= OnAudioPlayerOnPlayerStarted;
                 Services.Get<PlayersInst>().AudioPlayer.PlayerPaused -= OnAudioPlayerOnPlayerPaused;
-                //VideoElement.Dispose();
+                VideoElement.Dispose();
                 VideoElement = null;
-                VideoElementBorder.Visibility = Visibility.Hidden;
+                VideoElementBorder.Child = null;
+                //VideoElementBorder.Visibility = Visibility.Hidden;
                 VideoElement = new Unosquare.FFME.MediaElement { IsMuted = true, LoadedBehavior = MediaPlaybackState.Manual, Visibility = Visibility.Visible, };
                 VideoElement.MediaOpened += OnMediaOpened;
                 VideoElement.MediaFailed += OnMediaFailed;
@@ -321,7 +328,7 @@ namespace Milky.OsuPlayer.Windows
                     Services.Get<PlayersInst>().AudioPlayer.PlayerPaused += OnAudioPlayerOnPlayerPaused;
                 }
 
-                VideoElementBorder.Children.Add(VideoElement);
+                VideoElementBorder.Child = VideoElement;
             }
 
             void OnAudioPlayerOnPlayerPaused(object sender, ProgressEventArgs e)

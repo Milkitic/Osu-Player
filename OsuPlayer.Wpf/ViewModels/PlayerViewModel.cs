@@ -28,7 +28,7 @@ namespace Milky.OsuPlayer.ViewModels
         }
 
         private bool _isPlaying;
-        private bool _enableVideo;
+        private bool _enableVideo = true;
         private PlayListMode _playListMode;
 
         private long _position;

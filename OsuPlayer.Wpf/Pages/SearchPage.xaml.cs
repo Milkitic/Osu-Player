@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Common;
+﻿using System;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Instances;
@@ -36,16 +37,18 @@ namespace Milky.OsuPlayer.Pages
             _beatmapDbOperator = new BeatmapDbOperator();
 
             ViewModel = (SearchPageViewModel)DataContext;
+            SearchBox.Text = "";
         }
 
-        public SearchPage(MainWindow mainWindow, string searchKey) : this(mainWindow)
-        {
-            SearchBox.Text = searchKey;
-        }
+        //private async void Page_Initialized(object sender, EventArgs e)
+        //{
+        //    await ViewModel.PlayListQueryAsync();
+        //}
 
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        public SearchPage Search(string keyword)
         {
-            await ViewModel.PlayListQueryAsync();
+            SearchBox.Text = keyword;
+            return this;
         }
 
         private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -83,7 +86,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelectedDefault();
             if (map == null)
                 return;
-            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow, map.Creator));
+            ParentWindow.MainFrame.Navigate(ParentWindow.Pages.SearchPage.Search(map.Creator));
         }
 
         private void ItemSearchSource_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -91,7 +94,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelectedDefault();
             if (map == null)
                 return;
-            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow, map.SongSource));
+            ParentWindow.MainFrame.Navigate(ParentWindow.Pages.SearchPage.Search(map.SongSource));
         }
 
         private void ItemSearchArtist_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -99,7 +102,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelectedDefault();
             if (map == null)
                 return;
-            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow,
+            ParentWindow.MainFrame.Navigate(ParentWindow.Pages.SearchPage.Search(
                 MetaString.GetUnicode(map.Artist, map.ArtistUnicode)));
         }
 
@@ -108,7 +111,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelectedDefault();
             if (map == null)
                 return;
-            ParentWindow.MainFrame.Navigate(new SearchPage(ParentWindow,
+            ParentWindow.MainFrame.Navigate(ParentWindow.Pages.SearchPage.Search(
                 MetaString.GetUnicode(map.Title, map.TitleUnicode)));
         }
 

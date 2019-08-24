@@ -80,7 +80,6 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 RenderOptions.BitmapScalingMode="HighQuality"
-                Source="C:\Program Files (x86)\osu!\Songs\144899 Marie - Clover Day's\BG.jpg"
                 Stretch="UniformToFill" />
         </Button>
         <StackPanel

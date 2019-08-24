@@ -12,6 +12,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:notification="clr-namespace:Milky.OsuPlayer.Control.Notification"
     xmlns:osuPlayer="clr-namespace:Milky.OsuPlayer"
+    xmlns:shaderEffects="clr-namespace:MDS.ShaderEffects;assembly=ShaderEffects"
     xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
@@ -217,7 +218,7 @@
                                         </Canvas>
                                     </Viewbox>
                                 </Canvas>
-                                <Canvas Height="40" Visibility="Collapsed">
+                                <Canvas Height="40">
                                     <ToggleButton
                                         x:Name="BtnSb"
                                         Width="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavigationWidth}}"
@@ -379,22 +380,11 @@
                     </ScrollViewer>
                 </DockPanel>
                 <Grid>
-                    <Grid x:Name="BgArea" Margin="0">
-                        <Image
-                            x:Name="BlurScene"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Opacity="1"
-                            RenderOptions.BitmapScalingMode="HighQuality"
-                            Stretch="UniformToFill">
-                            <!--<Image.Effect>
-                                <BlurEffect Radius="100" />
-                            </Image.Effect>-->
-                        </Image>
-                        <Rectangle
-                            x:Name="WhiteCover"
-                            Fill="{StaticResource WhiteBrush}"
-                            Opacity="0.833333333" />
+                    <Grid
+                        x:Name="FullModeArea"
+                        Grid.Row="0"
+                        ClipToBounds="True"
+                        Visibility="{Binding Player.EnableVideo, Converter={StaticResource CvtVideoShow}}">
                         <Grid.Style>
                             <Style TargetType="{x:Type Grid}">
                                 <Setter Property="Background">
@@ -406,15 +396,64 @@
                                     </Setter.Value>
                                 </Setter>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Source, ElementName=BlurScene}" Value="{x:Null}">
+                                    <DataTrigger Binding="{Binding Source, ElementName=BackImage}" Value="{x:Null}">
                                         <Setter Property="Background" Value="White" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding Source, ElementName=BlurScene}" Value="">
+                                    <DataTrigger Binding="{Binding Source, ElementName=BackImage}" Value="">
                                         <Setter Property="Background" Value="White" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Grid.Style>
+                        <Grid.Effect>
+                            <BlurEffect Radius="{Binding Content, ElementName=MainFrame, Converter={StaticResource NullToNoBlurConverter}}" />
+                        </Grid.Effect>
+                        <Border x:Name="BackImageBorder" Background="Black">
+                            <Image
+                                x:Name="BackImage"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                RenderOptions.BitmapScalingMode="HighQuality"
+                                Source="{Binding Source, ElementName=Thumb}"
+                                Stretch="UniformToFill" />
+                        </Border>
+                        <Border
+                            x:Name="BlendBorder"
+                            Panel.ZIndex="99"
+                            Background="Black">
+                            <Border
+                                Width="{Binding ActualWidth, ElementName=VideoElementBorder}"
+                                Height="{Binding ActualHeight, ElementName=VideoElementBorder}"
+                                Background="Transparent">
+                                <Border.Effect>
+                                    <shaderEffects:BlendEffect Amount="1" Mode="Lighten">
+                                        <shaderEffects:BlendEffect.Base>
+                                            <VisualBrush Stretch="UniformToFill" Visual="{Binding ElementName=BackImageBorder}" />
+                                        </shaderEffects:BlendEffect.Base>
+                                        <shaderEffects:BlendEffect.Blend>
+                                            <VisualBrush Stretch="Uniform" Visual="{Binding ElementName=VideoElementBorder}" />
+                                        </shaderEffects:BlendEffect.Blend>
+                                    </shaderEffects:BlendEffect>
+                                </Border.Effect>
+                            </Border>
+                        </Border>
+                        <Border
+                            x:Name="VideoElementBorder"
+                            Margin="0,-2000,-0,2000"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Panel.ZIndex="2000"
+                            BorderThickness="1">
+                            <ffme:MediaElement
+                                x:Name="VideoElement"
+                                LoadedBehavior="Manual"
+                                RenderOptions.BitmapScalingMode="HighQuality"
+                                RenderTransformOrigin="0.5,0.5"
+                                Stretch="Fill" />
+                            <!--<Border.Effect>
+                                <shaderEffects:ChromaticAberrationEffect OffsetB="0,0" OffsetR="-0,0" />
+                            </Border.Effect>-->
+                        </Border>
                     </Grid>
                     <Frame Name="MainFrame" NavigationUIVisibility="Hidden">
                         <Frame.Style>
@@ -432,45 +471,6 @@
                     </Frame>
                 </Grid>
             </DockPanel>
-            <Grid
-                x:Name="FullModeArea"
-                Grid.Row="0"
-                Margin="1,0,1,0"
-                Visibility="{Binding Player.EnableVideo, Converter={StaticResource CvtVideoShow}}">
-                <Border x:Name="ResizableArea">
-                    <Grid>
-                        <Image
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Opacity="1"
-                            RenderOptions.BitmapScalingMode="HighQuality"
-                            Source="{Binding Source, ElementName=BlurScene}"
-                            Stretch="UniformToFill" />
-                        <Grid x:Name="VideoElementBorder" Background="#E0000000">
-                            <ffme:MediaElement
-                                x:Name="VideoElement"
-                                LoadedBehavior="Manual"
-                                RenderOptions.BitmapScalingMode="HighQuality" />
-                        </Grid>
-                        <Border
-                            Margin="5"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Top"
-                            Background="{StaticResource ExtraLightBrush20}"
-                            Cursor="Hand">
-                            <dms:DMSystemButton
-                                Click="BtnHideFullScr_Click"
-                                DMSystemButtonForeground="#505050"
-                                DMSystemButtonHoverColor="{StaticResource ExtraLightBrush80}"
-                                DMSystemButtonHoverForeground="#303030"
-                                DMSystemButtonSize="25"
-                                Icon="{StaticResource No}"
-                                IconHeight="14"
-                                IconWidth="14" />
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
             <control:PlayController x:Name="PlayController" Grid.Row="1" />
         </Grid>
         <Frame

@@ -111,21 +111,21 @@ namespace Milky.OsuPlayer.Pages
         {
             var map = GetSelected();
             if (map == null) return;
-            _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow, map.SongSource));
+            _mainWindow.MainFrame.Navigate(_mainWindow.Pages.SearchPage.Search(map.SongSource));
         }
 
         private void ItemSearchMapper_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
             if (map == null) return;
-            _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow, map.Creator));
+            _mainWindow.MainFrame.Navigate(_mainWindow.Pages.SearchPage.Search(map.Creator));
         }
 
         private void ItemSearchArtist_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
             if (map == null) return;
-            _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow,
+            _mainWindow.MainFrame.Navigate(_mainWindow.Pages.SearchPage.Search(
                 MetaString.GetUnicode(map.Artist, map.ArtistUnicode)));
         }
 
@@ -133,7 +133,7 @@ namespace Milky.OsuPlayer.Pages
         {
             var map = GetSelected();
             if (map == null) return;
-            _mainWindow.MainFrame.Navigate(new SearchPage(_mainWindow,
+            _mainWindow.MainFrame.Navigate(_mainWindow.Pages.SearchPage.Search(
                 MetaString.GetUnicode(map.Title, map.TitleUnicode)));
         }
 

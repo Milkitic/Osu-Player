@@ -12,4 +12,7 @@
     <converter:MiniWindowConverter x:Key="MiniWindowConverter" />
     <apiConverter:NegativeBooleanConverter x:Key="NegativeBooleanConverter" />
     <converter:WindowMarginConverter x:Key="WindowMarginConverter" />
+    <converter:NullToHiddenConverter x:Key="NullToHiddenConverter" />
+    <converter:NullToFullOpacityConverter x:Key="NullToFullOpacityConverter" />
+    <converter:NullToNoBlurConverter x:Key="NullToNoBlurConverter" />
 </ResourceDictionary>

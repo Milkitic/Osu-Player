@@ -8,5 +8,6 @@ namespace Milky.OsuPlayer.Windows {
         public RecentPlayPage RecentPlayPage { get; set; }
         public FindPage FindPage { get; set; }
         public ExportPage ExportPage { get; set; }
+        public CollectionPage CollectionPage { get; set; }
     }
 }

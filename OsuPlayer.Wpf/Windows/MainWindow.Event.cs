@@ -53,6 +53,13 @@ namespace Milky.OsuPlayer.Windows
 
             UpdateCollections();
 
+            PlayController.Default.OnNewFileLoaded += Controller_OnNewFileLoaded;
+            PlayController.Default.OnProgressDragComplete += Controller_OnProgressDragComplete;
+            PlayController.Default.OnLikeClick += Controller_OnLikeClick;
+            PlayController.Default.OnThumbClick += Controller_OnThumbClick;
+            PlayController.Default.OnPlayClick += Controller_OnPlayClick;
+            PlayController.Default.OnPauseClick += Controller_OnPauseClick;
+
             if (AppSettings.Current.CurrentPath != null && AppSettings.Current.Play.Memory)
             {
                 var entries = _beatmapDbOperator.GetBeatmapsByIdentifiable(AppSettings.Current.CurrentList);
@@ -62,13 +69,6 @@ namespace Milky.OsuPlayer.Windows
                 bool play = AppSettings.Current.Play.AutoPlay;
                 await PlayController.Default.PlayNewFile(AppSettings.Current.CurrentPath, play);
             }
-
-            PlayController.Default.OnNewFileLoaded += Controller_OnNewFileLoaded;
-            PlayController.Default.OnProgressDragComplete += Controller_OnProgressDragComplete;
-            PlayController.Default.OnLikeClick += Controller_OnLikeClick;
-            PlayController.Default.OnThumbClick += Controller_OnThumbClick;
-            PlayController.Default.OnPlayClick += Controller_OnPlayClick;
-            PlayController.Default.OnPauseClick += Controller_OnPauseClick;
             var helper = new WindowInteropHelper(this);
             //var source = HwndSource.FromHwnd(helper.Handle);
             //source?.AddHook(HwndMessageHook);
@@ -191,14 +191,8 @@ namespace Milky.OsuPlayer.Windows
         {
             var btn = (ToggleButton)sender;
             var colId = (string)btn.Tag;
-            if (MainFrame.Content?.GetType() != typeof(CollectionPage))
-                MainFrame.Navigate(new CollectionPage(this, _appDbOperator.GetCollectionById(colId)));
-            if (MainFrame.Content?.GetType() == typeof(CollectionPage))
-            {
-                var sb = (CollectionPage)MainFrame.Content;
-                if (sb.Id != colId)
-                    MainFrame.Navigate(new CollectionPage(this, _appDbOperator.GetCollectionById(colId)));
-            }
+            if ((MainFrame.Content as CollectionPage)?.Id != colId)
+                MainFrame.Navigate(Pages.CollectionPage.NavigateNewCollection(_appDbOperator.GetCollectionById(colId)));
         }
 
         private void BtnNavigate_Checked(object sender, RoutedEventArgs e)
@@ -250,16 +244,16 @@ namespace Milky.OsuPlayer.Windows
 
         #region Play control events
 
-        private void SetFullScrMini()
-        {
-            ResizableArea.BorderBrush = new SolidColorBrush(Color.FromArgb(64, 0, 0, 0));
-            ResizableArea.BorderThickness = new Thickness(1);
-            ResizableArea.HorizontalAlignment = HorizontalAlignment.Right;
-            ResizableArea.VerticalAlignment = VerticalAlignment.Bottom;
-            ResizableArea.Width = 318;
-            ResizableArea.Height = 180;
-            ResizableArea.Margin = new Thickness(5);
-        }
+        //private void SetFullScrMini()
+        //{
+        //    ResizableArea.BorderBrush = new SolidColorBrush(Color.FromArgb(64, 0, 0, 0));
+        //    ResizableArea.BorderThickness = new Thickness(1);
+        //    ResizableArea.HorizontalAlignment = HorizontalAlignment.Right;
+        //    ResizableArea.VerticalAlignment = VerticalAlignment.Bottom;
+        //    ResizableArea.Width = 318;
+        //    ResizableArea.Height = 180;
+        //    ResizableArea.Margin = new Thickness(5);
+        //}
 
         private void BtnHideFullScr_Click(object sender, RoutedEventArgs e)
         {
@@ -270,21 +264,21 @@ namespace Milky.OsuPlayer.Windows
             //}
             if (PlayerViewModel.Current.EnableVideo)
             {
-                SetFullScr();
+                //SetFullScr();
                 PlayerViewModel.Current.EnableVideo = false;
             }
         }
 
-        private void SetFullScr()
-        {
-            ResizableArea.ClearValue(Border.BorderBrushProperty);
-            ResizableArea.ClearValue(Border.BorderThicknessProperty);
-            ResizableArea.ClearValue(Border.HorizontalAlignmentProperty);
-            ResizableArea.ClearValue(Border.VerticalAlignmentProperty);
-            ResizableArea.ClearValue(Border.WidthProperty);
-            ResizableArea.ClearValue(Border.HeightProperty);
-            ResizableArea.ClearValue(Border.MarginProperty);
-        }
+        //private void SetFullScr()
+        //{
+        //    ResizableArea.ClearValue(Border.BorderBrushProperty);
+        //    ResizableArea.ClearValue(Border.BorderThicknessProperty);
+        //    ResizableArea.ClearValue(Border.HorizontalAlignmentProperty);
+        //    ResizableArea.ClearValue(Border.VerticalAlignmentProperty);
+        //    ResizableArea.ClearValue(Border.WidthProperty);
+        //    ResizableArea.ClearValue(Border.HeightProperty);
+        //    ResizableArea.ClearValue(Border.MarginProperty);
+        //}
 
         private async void BtnLike_Click(object sender, RoutedEventArgs e)
         {
