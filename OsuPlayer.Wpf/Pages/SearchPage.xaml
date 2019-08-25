@@ -6,6 +6,7 @@
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
     xmlns:converters="clr-namespace:Milky.WpfApi.Converters;assembly=WpfApi"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:Milky.OsuPlayer"
     xmlns:models1="clr-namespace:Milky.OsuPlayer.Models"
@@ -24,8 +25,9 @@
     <Page.DataContext>
         <viewModels:SearchPageViewModel />
     </Page.DataContext>
-    <Grid>
+    <Grid Background="#90FFFFFF">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
@@ -69,10 +71,73 @@
                 </Style>
             </TextBlock.Style>
         </TextBlock>
-
+        <StackPanel
+            Grid.Row="1"
+            Margin="10,0"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal">
+            <dms:DMButton
+                x:Name="BtnPlayAll"
+                Height="28"
+                Margin="5"
+                Background="#5d9cec"
+                BorderBrush="Transparent"
+                BorderThickness="1"
+                Click="BtnPlayAll_Click"
+                CornerRadius="5"
+                Cursor="Hand"
+                Foreground="White">
+                <StackPanel Margin="10,0" Orientation="Horizontal">
+                    <Viewbox
+                        Width="16"
+                        Height="16"
+                        Stretch="Uniform">
+                        <Canvas Width="1000" Height="1000">
+                            <Canvas.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000" />
+                                    <TranslateTransform X="0.000000" Y="385.000000" />
+                                </TransformGroup>
+                            </Canvas.RenderTransform>
+                            <Path Data="{StaticResource Play}" Fill="White" />
+                        </Canvas>
+                    </Viewbox>
+                    <Label Content="播放全部" Foreground="White" />
+                </StackPanel>
+            </dms:DMButton>
+            <dms:DMButton
+                x:Name="BtnQueueAll"
+                Grid.Column="0"
+                Width="auto"
+                Height="28"
+                Margin="5"
+                Background="#FAFAFB"
+                BorderThickness="1"
+                Click="BtnQueueAll_Click"
+                Command="{Binding ItemFolderCommand}"
+                CommandParameter="{Binding ExportPath}"
+                CornerRadius="5"
+                Cursor="Hand">
+                <StackPanel Margin="10,0" Orientation="Horizontal">
+                    <Viewbox
+                        Width="16"
+                        Height="16"
+                        Stretch="Uniform">
+                        <Canvas Width="1000" Height="1000">
+                            <Path Fill="#303030">
+                                <Path.Data>
+                                    <PathGeometry Figures="M102.5 919.2c-51 0-92.5-41.5-92.5-92.5V173.3c0-51 41.5-92.5 92.5-92.5h287.1c47.7 0 87.3 35.8 92 83.2l0.3 4.5c2.1 20.4 19.2 35.8 39.8 35.8h375.8c51 0 92.5 41.5 92.5 92.5v530c0 51-41.5 92.5-92.5 92.5H102.5z M80.3 809.4c0 22 17.9 40 40 40h758.6c22.1 0 40-18 40-40V388.7H80.3V809.4z M918.7 317.9c0-24.6-8.8-45.5-39.8-45.5H521.7c-46.4 0-85.1-33.8-91.6-79.3l-0.8-8.4c-2.1-20.4-19.2-35.8-39.8-35.8H120.3c-22.1 0-40 18-40 40v129H918.7z" FillRule="NonZero" />
+                                </Path.Data>
+                            </Path>
+                        </Canvas>
+                    </Viewbox>
+                    <Label Content="排队全部" />
+                </StackPanel>
+            </dms:DMButton>
+        </StackPanel>
         <ListView
             x:Name="ResultList"
-            Grid.Row="1"
+            Grid.Row="2"
             Margin="0,20,0,2"
             Background="Transparent"
             BorderThickness="0"
@@ -191,7 +256,7 @@
             </ListView.View>
         </ListView>
         <StackPanel
-            Grid.Row="2"
+            Grid.Row="3"
             Margin="10"
             HorizontalAlignment="Center"
             Orientation="Horizontal">

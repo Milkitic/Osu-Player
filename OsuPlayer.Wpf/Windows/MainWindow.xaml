@@ -59,7 +59,6 @@
         <converter:MiniEnabledConverter x:Key="CvtMiniEnabled" />
         <converter:LyricWindowShownConverter x:Key="CvtLyricWindowShown" />
         <converter:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
-        <converter:VideoShowConverter x:Key="CvtVideoShow" />
         <converter:MsToStringConverter x:Key="MsToStringConverter" />
     </wpfApi:WindowBase.Resources>
     <Grid Margin="{Binding WindowState, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource WindowMarginConverter}}">
@@ -380,81 +379,10 @@
                     </ScrollViewer>
                 </DockPanel>
                 <Grid>
-                    <Grid
-                        x:Name="FullModeArea"
-                        Grid.Row="0"
+                    <osuPlayer:AnimationControl
+                        x:Name="Animation"
                         ClipToBounds="True"
-                        Visibility="{Binding Player.EnableVideo, Converter={StaticResource CvtVideoShow}}">
-                        <Grid.Style>
-                            <Style TargetType="{x:Type Grid}">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <LinearGradientBrush EndPoint="0,1">
-                                            <GradientStop Offset="0" Color="#dc498d" />
-                                            <GradientStop Offset="1" Color="White" />
-                                        </LinearGradientBrush>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Source, ElementName=BackImage}" Value="{x:Null}">
-                                        <Setter Property="Background" Value="White" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Source, ElementName=BackImage}" Value="">
-                                        <Setter Property="Background" Value="White" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Grid.Style>
-                        <Grid.Effect>
-                            <BlurEffect Radius="{Binding Content, ElementName=MainFrame, Converter={StaticResource NullToNoBlurConverter}}" />
-                        </Grid.Effect>
-                        <Border x:Name="BackImageBorder" Background="Black">
-                            <Image
-                                x:Name="BackImage"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                RenderOptions.BitmapScalingMode="HighQuality"
-                                Source="{Binding Source, ElementName=Thumb}"
-                                Stretch="UniformToFill" />
-                        </Border>
-                        <Border
-                            x:Name="BlendBorder"
-                            Panel.ZIndex="99"
-                            Background="Black">
-                            <Border
-                                Width="{Binding ActualWidth, ElementName=VideoElementBorder}"
-                                Height="{Binding ActualHeight, ElementName=VideoElementBorder}"
-                                Background="Transparent">
-                                <Border.Effect>
-                                    <shaderEffects:BlendEffect Amount="1" Mode="Lighten">
-                                        <shaderEffects:BlendEffect.Base>
-                                            <VisualBrush Stretch="UniformToFill" Visual="{Binding ElementName=BackImageBorder}" />
-                                        </shaderEffects:BlendEffect.Base>
-                                        <shaderEffects:BlendEffect.Blend>
-                                            <VisualBrush Stretch="Uniform" Visual="{Binding ElementName=VideoElementBorder}" />
-                                        </shaderEffects:BlendEffect.Blend>
-                                    </shaderEffects:BlendEffect>
-                                </Border.Effect>
-                            </Border>
-                        </Border>
-                        <Border
-                            x:Name="VideoElementBorder"
-                            Margin="0,-2000,-0,2000"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Panel.ZIndex="2000"
-                            BorderThickness="1">
-                            <ffme:MediaElement
-                                x:Name="VideoElement"
-                                LoadedBehavior="Manual"
-                                RenderOptions.BitmapScalingMode="HighQuality"
-                                RenderTransformOrigin="0.5,0.5"
-                                Stretch="Fill" />
-                            <!--<Border.Effect>
-                                <shaderEffects:ChromaticAberrationEffect OffsetB="0,0" OffsetR="-0,0" />
-                            </Border.Effect>-->
-                        </Border>
-                    </Grid>
+                        IsBlur="{Binding Content, ElementName=MainFrame, Converter={StaticResource NullToBoolFalseConverter}}" />
                     <Frame Name="MainFrame" NavigationUIVisibility="Hidden">
                         <Frame.Style>
                             <Style TargetType="FrameworkElement">

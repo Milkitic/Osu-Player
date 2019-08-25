@@ -73,9 +73,7 @@ namespace Milky.OsuPlayer.Common.Data.EF
         {
             return Ctx.Beatmaps.Where(k => k.FolderName == folder).ToList();
         }
-
-
-
+        
         public List<Beatmap> GetBeatmapsByIdentifiable<T>(List<T> reqList)
             where T : IMapIdentifiable
         {

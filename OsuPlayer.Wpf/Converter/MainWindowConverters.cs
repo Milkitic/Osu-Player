@@ -128,7 +128,7 @@ namespace Milky.OsuPlayer.Converter
         }
     }
 
-    public class VideoShowConverter : IValueConverter
+    public class BoolTrueToVisibleConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

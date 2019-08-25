@@ -31,11 +31,11 @@ namespace Milky.OsuPlayer.Converter
         }
     }
 
-    public class NullToNoBlurConverter : IValueConverter
+    public class NullToBoolFalseConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value is null ? 0 : 20;
+            return !(value is null);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

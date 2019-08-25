@@ -29,10 +29,10 @@ namespace Milky.OsuPlayer.ViewModels
         }
 
         private const int MaxListCount = 100;
-        private IEnumerable<BeatmapDataModel> _searchedMaps;
-        private IEnumerable<BeatmapDataModel> _displayedMaps;
+        private List<BeatmapDataModel> _searchedMaps;
+        private List<BeatmapDataModel> _displayedMaps;
 
-        private IEnumerable<ListPageViewModel> _pages;
+        private List<ListPageViewModel> _pages;
         private ListPageViewModel _lastPage;
         private ListPageViewModel _firstPage;
         private string _searchText;
@@ -47,7 +47,17 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public IEnumerable<BeatmapDataModel> SearchedMaps
+        public List<Beatmap> SearchedDbMaps
+        {
+            get => _searchedDbMaps;
+            set
+            {
+                _searchedDbMaps = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public List<BeatmapDataModel> SearchedMaps
         {
             get => _searchedMaps;
             private set
@@ -56,7 +66,7 @@ namespace Milky.OsuPlayer.ViewModels
                 OnPropertyChanged();
             }
         }
-        public IEnumerable<BeatmapDataModel> DisplayedMaps
+        public List<BeatmapDataModel> DisplayedMaps
         {
             get => _displayedMaps;
             private set
@@ -66,7 +76,7 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public IEnumerable<ListPageViewModel> Pages
+        public List<ListPageViewModel> Pages
         {
             get => _pages;
             private set
@@ -97,6 +107,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private readonly Stopwatch _querySw = new Stopwatch();
         private bool _isQuerying;
+        private List<Beatmap> _searchedDbMaps;
         private static readonly object QueryLock = new object();
 
         public async Task PlayListQueryAsync(int startIndex = 0)
@@ -121,8 +132,9 @@ namespace Milky.OsuPlayer.ViewModels
                     Thread.Sleep(1);
                 _querySw.Stop();
 
-                List<BeatmapDataModel> sorted = _dbOperator
-                    .SearchBeatmapByOptions(SearchText, SortMode.Artist, startIndex, int.MaxValue)
+                SearchedDbMaps = _dbOperator
+                    .SearchBeatmapByOptions(SearchText, SortMode.Artist, startIndex, int.MaxValue);
+                List<BeatmapDataModel> sorted = SearchedDbMaps
                     .ToDataModelList(true);
 
 
@@ -178,7 +190,7 @@ namespace Milky.OsuPlayer.ViewModels
 
             if (page != null)
                 page.IsActivated = true;
-            DisplayedMaps = SearchedMaps.Skip(nowIndex * MaxListCount).Take(MaxListCount);
+            DisplayedMaps = SearchedMaps.Skip(nowIndex * MaxListCount).Take(MaxListCount).ToList();
         }
 
         private ListPageViewModel GetPage(int page)

@@ -335,10 +335,21 @@ namespace Milky.OsuPlayer.Control
                     PlayProgress.Value = 0;
 
                     /* Set Thumb */
+                    var defaultPath = System.IO.Path.Combine(Domain.ResourcePath, "default.jpg");
                     if (osuFile.Events.BackgroundInfo != null)
                     {
                         var bgPath = System.IO.Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
-                        Thumb.Source = File.Exists(bgPath) ? new BitmapImage(new Uri(bgPath)) : null;
+                        Thumb.Source = File.Exists(bgPath)
+                            ? new BitmapImage(new Uri(bgPath))
+                            : (File.Exists(defaultPath)
+                                ? new BitmapImage(new Uri(defaultPath))
+                                : null);
+                    }
+                    else
+                    {
+                        Thumb.Source = File.Exists(defaultPath)
+                            ? new BitmapImage(new Uri(defaultPath))
+                            : null;
                     }
 
                     /* Set new hitsound player*/
@@ -382,17 +393,14 @@ namespace Milky.OsuPlayer.Control
                     //var args = new RoutedEventArgs(OnNewFileLoadedEvent, this);
                     //RaiseEvent(args);
                     var args = new HandledEventArgs();
-                    OnNewFileLoaded?.BeginInvoke(this, args, obj =>
+                    OnNewFileLoaded?.Invoke(play, args);
+                    if (!args.Handled)
                     {
-                        if (!args.Handled)
+                        if (play)
                         {
-                            if (play)
-                            {
-                                audioPlayer.Play();
-                            }
+                            audioPlayer.Play();
                         }
-                    }, null);
-
+                    }
                     LblNow.Visibility = Visibility.Visible;
                     LblTotal.Visibility = Visibility.Visible;
                     AppSettings.Current.CurrentPath = path;
@@ -402,7 +410,7 @@ namespace Milky.OsuPlayer.Control
                 }
                 catch (Exception ex)
                 {
-                    OsuPlayer.Notification.Show(@"发生未处理的错误：" + (ex.InnerException ?? ex));
+                    OsuPlayer.Notification.Show(@"发生未处理的错误：" + (ex.InnerException?.Message ?? ex?.Message));
 
                     if (audioPlayer == null) return;
                     if (audioPlayer.PlayerStatus != PlayerStatus.Playing)

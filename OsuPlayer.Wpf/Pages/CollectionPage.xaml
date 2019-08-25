@@ -22,7 +22,7 @@
     <Page.DataContext>
         <viewModels:CollectionPageViewModel />
     </Page.DataContext>
-    <Grid>
+    <Grid Background="#90FFFFFF">
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem
                 Cursor="Hand"

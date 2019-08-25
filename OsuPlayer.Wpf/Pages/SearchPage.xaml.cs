@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
@@ -170,6 +171,28 @@ namespace Milky.OsuPlayer.Pages
             var map = _beatmapDbOperator.GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
                 .GetHighestDiff();
             return map;
+        }
+
+        private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
+        {
+            List<Beatmap> beatmaps = ViewModel.SearchedDbMaps;
+            if (beatmaps.Count <= 0) return;
+            var group = beatmaps.GroupBy(k => k.FolderName);
+            List<Beatmap> newBeatmaps = group
+                .Select(sb => sb.GetHighestDiff())
+                .ToList();
+
+            //if (map == null) return;
+            //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
+            //     map.BeatmapFileName));
+            await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.Collection, newBeatmaps);
+            await PlayController.Default.PlayNewFile(newBeatmaps[0]);
+
+        }
+
+        private void BtnQueueAll_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

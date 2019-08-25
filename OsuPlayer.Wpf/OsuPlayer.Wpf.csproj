@@ -164,6 +164,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnimationControl.xaml.cs">
+      <DependentUpon>AnimationControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Control\CommonButton.cs" />
     <Compile Include="Control\FrontDialog\FrontDialogOverlay.xaml.cs">
       <DependentUpon>FrontDialogOverlay.xaml</DependentUpon>
@@ -194,6 +197,10 @@
     <Compile Include="Notification.cs" />
     <Compile Include="ViewModels\ListPageViewModel.cs" />
     <Compile Include="Windows\PageParts.cs" />
+    <Page Include="AnimationControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -576,18 +583,11 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\heart.png" />
-    <Resource Include="Resources\heart_disable.png" />
-    <Resource Include="Resources\volume.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="player.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\gear.png" />
     <Resource Include="Resources\gear_s.png" />
-    <Resource Include="Resources\heart_disable_s.png" />
-    <Resource Include="Resources\heart_s.png" />
     <Resource Include="Resources\mode_loop.png" />
     <Resource Include="Resources\mode_loop_s.png" />
     <Resource Include="Resources\mode_normal.png" />
@@ -600,7 +600,6 @@
     <Resource Include="Resources\mode_single_loop.png" />
     <Resource Include="Resources\mode_single_loop_s.png" />
     <Resource Include="Resources\mode_single_s.png" />
-    <Resource Include="Resources\volume_s.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\exit_s.png" />
@@ -616,6 +615,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\fullscreen_s.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\default.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\title.png" />

@@ -13,6 +13,7 @@
     <apiConverter:NegativeBooleanConverter x:Key="NegativeBooleanConverter" />
     <converter:WindowMarginConverter x:Key="WindowMarginConverter" />
     <converter:NullToHiddenConverter x:Key="NullToHiddenConverter" />
+    <converter:BoolTrueToVisibleConverter x:Key="BoolTrueToVisibleConverter" />
     <converter:NullToFullOpacityConverter x:Key="NullToFullOpacityConverter" />
-    <converter:NullToNoBlurConverter x:Key="NullToNoBlurConverter" />
+    <converter:NullToBoolFalseConverter x:Key="NullToBoolFalseConverter" />
 </ResourceDictionary>

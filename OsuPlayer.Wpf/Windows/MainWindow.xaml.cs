@@ -35,7 +35,6 @@ namespace Milky.OsuPlayer.Windows
         //local player control
         private bool _scrollLock;
         private PlayerStatus _tmpStatus = PlayerStatus.Stopped;
-        private double _videoOffset;
 
         public MainWindow()
         {
@@ -48,19 +47,19 @@ namespace Milky.OsuPlayer.Windows
                 CollectionPage = new CollectionPage(this),
                 ExportPage = new ExportPage(this),
             };
+            PlayerViewModel.InitViewModel();
 
             InitializeComponent();
             ViewModel = (MainWindowViewModel)DataContext;
-            PlayerViewModel.InitViewModel();
             ViewModel.Player = PlayerViewModel.Current;
             LyricWindow = new LyricWindow(this);
             if (AppSettings.Current.Lyric.EnableLyric)
                 LyricWindow.Show();
 
             OverallKeyHook = new OverallKeyHook(this);
+            Animation.Loaded += Animation_Loaded;
             TryBindHotKeys();
         }
-
         private void TryBindHotKeys()
         {
             var page = new Pages.Settings.HotKeyPage(this);

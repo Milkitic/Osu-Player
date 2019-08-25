@@ -54,22 +54,11 @@ namespace Milky.OsuPlayer.Windows
             UpdateCollections();
 
             PlayController.Default.OnNewFileLoaded += Controller_OnNewFileLoaded;
-            PlayController.Default.OnProgressDragComplete += Controller_OnProgressDragComplete;
             PlayController.Default.OnLikeClick += Controller_OnLikeClick;
             PlayController.Default.OnThumbClick += Controller_OnThumbClick;
-            PlayController.Default.OnPlayClick += Controller_OnPlayClick;
-            PlayController.Default.OnPauseClick += Controller_OnPauseClick;
 
-            if (AppSettings.Current.CurrentPath != null && AppSettings.Current.Play.Memory)
-            {
-                var entries = _beatmapDbOperator.GetBeatmapsByIdentifiable(AppSettings.Current.CurrentList);
-                await Services.Get<PlayerList>()
-                    .RefreshPlayListAsync(PlayerList.FreshType.All, beatmaps: entries);
 
-                bool play = AppSettings.Current.Play.AutoPlay;
-                await PlayController.Default.PlayNewFile(AppSettings.Current.CurrentPath, play);
-            }
-            var helper = new WindowInteropHelper(this);
+            //var helper = new WindowInteropHelper(this);
             //var source = HwndSource.FromHwnd(helper.Handle);
             //source?.AddHook(HwndMessageHook);
 
@@ -81,6 +70,27 @@ namespace Milky.OsuPlayer.Windows
                 newVersionWindow.ShowDialog();
             }
         }
+
+        private void Animation_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (AppSettings.Current.CurrentPath == null || !AppSettings.Current.Play.Memory)
+            {
+                return;
+            }
+
+            Animation.StartScene(async () =>
+            {
+                // 加至播放列表
+                var entries = _beatmapDbOperator.GetBeatmapsByIdentifiable(AppSettings.Current.CurrentList);
+
+                await Services.Get<PlayerList>()
+                    .RefreshPlayListAsync(PlayerList.FreshType.All, beatmaps: entries);
+
+                bool play = AppSettings.Current.Play.AutoPlay;
+                await PlayController.Default.PlayNewFile(AppSettings.Current.CurrentPath, play);
+            });
+        }
+
 
         private static void ScanSynchronously()
         {
