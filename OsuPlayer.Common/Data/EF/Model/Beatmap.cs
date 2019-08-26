@@ -85,6 +85,9 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         [Required, Column("own")]
         public bool InOwnFolder { get; set; }
 
+        public string AutoTitle => MetaString.GetUnicode(Title, TitleUnicode) ?? "未知标题";
+        public string AutoArtist => MetaString.GetUnicode(Artist, ArtistUnicode) ?? "未知艺术家";
+   
         #region Only used in HoLLy
         //public string BeatmapChecksum { get; set; }
         //public RankStatus RankedStatus { get; set; }

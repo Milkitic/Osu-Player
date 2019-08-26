@@ -3,21 +3,34 @@ using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Instances;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Common.Data.EF;
+using Milky.WpfApi;
 using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 
 namespace Milky.OsuPlayer.Common.Player
 {
-    public class PlayerList
+    public class PlayerList : ViewModelBase
     {
         private int _pointer;
         private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
         private AppDbOperator _appDbOperator = new AppDbOperator();
+        private ObservableCollection<Beatmap> _entries = new ObservableCollection<Beatmap>();
+
+        public ObservableCollection<Beatmap> Entries
+        {
+            get => _entries;
+            set
+            {
+                _entries = value;
+                OnPropertyChanged();
+            }
+        }
+
         public PlayerMode PlayerMode { get; set; } = PlayerMode.Loop;
         public PlayListMode PlayListMode { get; set; }
-        public List<Beatmap> Entries { get; set; } = new List<Beatmap>();
         public List<int> Indexes { get; set; } = new List<int>();
         //public MapIdentity NowIdentity { get; set; }
         public CurrentInfo CurrentInfo { get; set; }
@@ -54,12 +67,12 @@ namespace Milky.OsuPlayer.Common.Player
                 {
                     case PlayListMode.RecentList:
                         var mapInfos = _appDbOperator.GetRecentList();
-                        Entries = _beatmapDbOperator.GetBeatmapsByMapInfo(mapInfos, TimeSortMode.PlayTime); ;
+                        Entries = new ObservableCollection<Beatmap>(_beatmapDbOperator.GetBeatmapsByMapInfo(mapInfos, TimeSortMode.PlayTime));
                         break;
                     default:
                     case PlayListMode.Collection:
                         if (beatmaps != null)
-                            Entries = await Task.Run(() => beatmaps.ToList()); //todo: 150ms
+                            Entries = new ObservableCollection<Beatmap>(await Task.Run(() => beatmaps.ToList())); //todo: 150ms
                         break;
                 }
 
@@ -81,25 +94,6 @@ namespace Milky.OsuPlayer.Common.Player
 
             AppSettings.Current.CurrentList = Entries.Select(k => k.GetIdentity()).ToList();
             AppSettings.SaveCurrent();
-        }
-
-        public void RedirectPointer()
-        {
-            for (int i = 0; i < Entries.Count; i++)
-            {
-                if (Entries[i].GetIdentity().Equals(CurrentInfo.Identity))
-                {
-                    for (int j = 0; j < Indexes.Count; j++)
-                    {
-                        if (Indexes[j] != i)
-                            continue;
-                        Pointer = j;
-                        break;
-                    }
-
-                    break;
-                }
-            }
         }
 
         /// <summary>
@@ -176,6 +170,25 @@ namespace Milky.OsuPlayer.Common.Player
             /// Keep all the lists.
             /// </summary>
             None
+        }
+
+        private void RedirectPointer()
+        {
+            for (int i = 0; i < Entries.Count; i++)
+            {
+                if (Entries[i].GetIdentity().Equals(CurrentInfo.Identity))
+                {
+                    for (int j = 0; j < Indexes.Count; j++)
+                    {
+                        if (Indexes[j] != i)
+                            continue;
+                        Pointer = j;
+                        break;
+                    }
+
+                    break;
+                }
+            }
         }
     }
 }

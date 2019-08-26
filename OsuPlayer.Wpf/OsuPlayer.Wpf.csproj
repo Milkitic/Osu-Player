@@ -189,6 +189,9 @@
     <Compile Include="Control\PlayController.xaml.cs">
       <DependentUpon>PlayController.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Control\PlayListControl.xaml.cs">
+      <DependentUpon>PlayListControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Control\SystemButton.cs" />
     <Compile Include="Control\WelcomeControl.xaml.cs">
       <DependentUpon>WelcomeControl.xaml</DependentUpon>
@@ -328,6 +331,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Control\PlayController.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Control\PlayListControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
