@@ -289,7 +289,7 @@
                         BorderThickness="0"
                         Click="ModeButton_Click"
                         IconMargin="0"
-                        IconSize="26"
+                        IconSize="25"
                         IconTemplate="{StaticResource ModeLoopTempl}"
                         MouseOverBackground="Transparent"
                         WindowChrome.IsHitTestVisibleInChrome="True" />
