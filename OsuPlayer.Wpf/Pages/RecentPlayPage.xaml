@@ -9,10 +9,11 @@
     Title="RecentPlayPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    Initialized="Page_Initialized"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
 
-    <Grid Background="#90FFFFFF">
+    <Grid Background="#B0FFFFFF">
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem
                 Cursor="Hand"
@@ -91,8 +92,7 @@
                         Background="Transparent"
                         BorderThickness="0"
                         ItemContainerStyle="{StaticResource GridView}"
-                        ItemsSource="{Binding Mode=OneWay}"
-                        MouseDoubleClick="Recent_MouseDoubleClick">
+                        ItemsSource="{Binding Mode=OneWay}">
                         <ListView.ContextMenu>
                             <ContextMenu Style="{DynamicResource DefaultContextMenu}">
                                 <MenuItem

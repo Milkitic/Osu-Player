@@ -234,27 +234,27 @@ namespace Milky.OsuPlayer.Control
 
         private async Task SetPlayMode(PlayerMode playMode)
         {
-            switch (playMode)
-            {
-                case PlayerMode.Normal:
-                    Normal.IsChecked = true;
-                    break;
-                case PlayerMode.Random:
-                    Random.IsChecked = true;
-                    break;
-                case PlayerMode.Loop:
-                    Loop.IsChecked = true;
-                    break;
-                case PlayerMode.LoopRandom:
-                    LoopRandom.IsChecked = true;
-                    break;
-                case PlayerMode.Single:
-                    Single.IsChecked = true;
-                    break;
-                case PlayerMode.SingleLoop:
-                    SingleLoop.IsChecked = true;
-                    break;
-            }
+            //switch (playMode)
+            //{
+            //    case PlayerMode.Normal:
+            //        Normal.IsChecked = true;
+            //        break;
+            //    case PlayerMode.Random:
+            //        Random.IsChecked = true;
+            //        break;
+            //    case PlayerMode.Loop:
+            //        Loop.IsChecked = true;
+            //        break;
+            //    case PlayerMode.LoopRandom:
+            //        LoopRandom.IsChecked = true;
+            //        break;
+            //    case PlayerMode.Single:
+            //        Single.IsChecked = true;
+            //        break;
+            //    case PlayerMode.SingleLoop:
+            //        SingleLoop.IsChecked = true;
+            //        break;
+            //}
 
             if (playMode == Services.Get<PlayerList>().PlayerMode)
             {
@@ -608,15 +608,20 @@ namespace Milky.OsuPlayer.Control
             Pop.IsOpen = true;
         }
 
+        private void PlayListButton_Click(object sender, RoutedEventArgs e)
+        {
+            PopPlayList.IsOpen = true;
+        }
+
         private void PlayMode_Checked(object sender, RoutedEventArgs e)
         {
-            var btn = (ToggleButton)sender;
+            var btn = (ToggleButton)e.Source;
             _modeOptionContainer.Switch(btn);
         }
 
         private async void PlayMode_Click(object sender, RoutedEventArgs e)
         {
-            var btn = (ToggleButton)sender;
+            var btn = (ToggleButton)e.Source;
             PlayerMode playMode;
             switch (btn.Name)
             {
@@ -647,6 +652,7 @@ namespace Milky.OsuPlayer.Control
                     break;
             }
 
+            ModeButton.IconTemplate = (ControlTemplate)Application.Current.FindResource("Mode" + btn.Name + "Templ");
             await SetPlayMode(playMode);
             PopMode.IsOpen = false;
         }
@@ -708,6 +714,11 @@ namespace Milky.OsuPlayer.Control
         public void Dispose()
         {
             ClearHitsoundPlayer();
+        }
+
+        private void PlayListControl_CloseRequested(object sender, RoutedEventArgs e)
+        {
+            PopPlayList.IsOpen = false;
         }
     }
 

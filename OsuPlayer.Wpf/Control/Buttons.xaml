@@ -177,7 +177,6 @@
         <Setter Property="BorderBrush" Value="#f0f0f0" />
         <Setter Property="Foreground" Value="#484848" />
         <Setter Property="BorderThickness" Value="1,0" />
-        <Setter Property="FontSize" Value="15" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Height" Value="36" />
         <Setter Property="MouseOverBackground" Value="#f3f5f5" />
@@ -192,6 +191,7 @@
                         x:Name="BorderMain"
                         Width="{TemplateBinding Width}"
                         Height="{TemplateBinding Height}"
+                        Padding="{TemplateBinding Padding}"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"

@@ -17,6 +17,7 @@
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
     Closing="Window_Closing"
+    Deactivated="WindowBase_Deactivated"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
     Loaded="Window_Loaded"
     SizeChanged="Window_SizeChanged"
@@ -120,7 +121,8 @@
                 <DockPanel
                     x:Name="Navigation"
                     Width="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavigationWidth}}"
-                    Height="{Binding ElementName=MainArea, Path=ActualHeight}">
+                    Height="{Binding ElementName=MainArea, Path=ActualHeight}"
+                    MouseDown="ButtonBase_Click">
                     <ScrollViewer
                         Width="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavigationWidth}}"
                         HorizontalScrollBarVisibility="Hidden"
@@ -349,24 +351,34 @@
                                     Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
                                     <ListView.Resources>
                                         <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
-                                            <ToggleButton
-                                                x:Name="BtnCollection"
-                                                Height="35"
-                                                Margin="-5,0,0,1"
-                                                VerticalAlignment="Center"
-                                                Checked="BtnNavigate_Checked"
-                                                Click="BtnCollection_Click"
-                                                Style="{StaticResource NavigationButtonStyle}"
-                                                Tag="{Binding Id}"
-                                                Unchecked="BtnNavigate_Unchecked">
-                                                <Label
-                                                    MaxWidth="120"
-                                                    Margin="0,-7"
+                                            <Grid>
+                                                <ToggleButton
+                                                    x:Name="BtnCollection"
+                                                    Height="35"
+                                                    Margin="-5,0,0,1"
+                                                    VerticalAlignment="Center"
+                                                    Checked="BtnNavigate_Checked"
+                                                    Click="BtnCollection_Click"
+                                                    Style="{StaticResource NavigationButtonStyle}"
+                                                    Tag="{Binding Id}"
+                                                    Unchecked="BtnNavigate_Unchecked">
+                                                    <Label
+                                                        MaxWidth="120"
+                                                        Margin="0,-7"
+                                                        HorizontalAlignment="Left"
+                                                        Content="{Binding Name}"
+                                                        FontSize="13px"
+                                                        Foreground="{Binding ElementName=BtnCollection, Path=Foreground}" />
+                                                </ToggleButton>
+                                                <Viewbox
+                                                    Width="20"
+                                                    Height="20"
+                                                    Margin="20,0,0,0"
                                                     HorizontalAlignment="Left"
-                                                    Content="{Binding Name}"
-                                                    FontSize="13px"
-                                                    Foreground="{Binding ElementName=BtnCollection, Path=Foreground}" />
-                                            </ToggleButton>
+                                                    Stretch="Uniform">
+                                                    <ContentControl Foreground="{Binding ElementName=BtnCollection, Path=Foreground, Converter={StaticResource CvtColor}}" Template="{StaticResource CollectionTempl}" />
+                                                </Viewbox>
+                                            </Grid>
                                         </ControlTemplate>
                                         <Style TargetType="{x:Type ListViewItem}">
                                             <Setter Property="BorderThickness" Value="0" />
@@ -378,7 +390,7 @@
                         </Grid>
                     </ScrollViewer>
                 </DockPanel>
-                <Grid>
+                <Grid MouseDown="ButtonBase_Click">
                     <osuPlayer:AnimationControl
                         x:Name="Animation"
                         ClipToBounds="True"

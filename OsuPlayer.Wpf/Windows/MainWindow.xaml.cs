@@ -106,5 +106,15 @@ namespace Milky.OsuPlayer.Windows
 
             return IntPtr.Zero;
         }
+
+        private void WindowBase_Deactivated(object sender, EventArgs e)
+        {
+            PlayController.Default.PopPlayList.IsOpen = false;
+        }
+
+        private void ButtonBase_Click(object sender, RoutedEventArgs e)
+        {
+            PlayController.Default.PopPlayList.IsOpen = false;
+        }
     }
 }

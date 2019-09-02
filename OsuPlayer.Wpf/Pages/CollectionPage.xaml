@@ -12,6 +12,7 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     Focusable="False"
+    Initialized="Page_Initialized"
     IsHitTestVisible="True"
     Loaded="Page_Loaded"
     Unloaded="Page_Unloaded"
@@ -22,7 +23,7 @@
     <Page.DataContext>
         <viewModels:CollectionPageViewModel />
     </Page.DataContext>
-    <Grid Background="#90FFFFFF">
+    <Grid Background="#B0FFFFFF">
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem
                 Cursor="Hand"
@@ -258,8 +259,7 @@
                                     Background="{StaticResource WhiteBrush40}"
                                     BorderThickness="0"
                                     ItemContainerStyle="{StaticResource GridView}"
-                                    ItemsSource="{Binding Beatmaps}"
-                                    MouseDoubleClick="RecentList_MouseDoubleClick">
+                                    ItemsSource="{Binding Beatmaps}">
                                     <ListView.ContextMenu>
                                         <ContextMenu Style="{StaticResource DefaultContextMenu}">
                                             <MenuItem

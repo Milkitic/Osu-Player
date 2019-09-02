@@ -59,6 +59,7 @@
         </Setter>
     </Style>
     <Style x:Key="GridView" TargetType="{x:Type ListViewItem}">
+        <!--<EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick" />-->
         <Setter Property="Padding" Value="0" />
         <Setter Property="Background" Value="#b0fafafa" />
         <Setter Property="Template">
@@ -95,5 +96,8 @@
     </Style>
     <Style TargetType="{x:Type ListView}">
         <Setter Property="AlternationCount" Value="2" />
+    </Style>
+    <Style x:Key="ListView" TargetType="{x:Type ListView}">
+        <Setter Property="BorderThickness" Value="0" />
     </Style>
 </ResourceDictionary>

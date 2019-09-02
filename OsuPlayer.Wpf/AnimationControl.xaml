@@ -92,7 +92,6 @@
                 <shaderEffects:ChromaticAberrationEffect OffsetB="0,0" OffsetR="-0,0" />
             </Border.Effect>-->
             </Border>
-            <control:PlayListControl Panel.ZIndex="999" />
         </Grid>
     </Border>
 </UserControl>

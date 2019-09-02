@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Common;
+﻿using System.Collections.Generic;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
@@ -22,15 +23,19 @@ namespace Milky.OsuPlayer.Pages
         public SelectCollectionPageViewModel ViewModel { get; set; }
 
         private readonly MainWindow _mainWindow;
-        private readonly Beatmap _entry;
+        private readonly IList<Beatmap> _entries;
         private static AppDbOperator _appDbOperator = new AppDbOperator();
 
-        public SelectCollectionPage(Beatmap entry)
+        public SelectCollectionPage(Beatmap entry) : this(new[] { entry })
+        {
+        }
+
+        public SelectCollectionPage(IList<Beatmap> entries)
         {
             InitializeComponent();
             ViewModel = (SelectCollectionPageViewModel)DataContext;
-            _entry = entry;
-            ViewModel.Entry = entry;
+            _entries = entries;
+            ViewModel.Entries = entries;
             _mainWindow = (MainWindow)Application.Current.MainWindow;
             RefreshList();
         }
@@ -56,16 +61,19 @@ namespace Milky.OsuPlayer.Pages
                 CollectionViewModel.CopyFrom(_appDbOperator.GetCollections().OrderByDescending(k => k.CreateTime)));
         }
 
-        public static async Task AddToCollectionAsync(Collection col, Beatmap entry)
+        public static async Task AddToCollectionAsync(Collection col, IList<Beatmap> entries)
         {
+            if (entries.Count <= 0) return;
             if (string.IsNullOrEmpty(col.ImagePath))
             {
+                var first = entries[0];
                 var osuFile =
-                    await OsuFile.ReadFromFileAsync(Path.Combine(Domain.OsuSongPath, entry.FolderName,
-                        entry.BeatmapFileName));
+                    await OsuFile.ReadFromFileAsync(Path.Combine(Domain.OsuSongPath, first.FolderName,
+                        first.BeatmapFileName));
                 if (osuFile.Events.BackgroundInfo != null)
                 {
-                    var imgPath = Path.Combine(Domain.OsuSongPath, entry.FolderName, osuFile.Events.BackgroundInfo.Filename);
+                    var imgPath = Path.Combine(Domain.OsuSongPath, first.FolderName,
+                        osuFile.Events.BackgroundInfo.Filename);
                     if (File.Exists(imgPath))
                     {
                         col.ImagePath = imgPath;
@@ -74,7 +82,7 @@ namespace Milky.OsuPlayer.Pages
                 }
             }
 
-            _appDbOperator.AddMapToCollection(entry, col);
+            _appDbOperator.AddMapsToCollection(entries, col);
         }
     }
 }

@@ -21,7 +21,6 @@
                 <ResourceDictionary Source="Styles/StatusIconStyle.xaml" />
                 <ResourceDictionary Source="Styles/TabStyle.xaml" />
                 <ResourceDictionary Source="Control/Buttons.xaml" />
-
                 <ResourceDictionary Source="Styles/ConverterDictionary.xaml" />
 
                 <!--  DMSKin内置转换器 配色  -->

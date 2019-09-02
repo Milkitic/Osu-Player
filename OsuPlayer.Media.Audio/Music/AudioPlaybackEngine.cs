@@ -72,7 +72,14 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 return;
             }
 
-            _cachedDictionary.TryAdd(path, new CachedSound(newPath)); // Cache each file once before play.
+            try
+            {
+                _cachedDictionary.TryAdd(path, new CachedSound(newPath)); // Cache each file once before play.
+            }
+            catch
+            {
+                _cachedDictionary.TryAdd(path, null);
+            }
         }
 
         private static string TryGetPath(string path)

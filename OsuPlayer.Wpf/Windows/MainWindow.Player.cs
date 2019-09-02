@@ -81,7 +81,7 @@ namespace Milky.OsuPlayer.Windows
                 }
                 else
                 {
-                    await SelectCollectionPage.AddToCollectionAsync(collection, entry);
+                    await SelectCollectionPage.AddToCollectionAsync(collection, new[] { entry });
                     Services.Get<PlayerList>().CurrentInfo.IsFavorite = true;
                 }
             }

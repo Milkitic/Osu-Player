@@ -73,19 +73,55 @@ namespace Milky.OsuPlayer.Common.Data.EF
         {
             return Ctx.Beatmaps.Where(k => k.FolderName == folder).ToList();
         }
-        
+
         public List<Beatmap> GetBeatmapsByIdentifiable<T>(List<T> reqList)
             where T : IMapIdentifiable
         {
-            var folders = reqList.Select(k => k.FolderName).ToList();
-            var checkExpr = Ctx.Beatmaps.Where(entity => folders.Contains(entity.FolderName));
-            var entities = checkExpr.ToList();
+            if (reqList.Count > 500)
+            {
+                // var folders = new HashSet<string>(reqList.Select(k => k.FolderName));
+                var entities = Ctx.Beatmaps.ToList();
 
-            var filter = entities.Where(full =>
-                    reqList.Any(req => req.FolderName.Contains(full.FolderName) &&
-                                       req.Version.Contains(full.Version)))
-                .ToList();
-            return filter;
+                var groups = entities.GroupBy(k => k.FolderName);
+
+                var list = new List<Beatmap>();
+                var dic = reqList.GroupBy(k => k.FolderName).ToDictionary(k => k.Key, k => k.ToList());
+                foreach (var s in groups)
+                {
+                    if (!dic.ContainsKey(s.Key))
+                        continue;
+                    var o = dic[s.Key];
+                    foreach (var beatmap in s)
+                    {
+                        if (o.Any(k => k.Version == beatmap.Version))
+                        {
+                            list.Add(beatmap);
+                        }
+                    }
+                }
+
+                return list;
+            }
+            else
+            {
+                var folders = new HashSet<string>(reqList.Select(k => k.FolderName));
+                var checkExpr = Ctx.Beatmaps.Where(entity => folders.Contains(entity.FolderName));
+                var entities = checkExpr.ToList();
+
+                //var filter = entities.Where(full =>
+                //        reqList.Any(req => req.FolderName.Contains(full.FolderName) &&
+                //                           req.Version.Contains(full.Version)))
+                //    .ToList();
+                var filter = entities.GroupBy(k => k.FolderName);
+
+                var dic = reqList.GroupBy(k => k.FolderName).ToDictionary(k => k.Key, k => k.ToList());
+                var result = (from s in filter
+                              let o = dic[s.Key]
+                              from beatmap in s
+                              where o.Any(k => k.Version == beatmap.Version)
+                              select beatmap).ToList();
+                return result;
+            }
         }
 
         public async Task SyncMapsFromHoLLyAsync(IEnumerable<BeatmapEntry> entry, bool addOnly)
@@ -143,16 +179,18 @@ namespace Milky.OsuPlayer.Common.Data.EF
             var keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
             var predicate = keywords.Aggregate(PredicateBuilder.New<Beatmap>(), (current, keyword) =>
-                current.And(k => k.Title != null && k.Title.ToLower().Contains(keyword) ||
-                                k.TitleUnicode != null && k.TitleUnicode.ToLower().Contains(keyword) ||
-                                k.Artist != null && k.Artist.ToLower().Contains(keyword) ||
-                                k.ArtistUnicode != null && k.ArtistUnicode.ToLower().Contains(keyword) ||
-                                k.SongTags != null && k.SongTags.ToLower().Contains(keyword) ||
-                                k.SongSource != null && k.SongSource.ToLower().Contains(keyword) ||
-                                k.Creator != null && k.Creator.ToLower().Contains(keyword) ||
-                                k.Version != null && k.Version.ToLower().Contains(keyword)
-                )
-            );
+            {
+                var lower = keyword.ToLower();
+                return current.And(k => k.Title != null && k.Title.ToLower().Contains(lower) ||
+                                        k.TitleUnicode != null && k.TitleUnicode.ToLower().Contains(lower) ||
+                                        k.Artist != null && k.Artist.ToLower().Contains(lower) ||
+                                        k.ArtistUnicode != null && k.ArtistUnicode.ToLower().Contains(lower) ||
+                                        k.SongTags != null && k.SongTags.ToLower().Contains(lower) ||
+                                        k.SongSource != null && k.SongSource.ToLower().Contains(lower) ||
+                                        k.Creator != null && k.Creator.ToLower().Contains(lower) ||
+                                        k.Version != null && k.Version.ToLower().Contains(lower)
+                );
+            });
 
             return queryableBeatmaps.Where(predicate);
         }

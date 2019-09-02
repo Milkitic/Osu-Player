@@ -171,6 +171,7 @@
     <Compile Include="Control\FrontDialog\FrontDialogOverlay.xaml.cs">
       <DependentUpon>FrontDialogOverlay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\GridViewHelper.cs" />
     <Compile Include="Control\MaxButton.cs" />
     <Compile Include="Control\MinButton.cs" />
     <Compile Include="Control\Notification\Converters\EmptyToVisibleConverter.cs" />
@@ -198,6 +199,7 @@
     </Compile>
     <Compile Include="Converter\NullToHiddenConverter.cs" />
     <Compile Include="Notification.cs" />
+    <Compile Include="Utils\NativeUser32.cs" />
     <Compile Include="ViewModels\ListPageViewModel.cs" />
     <Compile Include="Windows\PageParts.cs" />
     <Page Include="AnimationControl.xaml">
@@ -595,18 +597,6 @@
     </Resource>
     <Resource Include="Resources\gear.png" />
     <Resource Include="Resources\gear_s.png" />
-    <Resource Include="Resources\mode_loop.png" />
-    <Resource Include="Resources\mode_loop_s.png" />
-    <Resource Include="Resources\mode_normal.png" />
-    <Resource Include="Resources\mode_normal_s.png" />
-    <Resource Include="Resources\mode_random.png" />
-    <Resource Include="Resources\mode_random_loop.png" />
-    <Resource Include="Resources\mode_random_loop_s.png" />
-    <Resource Include="Resources\mode_random_s.png" />
-    <Resource Include="Resources\mode_single.png" />
-    <Resource Include="Resources\mode_single_loop.png" />
-    <Resource Include="Resources\mode_single_loop_s.png" />
-    <Resource Include="Resources\mode_single_s.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\exit_s.png" />

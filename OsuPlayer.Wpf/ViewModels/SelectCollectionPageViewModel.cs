@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Common.Data.EF.Model;
+﻿using System.Collections.Generic;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.WpfApi;
 using System.Collections.ObjectModel;
 
@@ -7,7 +8,7 @@ namespace Milky.OsuPlayer.ViewModels
     public class SelectCollectionPageViewModel : ViewModelBase
     {
         private ObservableCollection<CollectionViewModel> _collections;
-        private Beatmap _entry;
+        private IList<Beatmap> _entries;
 
         public ObservableCollection<CollectionViewModel> Collections
         {
@@ -19,12 +20,12 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public Beatmap Entry
+        public IList<Beatmap> Entries
         {
-            get => _entry;
+            get => _entries;
             set
             {
-                _entry = value;
+                _entries = value;
                 OnPropertyChanged();
             }
         }

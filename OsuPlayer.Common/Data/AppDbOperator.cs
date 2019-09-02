@@ -110,21 +110,24 @@ namespace Milky.OsuPlayer.Common.Data
             Ctx.SaveChanges();
         }
 
-        public void AddMapToCollection(Beatmap beatmap, Collection collection)
+        public void AddMapsToCollection(IList<Beatmap> beatmaps, Collection collection)
         {
-            MapInfo map = InnerGetMapFromDb(beatmap.GetIdentity(), Ctx);
-            Ctx.Relations.Add(new CollectionRelation(Guid.NewGuid().ToString(), collection.Id,
-                map.Id));
-            Ctx.SaveChanges();
-
-            //todo: not suitable position
-            var currentInfo = Services.Get<PlayerList>().CurrentInfo;
-            if (currentInfo != null)
+            foreach (var beatmap in beatmaps)
             {
-                if (collection.Locked &&
-                    currentInfo.Identity.Equals(beatmap.GetIdentity()))
+                MapInfo map = InnerGetMapFromDb(beatmap.GetIdentity(), Ctx);
+                Ctx.Relations.Add(new CollectionRelation(Guid.NewGuid().ToString(), collection.Id,
+                    map.Id));
+                Ctx.SaveChanges();
+
+                //todo: not suitable position
+                var currentInfo = Services.Get<PlayerList>().CurrentInfo;
+                if (currentInfo != null)
                 {
-                    currentInfo.IsFavorite = true;
+                    if (collection.Locked &&
+                        currentInfo.Identity.Equals(beatmap.GetIdentity()))
+                    {
+                        currentInfo.IsFavorite = true;
+                    }
                 }
             }
         }

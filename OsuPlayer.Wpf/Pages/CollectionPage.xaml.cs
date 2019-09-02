@@ -20,6 +20,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Control.Notification;
+using Milky.OsuPlayer.Utils;
 using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
@@ -37,18 +38,18 @@ namespace Milky.OsuPlayer.Pages
         public CollectionPageViewModel ViewModel { get; set; }
         public string Id { get; set; }
 
-        public CollectionPage(MainWindow mainWindow )
+        public CollectionPage(MainWindow mainWindow)
         {
             InitializeComponent();
             _mainWindow = mainWindow;
 
             ViewModel = (CollectionPageViewModel)this.DataContext;
-            }
+        }
 
         public CollectionPage NavigateNewCollection(Collection collectionInfo)
         {
             ViewModel.CollectionInfo = collectionInfo;
-            var infos = (List<MapInfo>)_appDbOperator.GetMapsFromCollection(collectionInfo);
+            var infos = _appDbOperator.GetMapsFromCollection(collectionInfo);
             _entries = _beatmapDbOperator.GetBeatmapsByMapInfo(infos, TimeSortMode.AddTime);
             ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModelList(false));
             return this;
@@ -68,20 +69,14 @@ namespace Milky.OsuPlayer.Pages
         {
             var keyword = SearchBox.Text.Trim();
             if (string.IsNullOrEmpty(keyword))
-                UpdateList();
+            {
+
+            }
             else
             {
                 //var query = AppDbOperatorExt.FilterByKeyword(keyword);
                 //UpdateView(query);
             }
-        }
-
-        private void UpdateList()
-        {
-            //CollectionInfoGrid.DataContext = _collection;
-            //var infos = (List<MapInfo>)DbOperator.GetMapsFromCollection(_collection);
-            //_entries = Instances.OsuDb.Beatmaps.GetMapListFromDb(infos, false);
-            //UpdateView(_entries);
         }
 
         private void UpdateView(IEnumerable<Beatmap> entries)
@@ -97,10 +92,10 @@ namespace Milky.OsuPlayer.Pages
 
         private void Dispose()
         {
-            //todo
+            // todo
         }
 
-        private void RecentList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void MapList_MouseDoubleClick(object sender, RoutedEventArgs e)
         {
             PlaySelected();
         }
@@ -121,16 +116,12 @@ namespace Milky.OsuPlayer.Pages
                 _appDbOperator.RemoveMapFromCollection(entry.GetIdentity(), ViewModel.CollectionInfo);
             }
             //var dataModel = (BeatmapDataModel)MapList.SelectedItem;
-            UpdateList();
+
             await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
         }
 
         private void BtnDelCol_Click(object sender, RoutedEventArgs e)
         {
-            //App.NotificationList.Add(new NotificationOption
-            //{
-            //    Content = "确认删除收藏夹？"
-            //});
             var result = MessageBox.Show(_mainWindow, "确认删除收藏夹？", _mainWindow.Title, MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
@@ -208,8 +199,6 @@ namespace Milky.OsuPlayer.Pages
         {
             var map = GetSelected();
             if (map == null) return;
-            //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
-            //     map.BeatmapFileName));
             await PlayController.Default.PlayNewFile(map);
             await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.Collection, _entries);
         }
@@ -237,6 +226,12 @@ namespace Milky.OsuPlayer.Pages
         private IEnumerable<Beatmap> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)
         {
             return dataModels.Select(ConvertToEntry);
+        }
+
+        private void Page_Initialized(object sender, System.EventArgs e)
+        {
+            var helper = new GridViewHelper(MapList);
+            helper.OnMouseDoubleClick(MapList_MouseDoubleClick);
         }
     }
 }

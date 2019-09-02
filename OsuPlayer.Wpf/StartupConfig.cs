@@ -22,7 +22,7 @@ namespace Milky.OsuPlayer
 
             InitLocalDb();
 
-            EventRedirectHandle.Redirect();
+            //EventRedirectHandle.Redirect();
             StyleUtilities.SetAlignment();
 
             Unosquare.FFME.Library.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg");

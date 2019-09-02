@@ -8,17 +8,198 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     Initialized="UserControl_Initialized"
+    Loaded="UserControl_Loaded"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <ContextMenu x:Key="PlayListCtxMenu" Style="{StaticResource DefaultContextMenu}">
+            <MenuItem Header="播放(Enter)" Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding SearchCommand}"
+                CommandParameter="0"
+                Header="搜索标题"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding SearchCommand}"
+                CommandParameter="1"
+                Header="搜索艺术家"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding SearchCommand}"
+                CommandParameter="2"
+                Header="搜索来源"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding SearchCommand}"
+                CommandParameter="3"
+                Header="搜索作者"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding OpenSourceFolderCommand}"
+                Header="打开所在目录(Ctrl+O)"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding OpenScorePageCommand}"
+                Header="打开成绩页"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding SaveCollectionCommand}"
+                Header="收藏至...(Ctrl+S)"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding ExportCommand}"
+                Header="导出"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding RemoveCommand}"
+                Header="从列表中移除(Delete)"
+                Style="{StaticResource DefaultMenuItem}" />
+        </ContextMenu>
+    </UserControl.Resources>
     <UserControl.DataContext>
         <local:PlayListControlVm />
     </UserControl.DataContext>
     <Grid>
-        <ListBox ItemsSource="{Binding PlayList.Entries}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Label Content="{Binding AutoTitle}" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Border Margin="10" Background="#F0F0F0">
+            <Border.Effect>
+                <DropShadowEffect
+                    BlurRadius="10"
+                    Opacity="0.5"
+                    ShadowDepth="0" />
+            </Border.Effect>
+        </Border>
+        <Grid Margin="10" Background="#F0F0F0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Border BorderBrush="#D0D0D0" BorderThickness="0,0,0,1">
+                    <StackPanel
+                        Height="34"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <Label
+                            Margin="30,0,0,0"
+                            VerticalAlignment="Center"
+                            Foreground="#727272">
+                            <Label.Content>
+                                <TextBlock>
+                                    <Run Text="共" /><Run Text="{Binding PlayList.Entries.Count, Mode=OneWay}" /><Run Text="首" />
+                                </TextBlock>
+                            </Label.Content>
+                        </Label>
+                        <local:CommonButton
+                            Height="24"
+                            Padding="5,0"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            Click="CloseButton_Click"
+                            Command="{Binding SaveAllCollectionCommand}"
+                            Content="收藏全部"
+                            Cursor="Hand"
+                            FontSize="11"
+                            Foreground="#a0a0a0"
+                            MouseDownBackground="#e8e8e8"
+                            MouseDownForeground="#727272"
+                            MouseOverBackground="Transparent"
+                            MouseOverForeground="#808080" />
+                    </StackPanel>
+                </Border>
+                <StackPanel
+                    Margin="4,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <local:CommonButton
+                        Height="24"
+                        Padding="5,0"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        Command="{Binding ClearPlayListCommand}"
+                        Content="清空列表"
+                        Cursor="Hand"
+                        FontSize="11"
+                        Foreground="#a0a0a0"
+                        MouseDownBackground="#e8e8e8"
+                        MouseDownForeground="#727272"
+                        MouseOverBackground="Transparent"
+                        MouseOverForeground="#808080" />
+                    <local:CommonButton
+                        Width="24"
+                        Height="24"
+                        Click="CloseButton_Click"
+                        Cursor="Hand"
+                        IconMargin="0"
+                        IconSize="15"
+                        IconTemplate="{StaticResource CloseTempl}"
+                        MouseDownBackground="#d0d0d0"
+                        MouseOverBackground="#e0e0e0" />
+                </StackPanel>
+            </Grid>
+            <ListView
+                x:Name="PlayList"
+                Grid.Row="1"
+                ContextMenu="{StaticResource PlayListCtxMenu}"
+                ContextMenuOpening="PlayList_ContextMenuOpening"
+                ItemContainerStyle="{StaticResource GridView}"
+                ItemsSource="{Binding PlayList.Entries}"
+                MouseMove="PlayList_MouseMove"
+                SelectionChanged="PlayList_SelectionChanged"
+                Style="{StaticResource ListView}">
+                <ListView.Resources>
+                    <DataTemplate x:Key="PlayingDt">
+                        <TextBlock
+                            x:Name="LblCreator"
+                            Height="28"
+                            VerticalAlignment="Center"
+                            Foreground="#727272"
+                            Text="" />
+                    </DataTemplate>
+                    <DataTemplate x:Key="TitleDt">
+                        <Label
+                            x:Name="LblCreator"
+                            VerticalAlignment="Center"
+                            Foreground="#303030">
+                            <Label.Content>
+                                <TextBlock Text="{Binding AutoTitle}" />
+                            </Label.Content>
+                        </Label>
+                    </DataTemplate>
+                    <DataTemplate x:Key="ArtistDt">
+                        <Label
+                            x:Name="LblCreator"
+                            VerticalAlignment="Center"
+                            Foreground="#727272">
+                            <Label.Content>
+                                <TextBlock Text="{Binding AutoArtist}" />
+                            </Label.Content>
+                        </Label>
+                    </DataTemplate>
+                    <DataTemplate x:Key="CreatorDt">
+                        <Label
+                            x:Name="LblCreator"
+                            VerticalAlignment="Center"
+                            Foreground="#484848">
+                            <Label.Content>
+                                <TextBlock Text="{Binding Creator}" />
+                            </Label.Content>
+                        </Label>
+                    </DataTemplate>
+                </ListView.Resources>
+                <ListView.View>
+                    <GridView ColumnHeaderContainerStyle="{StaticResource HiddenHeaderStyle}">
+                        <GridViewColumn Width="20" CellTemplate="{StaticResource PlayingDt}" />
+                        <GridViewColumn Width="240" CellTemplate="{StaticResource TitleDt}" />
+                        <GridViewColumn Width="180" CellTemplate="{StaticResource ArtistDt}" />
+                        <GridViewColumn Width="110" CellTemplate="{StaticResource CreatorDt}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
     </Grid>
 </UserControl>

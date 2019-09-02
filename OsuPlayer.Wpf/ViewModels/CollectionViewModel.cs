@@ -29,9 +29,9 @@ namespace Milky.OsuPlayer.ViewModels
             {
                 return new DelegateCommand(async obj =>
                 {
-                    var entry = (Beatmap)obj;
+                    var entries = (IList<Beatmap>)obj;
                     var col = _appDbOperator.GetCollectionById(Id);
-                    await SelectCollectionPage.AddToCollectionAsync(col, entry);
+                    await SelectCollectionPage.AddToCollectionAsync(col, entries);
                 });
             }
         }

@@ -17,6 +17,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data.EF;
+using Milky.OsuPlayer.Utils;
 using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 
 namespace Milky.OsuPlayer.Pages
@@ -55,7 +56,7 @@ namespace Milky.OsuPlayer.Pages
             RecentList.SelectedItem = item;
         }
 
-        private void Recent_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void RecentList_MouseDoubleClick(object sender, RoutedEventArgs e)
         {
             PlaySelected();
         }
@@ -183,6 +184,12 @@ namespace Milky.OsuPlayer.Pages
         private IEnumerable<Beatmap> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)
         {
             return dataModels.Select(ConvertToEntry);
+        }
+
+        private void Page_Initialized(object sender, System.EventArgs e)
+        {
+            var helper = new GridViewHelper(RecentList);
+            helper.OnMouseDoubleClick(RecentList_MouseDoubleClick);
         }
     }
 }
