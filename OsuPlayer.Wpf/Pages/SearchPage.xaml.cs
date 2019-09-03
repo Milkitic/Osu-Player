@@ -31,10 +31,10 @@ namespace Milky.OsuPlayer.Pages
 
         public SearchPageViewModel ViewModel { get; set; }
 
-        public SearchPage(MainWindow mainWindow)
+        public SearchPage()
         {
-            ParentWindow = mainWindow;
             InitializeComponent();
+            ParentWindow = (MainWindow)Application.Current.MainWindow; ;
             _beatmapDbOperator = new BeatmapDbOperator();
 
             ViewModel = (SearchPageViewModel)DataContext;

@@ -33,11 +33,10 @@ namespace Milky.OsuPlayer.Pages
         private BeatmapDbOperator _beatmapOperator = new BeatmapDbOperator();
         private AppDbOperator _appDbOperator = new AppDbOperator();
 
-        public RecentPlayPage(MainWindow mainWindow)
+        public RecentPlayPage()
         {
-            _mainWindow = mainWindow;
-
             InitializeComponent();
+            _mainWindow = (MainWindow)Application.Current.MainWindow; ;
         }
 
         public void UpdateList()

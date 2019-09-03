@@ -47,10 +47,10 @@ namespace Milky.OsuPlayer.Pages
         public static bool IsTaskBusy =>
             ExportTask != null && !ExportTask.IsCanceled && !ExportTask.IsCompleted && !ExportTask.IsFaulted;
 
-        public ExportPage(MainWindow mainWindow)
+        public ExportPage()
         {
             InitializeComponent();
-            _mainWindow = mainWindow;
+            _mainWindow = (MainWindow)Application.Current.MainWindow; 
             ViewModel = (ExportPageViewModel)DataContext;
             ViewModel.ExportPath = AppSettings.Current.Export.MusicPath;
         }

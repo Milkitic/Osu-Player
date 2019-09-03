@@ -38,12 +38,17 @@ namespace Milky.OsuPlayer.Pages
         public CollectionPageViewModel ViewModel { get; set; }
         public string Id { get; set; }
 
-        public CollectionPage(MainWindow mainWindow)
+        public CollectionPage()
         {
             InitializeComponent();
-            _mainWindow = mainWindow;
+            _mainWindow = (MainWindow)Application.Current.MainWindow;
 
             ViewModel = (CollectionPageViewModel)this.DataContext;
+        }
+        public CollectionPage(string colId) : this()
+        {
+            var collectionInfo = _appDbOperator.GetCollectionById(colId);
+            NavigateNewCollection(collectionInfo);
         }
 
         public CollectionPage NavigateNewCollection(Collection collectionInfo)

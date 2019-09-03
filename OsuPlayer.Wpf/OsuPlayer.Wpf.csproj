@@ -171,6 +171,8 @@
     <Compile Include="Control\FrontDialog\FrontDialogOverlay.xaml.cs">
       <DependentUpon>FrontDialogOverlay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Control\SwitchRadio.cs" />
+    <Compile Include="Converter\IconColorConverter.cs" />
     <Compile Include="Utils\GridViewHelper.cs" />
     <Compile Include="Control\MaxButton.cs" />
     <Compile Include="Control\MinButton.cs" />
@@ -359,6 +361,10 @@
     <Page Include="Styles\ConverterDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\Radios.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Styles\SvgDictionary.xaml">
       <SubType>Designer</SubType>

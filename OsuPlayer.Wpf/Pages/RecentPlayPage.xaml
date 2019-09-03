@@ -13,7 +13,7 @@
     Loaded="Page_Loaded"
     mc:Ignorable="d">
 
-    <Grid Background="#B0FFFFFF">
+    <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem
                 Cursor="Hand"

@@ -25,7 +25,7 @@
     <Page.DataContext>
         <viewModels:SearchPageViewModel />
     </Page.DataContext>
-    <Grid Background="#B0FFFFFF">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />

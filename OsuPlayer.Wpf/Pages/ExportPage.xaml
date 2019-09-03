@@ -24,7 +24,7 @@
             <i:InvokeCommandAction Command="{Binding UpdateList}" CommandParameter="10" />
         </i:EventTrigger>
     </i:Interaction.Triggers>-->
-    <Grid Background="#B0FFFFFF">
+    <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem
                 Cursor="Hand"

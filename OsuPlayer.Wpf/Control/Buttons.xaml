@@ -233,4 +233,14 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style
+        x:Key="NavButton"
+        BasedOn="{StaticResource {x:Type controls:CommonButton}}"
+        TargetType="{x:Type controls:CommonButton}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="IconMargin" Value="0" />
+        <Setter Property="MouseDownForeground" Value="#CC397D" />
+        <Setter Property="MouseOverForeground" Value="#DC498D" />
+    </Style>
 </ResourceDictionary>

@@ -11,10 +11,10 @@ namespace Milky.OsuPlayer.Pages
     {
         private readonly MainWindow _mainWindow;
 
-        public StoryboardPage(MainWindow mainWindow)
+        public StoryboardPage()
         {
-            _mainWindow = mainWindow;
             InitializeComponent();
+            _mainWindow = (MainWindow)Application.Current.MainWindow;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)

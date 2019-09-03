@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.Pages
@@ -10,10 +11,10 @@ namespace Milky.OsuPlayer.Pages
     {
         private readonly MainWindow _mainWindow;
 
-        public FindPage(MainWindow mainWindow)
+        public FindPage()
         {
-            _mainWindow = mainWindow;
             InitializeComponent();
+            _mainWindow = (MainWindow)Application.Current.MainWindow; 
         }
     }
 }

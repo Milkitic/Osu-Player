@@ -42,11 +42,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         public override int PlayTime
         {
-            get => (int)(_sw.ElapsedMilliseconds * _multiplier + _controlOffset);
+            get => (int)(_sw.ElapsedMilliseconds * _multiplier + _controlOffset); // _multiplier播放速率
             protected set
             {
                 _controlOffset = value;
-                _sw.Reset();
+                _sw.Reset(); // sw是秒表
             }
         }
 
@@ -275,16 +275,16 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                     int? preMs = null;
                     while (!_cts.IsCancellationRequested && ComponentPlayer.Current.MusicPlayer.PlayerStatus == PlayerStatus.Playing)
                     {
-                        int playerMs = ComponentPlayer.Current.MusicPlayer.PlayTime;
-                        if (playerMs != preMs)
+                        int nowMs = ComponentPlayer.Current.MusicPlayer.PlayTime;
+                        if (nowMs != preMs) // 音乐play time变动
                         {
-                            preMs = playerMs;
-                            var d = playerMs - (PlayTime + SingleOffset + (UseSoundTouch ? 480 : 0));
-                            var r = AppSettings.Current.Play.GeneralOffset - d;
+                            preMs = nowMs;
+                            var d = nowMs - (PlayTime + SingleOffset); // Single：单曲offset（人工调），PlayTime：音效play time
+                            var r = AppSettings.Current.Play.GeneralOffset - d; // General：全局offset
                             if (Math.Abs(r) > 5)
                             {
                                 //Console.WriteLine($@"music: {App.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
-                                _controlOffset -= (int)(r / 2f);
+                                _controlOffset -= (int)(r / 2f); // 计算音效偏移量
                             }
                         }
 

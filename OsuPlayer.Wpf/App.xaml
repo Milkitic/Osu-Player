@@ -17,6 +17,7 @@
                 <ResourceDictionary Source="Styles/ContextMenuStyle.xaml" />
                 <ResourceDictionary Source="Styles/ListViewStyle.xaml" />
                 <ResourceDictionary Source="Styles/NavigationStyle.xaml" />
+                <ResourceDictionary Source="Styles/Radios.xaml" />
                 <ResourceDictionary Source="Styles/SliderStyle.xaml" />
                 <ResourceDictionary Source="Styles/StatusIconStyle.xaml" />
                 <ResourceDictionary Source="Styles/TabStyle.xaml" />

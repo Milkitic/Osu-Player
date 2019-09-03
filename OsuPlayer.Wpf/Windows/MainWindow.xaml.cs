@@ -40,13 +40,14 @@ namespace Milky.OsuPlayer.Windows
         {
             Pages = new PageParts
             {
-                SearchPage = new SearchPage(this),
-                RecentPlayPage = new RecentPlayPage(this),
-                FindPage = new FindPage(this),
-                StoryboardPage = new StoryboardPage(this),
-                CollectionPage = new CollectionPage(this),
-                ExportPage = new ExportPage(this),
+                SearchPage = new SearchPage(),
+                RecentPlayPage = new RecentPlayPage(),
+                FindPage = new FindPage(),
+                StoryboardPage = new StoryboardPage(),
+                CollectionPage = new CollectionPage(),
+                ExportPage = new ExportPage(),
             };
+
             PlayerViewModel.InitViewModel();
 
             InitializeComponent();

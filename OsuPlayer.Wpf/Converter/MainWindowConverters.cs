@@ -58,7 +58,25 @@ namespace Milky.OsuPlayer.Converter
             throw new NotImplementedException();
         }
     }
+    public class NavTextConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool isNavigationCollapsed)
+            {
+                return isNavigationCollapsed
+                    ? ""
+                    : parameter;
+            }
 
+            return parameter;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
     public class NavigationWidthConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
