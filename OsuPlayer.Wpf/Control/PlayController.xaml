@@ -47,14 +47,6 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                    <Setter Property="Visibility" Value="Visible" />
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                </DataTrigger>
-            </Style.Triggers>
         </Style>
     </UserControl.Resources>
     <Grid x:Name="ToolControl" Background="White">
@@ -100,18 +92,6 @@
                 IsTabStop="False"
                 WindowChrome.IsHitTestVisibleInChrome="True">
                 <ContentPresenter x:Name="PrevIcon" Content="{StaticResource WhitePrevIcon}" />
-                <!--<Button.Style>
-                    <Style TargetType="custom:PlayerControlButton">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                <Setter Property="Margin" Value="8" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                <Setter Property="Margin" Value="5" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>-->
             </custom:PlayerControlButton>
             <custom:PlayerControlButton
                 x:Name="PlayButton"
@@ -165,18 +145,6 @@
                 IsTabStop="False"
                 WindowChrome.IsHitTestVisibleInChrome="True">
                 <ContentPresenter x:Name="NextIcon" Content="{StaticResource WhiteNextIcon}" />
-                <!--<Button.Style>
-                    <Style TargetType="custom:PlayerControlButton">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                <Setter Property="Margin" Value="8" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                <Setter Property="Margin" Value="5" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>-->
             </custom:PlayerControlButton>
             <custom:PlayerControlButton
                 x:Name="OpenButton"
@@ -193,18 +161,6 @@
                 IsTabStop="False"
                 ShadowColor="#5d9cec">
                 <ContentPresenter x:Name="OpenIcon" Content="{StaticResource WhiteOpenIcon}" />
-                <Button.Style>
-                    <Style TargetType="custom:PlayerControlButton">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
             </custom:PlayerControlButton>
         </StackPanel>
         <Grid Grid.Column="2" Background="White">
@@ -348,7 +304,7 @@
                     BorderThickness="1">
                     <Border.Background>
                         <ImageBrush
-                            ImageSource="{StaticResource TextrueSource1}"
+                            ImageSource="{StaticResource TextureSource1}"
                             TileMode="Tile"
                             Viewport="0,0,500,500"
                             ViewportUnits="Absolute" />
@@ -423,7 +379,7 @@
                 <Border>
                     <Border.Background>
                         <ImageBrush
-                            ImageSource="{StaticResource TextrueSource1}"
+                            ImageSource="{StaticResource TextureSource1}"
                             TileMode="Tile"
                             Viewport="0,0,500,500"
                             ViewportUnits="Absolute" />

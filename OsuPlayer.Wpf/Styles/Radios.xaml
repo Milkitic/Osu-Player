@@ -140,4 +140,23 @@
         <Setter Property="TargetPageSingleton" Value="True" />
         <Setter Property="Scope" Value="Nav" />
     </Style>
+    <Style
+        x:Key="ConfigSwitchRadio"
+        BasedOn="{StaticResource {x:Type control:SwitchRadio}}"
+        TargetType="{x:Type control:SwitchRadio}">
+        <Setter Property="Margin" Value="0,0,0,1" />
+        <Setter Property="Height" Value="39" />
+        <Setter Property="Padding" Value="50,0,0,0" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="CheckedBackground" Value="#F8F8F8" />
+        <Setter Property="CheckedForeground" Value="#303030" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="MouseDownBackground" Value="{StaticResource ExtraLightBrush}" />
+        <Setter Property="MouseDownForeground" Value="#303030" />
+        <Setter Property="MouseOverBackground" Value="White" />
+        <Setter Property="MouseOverForeground" Value="#303030" />
+        <Setter Property="TargetPageSingleton" Value="True" />
+        <Setter Property="Scope" Value="Nav" />
+    </Style>
 </ResourceDictionary>

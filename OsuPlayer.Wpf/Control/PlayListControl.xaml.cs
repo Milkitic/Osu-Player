@@ -101,16 +101,16 @@ namespace Milky.OsuPlayer.Control
                     switch (s)
                     {
                         case "0":
-                            mw.MainFrame.Navigate(mw.Pages.SearchPage.Search(SelectedMap.AutoTitle));
+                            mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.AutoTitle));
                             break;
                         case "1":
-                            mw.MainFrame.Navigate(mw.Pages.SearchPage.Search(SelectedMap.AutoArtist));
+                            mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.AutoArtist));
                             break;
                         case "2":
-                            mw.MainFrame.Navigate(mw.Pages.SearchPage.Search(SelectedMap.SongSource));
+                            mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.SongSource));
                             break;
                         case "3":
-                            mw.MainFrame.Navigate(mw.Pages.SearchPage.Search(SelectedMap.Creator));
+                            mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.Creator));
                             break;
                     }
                 });

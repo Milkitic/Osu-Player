@@ -132,7 +132,7 @@ namespace Milky.OsuPlayer.Pages
             if (result == MessageBoxResult.Yes)
             {
                 _appDbOperator.RemoveCollection(ViewModel.CollectionInfo);
-                _mainWindow.MainFrame.Navigate(_mainWindow.Pages.RecentPlayPage);
+                _mainWindow.SwitchRecent.IsChecked = true;
                 _mainWindow.UpdateCollections();
             }
         }
@@ -146,30 +146,28 @@ namespace Milky.OsuPlayer.Pages
         {
             var map = GetSelected();
             if (map == null) return;
-            _mainWindow.MainFrame.Navigate(_mainWindow.Pages.SearchPage.Search(map.Creator));
+            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.Creator));
         }
 
         private void ItemSearchSource_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
             if (map == null) return;
-            _mainWindow.MainFrame.Navigate(_mainWindow.Pages.SearchPage.Search(map.SongSource));
+            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.SongSource));
         }
 
         private void ItemSearchArtist_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
             if (map == null) return;
-            _mainWindow.MainFrame.Navigate(_mainWindow.Pages.SearchPage.Search(
-                MetaString.GetUnicode(map.Artist, map.ArtistUnicode)));
+            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoArtist));
         }
 
         private void ItemSearchTitle_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
             if (map == null) return;
-            _mainWindow.MainFrame.Navigate(_mainWindow.Pages.SearchPage.Search(
-                MetaString.GetUnicode(map.Title, map.TitleUnicode)));
+            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoTitle));
         }
 
         private void ItemExport_Click(object sender, RoutedEventArgs e)

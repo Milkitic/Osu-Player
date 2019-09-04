@@ -111,30 +111,28 @@ namespace Milky.OsuPlayer.Pages
         {
             var map = GetSelected();
             if (map == null) return;
-            _mainWindow.MainFrame.Navigate(_mainWindow.Pages.SearchPage.Search(map.SongSource));
+            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.SongSource));
         }
 
         private void ItemSearchMapper_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
             if (map == null) return;
-            _mainWindow.MainFrame.Navigate(_mainWindow.Pages.SearchPage.Search(map.Creator));
+            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.Creator));
         }
 
         private void ItemSearchArtist_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
             if (map == null) return;
-            _mainWindow.MainFrame.Navigate(_mainWindow.Pages.SearchPage.Search(
-                MetaString.GetUnicode(map.Artist, map.ArtistUnicode)));
+            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoArtist));
         }
 
         private void ItemSearchTitle_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
             if (map == null) return;
-            _mainWindow.MainFrame.Navigate(_mainWindow.Pages.SearchPage.Search(
-                MetaString.GetUnicode(map.Title, map.TitleUnicode)));
+            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoTitle));
         }
 
         private void ItemSet_Click(object sender, RoutedEventArgs e)

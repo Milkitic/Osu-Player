@@ -203,6 +203,7 @@
     <Compile Include="Notification.cs" />
     <Compile Include="Utils\NativeUser32.cs" />
     <Compile Include="ViewModels\ListPageViewModel.cs" />
+    <Compile Include="Windows\MyCancellationTokenSource.cs" />
     <Compile Include="Windows\PageParts.cs" />
     <Page Include="AnimationControl.xaml">
       <SubType>Designer</SubType>
@@ -245,14 +246,11 @@
     <Compile Include="Converter\DateTimeConverter.cs" />
     <Compile Include="Converter\NavigationColorConverter.cs" />
     <Compile Include="Converter\MainWindowConverters.cs" />
-    <Compile Include="Windows\EffectWindowBase.cs" />
     <Compile Include="Windows\ExceptionWindow.xaml.cs">
       <DependentUpon>ExceptionWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\LyricWindow.xaml.WinApi.cs" />
     <Compile Include="ViewModels\LyricWindowViewModel.cs" />
-    <Compile Include="Windows\MainWindow.Player.cs" />
-    <Compile Include="Windows\MainWindow.Surface.cs" />
     <Compile Include="Windows\LyricWindow.xaml.cs">
       <DependentUpon>LyricWindow.xaml</DependentUpon>
     </Compile>
@@ -526,7 +524,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Windows\MainWindow.Event.cs" />
     <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

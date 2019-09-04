@@ -1,79 +1,114 @@
-﻿<windows:EffectWindowBase x:Class="Milky.OsuPlayer.Windows.ConfigWindow"
-                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                        xmlns:local="clr-namespace:Milky.OsuPlayer"
-                        xmlns:dms="clr-namespace:DMSkin.WPF;assembly=DMSkin.WPF"
-                        xmlns:controls="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
-                        xmlns:windows="clr-namespace:Milky.OsuPlayer.Windows"
-                        mc:Ignorable="d"
-                        Title="播放器设置" Height="400" MinWidth="600" Loaded="Window_Loaded" SizeToContent="Width"
-                        ResizeMode="NoResize"
-                        Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
-                        DMWindowShadowColor="#FF000000"
-                        DMWindowShadowSize="20"
-                        DMWindowShadowOpacity="0.5" x:Name="CfgWindow" WindowStartupLocation="CenterScreen">
+﻿<wpfApi:WindowBase
+    x:Class="Milky.OsuPlayer.Windows.ConfigWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:settings="clr-namespace:Milky.OsuPlayer.Pages.Settings"
+    xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
+    x:Name="CfgWindow"
+    Title="播放器设置"
+    Height="400"
+    MinWidth="600"
+    Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
+    ResizeMode="NoResize"
+    Shown="Window_Shown"
+    SizeToContent="Width"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <WindowChrome.WindowChrome>
+        <WindowChrome
+            CaptionHeight="32"
+            CornerRadius="0"
+            GlassFrameThickness="1,1,1,1"
+            ResizeBorderThickness="0"
+            UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
     <Grid Background="#323232">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Grid x:Name="TitleBarArea" Grid.Row="0" Height="32">
-            <Label Content="{Binding Title,ElementName=CfgWindow}" Foreground="White" Margin="8,0,0,0"
-                   VerticalContentAlignment="Center" />
+        <Grid
+            x:Name="TitleBarArea"
+            Grid.Row="0"
+            Height="32">
+            <Label
+                Margin="8,0,0,0"
+                VerticalContentAlignment="Center"
+                Content="{Binding Title, ElementName=CfgWindow}"
+                Foreground="White" />
             <StackPanel
                 Height="{Binding DMSystemButtonSize}"
+                Margin="0,0,1,0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Orientation="Horizontal">
-                <controls:DMSystemCloseButton
-                    DMSystemButtonForeground="#E0EEEEEE"
-                    DMSystemButtonHoverForeground="{StaticResource WhiteBrush}"
-                    DMSystemButtonSize="32" />
+                <control:CloseButton MouseDownBackground="#80F72F2F" WindowChrome.IsHitTestVisibleInChrome="True" />
             </StackPanel>
         </Grid>
-        <DockPanel Grid.Row="1" Width="Auto" Height="Auto">
-            <Canvas Width="150">
-                <Label Style="{StaticResource NavigationLabelStyle}"
-                       Width="150" Height="30">
-                    <TextBlock Margin="5,0,0,0">设置</TextBlock>
-                </Label>
-                <ToggleButton x:Name="BtnGeneral" Click="BtnGeneral_Click"
-                              Canvas.Top="40" Width="150" Height="40"
-                              Content="常规" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
-                              Style="{StaticResource NavigationButtonStyle}" />
-                <ToggleButton x:Name="BtnPlay" Click="BtnPlay_Click"
-                              Canvas.Top="81" Width="150" Height="40"
-                              Content="播放" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
-                              Style="{StaticResource NavigationButtonStyle}" />
-                <ToggleButton x:Name="BtnHotkey" Click="BtnHotkey_Click"
-                              Canvas.Top="122" Width="150" Height="40"
-                              Content="热键" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
-                              Style="{StaticResource NavigationButtonStyle}" />
-                <ToggleButton x:Name="BtnLyric" Click="BtnLyric_Click"
-                              Canvas.Top="163" Width="150" Height="40"
-                              Content="歌词" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
-                              Style="{StaticResource NavigationButtonStyle}" />
-                <ToggleButton x:Name="BtnExport" Click="BtnExport_Click"
-                              Canvas.Top="204" Width="150" Height="40"
-                              Content="导出设置" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
-                              Style="{StaticResource NavigationButtonStyle}" />
-                <ToggleButton x:Name="BtnAbout" Click="BtnAbout_Click"
-                              Canvas.Top="245" Width="150" Height="40"
-                              Content="关于" Checked="BtnNavigate_Checked" Unchecked="BtnNavigate_Unchecked"
-                              Style="{StaticResource NavigationButtonStyle}" />
-            </Canvas>
+        <DockPanel
+            Grid.Row="1"
+            Width="Auto"
+            Height="Auto">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Width="150">
+                    <Label
+                        Width="150"
+                        Height="30"
+                        Style="{StaticResource NavigationLabelStyle}">
+                        <TextBlock Margin="5,0,0,0">设置</TextBlock>
+                    </Label>
+                    <control:SwitchRadio
+                        x:Name="SwitchGeneral"
+                        Content="常规"
+                        Style="{StaticResource ConfigSwitchRadio}"
+                        TargetFrameControl="MainFrame"
+                        TargetPageType="{x:Type settings:GeneralPage}" />
+                    <control:SwitchRadio
+                        Content="播放"
+                        Style="{StaticResource ConfigSwitchRadio}"
+                        TargetFrameControl="MainFrame"
+                        TargetPageType="{x:Type settings:PlayPage}" />
+                    <control:SwitchRadio
+                        Content="热键"
+                        Style="{StaticResource ConfigSwitchRadio}"
+                        TargetFrameControl="MainFrame"
+                        TargetPageType="{x:Type settings:HotKeyPage}" />
+                    <control:SwitchRadio
+                        Content="歌词"
+                        Style="{StaticResource ConfigSwitchRadio}"
+                        TargetFrameControl="MainFrame"
+                        TargetPageType="{x:Type settings:LyricPage}" />
+                    <control:SwitchRadio
+                        Content="导出设置"
+                        Style="{StaticResource ConfigSwitchRadio}"
+                        TargetFrameControl="MainFrame"
+                        TargetPageType="{x:Type settings:ExportPage}" />
+                    <control:SwitchRadio
+                        Content="关于"
+                        Style="{StaticResource ConfigSwitchRadio}"
+                        TargetFrameControl="MainFrame"
+                        TargetPageType="{x:Type settings:AboutPage}" />
+                </StackPanel>
+            </ScrollViewer>
             <DockPanel x:Name="MainCanvas" Background="#FEFEFE">
-                <Frame Name="MainFrame" NavigationUIVisibility="Hidden" 
-                       Width="{Binding ElementName=MainCanvas,Path=ActualWidth}"
-                       Height="{Binding ElementName=MainCanvas,Path=ActualHeight}" />
+                <Frame
+                    Name="MainFrame"
+                    Width="{Binding ElementName=MainCanvas, Path=ActualWidth}"
+                    Height="{Binding ElementName=MainCanvas, Path=ActualHeight}"
+                    NavigationUIVisibility="Hidden" />
             </DockPanel>
         </DockPanel>
-        <Border x:Name="MsgBoxCover" Grid.Row="1" Background="{StaticResource WhiteBrush80}"
-                Visibility="Hidden" />
+
+        <Border
+            x:Name="MsgBoxCover"
+            Grid.Row="1"
+            Background="{StaticResource WhiteBrush80}"
+            Visibility="Hidden" />
     </Grid>
-</windows:EffectWindowBase>
+</wpfApi:WindowBase>
 
 
 

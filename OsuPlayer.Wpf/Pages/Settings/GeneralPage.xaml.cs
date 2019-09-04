@@ -11,6 +11,7 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -23,10 +24,10 @@ namespace Milky.OsuPlayer.Pages.Settings
         private readonly ConfigWindow _configWindow;
         private FileScannerViewModel ScannerViewModel { get; }
 
-        public GeneralPage(MainWindow mainWindow, ConfigWindow configWindow)
+        public GeneralPage()
         {
-            _mainWindow = mainWindow;
-            _configWindow = configWindow;
+            _mainWindow = WindowBase.GetCurrentFirst<MainWindow>();
+            _configWindow = WindowBase.GetCurrentFirst<ConfigWindow>();
             InitializeComponent();
             ScannerViewModel = Services.Get<OsuFileScanner>().ViewModel;
         }

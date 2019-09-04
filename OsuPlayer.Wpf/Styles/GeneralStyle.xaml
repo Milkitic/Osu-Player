@@ -7,10 +7,10 @@
         CacheOption="OnLoad"
         UriSource="pack://application:,,,/OsuPlayer;component/Resources/title.png" />
     <BitmapImage
-        x:Key="TextrueSource1"
+        x:Key="TextureSource1"
         CacheOption="OnLoad"
         UriSource="pack://application:,,,/OsuPlayer;component/Resources/osu_texture.png" />
-    <ImageBrush x:Key="TextureBrush" ImageSource="{StaticResource TextrueSource1}" />
+    <ImageBrush x:Key="TextureBrush" ImageSource="{StaticResource TextureSource1}" />
 
     <BitmapImage
         x:Key="GearS"

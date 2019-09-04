@@ -17,6 +17,10 @@
     xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
+    Width="998"
+    Height="759"
+    MinWidth="800"
+    MinHeight="600"
     Closing="Window_Closing"
     Deactivated="WindowBase_Deactivated"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
@@ -24,25 +28,7 @@
     SizeChanged="Window_SizeChanged"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-    <!--  Width="998" Height="759" MinWidth="878" MinHeight="138"  -->
-    <wpfApi:WindowBase.Style>
-        <Style TargetType="wpfApi:WindowBase">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsMiniMode, Converter={StaticResource MiniWindowConverter}}" Value="False">
-                    <Setter Property="Topmost" Value="False" />
-                    <Setter Property="ResizeMode" Value="CanResize" />
-                </DataTrigger>
-                <DataTrigger
-                    wpfApi:TriggerTracing.TraceEnabled="True"
-                    wpfApi:TriggerTracing.TriggerName="MainWindow -&gt; IsMiniMode"
-                    Binding="{Binding IsMiniMode, Converter={StaticResource MiniWindowConverter}}"
-                    Value="True">
-                    <Setter Property="Topmost" Value="True" />
-                    <Setter Property="ResizeMode" Value="NoResize" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </wpfApi:WindowBase.Style>
+
     <WindowChrome.WindowChrome>
         <WindowChrome
             CaptionHeight="46"
@@ -59,7 +45,6 @@
         <converter:IconMarginConverter x:Key="CvtIconMargin" />
         <converter:TitleVisibleConverter x:Key="CvtTitleVisible" />
         <converter:NavTextConverter x:Key="CvtNavText" />
-        <converter:MiniEnabledConverter x:Key="CvtMiniEnabled" />
         <converter:LyricWindowShownConverter x:Key="CvtLyricWindowShown" />
         <converter:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
         <converter:MsToStringConverter x:Key="MsToStringConverter" />
@@ -67,7 +52,7 @@
     <Grid Margin="{Binding WindowState, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource WindowMarginConverter}}">
         <Grid.Background>
             <ImageBrush
-                ImageSource="{StaticResource TextrueSource1}"
+                ImageSource="{StaticResource TextureSource1}"
                 TileMode="Tile"
                 Viewport="0,0,500,500"
                 ViewportUnits="Absolute" />
@@ -80,18 +65,6 @@
             x:Name="TitleBarAreaBack"
             Grid.Row="0"
             Height="40">
-            <DockPanel.Style>
-                <Style TargetType="FrameworkElement">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                            <Setter Property="Visibility" Value="Visible" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </DockPanel.Style>
             <Image
                 Height="28"
                 Margin="8,0,0,0"
@@ -103,7 +76,10 @@
                 <RowDefinition />
                 <RowDefinition Height="auto" MinHeight="48" />
             </Grid.RowDefinitions>
-            <Border Grid.Row="0" BorderThickness="1,0,1,0">
+            <Border
+                Grid.Row="0"
+                Panel.ZIndex="10"
+                BorderThickness="1,0,1,0">
                 <Border.BorderBrush>
                     <LinearGradientBrush EndPoint="0,1">
                         <GradientStop Offset="0" Color="#dc498d" />
@@ -136,6 +112,7 @@
                             <TextBlock Margin="5,0,0,0">库</TextBlock>
                         </Label>
                         <control:SwitchRadio
+                            x:Name="SwitchSearch"
                             Padding="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
                             CheckedIconColor="#4050A0"
                             Content="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavText}, ConverterParameter=搜索}"
@@ -158,6 +135,7 @@
                             <TextBlock Margin="5,0,0,0">我的</TextBlock>
                         </Label>
                         <control:SwitchRadio
+                            x:Name="SwitchRecent"
                             Padding="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
                             CheckedIconColor="#A04090"
                             Content="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavText}, ConverterParameter=最近播放}"
@@ -227,21 +205,8 @@
                     <Frame
                         Name="MainFrame"
                         Background="#B0FFFFFF"
-                        ClipToBounds="True"
-                        NavigationUIVisibility="Hidden">
-                        <Frame.Style>
-                            <Style TargetType="FrameworkElement">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Frame.Style>
-                    </Frame>
+                        NavigationUIVisibility="Hidden"
+                        Visibility="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource NullToHiddenConverter}}" />
                 </Grid>
             </DockPanel>
             <control:PlayController x:Name="PlayController" Grid.Row="1" />
@@ -263,18 +228,6 @@
             x:Name="TitleBarArea"
             Grid.Row="0"
             Height="40">
-            <DockPanel.Style>
-                <Style TargetType="FrameworkElement">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsMiniMode}" Value="False">
-                            <Setter Property="Visibility" Value="Visible" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </DockPanel.Style>
             <StackPanel
                 Height="40"
                 Margin="0,0,5,0"
@@ -315,7 +268,7 @@
                 </Border>
                 <control:MinButton IconSize="22" WindowChrome.IsHitTestVisibleInChrome="True" />
                 <control:MaxButton WindowChrome.IsHitTestVisibleInChrome="True" />
-                <control:CloseButton WindowChrome.IsHitTestVisibleInChrome="True" />
+                <control:CloseButton MouseDownBackground="#a0c72828" WindowChrome.IsHitTestVisibleInChrome="True" />
             </StackPanel>
         </DockPanel>
         <control:WelcomeControl x:Name="WelcomeControl" Grid.Row="1" />

@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -20,10 +21,10 @@ namespace Milky.OsuPlayer.Pages.Settings
         private readonly string _dtFormat = "g";
         private NewVersionWindow _newVersionWindow;
 
-        public AboutPage(MainWindow mainWindow, ConfigWindow configWindow)
+        public AboutPage()
         {
-            _mainWindow = mainWindow;
-            _configWindow = configWindow;
+            _mainWindow = WindowBase.GetCurrentFirst<MainWindow>();
+            _configWindow = WindowBase.GetCurrentFirst<ConfigWindow>();
             InitializeComponent();
         }
 

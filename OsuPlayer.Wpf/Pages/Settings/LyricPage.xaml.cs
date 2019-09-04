@@ -5,6 +5,7 @@ using Milky.OsuPlayer.Windows;
 using System.Windows;
 using System.Windows.Controls;
 using Milky.OsuPlayer.Instances;
+using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -15,9 +16,9 @@ namespace Milky.OsuPlayer.Pages.Settings
     {
         private readonly MainWindow _mainWindow;
         private bool _loaded;
-        public LyricPage(MainWindow mainWindow)
+        public LyricPage()
         {
-            _mainWindow = mainWindow;
+            _mainWindow = WindowBase.GetCurrentFirst<MainWindow>();
             InitializeComponent();
         }
 

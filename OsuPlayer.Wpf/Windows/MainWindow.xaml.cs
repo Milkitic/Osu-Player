@@ -7,11 +7,22 @@ using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Common.Scanning;
+using Milky.OsuPlayer.Control.Notification;
+using Milky.OsuPlayer.Instances;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -20,7 +31,6 @@ namespace Milky.OsuPlayer.Windows
     /// </summary>
     public partial class MainWindow : WindowBase
     {
-        public PageParts Pages { get; } 
         internal MainWindowViewModel ViewModel { get; }
 
         public readonly LyricWindow LyricWindow;
@@ -29,25 +39,14 @@ namespace Milky.OsuPlayer.Windows
         public bool ForceExit = false;
 
         private WindowState _lastState;
-        private readonly OptionContainer _optionContainer = new OptionContainer();
-        private readonly OptionContainer _modeOptionContainer = new OptionContainer();
 
-        //local player control
-        private bool _scrollLock;
-        private PlayerStatus _tmpStatus = PlayerStatus.Stopped;
+        private readonly BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private readonly AppDbOperator _appDbOperator = new AppDbOperator();
+
+        private Task _searchLyricTask;
 
         public MainWindow()
         {
-            Pages = new PageParts
-            {
-                SearchPage = new SearchPage(),
-                RecentPlayPage = new RecentPlayPage(),
-                FindPage = new FindPage(),
-                StoryboardPage = new StoryboardPage(),
-                CollectionPage = new CollectionPage(),
-                ExportPage = new ExportPage(),
-            };
-
             PlayerViewModel.InitViewModel();
 
             InitializeComponent();
@@ -61,9 +60,10 @@ namespace Milky.OsuPlayer.Windows
             Animation.Loaded += Animation_Loaded;
             TryBindHotKeys();
         }
+
         private void TryBindHotKeys()
         {
-            var page = new Pages.Settings.HotKeyPage(this);
+            var page = new Pages.Settings.HotKeyPage();
             OverallKeyHook.AddKeyHook(page.PlayPause.Name, () => { PlayController.Default.TogglePlay(); });
             OverallKeyHook.AddKeyHook(page.Previous.Name, () =>
             {
@@ -89,25 +89,6 @@ namespace Milky.OsuPlayer.Windows
             });
         }
 
-        private const int WmExitSizeMove = 0x232;
-
-        private IntPtr HwndMessageHook(IntPtr wnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            switch (msg)
-            {
-                case WmExitSizeMove:
-                    if (Height <= MinHeight && !ViewModel.IsMiniMode)
-                    {
-                        ViewModel.IsMiniMode = true;
-                    }
-
-                    handled = true;
-                    break;
-            }
-
-            return IntPtr.Zero;
-        }
-
         private void WindowBase_Deactivated(object sender, EventArgs e)
         {
             PlayController.Default.PopPlayList.IsOpen = false;
@@ -117,5 +98,260 @@ namespace Milky.OsuPlayer.Windows
         {
             PlayController.Default.PopPlayList.IsOpen = false;
         }
+
+        /// <summary>
+        /// Update collections in the navigation bar.
+        /// </summary>
+        public void UpdateCollections()
+        {
+            var list = _appDbOperator.GetCollections();
+            list.Reverse();
+            ViewModel.Collection = new ObservableCollection<Collection>(list);
+        }
+
+        private bool IsMapFavorite(MapInfo info)
+        {
+            var album = _appDbOperator.GetCollectionsByMap(info);
+            bool isFavorite = album != null && album.Any(k => k.Locked);
+
+            return isFavorite;
+        }
+
+        private bool IsMapFavorite(MapIdentity identity)
+        {
+            var info = _appDbOperator.GetMapFromDb(identity);
+            return IsMapFavorite(info);
+        }
+
+        /// <summary>
+        /// Call lyric provider to check lyric
+        /// </summary>
+        public void SetLyricSynchronously()
+        {
+            if (!LyricWindow.IsVisible)
+                return;
+
+            Task.Run(async () =>
+            {
+                if (_searchLyricTask?.IsTaskBusy() == true)
+                    await Task.WhenAny(_searchLyricTask);
+
+                _searchLyricTask = Task.Run(async () =>
+                {
+                    var player = Services.Get<PlayersInst>().AudioPlayer;
+                    if (player == null)
+                        return;
+
+                    var meta = player.OsuFile.Metadata;
+                    var lyricInst = Services.Get<LyricsInst>();
+                    var lyric = await lyricInst.LyricProvider.GetLyricAsync(meta.ArtistMeta.ToUnicodeString(),
+                        meta.TitleMeta.ToUnicodeString(), player.Duration);
+                    LyricWindow.SetNewLyric(lyric, player.OsuFile);
+                    LyricWindow.StartWork();
+                });
+            });
+        }
+
+        private void TriggerMiniWindow()
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Events
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            App.NotificationList = new ObservableCollection<NotificationOption>();
+            NotificationOverlay.ItemsSource = App.NotificationList;
+            if (AppSettings.Current.General.FirstOpen)
+            {
+                WelcomeControl.Show();
+                await Services.Get<OsuDbInst>().LoadLocalDbAsync();
+            }
+            else
+            {
+                await Services.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Current.General.CustomSongsPath);
+                if (DateTime.Now - AppSettings.Current.LastTimeScanOsuDb > TimeSpan.FromDays(1))
+                {
+                    await Services.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Current.General.DbPath, true);
+                    AppSettings.Current.LastTimeScanOsuDb = DateTime.Now;
+                    AppSettings.SaveCurrent();
+                }
+            }
+
+            UpdateCollections();
+
+            PlayController.Default.OnNewFileLoaded += Controller_OnNewFileLoaded;
+            PlayController.Default.OnLikeClick += Controller_OnLikeClick;
+            PlayController.Default.OnThumbClick += Controller_OnThumbClick;
+
+            var updater = Services.Get<Updater>();
+            bool? hasUpdate = await updater.CheckUpdateAsync();
+            if (hasUpdate == true && updater.NewRelease.NewVerString != AppSettings.Current.IgnoredVer)
+            {
+                var newVersionWindow = new NewVersionWindow(updater.NewRelease, this);
+                newVersionWindow.ShowDialog();
+            }
+        }
+
+        /// <summary>
+        /// Clear things.
+        /// </summary>
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (AppSettings.Current.General.ExitWhenClosed == null && !ForceExit)
+            {
+                e.Cancel = true;
+                FramePop.Navigate(new ClosingPage(this));
+                return;
+            }
+            else if (AppSettings.Current.General.ExitWhenClosed == false && !ForceExit)
+            {
+                WindowState = WindowState.Minimized;
+                Hide();
+                e.Cancel = true;
+                return;
+            }
+
+            PlayController.Default?.Dispose();
+            LyricWindow.Dispose();
+            NotifyIcon.Dispose();
+            if (ConfigWindow == null || ConfigWindow.IsClosed)
+                return;
+            if (ConfigWindow.IsInitialized)
+                ConfigWindow.Close();
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (WindowState == WindowState.Minimized)
+                return;
+            _lastState = WindowState;
+        }
+
+        private void Animation_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (AppSettings.Current.CurrentPath == null || !AppSettings.Current.Play.Memory)
+            {
+                return;
+            }
+
+            Animation.StartScene(async () =>
+            {
+                // 加至播放列表
+                var entries = _beatmapDbOperator.GetBeatmapsByIdentifiable(AppSettings.Current.CurrentList);
+
+                await Services.Get<PlayerList>()
+                    .RefreshPlayListAsync(PlayerList.FreshType.All, beatmaps: entries);
+
+                bool play = AppSettings.Current.Play.AutoPlay;
+                await PlayController.Default.PlayNewFile(AppSettings.Current.CurrentPath, play);
+            });
+        }
+
+        private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
+        {
+            FramePop.Navigate(new AddCollectionPage(this));
+        }
+
+        private void BtnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            if (ConfigWindow == null || ConfigWindow.IsClosed)
+            {
+                ConfigWindow = new ConfigWindow();
+                ConfigWindow.Show();
+            }
+            else
+            {
+                if (ConfigWindow.IsInitialized)
+                    ConfigWindow.Focus();
+            }
+        }
+
+        private void BtnMini_Click(object sender, RoutedEventArgs e)
+        {
+            TriggerMiniWindow();
+        }
+
+        private void NotifyIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            Topmost = true;
+            Topmost = false;
+            Show();
+            WindowState = _lastState;
+        }
+
+        private void MenuExit_Click(object sender, RoutedEventArgs e)
+        {
+            ForceExit = true;
+            this.Close();
+        }
+
+        private void MenuConfig_Click(object sender, RoutedEventArgs e)
+        {
+            BtnSettings_Click(sender, e);
+        }
+
+        private void MenuOpenHideLyric_Click(object sender, RoutedEventArgs e)
+        {
+            if (LyricWindow.IsShown)
+            {
+                LyricWindow.Hide();
+            }
+            else
+            {
+                LyricWindow.Show();
+            }
+        }
+
+        private void MenuLockLyric_Click(object sender, RoutedEventArgs e)
+        {
+            LyricWindow.IsLocked = !LyricWindow.IsLocked;
+        }
+
+        private void Controller_OnNewFileLoaded(object sender, HandledEventArgs e)
+        {
+            Execute.OnUiThread(() =>
+            {
+                /* Set Lyric */
+                SetLyricSynchronously();
+            });
+        }
+
+        private void Controller_OnThumbClick(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Content = null;
+        }
+
+        private void Controller_OnLikeClick(object sender, RoutedEventArgs e)
+        {
+            var entry = _beatmapDbOperator.GetBeatmapByIdentifiable(Services.Get<PlayerList>().CurrentIdentity);
+            if (entry == null)
+            {
+                Notification.Show("该图不存在于该osu!db中", Title);
+                return;
+            }
+
+            //if (!ViewModel.IsMiniMode)
+            FramePop.Navigate(new SelectCollectionPage(entry));
+            //else
+            //{
+            //    var collection = _appDbOperator.GetCollections().First(k => k.Locked);
+            //    if (Services.Get<PlayerList>().CurrentInfo.IsFavorite)
+            //    {
+            //        _appDbOperator.RemoveMapFromCollection(entry, collection);
+            //        Services.Get<PlayerList>().CurrentInfo.IsFavorite = false;
+            //    }
+            //    else
+            //    {
+            //        await SelectCollectionPage.AddToCollectionAsync(collection, new[] { entry });
+            //        Services.Get<PlayerList>().CurrentInfo.IsFavorite = true;
+            //    }
+            //}
+
+            IsMapFavorite(Services.Get<PlayerList>().CurrentInfo.Identity);
+        }
+
+        #endregion Events
     }
 }

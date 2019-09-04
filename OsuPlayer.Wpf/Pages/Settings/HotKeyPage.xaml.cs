@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Windows;
+using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -26,9 +27,9 @@ namespace Milky.OsuPlayer.Pages.Settings
             Key.LeftAlt, Key.RightAlt
         };
 
-        public HotKeyPage(MainWindow mainWindow)
+        public HotKeyPage()
         {
-            _mainWindow = mainWindow;
+            _mainWindow = WindowBase.GetCurrentFirst<MainWindow>();
             InitializeComponent();
         }
 

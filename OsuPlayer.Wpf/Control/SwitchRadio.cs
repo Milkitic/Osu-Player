@@ -12,9 +12,9 @@ namespace Milky.OsuPlayer.Control
     public class SwitchRadio : RadioButton
     {
         //protected Window HostWindow { get; private set; }
-        private Dictionary<Type, FrameworkElement> _pageSet = new Dictionary<Type, FrameworkElement>();
+        private static readonly Dictionary<Type, FrameworkElement> PageMapping = new Dictionary<Type, FrameworkElement>();
         protected FrameworkElement HostWindow { get; private set; }
-
+        private Action<FrameworkElement> _loadedAction;
         public SwitchRadio()
         {
             Loaded += (sender, e) =>
@@ -34,7 +34,7 @@ namespace Milky.OsuPlayer.Control
                 {
                     return;
                 }
-                
+
                 if (!string.IsNullOrWhiteSpace(Scope) && Scopes.ContainsKey(Scope))
                 {
                     var others = Scopes[Scope].Where(k => k != this);
@@ -80,12 +80,31 @@ namespace Milky.OsuPlayer.Control
             };
         }
 
+        public void CheckAndAction(Action<FrameworkElement> action)
+        {
+            if (IsChecked == true)
+            {
+                if (HostWindow.FindName(TargetFrameControl) is Frame frame)
+                {
+                    if (frame.Content != null)
+                    {
+                        action.Invoke(frame.Content as FrameworkElement);
+                    }
+                }
+            }
+            else
+            {
+                _loadedAction = action;
+                IsChecked = true;
+            }
+        }
+
         private void Navigate(Frame frame)
         {
             FrameworkElement page;
-            if (TargetPageSingleton && _pageSet.ContainsKey(TargetPageType))
+            if (TargetPageSingleton && PageMapping.ContainsKey(TargetPageType))
             {
-                page = _pageSet[TargetPageType];
+                page = PageMapping[TargetPageType];
             }
             else
             {
@@ -94,10 +113,12 @@ namespace Milky.OsuPlayer.Control
                     : Activator.CreateInstance(TargetPageType, TargetPageData));
                 if (TargetPageSingleton)
                 {
-                    _pageSet.Add(TargetPageType, page);
+                    PageMapping.Add(TargetPageType, page);
                 }
             }
 
+            _loadedAction?.Invoke(page);
+            _loadedAction = null;
             var endOpacity = page.Opacity;
             var originTransform = page.RenderTransform;
 

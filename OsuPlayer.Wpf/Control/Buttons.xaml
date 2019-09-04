@@ -206,7 +206,7 @@
                                 Height="{TemplateBinding IconSize}"
                                 Margin="{TemplateBinding IconMargin}"
                                 VerticalAlignment="Center"
-                                SnapsToDevicePixels="True"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                 UseLayoutRounding="True">
                                 <ContentControl x:Name="IconContent" Template="{TemplateBinding IconTemplate}" />
                             </Viewbox>

@@ -27,14 +27,14 @@ namespace Milky.OsuPlayer.Pages
     public partial class SearchPage : Page
     {
         private BeatmapDbOperator _beatmapDbOperator;
-        public MainWindow ParentWindow { get; set; }
+        private MainWindow _mainWindow;
 
         public SearchPageViewModel ViewModel { get; set; }
 
         public SearchPage()
         {
             InitializeComponent();
-            ParentWindow = (MainWindow)Application.Current.MainWindow; ;
+            _mainWindow = (MainWindow)Application.Current.MainWindow; ;
             _beatmapDbOperator = new BeatmapDbOperator();
 
             ViewModel = (SearchPageViewModel)DataContext;
@@ -68,18 +68,18 @@ namespace Milky.OsuPlayer.Pages
             if (ResultList.SelectedItem == null)
                 return;
             var ok = (BeatmapDataModel)ResultList.SelectedItem;
-            var page = new DiffSelectPage(ParentWindow,
+            var page = new DiffSelectPage(_mainWindow,
                 _beatmapDbOperator.GetBeatmapsFromFolder(ok.GetIdentity().FolderName));
             page.Callback = async () =>
             {
-                //await ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, page.SelectedMap.FolderName,
+                //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, page.SelectedMap.FolderName,
                 //      page.SelectedMap.BeatmapFileName));
                 var map = _beatmapDbOperator.GetBeatmapByIdentifiable(page.SelectedMap);
                 await PlayController.Default.PlayNewFile(map);
                 await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
-                ParentWindow.FramePop.Navigate(null);
+                _mainWindow.FramePop.Navigate(null);
             };
-            ParentWindow.FramePop.Navigate(page);
+            _mainWindow.FramePop.Navigate(page);
         }
 
         private void ItemSearchMapper_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -87,7 +87,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelectedDefault();
             if (map == null)
                 return;
-            ParentWindow.MainFrame.Navigate(ParentWindow.Pages.SearchPage.Search(map.Creator));
+            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.Creator));
         }
 
         private void ItemSearchSource_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -95,7 +95,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelectedDefault();
             if (map == null)
                 return;
-            ParentWindow.MainFrame.Navigate(ParentWindow.Pages.SearchPage.Search(map.SongSource));
+            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.SongSource));
         }
 
         private void ItemSearchArtist_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -103,8 +103,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelectedDefault();
             if (map == null)
                 return;
-            ParentWindow.MainFrame.Navigate(ParentWindow.Pages.SearchPage.Search(
-                MetaString.GetUnicode(map.Artist, map.ArtistUnicode)));
+            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoArtist));
         }
 
         private void ItemSearchTitle_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -112,8 +111,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelectedDefault();
             if (map == null)
                 return;
-            ParentWindow.MainFrame.Navigate(ParentWindow.Pages.SearchPage.Search(
-                MetaString.GetUnicode(map.Title, map.TitleUnicode)));
+            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoTitle));
         }
 
         private void ItemExport_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -129,16 +127,16 @@ namespace Milky.OsuPlayer.Pages
             if (ResultList.SelectedItem == null)
                 return;
             var ok = (BeatmapDataModel)ResultList.SelectedItem;
-            var page = new DiffSelectPage(ParentWindow,
+            var page = new DiffSelectPage(_mainWindow,
                 _beatmapDbOperator.GetBeatmapsFromFolder(ok.GetIdentity().FolderName));
             page.Callback = () =>
             {
-                ParentWindow.FramePop.Navigate(new SelectCollectionPage(
+                _mainWindow.FramePop.Navigate(new SelectCollectionPage(
                     _beatmapDbOperator.GetBeatmapsFromFolder(page.SelectedMap.FolderName)
                         .FirstOrDefault(k => k.Version == page.SelectedMap.Version))
                 );
             };
-            ParentWindow.FramePop.Navigate(page);
+            _mainWindow.FramePop.Navigate(page);
         }
 
         private void ItemSet_Click(object sender, RoutedEventArgs e)
@@ -158,7 +156,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelectedDefault();
             if (map == null)
                 return;
-            //await ParentWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
+            //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
             //    map.BeatmapFileName));
             await PlayController.Default.PlayNewFile(map);
             await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);

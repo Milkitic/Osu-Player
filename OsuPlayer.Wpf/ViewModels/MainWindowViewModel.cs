@@ -20,7 +20,6 @@ namespace Milky.OsuPlayer.ViewModels
         }
 
         private bool _isNavigationCollapsed;
-        private bool _isMiniMode;
         private ObservableCollection<Collection> _collection;
         private bool _isLyricWindowLocked;
         private PlayerViewModel _player;
@@ -42,16 +41,6 @@ namespace Milky.OsuPlayer.ViewModels
             set
             {
                 _isNavigationCollapsed = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsMiniMode
-        {
-            get => _isMiniMode;
-            set
-            {
-                _isMiniMode = value;
                 OnPropertyChanged();
             }
         }
