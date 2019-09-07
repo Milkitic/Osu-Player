@@ -48,9 +48,9 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void GetLastUpdate()
         {
-            LastUpdate.Content = AppSettings.Current.LastUpdateCheck == null
+            LastUpdate.Content = AppSettings.Default.LastUpdateCheck == null
                 ? "从未"
-                : AppSettings.Current.LastUpdateCheck.Value.ToString(_dtFormat);
+                : AppSettings.Default.LastUpdateCheck.Value.ToString(_dtFormat);
         }
 
         private async void CheckUpdate_Click(object sender, RoutedEventArgs e)
@@ -65,9 +65,9 @@ namespace Milky.OsuPlayer.Pages.Settings
                 return;
             }
 
-            AppSettings.Current.LastUpdateCheck = DateTime.Now;
+            AppSettings.Default.LastUpdateCheck = DateTime.Now;
             GetLastUpdate();
-            AppSettings.SaveCurrent();
+            AppSettings.SaveDefault();
             if (hasNew == true)
             {
                 NewVersion.Visibility = Visibility.Visible;

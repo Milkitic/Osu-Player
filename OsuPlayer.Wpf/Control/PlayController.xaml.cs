@@ -234,27 +234,29 @@ namespace Milky.OsuPlayer.Control
 
         private async Task SetPlayMode(PlayerMode playMode)
         {
-            //switch (playMode)
-            //{
-            //    case PlayerMode.Normal:
-            //        Normal.IsChecked = true;
-            //        break;
-            //    case PlayerMode.Random:
-            //        Random.IsChecked = true;
-            //        break;
-            //    case PlayerMode.Loop:
-            //        Loop.IsChecked = true;
-            //        break;
-            //    case PlayerMode.LoopRandom:
-            //        LoopRandom.IsChecked = true;
-            //        break;
-            //    case PlayerMode.Single:
-            //        Single.IsChecked = true;
-            //        break;
-            //    case PlayerMode.SingleLoop:
-            //        SingleLoop.IsChecked = true;
-            //        break;
-            //}
+            switch (playMode)
+            {
+                case PlayerMode.Normal:
+                    Normal.IsChecked = true;
+                    break;
+                case PlayerMode.Random:
+                    Random.IsChecked = true;
+                    break;
+                case PlayerMode.Loop:
+                    Loop.IsChecked = true;
+                    break;
+                case PlayerMode.LoopRandom:
+                    LoopRandom.IsChecked = true;
+                    break;
+                case PlayerMode.Single:
+                    Single.IsChecked = true;
+                    break;
+                case PlayerMode.SingleLoop:
+                    SingleLoop.IsChecked = true;
+                    break;
+            }
+
+            ModeButton.IconTemplate = (ControlTemplate)Application.Current.FindResource($"Mode{playMode}Templ");
 
             if (playMode == Services.Get<PlayerList>().PlayerMode)
             {
@@ -263,8 +265,8 @@ namespace Milky.OsuPlayer.Control
 
             Services.Get<PlayerList>().PlayerMode = playMode;
             await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.IndexOnly);
-            AppSettings.Current.Play.PlayListMode = playMode;
-            AppSettings.SaveCurrent();
+            AppSettings.Default.Play.PlayerMode = playMode;
+            AppSettings.SaveDefault();
         }
 
         /// <summary>
@@ -306,7 +308,7 @@ namespace Milky.OsuPlayer.Control
 
                     /* Clear */
                     ClearHitsoundPlayer();
-                    if (System.IO.Path.GetDirectoryName(AppSettings.Current.CurrentPath) !=
+                    if (System.IO.Path.GetDirectoryName(AppSettings.Default.CurrentPath) !=
                         System.IO.Path.GetDirectoryName(path))
                     {
                         Services.Get<PlayersInst>()?.ClearHitsoundCache();
@@ -336,29 +338,31 @@ namespace Milky.OsuPlayer.Control
 
                     /* Set Thumb */
                     var defaultPath = System.IO.Path.Combine(Domain.ResourcePath, "default.jpg");
+                    string truePath;
                     if (osuFile.Events.BackgroundInfo != null)
                     {
                         var bgPath = System.IO.Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
-                        Thumb.Source = File.Exists(bgPath)
-                            ? new BitmapImage(new Uri(bgPath))
+                        truePath = File.Exists(bgPath)
+                            ? bgPath
                             : (File.Exists(defaultPath)
-                                ? new BitmapImage(new Uri(defaultPath))
+                                ? defaultPath
                                 : null);
                     }
                     else
                     {
-                        Thumb.Source = File.Exists(defaultPath)
-                            ? new BitmapImage(new Uri(defaultPath))
+                        truePath = File.Exists(defaultPath)
+                            ? defaultPath
                             : null;
                     }
 
+                    Thumb.Source = truePath==null?null: new BitmapImage(new Uri(truePath));
                     /* Set new hitsound player*/
                     playerInst.SetAudioPlayer(path, osuFile);
                     audioPlayer = playerInst.AudioPlayer;
                     SignUpPlayerEvent(audioPlayer);
                     await audioPlayer.InitializeAsync(); //700 ms
                     audioPlayer.HitsoundOffset = mapInfo.Offset;
-                    Offset.Value = audioPlayer.HitsoundOffset;
+                    VolumeControl.HitsoundOffset = audioPlayer.HitsoundOffset;
 
                     var currentInfo = new CurrentInfo(
                         osuFile.Metadata.Artist,
@@ -379,7 +383,7 @@ namespace Milky.OsuPlayer.Control
                         nowIdentity,
                         mapInfo,
                         beatmap,
-                        isFavorite, path); // 20 ms
+                        isFavorite, path, truePath); // 20 ms
                     Services.Get<PlayerList>().CurrentInfo = currentInfo;
                     PlayerViewModel.Current.CurrentInfo = currentInfo;
 
@@ -403,8 +407,8 @@ namespace Milky.OsuPlayer.Control
                     }
                     LblNow.Visibility = Visibility.Visible;
                     LblTotal.Visibility = Visibility.Visible;
-                    AppSettings.Current.CurrentPath = path;
-                    AppSettings.SaveCurrent();
+                    AppSettings.Default.CurrentPath = path;
+                    AppSettings.SaveDefault();
 
                     _appDbOperator.UpdateMap(nowIdentity);
                 }
@@ -517,17 +521,7 @@ namespace Milky.OsuPlayer.Control
             Services.Get<PlayersInst>()?.ClearAudioPlayer();
             _forcePaused = false;
         }
-
-        /// <summary>
-        /// Initialize default player settings.
-        /// </summary>
-        private void LoadSurfaceSettings()
-        {
-            MasterVolume.Value = AppSettings.Current.Volume.Main * 100;
-            MusicVolume.Value = AppSettings.Current.Volume.Music * 100;
-            HitsoundVolume.Value = AppSettings.Current.Volume.Hitsound * 100;
-        }
-
+        
         #region Event handler
 
         private void ThumbButton_Click(object sender, RoutedEventArgs e)
@@ -626,87 +620,28 @@ namespace Milky.OsuPlayer.Control
             switch (btn.Name)
             {
                 case "Single":
-                    //BtnMode.Content = "单曲播放";
                     playMode = PlayerMode.Single;
                     break;
                 case "SingleLoop":
-                    //BtnMode.Content = "单曲循环";
                     playMode = PlayerMode.SingleLoop;
                     break;
                 case "Normal":
-                    //BtnMode.Content = "顺序播放";
                     playMode = PlayerMode.Normal;
                     break;
                 case "Random":
-                    //BtnMode.Content = "随机播放";
                     playMode = PlayerMode.Random;
                     break;
                 case "Loop":
-                    //BtnMode.Content = "循环列表";
                     playMode = PlayerMode.Loop;
                     break;
                 case "LoopRandom":
                 default:
-                    //BtnMode.Content = "随机循环";
                     playMode = PlayerMode.LoopRandom;
                     break;
             }
 
-            ModeButton.IconTemplate = (ControlTemplate)Application.Current.FindResource("Mode" + btn.Name + "Templ");
             await SetPlayMode(playMode);
             PopMode.IsOpen = false;
-        }
-
-        /// <summary>
-        /// Master Volume Settings
-        /// </summary>
-        private void MasterVolume_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            AppSettings.SaveCurrent();
-        }
-
-        /// <summary>
-        /// Music Volume Settings
-        /// </summary>
-        private void MusicVolume_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            AppSettings.SaveCurrent();
-        }
-
-        /// <summary>
-        /// Effect Volume Settings
-        /// </summary>
-        private void HitsoundVolume_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            AppSettings.SaveCurrent();
-        }
-
-        /// <summary>
-        /// Sample Volume Settings
-        /// </summary>
-        private void SampleVolume_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            AppSettings.SaveCurrent();
-        }
-
-        /// <summary>
-        /// Balance Settings
-        /// </summary>
-        private void Balance_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            AppSettings.SaveCurrent();
-        }
-
-        /// <summary>
-        /// Offset Settings
-        /// </summary>
-        private void Offset_DragDelta(object sender, DragDeltaEventArgs e)
-        {
-            if (ComponentPlayer.Current == null)
-                return;
-            ComponentPlayer.Current.HitsoundOffset = (int)Offset.Value;
-            _appDbOperator.UpdateMap(Services.Get<PlayerList>().CurrentInfo.Identity,
-                ComponentPlayer.Current.HitsoundOffset);
         }
 
         #endregion
@@ -719,6 +654,12 @@ namespace Milky.OsuPlayer.Control
         private void PlayListControl_CloseRequested(object sender, RoutedEventArgs e)
         {
             PopPlayList.IsOpen = false;
+        }
+
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            var playList = Services.Get<PlayerList>();
+            await SetPlayMode(playList.PlayerMode);
         }
     }
 

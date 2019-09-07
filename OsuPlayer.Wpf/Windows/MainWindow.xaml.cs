@@ -53,11 +53,24 @@ namespace Milky.OsuPlayer.Windows
             ViewModel = (MainWindowViewModel)DataContext;
             ViewModel.Player = PlayerViewModel.Current;
             LyricWindow = new LyricWindow(this);
-            if (AppSettings.Current.Lyric.EnableLyric)
+            if (AppSettings.Default.Lyric.EnableLyric)
                 LyricWindow.Show();
 
             OverallKeyHook = new OverallKeyHook(this);
             Animation.Loaded += Animation_Loaded;
+            MiniPlayController.CloseButtonClicked += () =>
+            {
+                if (AppSettings.Default.General.ExitWhenClosed == null) Show();
+                Close();
+            };
+            MiniPlayController.MaxButtonClicked += () =>
+            {
+                Topmost = true;
+                Topmost = false;
+                Show();
+                PlayerViewModel.Current.EnableVideo = true;
+                GetCurrentFirst<MiniWindow>()?.Close();
+            };
             TryBindHotKeys();
         }
 
@@ -70,8 +83,8 @@ namespace Milky.OsuPlayer.Windows
                 //TODO
             });
             OverallKeyHook.AddKeyHook(page.Next.Name, async () => { await PlayController.Default.PlayNext(); });
-            OverallKeyHook.AddKeyHook(page.VolumeUp.Name, () => { AppSettings.Current.Volume.Main += 0.05f; });
-            OverallKeyHook.AddKeyHook(page.VolumeDown.Name, () => { AppSettings.Current.Volume.Main -= 0.05f; });
+            OverallKeyHook.AddKeyHook(page.VolumeUp.Name, () => { AppSettings.Default.Volume.Main += 0.05f; });
+            OverallKeyHook.AddKeyHook(page.VolumeDown.Name, () => { AppSettings.Default.Volume.Main -= 0.05f; });
             OverallKeyHook.AddKeyHook(page.FullMini.Name, () =>
             {
                 //TODO
@@ -154,7 +167,18 @@ namespace Milky.OsuPlayer.Windows
 
         private void TriggerMiniWindow()
         {
-            throw new NotImplementedException();
+            var mini = GetCurrentFirst<MiniWindow>();
+            if (mini != null && !mini.IsClosed)
+            {
+                mini.Focus();
+            }
+            else
+            {
+                mini = new MiniWindow();
+                mini.Show();
+                Hide();
+                PlayerViewModel.Current.EnableVideo = false;
+            }
         }
 
         #region Events
@@ -163,19 +187,19 @@ namespace Milky.OsuPlayer.Windows
         {
             App.NotificationList = new ObservableCollection<NotificationOption>();
             NotificationOverlay.ItemsSource = App.NotificationList;
-            if (AppSettings.Current.General.FirstOpen)
+            if (AppSettings.Default.General.FirstOpen)
             {
                 WelcomeControl.Show();
                 await Services.Get<OsuDbInst>().LoadLocalDbAsync();
             }
             else
             {
-                await Services.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Current.General.CustomSongsPath);
-                if (DateTime.Now - AppSettings.Current.LastTimeScanOsuDb > TimeSpan.FromDays(1))
+                await Services.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Default.General.CustomSongsPath);
+                if (DateTime.Now - AppSettings.Default.LastTimeScanOsuDb > TimeSpan.FromDays(1))
                 {
-                    await Services.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Current.General.DbPath, true);
-                    AppSettings.Current.LastTimeScanOsuDb = DateTime.Now;
-                    AppSettings.SaveCurrent();
+                    await Services.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, true);
+                    AppSettings.Default.LastTimeScanOsuDb = DateTime.Now;
+                    AppSettings.SaveDefault();
                 }
             }
 
@@ -187,7 +211,7 @@ namespace Milky.OsuPlayer.Windows
 
             var updater = Services.Get<Updater>();
             bool? hasUpdate = await updater.CheckUpdateAsync();
-            if (hasUpdate == true && updater.NewRelease.NewVerString != AppSettings.Current.IgnoredVer)
+            if (hasUpdate == true && updater.NewRelease.NewVerString != AppSettings.Default.IgnoredVer)
             {
                 var newVersionWindow = new NewVersionWindow(updater.NewRelease, this);
                 newVersionWindow.ShowDialog();
@@ -199,27 +223,29 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (AppSettings.Current.General.ExitWhenClosed == null && !ForceExit)
+            if (AppSettings.Default.General.ExitWhenClosed == null && !ForceExit)
             {
                 e.Cancel = true;
                 FramePop.Navigate(new ClosingPage(this));
                 return;
             }
-            else if (AppSettings.Current.General.ExitWhenClosed == false && !ForceExit)
+            else if (AppSettings.Default.General.ExitWhenClosed == false && !ForceExit)
             {
                 WindowState = WindowState.Minimized;
+                GetCurrentFirst<MiniWindow>()?.Close();
                 Hide();
                 e.Cancel = true;
                 return;
             }
 
+            GetCurrentFirst<MiniWindow>()?.Close();
             PlayController.Default?.Dispose();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
-            if (ConfigWindow == null || ConfigWindow.IsClosed)
-                return;
-            if (ConfigWindow.IsInitialized)
+            if (ConfigWindow != null && !ConfigWindow.IsClosed && ConfigWindow.IsInitialized)
+            {
                 ConfigWindow.Close();
+            }
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -231,7 +257,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void Animation_Loaded(object sender, RoutedEventArgs e)
         {
-            if (AppSettings.Current.CurrentPath == null || !AppSettings.Current.Play.Memory)
+            if (AppSettings.Default.CurrentPath == null || !AppSettings.Default.Play.Memory)
             {
                 return;
             }
@@ -239,13 +265,13 @@ namespace Milky.OsuPlayer.Windows
             Animation.StartScene(async () =>
             {
                 // 加至播放列表
-                var entries = _beatmapDbOperator.GetBeatmapsByIdentifiable(AppSettings.Current.CurrentList);
+                var entries = _beatmapDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList);
 
                 await Services.Get<PlayerList>()
                     .RefreshPlayListAsync(PlayerList.FreshType.All, beatmaps: entries);
 
-                bool play = AppSettings.Current.Play.AutoPlay;
-                await PlayController.Default.PlayNewFile(AppSettings.Current.CurrentPath, play);
+                bool play = AppSettings.Default.Play.AutoPlay;
+                await PlayController.Default.PlayNewFile(AppSettings.Default.CurrentPath, play);
             });
         }
 
@@ -275,6 +301,13 @@ namespace Milky.OsuPlayer.Windows
 
         private void NotifyIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
         {
+            var mini = GetCurrentFirst<MiniWindow>();
+            if (mini != null)
+            {
+                mini.Focus();
+                return;
+            }
+
             Topmost = true;
             Topmost = false;
             Show();

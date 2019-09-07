@@ -164,14 +164,23 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnimationControl.xaml.cs">
+    <Compile Include="Control\AnimationControl.xaml.cs">
       <DependentUpon>AnimationControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\CommonButton.cs" />
     <Compile Include="Control\FrontDialog\FrontDialogOverlay.xaml.cs">
       <DependentUpon>FrontDialogOverlay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Control\MiniPlayController.xaml.cs">
+      <DependentUpon>MiniPlayController.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Control\PlayModeControl.xaml.cs">
+      <DependentUpon>PlayModeControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Control\SwitchRadio.cs" />
+    <Compile Include="Control\VolumeControl.xaml.cs">
+      <DependentUpon>VolumeControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converter\IconColorConverter.cs" />
     <Compile Include="Utils\GridViewHelper.cs" />
     <Compile Include="Control\MaxButton.cs" />
@@ -203,9 +212,12 @@
     <Compile Include="Notification.cs" />
     <Compile Include="Utils\NativeUser32.cs" />
     <Compile Include="ViewModels\ListPageViewModel.cs" />
+    <Compile Include="Windows\MiniWindow.xaml.cs">
+      <DependentUpon>MiniWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\MyCancellationTokenSource.cs" />
     <Compile Include="Windows\PageParts.cs" />
-    <Page Include="AnimationControl.xaml">
+    <Page Include="Control\AnimationControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -324,6 +336,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Control\MiniPlayController.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Control\Notification\NotifyControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -337,6 +353,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Control\PlayListControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Control\PlayModeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Control\VolumeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -392,6 +416,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\MiniWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\NewVersionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

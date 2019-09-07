@@ -63,7 +63,7 @@
         <local:PlayListControlVm />
     </UserControl.DataContext>
     <Grid>
-        <Border Margin="10" Background="#F0F0F0">
+        <Border Margin="10" Background="#A0F0F0F0">
             <Border.Effect>
                 <DropShadowEffect
                     BlurRadius="10"
@@ -71,7 +71,7 @@
                     ShadowDepth="0" />
             </Border.Effect>
         </Border>
-        <Grid Margin="10" Background="#F0F0F0">
+        <Grid Margin="10" Background="#B0F0F0F0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
@@ -98,14 +98,15 @@
                             Padding="5,0"
                             VerticalAlignment="Center"
                             Background="Transparent"
+                            BorderThickness="0"
                             Click="CloseButton_Click"
                             Command="{Binding SaveAllCollectionCommand}"
                             Content="收藏全部"
                             Cursor="Hand"
                             FontSize="11"
                             Foreground="#a0a0a0"
-                            MouseDownBackground="#e8e8e8"
-                            MouseDownForeground="#727272"
+                            MouseDownBackground="Transparent"
+                            MouseDownForeground="#646464"
                             MouseOverBackground="Transparent"
                             MouseOverForeground="#808080" />
                     </StackPanel>
@@ -120,35 +121,40 @@
                         Padding="5,0"
                         VerticalAlignment="Center"
                         Background="Transparent"
+                        BorderThickness="0"
                         Command="{Binding ClearPlayListCommand}"
                         Content="清空列表"
                         Cursor="Hand"
                         FontSize="11"
                         Foreground="#a0a0a0"
-                        MouseDownBackground="#e8e8e8"
-                        MouseDownForeground="#727272"
+                        MouseDownBackground="Transparent"
+                        MouseDownForeground="#646464"
                         MouseOverBackground="Transparent"
                         MouseOverForeground="#808080" />
                     <local:CommonButton
                         Width="24"
                         Height="24"
+                        Background="Transparent"
+                        BorderThickness="0"
                         Click="CloseButton_Click"
                         Cursor="Hand"
                         IconMargin="0"
                         IconSize="15"
                         IconTemplate="{StaticResource CloseTempl}"
-                        MouseDownBackground="#d0d0d0"
-                        MouseOverBackground="#e0e0e0" />
+                        MouseDownBackground="#D0D0D0"
+                        MouseOverBackground="#D4D4D4" />
                 </StackPanel>
             </Grid>
             <ListView
                 x:Name="PlayList"
                 Grid.Row="1"
+                Background="Transparent"
                 ContextMenu="{StaticResource PlayListCtxMenu}"
                 ContextMenuOpening="PlayList_ContextMenuOpening"
                 ItemContainerStyle="{StaticResource GridView}"
                 ItemsSource="{Binding PlayList.Entries}"
                 MouseMove="PlayList_MouseMove"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 SelectionChanged="PlayList_SelectionChanged"
                 Style="{StaticResource ListView}">
                 <ListView.Resources>

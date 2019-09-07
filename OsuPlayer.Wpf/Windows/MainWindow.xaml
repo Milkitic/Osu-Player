@@ -187,6 +187,7 @@
                                         Style="{StaticResource OsuSwitchRadio}"
                                         TargetFrameControl="MainFrame"
                                         TargetPageData="{Binding Id}"
+                                        TargetPageSingleton="False"
                                         TargetPageType="{x:Type pages:CollectionPage}" />
                                 </ControlTemplate>
                                 <Style TargetType="{x:Type ListViewItem}">
@@ -198,7 +199,7 @@
                     </StackPanel>
                 </ScrollViewer>
                 <Grid MouseDown="ButtonBase_Click">
-                    <osuPlayer:AnimationControl
+                    <control:AnimationControl
                         x:Name="Animation"
                         ClipToBounds="True"
                         IsBlur="{Binding Content, ElementName=MainFrame, Converter={StaticResource NullToBoolFalseConverter}}" />

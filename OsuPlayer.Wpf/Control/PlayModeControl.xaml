@@ -1,0 +1,91 @@
+﻿<UserControl
+    x:Class="Milky.OsuPlayer.Control.PlayModeControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Milky.OsuPlayer.Control"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="236"
+    d:DesignWidth="130"
+    mc:Ignorable="d">
+    <Grid>
+        <Border Margin="10" Background="#A0ffffff">
+            <Border.Effect>
+                <DropShadowEffect
+                    BlurRadius="10"
+                    Opacity="0.5"
+                    ShadowDepth="0" />
+            </Border.Effect>
+        </Border>
+        <Border Margin="10" Background="#B0ffffff">
+            <StackPanel>
+                <local:SwitchRadio
+                    Height="30"
+                    Padding="0,0,5,0"
+                    Background="Transparent"
+                    CheckedBackground="#80D0D0D0"
+                    Content="单曲播放"
+                    IconMargin="0,0,5,0"
+                    IconSize="18"
+                    IconTemplate="{StaticResource ModeSingleTempl}"
+                    MouseDownBackground="#80D8D8D8"
+                    MouseOverBackground="#80E0E0E0" />
+                <local:SwitchRadio
+                    Height="30"
+                    Padding="0,0,5,0"
+                    Background="Transparent"
+                    CheckedBackground="#80D0D0D0"
+                    Content="单曲循环"
+                    IconMargin="0,0,5,0"
+                    IconSize="18"
+                    IconTemplate="{StaticResource ModeSingleLoopTempl}"
+                    MouseDownBackground="#80D8D8D8"
+                    MouseOverBackground="#80E0E0E0" />
+                <local:SwitchRadio
+                    Height="30"
+                    Padding="0,0,5,0"
+                    Background="Transparent"
+                    CheckedBackground="#80D0D0D0"
+                    Content="顺序播放"
+                    IconMargin="0,0,5,0"
+                    IconSize="18"
+                    IconTemplate="{StaticResource ModeNormalTempl}"
+                    MouseDownBackground="#80D8D8D8"
+                    MouseOverBackground="#80E0E0E0" />
+                <local:SwitchRadio
+                    Height="30"
+                    Padding="0,0,5,0"
+                    Background="Transparent"
+                    CheckedBackground="#80D0D0D0"
+                    Content="随机播放"
+                    IconMargin="0,0,5,0"
+                    IconSize="18"
+                    IconTemplate="{StaticResource ModeRandomTempl}"
+                    MouseDownBackground="#80D8D8D8"
+                    MouseOverBackground="#80E0E0E0" />
+                <local:SwitchRadio
+                    Height="30"
+                    Padding="0,0,5,0"
+                    Background="Transparent"
+                    CheckedBackground="#80D0D0D0"
+                    Content="循环列表"
+                    IconMargin="0,0,5,0"
+                    IconSize="18"
+                    IconTemplate="{StaticResource ModeLoopTempl}"
+                    MouseDownBackground="#80D8D8D8"
+                    MouseOverBackground="#80E0E0E0" />
+                <local:SwitchRadio
+                    Height="30"
+                    Padding="0,0,5,0"
+                    Background="Transparent"
+                    CheckedBackground="#80D0D0D0"
+                    Content="随机循环"
+                    IconMargin="0,0,5,0"
+                    IconSize="18"
+                    IconTemplate="{StaticResource ModeLoopRandomTempl}"
+                    MouseDownBackground="#80D8D8D8"
+                    MouseOverBackground="#80E0E0E0" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

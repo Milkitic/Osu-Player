@@ -18,6 +18,8 @@ namespace Milky.OsuPlayer.Common.Player
         private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
         private AppDbOperator _appDbOperator = new AppDbOperator();
         private ObservableCollection<Beatmap> _entries = new ObservableCollection<Beatmap>();
+        private CurrentInfo _currentInfo;
+        private PlayerMode _playerMode = PlayerMode.Loop;
 
         public ObservableCollection<Beatmap> Entries
         {
@@ -29,11 +31,30 @@ namespace Milky.OsuPlayer.Common.Player
             }
         }
 
-        public PlayerMode PlayerMode { get; set; } = PlayerMode.Loop;
+        public PlayerMode PlayerMode
+        {
+            get => _playerMode;
+            set
+            {
+                _playerMode = value;
+                OnPropertyChanged();
+            }
+        }
+
         public PlayListMode PlayListMode { get; set; }
         public List<int> Indexes { get; set; } = new List<int>();
+
         //public MapIdentity NowIdentity { get; set; }
-        public CurrentInfo CurrentInfo { get; set; }
+        public CurrentInfo CurrentInfo
+        {
+            get => _currentInfo;
+            set
+            {
+                _currentInfo = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MapIdentity CurrentIdentity => CurrentInfo?.Identity ?? default;
         public int Pointer
         {
@@ -92,8 +113,8 @@ namespace Milky.OsuPlayer.Common.Player
             Pointer = 0;
             if (!finishList && CurrentInfo != null) RedirectPointer();
 
-            AppSettings.Current.CurrentList = Entries.Select(k => k.GetIdentity()).ToList();
-            AppSettings.SaveCurrent();
+            AppSettings.Default.CurrentList = Entries.Select(k => k.GetIdentity()).ToList();
+            AppSettings.SaveDefault();
         }
 
         /// <summary>

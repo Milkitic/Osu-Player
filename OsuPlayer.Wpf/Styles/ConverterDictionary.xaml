@@ -16,4 +16,5 @@
     <converter:BoolTrueToVisibleConverter x:Key="BoolTrueToVisibleConverter" />
     <converter:NullToFullOpacityConverter x:Key="NullToFullOpacityConverter" />
     <converter:NullToBoolFalseConverter x:Key="NullToBoolFalseConverter" />
+    <converter:PlayModeConverter x:Key="PlayModeConverter" />
 </ResourceDictionary>

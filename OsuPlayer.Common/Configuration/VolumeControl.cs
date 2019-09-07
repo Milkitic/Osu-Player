@@ -9,7 +9,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         private float _bgm = 1;
         private float _hs = 0.9f;
         private float _sample = 0.85f;
-        private float _balanceFactor = 0.30f;
+        private float _balanceFactor = 0.35f;
         public float Main
         {
             get => _main;

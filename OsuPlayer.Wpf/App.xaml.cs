@@ -34,7 +34,8 @@ namespace Milky.OsuPlayer
             StartupConfig.Startup();
 
             Services.TryAddInstance(new UiMetadata());
-            Services.TryAddInstance(new PlayerList());
+            var playerList = new PlayerList { PlayerMode = AppSettings.Default.Play.PlayerMode };
+            Services.TryAddInstance(playerList);
             Services.TryAddInstance(new OsuDbInst());
             Services.TryAddInstance(new PlayersInst());
             Services.TryAddInstance(new LyricsInst());

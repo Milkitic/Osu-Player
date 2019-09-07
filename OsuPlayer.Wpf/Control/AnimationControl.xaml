@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="Milky.OsuPlayer.AnimationControl"
+    x:Class="Milky.OsuPlayer.Control.AnimationControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
@@ -13,16 +13,13 @@
     Loaded="AnimationControl_Loaded"
     mc:Ignorable="d">
     <UserControl.DataContext>
-        <local:AnimationControlVm />
+        <control:AnimationControlVm />
     </UserControl.DataContext>
     <Border
         BorderBrush="#40FFFFFF"
         BorderThickness="1"
         SnapsToDevicePixels="True">
-        <Grid
-            x:Name="MainGrid"
-            Grid.Row="0"
-            Visibility="{Binding Player.EnableVideo, Converter={StaticResource BoolTrueToVisibleConverter}}">
+        <Grid>
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
                     <Setter Property="Background">

@@ -183,7 +183,7 @@
         <Setter Property="MouseOverForeground" Value="#484848" />
         <Setter Property="MouseDownBackground" Value="#e8e8e8" />
         <Setter Property="MouseDownForeground" Value="#323232" />
-        <Setter Property="CornerR" Value="2,2,0,0" />
+        <Setter Property="CornerR" Value="2" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:CommonButton}">

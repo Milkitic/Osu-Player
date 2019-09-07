@@ -41,27 +41,27 @@ namespace Milky.OsuPlayer.Pages.Settings
                 if (isRunOnStartup)
                 {
                     rKey?.SetValue("OsuPlayer", Process.GetCurrentProcess().MainModule.FileName);
-                    AppSettings.Current.General.RunOnStartup = true;
+                    AppSettings.Default.General.RunOnStartup = true;
                 }
                 else
                 {
                     rKey?.DeleteValue("OsuPlayer", false);
-                    AppSettings.Current.General.RunOnStartup = false;
+                    AppSettings.Default.General.RunOnStartup = false;
                 }
             }
 
-            AppSettings.SaveCurrent();
+            AppSettings.SaveDefault();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            RunOnStartup.IsChecked = AppSettings.Current.General.RunOnStartup;
-            TbDbPath.Text = AppSettings.Current.General.DbPath;
-            TbCustomPath.Text = AppSettings.Current.General.CustomSongsPath;
+            RunOnStartup.IsChecked = AppSettings.Default.General.RunOnStartup;
+            TbDbPath.Text = AppSettings.Default.General.DbPath;
+            TbCustomPath.Text = AppSettings.Default.General.CustomSongsPath;
 
-            if (AppSettings.Current.General.ExitWhenClosed.HasValue)
+            if (AppSettings.Default.General.ExitWhenClosed.HasValue)
             {
-                if (AppSettings.Current.General.ExitWhenClosed.Value)
+                if (AppSettings.Default.General.ExitWhenClosed.Value)
                     RadioExit.IsChecked = true;
                 else
                     RadioMinimum.IsChecked = true;
@@ -76,12 +76,12 @@ namespace Milky.OsuPlayer.Pages.Settings
         private void Radio_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (RadioExit.IsChecked.HasValue && RadioExit.IsChecked.Value)
-                AppSettings.Current.General.ExitWhenClosed = true;
+                AppSettings.Default.General.ExitWhenClosed = true;
             else if (RadioMinimum.IsChecked.HasValue && RadioMinimum.IsChecked.Value)
-                AppSettings.Current.General.ExitWhenClosed = false;
+                AppSettings.Default.General.ExitWhenClosed = false;
 
             AsDefault.IsChecked = true;
-            AppSettings.SaveCurrent();
+            AppSettings.SaveDefault();
         }
 
         private async void BrowseDb_Click(object sender, RoutedEventArgs e)
@@ -93,8 +93,8 @@ namespace Milky.OsuPlayer.Pages.Settings
             {
                 await Services.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
                 TbDbPath.Text = path;
-                AppSettings.Current.General.DbPath = path;
-                AppSettings.SaveCurrent();
+                AppSettings.Default.General.DbPath = path;
+                AppSettings.SaveDefault();
             }
             catch (Exception ex)
             {
@@ -105,10 +105,10 @@ namespace Milky.OsuPlayer.Pages.Settings
         private void AsDefault_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (AsDefault.IsChecked.HasValue && !AsDefault.IsChecked.Value)
-                AppSettings.Current.General.ExitWhenClosed = null;
+                AppSettings.Default.General.ExitWhenClosed = null;
             else
                 Radio_CheckChanged(sender, e);
-            AppSettings.SaveCurrent();
+            AppSettings.SaveDefault();
         }
 
         private async void BrowseCustom_Click(object sender, RoutedEventArgs e)
@@ -128,8 +128,8 @@ namespace Milky.OsuPlayer.Pages.Settings
                 TbCustomPath.Text = path;
                 await Services.Get<OsuFileScanner>().CancelTaskAsync();
                 await Services.Get<OsuFileScanner>().NewScanAndAddAsync(path);
-                AppSettings.Current.General.CustomSongsPath = path;
-                AppSettings.SaveCurrent();
+                AppSettings.Default.General.CustomSongsPath = path;
+                AppSettings.SaveDefault();
             }
             catch (Exception ex)
             {
@@ -146,9 +146,9 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             try
             {
-                await Services.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Current.General.DbPath, false);
-                AppSettings.Current.LastTimeScanOsuDb = DateTime.Now;
-                AppSettings.SaveCurrent();
+                await Services.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, false);
+                AppSettings.Default.LastTimeScanOsuDb = DateTime.Now;
+                AppSettings.SaveDefault();
             }
             catch (Exception ex)
             {

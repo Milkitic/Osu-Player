@@ -277,7 +277,7 @@ namespace Milky.OsuPlayer.Control
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!_signed)
+            if (!_signed && PlayController.Default != null)
             {
                 PlayController.Default.OnNewFileLoaded += Controller_OnNewFileLoaded;
                 _signed = true;

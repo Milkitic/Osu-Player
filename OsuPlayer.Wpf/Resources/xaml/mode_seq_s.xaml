@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This file is NOT compatible with Silverlight-->
+<Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+  <Canvas Name="svg8" Width="290" Height="290">
+    <Canvas.RenderTransform>
+      <TranslateTransform X="0" Y="0"/>
+    </Canvas.RenderTransform>
+    <Canvas.Resources/>
+    <!--Unknown tag: metadata-->
+    <!--Unknown tag: sodipodi:namedview-->
+    <Canvas Name="#ffffffff">
+      <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2" Fill="#FFFFFFFF" Opacity="1.00">
+        <Path.Data>
+          <PathGeometry Figures=" M 141.28 55.95 C 141.31 51.28 143.01 45.61 148.08 44.27 C 152.42 42.49 157.10 44.64 160.45 47.47 C 200.19 77.40 239.94 107.31 279.60 137.34 C 284.96 141.40 284.65 150.34 279.08 154.08 C 239.23 184.18 199.37 214.28 159.44 244.27 C 155.66 247.53 149.74 248.57 145.55 245.48 C 142.41 243.40 141.67 239.46 141.31 235.98 C 141.29 224.03 141.26 212.08 141.32 200.13 C 100.20 200.15 59.07 200.13 17.94 200.14 C 14.99 200.07 11.91 199.35 9.64 197.37 C 6.91 195.13 6.14 191.40 5.99 188.04 C 6.00 159.66 6.00 131.27 5.99 102.88 C 6.15 99.55 6.93 95.85 9.64 93.63 C 11.90 91.66 14.95 90.94 17.88 90.86 C 59.03 90.87 100.18 90.85 141.32 90.87 C 141.24 79.23 141.32 67.59 141.28 55.95 M 151.29 100.86 C 106.20 100.87 61.10 100.86 16.00 100.87 C 16.00 130.62 16.00 160.38 16.00 190.13 C 61.10 190.14 106.20 190.13 151.29 190.14 C 151.30 206.09 151.29 222.04 151.30 237.99 C 192.20 207.18 233.09 176.34 273.98 145.51 C 233.10 114.66 192.20 83.83 151.30 53.01 C 151.29 68.96 151.30 84.91 151.29 100.86 Z" FillRule="NonZero"/>
+        </Path.Data>
+      </Path>
+    </Canvas>
+    <Canvas Name="#000000ff">
+      <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path5" Fill="#FF000000" Opacity="1.00">
+        <Path.Data>
+          <PathGeometry Figures=" M 151.29 100.86 C 151.30 84.91 151.29 68.96 151.30 53.01 C 192.20 83.83 233.10 114.66 273.98 145.51 C 233.09 176.34 192.20 207.18 151.30 237.99 C 151.29 222.04 151.30 206.09 151.29 190.14 C 106.20 190.13 61.10 190.14 16.00 190.13 C 16.00 160.38 16.00 130.62 16.00 100.87 C 61.10 100.86 106.20 100.87 151.29 100.86 Z" FillRule="NonZero"/>
+        </Path.Data>
+      </Path>
+    </Canvas>
+  </Canvas>
+</Viewbox>

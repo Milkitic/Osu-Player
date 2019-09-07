@@ -52,7 +52,7 @@ namespace Milky.OsuPlayer.Pages
             InitializeComponent();
             _mainWindow = (MainWindow)Application.Current.MainWindow; 
             ViewModel = (ExportPageViewModel)DataContext;
-            ViewModel.ExportPath = AppSettings.Current.Export.MusicPath;
+            ViewModel.ExportPath = AppSettings.Default.Export.MusicPath;
         }
 
         public static void QueueEntries(IEnumerable<Beatmap> entries)
@@ -126,7 +126,7 @@ namespace Milky.OsuPlayer.Pages
         private static void GetExportFolder(out string exportMp3Folder, out string exportBgFolder,
             MetaString artist, string creator, string source)
         {
-            switch (AppSettings.Current.Export.SortStyle)
+            switch (AppSettings.Default.Export.SortStyle)
             {
                 case SortStyle.None:
                     exportMp3Folder = Domain.MusicPath;
@@ -179,7 +179,7 @@ namespace Milky.OsuPlayer.Pages
         private static void ConstructNameWithEscaping(out string originAudio, out string originBack,
             string title, string artist, string creator, string version)
         {
-            switch (AppSettings.Current.Export.NamingStyle)
+            switch (AppSettings.Default.Export.NamingStyle)
             {
                 case NamingStyle.Title:
                     originAudio = Escape($"{title}");

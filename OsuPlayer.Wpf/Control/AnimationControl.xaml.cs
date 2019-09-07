@@ -1,24 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio.Music;
 using Milky.OsuPlayer.ViewModels;
@@ -26,7 +17,7 @@ using Milky.WpfApi;
 using Unosquare.FFME.Common;
 using ViewModelBase = Milky.WpfApi.ViewModelBase;
 
-namespace Milky.OsuPlayer
+namespace Milky.OsuPlayer.Control
 {
     public class AnimationControlVm : ViewModelBase
     {
@@ -219,7 +210,7 @@ namespace Milky.OsuPlayer
                 }
                 catch (Exception ex)
                 {
-                    Notification.Show(@"发生未处理的错误：" + (ex.InnerException ?? ex));
+                    OsuPlayer.Notification.Show(@"发生未处理的错误：" + (ex.InnerException ?? ex));
                 }
             });
         }

@@ -11,6 +11,6 @@ namespace Milky.OsuPlayer.Common.Configuration
         public bool AutoPlay { get; set; } = false;
         public bool Memory { get; set; } = true;
         public int DesiredLatency { get; set; } = 5;
-        public PlayerMode PlayListMode { get; set; } = PlayerMode.Normal;
+        public PlayerMode PlayerMode { get; set; } = PlayerMode.Normal;
     }
 }

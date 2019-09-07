@@ -1,0 +1,138 @@
+﻿<UserControl
+    x:Class="Milky.OsuPlayer.Control.VolumeControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Milky.OsuPlayer.Control"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="220"
+    d:DesignWidth="170"
+    mc:Ignorable="d">
+    <UserControl.DataContext>
+        <local:VolumeControlVm />
+    </UserControl.DataContext>
+    <Grid>
+        <Border Margin="10" Background="#A0ffffff">
+            <Border.Effect>
+                <DropShadowEffect
+                    BlurRadius="10"
+                    Opacity="0.5"
+                    ShadowDepth="0" />
+            </Border.Effect>
+        </Border>
+        <Border Margin="10" Background="#B0ffffff">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <Slider
+                            Height="70"
+                            Margin="10,5"
+                            HorizontalAlignment="Center"
+                            Maximum="1"
+                            Orientation="Vertical"
+                            Style="{StaticResource VerticalSliderWhiteStyle}"
+                            Thumb.DragCompleted="MasterVolume_DragComplete"
+                            Value="{Binding Player.CurrentVolume.Main, Mode=TwoWay}" />
+                        <Label
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Content="总体"
+                            Foreground="#303030" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <Slider
+                            Height="70"
+                            Margin="10,5"
+                            HorizontalAlignment="Center"
+                            Maximum="1"
+                            Orientation="Vertical"
+                            Style="{StaticResource VerticalSliderWhiteStyle}"
+                            Thumb.DragCompleted="MusicVolume_DragComplete"
+                            Value="{Binding Player.CurrentVolume.Music, Mode=TwoWay}" />
+                        <Label
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Content="音乐"
+                            Foreground="#303030" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <Slider
+                            Height="70"
+                            Margin="10,5"
+                            HorizontalAlignment="Center"
+                            Maximum="1"
+                            Orientation="Vertical"
+                            Style="{StaticResource VerticalSliderWhiteStyle}"
+                            Thumb.DragCompleted="HitsoundVolume_DragComplete"
+                            Value="{Binding Player.CurrentVolume.Hitsound, Mode=TwoWay}" />
+                        <Label
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Content="音效"
+                            Foreground="#303030" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="3">
+                        <Slider
+                            Height="70"
+                            Margin="10,5"
+                            HorizontalAlignment="Center"
+                            Maximum="1"
+                            Orientation="Vertical"
+                            Style="{StaticResource VerticalSliderWhiteStyle}"
+                            Thumb.DragCompleted="SampleVolume_DragComplete"
+                            Value="{Binding Player.CurrentVolume.Sample, Mode=TwoWay}" />
+                        <Label
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Content="音轨"
+                            Foreground="#303030" />
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <StackPanel>
+                        <Slider
+                            Margin="10,5"
+                            AutoToolTipPlacement="BottomRight"
+                            Maximum="100"
+                            Minimum="0"
+                            Orientation="Horizontal"
+                            Style="{StaticResource HorizontalSliderWhiteStyle}"
+                            Thumb.DragCompleted="Balance_DragComplete"
+                            TickFrequency="1"
+                            Value="{Binding Player.CurrentVolume.BalanceFactor, Mode=TwoWay}" />
+                        <Label
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Content="3D差异度"
+                            Foreground="#303030" />
+                        <Slider
+                            x:Name="Offset"
+                            Margin="10,5"
+                            AutoToolTipPlacement="BottomRight"
+                            Maximum="200"
+                            Minimum="-200"
+                            Orientation="Horizontal"
+                            Style="{StaticResource HorizontalSliderWhiteStyle}"
+                            Thumb.DragCompleted="Offset_DragComplete"
+                            Thumb.DragDelta="Offset_DragDelta" />
+                        <Label
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Content="单曲偏移"
+                            Foreground="#303030" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

@@ -67,7 +67,7 @@ namespace Milky.OsuPlayer
 
         private static void SetDbPath()
         {
-            string dbPath = AppSettings.Current.General.DbPath;
+            string dbPath = AppSettings.Default.General.DbPath;
             if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath))
             {
                 var osuProcess = Process.GetProcesses().Where(x => x.ProcessName == "osu!").ToArray();
@@ -98,7 +98,7 @@ namespace Milky.OsuPlayer
                 }
 
                 //if (dbPath == null) return;
-                AppSettings.Current.General.DbPath = dbPath;
+                AppSettings.Default.General.DbPath = dbPath;
             }
         }
     }

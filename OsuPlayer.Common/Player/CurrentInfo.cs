@@ -16,8 +16,10 @@ namespace Milky.OsuPlayer.Common.Player
         public CurrentInfo() { }
 
         public CurrentInfo(string artist, string artistUnicode, string title, string titleUnicode, string creator,
-            string source, List<string> tags, int beatmapId, int beatmapsetId, double stars, double hp, double cs, double ar,
-            double od, long songLength, MapIdentity identity, MapInfo mapInfo, Beatmap beatmap, bool isFavorite, string path)
+            string source, List<string> tags, int beatmapId, int beatmapsetId, double stars, double hp, double cs,
+            double ar,
+            double od, long songLength, MapIdentity identity, MapInfo mapInfo, Beatmap beatmap, bool isFavorite,
+            string path, string bgPath)
         {
             Artist = artist;
             ArtistUnicode = artistUnicode;
@@ -39,6 +41,7 @@ namespace Milky.OsuPlayer.Common.Player
             Beatmap = beatmap;
             IsFavorite = isFavorite;
             Path = path;
+            BgPath = bgPath;
         }
 
         public string Artist
@@ -118,5 +121,6 @@ namespace Milky.OsuPlayer.Common.Player
         }
 
         public string Path { get; set; }
+        public string BgPath { get; }
     }
 }

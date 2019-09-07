@@ -24,23 +24,23 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            EnableLyric.IsChecked = AppSettings.Current.Lyric.EnableLyric;
-            if (AppSettings.Current.Lyric.LyricSource == LyricSource.Auto)
+            EnableLyric.IsChecked = AppSettings.Default.Lyric.EnableLyric;
+            if (AppSettings.Default.Lyric.LyricSource == LyricSource.Auto)
                 SourceAuto.IsChecked = true;
-            else if (AppSettings.Current.Lyric.LyricSource == LyricSource.Netease)
+            else if (AppSettings.Default.Lyric.LyricSource == LyricSource.Netease)
                 SourceNetease.IsChecked = true;
-            else if (AppSettings.Current.Lyric.LyricSource == LyricSource.Kugou)
+            else if (AppSettings.Default.Lyric.LyricSource == LyricSource.Kugou)
                 SourceKugou.IsChecked = true;
-            else if (AppSettings.Current.Lyric.LyricSource == LyricSource.QqMusic)
+            else if (AppSettings.Default.Lyric.LyricSource == LyricSource.QqMusic)
                 SourceQqMusic.IsChecked = true;
-            if (AppSettings.Current.Lyric.ProvideType == LyricProvideType.PreferBoth)
+            if (AppSettings.Default.Lyric.ProvideType == LyricProvideType.PreferBoth)
                 ShowAll.IsChecked = true;
-            else if (AppSettings.Current.Lyric.ProvideType == LyricProvideType.Original)
+            else if (AppSettings.Default.Lyric.ProvideType == LyricProvideType.Original)
                 ShowOrigin.IsChecked = true;
-            else if (AppSettings.Current.Lyric.ProvideType == LyricProvideType.PreferTranslated)
+            else if (AppSettings.Default.Lyric.ProvideType == LyricProvideType.PreferTranslated)
                 ShowTrans.IsChecked = true;
-            StrictMode.IsChecked = AppSettings.Current.Lyric.StrictMode;
-            EnableCache.IsChecked = AppSettings.Current.Lyric.EnableCache;
+            StrictMode.IsChecked = AppSettings.Default.Lyric.StrictMode;
+            EnableCache.IsChecked = AppSettings.Default.Lyric.EnableCache;
             _loaded = true;
         }
 
@@ -61,50 +61,50 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             if (!_loaded) return;
             if (SourceAuto.IsChecked.HasValue && SourceAuto.IsChecked.Value)
-                AppSettings.Current.Lyric.LyricSource = LyricSource.Auto;
+                AppSettings.Default.Lyric.LyricSource = LyricSource.Auto;
             else if (SourceNetease.IsChecked.HasValue && SourceNetease.IsChecked.Value)
-                AppSettings.Current.Lyric.LyricSource = LyricSource.Netease;
+                AppSettings.Default.Lyric.LyricSource = LyricSource.Netease;
             else if (SourceKugou.IsChecked.HasValue && SourceKugou.IsChecked.Value)
-                AppSettings.Current.Lyric.LyricSource = LyricSource.Kugou;
+                AppSettings.Default.Lyric.LyricSource = LyricSource.Kugou;
             else if (SourceQqMusic.IsChecked.HasValue && SourceQqMusic.IsChecked.Value)
-                AppSettings.Current.Lyric.LyricSource = LyricSource.QqMusic;
+                AppSettings.Default.Lyric.LyricSource = LyricSource.QqMusic;
             ReloadLyric();
-            AppSettings.SaveCurrent();
+            AppSettings.SaveDefault();
         }
 
         private void Show_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (!_loaded) return;
             if (ShowAll.IsChecked.HasValue && ShowAll.IsChecked.Value)
-                AppSettings.Current.Lyric.ProvideType = LyricProvideType.PreferBoth;
+                AppSettings.Default.Lyric.ProvideType = LyricProvideType.PreferBoth;
             else if (ShowOrigin.IsChecked.HasValue && ShowOrigin.IsChecked.Value)
-                AppSettings.Current.Lyric.ProvideType = LyricProvideType.Original;
+                AppSettings.Default.Lyric.ProvideType = LyricProvideType.Original;
             else if (ShowTrans.IsChecked.HasValue && ShowTrans.IsChecked.Value)
-                AppSettings.Current.Lyric.ProvideType = LyricProvideType.PreferTranslated;
+                AppSettings.Default.Lyric.ProvideType = LyricProvideType.PreferTranslated;
             ReloadLyric();
-            AppSettings.SaveCurrent();
+            AppSettings.SaveDefault();
         }
 
         private void StrictMode_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (!_loaded) return;
             if (StrictMode.IsChecked.HasValue && StrictMode.IsChecked.Value)
-                AppSettings.Current.Lyric.StrictMode = true;
+                AppSettings.Default.Lyric.StrictMode = true;
             else
-                AppSettings.Current.Lyric.StrictMode = false;
+                AppSettings.Default.Lyric.StrictMode = false;
             ReloadLyric();
-            AppSettings.SaveCurrent();
+            AppSettings.SaveDefault();
         }
 
         private void EnableCache_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (!_loaded) return;
             if (EnableCache.IsChecked.HasValue && EnableCache.IsChecked.Value)
-                AppSettings.Current.Lyric.EnableCache = true;
+                AppSettings.Default.Lyric.EnableCache = true;
             else
-                AppSettings.Current.Lyric.EnableCache = false;
+                AppSettings.Default.Lyric.EnableCache = false;
             ReloadLyric();
-            AppSettings.SaveCurrent();
+            AppSettings.SaveDefault();
         }
 
         private void ReloadLyric()

@@ -9,12 +9,12 @@ namespace Milky.OsuPlayer.Common.Configuration
     {
         public AppSettings()
         {
-            if (Current != null)
+            if (Default != null)
             {
                 return;
             }
 
-            Current = this;
+            Default = this;
         }
 
         public VolumeControl Volume { get; set; } = new VolumeControl();
@@ -28,18 +28,18 @@ namespace Milky.OsuPlayer.Common.Configuration
         public DateTime? LastUpdateCheck { get; set; } = null;
         public string IgnoredVer { get; set; } = null;
 
-        public static AppSettings Current { get; private set; }
+        public static AppSettings Default { get; private set; }
 
         public DateTime LastTimeScanOsuDb { get; set; }
 
-        public static void SaveCurrent()
+        public static void SaveDefault()
         {
-            ConcurrentFile.WriteAllText(Domain.ConfigFile, JsonConvert.SerializeObject(Current, Formatting.Indented));
+            ConcurrentFile.WriteAllText(Domain.ConfigFile, JsonConvert.SerializeObject(Default, Formatting.Indented));
         }
 
         public static void Load(AppSettings config)
         {
-            Current = config;
+            Default = config;
         }
 
         public static void LoadNew()
@@ -50,7 +50,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         public static void CreateNewConfig()
         {
             LoadNew();
-            SaveCurrent();
+            SaveDefault();
         }
     }
 }
