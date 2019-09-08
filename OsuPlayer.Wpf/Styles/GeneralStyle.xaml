@@ -10,7 +10,20 @@
         x:Key="TextureSource1"
         CacheOption="OnLoad"
         UriSource="pack://application:,,,/OsuPlayer;component/Resources/osu_texture.png" />
+    <BitmapImage
+        x:Key="TextureSource2"
+        CacheOption="OnLoad"
+        UriSource="pack://application:,,,/OsuPlayer;component/Resources/osu_texture2.png" />
+    <BitmapImage
+        x:Key="TextureSource3"
+        CacheOption="OnLoad"
+        UriSource="pack://application:,,,/OsuPlayer;component/Resources/store.jpg" />
     <ImageBrush x:Key="TextureBrush" ImageSource="{StaticResource TextureSource1}" />
+    <ImageBrush x:Key="TextureBrush2" ImageSource="{StaticResource TextureSource2}" />
+    <ImageBrush
+        x:Key="TextureBrush3"
+        ImageSource="{StaticResource TextureSource3}"
+        Stretch="UniformToFill" />
 
     <BitmapImage
         x:Key="GearS"

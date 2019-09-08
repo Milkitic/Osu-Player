@@ -10,7 +10,7 @@
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     xmlns:windows="clr-namespace:Milky.OsuPlayer.Windows"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
-    Title="LyricWindow"
+    Title="Lyric Window"
     Height="90"
     AllowsTransparency="True"
     Background="Transparent"

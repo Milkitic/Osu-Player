@@ -79,5 +79,18 @@ namespace Milky.OsuPlayer.Converter
         {
             throw new NotImplementedException();
         }
+    }  
+    public class BoolIsFavToSvgConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is bool b)) return value;
+            return b ? Application.Current.FindResource("HeartEnabledTempl") : Application.Current.FindResource("HeartDisabledTempl");
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

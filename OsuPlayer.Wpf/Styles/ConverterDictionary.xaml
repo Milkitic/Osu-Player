@@ -17,4 +17,5 @@
     <converter:NullToFullOpacityConverter x:Key="NullToFullOpacityConverter" />
     <converter:NullToBoolFalseConverter x:Key="NullToBoolFalseConverter" />
     <converter:PlayModeConverter x:Key="PlayModeConverter" />
+    <converter:BoolIsFavToSvgConverter x:Key="BoolIsFavToSvgConverter" />
 </ResourceDictionary>

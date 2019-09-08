@@ -69,9 +69,10 @@
                 VerticalAlignment="Center"
                 Background="Transparent"
                 BorderThickness="0"
+                Click="CommonButton_Click"
                 IconMargin="0"
                 IconSize="18"
-                IconTemplate="{StaticResource HeartEnabledTempl}"
+                IconTemplate="{Binding Player.CurrentInfo.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}"
                 MouseDownBackground="#80D0D0D0"
                 MouseOverBackground="#80E0E0E0"
                 WindowChrome.IsHitTestVisibleInChrome="True" />
@@ -121,7 +122,7 @@
                 BorderThickness="0"
                 Click="MaxButton_Click"
                 Content="▢"
-                Foreground="#303030"
+                Foreground="#FF646C77"
                 IsTabStop="False"
                 MouseDownBackground="#A0D0D0D0"
                 MouseOverBackground="#60D0D0D0"
@@ -134,7 +135,7 @@
                 BorderThickness="0"
                 Click="CloseButton_Click"
                 Content="×"
-                Foreground="#303030"
+                Foreground="#FF646C77"
                 IsTabStop="False"
                 MouseDownBackground="#30A06349"
                 MouseOverBackground="#60D0D0D0"
@@ -284,14 +285,15 @@
         </Popup>
         <Popup
             x:Name="PopMode"
-            Grid.Row="0" Width="110"
+            Grid.Row="0"
             Grid.Column="0"
+            Width="110"
             AllowsTransparency="True"
             Placement="Top"
             PlacementTarget="{Binding ElementName=ModeButton}"
             PopupAnimation="Fade"
             StaysOpen="False">
-            <local:PlayModeControl />
+            <local:PlayModeControl x:Name="PlayModeControl" />
         </Popup>
     </Grid>
 </UserControl>

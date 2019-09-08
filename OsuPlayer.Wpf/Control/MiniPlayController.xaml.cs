@@ -13,8 +13,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Instances;
+using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
@@ -70,6 +72,7 @@ namespace Milky.OsuPlayer.Control
     {
         private MiniPlayListControlVm _viewModel;
         private PlayersInst _playersInst;
+        private AppDbOperator _appDbOperator = new AppDbOperator();
 
         public static event Action MaxButtonClicked;
         public static event Action CloseButtonClicked;
@@ -85,12 +88,8 @@ namespace Milky.OsuPlayer.Control
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            PlayModeControl.CloseRequested += (obj, args) => PopMode.IsOpen = false;
             _playersInst.AudioPlayer.PositionChanged += AudioPlayer_PositionChanged;
-        }
-
-        private void AudioPlayer_PositionChanged(object sender, Media.Audio.Music.ProgressEventArgs e)
-        {
-            _viewModel.PositionPercent = e.Position / (double)e.Duration;
         }
 
         private void UserControl_Initialized(object sender, EventArgs e)
@@ -104,6 +103,11 @@ namespace Milky.OsuPlayer.Control
             _playersInst.AudioPlayer.PositionSet += AudioPlayer_PositionChanged;
         }
 
+        private void AudioPlayer_PositionChanged(object sender, Media.Audio.Music.ProgressEventArgs e)
+        {
+            _viewModel.PositionPercent = e.Position / (double)e.Duration;
+        }
+        
         private void MaxButton_Click(object sender, RoutedEventArgs e)
         {
             MaxButtonClicked?.Invoke();
@@ -134,6 +138,21 @@ namespace Milky.OsuPlayer.Control
         private void ModeButton_Click(object sender, RoutedEventArgs e)
         {
             PopMode.IsOpen = true;
+        }
+
+        private async void CommonButton_Click(object sender, RoutedEventArgs e)
+        {
+            var collection = _appDbOperator.GetCollections().First(k => k.Locked);
+            if (_viewModel.PlayerList.CurrentInfo.IsFavorite)
+            {
+                _appDbOperator.RemoveMapFromCollection(_viewModel.Player.CurrentInfo.Beatmap, collection);
+                _viewModel.PlayerList.CurrentInfo.IsFavorite = false;
+            }
+            else
+            {
+                await SelectCollectionPage.AddToCollectionAsync(collection, new[] { _viewModel.Player.CurrentInfo.Beatmap });
+                _viewModel.PlayerList.CurrentInfo.IsFavorite = true;
+            }
         }
     }
 }

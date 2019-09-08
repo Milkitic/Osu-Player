@@ -7,7 +7,7 @@
     xmlns:local="clr-namespace:Milky.OsuPlayer.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
-    Title="MiniWindow"
+    Title="Mini Window"
     Width="320"
     Height="80"
     AllowsTransparency="True"

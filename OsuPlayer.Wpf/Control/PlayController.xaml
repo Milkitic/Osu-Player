@@ -12,10 +12,11 @@
     d:DesignWidth="800"
     Loaded="UserControl_Loaded"
     mc:Ignorable="d">
+    <UserControl.DataContext>
+        <local:PlayControllerVm />
+    </UserControl.DataContext>
     <UserControl.Resources>
         <converter:MsToStringConverter x:Key="MsToStringConverter" />
-        <ImageBrush x:Key="FullscreenS" ImageSource="pack://application:,,,/OsuPlayer;component/Resources/fullscreen_s.png" />
-
         <Style x:Key="FullScrButton" TargetType="{x:Type Button}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -50,7 +51,7 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Grid x:Name="ToolControl" Background="White">
+    <Grid x:Name="ToolControl" Background="{StaticResource TextureBrush3}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition MaxWidth="65" />
             <ColumnDefinition Width="Auto" />
@@ -164,7 +165,7 @@
                 <ContentPresenter x:Name="OpenIcon" Content="{StaticResource WhiteOpenIcon}" />
             </custom:PlayerControlButton>
         </StackPanel>
-        <Grid Grid.Column="2" Background="White">
+        <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -198,10 +199,13 @@
                     HorizontalAlignment="Right"
                     Orientation="Horizontal">
                     <Grid>
-                        <Label Content="00:00" Foreground="#777" />
+                        <Label
+                            x:Name="LblNowFake"
+                            Content="00:00"
+                            Foreground="#777"
+                            Visibility="Hidden" />
                         <Label
                             x:Name="LblNow"
-                            Background="White"
                             Content="{Binding Player.Position, Mode=OneWay, Converter={StaticResource MsToStringConverter}}"
                             Foreground="#777" />
                     </Grid>
@@ -210,10 +214,13 @@
                         Content="/"
                         Foreground="#858585" />
                     <Grid>
-                        <Label Content="00:00" Foreground="#777" />
+                        <Label
+                            x:Name="LblTotalFake"
+                            Content="00:00"
+                            Foreground="#777"
+                            Visibility="Hidden" />
                         <Label
                             x:Name="LblTotal"
-                            Background="White"
                             Content="{Binding Player.Duration, Mode=OneWay, Converter={StaticResource MsToStringConverter}}"
                             Foreground="#AAA" />
                     </Grid>
@@ -247,7 +254,7 @@
                         Click="ModeButton_Click"
                         IconMargin="0"
                         IconSize="25"
-                        IconTemplate="{StaticResource ModeLoopTempl}"
+                        IconTemplate="{Binding PlayerList.PlayerMode, Converter={StaticResource PlayModeConverter}}"
                         MouseOverBackground="Transparent"
                         WindowChrome.IsHitTestVisibleInChrome="True" />
                     <local:CommonButton
@@ -260,7 +267,7 @@
                         Click="LikeButton_Click"
                         IconMargin="0"
                         IconSize="24"
-                        IconTemplate="{StaticResource HeartEnabledTempl}"
+                        IconTemplate="{Binding Player.CurrentInfo.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}"
                         MouseOverBackground="Transparent" />
                     <local:CommonButton
                         x:Name="VolumeButton"
@@ -291,63 +298,14 @@
             x:Name="PopMode"
             Grid.Row="0"
             Grid.Column="0"
+            Width="110"
             AllowsTransparency="True"
-            HorizontalOffset="-31"
+            HorizontalOffset="-44"
             Placement="Top"
             PlacementTarget="{Binding ElementName=ModeButton}"
             PopupAnimation="Fade"
             StaysOpen="False">
-            <Grid Margin="5">
-                <Border BorderBrush="#cccccc" BorderThickness="1" />
-                <Border
-                    HorizontalAlignment="Center"
-                    BorderBrush="#cccccc"
-                    BorderThickness="1">
-                    <Border.Background>
-                        <ImageBrush
-                            ImageSource="{StaticResource TextureSource1}"
-                            TileMode="Tile"
-                            Viewport="0,0,500,500"
-                            ViewportUnits="Absolute" />
-                    </Border.Background>
-                    <StackPanel
-                        Width="75"
-                        ButtonBase.Click="PlayMode_Click"
-                        ToggleButton.Checked="PlayMode_Checked">
-                        <ToggleButton
-                            x:Name="Single"
-                            Height="25"
-                            Checked="PlayMode_Checked"
-                            Content="单曲播放"
-                            Style="{StaticResource PopupButtonStyle}" />
-                        <ToggleButton
-                            x:Name="SingleLoop"
-                            Height="25"
-                            Content="单曲循环"
-                            Style="{StaticResource PopupButtonStyle}" />
-                        <ToggleButton
-                            x:Name="Normal"
-                            Height="25"
-                            Content="顺序播放"
-                            Style="{StaticResource PopupButtonStyle}" />
-                        <ToggleButton
-                            x:Name="Random"
-                            Height="25"
-                            Content="随机播放"
-                            Style="{StaticResource PopupButtonStyle}" />
-                        <ToggleButton
-                            x:Name="Loop"
-                            Height="25"
-                            Content="循环列表"
-                            Style="{StaticResource PopupButtonStyle}" />
-                        <ToggleButton
-                            x:Name="LoopRandom"
-                            Height="25"
-                            Content="随机循环"
-                            Style="{StaticResource PopupButtonStyle}" />
-                    </StackPanel>
-                </Border>
-            </Grid>
+            <local:PlayModeControl x:Name="PlayModeControl" />
         </Popup>
         <Popup
             x:Name="PopPlayList"
@@ -360,8 +318,7 @@
             Placement="Top"
             PlacementTarget="{Binding ElementName=PlayListButton}"
             PopupAnimation="Fade"
-            StaysOpen="True"
-            VerticalOffset="5">
+            StaysOpen="True">
             <local:PlayListControl CloseRequested="PlayListControl_CloseRequested" />
         </Popup>
         <Popup
@@ -370,7 +327,7 @@
             Grid.Column="0"
             Width="170"
             AllowsTransparency="True"
-            HorizontalOffset="-113"
+            HorizontalOffset="-73"
             Placement="Top"
             PlacementTarget="{Binding ElementName=VolumeButton}"
             PopupAnimation="Fade"

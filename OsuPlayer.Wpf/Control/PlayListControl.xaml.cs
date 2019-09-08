@@ -203,16 +203,14 @@ namespace Milky.OsuPlayer.Control
                 typeof(RoutedEventHandler),
                 typeof(PlayListControl));
 
-        private bool _signed;
-
-        // .NET event wrapper
         public event RoutedEventHandler CloseRequested
         {
             add => AddHandler(CloseRequestedEvent, value);
             remove => RemoveHandler(CloseRequestedEvent, value);
         }
 
-
+        private bool _signed;
+        
         public PlayListControl()
         {
             InitializeComponent();

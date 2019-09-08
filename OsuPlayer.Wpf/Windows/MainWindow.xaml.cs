@@ -382,7 +382,7 @@ namespace Milky.OsuPlayer.Windows
             //    }
             //}
 
-            IsMapFavorite(Services.Get<PlayerList>().CurrentInfo.Identity);
+            //IsMapFavorite(Services.Get<PlayerList>().CurrentInfo.Identity);
         }
 
         #endregion Events

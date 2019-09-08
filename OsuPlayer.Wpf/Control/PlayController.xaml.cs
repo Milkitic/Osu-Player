@@ -39,6 +39,33 @@ using Unosquare.FFME.Common;
 
 namespace Milky.OsuPlayer.Control
 {
+    public class PlayControllerVm : WpfApi.ViewModelBase
+    {
+        private PlayerList _playerList = Services.Get<PlayerList>();
+
+        public PlayerList PlayerList
+        {
+            get => _playerList;
+            set
+            {
+                _playerList = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private PlayerViewModel _player = PlayerViewModel.Current;
+
+        public PlayerViewModel Player
+        {
+            get => _player;
+            set
+            {
+                _player = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
     /// <summary>
     /// PlayController.xaml 的交互逻辑
     /// </summary>
@@ -157,6 +184,7 @@ namespace Milky.OsuPlayer.Control
         {
             InitializeComponent();
             Default = this;
+            PlayModeControl.CloseRequested += (sender, e) => { PopMode.IsOpen = false; };
         }
 
         public async Task PlayNewFile(Beatmap map, bool play = true)
@@ -232,32 +260,8 @@ namespace Milky.OsuPlayer.Control
             await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None);
         }
 
-        private async Task SetPlayMode(PlayerMode playMode)
+        public async Task SetPlayMode(PlayerMode playMode)
         {
-            switch (playMode)
-            {
-                case PlayerMode.Normal:
-                    Normal.IsChecked = true;
-                    break;
-                case PlayerMode.Random:
-                    Random.IsChecked = true;
-                    break;
-                case PlayerMode.Loop:
-                    Loop.IsChecked = true;
-                    break;
-                case PlayerMode.LoopRandom:
-                    LoopRandom.IsChecked = true;
-                    break;
-                case PlayerMode.Single:
-                    Single.IsChecked = true;
-                    break;
-                case PlayerMode.SingleLoop:
-                    SingleLoop.IsChecked = true;
-                    break;
-            }
-
-            ModeButton.IconTemplate = (ControlTemplate)Application.Current.FindResource($"Mode{playMode}Templ");
-
             if (playMode == Services.Get<PlayerList>().PlayerMode)
             {
                 return;
@@ -333,6 +337,8 @@ namespace Milky.OsuPlayer.Control
 
                     LblNow.Visibility = Visibility.Hidden;
                     LblTotal.Visibility = Visibility.Hidden;
+                    LblNowFake.Visibility = Visibility.Visible;
+                    LblTotalFake.Visibility = Visibility.Visible;
                     PlayProgress.Maximum = 1;
                     PlayProgress.Value = 0;
 
@@ -355,7 +361,7 @@ namespace Milky.OsuPlayer.Control
                             : null;
                     }
 
-                    Thumb.Source = truePath==null?null: new BitmapImage(new Uri(truePath));
+                    Thumb.Source = truePath == null ? null : new BitmapImage(new Uri(truePath));
                     /* Set new hitsound player*/
                     playerInst.SetAudioPlayer(path, osuFile);
                     audioPlayer = playerInst.AudioPlayer;
@@ -405,8 +411,11 @@ namespace Milky.OsuPlayer.Control
                             audioPlayer.Play();
                         }
                     }
+
                     LblNow.Visibility = Visibility.Visible;
                     LblTotal.Visibility = Visibility.Visible;
+                    LblNowFake.Visibility = Visibility.Hidden;
+                    LblTotalFake.Visibility = Visibility.Hidden;
                     AppSettings.Default.CurrentPath = path;
                     AppSettings.SaveDefault();
 
@@ -521,7 +530,7 @@ namespace Milky.OsuPlayer.Control
             Services.Get<PlayersInst>()?.ClearAudioPlayer();
             _forcePaused = false;
         }
-        
+
         #region Event handler
 
         private void ThumbButton_Click(object sender, RoutedEventArgs e)
@@ -605,43 +614,6 @@ namespace Milky.OsuPlayer.Control
         private void PlayListButton_Click(object sender, RoutedEventArgs e)
         {
             PopPlayList.IsOpen = true;
-        }
-
-        private void PlayMode_Checked(object sender, RoutedEventArgs e)
-        {
-            var btn = (ToggleButton)e.Source;
-            _modeOptionContainer.Switch(btn);
-        }
-
-        private async void PlayMode_Click(object sender, RoutedEventArgs e)
-        {
-            var btn = (ToggleButton)e.Source;
-            PlayerMode playMode;
-            switch (btn.Name)
-            {
-                case "Single":
-                    playMode = PlayerMode.Single;
-                    break;
-                case "SingleLoop":
-                    playMode = PlayerMode.SingleLoop;
-                    break;
-                case "Normal":
-                    playMode = PlayerMode.Normal;
-                    break;
-                case "Random":
-                    playMode = PlayerMode.Random;
-                    break;
-                case "Loop":
-                    playMode = PlayerMode.Loop;
-                    break;
-                case "LoopRandom":
-                default:
-                    playMode = PlayerMode.LoopRandom;
-                    break;
-            }
-
-            await SetPlayMode(playMode);
-            PopMode.IsOpen = false;
         }
 
         #endregion

@@ -12,7 +12,15 @@
         <local:VolumeControlVm />
     </UserControl.DataContext>
     <Grid>
-        <Border Margin="10" Background="#A0ffffff">
+        <Border Margin="10" RenderOptions.BitmapScalingMode="LowQuality">
+            <Border.Background>
+                <ImageBrush
+                    ImageSource="{StaticResource TextureSource2}"
+                    Opacity="0.7"
+                    TileMode="Tile"
+                    Viewport="0,0,500,500"
+                    ViewportUnits="Absolute" />
+            </Border.Background>
             <Border.Effect>
                 <DropShadowEffect
                     BlurRadius="10"
@@ -20,7 +28,7 @@
                     ShadowDepth="0" />
             </Border.Effect>
         </Border>
-        <Border Margin="10" Background="#B0ffffff">
+        <Border Margin="10" Background="#A0ffffff">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />

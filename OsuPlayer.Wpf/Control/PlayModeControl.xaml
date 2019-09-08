@@ -5,11 +5,21 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:player="clr-namespace:Milky.OsuPlayer.Common.Player;assembly=OsuPlayer.Common"
     d:DesignHeight="236"
     d:DesignWidth="130"
+    Loaded="UserControl_Loaded"
     mc:Ignorable="d">
     <Grid>
-        <Border Margin="10" Background="#A0ffffff">
+        <Border Margin="10" RenderOptions.BitmapScalingMode="LowQuality">
+            <Border.Background>
+                <ImageBrush
+                    ImageSource="{StaticResource TextureSource2}"
+                    Opacity="0.7"
+                    TileMode="Tile"
+                    Viewport="0,0,500,500"
+                    ViewportUnits="Absolute" />
+            </Border.Background>
             <Border.Effect>
                 <DropShadowEffect
                     BlurRadius="10"
@@ -17,74 +27,92 @@
                     ShadowDepth="0" />
             </Border.Effect>
         </Border>
-        <Border Margin="10" Background="#B0ffffff">
+        <Border Margin="10" Background="#A0ffffff">
             <StackPanel>
                 <local:SwitchRadio
+                    x:Name="ModeSingle"
                     Height="30"
                     Padding="0,0,5,0"
                     Background="Transparent"
+                    Checked="Mode_Changed"
                     CheckedBackground="#80D0D0D0"
                     Content="单曲播放"
                     IconMargin="0,0,5,0"
                     IconSize="18"
                     IconTemplate="{StaticResource ModeSingleTempl}"
                     MouseDownBackground="#80D8D8D8"
-                    MouseOverBackground="#80E0E0E0" />
+                    MouseOverBackground="#80E0E0E0"
+                    Tag="{x:Static player:PlayerMode.Single}" />
                 <local:SwitchRadio
+                    x:Name="ModeSingleLoop"
                     Height="30"
                     Padding="0,0,5,0"
                     Background="Transparent"
+                    Checked="Mode_Changed"
                     CheckedBackground="#80D0D0D0"
                     Content="单曲循环"
                     IconMargin="0,0,5,0"
                     IconSize="18"
                     IconTemplate="{StaticResource ModeSingleLoopTempl}"
                     MouseDownBackground="#80D8D8D8"
-                    MouseOverBackground="#80E0E0E0" />
+                    MouseOverBackground="#80E0E0E0"
+                    Tag="{x:Static player:PlayerMode.SingleLoop}" />
                 <local:SwitchRadio
+                    x:Name="ModeNormal"
                     Height="30"
                     Padding="0,0,5,0"
                     Background="Transparent"
+                    Checked="Mode_Changed"
                     CheckedBackground="#80D0D0D0"
                     Content="顺序播放"
                     IconMargin="0,0,5,0"
                     IconSize="18"
                     IconTemplate="{StaticResource ModeNormalTempl}"
                     MouseDownBackground="#80D8D8D8"
-                    MouseOverBackground="#80E0E0E0" />
+                    MouseOverBackground="#80E0E0E0"
+                    Tag="{x:Static player:PlayerMode.Normal}" />
                 <local:SwitchRadio
+                    x:Name="ModeRandom"
                     Height="30"
                     Padding="0,0,5,0"
                     Background="Transparent"
+                    Checked="Mode_Changed"
                     CheckedBackground="#80D0D0D0"
                     Content="随机播放"
                     IconMargin="0,0,5,0"
                     IconSize="18"
                     IconTemplate="{StaticResource ModeRandomTempl}"
                     MouseDownBackground="#80D8D8D8"
-                    MouseOverBackground="#80E0E0E0" />
+                    MouseOverBackground="#80E0E0E0"
+                    Tag="{x:Static player:PlayerMode.Random}" />
                 <local:SwitchRadio
+                    x:Name="ModeLoop"
                     Height="30"
                     Padding="0,0,5,0"
                     Background="Transparent"
+                    Checked="Mode_Changed"
                     CheckedBackground="#80D0D0D0"
                     Content="循环列表"
                     IconMargin="0,0,5,0"
                     IconSize="18"
                     IconTemplate="{StaticResource ModeLoopTempl}"
                     MouseDownBackground="#80D8D8D8"
-                    MouseOverBackground="#80E0E0E0" />
+                    MouseOverBackground="#80E0E0E0"
+                    Tag="{x:Static player:PlayerMode.Loop}" />
                 <local:SwitchRadio
+                    x:Name="ModeLoopRandom"
                     Height="30"
                     Padding="0,0,5,0"
                     Background="Transparent"
+                    Checked="Mode_Changed"
                     CheckedBackground="#80D0D0D0"
                     Content="随机循环"
                     IconMargin="0,0,5,0"
                     IconSize="18"
                     IconTemplate="{StaticResource ModeLoopRandomTempl}"
                     MouseDownBackground="#80D8D8D8"
-                    MouseOverBackground="#80E0E0E0" />
+                    MouseOverBackground="#80E0E0E0"
+                    Tag="{x:Static player:PlayerMode.LoopRandom}" />
             </StackPanel>
         </Border>
     </Grid>

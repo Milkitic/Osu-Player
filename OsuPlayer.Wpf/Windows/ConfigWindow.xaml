@@ -98,7 +98,16 @@
                     Name="MainFrame"
                     Width="{Binding ElementName=MainCanvas, Path=ActualWidth}"
                     Height="{Binding ElementName=MainCanvas, Path=ActualHeight}"
-                    NavigationUIVisibility="Hidden" />
+                    NavigationUIVisibility="Hidden">
+                    <Frame.Background>
+                        <ImageBrush
+                            ImageSource="{StaticResource TextureSource2}"
+                            Opacity="0.3"
+                            TileMode="Tile"
+                            Viewport="0,0,500,500"
+                            ViewportUnits="Absolute" />
+                    </Frame.Background>
+                </Frame>
             </DockPanel>
         </DockPanel>
 

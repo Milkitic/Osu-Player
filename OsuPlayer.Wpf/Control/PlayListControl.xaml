@@ -63,7 +63,15 @@
         <local:PlayListControlVm />
     </UserControl.DataContext>
     <Grid>
-        <Border Margin="10" Background="#A0F0F0F0">
+        <Border Margin="10" RenderOptions.BitmapScalingMode="LowQuality">
+            <Border.Background>
+                <ImageBrush
+                    ImageSource="{StaticResource TextureSource2}"
+                    Opacity="0.7"
+                    TileMode="Tile"
+                    Viewport="0,0,500,500"
+                    ViewportUnits="Absolute" />
+            </Border.Background>
             <Border.Effect>
                 <DropShadowEffect
                     BlurRadius="10"
