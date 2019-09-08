@@ -219,7 +219,7 @@
                                     x:Name="ListCount"
                                     Margin="0,-5,0,0"
                                     HorizontalAlignment="Right"
-                                    Content="0"
+                                    Content="{Binding Beatmaps.Count}"
                                     FontWeight="Bold"
                                     Foreground="#7A7A7A" />
                             </StackPanel>
@@ -259,7 +259,7 @@
                                     Background="{StaticResource WhiteBrush40}"
                                     BorderThickness="0"
                                     ItemContainerStyle="{StaticResource GridView}"
-                                    ItemsSource="{Binding Beatmaps}">
+                                    ItemsSource="{Binding DisplayedBeatmaps}">
                                     <ListView.ContextMenu>
                                         <ContextMenu Style="{StaticResource DefaultContextMenu}">
                                             <MenuItem

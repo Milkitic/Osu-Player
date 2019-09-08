@@ -10,6 +10,7 @@ namespace Milky.OsuPlayer.ViewModels
     public class CollectionPageViewModel : ViewModelBase
     {
         private NumberableObservableCollection<BeatmapDataModel> _beatmaps;
+        private NumberableObservableCollection<BeatmapDataModel> _displayedBeatmaps;
         private Collection _collectionInfo;
 
         public NumberableObservableCollection<BeatmapDataModel> Beatmaps
@@ -18,6 +19,15 @@ namespace Milky.OsuPlayer.ViewModels
             set
             {
                 _beatmaps = value;
+                OnPropertyChanged();
+            }
+        }
+        public NumberableObservableCollection<BeatmapDataModel> DisplayedBeatmaps
+        {
+            get => _displayedBeatmaps;
+            set
+            {
+                _displayedBeatmaps = value;
                 OnPropertyChanged();
             }
         }

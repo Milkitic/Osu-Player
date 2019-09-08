@@ -87,7 +87,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
 
         public string AutoTitle => MetaString.GetUnicode(Title, TitleUnicode) ?? "未知标题";
         public string AutoArtist => MetaString.GetUnicode(Artist, ArtistUnicode) ?? "未知艺术家";
-   
+
         #region Only used in HoLLy
         //public string BeatmapChecksum { get; set; }
         //public RankStatus RankedStatus { get; set; }
@@ -235,5 +235,12 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
                 return obj.GetHashCode();
             }
         }
+    }
+
+    public class JoinedBeatmap : Beatmap
+    {
+        public string FileSize { get; set; }
+        public string ExportTime { get; set; }
+        public string ExportFile { get; set; }
     }
 }

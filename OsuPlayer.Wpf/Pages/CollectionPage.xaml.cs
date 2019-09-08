@@ -47,23 +47,27 @@ namespace Milky.OsuPlayer.Pages
         }
         public CollectionPage(string colId) : this()
         {
-            var collectionInfo = _appDbOperator.GetCollectionById(colId);
-            NavigateNewCollection(collectionInfo);
+            UpdateView(colId);
         }
 
-        public CollectionPage NavigateNewCollection(Collection collectionInfo)
+        public void UpdateView(string colId)
         {
+            var collectionInfo = _appDbOperator.GetCollectionById(colId);
             ViewModel.CollectionInfo = collectionInfo;
-            var infos = _appDbOperator.GetMapsFromCollection(collectionInfo);
+            UpdateList();
+        }
+
+        public void UpdateList()
+        {
+            var infos = _appDbOperator.GetMapsFromCollection(ViewModel.CollectionInfo);
             _entries = _beatmapDbOperator.GetBeatmapsByMapInfo(infos, TimeSortMode.AddTime);
             ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModelList(false));
-            return this;
+            ViewModel.DisplayedBeatmaps = ViewModel.Beatmaps;
+            ListCount.Content = ViewModel.Beatmaps.Count;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            //LblTitle.Content = _collection.Name;
-
             var item = ViewModel.Beatmaps?.FirstOrDefault(k =>
                 k.GetIdentity().Equals(Services.Get<PlayerList>()?.CurrentInfo?.Identity));
             if (item != null)
@@ -73,21 +77,9 @@ namespace Milky.OsuPlayer.Pages
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var keyword = SearchBox.Text.Trim();
-            if (string.IsNullOrEmpty(keyword))
-            {
-
-            }
-            else
-            {
-                //var query = AppDbOperatorExt.FilterByKeyword(keyword);
-                //UpdateView(query);
-            }
-        }
-
-        private void UpdateView(IEnumerable<Beatmap> entries)
-        {
-            //ViewModel.Beatmaps = new ObservableCollection<BeatmapDataModel>(entries.ToDataModelList(false));
-            //ListCount.Content = ViewModel.Beatmaps.Count;
+            ViewModel.DisplayedBeatmaps = string.IsNullOrWhiteSpace(keyword)
+                ? ViewModel.Beatmaps
+                : new NumberableObservableCollection<BeatmapDataModel>(ViewModel.Beatmaps.GetByKeyword(keyword));
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
