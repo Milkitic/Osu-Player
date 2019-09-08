@@ -162,7 +162,13 @@
                         BorderBrush="#C0C0C0"
                         BorderThickness="1"
                         CornerRadius="5">
-                        <Border.Background>#D8D8D8</Border.Background>
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#D4D4D4" Offset="0"/>
+                                <GradientStop Color="#D0D0D0" Offset="0.5"/>
+                                <GradientStop Color="#D4D4D4" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
                         <Grid x:Name="GridRoot">
                             <Grid.RowDefinitions>
                                 <RowDefinition MaxHeight="15" />
