@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data.EF;
+using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Control.Notification;
 using Milky.OsuPlayer.Utils;
 using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
@@ -171,7 +172,8 @@ namespace Milky.OsuPlayer.Pages
 
         private void ItemCollect_Click(object sender, RoutedEventArgs e)
         {
-            _mainWindow.FramePop.Navigate(new SelectCollectionPage(GetSelected()));
+            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(GetSelected()),
+                DialogOptionFactory.SelectCollectionOptions);
         }
 
         private void ItemSet_Click(object sender, RoutedEventArgs e)
@@ -209,7 +211,8 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            _mainWindow.FramePop.Navigate(new EditCollectionPage(_mainWindow, ViewModel.CollectionInfo));
+            FrontDialogOverlay.Default.ShowContent(new EditCollectionControl(ViewModel.CollectionInfo),
+                DialogOptionFactory.EditCollectionOptions);
         }
 
         private Beatmap ConvertToEntry(BeatmapDataModel dataModel)

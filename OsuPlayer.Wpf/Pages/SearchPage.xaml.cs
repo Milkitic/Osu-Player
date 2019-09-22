@@ -17,6 +17,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Control.FrontDialog;
 using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 
 namespace Milky.OsuPlayer.Pages
@@ -63,26 +64,23 @@ namespace Milky.OsuPlayer.Pages
             PlaySelectedDefault();
         }
 
-        private void ItemPlay_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void ItemPlay_Click(object sender, RoutedEventArgs e)
         {
             if (ResultList.SelectedItem == null)
                 return;
             var ok = (BeatmapDataModel)ResultList.SelectedItem;
-            var page = new DiffSelectPage(_mainWindow,
-                _beatmapDbOperator.GetBeatmapsFromFolder(ok.GetIdentity().FolderName));
-            page.Callback = async () =>
+            var control = new DiffSelectControl(
+                _beatmapDbOperator.GetBeatmapsFromFolder(ok.GetIdentity().FolderName),
+            async selected =>
             {
-                //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, page.SelectedMap.FolderName,
-                //      page.SelectedMap.BeatmapFileName));
-                var map = _beatmapDbOperator.GetBeatmapByIdentifiable(page.SelectedMap);
+                var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
                 await PlayController.Default.PlayNewFile(map);
                 await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
-                _mainWindow.FramePop.Navigate(null);
-            };
-            _mainWindow.FramePop.Navigate(page);
+            });
+            FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
         }
 
-        private void ItemSearchMapper_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void ItemSearchMapper_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelectedDefault();
             if (map == null)
@@ -90,7 +88,7 @@ namespace Milky.OsuPlayer.Pages
             _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.Creator));
         }
 
-        private void ItemSearchSource_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void ItemSearchSource_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelectedDefault();
             if (map == null)
@@ -98,7 +96,7 @@ namespace Milky.OsuPlayer.Pages
             _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.SongSource));
         }
 
-        private void ItemSearchArtist_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void ItemSearchArtist_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelectedDefault();
             if (map == null)
@@ -106,7 +104,7 @@ namespace Milky.OsuPlayer.Pages
             _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoArtist));
         }
 
-        private void ItemSearchTitle_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void ItemSearchTitle_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelectedDefault();
             if (map == null)
@@ -114,7 +112,7 @@ namespace Milky.OsuPlayer.Pages
             _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoTitle));
         }
 
-        private void ItemExport_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void ItemExport_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelectedDefault();
             if (map == null)
@@ -122,32 +120,34 @@ namespace Milky.OsuPlayer.Pages
             ExportPage.QueueEntry(map);
         }
 
-        private void ItemCollect_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void ItemCollect_Click(object sender, RoutedEventArgs e)
         {
             if (ResultList.SelectedItem == null)
                 return;
             var ok = (BeatmapDataModel)ResultList.SelectedItem;
-            var page = new DiffSelectPage(_mainWindow,
-                _beatmapDbOperator.GetBeatmapsFromFolder(ok.GetIdentity().FolderName));
-            page.Callback = () =>
-            {
-                _mainWindow.FramePop.Navigate(new SelectCollectionPage(
-                    _beatmapDbOperator.GetBeatmapsFromFolder(page.SelectedMap.FolderName)
-                        .FirstOrDefault(k => k.Version == page.SelectedMap.Version))
-                );
-            };
-            _mainWindow.FramePop.Navigate(page);
+            var control = new DiffSelectControl(
+                _beatmapDbOperator.GetBeatmapsFromFolder(ok.GetIdentity().FolderName),
+                selected =>
+                {
+                    var entry = _beatmapDbOperator.GetBeatmapsFromFolder(selected.FolderName)
+                        .FirstOrDefault(k => k.Version == selected.Version);
+                    FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
+                        DialogOptionFactory.SelectCollectionOptions);
+                });
+            FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
         }
 
         private void ItemSet_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelectedDefault();
+            if (map == null) return;
             Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
         }
 
         private void ItemFolder_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelectedDefault();
+            if (map == null) return;
             Process.Start(Path.Combine(Domain.OsuSongPath, map.FolderName));
         }
 

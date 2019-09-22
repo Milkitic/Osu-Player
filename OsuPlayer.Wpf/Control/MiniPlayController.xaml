@@ -41,6 +41,33 @@
             Grid.Row="0"
             Grid.RowSpan="3"
             Fill="#C0FFFFFF" />
+        <Button
+            x:Name="Bg"
+            Grid.Row="0"
+            Grid.RowSpan="3"
+            Opacity="1"
+            RenderOptions.BitmapScalingMode="HighQuality">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Rectangle x:Name="aaa">
+                                    <Rectangle.Fill>
+                                        <ImageBrush ImageSource="{StaticResource TextureSource3}" Stretch="UniformToFill" />
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <ControlTemplate.Triggers>
+                                    <Trigger SourceName="aaa" Property="IsMouseOver" Value="true">
+                                        <Setter TargetName="aaa" Property="Opacity" Value="0" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Button.Style>
+        </Button>
         <StackPanel
             Grid.Row="0"
             Margin="2"

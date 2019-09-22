@@ -35,28 +35,28 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#f3f5f5" />
-                                <Setter Property="BorderBrush" Value="#f0f0f0" />
+                                <Setter Property="Background" Value="#E0E0E0" />
+                                <Setter Property="BorderBrush" Value="#80D0D0D0" />
+                                <Setter TargetName="ShadowBorder" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect
+                                            BlurRadius="5"
+                                            Opacity="0.2"
+                                            ShadowDepth="0"
+                                            Color="#FFDC5479" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#D0D0D0" />
+                                <Setter Property="BorderBrush" Value="#80C0C0C0" />
                                 <Setter TargetName="ShadowBorder" Property="Effect">
                                     <Setter.Value>
                                         <DropShadowEffect
                                             BlurRadius="10"
                                             Opacity="0.2"
                                             ShadowDepth="0"
-                                            Color="#FF33CCCC" />
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#e8e8e8" />
-                                <Setter Property="BorderBrush" Value="#e0e0e0" />
-                                <Setter TargetName="ShadowBorder" Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect
-                                            BlurRadius="5"
-                                            Opacity="0.4"
-                                            ShadowDepth="0"
-                                            Color="#FF33CCCC" />
+                                            Color="#FF484848" />
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
@@ -66,69 +66,109 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Grid
-        x:Name="MainGrid"
-        Background="#80FFFFFF"
-        Visibility="Hidden">
-        <Border
-            x:Name="Parallel"
-            Width="{Binding ActualWidth, ElementName=BoxGrid}"
-            Height="{Binding ActualHeight, ElementName=BoxGrid}"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Background="White">
-            <Border.Effect>
-                <DropShadowEffect
-                    BlurRadius="10"
-                    Opacity="0.3"
-                    ShadowDepth="0"
-                    Color="#000000" />
-            </Border.Effect>
-        </Border>
-        <Grid
-            x:Name="BoxGrid"
-            Width="280"
-            Height="175"
-            Background="White">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <DockPanel Height="35" Background="#10808080">
-                <Label
-                    x:Name="Header"
-                    Margin="10,0,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    Content="" />
-                <Button
-                    Margin="0,0,5,0"
-                    Padding="8,4"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Content="×"
-                    Cursor="Hand"
-                    Style="{StaticResource SetsButton}" />
-            </DockPanel>
-            <Grid Grid.Row="1" Margin="5">
+    <Grid x:Name="MainGrid">
+        <Canvas
+            x:Name="MainCanvas"
+            Opacity="0"
+            Visibility="Hidden">
+            <!--<Canvas.Background>#40F095BA</Canvas.Background>-->
+            <Canvas.Background>#40F0F0F0</Canvas.Background>
+            <Border
+                x:Name="Parallel"
+                Canvas.Left="{Binding (Canvas.Left), ElementName=BoxGrid, Mode=OneWay}"
+                Canvas.Top="{Binding (Canvas.Top), ElementName=BoxGrid, Mode=OneWay}"
+                Width="{Binding ActualWidth, ElementName=BoxGrid, Mode=OneWay}"
+                Height="{Binding ActualHeight, ElementName=BoxGrid, Mode=OneWay}"
+                Background="White"
+                Opacity="{Binding Opacity, ElementName=BoxGrid, Mode=OneWay}"
+                RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <ScaleTransform ScaleX="{Binding RenderTransform.ScaleX, ElementName=BoxGrid}" ScaleY="{Binding RenderTransform.ScaleY, ElementName=BoxGrid}" />
+                </Border.RenderTransform>
+                <Border.Effect>
+                    <DropShadowEffect
+                        BlurRadius="10"
+                        Opacity="0.3"
+                        ShadowDepth="0"
+                        Color="#000000" />
+                </Border.Effect>
+            </Border>
+            <Grid
+                x:Name="BoxGrid"
+                Canvas.Left="0"
+                Canvas.Top="0"
+                Background="White"
+                Opacity="0"
+                RenderTransformOrigin="0.5,0.5">
+                <Grid.RenderTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Grid.RenderTransform>
+                <Grid.Height>520</Grid.Height>
+                <Grid.Width>800</Grid.Width>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <ContentPresenter
-                    x:Name="Body"
-                    Grid.Row="0"
-                    Margin="10" />
-                <Button
-                    x:Name="BtnNew"
+                <DockPanel
+                    x:Name="TitleBar"
+                    Height="34"
+                    Background="#10808080"
+                    MouseLeftButtonDown="DockPanel_MouseLeftButtonDown"
+                    MouseLeftButtonUp="DockPanel_MouseLeftButtonUp"
+                    MouseMove="DockPanel_MouseMove"
+                    WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Label
+                        x:Name="Header"
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Content=""
+                        TextBlock.FontSize="13" />
+                    <Button
+                        Margin="0,0,5,0"
+                        Padding="7,2"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Click="Cancel_Click"
+                        Content="×"
+                        Style="{StaticResource SetsButton}"
+                        TextBlock.FontSize="16" />
+                </DockPanel>
+                <Rectangle
                     Grid.Row="1"
-                    Margin="0,5,0,0"
-                    HorizontalAlignment="Center"
-                    Content="确定"
-                    Foreground="#303030"
-                    Style="{StaticResource SetsButton}" />
-
+                    Opacity="0.7"
+                    RenderOptions.BitmapScalingMode="HighQuality">
+                    <Rectangle.Fill>
+                        <ImageBrush ImageSource="{StaticResource TextureSource3}" Stretch="UniformToFill" />
+                    </Rectangle.Fill>
+                </Rectangle>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ContentPresenter x:Name="Body" Margin="10" />
+                </ScrollViewer>
+                <StackPanel
+                    x:Name="DialogBar"
+                    Grid.Row="2"
+                    Margin="10"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+                    <Button
+                        x:Name="BtnOk"
+                        Click="OK_Click"
+                        Content="确定"
+                        Foreground="#303030"
+                        Style="{StaticResource SetsButton}"
+                        TextBlock.FontSize="13" />
+                </StackPanel>
             </Grid>
-        </Grid>
+            <Rectangle
+                x:Name="Cover"
+                Canvas.Left="{Binding (Canvas.Left), ElementName=BoxGrid, Mode=OneWay}"
+                Canvas.Top="{Binding (Canvas.Top), ElementName=BoxGrid, Mode=OneWay}"
+                Width="{Binding ActualWidth, ElementName=BoxGrid, Mode=OneWay}"
+                Height="{Binding ActualHeight, ElementName=BoxGrid, Mode=OneWay}"
+                Fill="Transparent"
+                Visibility="Hidden" />
+        </Canvas>
     </Grid>
 </UserControl>

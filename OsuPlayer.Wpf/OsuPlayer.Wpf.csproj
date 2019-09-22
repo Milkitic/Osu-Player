@@ -167,10 +167,22 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Control\AddCollectionControl.xaml.cs">
+      <DependentUpon>AddCollectionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Control\AnimationControl.xaml.cs">
       <DependentUpon>AnimationControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Control\ClosingControl.xaml.cs">
+      <DependentUpon>ClosingControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Control\CommonButton.cs" />
+    <Compile Include="Control\DiffSelectControl.xaml.cs">
+      <DependentUpon>DiffSelectControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Control\EditCollectionControl.xaml.cs">
+      <DependentUpon>EditCollectionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Control\FrontDialog\FrontDialogOverlay.xaml.cs">
       <DependentUpon>FrontDialogOverlay.xaml</DependentUpon>
     </Compile>
@@ -180,11 +192,15 @@
     <Compile Include="Control\PlayModeControl.xaml.cs">
       <DependentUpon>PlayModeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Control\SelectCollectionControl.xaml.cs">
+      <DependentUpon>SelectCollectionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Control\SwitchRadio.cs" />
     <Compile Include="Control\VolumeControl.xaml.cs">
       <DependentUpon>VolumeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converter\IconColorConverter.cs" />
+    <Compile Include="DialogOptionFactory.cs" />
     <Compile Include="Utils\GridViewHelper.cs" />
     <Compile Include="Control\MaxButton.cs" />
     <Compile Include="Control\MinButton.cs" />
@@ -220,6 +236,10 @@
     </Compile>
     <Compile Include="Windows\MyCancellationTokenSource.cs" />
     <Compile Include="Windows\PageParts.cs" />
+    <Page Include="Control\AddCollectionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Control\AnimationControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -242,9 +262,6 @@
     <Compile Include="Instances\LyricsInst.cs" />
     <Compile Include="Instances\PlayersInst.cs" />
     <Compile Include="Converter\MiniWindowConverter.cs" />
-    <Compile Include="Pages\EditCollectionPage.xaml.cs">
-      <DependentUpon>EditCollectionPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="RandomSeed.cs" />
     <Compile Include="StartupConfig.cs" />
     <Compile Include="ViewModels\CollectionPageViewModel.cs" />
@@ -274,12 +291,6 @@
       <DependentUpon>NewVersionWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="OverallKeyHook.cs" />
-    <Compile Include="Pages\ClosingPage.xaml.cs">
-      <DependentUpon>ClosingPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\DiffSelectPage.xaml.cs">
-      <DependentUpon>DiffSelectPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Pages\Settings\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
     </Compile>
@@ -298,9 +309,6 @@
     <Compile Include="Pages\Settings\PlayPage.xaml.cs">
       <DependentUpon>PlayPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\AddCollectionPage.xaml.cs">
-      <DependentUpon>AddCollectionPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Pages\CollectionPage.xaml.cs">
       <DependentUpon>CollectionPage.xaml</DependentUpon>
     </Compile>
@@ -309,9 +317,6 @@
     </Compile>
     <Compile Include="Pages\FindPage.xaml.cs">
       <DependentUpon>FindPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\SelectCollectionPage.xaml.cs">
-      <DependentUpon>SelectCollectionPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\RecentPlayPage.xaml.cs">
       <DependentUpon>RecentPlayPage.xaml</DependentUpon>
@@ -334,6 +339,18 @@
     <Page Include="Control\Buttons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Control\ClosingControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Control\DiffSelectControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Control\EditCollectionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Control\FrontDialog\FrontDialogOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -363,6 +380,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Control\SelectCollectionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Control\VolumeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -370,10 +391,6 @@
     <Page Include="Control\WelcomeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\EditCollectionPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Styles\BrushDictionary.xaml">
       <SubType>Designer</SubType>
@@ -431,19 +448,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\AddCollectionPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\ClosingPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Pages\CollectionPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\DiffSelectPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -452,10 +457,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\FindPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\SelectCollectionPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

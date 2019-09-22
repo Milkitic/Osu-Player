@@ -20,6 +20,7 @@ using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Utils;
@@ -147,8 +148,10 @@ namespace Milky.OsuPlayer.Control
             {
                 return new DelegateCommand(param =>
                 {
-                    var mw = WindowBase.GetCurrentFirst<MainWindow>();
-                    mw.FramePop.Navigate(new SelectCollectionPage(SelectedMap));
+                    FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(SelectedMap),
+                        DialogOptionFactory.SelectCollectionOptions);
+                    //var mw = WindowBase.GetCurrentFirst<MainWindow>();
+                    //mw.FramePop.Navigate(new SelectCollectionPage(SelectedMap));
                 });
             }
         }
@@ -160,7 +163,8 @@ namespace Milky.OsuPlayer.Control
                 return new DelegateCommand(param =>
                 {
                     var mw = WindowBase.GetCurrentFirst<MainWindow>();
-                    mw.FramePop.Navigate(new SelectCollectionPage(PlayList.Entries));
+                    FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(PlayList.Entries),
+                        DialogOptionFactory.SelectCollectionOptions);
                 });
             }
         }
@@ -210,7 +214,7 @@ namespace Milky.OsuPlayer.Control
         }
 
         private bool _signed;
-        
+
         public PlayListControl()
         {
             InitializeComponent();

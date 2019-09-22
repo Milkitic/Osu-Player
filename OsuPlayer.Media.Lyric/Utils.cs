@@ -129,6 +129,7 @@ namespace Milky.OsuPlayer.Media.Lyric
             {
                 decode = result;
             }
+
             return decode;
         }
 

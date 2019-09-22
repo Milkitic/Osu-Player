@@ -21,6 +21,7 @@ using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Scanning;
+using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Control.Notification;
 using Milky.OsuPlayer.Instances;
 
@@ -189,7 +190,14 @@ namespace Milky.OsuPlayer.Windows
             NotificationOverlay.ItemsSource = App.NotificationList;
             if (AppSettings.Default.General.FirstOpen)
             {
-                WelcomeControl.Show();
+                FrontDialogOverlay.ShowContent(new WelcomeControl(), new FrontDialogOverlay.ShowContentOptions
+                {
+                    Height = 400,
+                    Width = 350,
+                    ShowDialogButtons = false,
+                    ShowTitleBar = false
+                });
+                //WelcomeControl.Show();
                 await Services.Get<OsuDbInst>().LoadLocalDbAsync();
             }
             else
@@ -226,10 +234,33 @@ namespace Milky.OsuPlayer.Windows
             if (AppSettings.Default.General.ExitWhenClosed == null && !ForceExit)
             {
                 e.Cancel = true;
-                FramePop.Navigate(new ClosingPage(this));
+                var closingControl = new ClosingControl();
+                FrontDialogOverlay.ShowContent(closingControl, new FrontDialogOverlay.ShowContentOptions
+                {
+                    Width = 280,
+                    Height = 190,
+                    Title = "关闭确认"
+                }, (obj, arg) =>
+                {
+                    if (closingControl.AsDefault.IsChecked == true)
+                    {
+                        AppSettings.Default.General.ExitWhenClosed = closingControl.RadioMinimum.IsChecked != true;
+                        AppSettings.SaveDefault();
+                    }
+
+                    if (closingControl.RadioMinimum.IsChecked == true)
+                        Hide();
+                    else
+                    {
+                        ForceExit = true;
+                        Close();
+                    }
+                });
+
                 return;
             }
-            else if (AppSettings.Default.General.ExitWhenClosed == false && !ForceExit)
+
+            if (AppSettings.Default.General.ExitWhenClosed == false && !ForceExit)
             {
                 WindowState = WindowState.Minimized;
                 GetCurrentFirst<MiniWindow>()?.Close();
@@ -277,7 +308,12 @@ namespace Milky.OsuPlayer.Windows
 
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
         {
-            FramePop.Navigate(new AddCollectionPage(this));
+            var addCollectionControl = new AddCollectionControl();
+            FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, (obj, args) =>
+            {
+                _appDbOperator.AddCollection(addCollectionControl.CollectionName.Text);
+                UpdateCollections();
+            });
         }
 
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
@@ -366,7 +402,9 @@ namespace Milky.OsuPlayer.Windows
             }
 
             //if (!ViewModel.IsMiniMode)
-            FramePop.Navigate(new SelectCollectionPage(entry));
+            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
+                DialogOptionFactory.SelectCollectionOptions);
+            //FramePop.Navigate(new SelectCollectionPage(entry));
             //else
             //{
             //    var collection = _appDbOperator.GetCollections().First(k => k.Locked);

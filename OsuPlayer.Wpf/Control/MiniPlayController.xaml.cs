@@ -150,9 +150,19 @@ namespace Milky.OsuPlayer.Control
             }
             else
             {
-                await SelectCollectionPage.AddToCollectionAsync(collection, new[] { _viewModel.Player.CurrentInfo.Beatmap });
+                await SelectCollectionControl.AddToCollectionAsync(collection, new[] { _viewModel.Player.CurrentInfo.Beatmap });
                 _viewModel.PlayerList.CurrentInfo.IsFavorite = true;
             }
+        }
+
+        private void UserControl_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Bg.Visibility = Visibility.Visible;
+        }
+
+        private void UserControl_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Bg.Visibility = Visibility.Hidden;
         }
     }
 }

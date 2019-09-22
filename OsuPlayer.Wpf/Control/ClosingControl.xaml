@@ -1,0 +1,31 @@
+﻿<UserControl
+    x:Class="Milky.OsuPlayer.Control.ClosingControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Milky.OsuPlayer.Control"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="100"
+    d:DesignWidth="200"
+    mc:Ignorable="d">
+    <StackPanel Margin="10,5,10,0">
+        <controls:DMRadioButton
+            x:Name="RadioMinimum"
+            HorizontalAlignment="Left"
+            Content="最小化到系统托盘"
+            IconColor="#FF1E9FFF"
+            IsChecked="True" />
+        <controls:DMRadioButton
+            x:Name="RadioExit"
+            HorizontalAlignment="Left"
+            Content="退出程序"
+            IconColor="#FF1E9FFF" />
+        <controls:DMCheckBox
+            x:Name="AsDefault"
+            Margin="0,10,0,0"
+            HorizontalAlignment="Left"
+            Content="设置默认选项"
+            IconColor="#FF1E9FFF" />
+    </StackPanel>
+</UserControl>

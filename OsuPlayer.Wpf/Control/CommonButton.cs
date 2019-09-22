@@ -21,18 +21,18 @@ namespace Milky.OsuPlayer.Control
                 null
             );
 
-        public Thickness CornerR
+        public CornerRadius CornerRadius
         {
-            get => (Thickness)GetValue(CornerRProperty);
-            set => SetValue(CornerRProperty, value);
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
-        public static readonly DependencyProperty CornerRProperty =
+        public static readonly DependencyProperty CornerRadiusProperty =
             DependencyProperty.Register(
-                "CornerR",
-                typeof(Thickness),
+                "CornerRadius",
+                typeof(CornerRadius),
                 typeof(CommonButton),
-                new PropertyMetadata(new Thickness(0))
+                new PropertyMetadata(new CornerRadius(2))
             );
 
         public Thickness IconMargin

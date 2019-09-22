@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using osu.Shared;
+using OSharp.Beatmap.Sections.GamePlay;
 
 namespace Milky.OsuPlayer.Converter
 {
@@ -13,11 +13,11 @@ namespace Milky.OsuPlayer.Converter
             if (sb == null) return "";
             switch (sb)
             {
-                case GameMode.Standard:
+                case GameMode.Circle:
                     return "圈";
                 case GameMode.Taiko:
                     return "鼓";
-                case GameMode.CatchTheBeat:
+                case GameMode.Catch:
                     return "果";
                 case GameMode.Mania:
                     return "键";

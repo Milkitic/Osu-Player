@@ -8,6 +8,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
     xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
+    xmlns:frontdialog="clr-namespace:Milky.OsuPlayer.Control.FrontDialog"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:notification="clr-namespace:Milky.OsuPlayer.Control.Notification"
@@ -213,12 +214,6 @@
             </DockPanel>
             <control:PlayController x:Name="PlayController" Grid.Row="1" />
         </Grid>
-        <Frame
-            Name="FramePop"
-            Grid.Row="0"
-            Grid.RowSpan="2"
-            Grid.Column="0"
-            NavigationUIVisibility="Hidden" />
         <Border
             x:Name="MsgBoxCover"
             Grid.Row="0"
@@ -226,6 +221,10 @@
             Grid.Column="0"
             Background="{StaticResource WhiteBrush80}"
             Visibility="Hidden" />
+        <frontdialog:FrontDialogOverlay
+            x:Name="FrontDialogOverlay"
+            Grid.Row="0"
+            Grid.RowSpan="2" />
         <DockPanel
             x:Name="TitleBarArea"
             Grid.Row="0"
@@ -273,7 +272,7 @@
                 <control:CloseButton MouseDownBackground="#a0c72828" WindowChrome.IsHitTestVisibleInChrome="True" />
             </StackPanel>
         </DockPanel>
-        <control:WelcomeControl x:Name="WelcomeControl" Grid.Row="1" />
+        <!--<control:WelcomeControl x:Name="WelcomeControl" Grid.Row="1" />-->
         <notification:NotifyOverlay
             x:Name="NotificationOverlay"
             Grid.Row="1"

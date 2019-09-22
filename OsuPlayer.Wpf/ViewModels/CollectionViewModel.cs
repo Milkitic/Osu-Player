@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+using Milky.OsuPlayer.Control;
 using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.ViewModels
@@ -31,7 +32,7 @@ namespace Milky.OsuPlayer.ViewModels
                 {
                     var entries = (IList<Beatmap>)obj;
                     var col = _appDbOperator.GetCollectionById(Id);
-                    await SelectCollectionPage.AddToCollectionAsync(col, entries);
+                    await SelectCollectionControl.AddToCollectionAsync(col, entries);
                 });
             }
         }

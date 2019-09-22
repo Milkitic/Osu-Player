@@ -128,22 +128,27 @@ namespace Milky.OsuPlayer.Common.Data.EF
         {
             if (addOnly)
             {
-                var dbMaps = Ctx.Beatmaps.Where(k => !k.InOwnFolder);
-                var newList = entry.Select(Beatmap.ParseFromHolly);
-                var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
+                await Task.Run (() =>
+                {
+                    var dbMaps = Ctx.Beatmaps.Where(k => !k.InOwnFolder);
+                    var newList = entry.Select(Beatmap.ParseFromHolly);
+                    var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
 
-                Ctx.Beatmaps.AddRange(except);
-                await Ctx.SaveChangesAsync();
+                    Ctx.Beatmaps.AddRange(except);
+                    return Ctx.SaveChanges();
+                });
             }
             else
             {
-                var dbMaps = Ctx.Beatmaps.Where(k => !k.InOwnFolder);
-                Ctx.Beatmaps.RemoveRange(dbMaps);
+                await Task.Run(() =>
+                {
+                    var dbMaps = Ctx.Beatmaps.Where(k => !k.InOwnFolder);
+                    Ctx.Beatmaps.RemoveRange(dbMaps);
 
-                var osuMaps = entry.Select(Beatmap.ParseFromHolly);
-                Ctx.Beatmaps.AddRange(osuMaps);
-
-                await Ctx.SaveChangesAsync();
+                    var osuMaps = entry.Select(Beatmap.ParseFromHolly);
+                    Ctx.Beatmaps.AddRange(osuMaps);
+                    return Ctx.SaveChanges();
+                });
             }
         }
 

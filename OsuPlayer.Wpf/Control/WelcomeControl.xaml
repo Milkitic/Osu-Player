@@ -11,50 +11,49 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Border
-        x:Name="WelcomeArea"
-        Background="{StaticResource WhiteBrushB0}"
-        Visibility="{Binding ShowWelcome, Converter={StaticResource TrueToVisibleConverter}}">
+        x:Name="WelcomeArea">
         <Border.DataContext>
             <local:WelcomeControlVm />
         </Border.DataContext>
         <StackPanel
             x:Name="VerticalWelcomeStackPanel"
-            HorizontalAlignment="Center"
+            HorizontalAlignment="Center" IsEnabled="{Binding GuideSyncing,Converter={StaticResource NegativeBooleanConverter}}"
             VerticalAlignment="Center">
             <Label
-                Margin="0,3,0,0"
                 HorizontalContentAlignment="Center"
                 Content="欢迎"
                 FontSize="35"
                 FontWeight="Bold"
                 Foreground="{StaticResource SliderBackground}" />
             <Label
-                Margin="0,0,0,3"
+                Margin="0,5"
                 HorizontalContentAlignment="Center"
-                Content="选择以下项目，开启精彩音乐世界……"
+                Content="选择以下项目，开启精彩音乐世界"
                 FontSize="12"
                 Foreground="{StaticResource SliderBackground}" />
-            <custom:Loader
-                Width="30"
-                Height="30"
-                FillColor="#303030"
-                Visibility="{Binding GuideSyncing, Converter={StaticResource TrueToVisibleConverter}}" />
             <CheckBox
                 x:Name="Step1"
-                Margin="0,3"
+                Margin="0,10" HorizontalAlignment="Center"
                 Command="{Binding SelectDbCommand}"
                 Content="选择osu!db，同步曲库"
                 IsChecked="{Binding GuideSelectedDb, Mode=TwoWay}" />
             <CheckBox
                 x:Name="Step2"
-                Margin="0,3"
+                Margin="0,10"
                 Content="开启曲库目录监听服务，减少同步与扫描时间"
                 Visibility="Collapsed" />
-            <Button
-                Margin="0,30,0,0"
+            <local:CommonButton
+                Margin="0,55,0,5"
+                Width="150"
                 HorizontalContentAlignment="Center"
                 Command="{Binding SkipCommand}"
                 Content="Skip this step" />
+            <custom:Loader
+                Width="30"  
+                Height="30"
+                Margin="0,5,0,0"
+                FillColor="#646464"
+                Visibility="{Binding GuideSyncing, Converter={StaticResource TrueToVisibleConverter}}" />
         </StackPanel>
     </Border>
 </UserControl>

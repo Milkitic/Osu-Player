@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Control.Notification;
 using Milky.OsuPlayer.Utils;
 using Milky.WpfApi;
@@ -50,17 +51,6 @@ namespace Milky.OsuPlayer.Control
             }
         }
 
-        public bool ShowWelcome
-        {
-            get => _showWelcome;
-            set
-            {
-                if (_showWelcome == value) return;
-                _showWelcome = value;
-                OnPropertyChanged();
-            }
-        }
-
         public ICommand SelectDbCommand
         {
             get
@@ -78,15 +68,19 @@ namespace Milky.OsuPlayer.Control
                     {
                         GuideSyncing = true;
                         await Services.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
+                        AppSettings.Default.General.DbPath = path;
+                        AppSettings.SaveDefault();
                         GuideSyncing = false;
+                        GuideSelectedDb = true;
                     }
                     catch (Exception ex)
                     {
-                        OsuPlayer.Notification.Show("该图不存在于该osu!db中");
+                        OsuPlayer.Notification.Show(ex.Message);
                         GuideSelectedDb = false;
                     }
 
-                    GuideSelectedDb = true;
+                    SkipCommand.Execute(null);
+                    GuideSyncing = false;
                 });
             }
         }
@@ -97,7 +91,8 @@ namespace Milky.OsuPlayer.Control
             {
                 return new DelegateCommand(arg =>
                 {
-                    ShowWelcome = false;
+                    //ShowWelcome = false;
+                    FrontDialogOverlay.Default.RaiseCancel();
                     AppSettings.Default.General.FirstOpen = false;
                     AppSettings.SaveDefault();
                 });
@@ -116,11 +111,6 @@ namespace Milky.OsuPlayer.Control
         {
             InitializeComponent();
             ViewModel = (WelcomeControlVm)WelcomeArea.DataContext;
-        }
-
-        public void Show()
-        {
-            ViewModel.ShowWelcome = true;
         }
     }
 }
