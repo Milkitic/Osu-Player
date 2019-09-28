@@ -577,14 +577,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DMSkin-for-WPF\DMSkin.Core\DMSkin.Core.csproj">
-      <Project>{13da6558-356b-47b9-96f2-fe4d5457cb02}</Project>
-      <Name>DMSkin.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DMSkin-for-WPF\DMSkin.WPF\DMSkin.WPF.csproj">
-      <Project>{168352b1-6a0c-4c9c-8a32-68b512da3cfc}</Project>
-      <Name>DMSkin.WPF</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
       <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
       <Name>OSharp.Beatmap</Name>

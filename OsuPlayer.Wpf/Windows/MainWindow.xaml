@@ -6,7 +6,6 @@
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
     xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
     xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
     xmlns:frontdialog="clr-namespace:Milky.OsuPlayer.Control.FrontDialog"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Windows"

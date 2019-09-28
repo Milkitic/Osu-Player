@@ -6,7 +6,6 @@
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
     xmlns:converters="clr-namespace:Milky.WpfApi.Converters;assembly=WpfApi"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:Milky.OsuPlayer"
     xmlns:models1="clr-namespace:Milky.OsuPlayer.Models"

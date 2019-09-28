@@ -3,7 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:apiConverter="clr-namespace:Milky.WpfApi.Converters;assembly=WpfApi"
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
-    xmlns:converters="clr-namespace:DMSkin.Core.Converters;assembly=DMSkin.Core"
     xmlns:local="clr-namespace:Milky.OsuPlayer">
     <converter:IndexToStringConverter x:Key="IndexToStringConverter" />
     <converter:TrueToVisibleConverter x:Key="TrueToVisibleConverter" />

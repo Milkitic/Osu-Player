@@ -5,7 +5,6 @@
     xmlns:beatmaps="clr-namespace:osu_database_reader.Components.Beatmaps;assembly=osu-database-reader"
     xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"

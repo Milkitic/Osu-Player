@@ -4,7 +4,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:Milky.OsuPlayer.Pages.Settings"
-      xmlns:dms="clr-namespace:DMSkin.WPF.Controls;assembly=DMSkin.WPF"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="LyricPage" Loaded="Page_Loaded">
