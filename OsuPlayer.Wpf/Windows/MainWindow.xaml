@@ -44,6 +44,7 @@
     <wpfApi:WindowBase.Resources>
         <converter:NavigationWidthConverter x:Key="CvtNavigationWidth" />
         <converter:IconMarginConverter x:Key="CvtIconMargin" />
+        <converter:TitleIconConverter x:Key="CvtTitleIcon" />
         <converter:TitleVisibleConverter x:Key="CvtTitleVisible" />
         <converter:NavTextConverter x:Key="CvtNavText" />
         <converter:LyricWindowShownConverter x:Key="CvtLyricWindowShown" />
@@ -68,9 +69,9 @@
             Height="40">
             <Image
                 Height="28"
-                Margin="8,0,0,0"
+                Margin="10,0,0,0"
                 HorizontalAlignment="Left"
-                Source="{StaticResource TitleLogo}" />
+                Source="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleIcon}}" />
         </DockPanel>
         <Grid x:Name="MainGrid" Grid.Row="1">
             <Grid.RowDefinitions>
@@ -99,7 +100,7 @@
                         <control:CommonButton
                             Width="28"
                             Height="28"
-                            Margin="8,1,1,1"
+                            Margin="9,1,1,1"
                             HorizontalAlignment="Left"
                             Command="{Binding CollapseCommand}"
                             Foreground="White"
@@ -121,14 +122,14 @@
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
                             TargetPageType="{x:Type pages:SearchPage}" />
-                        <control:SwitchRadio
+                        <!--<control:SwitchRadio
                             Padding="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
                             CheckedIconColor="#508030"
                             Content="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavText}, ConverterParameter=故事板}"
                             IconTemplate="{StaticResource NavStoryboardTempl}"
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
-                            TargetPageType="{x:Type pages:StoryboardPage}" />
+                            TargetPageType="{x:Type pages:StoryboardPage}" />-->
                         <Label
                             Height="30"
                             Style="{StaticResource NavigationLabelStyle}"

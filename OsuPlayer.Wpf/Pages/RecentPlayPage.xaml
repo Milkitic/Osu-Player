@@ -41,14 +41,9 @@
                             Style="{StaticResource PlayButton}" />
                         <control:CommonButton
                             x:Name="BtnDelAll"
-                            Height="28"
-                            Margin="5"
-                            Background="#FAFAFB"
-                            BorderThickness="1"
                             Click="BtnDelAll_Click"
-                            CornerRadius="5"
-                            Cursor="Hand">
-                            <StackPanel Margin="10,0" Orientation="Horizontal">
+                            Style="{StaticResource SettingsButton}">
+                            <StackPanel Orientation="Horizontal">
                                 <Viewbox
                                     Width="16"
                                     Height="16"

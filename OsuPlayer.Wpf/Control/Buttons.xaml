@@ -249,12 +249,16 @@
         x:Key="SettingsButton"
         BasedOn="{StaticResource {x:Type controls:CommonButton}}"
         TargetType="{x:Type controls:CommonButton}">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="#DADADB" />
         <Setter Property="Padding" Value="10,0" />
         <Setter Property="Margin" Value="5" />
         <Setter Property="Height" Value="28" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="CornerRadius" Value="5" />
+        <!--<Setter Property="Cursor" Value="Hand" />-->
+        <Setter Property="CornerRadius" Value="0" />
         <Setter Property="IconSize" Value="15" />
+        <Setter Property="Background" Value="#FAFAFB" />
+        <Setter Property="MouseOverBackground" Value="#F0F0F0" />
         <Setter Property="IconMargin" Value="0,0,5,0" />
     </Style>
     <Style
@@ -265,8 +269,9 @@
         x:Key="PlayButton"
         BasedOn="{StaticResource SettingsButton}"
         TargetType="{x:Type controls:CommonButton}">
-        <Setter Property="BorderBrush" Value="#4d8cdc" />
-        <Setter Property="BorderThickness" Value="1" />
+        <!--<Setter Property="BorderBrush" Value="#4d8cdc" />-->
+        <Setter Property="BorderBrush" Value="#5d9cec" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Content" Value="全部播放" />
         <Setter Property="Foreground" Value="White" />
         <Setter Property="IconTemplate" Value="{StaticResource SettingsPlayTempl}" />
@@ -275,5 +280,35 @@
         <Setter Property="MouseDownForeground" Value="#e8e8e8" />
         <Setter Property="MouseOverBackground" Value="#6da3ef" />
         <Setter Property="MouseOverForeground" Value="White" />
+    </Style>
+    <Style
+        x:Key="LinkButton"
+        BasedOn="{StaticResource {x:Type controls:CommonButton}}"
+        TargetType="{x:Type controls:CommonButton}">
+        <Setter Property="Height" Value="Auto" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="MouseDownBackground" Value="Transparent" />
+        <Setter Property="MouseOverBackground" Value="Transparent" />
+        <Setter Property="Foreground" Value="#1E9FFF" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="MouseDownForeground" Value="#929292" />
+        <Setter Property="MouseOverForeground" Value="#646464" />
+    </Style>
+    <Style
+        x:Key="LyricButton"
+        BasedOn="{StaticResource {x:Type controls:CommonButton}}"
+        TargetType="{x:Type controls:CommonButton}">
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="MouseDownBackground" Value="Transparent" />
+        <Setter Property="MouseOverBackground" Value="Transparent" />
+        <Setter Property="Foreground" Value="#E8E8E8" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="IconSize" Value="20" />
+        <Setter Property="IconMargin" Value="0" />
+        <Setter Property="MouseDownForeground" Value="#929292" />
+        <Setter Property="MouseOverForeground" Value="#C0C0C0" />
     </Style>
 </ResourceDictionary>

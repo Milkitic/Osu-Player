@@ -47,16 +47,10 @@
                         <control:CommonButton
                             x:Name="BtnExportAll"
                             Grid.Column="0"
-                            Width="auto"
-                            Height="28"
-                            Margin="5"
-                            Background="#FAFAFB"
-                            BorderThickness="1"
                             Command="{Binding ItemFolderCommand}"
                             CommandParameter="{Binding ExportPath}"
-                            CornerRadius="5"
-                            Cursor="Hand">
-                            <StackPanel Margin="10,0" Orientation="Horizontal">
+                            Style="{StaticResource SettingsButton}">
+                            <StackPanel Orientation="Horizontal">
                                 <Viewbox
                                     Width="16"
                                     Height="16"

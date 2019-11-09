@@ -26,8 +26,28 @@ namespace Milky.OsuPlayer.Converter
             if (value is bool isNavigationCollapsed)
             {
                 return isNavigationCollapsed
-                    ? new Thickness(14, 0, 0, 0)
+                    ? new Thickness(13, 0, 0, 0)
                     : new Thickness(20, 0, 0, 0);
+            }
+
+            return new Thickness(0);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class TitleIconConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool isNavigationCollapsed)
+            {
+                return !isNavigationCollapsed
+                    ? App.Current.FindResource("TitleLogo")
+                    : App.Current.FindResource("TitleLogoSmall");
             }
 
             return new Thickness(0);

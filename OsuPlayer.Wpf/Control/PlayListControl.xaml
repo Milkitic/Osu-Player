@@ -167,7 +167,13 @@
                 Style="{StaticResource ListView}">
                 <ListView.Resources>
                     <DataTemplate x:Key="PlayingDt">
-                        <Border HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding}">
+                        <Border HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" >
+                            <Border.Visibility>
+                                <MultiBinding Converter="{StaticResource Multi_EqualityToVisibilityConverter}">
+                                    <Binding />
+                                    <Binding Path="DataContext.PlayList.CurrentInfo.Beatmap" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:PlayListControl}}" />
+                                </MultiBinding>
+                            </Border.Visibility>
                             <Viewbox Width="22" Height="22">
                                 <ContentControl Template="{StaticResource Volume2Templ}" Foreground="{StaticResource PinkBrushOsu}"/>
                             </Viewbox>
@@ -212,6 +218,12 @@
                         <GridViewColumn Width="110" CellTemplate="{StaticResource CreatorDt}" />
                     </GridView>
                 </ListView.View>
+                <ListView.SelectedItem>
+                    <MultiBinding Converter="{StaticResource Multi_ListViewSelectAndScrollConverter}">
+                        <Binding ElementName="PlayList" Mode="OneWay" />
+                        <Binding Path="DataContext.PlayList.CurrentInfo.Beatmap" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:PlayListControl}}" Mode="OneWay" />
+                    </MultiBinding>
+                </ListView.SelectedItem>
             </ListView>
         </Grid>
     </Grid>

@@ -284,6 +284,11 @@ namespace Milky.OsuPlayer.Control
                 PlayController.Default.OnNewFileLoaded += Controller_OnNewFileLoaded;
                 _signed = true;
             }
+
+            PlayList.SelectedItem = ViewModel.PlayList.CurrentInfo?.Beatmap;
+            PlayList.ScrollIntoView(PlayList.SelectedItem);
+            ListViewItem item = PlayList.ItemContainerGenerator.ContainerFromItem(PlayList.SelectedItem) as ListViewItem;
+            item?.Focus();
         }
     }
 }

@@ -37,88 +37,38 @@
                 Grid.Column="0"
                 Margin="0,5"
                 Content="简介：" />
-            <TextBox
+            <local:CommonTextBox
                 Grid.Row="0"
                 Grid.Column="1"
+                Width="Auto"
                 Height="28"
                 Margin="0,5"
-                Text="{Binding Name, Mode=TwoWay}">
-                <TextBox.Style>
-                    <Style TargetType="{x:Type TextBox}">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type TextBox}">
-                                    <Border
-                                        x:Name="border"
-                                        Width="Auto"
-                                        Height="Auto"
-                                        BorderBrush="#ffa0a0a0"
-                                        BorderThickness="1"
-                                        CornerRadius="2">
-                                        <Grid
-                                            x:Name="grid"
-                                            Margin="3,0"
-                                            Background="{StaticResource WhiteBrush}">
-                                            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" />
-                                        </Grid>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
-            <TextBox
+                Text="{Binding Name, Mode=TwoWay}" />
+            <local:CommonTextBox
                 Grid.Row="1"
                 Grid.Column="1"
+                Width="Auto"
                 Height="154"
                 Margin="0,5,0,10"
+                Padding="0,5,0,0"
                 VerticalAlignment="Top"
                 VerticalContentAlignment="Top"
                 AcceptsReturn="True"
                 Text="{Binding Description, Mode=TwoWay}"
                 TextWrapping="Wrap"
-                VerticalScrollBarVisibility="Auto">
-                <TextBox.Style>
-                    <Style TargetType="{x:Type TextBox}">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type TextBox}">
-                                    <Border
-                                        x:Name="border"
-                                        Width="Auto"
-                                        Height="Auto"
-                                        BorderBrush="#ffa0a0a0"
-                                        BorderThickness="1"
-                                        CornerRadius="2">
-                                        <Grid
-                                            x:Name="grid"
-                                            Margin="3,6"
-                                            Background="{StaticResource WhiteBrush}">
-                                            <ScrollViewer x:Name="PART_ContentHost" />
-                                        </Grid>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
+                VerticalScrollBarVisibility="Auto" />
             <StackPanel
                 Grid.Row="2"
                 Grid.Column="1"
                 Orientation="Horizontal">
                 <local:CommonButton
                     Width="75"
-                    Height="28"
-                    Background="#5d9cec"
+                    Margin="0"
                     BorderBrush="Transparent"
-                    BorderThickness="1"
                     Click="BtnSave_Click"
                     Content="保存"
-                    CornerRadius="5"
-                    Cursor="Hand"
-                    Foreground="White" />
+                    IconTemplate="{x:Null}"
+                    Style="{StaticResource PlayButton}" />
             </StackPanel>
         </Grid>
         <Grid Grid.Row="0" Grid.Column="1">
@@ -138,15 +88,10 @@
                 </Grid>
                 <local:CommonButton
                     Width="auto"
-                    Height="28"
                     Margin="10,0"
-                    Background="#FAFAFB"
-                    BorderThickness="1"
                     Click="BtnChooseImg_Click"
                     Content="编辑封面"
-                    CornerRadius="5"
-                    Cursor="Hand"
-                    Foreground="#303030" />
+                    Style="{StaticResource SettingsButton}" />
             </StackPanel>
         </Grid>
     </Grid>

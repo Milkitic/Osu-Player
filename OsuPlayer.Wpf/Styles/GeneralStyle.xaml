@@ -7,6 +7,10 @@
         CacheOption="OnLoad"
         UriSource="pack://application:,,,/OsuPlayer;component/Resources/title.png" />
     <BitmapImage
+        x:Key="TitleLogoSmall"
+        CacheOption="OnLoad"
+        UriSource="pack://application:,,,/OsuPlayer;component/Resources/title_sm.png" />
+    <BitmapImage
         x:Key="TextureSource1"
         CacheOption="OnLoad"
         UriSource="pack://application:,,,/OsuPlayer;component/Resources/osu_texture.png" />
@@ -144,5 +148,5 @@
         B="255"
         G="255"
         R="255" />
-    <SolidColorBrush x:Key="PinkBrushOsu" Color="{StaticResource PinkColorOsu}"/>
+    <SolidColorBrush x:Key="PinkBrushOsu" Color="{StaticResource PinkColorOsu}" />
 </ResourceDictionary>

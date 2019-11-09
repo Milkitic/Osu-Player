@@ -32,7 +32,7 @@
     </Style>
     <!-- Config stack hori style -->
     <Style x:Key="ConfigStackHoriStyle" TargetType="{x:Type StackPanel}">
-
+        <Setter Property="Margin" Value="0,0,0,5" />
     </Style>
     <!-- Config slider style -->
     <Style x:Key="ConfigSliderStyle" TargetType="{x:Type Slider}">

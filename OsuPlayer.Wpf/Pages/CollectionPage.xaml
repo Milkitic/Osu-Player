@@ -81,11 +81,10 @@
                                         Height="28"
                                         Margin="5"
                                         Background="#FAFAFB"
-                                        BorderBrush="#80FAFAFB"
+                                        BorderBrush="#DADADB"
                                         BorderThickness="1"
                                         Click="BtnEdit_Click"
-                                        CornerRadius="50"
-                                        Cursor="Hand">
+                                        CornerRadius="50">
                                         <Viewbox
                                             Width="16"
                                             Height="16"
@@ -107,7 +106,6 @@
                                         BorderThickness="1"
                                         Click="BtnDelCol_Click"
                                         CornerRadius="50"
-                                        Cursor="Hand"
                                         Foreground="#f0f0f0"
                                         IconMargin="0"
                                         IconSize="15"
@@ -125,15 +123,9 @@
                                     <control:CommonButton Click="BtnPlayAll_Click" Style="{StaticResource PlayButton}" />
                                     <control:CommonButton
                                         x:Name="BtnExportAll"
-                                        Width="auto"
-                                        Height="28"
-                                        Margin="5"
-                                        Background="#FAFAFB"
-                                        BorderThickness="1"
                                         Click="BtnExportAll_Click"
-                                        CornerRadius="5"
-                                        Cursor="Hand">
-                                        <StackPanel Margin="10,0" Orientation="Horizontal">
+                                        Style="{StaticResource SettingsButton}">
+                                        <StackPanel Orientation="Horizontal">
                                             <Viewbox
                                                 Width="16"
                                                 Height="16"

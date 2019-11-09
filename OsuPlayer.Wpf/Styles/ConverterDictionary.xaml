@@ -18,4 +18,6 @@
     <converter:NullToBoolFalseConverter x:Key="NullToBoolFalseConverter" />
     <converter:PlayModeConverter x:Key="PlayModeConverter" />
     <converter:BoolIsFavToSvgConverter x:Key="BoolIsFavToSvgConverter" />
+    <converter:Multi_EqualityToVisibilityConverter x:Key="Multi_EqualityToVisibilityConverter" />
+    <converter:Multi_ListViewSelectAndScrollConverter x:Key="Multi_ListViewSelectAndScrollConverter" />
 </ResourceDictionary>

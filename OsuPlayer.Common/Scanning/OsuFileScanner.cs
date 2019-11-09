@@ -32,12 +32,14 @@ namespace Milky.OsuPlayer.Common.Scanning
             _scanCts = new CancellationTokenSource();
             await _beatmapDbOperator.RemoveLocalAllAsync();
             var dirInfo = new DirectoryInfo(path);
-
-            foreach (var privateFolder in dirInfo.EnumerateDirectories(searchPattern: "*.*", searchOption: SearchOption.TopDirectoryOnly))
+            if (dirInfo.Exists)
             {
-                if (_scanCts.IsCancellationRequested)
-                    break;
-                await ScanPrivateFolderAsync(privateFolder);
+                foreach (var privateFolder in dirInfo.EnumerateDirectories(searchPattern: "*.*", searchOption: SearchOption.TopDirectoryOnly))
+                {
+                    if (_scanCts.IsCancellationRequested)
+                        break;
+                    await ScanPrivateFolderAsync(privateFolder);
+                }
             }
 
             lock (ScanObject)

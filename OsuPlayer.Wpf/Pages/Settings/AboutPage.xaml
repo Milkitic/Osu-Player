@@ -19,7 +19,10 @@
                     HorizontalAlignment="Left"
                     Content="软件更新："
                     Style="{StaticResource ConfigTitleStyle}" />
-                <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
+                <StackPanel
+                    Margin="0"
+                    Orientation="Horizontal"
+                    Style="{StaticResource ConfigStackHoriStyle}">
                     <Label Content="当前版本：" Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         x:Name="CurrentVer"
@@ -28,7 +31,10 @@
                         Content="v100.20"
                         Style="{StaticResource ConfigLabel2Style}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
+                <StackPanel
+                    Margin="0"
+                    Orientation="Horizontal"
+                    Style="{StaticResource ConfigStackHoriStyle}">
                     <Label Content="上次检查时间：" Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         x:Name="LastUpdate"
@@ -44,23 +50,19 @@
                         Height="25"
                         Margin="8"
                         HorizontalAlignment="Left"
-                        Background="#484852"
-                        BorderThickness="0"
+                        Background="#E3E3E3"
                         Click="CheckUpdate_Click"
                         Content="检查更新"
-                        CornerRadius="5"
-                        Cursor="Hand"
-                        Foreground="White" />
+                        Style="{StaticResource SettingsButton}" />
                     <Label
                         x:Name="NewVersion"
                         VerticalAlignment="Center"
                         Visibility="Collapsed">
                         <control:CommonButton
                             Click="NewVersion_Click"
-                            Content="! 有新版本 !"
-                            Foreground="#FF1E9FFF"
-                            MouseOverBackground="Transparent"
-                            MouseOverForeground="#FF6EBFFF" />
+                            Content="有新版本"
+                            Foreground="#FE5472"
+                            Style="{StaticResource LinkButton}" />
                     </Label>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
@@ -79,18 +81,16 @@
                         <control:CommonButton
                             Click="LinkGithub_Click"
                             Content="项目地址"
-                            MouseOverBackground="Transparent"
-                            MouseOverForeground="#949494" />
+                            Style="{StaticResource LinkButton}" />
                     </Label>
                     <Label>
                         <control:CommonButton
                             Click="LinkFeedback_Click"
                             Content="意见反馈"
-                            MouseOverBackground="Transparent"
-                            MouseOverForeground="#949494" />
+                            Style="{StaticResource LinkButton}" />
                     </Label>
                 </StackPanel>
-                <Label Margin="0,10,0,0">
+                <Label Margin="0,60,0,5">
                     <TextBlock>
                         Developed by Milkitic (yf_bmp).<LineBreak />
                         Collaborator: bleetingsheep.<LineBreak />
@@ -101,15 +101,13 @@
                         <control:CommonButton
                             Click="LinkLicense_Click"
                             Content="License"
-                            MouseOverBackground="Transparent"
-                            MouseOverForeground="#949494" />
+                            Style="{StaticResource LinkButton}" />
                     </Label>
                     <Label>
                         <control:CommonButton
                             Click="LinkPrivacy_Click"
                             Content="Privacy Policy"
-                            MouseOverBackground="Transparent"
-                            MouseOverForeground="#949494" />
+                            Style="{StaticResource LinkButton}" />
                     </Label>
                 </StackPanel>
             </StackPanel>

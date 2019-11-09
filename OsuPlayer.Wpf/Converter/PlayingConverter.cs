@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Milky.OsuPlayer.Common.Player;
+using System.Linq;
 
 namespace Milky.OsuPlayer.Converter
 {
@@ -20,7 +21,7 @@ namespace Milky.OsuPlayer.Converter
                 {
                     if (window is LyricWindow lyricWindow)
                     {
-                        return lyricWindow.FindResource(isPlaying ? "PauseButton" : "PlayButton");
+                        return lyricWindow.FindResource(isPlaying ? "PauseButtonTempl" : "PlayButtonTempl");
                     }
                     if (window is MainWindow mainWindow)
                     {
@@ -79,7 +80,7 @@ namespace Milky.OsuPlayer.Converter
         {
             throw new NotImplementedException();
         }
-    }  
+    }
     public class BoolIsFavToSvgConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -91,6 +92,56 @@ namespace Milky.OsuPlayer.Converter
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    public class Multi_EqualityToVisibilityConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values.Length > 0)
+            {
+                var first = values[0];
+
+                foreach (var val in values.Skip(1))
+                {
+                    if (val != first)
+                        return Visibility.Collapsed;
+                }
+
+                return Visibility.Visible;
+            }
+
+            return Visibility.Collapsed;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class Multi_ListViewSelectAndScrollConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values.Length == 2)
+            {
+                var lv = (ListView)values[0];
+                var itemObj = (object)values[1];
+                lv.ScrollIntoView(itemObj);
+                ListViewItem item = lv.ItemContainerGenerator.ContainerFromItem(itemObj) as ListViewItem;
+                item?.Focus();
+
+                return itemObj;
+            }
+
+            return null;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            return new[] { value };
         }
     }
 }

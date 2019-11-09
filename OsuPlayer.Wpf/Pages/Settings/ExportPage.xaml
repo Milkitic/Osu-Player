@@ -31,7 +31,6 @@
                         Margin="-5,0,5,0"
                         VerticalContentAlignment="Center"
                         Background="White"
-                        BorderBrush="#33999999"
                         CornerRadius="5"
                         IsReadOnly="True"
                         Text="D:\asdf\asdf" />
@@ -39,11 +38,14 @@
                         x:Name="BtnMp3Path"
                         Width="25"
                         Height="25"
+                        Margin="0"
+                        Padding="0"
+                        VerticalAlignment="Center"
                         Background="#E3E3E3"
                         Click="BtnMp3Path_Click"
                         Content="..."
-                        CornerRadius="100"
-                        Foreground="Black" />
+                        CornerRadius="13"
+                        Style="{StaticResource SettingsButton}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <Label
@@ -57,7 +59,6 @@
                         Margin="-5,0,5,0"
                         VerticalContentAlignment="Center"
                         Background="White"
-                        BorderBrush="#33999999"
                         CornerRadius="5"
                         IsReadOnly="True"
                         Text="D:\asdf\asdf" />
@@ -65,11 +66,14 @@
                         x:Name="BtnBgPath"
                         Width="25"
                         Height="25"
+                        Margin="0"
+                        Padding="0"
+                        VerticalAlignment="Center"
                         Background="#E3E3E3"
                         Click="BtnBgPath_Click"
                         Content="..."
-                        CornerRadius="100"
-                        Foreground="Black" />
+                        CornerRadius="13"
+                        Style="{StaticResource SettingsButton}" />
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"

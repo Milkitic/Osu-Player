@@ -31,8 +31,8 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             Fill="#F0F0F0"
-                            RadiusX="5"
-                            RadiusY="5"
+                            RadiusX="0"
+                            RadiusY="0"
                             Stroke="{DynamicResource NormalBorderBrush}" />
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -62,7 +62,7 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="5,5,1,1">
+                            CornerRadius="0">
                             <ContentPresenter
                                 x:Name="ContentPresenter"
                                 HorizontalAlignment="Center"
@@ -104,7 +104,7 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="1,1,5,5">
+                            CornerRadius="0">
                             <ContentPresenter
                                 x:Name="ContentPresenter"
                                 HorizontalAlignment="Center"
@@ -158,7 +158,7 @@
                         Width="16"
                         BorderBrush="#C0C0C0"
                         BorderThickness="1"
-                        CornerRadius="5">
+                        CornerRadius="0">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                 <GradientStop Offset="0" Color="#D4D4D4" />
@@ -180,7 +180,7 @@
                                     Width="6"
                                     Height="6"
                                     BorderBrush="#646464"
-                                    BorderThickness="2,2,0,0"
+                                    BorderThickness="1,1,0,0"
                                     RenderTransformOrigin="0.5,0.5">
                                     <Border.RenderTransform>
                                         <TransformGroup>
@@ -225,7 +225,7 @@
                                         Width="6"
                                         Height="6"
                                         BorderBrush="#646464"
-                                        BorderThickness="0,0,2,2"
+                                        BorderThickness="0,0,1,1"
                                         RenderTransformOrigin="0.5,0.5">
                                         <Border.RenderTransform>
                                             <TransformGroup>

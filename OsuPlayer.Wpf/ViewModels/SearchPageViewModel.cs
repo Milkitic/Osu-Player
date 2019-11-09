@@ -35,6 +35,7 @@ namespace Milky.OsuPlayer.ViewModels
         private List<ListPageViewModel> _pages;
         private ListPageViewModel _lastPage;
         private ListPageViewModel _firstPage;
+        private ListPageViewModel _currentPage;
         private string _searchText;
 
         public string SearchText
@@ -101,6 +102,15 @@ namespace Milky.OsuPlayer.ViewModels
             private set
             {
                 _firstPage = value;
+                OnPropertyChanged();
+            }
+        }
+        public ListPageViewModel CurrentPage
+        {
+            get => _currentPage;
+            private set
+            {
+                _currentPage = value;
                 OnPropertyChanged();
             }
         }
@@ -190,6 +200,8 @@ namespace Milky.OsuPlayer.ViewModels
 
             if (page != null)
                 page.IsActivated = true;
+
+            CurrentPage = page;
             DisplayedMaps = SearchedMaps.Skip(nowIndex * MaxListCount).Take(MaxListCount).ToList();
         }
 
@@ -204,14 +216,28 @@ namespace Milky.OsuPlayer.ViewModels
             {
                 return new DelegateCommand(obj =>
                 {
-                    var reqPage = (int)obj;
-                    var page = GetPage(reqPage);
-                    if (page.IsActivated)
+                    if (obj is bool b)
                     {
-                        return;
-                    }
+                        var page = b ? GetPage(CurrentPage.Index + 1) : GetPage(CurrentPage.Index - 1);
+                        if (page == null) return;
+                        if (page.IsActivated)
+                        {
+                            return;
+                        }
 
-                    SetPage(SearchedMaps.Count(), reqPage - 1);
+                        SetPage(SearchedMaps.Count(), page.Index - 1);
+                    }
+                    else
+                    {
+                        var reqPage = (int)obj;
+                        var page = GetPage(reqPage);
+                        if (page.IsActivated)
+                        {
+                            return;
+                        }
+
+                        SetPage(SearchedMaps.Count(), reqPage - 1);
+                    }
                 });
             }
         }

@@ -43,7 +43,6 @@
                         Margin="5,0"
                         VerticalContentAlignment="Center"
                         Background="White"
-                        BorderBrush="#33999999"
                         CornerRadius="5"
                         IsReadOnly="True"
                         Text="D:\asdf\asdf" />
@@ -51,12 +50,14 @@
                         x:Name="BrowseDb"
                         Width="25"
                         Height="25"
+                        Margin="0"
+                        Padding="0"
                         Background="#E3E3E3"
                         Click="BrowseDb_Click"
                         Content="..."
-                        CornerRadius="100"
-                        Foreground="Black"
-                        IsEnabled="{Binding IsScanning, Converter={StaticResource NegativeBooleanConverter}}" />
+                        CornerRadius="13"
+                        IsEnabled="{Binding IsScanning, Converter={StaticResource NegativeBooleanConverter}}"
+                        Style="{StaticResource SettingsButton}" />
                     <control:CommonButton
                         x:Name="SyncNow"
                         Height="25"
@@ -65,9 +66,8 @@
                         Background="#E3E3E3"
                         Click="SyncNow_Click"
                         Content="手动同步"
-                        CornerRadius="5"
-                        Foreground="Black"
-                        IsEnabled="{Binding IsScanning, Converter={StaticResource NegativeBooleanConverter}}" />
+                        IsEnabled="{Binding IsScanning, Converter={StaticResource NegativeBooleanConverter}}"
+                        Style="{StaticResource SettingsButton}" />
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
@@ -81,7 +81,6 @@
                         Margin="5,0"
                         VerticalContentAlignment="Center"
                         Background="White"
-                        BorderBrush="#33999999"
                         CornerRadius="5"
                         IsReadOnly="True"
                         Text="D:\asdf\asdf" />
@@ -89,11 +88,13 @@
                         x:Name="BrowseCustom"
                         Width="25"
                         Height="25"
+                        Margin="0"
+                        Padding="0"
                         Background="#E3E3E3"
                         Click="BrowseCustom_Click"
                         Content="..."
-                        CornerRadius="100"
-                        Foreground="Black" />
+                        CornerRadius="13"
+                        Style="{StaticResource SettingsButton}" />
                     <custom:Loader
                         Width="25"
                         Height="25"
@@ -105,14 +106,12 @@
                         Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
                     <control:CommonButton
                         x:Name="CancelScan"
-                        Width="25"
-                        Height="25"
-                        Background="#E3E3E3"
+                        Padding="2,0"
+                        VerticalAlignment="Center"
                         Click="CancelScan_Click"
-                        Content="..."
-                        CornerRadius="100"
-                        Foreground="Black"
-                        IsEnabled="{Binding IsCanceling, Converter={StaticResource NegativeBooleanConverter}}" />
+                        Content="取消扫描"
+                        Style="{StaticResource LinkButton}"
+                        Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"

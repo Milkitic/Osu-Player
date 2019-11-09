@@ -238,7 +238,7 @@ namespace Milky.OsuPlayer.Windows
                 FrontDialogOverlay.ShowContent(closingControl, new FrontDialogOverlay.ShowContentOptions
                 {
                     Width = 280,
-                    Height = 190,
+                    Height = 180,
                     Title = "关闭确认"
                 }, (obj, arg) =>
                 {

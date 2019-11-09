@@ -32,7 +32,6 @@
                         x:Name="BoxOffset"
                         Width="35"
                         Background="White"
-                        BorderBrush="#33999999"
                         CornerRadius="2"
                         TextAlignment="Center"
                         TextChanged="BoxOffset_TextChanged" />
@@ -97,7 +96,6 @@
                         x:Name="BoxLatency"
                         Width="35"
                         Background="White"
-                        BorderBrush="#33999999"
                         TextAlignment="Center"
                         TextChanged="BoxLatency_TextChanged" />
                 </StackPanel>

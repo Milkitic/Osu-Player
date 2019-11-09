@@ -10,6 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:Milky.OsuPlayer"
     xmlns:models1="clr-namespace:Milky.OsuPlayer.Models"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     x:Name="CurrentPage"
     Title="SearchPage"
@@ -82,18 +83,11 @@
                 Style="{StaticResource PlayButton}" />
             <control:CommonButton
                 x:Name="BtnQueueAll"
-                Grid.Column="0"
-                Width="auto"
-                Height="28"
-                Margin="5"
-                Background="#FAFAFB"
-                BorderThickness="1"
                 Click="BtnQueueAll_Click"
                 Command="{Binding ItemFolderCommand}"
                 CommandParameter="{Binding ExportPath}"
-                CornerRadius="5"
-                Cursor="Hand">
-                <StackPanel Margin="10,0" Orientation="Horizontal">
+                Style="{StaticResource SettingsButton}">
+                <StackPanel Orientation="Horizontal">
                     <Viewbox
                         Width="16"
                         Height="16"
@@ -246,7 +240,11 @@
                     Padding="0"
                     Background="Transparent"
                     BorderThickness="0"
+                    Command="{Binding DataContext.SwitchCommand, ElementName=CurrentPage}"
                     Style="{StaticResource FlatButtonStyle}">
+                    <Button.CommandParameter>
+                        <system:Boolean>False</system:Boolean>
+                    </Button.CommandParameter>
                     <Viewbox Width="12" Height="12">
                         <ContentControl Template="{StaticResource PageArrowLeftControl}" />
                     </Viewbox>
@@ -288,9 +286,11 @@
                                     BorderThickness="0"
                                     Command="{Binding DataContext.SwitchCommand, ElementName=CurrentPage}"
                                     CommandParameter="{Binding Index}"
-                                    Cursor="{Binding IsActivated, Converter={StaticResource BooleanToCursorConverter}}"
                                     IsEnabled="{Binding IsActivated, Converter={StaticResource NegativeBooleanConverter}}"
                                     Style="{StaticResource FlatButtonStyle}">
+                                    <!--<Button.Cursor>
+                                        <Binding Converter="{StaticResource BooleanToCursorConverter}" Path="IsActivated" />
+                                    </Button.Cursor>-->
                                     <TextBlock
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
@@ -316,7 +316,11 @@
                     Padding="0"
                     Background="Transparent"
                     BorderThickness="0"
+                    Command="{Binding DataContext.SwitchCommand, ElementName=CurrentPage}"
                     Style="{StaticResource FlatButtonStyle}">
+                    <Button.CommandParameter>
+                        <system:Boolean>True</system:Boolean>
+                    </Button.CommandParameter>
                     <Viewbox Width="12" Height="12">
                         <ContentControl Template="{StaticResource PageArrowRightControl}" />
                     </Viewbox>
