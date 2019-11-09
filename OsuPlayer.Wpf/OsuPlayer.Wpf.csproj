@@ -104,8 +104,8 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="osu-database-reader, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\HoLLy.osu.DatabaseReader.2.1.0\lib\net40\osu-database-reader.dll</HintPath>
+    <Reference Include="osu-database-reader, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HoLLy.osu.DatabaseReader.2.1.1\lib\net40\osu-database-reader.dll</HintPath>
     </Reference>
     <Reference Include="osu.Shared, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\osu.Shared.1.0.3\lib\net20\osu.Shared.dll</HintPath>
