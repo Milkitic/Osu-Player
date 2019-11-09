@@ -4,6 +4,15 @@
     xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter">
     <converter:IconColorConverter x:Key="IconColorConverter" />
+    <SolidColorBrush x:Key="ThemeBrush" Color="#4b367c" />
+    <SolidColorBrush x:Key="ForeBrush" Color="#101010" />
+    <SolidColorBrush x:Key="ForeDescBrush" Color="#A0A0A0" />
+
+    <SolidColorBrush x:Key="ButtonBrush" Color="#dddddd" />
+    <SolidColorBrush x:Key="ButtonHoverBrush" Color="#e0e0e0" />
+    <SolidColorBrush x:Key="ButtonPressedBrush" Color="#d0d0d0" />
+
+
     <Style TargetType="{x:Type control:SwitchRadio}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="VerticalAlignment" Value="Bottom" />
@@ -158,5 +167,125 @@
         <Setter Property="MouseOverForeground" Value="#303030" />
         <Setter Property="TargetPageSingleton" Value="True" />
         <Setter Property="Scope" Value="Nav" />
+    </Style>
+    <Style x:Key="CommonRadio" TargetType="RadioButton">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  Normal CheckBox Style  -->
+    <Style x:Key="CommonCheckBox" TargetType="CheckBox">
+        <Setter Property="Foreground" Value="{StaticResource ForeBrush}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <StackPanel Orientation="Horizontal">
+                        <Border
+                            x:Name="Icon"
+                            Width="16"
+                            Height="16"
+                            Background="{StaticResource PinkBrushOsu}"
+                            BorderBrush="#303030"
+                            CornerRadius="3">
+                            <Border
+                                x:Name="IconInner"
+                                Width="6"
+                                Height="10"
+                                BorderBrush="White"
+                                BorderThickness="0,0,2,2"
+                                RenderTransformOrigin="0.5,0.5">
+                                <Border.RenderTransform>
+                                    <TransformGroup>
+                                        <RotateTransform Angle="45" />
+                                        <TranslateTransform Y="-1.5" />
+                                    </TransformGroup>
+                                </Border.RenderTransform>
+                            </Border>
+                        </Border>
+                        <TextBlock
+                            Margin="4,0,0,0"
+                            VerticalAlignment="Center"
+                            Foreground="{TemplateBinding Foreground}"
+                            Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
+                            Visibility="{TemplateBinding Content,
+                                                         Converter={StaticResource NullToCollapsedConverter}}" />
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter TargetName="Icon" Property="Background" Value="{StaticResource ButtonPressedBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Setter TargetName="Icon" Property="Background" Value="{StaticResource PinkBrushOsu}" />
+                            <Setter TargetName="Icon" Property="BorderBrush" Value="{StaticResource PinkBrushOsu}" />
+                            <Setter TargetName="Icon" Property="BorderThickness" Value="0" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter TargetName="Icon" Property="Background" Value="Transparent" />
+                            <Setter TargetName="IconInner" Property="Opacity" Value="0" />
+                            <Setter TargetName="Icon" Property="BorderThickness" Value="2" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CommonRadioButton" TargetType="{x:Type RadioButton}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="#303030" />
+        <Setter Property="Padding" Value="0,3" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RadioButton}">
+                    <Grid
+                        x:Name="grid"
+                        Margin="{TemplateBinding Padding}"
+                        VerticalAlignment="Center">
+                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                            <Grid Margin="0,0,5,0">
+                                <Ellipse
+                                    x:Name="Cycle"
+                                    Width="16"
+                                    Height="16"
+                                    Stroke="{TemplateBinding Foreground}"
+                                    StrokeThickness="2" />
+                                <Ellipse
+                                    x:Name="Dot"
+                                    Width="6"
+                                    Height="6"
+                                    Fill="#FFFD629A"
+                                    Visibility="Collapsed" />
+                                <Ellipse
+                                    x:Name="Dot2"
+                                    Width="6"
+                                    Height="6"
+                                    Fill="#E0303030"
+                                    Visibility="Collapsed" />
+                            </Grid>
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Foreground" Value="#484848" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Setter TargetName="Dot" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="Dot2" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="Cycle" Property="Stroke" Value="#FFFD629A" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="grid" Property="Opacity" Value="0.6" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>

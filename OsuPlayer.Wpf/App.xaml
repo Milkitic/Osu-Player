@@ -8,6 +8,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/ConverterDictionary.xaml" />
                 <ResourceDictionary Source="Styles/GeneralStyle.xaml" />
                 <ResourceDictionary Source="Styles/BrushDictionary.xaml" />
                 <ResourceDictionary Source="Styles/SvgDictionary.xaml" />
@@ -22,8 +23,8 @@
                 <ResourceDictionary Source="Styles/StatusIconStyle.xaml" />
                 <ResourceDictionary Source="Styles/TabStyle.xaml" />
                 <ResourceDictionary Source="Control/Buttons.xaml" />
-                <ResourceDictionary Source="Styles/ConverterDictionary.xaml" />
                 <ResourceDictionary Source="Styles/ScrollBarStyle.xaml" />
+                <ResourceDictionary Source="Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

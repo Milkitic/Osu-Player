@@ -1,49 +1,105 @@
-﻿<Page x:Class="Milky.OsuPlayer.Pages.Settings.PlayPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:Milky.OsuPlayer.Pages.Settings"
-      mc:Ignorable="d"
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="PlayPage" Loaded="Page_Loaded">
+﻿<Page
+    x:Class="Milky.OsuPlayer.Pages.Settings.PlayPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Milky.OsuPlayer.Pages.Settings"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="PlayPage"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Loaded="Page_Loaded"
+    mc:Ignorable="d">
 
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="全局音效延迟" HorizontalAlignment="Left" />
+                <Label
+                    HorizontalAlignment="Left"
+                    Content="全局音效延迟"
+                    Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                    <Slider x:Name="SliderOffset" Style="{StaticResource DMOpacitySlider}" 
-                            Width="300" Minimum="-200" Margin="8,0"
-                            Maximum="200" ValueChanged="SliderOffset_ValueChanged" />
-                    <dms:DMTextBox x:Name="BoxOffset" Width="35" BorderBrush="#33999999" Background="White" TextAlignment="Center"
-                                   CornerRadius="2" TextChanged="BoxOffset_TextChanged" />
+                    <Slider
+                        x:Name="SliderOffset"
+                        Width="300"
+                        Margin="8,0"
+                        Maximum="200"
+                        Minimum="-200"
+                        Style="{StaticResource HorizontalSliderWhiteStyle}"
+                        ValueChanged="SliderOffset_ValueChanged" />
+                    <control:CommonTextBox
+                        x:Name="BoxOffset"
+                        Width="35"
+                        Background="White"
+                        BorderBrush="#33999999"
+                        CornerRadius="2"
+                        TextAlignment="Center"
+                        TextChanged="BoxOffset_TextChanged" />
                 </StackPanel>
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="播放列表：" HorizontalAlignment="Left" Visibility="Collapsed" />
+                <Label
+                    HorizontalAlignment="Left"
+                    Content="播放列表："
+                    Style="{StaticResource ConfigTitleStyle}"
+                    Visibility="Collapsed" />
                 <StackPanel HorizontalAlignment="Left">
-                    <RadioButton x:Name="RadioReplace" Style="{StaticResource ConfigRadioStyle}"
-                                 Content="播放单曲时，用此单曲所在的歌曲列表替换播放列表" Checked="RadioReplace_Checked" Visibility="Collapsed" />
-                    <RadioButton x:Name="RadioInsert" Style="{StaticResource ConfigRadioStyle}"
-                                 Content="播放单曲时，仅把此单曲添加到播放列表" Checked="RadioInsert_Checked" Visibility="Collapsed" />
+                    <RadioButton
+                        x:Name="RadioReplace"
+                        Checked="RadioReplace_Checked"
+                        Content="播放单曲时，用此单曲所在的歌曲列表替换播放列表"
+                        Style="{StaticResource ConfigRadioStyle}"
+                        Visibility="Collapsed" />
+                    <RadioButton
+                        x:Name="RadioInsert"
+                        Checked="RadioInsert_Checked"
+                        Content="播放单曲时，仅把此单曲添加到播放列表"
+                        Style="{StaticResource ConfigRadioStyle}"
+                        Visibility="Collapsed" />
                 </StackPanel>
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="自动播放：" HorizontalAlignment="Left" />
-                <dms:DMCheckBox x:Name="ChkAutoPlay" IconColor="#FF1E9FFF" Margin="8,0"
-                                Content="程序启动时自动播放" HorizontalAlignment="Left"
-                                Checked="ChkAutoPlay_CheckChanged"
-                                Unchecked="ChkAutoPlay_CheckChanged" />
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="播放进度：" HorizontalAlignment="Left" />
-                <dms:DMCheckBox x:Name="ChkMemory" IconColor="#FF1E9FFF" Margin="8,0"
-                                Content="程序启动时恢复上次播放" HorizontalAlignment="Left"
-                                Checked="ChkMemory_CheckChanged"
-                                Unchecked="ChkMemory_CheckChanged" />
-                <Label Style="{StaticResource ConfigTitleStyle}" Content="音频延迟（实验性）：" HorizontalAlignment="Left" />
+                <Label
+                    HorizontalAlignment="Left"
+                    Content="自动播放："
+                    Style="{StaticResource ConfigTitleStyle}" />
+                <CheckBox
+                    x:Name="ChkAutoPlay"
+                    Margin="8,0"
+                    HorizontalAlignment="Left"
+                    Checked="ChkAutoPlay_CheckChanged"
+                    Content="程序启动时自动播放"
+                    Style="{StaticResource CommonCheckBox}"
+                    Unchecked="ChkAutoPlay_CheckChanged" />
+                <Label
+                    HorizontalAlignment="Left"
+                    Content="播放进度："
+                    Style="{StaticResource ConfigTitleStyle}" />
+                <CheckBox
+                    x:Name="ChkMemory"
+                    Margin="8,0"
+                    HorizontalAlignment="Left"
+                    Checked="ChkMemory_CheckChanged"
+                    Content="程序启动时恢复上次播放"
+                    Style="{StaticResource CommonCheckBox}"
+                    Unchecked="ChkMemory_CheckChanged" />
+                <Label
+                    HorizontalAlignment="Left"
+                    Content="音频延迟（实验性）："
+                    Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                    <Slider x:Name="SliderLatency" Style="{StaticResource DMOpacitySlider}"
-                            Width="300" Minimum="0" Margin="8,0"
-                            Maximum="200" ValueChanged="SliderLatency_ValueChanged" />
-                    <dms:DMTextBox x:Name="BoxLatency" Width="35" BorderBrush="#33999999" TextAlignment="Center"
-                                   Background="White" 
-                                   TextChanged="BoxLatency_TextChanged" />
+                    <Slider
+                        x:Name="SliderLatency"
+                        Width="300"
+                        Margin="8,0"
+                        Maximum="200"
+                        Minimum="0"
+                        Style="{StaticResource HorizontalSliderWhiteStyle}"
+                        ValueChanged="SliderLatency_ValueChanged" />
+                    <control:CommonTextBox
+                        x:Name="BoxLatency"
+                        Width="35"
+                        Background="White"
+                        BorderBrush="#33999999"
+                        TextAlignment="Center"
+                        TextChanged="BoxLatency_TextChanged" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

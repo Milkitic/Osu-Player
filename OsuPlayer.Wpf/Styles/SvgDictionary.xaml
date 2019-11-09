@@ -630,4 +630,20 @@
             </Path>
         </Canvas>
     </ControlTemplate>
+    <ControlTemplate x:Key="SettingsPlayTempl">
+        <Canvas Width="1000" Height="1000">
+            <Canvas.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000" />
+                    <TranslateTransform X="0.000000" Y="385.000000" />
+                </TransformGroup>
+            </Canvas.RenderTransform>
+            <Path Data="{StaticResource Play}" Fill="{TemplateBinding Foreground}" />
+        </Canvas>
+    </ControlTemplate>
+    <ControlTemplate x:Key="DeleteTempl">
+        <Canvas Width="1000" Height="1000">
+            <Path Data="{StaticResource Delete}" Fill="{TemplateBinding Foreground}" />
+        </Canvas>
+    </ControlTemplate>
 </ResourceDictionary>

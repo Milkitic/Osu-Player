@@ -2,6 +2,7 @@
     x:Class="Milky.OsuPlayer.Pages.CollectionPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:cvt="clr-namespace:Milky.OsuPlayer.Converter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -75,7 +76,7 @@
                                         FontSize="22">
                                         <TextBlock Text="{Binding Path=CollectionInfo.Name}" TextWrapping="Wrap" />
                                     </Label>
-                                    <dms:DMButton
+                                    <control:CommonButton
                                         Width="28"
                                         Height="28"
                                         Margin="5"
@@ -95,61 +96,34 @@
                                                 <Path Data="{StaticResource Edit2}" Fill="#303030" />
                                             </Canvas>
                                         </Viewbox>
-                                    </dms:DMButton>
-                                    <dms:DMButton
+                                    </control:CommonButton>
+                                    <control:CommonButton
                                         x:Name="BtnDelCol"
                                         Width="28"
                                         Height="28"
                                         Margin="5"
-                                        Background="#ff4d40"
-                                        BorderBrush="#80ff4d40"
+                                        Background="#ff4d50"
+                                        BorderBrush="#e83430"
                                         BorderThickness="1"
                                         Click="BtnDelCol_Click"
                                         CornerRadius="50"
-                                        Cursor="Hand">
-                                        <Viewbox
-                                            Width="16"
-                                            Height="16"
-                                            Stretch="Uniform">
-                                            <Canvas Width="1000" Height="1000">
-                                                <Path Data="{StaticResource Delete}" Fill="White" />
-                                            </Canvas>
-                                        </Viewbox>
-                                    </dms:DMButton>
+                                        Cursor="Hand"
+                                        Foreground="#f0f0f0"
+                                        IconMargin="0"
+                                        IconSize="15"
+                                        IconTemplate="{StaticResource DeleteTempl}"
+                                        MouseDownBackground="#ef3d40"
+                                        MouseDownForeground="#e8e8e8"
+                                        MouseOverBackground="#ff6d70"
+                                        MouseOverForeground="White" />
                                 </WrapPanel>
                                 <StackPanel Margin="5" Orientation="Horizontal">
                                     <Label Content="创建时间：" Foreground="#303030" />
                                     <Label Content="{Binding Path=CollectionInfo.CreateTime, Converter={StaticResource CvtDate}}" Foreground="#303030" />
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <dms:DMButton
-                                        Height="28"
-                                        Margin="5"
-                                        Background="#5d9cec"
-                                        BorderBrush="Transparent"
-                                        BorderThickness="1"
-                                        CornerRadius="5"
-                                        Cursor="Hand"
-                                        Foreground="White">
-                                        <StackPanel Margin="10,0" Orientation="Horizontal">
-                                            <Viewbox
-                                                Width="16"
-                                                Height="16"
-                                                Stretch="Uniform">
-                                                <Canvas Width="1000" Height="1000">
-                                                    <Canvas.RenderTransform>
-                                                        <TransformGroup>
-                                                            <ScaleTransform ScaleX="0.100000" ScaleY="-0.100000" />
-                                                            <TranslateTransform X="0.000000" Y="385.000000" />
-                                                        </TransformGroup>
-                                                    </Canvas.RenderTransform>
-                                                    <Path Data="{StaticResource Play}" Fill="White" />
-                                                </Canvas>
-                                            </Viewbox>
-                                            <Label Content="全部播放" Foreground="White" />
-                                        </StackPanel>
-                                    </dms:DMButton>
-                                    <dms:DMButton
+                                    <control:CommonButton Click="BtnPlayAll_Click" Style="{StaticResource PlayButton}" />
+                                    <control:CommonButton
                                         x:Name="BtnExportAll"
                                         Width="auto"
                                         Height="28"
@@ -171,7 +145,7 @@
                                             </Viewbox>
                                             <Label Content="全部导出" />
                                         </StackPanel>
-                                    </dms:DMButton>
+                                    </control:CommonButton>
                                 </StackPanel>
                                 <StackPanel Margin="5" Orientation="Horizontal">
                                     <Label Content="简介：" Foreground="#303030" />
@@ -237,7 +211,7 @@
                                     Text="音乐列表" />
                             </TabItem.Header>
                             <Grid>
-                                <dms:DMTextBox
+                                <control:CommonTextBox
                                     x:Name="SearchBox"
                                     Width="180"
                                     Height="26"
@@ -249,9 +223,6 @@
                                     BorderThickness="1"
                                     CornerRadius="13"
                                     Hint="搜索收藏夹音乐"
-                                    Icon="{StaticResource Icon_Serach}"
-                                    SelectedColor="#40303030"
-                                    ShowIcon="True"
                                     TextChanged="SearchBox_TextChanged" />
                                 <ListView
                                     x:Name="MapList"

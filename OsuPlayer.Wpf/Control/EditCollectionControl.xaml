@@ -108,7 +108,7 @@
                 Grid.Row="2"
                 Grid.Column="1"
                 Orientation="Horizontal">
-                <controls:DMButton
+                <local:CommonButton
                     Width="75"
                     Height="28"
                     Background="#5d9cec"
@@ -136,7 +136,7 @@
                         Source="{Binding Path=CoverPath, Mode=TwoWay}"
                         Stretch="UniformToFill" />
                 </Grid>
-                <controls:DMButton
+                <local:CommonButton
                     Width="auto"
                     Height="28"
                     Margin="10,0"

@@ -177,6 +177,7 @@
       <DependentUpon>ClosingControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\CommonButton.cs" />
+    <Compile Include="Control\CommonTextBox.cs" />
     <Compile Include="Control\DiffSelectControl.xaml.cs">
       <DependentUpon>DiffSelectControl.xaml</DependentUpon>
     </Compile>

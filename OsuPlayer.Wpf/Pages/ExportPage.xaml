@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:beatmaps="clr-namespace:osu_database_reader.Components.Beatmaps;assembly=osu-database-reader"
     xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib"
+    xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
@@ -43,7 +44,7 @@
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <dms:DMButton
+                        <control:CommonButton
                             x:Name="BtnExportAll"
                             Grid.Column="0"
                             Width="auto"
@@ -70,7 +71,7 @@
                                 </Viewbox>
                                 <Label Content="打开目录" />
                             </StackPanel>
-                        </dms:DMButton>
+                        </control:CommonButton>
                         <StackPanel
                             Grid.Column="1"
                             VerticalAlignment="Center"

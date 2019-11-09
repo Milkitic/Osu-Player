@@ -231,5 +231,10 @@ namespace Milky.OsuPlayer.Pages
             var helper = new GridViewHelper(MapList);
             helper.OnMouseDoubleClick(MapList_MouseDoubleClick);
         }
+
+        private void BtnPlayAll_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
