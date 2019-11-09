@@ -144,4 +144,5 @@
         B="255"
         G="255"
         R="255" />
+    <SolidColorBrush x:Key="PinkBrushOsu" Color="{StaticResource PinkColorOsu}"/>
 </ResourceDictionary>

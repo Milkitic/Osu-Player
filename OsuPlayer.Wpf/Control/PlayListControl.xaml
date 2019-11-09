@@ -167,12 +167,11 @@
                 Style="{StaticResource ListView}">
                 <ListView.Resources>
                     <DataTemplate x:Key="PlayingDt">
-                        <TextBlock
-                            x:Name="LblCreator"
-                            Height="28"
-                            VerticalAlignment="Center"
-                            Foreground="#727272"
-                            Text="" />
+                        <Border HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding}">
+                            <Viewbox Width="22" Height="22">
+                                <ContentControl Template="{StaticResource Volume2Templ}" Foreground="{StaticResource PinkBrushOsu}"/>
+                            </Viewbox>
+                        </Border>
                     </DataTemplate>
                     <DataTemplate x:Key="TitleDt">
                         <Label
@@ -207,8 +206,8 @@
                 </ListView.Resources>
                 <ListView.View>
                     <GridView ColumnHeaderContainerStyle="{StaticResource HiddenHeaderStyle}">
-                        <GridViewColumn Width="20" CellTemplate="{StaticResource PlayingDt}" />
-                        <GridViewColumn Width="240" CellTemplate="{StaticResource TitleDt}" />
+                        <GridViewColumn Width="31" CellTemplate="{StaticResource PlayingDt}" />
+                        <GridViewColumn Width="229" CellTemplate="{StaticResource TitleDt}" />
                         <GridViewColumn Width="180" CellTemplate="{StaticResource ArtistDt}" />
                         <GridViewColumn Width="110" CellTemplate="{StaticResource CreatorDt}" />
                     </GridView>
