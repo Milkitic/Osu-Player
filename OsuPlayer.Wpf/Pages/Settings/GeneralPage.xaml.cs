@@ -40,7 +40,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             {
                 if (isRunOnStartup)
                 {
-                    rKey?.SetValue("OsuPlayer", Process.GetCurrentProcess().MainModule.FileName);
+                    rKey?.SetValue("OsuPlayer", Process.GetCurrentProcess().MainModule?.FileName ?? "");
                     AppSettings.Default.General.RunOnStartup = true;
                 }
                 else
@@ -113,27 +113,28 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private async void BrowseCustom_Click(object sender, RoutedEventArgs e)
         {
-            var openFileDialog = new CommonOpenFileDialog
+            using (var openFileDialog = new CommonOpenFileDialog
             {
                 IsFolderPicker = true,
                 Title = "Select Folder"
-            };
-
-            var result = openFileDialog.ShowDialog();
-            if (result != CommonFileDialogResult.Ok)
-                return;
-            var path = openFileDialog.FileName;
-            try
+            })
             {
-                TbCustomPath.Text = path;
-                await Services.Get<OsuFileScanner>().CancelTaskAsync();
-                await Services.Get<OsuFileScanner>().NewScanAndAddAsync(path);
-                AppSettings.Default.General.CustomSongsPath = path;
-                AppSettings.SaveDefault();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                var result = openFileDialog.ShowDialog();
+                if (result != CommonFileDialogResult.Ok)
+                    return;
+                var path = openFileDialog.FileName;
+                try
+                {
+                    TbCustomPath.Text = path;
+                    await Services.Get<OsuFileScanner>().CancelTaskAsync();
+                    await Services.Get<OsuFileScanner>().NewScanAndAddAsync(path);
+                    AppSettings.Default.General.CustomSongsPath = path;
+                    AppSettings.SaveDefault();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 

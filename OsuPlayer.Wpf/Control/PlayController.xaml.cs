@@ -633,6 +633,13 @@ namespace Milky.OsuPlayer.Control
             var playList = Services.Get<PlayerList>();
             await SetPlayMode(playList.PlayerMode);
         }
+
+        private void TitleArtist_Click(object sender, RoutedEventArgs e)
+        {
+            var playerList = Services.Get<PlayerList>();
+            var win = new BeatmapInfoWindow(playerList.CurrentInfo);
+            win.ShowDialog();
+        }
     }
 
     public class DragCompleteEventArgs : HandledEventArgs

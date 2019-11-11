@@ -42,6 +42,7 @@ namespace Milky.OsuPlayer.Common.Player
             IsFavorite = isFavorite;
             Path = path;
             BgPath = bgPath;
+            TagString = string.Join(" ", Tags);
         }
 
         public string Artist
@@ -94,6 +95,7 @@ namespace Milky.OsuPlayer.Common.Player
         public string Creator { get; set; }
         public string Source { get; set; }
         public List<string> Tags { get; set; }
+        public string TagString { get; set; }
         public int BeatmapId { get; set; }
         public int BeatmapsetId { get; set; }
         public double Stars { get; set; }

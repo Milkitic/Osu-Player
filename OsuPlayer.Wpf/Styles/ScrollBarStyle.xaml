@@ -155,7 +155,6 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollBar}">
                     <Border
-                        Width="16"
                         BorderBrush="#C0C0C0"
                         BorderThickness="1"
                         CornerRadius="0">

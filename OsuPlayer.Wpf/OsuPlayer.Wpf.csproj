@@ -232,6 +232,9 @@
     <Compile Include="Notification.cs" />
     <Compile Include="Utils\NativeUser32.cs" />
     <Compile Include="ViewModels\ListPageViewModel.cs" />
+    <Compile Include="Windows\BeatmapInfoWindow.xaml.cs">
+      <DependentUpon>BeatmapInfoWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\MiniWindow.xaml.cs">
       <DependentUpon>MiniWindow.xaml</DependentUpon>
     </Compile>
@@ -414,6 +417,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\SvgDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\BeatmapInfoWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -628,9 +635,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="player.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="player.db" />
     <Resource Include="Resources\gear.png" />
     <Resource Include="Resources\gear_s.png" />
   </ItemGroup>
@@ -772,6 +777,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

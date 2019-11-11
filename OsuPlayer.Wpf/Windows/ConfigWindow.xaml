@@ -40,7 +40,6 @@
                 Content="{Binding Title, ElementName=CfgWindow}"
                 Foreground="White" />
             <StackPanel
-                Height="{Binding DMSystemButtonSize}"
                 Margin="0,0,1,0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"

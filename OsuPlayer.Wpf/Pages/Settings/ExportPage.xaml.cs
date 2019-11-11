@@ -3,6 +3,7 @@ using Milky.OsuPlayer.Common.Metadata;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -38,53 +39,59 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void BtnMp3Path_Click(object sender, RoutedEventArgs e)
         {
-            FolderBrowserDialog dialog = new FolderBrowserDialog
+            using (var dialog = new CommonOpenFileDialog
             {
-                Description = @"选择音乐导出目录",
-                ShowNewFolderButton = true,
-            };
-            var result = dialog.ShowDialog();
-            if (result != DialogResult.OK) return;
-            AppSettings.Default.Export.MusicPath = dialog.SelectedPath;
-            LblMp3Path.Text = AppSettings.Default.Export.MusicPath;
-            AppSettings.SaveDefault();
+                IsFolderPicker = true,
+                Title = "选择音乐导出目录",
+            })
+            {
+                var result = dialog.ShowDialog();
+                if (result != CommonFileDialogResult.Ok) return;
+                AppSettings.Default.Export.MusicPath = dialog.FileName;
+                LblMp3Path.Text = AppSettings.Default.Export.MusicPath;
+                AppSettings.SaveDefault();
+            }
         }
 
         private void BtnBgPath_Click(object sender, RoutedEventArgs e)
         {
-            FolderBrowserDialog dialog = new FolderBrowserDialog
+            using (var dialog = new CommonOpenFileDialog()
             {
-                Description = @"选择背景导出目录",
-                ShowNewFolderButton = true,
-            };
-            var result = dialog.ShowDialog();
-            if (result != DialogResult.OK) return;
-            AppSettings.Default.Export.BgPath = dialog.SelectedPath;
-            LblBgPath.Text = AppSettings.Default.Export.BgPath;
-            AppSettings.SaveDefault();
+                IsFolderPicker = true,
+                Title = "选择背景导出目录"
+            })
+            {
+                var result = dialog.ShowDialog();
+                if (result != CommonFileDialogResult.Ok) return;
+                AppSettings.Default.Export.BgPath = dialog.FileName;
+                LblBgPath.Text = AppSettings.Default.Export.BgPath;
+                AppSettings.SaveDefault();
+            }
         }
 
         private void Naming_CheckChanged(object sender, RoutedEventArgs e)
         {
+            var exportSection = AppSettings.Default.Export;
             if (RadioT.IsChecked.HasValue && RadioT.IsChecked.Value)
-                AppSettings.Default.Export.NamingStyle = NamingStyle.Title;
+                exportSection.NamingStyle = NamingStyle.Title;
             else if (RadioAt.IsChecked.HasValue && RadioAt.IsChecked.Value)
-                AppSettings.Default.Export.NamingStyle = NamingStyle.ArtistTitle;
+                exportSection.NamingStyle = NamingStyle.ArtistTitle;
             else if (RadioTa.IsChecked.HasValue && RadioTa.IsChecked.Value)
-                AppSettings.Default.Export.NamingStyle = NamingStyle.TitleArtist;
+                exportSection.NamingStyle = NamingStyle.TitleArtist;
             AppSettings.SaveDefault();
         }
 
         private void Sort_CheckChanged(object sender, RoutedEventArgs e)
         {
+            var exportSection = AppSettings.Default.Export;
             if (SortNone.IsChecked.HasValue && SortNone.IsChecked.Value)
-                AppSettings.Default.Export.SortStyle = SortStyle.None;
+                exportSection.SortStyle = SortStyle.None;
             else if (SortArtist.IsChecked.HasValue && SortArtist.IsChecked.Value)
-                AppSettings.Default.Export.SortStyle = SortStyle.Artist;
+                exportSection.SortStyle = SortStyle.Artist;
             else if (SortMapper.IsChecked.HasValue && SortMapper.IsChecked.Value)
-                AppSettings.Default.Export.SortStyle = SortStyle.Mapper;
+                exportSection.SortStyle = SortStyle.Mapper;
             else if (SortSource.IsChecked.HasValue && SortSource.IsChecked.Value)
-                AppSettings.Default.Export.SortStyle = SortStyle.Source;
+                exportSection.SortStyle = SortStyle.Source;
             AppSettings.SaveDefault();
         }
     }

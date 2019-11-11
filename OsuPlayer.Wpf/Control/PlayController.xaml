@@ -155,7 +155,7 @@
                 Background="#5d9cec"
                 BorderBrush="White"
                 BorderRadius="14"
-                BorderThickness="2"
+                BorderThickness="1"
                 Click="OpenButton_Click"
                 ImageHeight="24"
                 ImageWidth="24"
@@ -177,21 +177,27 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal">
+                <!--<StackPanel Orientation="Horizontal">
+                    <Label Content="{Binding Player.CurrentInfo.TitleAuto, Mode=OneWay}" Foreground="#777" />
                     <Label
-                        x:Name="LblTitle"
-                        Content="{Binding Player.CurrentInfo.TitleAuto, Mode=OneWay}"
-                        Foreground="#777" />
-                    <Label
-                        x:Name="LblSeperate"
                         Margin="-5,0,-5,0"
                         Content="-"
                         Foreground="#858585" />
-                    <Label
-                        x:Name="LblArtist"
-                        Content="{Binding Player.CurrentInfo.ArtistAuto, Mode=OneWay}"
-                        Foreground="#AAA" />
-                </StackPanel>
+                    <Label Content="{Binding Player.CurrentInfo.ArtistAuto, Mode=OneWay}" Foreground="#AAA" />
+                </StackPanel>-->
+                <local:CommonButton
+                    Margin="3,0"
+                    VerticalAlignment="Center"
+                    Click="TitleArtist_Click"
+                    MouseDownBackground="#80E0E0E0"
+                    MouseOverBackground="#80F0F0F0"
+                    Style="{StaticResource LinkButton}">
+                    <TextBlock>
+                        <Run Foreground="#777" Text="{Binding Player.CurrentInfo.TitleAuto, Mode=OneWay}" />
+                        <Run Text="-" />
+                        <Run Foreground="#AAA" Text="{Binding Player.CurrentInfo.ArtistAuto, Mode=OneWay}" />
+                    </TextBlock>
+                </local:CommonButton>
                 <StackPanel
                     x:Name="LblProgress"
                     Grid.Column="1"

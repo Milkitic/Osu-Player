@@ -37,6 +37,7 @@ namespace Milky.OsuPlayer.Common
         public static string MusicPath => Path.Combine(CurrentPath, "Music");
         public static string BackgroundPath => Path.Combine(CurrentPath, "Background");
         public static string ResourcePath => Path.Combine(CurrentPath, "Resources");
+        public static string OwnSongsPath => Path.Combine(CurrentPath, "Songs");
         public static string PluginPath => Path.Combine(ExternalPath, "Plugins");
 
         public static string CustomSongPath => AppSettings.Default == null ? null : new FileInfo(AppSettings.Default.General.CustomSongsPath).FullName;

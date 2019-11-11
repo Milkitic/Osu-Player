@@ -40,7 +40,7 @@
                         x:Name="TbDbPath"
                         Width="250"
                         Height="27"
-                        Margin="5,0"
+                        Margin="5,0,-1,0"
                         VerticalContentAlignment="Center"
                         Background="White"
                         CornerRadius="5"
@@ -48,14 +48,16 @@
                         Text="D:\asdf\asdf" />
                     <control:CommonButton
                         x:Name="BrowseDb"
-                        Width="25"
-                        Height="25"
+                        Width="27"
+                        Height="27"
                         Margin="0"
                         Padding="0"
+                        VerticalAlignment="Center"
                         Background="#E3E3E3"
+                        BorderBrush="#B0B0B0"
                         Click="BrowseDb_Click"
-                        Content="..."
-                        CornerRadius="13"
+                        IconMargin="0"
+                        IconTemplate="{StaticResource FolderTempl}"
                         IsEnabled="{Binding IsScanning, Converter={StaticResource NegativeBooleanConverter}}"
                         Style="{StaticResource SettingsButton}" />
                     <control:CommonButton
@@ -63,6 +65,7 @@
                         Height="25"
                         Margin="6,0,0,0"
                         Padding="5,0"
+                        VerticalAlignment="Center"
                         Background="#E3E3E3"
                         Click="SyncNow_Click"
                         Content="手动同步"
@@ -78,7 +81,7 @@
                         x:Name="TbCustomPath"
                         Width="250"
                         Height="27"
-                        Margin="5,0"
+                        Margin="5,0,-1,0"
                         VerticalContentAlignment="Center"
                         Background="White"
                         CornerRadius="5"
@@ -86,14 +89,16 @@
                         Text="D:\asdf\asdf" />
                     <control:CommonButton
                         x:Name="BrowseCustom"
-                        Width="25"
-                        Height="25"
+                        Width="27"
+                        Height="27"
                         Margin="0"
                         Padding="0"
+                        VerticalAlignment="Center"
                         Background="#E3E3E3"
+                        BorderBrush="#B0B0B0"
                         Click="BrowseCustom_Click"
-                        Content="..."
-                        CornerRadius="13"
+                        IconMargin="0"
+                        IconTemplate="{StaticResource FolderTempl}"
                         Style="{StaticResource SettingsButton}" />
                     <custom:Loader
                         Width="25"

@@ -287,6 +287,7 @@
         TargetType="{x:Type controls:CommonButton}">
         <Setter Property="Height" Value="Auto" />
         <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="MouseDownBackground" Value="Transparent" />
         <Setter Property="MouseOverBackground" Value="Transparent" />

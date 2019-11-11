@@ -1,0 +1,176 @@
+﻿<Window
+    x:Class="Milky.OsuPlayer.Windows.BeatmapInfoWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Milky.OsuPlayer.Windows"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:player="clr-namespace:Milky.OsuPlayer.Common.Player;assembly=OsuPlayer.Common"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    Title="当前歌曲信息"
+    Width="400"
+    Height="340"
+    MaxWidth="400"
+    Background="#323232"
+    ResizeMode="NoResize"
+    SizeToContent="Height"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="SingleBorderWindow"
+    mc:Ignorable="d">
+    <WindowChrome.WindowChrome>
+        <WindowChrome
+            CaptionHeight="32"
+            CornerRadius="0"
+            GlassFrameThickness="1,1,0,0"
+            ResizeBorderThickness="1"
+            UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    <Window.DataContext>
+        <player:CurrentInfo />
+    </Window.DataContext>
+    <Window.Resources>
+        <system:Double x:Key="LabelWidth">110</system:Double>
+        <Style x:Key="ReadOnlyTextBox" TargetType="TextBox">
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid
+            x:Name="TitleBarArea"
+            Grid.Row="0"
+            Height="32">
+            <Label
+                Margin="8,0,0,0"
+                VerticalContentAlignment="Center"
+                Content="当前歌曲信息"
+                Foreground="White" />
+            <StackPanel
+                Margin="0,0,1,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <control:CloseButton MouseDownBackground="#80F72F2F" WindowChrome.IsHitTestVisibleInChrome="True" />
+            </StackPanel>
+        </Grid>
+        <ScrollViewer
+            Grid.Row="1"
+            Margin="1"
+            HorizontalScrollBarVisibility="Auto"
+            VerticalScrollBarVisibility="Disabled">
+            <StackPanel Background="#F0F0F0">
+                <StackPanel Margin="0,4,10,2" Orientation="Horizontal">
+                    <Label
+                        Width="{StaticResource LabelWidth}"
+                        HorizontalContentAlignment="Right"
+                        Content="艺术家：" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding ArtistUnicode}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label
+                        Width="{StaticResource LabelWidth}"
+                        HorizontalContentAlignment="Right"
+                        Content="（原始）艺术家：" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding Artist}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label
+                        Width="{StaticResource LabelWidth}"
+                        HorizontalContentAlignment="Right"
+                        Content="标题：" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding TitleUnicode}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label
+                        Width="{StaticResource LabelWidth}"
+                        HorizontalContentAlignment="Right"
+                        Content="（原始）标题：" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding Title}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label
+                        Width="{StaticResource LabelWidth}"
+                        HorizontalContentAlignment="Right"
+                        Content="地图作者：" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding Creator}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label
+                        Width="{StaticResource LabelWidth}"
+                        HorizontalContentAlignment="Right"
+                        Content="来源：" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding Source}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label
+                        Width="{StaticResource LabelWidth}"
+                        HorizontalContentAlignment="Right"
+                        Content="标签：" />
+                    <TextBox
+                        MaxWidth="270"
+                        Padding="0,5,0,0"
+                        Style="{StaticResource ReadOnlyTextBox}"
+                        Text="{Binding TagString}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label
+                        Width="{StaticResource LabelWidth}"
+                        HorizontalContentAlignment="Right"
+                        Content="地图链接：" />
+                    <control:CommonButton
+                        VerticalAlignment="Center"
+                        Click="SLink_Click"
+                        Style="{StaticResource LinkButton}">
+                        <TextBlock>
+                            <Run Text="s/" /><Run Text="{Binding BeatmapsetId}" />
+                        </TextBlock>
+                    </control:CommonButton>
+                    <control:CommonButton
+                        Margin="10,0"
+                        VerticalAlignment="Center"
+                        Click="BLink_Click"
+                        Style="{StaticResource LinkButton}">
+                        <TextBlock>
+                            <Run Text="b/" /><Run Text="{Binding BeatmapId}" />
+                        </TextBlock>
+                    </control:CommonButton>
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label
+                        Width="{StaticResource LabelWidth}"
+                        HorizontalContentAlignment="Right"
+                        Content="星级：" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding Stars}" />
+                </StackPanel>
+                <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
+                    <Label
+                        Width="{StaticResource LabelWidth}"
+                        HorizontalContentAlignment="Right"
+                        Content="四围：" />
+
+                    <TextBlock VerticalAlignment="Center">
+                        <Run Text="HP:" />
+                        <Run Text="{Binding HP}" />
+                        <Run Text="CS:" />
+                        <Run Text="{Binding CS}" />
+                        <Run Text="AR:" />
+                        <Run Text="{Binding AR}" />
+                        <Run Text="OD:" />
+                        <Run Text="{Binding OD}" />
+                    </TextBlock>
+
+                </StackPanel>
+            </StackPanel>
+
+        </ScrollViewer>
+    </Grid>
+</Window>

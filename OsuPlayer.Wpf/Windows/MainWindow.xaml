@@ -291,7 +291,9 @@
             TrayToolTip="{DynamicResource TrayToolTip}"
             Visibility="Visible" />
         <Grid.Resources>
-            <ToolTip x:Key="TrayToolTip" />
+            <ToolTip x:Key="TrayToolTip">
+                <TextBlock Text="OsuPlayer" />
+            </ToolTip>
             <!--<Popup x:Key="TrayStatusPopup"></Popup>-->
             <ContextMenu x:Key="TrayMenu" Style="{StaticResource DefaultContextMenu}">
                 <!--<ContextMenu x:Key="TrayMenu">-->

@@ -8,16 +8,18 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
-                    <Border Height="5" Background="{StaticResource SliderBackground}">
-                        <Border.Effect>
-                            <DropShadowEffect
-                                BlurRadius="10"
-                                Opacity="0.2"
-                                ShadowDepth="1"
-                                Color="{StaticResource PinkColorOsu}" />
-                        </Border.Effect>
-                    </Border>
-
+                    <Grid>
+                        <Border Height="5" Background="White">
+                            <Border.Effect>
+                                <DropShadowEffect
+                                    BlurRadius="10"
+                                    Opacity="0.2"
+                                    ShadowDepth="1"
+                                    Color="{StaticResource PinkColorOsu}" />
+                            </Border.Effect>
+                        </Border>
+                        <Border Height="5" Background="{StaticResource SliderBackground}" />
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -39,15 +41,18 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
-                    <Border Width="5" Background="{StaticResource SliderBackground}">
-                        <Border.Effect>
-                            <DropShadowEffect
-                                BlurRadius="10"
-                                Opacity="0.2"
-                                ShadowDepth="1"
-                                Color="{StaticResource PinkColorOsu}" />
-                        </Border.Effect>
-                    </Border>
+                    <Grid>
+                        <Border Width="5" Background="White">
+                            <Border.Effect>
+                                <DropShadowEffect
+                                    BlurRadius="10"
+                                    Opacity="0.2"
+                                    ShadowDepth="1"
+                                    Color="{StaticResource PinkColorOsu}" />
+                            </Border.Effect>
+                        </Border>
+                        <Border Width="5" Background="{StaticResource SliderBackground}" />
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -77,10 +82,7 @@
                         <Ellipse
                             Width="15"
                             Height="15"
-                            Cursor="Hand"
-                            Fill="{StaticResource SliderBackground}"
-                            Stroke="{StaticResource WhiteBrush}"
-                            StrokeThickness="2">
+                            Fill="White">
                             <Ellipse.Effect>
                                 <DropShadowEffect
                                     BlurRadius="10"
@@ -89,6 +91,13 @@
                                     Color="{StaticResource PinkColorOsu}" />
                             </Ellipse.Effect>
                         </Ellipse>
+                        <Ellipse
+                            Width="15"
+                            Height="15"
+                            Cursor="Hand"
+                            Fill="{StaticResource SliderBackground}"
+                            Stroke="{StaticResource WhiteBrush}"
+                            StrokeThickness="2" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -149,18 +158,24 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
-                    <Border
-                        Height="4"
-                        Background="#FFFD629A"
-                        CornerRadius="2">
-                        <Border.Effect>
-                            <DropShadowEffect
-                                BlurRadius="10"
-                                Opacity="0.3"
-                                ShadowDepth="1"
-                                Color="#FFFD629A" />
-                        </Border.Effect>
-                    </Border>
+                    <Grid>
+                        <Border
+                            Height="4"
+                            Background="White"
+                            CornerRadius="2">
+                            <Border.Effect>
+                                <DropShadowEffect
+                                    BlurRadius="10"
+                                    Opacity="0.3"
+                                    ShadowDepth="1"
+                                    Color="#FFFD629A" />
+                            </Border.Effect>
+                        </Border>
+                        <Border
+                            Height="4"
+                            Background="#FFFD629A"
+                            CornerRadius="2" />
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -185,18 +200,24 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
-                    <Border
-                        Width="4"
-                        Background="#FFFD629A"
-                        CornerRadius="2">
-                        <Border.Effect>
-                            <DropShadowEffect
-                                BlurRadius="10"
-                                Opacity="0.3"
-                                ShadowDepth="1"
-                                Color="#FFFD629A" />
-                        </Border.Effect>
-                    </Border>
+                    <Grid>
+                        <Border
+                            Width="4"
+                            Background="#FFFD629A"
+                            CornerRadius="2">
+                            <Border.Effect>
+                                <DropShadowEffect
+                                    BlurRadius="10"
+                                    Opacity="0.3"
+                                    ShadowDepth="1"
+                                    Color="#FFFD629A" />
+                            </Border.Effect>
+                        </Border>
+                        <Border
+                            Width="4"
+                            Background="#FFFD629A"
+                            CornerRadius="2" />
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -229,9 +250,8 @@
                         <Ellipse
                             Width="11"
                             Height="11"
-                            Cursor="Hand"
-                            Fill="{StaticResource PinkBrushOsu}"
-                            Stroke="{StaticResource WhiteBrush}"
+                            Fill="White"
+                            Stroke="White"
                             StrokeThickness="3">
                             <Ellipse.Effect>
                                 <DropShadowEffect
@@ -241,6 +261,13 @@
                                     Color="#FFFD629A" />
                             </Ellipse.Effect>
                         </Ellipse>
+                        <Ellipse
+                            Width="11"
+                            Height="11"
+                            Cursor="Hand"
+                            Fill="{StaticResource PinkBrushOsu}"
+                            Stroke="{StaticResource WhiteBrush}"
+                            StrokeThickness="3" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
