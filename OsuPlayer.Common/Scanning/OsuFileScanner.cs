@@ -57,7 +57,7 @@ namespace Milky.OsuPlayer.Common.Scanning
                 ViewModel.IsCanceling = true;
             }
 
-            _scanCts.Cancel();
+            _scanCts?.Cancel();
             await Task.Run(() =>
             {
                 // ReSharper disable once InconsistentlySynchronizedField
