@@ -4,9 +4,9 @@
 
 **A multifunctional player for playing music, hitsound, video and storyboard for osuers!.**
 
-![](http://puu.sh/CQWkb/7decbef183.png)
-![](http://puu.sh/CQWkO/1ef95bc770.png)
-![](http://puu.sh/CQYlm/01e9c6417b.jpg)
+![](http://puu.sh/EDjlF/d10eb3f90c.png)
+![](http://puu.sh/EDjot/57a76264ba.png)
+![](http://puu.sh/EDjqw/dac1e29cb3.png)
 
 Now you can close osu! and open osu player after making a cup of tea, and sit down to enjoy your afternoon.
 
@@ -33,14 +33,16 @@ Now you can close osu! and open osu player after making a cup of tea, and sit do
 * Intelligent recommendation when you exploring maps.
 
 ## Compile from source code
-To compile the source code, Microsoft Expression Blend SDK for .NET 4 will be needed. You can download the SDK from [https://www.microsoft.com/en-us/download/details.aspx?id=10801].
+Clone repo with submodules using git command `git clone --recursive https://github.com/Milkitic/Osu-Player`.
 
-Then, clone the repo with submodules with `git clone --recursive https://github.com/Milkitic/Osu-Player`
+Open `OsuPlayer.sln` with Visual Studio, Rider or other .NET-platform IDEs.
 
-After that, ppen `OsuPlayer.sln` with an IDE that supports .NET Framework 4.6 and compile the source code.
+Restore all nuget packages.
+
+Compile the source code.
 
 ## Dependencies
-* Interface: DMSkin, FFME.Windows, Hardcodet.NotifyIcon.Wpf
+* User Interface: FFME.Windows, Hardcodet.NotifyIcon.Wpf
 * Func: MouseKeyHook
 * Data: HoLLy.osu.DatabaseReader, OSharp.Beatmap, OSharp.Storyboard, System.Data.SQLite.Core, System.Data.SQLite.EF6.Migrations
 * Audio: NAudio, NAudio.Vorbis
