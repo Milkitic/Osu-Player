@@ -1,19 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-//using LinqKit;
-using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
-using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Metadata;
-using OSharp.Beatmap;
-using OSharp.Beatmap.MetaData;
 using OSharp.Beatmap.Sections.GamePlay;
 using OSharp.Common;
 
@@ -59,20 +49,6 @@ namespace Milky.OsuPlayer.Common.Data
             }
 
             var keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-
-            //var predicate = keywords.Aggregate(PredicateBuilder.New<BeatmapDataModel>(), (current, keyword) =>
-            //{
-            //    return current.And(k => InsensitiveCaseContains(k.Title, keyword) ||
-            //                            InsensitiveCaseContains(k.TitleUnicode, keyword) ||
-            //                            InsensitiveCaseContains(k.Artist, keyword) ||
-            //                            InsensitiveCaseContains(k.ArtistUnicode, keyword) ||
-            //                            InsensitiveCaseContains(k.SongTags, keyword) ||
-            //                            InsensitiveCaseContains(k.SongSource, keyword) ||
-            //                            InsensitiveCaseContains(k.Creator, keyword) ||
-            //                            InsensitiveCaseContains(k.Version, keyword)
-            //    );
-            //});
-
             var resultList = new List<BeatmapDataModel>();
             foreach (var keyword in keywords)
             {
@@ -100,25 +76,5 @@ namespace Milky.OsuPlayer.Common.Data
             if (paragraph == null) return false;
             return CultureInfo.CurrentCulture.CompareInfo.IndexOf(paragraph, word, CompareOptions.IgnoreCase) >= 0;
         }
-      
-        //public static bool IsDisposed(this DbContext context)
-        //{
-        //    var result = true;
-
-        //    var typeDbContext = typeof(DbContext);
-        //    var typeInternalContext = typeDbContext.Assembly.GetType("System.Data.Entity.Internal.InternalContext");
-
-        //    var fi_InternalContext = typeDbContext.GetField("_internalContext", BindingFlags.NonPublic | BindingFlags.Instance);
-        //    var pi_IsDisposed = typeInternalContext.GetProperty("IsDisposed");
-
-        //    var ic = fi_InternalContext.GetValue(context);
-
-        //    if (ic != null)
-        //    {
-        //        result = (bool)pi_IsDisposed.GetValue(ic);
-        //    }
-
-        //    return result;
-        //}
     }
 }
