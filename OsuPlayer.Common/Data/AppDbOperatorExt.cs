@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+//using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using LinqKit;
+//using LinqKit;
 using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
@@ -100,24 +100,25 @@ namespace Milky.OsuPlayer.Common.Data
             if (paragraph == null) return false;
             return CultureInfo.CurrentCulture.CompareInfo.IndexOf(paragraph, word, CompareOptions.IgnoreCase) >= 0;
         }
-        public static bool IsDisposed(this DbContext context)
-        {
-            var result = true;
+      
+        //public static bool IsDisposed(this DbContext context)
+        //{
+        //    var result = true;
 
-            var typeDbContext = typeof(DbContext);
-            var typeInternalContext = typeDbContext.Assembly.GetType("System.Data.Entity.Internal.InternalContext");
+        //    var typeDbContext = typeof(DbContext);
+        //    var typeInternalContext = typeDbContext.Assembly.GetType("System.Data.Entity.Internal.InternalContext");
 
-            var fi_InternalContext = typeDbContext.GetField("_internalContext", BindingFlags.NonPublic | BindingFlags.Instance);
-            var pi_IsDisposed = typeInternalContext.GetProperty("IsDisposed");
+        //    var fi_InternalContext = typeDbContext.GetField("_internalContext", BindingFlags.NonPublic | BindingFlags.Instance);
+        //    var pi_IsDisposed = typeInternalContext.GetProperty("IsDisposed");
 
-            var ic = fi_InternalContext.GetValue(context);
+        //    var ic = fi_InternalContext.GetValue(context);
 
-            if (ic != null)
-            {
-                result = (bool)pi_IsDisposed.GetValue(ic);
-            }
+        //    if (ic != null)
+        //    {
+        //        result = (bool)pi_IsDisposed.GetValue(ic);
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
     }
 }

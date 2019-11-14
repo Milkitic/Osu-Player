@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using LinqKit;
+using Dapper;
+using Milky.OsuPlayer.Common.Data.Dapper;
+using Milky.OsuPlayer.Common.Data.Dapper.Provider;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Metadata;
@@ -14,40 +18,42 @@ namespace Milky.OsuPlayer.Common.Data.EF
 {
     public class BeatmapDbOperator
     {
-        [ThreadStatic]
-        private static BeatmapDbContext _ctx;
+        private const string TABLE_BEATMAP = "beatmap";
 
-        private BeatmapDbContext Ctx
+        static BeatmapDbOperator()
         {
-            get
-            {
-                if (_ctx == null || _ctx.IsDisposed())
-                    _ctx = new BeatmapDbContext();
-                return _ctx;
-            }
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
-        public Beatmap GetBeatmapBy(Func<Beatmap, bool> predicate)
-        {
-            return Ctx.Beatmaps
-                .FirstOrDefault(predicate);
-        }
+        private static ThreadLocal<SQLiteProvider> _provider = new ThreadLocal<SQLiteProvider>(() =>
+            (SQLiteProvider)new SQLiteProvider().ConfigureConnectionString("data source=beatmap.db"));
+
+        private static SQLiteProvider ThreadedProvider => _provider.Value;
 
         public List<Beatmap> SearchBeatmapByOptions(string searchText, SortMode sortMode, int startIndex, int count)
         {
-            return Ctx.Beatmaps
-                .ByKeyword(searchText)
-                .OrderAndTake(sortMode, startIndex, count)
-                .ToList();
+            var expando = new ExpandoObject();
+            var command = " SELECT * FROM beatmap WHERE ";
+            var keywordSql = GetKeywordQueryAndArgs(searchText, ref expando);
+            var sort = GetOrderAndTakeQueryAndArgs(sortMode, startIndex, count);
+
+            return ThreadedProvider.GetDbConnection().Query<Beatmap>(command + keywordSql + sort, expando).ToList();
         }
 
-        public Beatmap GetBeatmapByIdentifiable(IMapIdentifiable map)
+        public List<Beatmap> GetAllBeatmaps()
         {
-            var entity = Ctx.Beatmaps.FirstOrDefault(full =>
-                             map.FolderName == full.FolderName &&
-                         map.Version == full.Version);
+            return ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP).ToList();
+        }
 
-            return entity;
+        public Beatmap GetBeatmapByIdentifiable(IMapIdentifiable id)
+        {
+            return ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP,
+                new Where[]
+                {
+                    ("version", id.Version),
+                    ("folderName", id.FolderName)
+                },
+                count: 1).FirstOrDefault();
         }
 
         public List<Beatmap> GetBeatmapsByMapInfo(List<MapInfo> reqList, TimeSortMode sortMode)
@@ -71,158 +77,176 @@ namespace Milky.OsuPlayer.Common.Data.EF
 
         public List<Beatmap> GetBeatmapsFromFolder(string folder)
         {
-            return Ctx.Beatmaps.Where(k => k.FolderName == folder).ToList();
+            return ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP, ("folderName", folder)).ToList();
         }
 
         public List<Beatmap> GetBeatmapsByIdentifiable<T>(List<T> reqList)
             where T : IMapIdentifiable
         {
-            if (reqList.Count > 500)
+            if (reqList.Count < 1) return new List<Beatmap>();
+
+            var args = new ExpandoObject();
+            var expando = (ICollection<KeyValuePair<string, object>>)args;
+
+            var sb = new StringBuilder();
+            for (var i = 0; i < reqList.Count; i++)
             {
-                // var folders = new HashSet<string>(reqList.Select(k => k.FolderName));
-                var entities = Ctx.Beatmaps.ToList();
-
-                var groups = entities.GroupBy(k => k.FolderName);
-
-                var list = new List<Beatmap>();
-                var dic = reqList.GroupBy(k => k.FolderName).ToDictionary(k => k.Key, k => k.ToList());
-                foreach (var s in groups)
-                {
-                    if (!dic.ContainsKey(s.Key))
-                        continue;
-                    var o = dic[s.Key];
-                    foreach (var beatmap in s)
-                    {
-                        if (o.Any(k => k.Version == beatmap.Version))
-                        {
-                            list.Add(beatmap);
-                        }
-                    }
-                }
-
-                return list;
+                var id = reqList[i];
+                sb.AppendLine($"(@folder{i}, @version{i})");
+                expando.Add(new KeyValuePair<string, object>($"folder{i}", id.FolderName));
+                expando.Add(new KeyValuePair<string, object>($"version{i}", id.Version));
             }
-            else
-            {
-                var folders = new HashSet<string>(reqList.Select(k => k.FolderName));
-                var checkExpr = Ctx.Beatmaps.Where(entity => folders.Contains(entity.FolderName));
-                var entities = checkExpr.ToList();
 
-                //var filter = entities.Where(full =>
-                //        reqList.Any(req => req.FolderName.Contains(full.FolderName) &&
-                //                           req.Version.Contains(full.Version)))
-                //    .ToList();
-                var filter = entities.GroupBy(k => k.FolderName);
+            var sql = $@"
+DROP TABLE IF EXISTS tmp_table;
+CREATE TEMPORARY TABLE tmp_table (
+    folder  NVARCHAR (255),
+    version NVARCHAR (255) 
+);
+INSERT INTO tmp_table (folder, version)
+                      VALUES {sb};
+SELECT *
+  FROM beatmap
+       INNER JOIN
+       tmp_table ON beatmap.folderName = tmp_table.folder AND 
+                    beatmap.version = tmp_table.version;
+";
 
-                var dic = reqList.GroupBy(k => k.FolderName).ToDictionary(k => k.Key, k => k.ToList());
-                var result = (from s in filter
-                              let o = dic[s.Key]
-                              from beatmap in s
-                              where o.Any(k => k.Version == beatmap.Version)
-                              select beatmap).ToList();
-                return result;
-            }
+            return ThreadedProvider.GetDbConnection().Query<Beatmap>(sql, args).ToList();
         }
 
+        // todo: to be optimized
         public async Task SyncMapsFromHoLLyAsync(IEnumerable<BeatmapEntry> entry, bool addOnly)
         {
             if (addOnly)
             {
-                await Task.Run (() =>
+                await Task.Run(() =>
                 {
-                    var dbMaps = Ctx.Beatmaps.Where(k => !k.InOwnFolder);
+                    var dbMaps = ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP, ("own", false));
                     var newList = entry.Select(Beatmap.ParseFromHolly);
                     var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
 
-                    Ctx.Beatmaps.AddRange(except);
-                    return Ctx.SaveChanges();
+                    foreach (var beatmap in except) // todo: no!!!!!!!!!
+                    {
+                        AddNewMap(beatmap);
+                    }
                 });
             }
             else
             {
                 await Task.Run(() =>
                 {
-                    var dbMaps = Ctx.Beatmaps.Where(k => !k.InOwnFolder);
-                    Ctx.Beatmaps.RemoveRange(dbMaps);
+                    RemoveSyncedAll();
 
                     var osuMaps = entry.Select(Beatmap.ParseFromHolly);
-                    Ctx.Beatmaps.AddRange(osuMaps);
-                    return Ctx.SaveChanges();
+                    foreach (var beatmap in osuMaps) // todo: no!!!!!!!!!
+                    {
+                        AddNewMap(beatmap);
+                    }
                 });
             }
         }
 
-        public async Task AddNewMapAsync(Beatmap beatmap)
+        public void AddNewMap(Beatmap beatmap)
         {
-            Ctx.Beatmaps.Add(beatmap);
-            await Ctx.SaveChangesAsync();
+            ThreadedProvider.Insert(TABLE_BEATMAP, new Dictionary<string, object>
+            {
+                ["id"] = beatmap.Id,
+                ["artist"] = beatmap.Artist,
+                ["artistU"] = beatmap.ArtistUnicode,
+                ["title"] = beatmap.Title,
+                ["titleU"] = beatmap.TitleUnicode,
+                ["creator"] = beatmap.Creator,
+                ["fileName"] = beatmap.BeatmapFileName,
+                ["lastModified"] = beatmap.LastModifiedTime,
+                ["diffSrStd"] = beatmap.DiffSrNoneStandard,
+                ["diffSrTaiko"] = beatmap.DiffSrNoneTaiko,
+                ["diffSrCtb"] = beatmap.DiffSrNoneCtB,
+                ["diffSrMania"] = beatmap.DiffSrNoneMania,
+                ["drainTime"] = beatmap.DrainTimeSeconds,
+                ["totalTime"] = beatmap.TotalTime,
+                ["audioPreview"] = beatmap.AudioPreviewTime,
+                ["beatmapId"] = beatmap.BeatmapId,
+                ["beatmapSetId"] = beatmap.BeatmapSetId,
+                ["gameMode"] = beatmap.GameMode,
+                ["source"] = beatmap.SongSource,
+                ["tags"] = beatmap.SongTags,
+                ["folderName"] = beatmap.FolderName,
+                ["audioName"] = beatmap.AudioFileName,
+                ["own"] = beatmap.InOwnFolder,
+
+            });
         }
 
-        public async Task RemoveLocalAllAsync()
+        public void RemoveLocalAll()
         {
-            var locals = Ctx.Beatmaps.Where(k => k.InOwnFolder);
-            Ctx.Beatmaps.RemoveRange(locals);
-            await Ctx.SaveChangesAsync();
+            ThreadedProvider.Delete(TABLE_BEATMAP, ("own", true));
+        }
+
+        public void RemoveSyncedAll()
+        {
+            ThreadedProvider.Delete(TABLE_BEATMAP, ("own", false));
+        }
+
+        private string GetKeywordQueryAndArgs(string keywordStr, ref ExpandoObject args)
+        {
+            if (string.IsNullOrWhiteSpace(keywordStr))
+            {
+                return "1=1";
+            }
+
+            var keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            if (args == null) args = new ExpandoObject();
+            var expando = (ICollection<KeyValuePair<string, object>>)args;
+
+            var sb = new StringBuilder();
+            for (var i = 0; i < keywords.Length; i++)
+            {
+                var keyword = keywords[i];
+                var postfix = $" like @keyword{i} COLLATE NOCASE ";
+                sb.AppendLine("(")
+                    .AppendLine($" artist {postfix} OR ")
+                    .AppendLine($" artistU {postfix} OR ")
+                    .AppendLine($" title {postfix} OR ")
+                    .AppendLine($" titleU {postfix} OR ")
+                    .AppendLine($" tags {postfix} OR ")
+                    .AppendLine($" source {postfix} OR ")
+                    .AppendLine($" creator {postfix} OR ")
+                    .AppendLine($" version {postfix} ")
+                    .AppendLine(" ) ");
+
+                expando.Add(new KeyValuePair<string, object>($"keyword{i}", $"%{keyword}%"));
+                if (i != keywords.Length - 1)
+                {
+                    sb.AppendLine(" AND ");
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        private string GetOrderAndTakeQueryAndArgs(SortMode sortMode, int startIndex, int count)
+        {
+            var sb = new StringBuilder();
+            switch (sortMode)
+            {
+                case SortMode.Title:
+                    sb.AppendLine(" ORDER BY titleU, title ");
+                    break;
+                default:
+                case SortMode.Artist:
+                    sb.AppendLine(" ORDER BY artistU, artist ");
+                    break;
+            }
+
+            sb.AppendLine($" LIMIT {startIndex}, {count} "); // no injection
+
+            return sb.ToString();
         }
     }
 
     public enum TimeSortMode
     {
         PlayTime, AddTime
-    }
-
-    public static class BeatmapDbContextExt
-    {
-        public static IQueryable<Beatmap> ByKeyword(this IQueryable<Beatmap> queryableBeatmaps,
-            string keywordStr)
-        {
-            if (string.IsNullOrWhiteSpace(keywordStr))
-            {
-                return queryableBeatmaps;
-            }
-
-            var keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-
-            var predicate = keywords.Aggregate(PredicateBuilder.New<Beatmap>(), (current, keyword) =>
-            {
-                var lower = keyword.ToLower();
-                return current.And(k => k.Title != null && k.Title.ToLower().Contains(lower) ||
-                                        k.TitleUnicode != null && k.TitleUnicode.ToLower().Contains(lower) ||
-                                        k.Artist != null && k.Artist.ToLower().Contains(lower) ||
-                                        k.ArtistUnicode != null && k.ArtistUnicode.ToLower().Contains(lower) ||
-                                        k.SongTags != null && k.SongTags.ToLower().Contains(lower) ||
-                                        k.SongSource != null && k.SongSource.ToLower().Contains(lower) ||
-                                        k.Creator != null && k.Creator.ToLower().Contains(lower) ||
-                                        k.Version != null && k.Version.ToLower().Contains(lower)
-                );
-            });
-
-            return queryableBeatmaps.Where(predicate);
-        }
-
-        public static IQueryable<Beatmap> OrderAndTake(this IQueryable<Beatmap> queryableBeatmaps,
-            SortMode sortMode,
-            int startIndex,
-            int count)
-        {
-            IQueryable<Beatmap> query;
-            switch (sortMode)
-            {
-                case SortMode.Artist:
-                    query = queryableBeatmaps
-                        .OrderBy(k => k.ArtistUnicode)
-                        .ThenBy(k => k.Artist);
-                    break;
-                case SortMode.Title:
-                    query = queryableBeatmaps
-                        .OrderBy(k => k.TitleUnicode)
-                        .ThenBy(k => k.Title);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(sortMode), sortMode, nameof(sortMode));
-            }
-
-            return query.Skip(startIndex).Take(count);
-        }
     }
 }

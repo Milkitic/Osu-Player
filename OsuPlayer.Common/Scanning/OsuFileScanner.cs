@@ -30,7 +30,7 @@ namespace Milky.OsuPlayer.Common.Scanning
             }
 
             _scanCts = new CancellationTokenSource();
-            await _beatmapDbOperator.RemoveLocalAllAsync();
+            _beatmapDbOperator.RemoveLocalAll();
             var dirInfo = new DirectoryInfo(path);
             if (dirInfo.Exists)
             {
@@ -82,18 +82,18 @@ namespace Milky.OsuPlayer.Common.Scanning
                     return;
 
                 var osuFile = await OsuFile.ReadFromFileAsync(fileInfo.FullName);
-                await AddFileAsync(osuFile, fileInfo);
+                AddFileAsync(osuFile, fileInfo);
             }
         }
 
-        private async Task AddFileAsync(OsuFile osuFile, FileInfo fileInfo)
+        private void AddFileAsync(OsuFile osuFile, FileInfo fileInfo)
         {
             var beatmap = Data.EF.Model.Beatmap.ParseFromOSharp(osuFile);
             beatmap.BeatmapFileName = fileInfo.Name;
             beatmap.LastModifiedTime = fileInfo.LastWriteTime;
             beatmap.FolderName = fileInfo.Directory.Name;
             beatmap.InOwnFolder = true;
-            await _beatmapDbOperator.AddNewMapAsync(beatmap);
+            _beatmapDbOperator.AddNewMap(beatmap);
         }
     }
 }
