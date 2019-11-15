@@ -64,7 +64,8 @@ CREATE TABLE map_info (
     PRIMARY KEY (
         id
     )
-);"
+);
+PRAGMA case_sensitive_like=false;"
                 });
 
         private static ThreadLocal<SQLiteProvider> _provider = new ThreadLocal<SQLiteProvider>(() =>
@@ -212,7 +213,7 @@ SELECT collection.id,
             {
                 ["id"] = Guid.NewGuid().ToString(),
                 ["name"] = collection.Name,
-                ["locked"] = collection.Locked ? 1 : 0,
+                ["locked"] = collection.LockedBool ? 1 : 0,
                 ["index"] = collection.Index,
                 ["createTime"] = collection.CreateTime
             });
@@ -235,7 +236,7 @@ SELECT collection.id,
 
                 // todo: not suitable position
                 if (currentInfo == null) continue;
-                if (collection.Locked && currentInfo.Identity.Equals(beatmap.GetIdentity()))
+                if (collection.LockedBool && currentInfo.Identity.Equals(beatmap.GetIdentity()))
                 {
                     currentInfo.IsFavorite = true;
                 }
@@ -259,7 +260,7 @@ SELECT collection.id,
                     {
                         ["id"] = Guid.NewGuid().ToString(),
                         ["name"] = collection.Name,
-                        ["locked"] = collection.Locked ? 1 : 0,
+                        ["locked"] = collection.LockedBool ? 1 : 0,
                         ["index"] = collection.Index,
                         ["createTime"] = collection.CreateTime
                     },
@@ -326,7 +327,7 @@ SELECT collection.id,
             // todo: not suitable position
             var currentInfo = Services.Get<PlayerList>().CurrentInfo;
             if (currentInfo == null) return;
-            if (collection.Locked && currentInfo.Identity.Equals(id))
+            if (collection.LockedBool && currentInfo.Identity.Equals(id))
             {
                 currentInfo.IsFavorite = false;
             }

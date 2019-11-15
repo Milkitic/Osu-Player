@@ -60,8 +60,9 @@ namespace Milky.OsuPlayer
             BeatmapDbOperator.ValidateDb();
 
             var appDbOperator = new AppDbOperator();
-            var defCol = appDbOperator.GetCollections().Where(k => k.Locked);
-            if (!defCol.Any()) appDbOperator.AddCollection("最喜爱的", true);
+            var defCol = appDbOperator.GetCollections();
+            var locked = defCol.Where(k => k.LockedBool);
+            if (!locked.Any()) appDbOperator.AddCollection("最喜爱的", true);
         }
     }
 }

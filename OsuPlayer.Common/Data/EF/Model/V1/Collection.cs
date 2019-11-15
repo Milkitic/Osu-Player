@@ -20,7 +20,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model.V1
         {
             Id = id;
             Name = name;
-            LockedInt = locked ? 1 : 0;
+            Locked = locked ? 1 : 0;
             Index = index;
             ImagePath = imagePath;
             Description = description;
@@ -44,7 +44,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model.V1
 
         [Column("locked")]
         [JsonProperty("locked")]
-        public int LockedInt { get; set; }
+        public int Locked { get; set; }
 
         [Column("index")]
         [JsonProperty("index")]
@@ -94,6 +94,6 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model.V1
             }
         }
 
-        public bool Locked => LockedInt == 1;
+        public bool LockedBool => Locked == 1;
     }
 }

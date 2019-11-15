@@ -620,7 +620,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="player.db" />
     <Resource Include="Resources\gear.png" />
     <Resource Include="Resources\gear_s.png" />
   </ItemGroup>

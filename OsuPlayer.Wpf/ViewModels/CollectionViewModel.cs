@@ -46,7 +46,7 @@ namespace Milky.OsuPlayer.ViewModels
                 ImagePath = collection.ImagePath,
                 Description = collection.Description,
                 CreateTime = collection.CreateTime,
-                Locked = collection.Locked
+                Locked = collection.LockedBool
             };
 
         public static IEnumerable<CollectionViewModel> CopyFrom(IEnumerable<Collection> collection)

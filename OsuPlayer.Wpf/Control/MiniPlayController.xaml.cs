@@ -142,7 +142,7 @@ namespace Milky.OsuPlayer.Control
 
         private async void CommonButton_Click(object sender, RoutedEventArgs e)
         {
-            var collection = _appDbOperator.GetCollections().First(k => k.Locked);
+            var collection = _appDbOperator.GetCollections().First(k => k.LockedBool);
             if (_viewModel.PlayerList.CurrentInfo.IsFavorite)
             {
                 _appDbOperator.RemoveMapFromCollection(_viewModel.Player.CurrentInfo.Beatmap, collection);

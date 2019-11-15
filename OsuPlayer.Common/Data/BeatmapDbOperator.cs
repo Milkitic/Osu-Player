@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
@@ -61,7 +62,7 @@ CREATE TABLE beatmap (
         id
     )
 );
-"
+PRAGMA case_sensitive_like=false;"
                 });
 
         private static ThreadLocal<SQLiteProvider> _provider = new ThreadLocal<SQLiteProvider>(() =>
@@ -95,12 +96,20 @@ CREATE TABLE beatmap (
 
         public List<Beatmap> SearchBeatmapByOptions(string searchText, SortMode sortMode, int startIndex, int count)
         {
-            var expando = new ExpandoObject();
+            var expando = new DynamicParameters();
             var command = " SELECT * FROM beatmap WHERE ";
             var keywordSql = GetKeywordQueryAndArgs(searchText, ref expando);
             var sort = GetOrderAndTakeQueryAndArgs(sortMode, startIndex, count);
-
-            return ThreadedProvider.GetDbConnection().Query<Beatmap>(command + keywordSql + sort, expando).ToList();
+            var sw = Stopwatch.StartNew();
+            try
+            {
+                return ThreadedProvider.GetDbConnection().Query<Beatmap>(command + keywordSql + sort, expando).ToList();
+            }
+            finally
+            {
+                Console.WriteLine($"query: {sw.ElapsedMilliseconds}");
+                sw.Stop();
+            }
         }
 
         public List<Beatmap> GetAllBeatmaps()
@@ -248,7 +257,7 @@ SELECT *
             ThreadedProvider.Delete(TABLE_BEATMAP, ("own", false));
         }
 
-        private string GetKeywordQueryAndArgs(string keywordStr, ref ExpandoObject args)
+        private string GetKeywordQueryAndArgs(string keywordStr, ref DynamicParameters args)
         {
             if (string.IsNullOrWhiteSpace(keywordStr))
             {
@@ -256,14 +265,13 @@ SELECT *
             }
 
             var keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-            if (args == null) args = new ExpandoObject();
-            var expando = (ICollection<KeyValuePair<string, object>>)args;
+            if (args == null) args = new DynamicParameters();
 
             var sb = new StringBuilder();
             for (var i = 0; i < keywords.Length; i++)
             {
                 var keyword = keywords[i];
-                var postfix = $" like @keyword{i} COLLATE NOCASE ";
+                var postfix = $" like @keyword{i} ";
                 sb.AppendLine("(")
                     .AppendLine($" artist {postfix} OR ")
                     .AppendLine($" artistU {postfix} OR ")
@@ -275,7 +283,7 @@ SELECT *
                     .AppendLine($" version {postfix} ")
                     .AppendLine(" ) ");
 
-                expando.Add(new KeyValuePair<string, object>($"keyword{i}", $"%{keyword}%"));
+                args.Add($"keyword{i}", $"%{keyword}%");
                 if (i != keywords.Length - 1)
                 {
                     sb.AppendLine(" AND ");
