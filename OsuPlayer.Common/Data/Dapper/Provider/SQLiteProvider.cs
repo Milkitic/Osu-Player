@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SQLite;
+using System.Dynamic;
 using System.Linq;
 using Dapper;
 
@@ -79,87 +80,68 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
             int count,
             bool asc, out string sql, out object kvParams)
         {
-            throw new NotImplementedException();
+            kvParams = new ExpandoObject();
+            //var s = ((ICollection<KeyValuePair<string, object>>) whereParams).ToDictionary(k => k.Key, k => k.Value);
+            var existColumn =
+                new HashSet<string>(((ICollection<KeyValuePair<string, object>>)whereParams).Select(k => k.Key));
+            var expando = (ICollection<KeyValuePair<string, object>>)kvParams;
+            foreach (var kvp in updateColumns)
+            {
+                if (!existColumn.Contains(kvp.Key))
+                {
+                    existColumn.Add(kvp.Key);
+                    expando.Add(new KeyValuePair<string, object>("upd_" + kvp.Key, kvp.Value));
+                }
+                else
+                {
+                    int j = 0;
+                    var newStr = kvp.Key + j;
+                    while (existColumn.Contains(newStr))
+                    {
+                        j++;
+                        newStr = kvp.Key + j;
+                    }
+
+                    expando.Add(new KeyValuePair<string, object>("upd_" + newStr, kvp.Value));
+                    existColumn.Add(newStr);
+                }
+            }
+
+            //var newDic = eoColl.ToDictionary(k => k.Key, k => k.Value);
+            var newDic = new Dictionary<string, string>();
+            var o1 = updateColumns.Keys.ToList();
+            var o2 = expando.Select(k => k.Key).ToList();
+            for (int i = 0; i < o1.Count; i++)
+            {
+                newDic.Add(o1[i], o2[i]);
+            }
+
+            sql = $"UPDATE {table} SET " +
+                  string.Join(",", newDic.Select(k => $"{k.Key}=@{k.Value}")) + " " +
+                  $"WHERE {whereStr} ";
         }
 
         protected override void GetInsertCommandTemplate(string table, Dictionary<string, object> insertColumns,
             out string sql, out object kvParams)
         {
-            throw new NotImplementedException();
+            kvParams = new ExpandoObject();
+            var eoColl = (ICollection<KeyValuePair<string, object>>)kvParams;
+            foreach (var kvp in insertColumns)
+            {
+                eoColl.Add(new KeyValuePair<string, object>($"ins_{kvp.Key}", kvp.Value));
+            }
+
+            sql = $"INSERT INTO {table} (" +
+                  string.Join(",", insertColumns.Keys) +
+                  $") VALUES (" +
+                  string.Join(",", insertColumns.Keys.Select(k => $"@ins_{k}")) +
+                  $")";
         }
 
         protected override string GetDeleteCommandTemplate(string table, string whereStr)
         {
-            throw new NotImplementedException();
+            return $"DELETE FROM {table} " +
+                   $"WHERE {whereStr} ";
         }
-
-        //protected override void GetUpdateCommandTemplate(string table, Dictionary<string, object> updateColumns,
-        // string whereStr, object whereParams,
-        // string orderColumn,
-        // int count,
-        // bool asc,
-        // out string sql,
-        // out object kvParams)
-        //{
-        //    kvParams = new ExpandoObject();
-        //    //var s = ((ICollection<KeyValuePair<string, object>>) whereParams).ToDictionary(k => k.Key, k => k.Value);
-        //    var existColumn = new HashSet<string>(((ICollection<KeyValuePair<string, object>>)whereParams).Select(k => k.Key));
-        //    var eoColl = (ICollection<KeyValuePair<string, object>>)kvParams;
-        //    foreach (var kvp in updateColumns)
-        //    {
-        //        if (!existColumn.Contains(kvp.Key))
-        //        {
-        //            existColumn.Add(kvp.Key);
-        //            eoColl.Add(new KeyValuePair<string, object>(kvp.Key, kvp.Value));
-        //        }
-        //        else
-        //        {
-        //            int j = 0;
-        //            var newStr = kvp.Key + j;
-        //            while (existColumn.Contains(newStr))
-        //            {
-        //                j++;
-        //                newStr = kvp.Key + j;
-        //            }
-
-        //            eoColl.Add(new KeyValuePair<string, object>(newStr, kvp.Value));
-        //            existColumn.Add(newStr);
-        //        }
-        //    }
-        //    //var newDic = eoColl.ToDictionary(k => k.Key, k => k.Value);
-        //    var newDic = new Dictionary<string, string>();
-        //    var o1 = updateColumns.Keys.ToList();
-        //    var o2 = eoColl.Select(k => k.Key).ToList();
-        //    for (int i = 0; i < o1.Count; i++)
-        //    {
-        //        newDic.Add(o1[i], o2[i]);
-        //    }
-
-        //    sql = $"UPDATE {table} SET " +
-        //          string.Join(",", newDic.Select(k => $"{k.Key}=@{k.Value}")) + " " +
-        //          $"WHERE {whereStr} ";
-        //}
-
-        //protected override void GetInsertCommandTemplate(string table, Dictionary<string, object> insertColumns, out string sql, out object kvParams)
-        //{
-        //    kvParams = new ExpandoObject();
-        //    var eoColl = (ICollection<KeyValuePair<string, object>>)kvParams;
-        //    foreach (var kvp in insertColumns)
-        //    {
-        //        eoColl.Add(new KeyValuePair<string, object>(kvp.Key, kvp.Value));
-        //    }
-
-        //    sql = $"INSERT INTO {table} (" +
-        //          string.Join(",", insertColumns.Keys) +
-        //          $") VALUES (" +
-        //          string.Join(",", insertColumns.Keys.Select(k => $"@{k}")) +
-        //          $")";
-        //}
-
-        //protected override string GetDeleteCommandTemplate(string table, string whereStr)
-        //{
-        //    return $"DELETE FROM {table} " +
-        //           $"WHERE {whereStr} ";
-        //}
     }
 }
