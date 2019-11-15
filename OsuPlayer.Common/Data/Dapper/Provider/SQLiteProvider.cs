@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Data.SQLite;
 using System.Dynamic;
 using System.Linq;
+using System.Text;
 using Dapper;
 
 namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
@@ -75,22 +76,22 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
         }
 
         protected override void GetUpdateCommandTemplate(string table, Dictionary<string, object> updateColumns,
-            string whereStr, object whereParams,
+            string whereStr, DynamicParameters whereParams,
             string orderColumn,
             int count,
-            bool asc, out string sql, out object kvParams)
+            bool asc, out string sql, out DynamicParameters kvParams)
         {
-            kvParams = new ExpandoObject();
+            kvParams = new DynamicParameters();
             //var s = ((ICollection<KeyValuePair<string, object>>) whereParams).ToDictionary(k => k.Key, k => k.Value);
-            var existColumn =
-                new HashSet<string>(((ICollection<KeyValuePair<string, object>>)whereParams).Select(k => k.Key));
-            var expando = (ICollection<KeyValuePair<string, object>>)kvParams;
+            var existColumn = whereParams.ParameterNames.ToList();
+            //new HashSet<string>(((ICollection<KeyValuePair<string, object>>)whereParams).Select(k => k.Key));
+            //var expando = (ICollection<KeyValuePair<string, object>>)kvParams;
             foreach (var kvp in updateColumns)
             {
                 if (!existColumn.Contains(kvp.Key))
                 {
                     existColumn.Add(kvp.Key);
-                    expando.Add(new KeyValuePair<string, object>("upd_" + kvp.Key, kvp.Value));
+                    kvParams.Add("upd_" + kvp.Key, kvp.Value);
                 }
                 else
                 {
@@ -102,7 +103,7 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
                         newStr = kvp.Key + j;
                     }
 
-                    expando.Add(new KeyValuePair<string, object>("upd_" + newStr, kvp.Value));
+                    kvParams.Add("upd_" + newStr, kvp.Value);
                     existColumn.Add(newStr);
                 }
             }
@@ -110,7 +111,7 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
             //var newDic = eoColl.ToDictionary(k => k.Key, k => k.Value);
             var newDic = new Dictionary<string, string>();
             var o1 = updateColumns.Keys.ToList();
-            var o2 = expando.Select(k => k.Key).ToList();
+            var o2 = kvParams.ParameterNames.ToList();
             for (int i = 0; i < o1.Count; i++)
             {
                 newDic.Add(o1[i], o2[i]);
@@ -122,13 +123,13 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
         }
 
         protected override void GetInsertCommandTemplate(string table, Dictionary<string, object> insertColumns,
-            out string sql, out object kvParams)
+            out string sql, out DynamicParameters kvParams)
         {
-            kvParams = new ExpandoObject();
-            var eoColl = (ICollection<KeyValuePair<string, object>>)kvParams;
+            kvParams = new DynamicParameters();
+            //var eoColl = (ICollection<KeyValuePair<string, object>>)kvParams;
             foreach (var kvp in insertColumns)
             {
-                eoColl.Add(new KeyValuePair<string, object>($"ins_{kvp.Key}", kvp.Value));
+                kvParams.Add($"ins_{kvp.Key}", kvp.Value);
             }
 
             sql = $"INSERT INTO {table} (" +

@@ -93,7 +93,7 @@ namespace Milky.OsuPlayer.Common.Scanning
             beatmap.LastModifiedTime = fileInfo.LastWriteTime;
             beatmap.FolderName = fileInfo.Directory.Name;
             beatmap.InOwnFolder = true;
-            _beatmapDbOperator.AddNewMap(beatmap);
+            _beatmapDbOperator.AddNewMaps(beatmap);
         }
     }
 }

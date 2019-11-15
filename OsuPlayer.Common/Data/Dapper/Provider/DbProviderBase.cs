@@ -465,7 +465,7 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
             GetUpdateCommandTemplate(table, updateColumns, whereStr, whereParams, orderColumn, count, asc, out var sql, out var kvParams);
             try
             {
-                var @params = ExpandObjects(whereParams as ExpandoObject, kvParams as ExpandoObject);
+                var @params = ExpandParameters(whereParams, kvParams);
                 var result = InnerExecute(@params, sql);
 
                 return result;
@@ -496,6 +496,44 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
                 throw new Exception($"从{DbType}数据库中获取数据出错：\r\n" +
                                     $"数据库执行语句：{sql}", exc);
             }
+        }
+
+        public virtual int InsertArray(string table, ICollection<Dictionary<string, object>> insertColumns)
+        {
+            int count = 0;
+            SingletonConnection.Open();
+            using (var transaction = SingletonConnection.BeginTransaction())
+            {
+                foreach (var insertColumn in insertColumns)
+                {
+                    if (insertColumn == null || insertColumn.Count == 0)
+                        throw new Exception("请提供插入字段");
+                    if (!VerifyTableAndColumn(table, insertColumn.Keys.ToList(), null, null, out var keyword))
+                        throw new Exception($"不存在表或者相关列名：{keyword}");
+
+                    GetInsertCommandTemplate(table, insertColumn, out var sql, out var @params);
+
+                    int result;
+
+                    try
+                    {
+                        result = @params == null
+                            ? SingletonConnection.Execute(sql)
+                            : SingletonConnection.Execute(sql, @params);
+                    }
+                    catch (Exception exc)
+                    {
+                        throw new Exception($"从{DbType}数据库中获取数据出错：\r\n" +
+                                            $"数据库执行语句：{sql}", exc);
+                    }
+
+                    count += result;
+                }
+
+                transaction.Commit();
+            }
+
+            return count;
         }
 
         public virtual int Delete(string table, Where whereCondition)
@@ -607,13 +645,13 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
             int count, bool asc);
 
         protected abstract void GetUpdateCommandTemplate(string table, Dictionary<string, object> updateColumns,
-            string whereStr, object whereParams,
+            string whereStr, DynamicParameters whereParams,
             string orderColumn,
             int count,
-            bool asc, out string sql, out object kvParams);
+            bool asc, out string sql, out DynamicParameters kvParams);
 
         protected abstract void GetInsertCommandTemplate(string table, Dictionary<string, object> insertColumns,
-            out string sql, out object kvParams);
+            out string sql, out DynamicParameters kvParams);
 
         protected abstract string GetDeleteCommandTemplate(string table, string whereStr);
 
@@ -646,7 +684,7 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
         }
 
         private void GetWhereStrAndParameters(IReadOnlyCollection<Where> whereConditions, out string whereStr,
-            out object @params)
+            out DynamicParameters @params)
         {
             whereStr = "1 = 1";
             @params = null;
@@ -656,8 +694,7 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
                 return;
             }
 
-            @params = new ExpandoObject();
-            var eoColl = (ICollection<KeyValuePair<string, object>>)@params;
+            @params = new DynamicParameters();
             var existColumn = new HashSet<string>();
             foreach (var kvp in whereConditions)
             {
@@ -681,7 +718,7 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
                     existColumn.Add(newStr);
                 }
 
-                eoColl.Add(new KeyValuePair<string, object>(kvp.ColumnName, kvp.Value));
+                @params.Add(kvp.ColumnName, kvp.Value);
             }
 
             var sb = new StringBuilder();
@@ -846,7 +883,7 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
             return true;
         }
 
-        private int InnerExecute(object @params, string sql)
+        private int InnerExecute(DynamicParameters @params, string sql)
         {
             int result;
             if (UseSingletonConnection)
@@ -871,7 +908,7 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
             return result;
         }
 
-        private IEnumerable<T> InnerQuery<T>(object @params, string sql)
+        private IEnumerable<T> InnerQuery<T>(DynamicParameters @params, string sql)
         {
             IEnumerable<T> result;
             if (UseSingletonConnection)
@@ -905,25 +942,30 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
                     : count);
         }
 
-        private static object ExpandObjects(params ExpandoObject[] @params)
+        private static DynamicParameters ExpandParameters(params DynamicParameters[] @params)
         {
             if (@params.Length == 0)
-                return new object();
-            var source = new ExpandoObject();
-            var expandable = (ICollection<KeyValuePair<string, object>>)source;
+                return new DynamicParameters();
+            var source = new DynamicParameters();
             foreach (var o in @params)
             {
-                foreach (var kv in o)
+                foreach (var name in o.ParameterNames)
                 {
-                    if (!expandable.Contains(kv))
-                    {
-                        expandable.Add(kv);
-                    }
-                    else
-                    {
-                        throw new Exception("对象存在重复键。");
-                    }
+                    var value = o.Get<object>(name);
+                    source.Add(name, value);
                 }
+
+                //foreach (var kv in o)
+                //{
+                //    if (!expandable.Contains(kv))
+                //    {
+                //        expandable.Add(kv);
+                //    }
+                //    else
+                //    {
+                //        throw new Exception("对象存在重复键。");
+                //    }
+                //}
             }
 
             return source;

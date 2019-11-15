@@ -57,10 +57,6 @@ CREATE TABLE beatmap (
     folderName    NVARCHAR (2147483647),
     audioName     NVARCHAR (2147483647),
     own           BIT                   NOT NULL,
-    FileSize      NVARCHAR (2147483647),
-    ExportTime    NVARCHAR (2147483647),
-    ExportFile    NVARCHAR (2147483647),
-    Discriminator NVARCHAR (128)        NOT NULL,
     PRIMARY KEY (
         id
     )
@@ -193,10 +189,7 @@ SELECT *
                     var newList = entry.Select(Beatmap.ParseFromHolly);
                     var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
 
-                    foreach (var beatmap in except) // todo: no!!!!!!!!!
-                    {
-                        AddNewMap(beatmap);
-                    }
+                    AddNewMaps(except);
                 });
             }
             else
@@ -206,43 +199,43 @@ SELECT *
                     RemoveSyncedAll();
 
                     var osuMaps = entry.Select(Beatmap.ParseFromHolly);
-                    foreach (var beatmap in osuMaps) // todo: no!!!!!!!!!
-                    {
-                        AddNewMap(beatmap);
-                    }
+                    AddNewMaps(osuMaps);
                 });
             }
         }
 
-        public void AddNewMap(Beatmap beatmap)
+        public void AddNewMaps(IEnumerable<Beatmap> beatmaps)
         {
-            ThreadedProvider.Insert(TABLE_BEATMAP, new Dictionary<string, object>
+            ThreadedProvider.InsertArray(TABLE_BEATMAP, beatmaps.Select(k => new Dictionary<string, object>
             {
-                ["id"] = beatmap.Id,
-                ["artist"] = beatmap.Artist,
-                ["artistU"] = beatmap.ArtistUnicode,
-                ["title"] = beatmap.Title,
-                ["titleU"] = beatmap.TitleUnicode,
-                ["creator"] = beatmap.Creator,
-                ["fileName"] = beatmap.BeatmapFileName,
-                ["lastModified"] = beatmap.LastModifiedTime,
-                ["diffSrStd"] = beatmap.DiffSrNoneStandard,
-                ["diffSrTaiko"] = beatmap.DiffSrNoneTaiko,
-                ["diffSrCtb"] = beatmap.DiffSrNoneCtB,
-                ["diffSrMania"] = beatmap.DiffSrNoneMania,
-                ["drainTime"] = beatmap.DrainTimeSeconds,
-                ["totalTime"] = beatmap.TotalTime,
-                ["audioPreview"] = beatmap.AudioPreviewTime,
-                ["beatmapId"] = beatmap.BeatmapId,
-                ["beatmapSetId"] = beatmap.BeatmapSetId,
-                ["gameMode"] = beatmap.GameMode,
-                ["source"] = beatmap.SongSource,
-                ["tags"] = beatmap.SongTags,
-                ["folderName"] = beatmap.FolderName,
-                ["audioName"] = beatmap.AudioFileName,
-                ["own"] = beatmap.InOwnFolder,
-
-            });
+                ["id"] = k.Id,
+                ["artist"] = k.Artist,
+                ["artistU"] = k.ArtistUnicode,
+                ["title"] = k.Title,
+                ["titleU"] = k.TitleUnicode,
+                ["creator"] = k.Creator,
+                ["fileName"] = k.BeatmapFileName,
+                ["lastModified"] = k.LastModifiedTime,
+                ["diffSrStd"] = k.DiffSrNoneStandard,
+                ["diffSrTaiko"] = k.DiffSrNoneTaiko,
+                ["diffSrCtb"] = k.DiffSrNoneCtB,
+                ["diffSrMania"] = k.DiffSrNoneMania,
+                ["drainTime"] = k.DrainTimeSeconds,
+                ["totalTime"] = k.TotalTime,
+                ["audioPreview"] = k.AudioPreviewTime,
+                ["beatmapId"] = k.BeatmapId,
+                ["beatmapSetId"] = k.BeatmapSetId,
+                ["gameMode"] = k.GameMode,
+                ["source"] = k.SongSource,
+                ["tags"] = k.SongTags,
+                ["folderName"] = k.FolderName,
+                ["audioName"] = k.AudioFileName,
+                ["own"] = k.InOwnFolder,
+            }).ToList());
+        }
+        public void AddNewMaps(params Beatmap[] beatmaps)
+        {
+            AddNewMaps((IEnumerable<Beatmap>)beatmaps);
         }
 
         public void RemoveLocalAll()
