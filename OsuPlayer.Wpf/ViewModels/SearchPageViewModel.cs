@@ -1,6 +1,4 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Instances;
+﻿using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Metadata;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
@@ -11,9 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Common.Data.EF.Model;
-using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 
 namespace Milky.OsuPlayer.ViewModels
 {

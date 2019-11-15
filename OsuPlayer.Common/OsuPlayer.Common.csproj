@@ -75,7 +75,7 @@
     <Compile Include="Data\Dapper\Provider\SQLiteProvider.cs" />
     <Compile Include="Data\Dapper\Where.cs" />
     <Compile Include="Data\Dapper\WhereType.cs" />
-    <Compile Include="Data\EF\BeatmapDbOperator.cs" />
+    <Compile Include="Data\BeatmapDbOperator.cs" />
     <Compile Include="Data\AppDbOperatorExt.cs" />
     <Compile Include="Data\EF\MapIdentifiableComparer.cs" />
     <Compile Include="Data\EF\Model\Beatmap.cs" />

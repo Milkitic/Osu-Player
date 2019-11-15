@@ -132,7 +132,7 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
             }
 
             sql = $"INSERT INTO {table} (" +
-                  string.Join(",", insertColumns.Keys) +
+                  string.Join(",", insertColumns.Keys.Select(k => $"[{k}]")) +
                   $") VALUES (" +
                   string.Join(",", insertColumns.Keys.Select(k => $"@ins_{k}")) +
                   $")";
