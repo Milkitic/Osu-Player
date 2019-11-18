@@ -164,11 +164,12 @@ PRAGMA case_sensitive_like=false;"
             for (var i = 0; i < reqList.Count; i++)
             {
                 var id = reqList[i];
-                sb.AppendLine($"(@folder{i}, @version{i})");
+                sb.Append($"(@folder{i}, @version{i}),");
                 expando.Add(new KeyValuePair<string, object>($"folder{i}", id.FolderName));
                 expando.Add(new KeyValuePair<string, object>($"version{i}", id.Version));
             }
 
+            sb.Remove(sb.Length - 1, 1);
             var sql = $@"
 DROP TABLE IF EXISTS tmp_table;
 CREATE TEMPORARY TABLE tmp_table (
