@@ -14,10 +14,23 @@ namespace Milky.OsuPlayer.Control
     public class VirtualizingGalleryWrapPanel : VirtualizingPanel, IScrollInfo
     {
         private readonly TranslateTransform _translate = new TranslateTransform();
+        private readonly HashSet<int> _loadedIndex = new HashSet<int>();
 
         public VirtualizingGalleryWrapPanel()
         {
             RenderTransform = _translate;
+        }
+
+        public static readonly RoutedEvent ItemLoadedEvent = EventManager.RegisterRoutedEvent(
+            "ItemLoaded",
+            RoutingStrategy.Bubble,
+            typeof(VirtualizingGalleryRoutedEventHandler),
+            typeof(VirtualizingGalleryWrapPanel));
+
+        public event VirtualizingGalleryRoutedEventHandler ItemLoaded
+        {
+            add => AddHandler(ItemLoadedEvent, value);
+            remove => RemoveHandler(ItemLoadedEvent, value);
         }
 
         public static readonly DependencyProperty ChildWidthProperty = DependencyProperty.RegisterAttached("ChildWidth",
@@ -74,6 +87,12 @@ namespace Milky.OsuPlayer.Control
                     int itemIndex = firstIndex;
                     while (itemIndex <= lastIndex) // 生成lastIndex-firstIndex个item
                     {
+                        if (!_loadedIndex.Contains(itemIndex))
+                        {
+                            _loadedIndex.Add(itemIndex);
+                            RaiseEvent(new VirtualizingGalleryRoutedEventArgs(ItemLoadedEvent, this) { Index = itemIndex });
+                        }
+
                         var child = (UIElement)generator.GenerateNext(out var isNewlyRealized);
                         if (isNewlyRealized)
                         {
@@ -294,12 +313,12 @@ namespace Milky.OsuPlayer.Control
 
         public void LineLeft()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void LineRight()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void PageUp()
@@ -314,12 +333,12 @@ namespace Milky.OsuPlayer.Control
 
         public void PageLeft()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void PageRight()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void MouseWheelUp()
@@ -334,17 +353,17 @@ namespace Milky.OsuPlayer.Control
 
         public void MouseWheelLeft()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void MouseWheelRight()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void SetHorizontalOffset(double offset)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void SetVerticalOffset(double offset)
@@ -404,4 +423,15 @@ namespace Milky.OsuPlayer.Control
 
         #endregion
     }
+
+    public class VirtualizingGalleryRoutedEventArgs : RoutedEventArgs
+    {
+        public VirtualizingGalleryRoutedEventArgs(RoutedEvent routedEvent, object source) : base(routedEvent, source)
+        {
+        }
+
+        public int Index { get; set; }
+    }
+
+    public delegate void VirtualizingGalleryRoutedEventHandler(object sender, VirtualizingGalleryRoutedEventArgs e);
 }

@@ -9,7 +9,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:Milky.OsuPlayer"
-    xmlns:models1="clr-namespace:Milky.OsuPlayer.Models"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     x:Name="CurrentPage"
@@ -225,6 +224,7 @@
                     <control:VirtualizingGalleryWrapPanel
                         ChildHeight="{StaticResource GalleryHeight}"
                         ChildWidth="{StaticResource GalleryWidth}"
+                        ItemLoaded="VirtualizingGalleryWrapPanel_OnItemLoaded"
                         ScrollOffset="100" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
@@ -299,35 +299,39 @@
                                         Grid.RowSpan="3"
                                         Margin="5"
                                         Background="#FBFBFB"
-                                        BorderThickness="1">
+                                        BorderThickness="1"
+                                        Visibility="Collapsed">
                                         <Border.Effect>
                                             <DropShadowEffect
-                                                BlurRadius="3"
+                                                BlurRadius="0"
                                                 Direction="-90"
                                                 Opacity="0.3"
                                                 ShadowDepth="0"
                                                 Color="Black" />
                                         </Border.Effect>
                                     </Border>
-                                    <Grid
-                                        x:Name="cardGrid"
+                                    <Border
                                         Margin="5"
-                                        Background="#FBFBFB">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto" />
-                                            <RowDefinition Height="auto" />
-                                            <RowDefinition Height="auto" />
-                                        </Grid.RowDefinitions>
-                                        <Border
-                                            Height="{StaticResource GalleryWidth}"
-                                            Margin="5"
-                                            Background="#F0F0F0" />
-                                        <Label Grid.Row="1" Content="{Binding AutoArtist}" />
-                                        <Label Grid.Row="2" Content="{Binding AutoTitle}" />
-                                    </Grid>
+                                        BorderBrush="#20646464"
+                                        BorderThickness="1">
+                                        <Grid x:Name="cardGrid" Background="#FBFBFB">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="auto" />
+                                                <RowDefinition Height="auto" />
+                                                <RowDefinition Height="auto" />
+                                            </Grid.RowDefinitions>
+                                            <Border
+                                                Height="{StaticResource GalleryWidth}"
+                                                Margin="5"
+                                                Background="#F0F0F0" />
+                                            <Label Grid.Row="1" Content="{Binding AutoArtist}" />
+                                            <Label Grid.Row="2" Content="{Binding AutoTitle}" />
+                                        </Grid>
+                                    </Border>
                                 </Grid>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="dropDownBorder" Property="Visibility" Value="Visible" />
                                         <Trigger.EnterActions>
                                             <BeginStoryboard>
                                                 <Storyboard Storyboard.TargetName="dropDownBorder" Storyboard.TargetProperty="Effect.BlurRadius">

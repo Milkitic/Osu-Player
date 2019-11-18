@@ -193,5 +193,10 @@ namespace Milky.OsuPlayer.Pages
         {
 
         }
+
+        private void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
+        {
+            Console.WriteLine(e.Index);
+        }
     }
 }
