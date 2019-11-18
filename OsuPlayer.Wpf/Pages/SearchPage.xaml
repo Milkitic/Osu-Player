@@ -230,154 +230,164 @@
             </ListBox.ItemsPanel>
             <ListBox.Resources>
                 <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
-                    <Grid
-                        x:Name="mainGrid"
-                        Width="{StaticResource GalleryWidth}"
-                        Height="{StaticResource GalleryHeight}"
-                        Cursor="Hand"
-                        RenderTransformOrigin="0.5,0.5"
-                        Tag="{Binding DataContext, Mode=OneWay, ElementName=CurrentPage}">
-                        <Grid.ContextMenu>
-                            <ContextMenu Style="{StaticResource DefaultContextMenu}" >
-                                <MenuItem
-                                    x:Name="ItemPlay"
-                                    Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                                    CommandParameter="{Binding }"
-                                    Header="播放..."
-                                    Style="{DynamicResource DefaultMenuItem}" />
-                                <Separator />
-                                <MenuItem
-                                    x:Name="ItemCollect"
-                                    Click="ItemCollect_Click"
-                                    Header="收藏..."
-                                    Style="{DynamicResource DefaultMenuItem}" />
-                                <MenuItem
-                                    x:Name="ItemExport"
-                                    Click="ItemExport_Click"
-                                    Header="导出"
-                                    Style="{DynamicResource DefaultMenuItem}" />
-                                <Separator />
-                                <MenuItem
-                                    x:Name="ItemSearchTitle"
-                                    Click="ItemSearchTitle_Click"
-                                    Header="搜索该标题"
-                                    Style="{DynamicResource DefaultMenuItem}" />
-                                <MenuItem
-                                    x:Name="ItemSearchArtist"
-                                    Click="ItemSearchArtist_Click"
-                                    Header="搜索该艺术家"
-                                    Style="{DynamicResource DefaultMenuItem}" />
-                                <MenuItem
-                                    x:Name="ItemSearchSource"
-                                    Click="ItemSearchSource_Click"
-                                    Header="搜索该来源"
-                                    Style="{DynamicResource DefaultMenuItem}" />
-                                <MenuItem
-                                    x:Name="ItemSearchMapper"
-                                    Click="ItemSearchMapper_Click"
-                                    Header="搜索该作者"
-                                    Style="{DynamicResource DefaultMenuItem}" />
-                                <Separator />
-                                <MenuItem
-                                    x:Name="ItemSet"
-                                    Click="ItemSet_Click"
-                                    Header="打开成绩页"
-                                    Style="{DynamicResource DefaultMenuItem}" />
-                                <MenuItem
-                                    x:Name="ItemFolder"
-                                    Click="ItemFolder_Click"
-                                    Header="打开所在目录"
-                                    Style="{DynamicResource DefaultMenuItem}" />
-                            </ContextMenu>
-                        </Grid.ContextMenu>
-                        <Grid.RenderTransform>
-                            <ScaleTransform ScaleX="1" ScaleY="1" />
-                        </Grid.RenderTransform>
-                        <Border
-                            x:Name="dropDownBorder"
-                            Grid.RowSpan="3"
-                            Margin="5"
-                            Background="#FBFBFB"
-                            BorderThickness="1">
-                            <Border.Effect>
-                                <DropShadowEffect
-                                    BlurRadius="3"
-                                    Direction="-90"
-                                    Opacity="0.3"
-                                    ShadowDepth="0"
-                                    Color="Black" />
-                            </Border.Effect>
-                        </Border>
-                        <Grid Margin="5" Background="#FBFBFB">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                            </Grid.RowDefinitions>
-                            <Border
-                                Height="{StaticResource GalleryWidth}"
-                                Margin="5"
-                                Background="#F0F0F0" />
-                            <Label Grid.Row="1" Content="{Binding AutoArtist}" />
-                            <Label Grid.Row="2" Content="{Binding AutoTitle}" />
-                        </Grid>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard Storyboard.TargetName="dropDownBorder" Storyboard.TargetProperty="Effect.BlurRadius">
-                                        <DoubleAnimation
-                                            EasingFunction="{StaticResource QuinticEaseOut}"
-                                            To="10"
-                                            Duration="0:0:0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                                <BeginStoryboard>
-                                    <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleX">
-                                        <DoubleAnimation
-                                            EasingFunction="{StaticResource QuinticEaseOut}"
-                                            To="1.05"
-                                            Duration="0:0:0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                                <BeginStoryboard>
-                                    <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleY">
-                                        <DoubleAnimation
-                                            EasingFunction="{StaticResource QuinticEaseOut}"
-                                            To="1.05"
-                                            Duration="0:0:0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard Storyboard.TargetName="dropDownBorder" Storyboard.TargetProperty="Effect.BlurRadius">
-                                        <DoubleAnimation
-                                            EasingFunction="{StaticResource QuinticEaseOut}"
-                                            To="0"
-                                            Duration="0:0:0.4" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                                <BeginStoryboard>
-                                    <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleX">
-                                        <DoubleAnimation
-                                            EasingFunction="{StaticResource QuinticEaseOut}"
-                                            To="1"
-                                            Duration="0:0:0.4" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                                <BeginStoryboard>
-                                    <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleY">
-                                        <DoubleAnimation
-                                            EasingFunction="{StaticResource QuinticEaseOut}"
-                                            To="1"
-                                            Duration="0:0:0.4" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
+                    <Button Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Grid
+                                    x:Name="mainGrid"
+                                    Width="{StaticResource GalleryWidth}"
+                                    Height="{StaticResource GalleryHeight}"
+                                    RenderTransformOrigin="0.5,0.5">
+                                    <Grid.ContextMenu>
+                                        <ContextMenu Style="{StaticResource DefaultContextMenu}">
+                                            <MenuItem
+                                                x:Name="ItemPlay"
+                                                Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                                                CommandParameter="{Binding}"
+                                                Header="播放..."
+                                                Style="{DynamicResource DefaultMenuItem}" />
+                                            <Separator />
+                                            <MenuItem
+                                                x:Name="ItemCollect"
+                                                Click="ItemCollect_Click"
+                                                Header="收藏..."
+                                                Style="{DynamicResource DefaultMenuItem}" />
+                                            <MenuItem
+                                                x:Name="ItemExport"
+                                                Click="ItemExport_Click"
+                                                Header="导出"
+                                                Style="{DynamicResource DefaultMenuItem}" />
+                                            <Separator />
+                                            <MenuItem
+                                                x:Name="ItemSearchTitle"
+                                                Click="ItemSearchTitle_Click"
+                                                Header="搜索该标题"
+                                                Style="{DynamicResource DefaultMenuItem}" />
+                                            <MenuItem
+                                                x:Name="ItemSearchArtist"
+                                                Click="ItemSearchArtist_Click"
+                                                Header="搜索该艺术家"
+                                                Style="{DynamicResource DefaultMenuItem}" />
+                                            <MenuItem
+                                                x:Name="ItemSearchSource"
+                                                Click="ItemSearchSource_Click"
+                                                Header="搜索该来源"
+                                                Style="{DynamicResource DefaultMenuItem}" />
+                                            <MenuItem
+                                                x:Name="ItemSearchMapper"
+                                                Click="ItemSearchMapper_Click"
+                                                Header="搜索该作者"
+                                                Style="{DynamicResource DefaultMenuItem}" />
+                                            <Separator />
+                                            <MenuItem
+                                                x:Name="ItemSet"
+                                                Click="ItemSet_Click"
+                                                Header="打开成绩页"
+                                                Style="{DynamicResource DefaultMenuItem}" />
+                                            <MenuItem
+                                                x:Name="ItemFolder"
+                                                Click="ItemFolder_Click"
+                                                Header="打开所在目录"
+                                                Style="{DynamicResource DefaultMenuItem}" />
+                                        </ContextMenu>
+                                    </Grid.ContextMenu>
+                                    <Grid.RenderTransform>
+                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                    </Grid.RenderTransform>
+                                    <Border
+                                        x:Name="dropDownBorder"
+                                        Grid.RowSpan="3"
+                                        Margin="5"
+                                        Background="#FBFBFB"
+                                        BorderThickness="1">
+                                        <Border.Effect>
+                                            <DropShadowEffect
+                                                BlurRadius="3"
+                                                Direction="-90"
+                                                Opacity="0.3"
+                                                ShadowDepth="0"
+                                                Color="Black" />
+                                        </Border.Effect>
+                                    </Border>
+                                    <Grid
+                                        x:Name="cardGrid"
+                                        Margin="5"
+                                        Background="#FBFBFB">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                        </Grid.RowDefinitions>
+                                        <Border
+                                            Height="{StaticResource GalleryWidth}"
+                                            Margin="5"
+                                            Background="#F0F0F0" />
+                                        <Label Grid.Row="1" Content="{Binding AutoArtist}" />
+                                        <Label Grid.Row="2" Content="{Binding AutoTitle}" />
+                                    </Grid>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Trigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard Storyboard.TargetName="dropDownBorder" Storyboard.TargetProperty="Effect.BlurRadius">
+                                                    <DoubleAnimation
+                                                        EasingFunction="{StaticResource QuinticEaseOut}"
+                                                        To="10"
+                                                        Duration="0:0:0.2" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                            <BeginStoryboard>
+                                                <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleX">
+                                                    <DoubleAnimation
+                                                        EasingFunction="{StaticResource QuinticEaseOut}"
+                                                        To="1.05"
+                                                        Duration="0:0:0.2" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                            <BeginStoryboard>
+                                                <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleY">
+                                                    <DoubleAnimation
+                                                        EasingFunction="{StaticResource QuinticEaseOut}"
+                                                        To="1.05"
+                                                        Duration="0:0:0.2" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.EnterActions>
+                                        <Trigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard Storyboard.TargetName="dropDownBorder" Storyboard.TargetProperty="Effect.BlurRadius">
+                                                    <DoubleAnimation
+                                                        EasingFunction="{StaticResource QuinticEaseOut}"
+                                                        To="0"
+                                                        Duration="0:0:0.4" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                            <BeginStoryboard>
+                                                <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleX">
+                                                    <DoubleAnimation
+                                                        EasingFunction="{StaticResource QuinticEaseOut}"
+                                                        To="1"
+                                                        Duration="0:0:0.4" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                            <BeginStoryboard>
+                                                <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleY">
+                                                    <DoubleAnimation
+                                                        EasingFunction="{StaticResource QuinticEaseOut}"
+                                                        To="1"
+                                                        Duration="0:0:0.4" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.ExitActions>
+                                    </Trigger>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="cardGrid" Property="Opacity" Value="0.7" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
                 </ControlTemplate>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <Setter Property="BorderThickness" Value="0" />
