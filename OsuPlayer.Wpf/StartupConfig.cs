@@ -7,6 +7,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using Dapper.FluentMap;
+using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 
 namespace Milky.OsuPlayer
 {
@@ -56,6 +59,12 @@ namespace Milky.OsuPlayer
 
         private static void InitLocalDb()
         {
+            FluentMapper.Initialize(config =>
+            {
+                config.AddMap(new BeatmapMap());
+                config.AddMap(new MapInfoMap());
+            });
+
             AppDbOperator.ValidateDb();
             BeatmapDbOperator.ValidateDb();
 

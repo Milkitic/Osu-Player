@@ -7,9 +7,31 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using Dapper.FluentMap.Mapping;
 
 namespace Milky.OsuPlayer.Common.Data.EF.Model
 {
+    public class BeatmapMap : EntityMap<Beatmap>
+    {
+        public BeatmapMap()
+        {
+            Map(p => p.ArtistUnicode).ToColumn("artistU");
+            Map(p => p.TitleUnicode).ToColumn("titleU");
+            Map(p => p.BeatmapFileName).ToColumn("fileName");
+            Map(p => p.LastModifiedTime).ToColumn("lastModified");
+            Map(p => p.DiffSrNoneStandard).ToColumn("diffSrStd");
+            Map(p => p.DiffSrNoneTaiko).ToColumn("diffSrTaiko");
+            Map(p => p.DiffSrNoneCtB).ToColumn("diffSrCtb");
+            Map(p => p.DiffSrNoneMania).ToColumn("diffSrMania");
+            Map(p => p.DrainTimeSeconds).ToColumn("drainTime");
+            Map(p => p.AudioPreviewTime).ToColumn("audioPreview");
+            Map(p => p.SongSource).ToColumn("source");
+            Map(p => p.SongTags).ToColumn("tags");
+            Map(p => p.AudioFileName).ToColumn("audioName");
+            Map(p => p.InOwnFolder).ToColumn("own");
+        }
+    }
+
     public class Beatmap : IMapIdentifiable
     {
         [Column("artist")]

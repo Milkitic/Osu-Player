@@ -118,7 +118,7 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
             }
 
             sql = $"UPDATE {table} SET " +
-                  string.Join(",", newDic.Select(k => $"{k.Key}=@{k.Value}")) + " " +
+                  string.Join(",", newDic.Select(k => $"[{k.Key}]=@{k.Value}")) + " " +
                   $"WHERE {whereStr} ";
         }
 

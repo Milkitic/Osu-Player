@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.SQLite;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using Dapper;
+﻿using Dapper;
 using Milky.OsuPlayer.Common.Data.Dapper;
 using Milky.OsuPlayer.Common.Data.Dapper.Provider;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Player;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
 
 namespace Milky.OsuPlayer.Common.Data
 {
@@ -120,13 +119,22 @@ PRAGMA case_sensitive_like=false;"
 
             if (map == null)
             {
+                var guid = Guid.NewGuid().ToString();
                 ThreadedProvider.Insert(TABLE_MAP, new Dictionary<string, object>()
                 {
-                    ["id"] = Guid.NewGuid().ToString(),
+                    ["id"] = guid,
                     ["version"] = id.Version,
                     ["folder"] = id.FolderName,
                     ["offset"] = 0
                 });
+
+                return new MapInfo
+                {
+                    Id = guid,
+                    Version = id.Version,
+                    FolderName = id.FolderName,
+                    Offset = 0
+                };
             }
 
             return map;
@@ -221,9 +229,10 @@ SELECT collection.id,
 
         public Collection GetCollectionById(string id)
         {
-            return ThreadedProvider.Query(TABLE_COLLECTION, ("id", id), count: 1).FirstOrDefault();
+            return ThreadedProvider.Query<Collection>(TABLE_COLLECTION, ("id", id), count: 1).FirstOrDefault();
         }
 
+        //todo: 添加时有误
         public void AddMapsToCollection(IList<Beatmap> beatmaps, Collection collection)
         {
             var currentInfo = Services.Get<PlayerList>().CurrentInfo;
@@ -232,7 +241,7 @@ SELECT collection.id,
             var sb = new StringBuilder($"INSERT INTO {TABLE_RELATION} (id, collectionId, mapId, addTime) VALUES ");
             foreach (var beatmap in beatmaps)
             {
-                sb.AppendLine($"({Guid.NewGuid().ToString()}, {collection.Id}, {beatmap.Id}, {DateTime.Now}),"); // maybe no injection here
+                sb.Append($"('{Guid.NewGuid().ToString()}', '{collection.Id}', '{beatmap.Id}', '{DateTime.Now}'),"); // maybe no injection here
 
                 // todo: not suitable position
                 if (currentInfo == null) continue;
@@ -243,7 +252,8 @@ SELECT collection.id,
             }
 
             sb.Remove(sb.Length - 1, 1).Append(";");
-            ThreadedProvider.GetDbConnection().Execute(sb.ToString());
+            var sql = sb.ToString();
+            ThreadedProvider.GetDbConnection().Execute(sql);
         }
 
         public void UpdateCollection(Collection collection)
@@ -258,7 +268,7 @@ SELECT collection.id,
                 ThreadedProvider.Update(TABLE_COLLECTION,
                     new Dictionary<string, object>
                     {
-                        ["id"] = Guid.NewGuid().ToString(),
+                        //["id"] = Guid.NewGuid().ToString(),
                         ["name"] = collection.Name,
                         ["locked"] = collection.LockedBool ? 1 : 0,
                         ["index"] = collection.Index,
@@ -271,7 +281,13 @@ SELECT collection.id,
 
         public void UpdateMap(MapIdentity id, int? offset = null)
         {
-            InnerUpdateMap(id, new Dictionary<string, object> { ["offset"] = offset, ["lastPlayTime"] = DateTime.Now });
+            var updateColumns = new Dictionary<string, object> { ["lastPlayTime"] = DateTime.Now };
+            if (offset != null)
+            {
+                updateColumns.Add("offset", offset);
+            }
+
+            InnerUpdateMap(id, updateColumns);
         }
 
         public void AddMapExport(MapIdentity id, string exportFilePath)

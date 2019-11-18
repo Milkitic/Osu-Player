@@ -164,9 +164,13 @@ PRAGMA case_sensitive_like=false;"
             for (var i = 0; i < reqList.Count; i++)
             {
                 var id = reqList[i];
-                sb.Append($"(@folder{i}, @version{i}),");
-                expando.Add(new KeyValuePair<string, object>($"folder{i}", id.FolderName));
-                expando.Add(new KeyValuePair<string, object>($"version{i}", id.Version));
+                var valueSql = string.Format("('{0}', '{1}'),", id.FolderName.Replace(@"'", @"''"),
+                    id.Version.Replace(@"'", @"''")); // escape is still safe
+                sb.Append(valueSql);
+                // sb.Append($"(@folder{i}, @version{i}),");
+                // expando.Add(new KeyValuePair<string, object>($"folder{i}", id.FolderName));
+                // expando.Add(new KeyValuePair<string, object>($"version{i}", id.Version));
+                // SQL logic error: too many SQL variables
             }
 
             sb.Remove(sb.Length - 1, 1);

@@ -824,7 +824,7 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
                 }
                 else
                 {
-                    sb.Append(string.Format("{0} {1} {2}@{3}{4}",
+                    sb.Append(string.Format("[{0}] {1} {2}@{3}{4}",
                         columnName,
                         Where.GetTypeSymbol(condition.WhereType),
                         valueQuote, columnName, valueQuote));
