@@ -166,7 +166,8 @@ namespace Milky.OsuPlayer.Pages
         {
             if (ResultList.SelectedItem == null)
                 return null;
-            var map = _beatmapDbOperator.GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
+            var map = _beatmapDbOperator
+                .GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
                 .GetHighestDiff();
             return map;
         }

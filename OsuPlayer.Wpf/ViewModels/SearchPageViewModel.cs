@@ -11,22 +11,23 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Input;
 using LinqKit;
 using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
+using System.Windows.Markup;
+using System.Xaml;
+using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Control.FrontDialog;
 
 namespace Milky.OsuPlayer.ViewModels
 {
     public class SearchPageViewModel : ViewModelBase
     {
-        private BeatmapDbOperator _dbOperator;
-
-        public SearchPageViewModel()
-        {
-            _dbOperator = new BeatmapDbOperator();
-        }
+        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
 
         private const int MaxListCount = 100;
         private List<BeatmapDataModel> _searchedMaps;
@@ -142,7 +143,7 @@ namespace Milky.OsuPlayer.ViewModels
                     Thread.Sleep(1);
                 _querySw.Stop();
 
-                SearchedDbMaps = _dbOperator
+                SearchedDbMaps = _beatmapDbOperator
                     .SearchBeatmapByOptions(SearchText, SortMode.Artist, startIndex, int.MaxValue);
                 List<BeatmapDataModel> sorted = SearchedDbMaps
                     .ToDataModelList(true);
@@ -240,6 +241,38 @@ namespace Milky.OsuPlayer.ViewModels
                     }
                 });
             }
+        }
+
+        public ICommand PlayCommand
+        {
+            get
+            {
+                return new DelegateCommand(param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var beatmaps = _beatmapDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName);
+                    var control = new DiffSelectControl(
+                        beatmaps,
+                        async selected =>
+                        {
+                            var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
+                            await PlayController.Default.PlayNewFile(map);
+                            await Services.Get<PlayerList>()
+                                .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+                        });
+                    FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
+                });
+            }
+        }
+    }
+
+    [MarkupExtensionReturnType(typeof(ContentControl))]
+    public class RootObject : MarkupExtension
+    {
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            var rootObjectProvider = (IRootObjectProvider)serviceProvider.GetService(typeof(IRootObjectProvider));
+            return rootObjectProvider?.RootObject;
         }
     }
 }
