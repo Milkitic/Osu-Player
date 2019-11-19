@@ -491,7 +491,7 @@ namespace Milky.OsuPlayer.Control
         private bool IsMapFavorite(MapInfo info)
         {
             var album = _appDbOperator.GetCollectionsByMap(info);
-            bool isFavorite = album != null && album.Any(k => k.Locked);
+            bool isFavorite = album != null && album.Any(k => k.LockedBool);
 
             return isFavorite;
         }

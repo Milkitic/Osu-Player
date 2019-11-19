@@ -1,195 +1,313 @@
-﻿using Milky.OsuPlayer.Common.Data.EF;
+﻿using Dapper;
+using Milky.OsuPlayer.Common.Data.Dapper;
+using Milky.OsuPlayer.Common.Data.Dapper.Provider;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Player;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.Common.Data
 {
     public class AppDbOperator
     {
-        [ThreadStatic]
-        private static ApplicationDbContext _ctx;
+        private const string TABLE_RELATION = "collection_relation";
+        private const string TABLE_MAP = "map_info";
+        private const string TABLE_COLLECTION = "collection";
 
-        private ApplicationDbContext Ctx
+        static AppDbOperator()
         {
-            get
-            {
-                if (_ctx == null || _ctx.IsDisposed())
-                    _ctx = new ApplicationDbContext();
-                return _ctx;
-            }
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
+
+        private static ReadOnlyDictionary<string, string> _creationMapping =
+            new ReadOnlyDictionary<string, string>(
+                new Dictionary<string, string>()
+                {
+                    ["collection"] = @"
+CREATE TABLE collection (
+    [id]          NVARCHAR (128)        NOT NULL,
+    [name]        NVARCHAR (2147483647) NOT NULL,
+    [locked]      INT                   NOT NULL,
+    [index]       INT                   NOT NULL,
+    [imagePath]   NVARCHAR (2147483647),
+    [description] NVARCHAR (2147483647),
+    [createTime]  DATETIME              NOT NULL,
+    PRIMARY KEY (
+        id
+    )
+);",
+                    ["collection_relation"] = @"
+CREATE TABLE collection_relation (
+    [id]           NVARCHAR (128)        NOT NULL,
+    [collectionId] NVARCHAR (2147483647) NOT NULL,
+    [mapId]        NVARCHAR (2147483647) NOT NULL,
+    [addTime]      DATETIME,
+    PRIMARY KEY (
+        id
+    )
+);",
+                    ["map_info"] = @"
+CREATE TABLE map_info (
+    [id]           NVARCHAR (128)        NOT NULL,
+    [version]      NVARCHAR (2147483647) NOT NULL,
+    [folder]       NVARCHAR (2147483647) NOT NULL,
+    [offset]       INT                   NOT NULL,
+    [lastPlayTime] DATETIME,
+    [exportFile]   NVARCHAR (2147483647),
+    PRIMARY KEY (
+        id
+    )
+);
+PRAGMA case_sensitive_like=false;"
+                });
+
+        private static ThreadLocal<SQLiteProvider> _provider = new ThreadLocal<SQLiteProvider>(() =>
+            (SQLiteProvider)new SQLiteProvider().ConfigureConnectionString("data source=player.db"));
+
+        private static SQLiteProvider ThreadedProvider => _provider.Value;
 
         private List<CollectionRelation> GetCollectionsRelations()
         {
-            return Ctx.Relations.ToList();
+            return ThreadedProvider.Query<CollectionRelation>(TABLE_RELATION).ToList();
         }
 
         private List<MapInfo> GetMaps()
         {
+            return ThreadedProvider.Query<MapInfo>(TABLE_MAP).ToList();
+        }
 
-            return Ctx.MapInfos.ToList();
+        public static void ValidateDb()
+        {
+            var dbFile = Path.Combine(Domain.CurrentPath, "player.db");
+            if (!File.Exists(dbFile))
+            {
+                File.WriteAllText(dbFile, "");
+            }
 
+            var tables = ThreadedProvider.GetAllTables();
+
+            foreach (var pair in _creationMapping)
+            {
+                if (tables.Contains(pair.Key)) continue;
+                try
+                {
+                    ThreadedProvider.GetDbConnection().Execute(pair.Value);
+                }
+                catch (Exception exc)
+                {
+                    throw new Exception($"创建表`{pair}`失败", exc);
+                }
+            }
         }
 
         public MapInfo GetMapFromDb(MapIdentity id)
         {
+            var map = ThreadedProvider.Query<MapInfo>(TABLE_MAP,
+                    new Where[]
+                    {
+                        ("version", id.Version),
+                        ("folder", id.FolderName)
+                    },
+                    count: 1)
+                .FirstOrDefault();
 
-            return InnerGetMapFromDb(id, Ctx);
+            if (map == null)
+            {
+                var guid = Guid.NewGuid().ToString();
+                ThreadedProvider.Insert(TABLE_MAP, new Dictionary<string, object>()
+                {
+                    ["id"] = guid,
+                    ["version"] = id.Version,
+                    ["folder"] = id.FolderName,
+                    ["offset"] = 0
+                });
 
+                return new MapInfo
+                {
+                    Id = guid,
+                    Version = id.Version,
+                    FolderName = id.FolderName,
+                    Offset = 0
+                };
+            }
+
+            return map;
         }
 
         public List<MapInfo> GetRecentList()
         {
-            return Ctx.MapInfos
-                .Where(k => k.LastPlayTime != null)
-                .OrderBy(k => k.LastPlayTime)
+            return ThreadedProvider.Query<MapInfo>(TABLE_MAP,
+                    ("lastPlayTime", null, "!="),
+                    orderColumn: "lastPlayTime")
                 .ToList();
         }
 
         public List<MapInfo> GetExportedMaps()
         {
-            return Ctx.MapInfos
-                .Where(k => !string.IsNullOrEmpty(k.ExportFile))
-                .ToList();
+            return ThreadedProvider.GetDbConnection()
+                .Query<MapInfo>(@"SELECT * FROM map_info WHERE exportFile IS NOT NULL AND TRIM(exportFile) <> ''").ToList();
         }
 
         public List<MapInfo> GetMapsFromCollection(Collection collection)
         {
-            var mapRelations = Ctx.Relations.Where(k => k.CollectionId == collection.Id).ToList();
-            var mapIds = mapRelations.Select(k => k.MapId).ToList();
-            var maps = Ctx.MapInfos.Where(k => mapIds.Contains(k.Id)).ToList();
-            return mapRelations.Join(maps,
-                    r => r.MapId,
-                    m => m.Id,
-                    (r, m) => new MapInfo(
-                        m.Id,
-                        m.Version,
-                        m.FolderName,
-                        m.Offset,
-                        m.LastPlayTime,
-                        m.ExportFile,
-                        r.AddTime)
-                )
-                .ToList();
+            return ThreadedProvider.GetDbConnection()
+                .Query<MapInfo>(@"
+SELECT map.id,
+       map.version,
+       map.folder,
+       map.[offset],
+       map.lastPlayTime,
+       map.exportFile,
+       relation.addTime
+  FROM (
+           SELECT *
+             FROM collection_relation
+            WHERE collectionId = @collectionId
+       )
+       AS relation
+       INNER JOIN
+       map_info AS map ON relation.mapId = map.id;
+", new { collectionId = collection.Id }).ToList();
         }
 
         public List<Collection> GetCollections()
         {
-            return Ctx.Collections.ToList();
-        }
-
-        public List<Collection> GetCollectionById(string[] id)
-        {
-            return Ctx.Collections.Where(k => id.Contains(k.Id)).ToList();
-        }
-
-        public Collection GetCollectionById(string id)
-        {
-            return Ctx.Collections.FirstOrDefault(k => id.Contains(k.Id));
+            return ThreadedProvider.Query<Collection>(TABLE_COLLECTION).ToList();
         }
 
         public List<Collection> GetCollectionsByMap(MapInfo map)
         {
-            var ids = Ctx.Relations.Where(k => k.MapId == map.Id).Select(k => k.CollectionId);
-            if (!ids.Any()) return null;
-            return GetCollectionById(ids.ToArray());
+            return ThreadedProvider.GetDbConnection()
+                .Query<Collection>(@"
+SELECT collection.id,
+       collection.name,
+       collection.locked,
+       collection.[index],
+       collection.imagePath,
+       collection.description,
+       collection.createTime
+  FROM (
+           SELECT *
+             FROM collection_relation
+            WHERE mapId = @mapId
+       )
+       AS relation
+       INNER JOIN
+       collection ON relation.collectionId = collection.id;
+", new { mapId = map.Id }).ToList();
         }
 
         public void AddCollection(string name, bool locked = false)
         {
-            var newOne = new Collection(Guid.NewGuid().ToString(), name, locked, 0) { CreateTime = DateTime.Now };
-            Ctx.Collections.Add(newOne);
-            Ctx.SaveChanges();
+            ThreadedProvider.Insert(TABLE_COLLECTION, new Dictionary<string, object>()
+            {
+                ["id"] = Guid.NewGuid().ToString(),
+                ["name"] = name,
+                ["locked"] = locked ? 1 : 0,
+                ["index"] = 0,
+                ["createTime"] = DateTime.Now
+            });
         }
 
+        private void AddCollection(Collection collection)
+        {
+            ThreadedProvider.Insert(TABLE_COLLECTION, new Dictionary<string, object>
+            {
+                ["id"] = Guid.NewGuid().ToString(),
+                ["name"] = collection.Name,
+                ["locked"] = collection.LockedBool ? 1 : 0,
+                ["index"] = collection.Index,
+                ["createTime"] = collection.CreateTime
+            });
+        }
+
+        public Collection GetCollectionById(string id)
+        {
+            return ThreadedProvider.Query<Collection>(TABLE_COLLECTION, ("id", id), count: 1).FirstOrDefault();
+        }
+
+        //todo: 添加时有误
         public void AddMapsToCollection(IList<Beatmap> beatmaps, Collection collection)
         {
+            var currentInfo = Services.Get<PlayerList>().CurrentInfo;
+            if (beatmaps.Count < 1) return;
+
+            var sb = new StringBuilder($"INSERT INTO {TABLE_RELATION} (id, collectionId, mapId, addTime) VALUES ");
             foreach (var beatmap in beatmaps)
             {
-                MapInfo map = InnerGetMapFromDb(beatmap.GetIdentity(), Ctx);
-                Ctx.Relations.Add(new CollectionRelation(Guid.NewGuid().ToString(), collection.Id,
-                    map.Id));
-                Ctx.SaveChanges();
+                sb.Append($"('{Guid.NewGuid().ToString()}', '{collection.Id}', '{beatmap.Id}', '{DateTime.Now}'),"); // maybe no injection here
 
-                //todo: not suitable position
-                var currentInfo = Services.Get<PlayerList>().CurrentInfo;
-                if (currentInfo != null)
+                // todo: not suitable position
+                if (currentInfo == null) continue;
+                if (collection.LockedBool && currentInfo.Identity.Equals(beatmap.GetIdentity()))
                 {
-                    if (collection.Locked &&
-                        currentInfo.Identity.Equals(beatmap.GetIdentity()))
-                    {
-                        currentInfo.IsFavorite = true;
-                    }
+                    currentInfo.IsFavorite = true;
                 }
             }
+
+            sb.Remove(sb.Length - 1, 1).Append(";");
+            var sql = sb.ToString();
+            ThreadedProvider.GetDbConnection().Execute(sql);
         }
 
         public void UpdateCollection(Collection collection)
         {
-            Collection col = Ctx.Collections.FirstOrDefault(k =>
-                 k.Id == collection.Id);
-            if (col == null)
+            var result = GetCollectionById(collection.Id);
+            if (result == null)
             {
-                var newOne = new Collection(Guid.NewGuid().ToString(), collection.Name, false, 0,
-                    collection.ImagePath, collection.Description)
-                {
-                    CreateTime = DateTime.Now
-                };
-                Ctx.Collections.Add(newOne);
+                AddCollection(collection);
             }
             else
             {
-                col.Description = collection.Description;
-                col.ImagePath = collection.ImagePath;
-                col.Index = collection.Index;
-                col.Name = collection.Name;
+                ThreadedProvider.Update(TABLE_COLLECTION,
+                    new Dictionary<string, object>
+                    {
+                        //["id"] = Guid.NewGuid().ToString(),
+                        ["name"] = collection.Name,
+                        ["locked"] = collection.LockedBool ? 1 : 0,
+                        ["index"] = collection.Index,
+                        ["createTime"] = collection.CreateTime
+                    },
+                    new Where[] { ("id", collection.Id) },
+                    count: 1);
             }
-
-            Ctx.SaveChanges();
         }
 
-        public void UpdateMap(MapIdentity id, int offset = 0)
+        public void UpdateMap(MapIdentity id, int? offset = null)
         {
-            MapInfo map = InnerGetMapFromDb(id, Ctx);
-            map.LastPlayTime = DateTime.Now;
-            if (offset != 0)
-                map.Offset = offset;
-            Ctx.SaveChanges();
+            var updateColumns = new Dictionary<string, object> { ["lastPlayTime"] = DateTime.Now };
+            if (offset != null)
+            {
+                updateColumns.Add("offset", offset);
+            }
+
+            InnerUpdateMap(id, updateColumns);
         }
 
         public void AddMapExport(MapIdentity id, string exportFilePath)
         {
-            MapInfo map = InnerGetMapFromDb(id, Ctx);
-            map.ExportFile = exportFilePath;
-            Ctx.SaveChanges();
+            InnerUpdateMap(id, new Dictionary<string, object> { ["exportFile"] = exportFilePath });
         }
 
         public void RemoveMapExport(MapIdentity id)
         {
-            MapInfo map = InnerGetMapFromDb(id, Ctx);
-            map.ExportFile = string.Empty;
-            Ctx.SaveChanges();
-
+            InnerUpdateMap(id, new Dictionary<string, object> { ["exportFile"] = null });
         }
 
-        public void UpdateMap(Beatmap beatmap, int offset)
+        public void UpdateMap(Beatmap beatmap, int? offset = null)
         {
-            UpdateMap(beatmap.GetIdentity());
+            UpdateMap(beatmap.GetIdentity(), offset);
         }
 
         public void RemoveFromRecent(MapIdentity id)
         {
-            MapInfo map = InnerGetMapFromDb(id, Ctx);
-            map.LastPlayTime = null;
-            Ctx.SaveChanges();
+            InnerUpdateMap(id, new Dictionary<string, object> { ["lastPlayTime"] = null });
         }
 
         public void RemoveFromRecent(Beatmap beatmap)
@@ -199,21 +317,19 @@ namespace Milky.OsuPlayer.Common.Data
 
         public void ClearRecent()
         {
-            var maps = Ctx.MapInfos;
-            foreach (var map in maps)
-                map.LastPlayTime = null;
-            Ctx.SaveChanges();
+            ThreadedProvider.Update(TABLE_COLLECTION,
+                new Dictionary<string, object>
+                {
+                    ["lastPlayTime"] = null
+                },
+                Array.Empty<Where>());
         }
 
         public void RemoveCollection(Collection collection)
         {
-            var coll = Ctx.Collections.FirstOrDefault(k => k.Id == collection.Id);
-            if (coll != null) Ctx.Collections.Remove(coll);
-            Ctx.Relations.RemoveRange(Ctx.Relations.Where(k => k.CollectionId == collection.Id));
-
-            Ctx.SaveChanges();
+            ThreadedProvider.Delete(TABLE_COLLECTION, ("id", collection.Id));
+            ThreadedProvider.Delete(TABLE_RELATION, ("collectionId", collection.Id));
         }
-
         public void RemoveMapFromCollection(Beatmap beatmap, Collection collection)
         {
             RemoveMapFromCollection(beatmap.GetIdentity(), collection);
@@ -221,64 +337,31 @@ namespace Milky.OsuPlayer.Common.Data
 
         public void RemoveMapFromCollection(MapIdentity id, Collection collection)
         {
-            MapInfo map = InnerGetMapFromDb(id, Ctx);
-            Ctx.Relations.RemoveRange(Ctx.Relations.Where(k =>
-                k.CollectionId == collection.Id && k.MapId == map.Id));
-            Ctx.SaveChanges();
+            var map = GetMapFromDb(id);
+            ThreadedProvider.Delete(TABLE_RELATION, new Where[] { ("collectionId", collection.Id), ("mapId", map.Id) });
 
-            //todo: not suitable position
+            // todo: not suitable position
             var currentInfo = Services.Get<PlayerList>().CurrentInfo;
-            if (currentInfo != null)
+            if (currentInfo == null) return;
+            if (collection.LockedBool && currentInfo.Identity.Equals(id))
             {
-                if (collection.Locked &&
-                    currentInfo.Identity.Equals(id))
-                {
-                    currentInfo.IsFavorite = false;
-                }
+                currentInfo.IsFavorite = false;
             }
         }
 
-        private static MapInfo InnerGetMapFromDb(MapIdentity id, ApplicationDbContext context)
+        private void InnerUpdateMap(MapIdentity id, Dictionary<string, object> updateColumns)
         {
-            var map = context.MapInfos.FirstOrDefault(k =>
-                k.Version == id.Version && k.FolderName == id.FolderName);
-            if (map == null)
-            {
-                map = new MapInfo(Guid.NewGuid().ToString(), id.Version, id.FolderName, 0, null);
-                context.MapInfos.Add(map);
-                context.SaveChanges();
-            }
+            GetMapFromDb(id);
+            if (updateColumns.Count == 0) return;
 
-            return map;
-        }
-        
-        private static DbJsonObject _dbJsonObject;
-        private static AppDbOperator _opt;
-
-        static AppDbOperator()
-        {
-            _opt = new AppDbOperator();
-            LookupBackup();
-        }
-
-        private static void LookupBackup()
-        {
-            Task.Run(() =>
-            {
-                _dbJsonObject = new DbJsonObject
+            ThreadedProvider.Update(TABLE_MAP,
+                updateColumns,
+                new Where[]
                 {
-                    Collections = _opt.GetCollections(),
-                    MapInfos = _opt.GetMaps(),
-                    CollectionRelations = _opt.GetCollectionsRelations()
-                };
-
-                Backup();
-            });
-        }
-
-        private static void Backup()
-        {
-            ConcurrentFile.WriteAllText("player.db.bak", JsonConvert.SerializeObject(_dbJsonObject));
+                    ("version", id.Version),
+                    ("folder", id.FolderName)
+                },
+                count: 1);
         }
     }
 }

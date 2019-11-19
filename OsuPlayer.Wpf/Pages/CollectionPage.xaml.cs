@@ -22,8 +22,6 @@ using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Control.Notification;
 using Milky.OsuPlayer.Utils;
-using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
-using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.Pages
 {
