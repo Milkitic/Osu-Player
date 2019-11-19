@@ -60,6 +60,13 @@ namespace Milky.OsuPlayer.Pages
             await ViewModel.PlayListQueryAsync();
         }
 
+        private VirtualizingGalleryWrapPanel _virtualizingGalleryWrapPanel;
+        private void Panel_Loaded(object sender, RoutedEventArgs e)
+        {
+            _virtualizingGalleryWrapPanel = sender as VirtualizingGalleryWrapPanel;
+            ViewModel.GalleryWrapPanel = _virtualizingGalleryWrapPanel;
+        }
+
         //private void ResultList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         //{
         //    PlaySelectedDefault();
@@ -198,8 +205,16 @@ namespace Milky.OsuPlayer.Pages
         private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
         {
             var dataModel = ViewModel.DisplayedMaps[e.Index];
-            var fileName = await Util.GetThumbByBeatmapDbId(dataModel).ConfigureAwait(false);
-            Execute.OnUiThread(() => dataModel.ThumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg"));
+            try
+            {
+                var fileName = await Util.GetThumbByBeatmapDbId(dataModel).ConfigureAwait(false);
+                Execute.OnUiThread(() => dataModel.ThumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
             Console.WriteLine(e.Index);
         }
     }

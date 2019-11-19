@@ -29,6 +29,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
             Map(p => p.SongTags).ToColumn("tags");
             Map(p => p.AudioFileName).ToColumn("audioName");
             Map(p => p.InOwnFolder).ToColumn("own");
+            Map(p => p.Version).ToColumn("version");
         }
     }
 

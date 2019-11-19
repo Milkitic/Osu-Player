@@ -275,6 +275,7 @@
                         ChildHeight="{StaticResource GalleryHeight}"
                         ChildWidth="{StaticResource GalleryWidth}"
                         ItemLoaded="VirtualizingGalleryWrapPanel_OnItemLoaded"
+                        Loaded="Panel_Loaded"
                         ScrollOffset="100" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>

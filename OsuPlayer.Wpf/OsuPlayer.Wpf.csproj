@@ -723,11 +723,21 @@
     <Content Include="Default\soft-sliderwhistle.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="External\plugins\ffmpeg\avcodec-58.dll" />
-    <Content Include="External\plugins\ffmpeg\avdevice-58.dll" />
-    <Content Include="External\plugins\ffmpeg\avfilter-7.dll" />
-    <Content Include="External\plugins\ffmpeg\avformat-58.dll" />
-    <Content Include="External\plugins\ffmpeg\avutil-56.dll" />
+    <Content Include="External\plugins\ffmpeg\avcodec-58.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="External\plugins\ffmpeg\avdevice-58.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="External\plugins\ffmpeg\avfilter-7.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="External\plugins\ffmpeg\avformat-58.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="External\plugins\ffmpeg\avutil-56.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="External\plugins\ffmpeg\ffmpeg.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -737,9 +747,15 @@
     <Content Include="External\plugins\ffmpeg\ffprobe.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="External\plugins\ffmpeg\postproc-55.dll" />
-    <Content Include="External\plugins\ffmpeg\swresample-3.dll" />
-    <Content Include="External\plugins\ffmpeg\swscale-5.dll" />
+    <Content Include="External\plugins\ffmpeg\postproc-55.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="External\plugins\ffmpeg\swresample-3.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="External\plugins\ffmpeg\swscale-5.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="External\plugins\SoundTouch.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

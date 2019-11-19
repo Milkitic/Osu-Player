@@ -68,6 +68,11 @@ namespace Milky.OsuPlayer.Utils
             var osuFilePath = dataModel.InOwnDb
                 ? Path.Combine(Domain.OwnSongsPath, dataModel.FolderName, dataModel.BeatmapFileName)
                 : Path.Combine(Domain.OsuSongPath, dataModel.FolderName, dataModel.BeatmapFileName);
+            if (!File.Exists(osuFilePath))
+            {
+                return null;
+            }
+
             var osuFile = await OSharp.Beatmap.OsuFile.ReadFromFileAsync(osuFilePath).ConfigureAwait(false);
             var guidStr = Guid.NewGuid().ToString();
 
@@ -83,7 +88,7 @@ namespace Milky.OsuPlayer.Utils
                 : Path.Combine(Domain.OsuSongPath, dataModel.FolderName, sourceBgFile);
             if (!File.Exists(sourceBgPath))
             {
-                _appDbOperator.SetMapThumb(dataModel.BeatmapDbId, null);
+                //_appDbOperator.SetMapThumb(dataModel.BeatmapDbId, null);
                 return null;
             }
 
