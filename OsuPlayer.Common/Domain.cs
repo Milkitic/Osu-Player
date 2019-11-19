@@ -31,6 +31,7 @@ namespace Milky.OsuPlayer.Common
 
         public static string CachePath => Path.Combine(CurrentPath, "_Cache");
         public static string LyricCachePath => Path.Combine(CachePath, "_Lyric");
+        public static string ThumbCachePath => Path.Combine(CachePath, "_Thumbs");
 
         public static string DefaultPath => Path.Combine(CurrentPath, "Default");
         public static string ExternalPath => Path.Combine(CurrentPath, "External");

@@ -18,6 +18,8 @@ using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Utils;
+using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -58,118 +60,118 @@ namespace Milky.OsuPlayer.Pages
             await ViewModel.PlayListQueryAsync();
         }
 
-        private void ResultList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            PlaySelectedDefault();
-        }
+        //private void ResultList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        //{
+        //    PlaySelectedDefault();
+        //}
 
-        private void ItemPlay_Click(object sender, RoutedEventArgs e)
-        {
-            if (ResultList.SelectedItem == null)
-                return;
-            var ok = (BeatmapDataModel)ResultList.SelectedItem;
-            var control = new DiffSelectControl(
-                _beatmapDbOperator.GetBeatmapsFromFolder(ok.GetIdentity().FolderName),
-            async selected =>
-            {
-                var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
-                await PlayController.Default.PlayNewFile(map);
-                await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
-            });
-            FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
-        }
+        //private void ItemPlay_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (ResultList.SelectedItem == null)
+        //        return;
+        //    var ok = (BeatmapDataModel)ResultList.SelectedItem;
+        //    var control = new DiffSelectControl(
+        //        _beatmapDbOperator.GetBeatmapsFromFolder(ok.GetIdentity().FolderName),
+        //    async selected =>
+        //    {
+        //        var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
+        //        await PlayController.Default.PlayNewFile(map);
+        //        await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+        //    });
+        //    FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
+        //}
 
-        private void ItemSearchMapper_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelectedDefault();
-            if (map == null)
-                return;
-            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.Creator));
-        }
+        //private void ItemSearchMapper_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var map = GetSelectedDefault();
+        //    if (map == null)
+        //        return;
+        //    _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.Creator));
+        //}
 
-        private void ItemSearchSource_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelectedDefault();
-            if (map == null)
-                return;
-            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.SongSource));
-        }
+        //private void ItemSearchSource_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var map = GetSelectedDefault();
+        //    if (map == null)
+        //        return;
+        //    _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.SongSource));
+        //}
 
-        private void ItemSearchArtist_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelectedDefault();
-            if (map == null)
-                return;
-            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoArtist));
-        }
+        //private void ItemSearchArtist_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var map = GetSelectedDefault();
+        //    if (map == null)
+        //        return;
+        //    _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoArtist));
+        //}
 
-        private void ItemSearchTitle_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelectedDefault();
-            if (map == null)
-                return;
-            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoTitle));
-        }
+        //private void ItemSearchTitle_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var map = GetSelectedDefault();
+        //    if (map == null)
+        //        return;
+        //    _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoTitle));
+        //}
 
-        private void ItemExport_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelectedDefault();
-            if (map == null)
-                return;
-            ExportPage.QueueEntry(map);
-        }
+        //private void ItemExport_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var map = GetSelectedDefault();
+        //    if (map == null)
+        //        return;
+        //    ExportPage.QueueEntry(map);
+        //}
 
-        private void ItemCollect_Click(object sender, RoutedEventArgs e)
-        {
-            if (ResultList.SelectedItem == null)
-                return;
-            var ok = (BeatmapDataModel)ResultList.SelectedItem;
-            var control = new DiffSelectControl(
-                _beatmapDbOperator.GetBeatmapsFromFolder(ok.GetIdentity().FolderName),
-                selected =>
-                {
-                    var entry = _beatmapDbOperator.GetBeatmapsFromFolder(selected.FolderName)
-                        .FirstOrDefault(k => k.Version == selected.Version);
-                    FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
-                        DialogOptionFactory.SelectCollectionOptions);
-                });
-            FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
-        }
+        //private void ItemCollect_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (ResultList.SelectedItem == null)
+        //        return;
+        //    var ok = (BeatmapDataModel)ResultList.SelectedItem;
+        //    var control = new DiffSelectControl(
+        //        _beatmapDbOperator.GetBeatmapsFromFolder(ok.GetIdentity().FolderName),
+        //        selected =>
+        //        {
+        //            var entry = _beatmapDbOperator.GetBeatmapsFromFolder(selected.FolderName)
+        //                .FirstOrDefault(k => k.Version == selected.Version);
+        //            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
+        //                DialogOptionFactory.SelectCollectionOptions);
+        //        });
+        //    FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
+        //}
 
-        private void ItemSet_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelectedDefault();
-            if (map == null) return;
-            Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
-        }
+        //private void ItemSet_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var map = GetSelectedDefault();
+        //    if (map == null) return;
+        //    Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
+        //}
 
-        private void ItemFolder_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelectedDefault();
-            if (map == null) return;
-            Process.Start(Path.Combine(Domain.OsuSongPath, map.FolderName));
-        }
+        //private void ItemFolder_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var map = GetSelectedDefault();
+        //    if (map == null) return;
+        //    Process.Start(Path.Combine(Domain.OsuSongPath, map.FolderName));
+        //}
 
-        private async void PlaySelectedDefault()
-        {
-            var map = GetSelectedDefault();
-            if (map == null)
-                return;
-            //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
-            //    map.BeatmapFileName));
-            await PlayController.Default.PlayNewFile(map);
-            await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
-        }
+        //private async void PlaySelectedDefault()
+        //{
+        //    var map = GetSelectedDefault();
+        //    if (map == null)
+        //        return;
+        //    //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
+        //    //    map.BeatmapFileName));
+        //    await PlayController.Default.PlayNewFile(map);
+        //    await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+        //}
 
-        private Beatmap GetSelectedDefault()
-        {
-            if (ResultList.SelectedItem == null)
-                return null;
-            var map = _beatmapDbOperator
-                .GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
-                .GetHighestDiff();
-            return map;
-        }
+        //private Beatmap GetSelectedDefault()
+        //{
+        //    if (ResultList.SelectedItem == null)
+        //        return null;
+        //    var map = _beatmapDbOperator
+        //        .GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
+        //        .GetHighestDiff();
+        //    return map;
+        //}
 
         private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {
@@ -193,8 +195,11 @@ namespace Milky.OsuPlayer.Pages
 
         }
 
-        private void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
+        private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
         {
+            var dataModel = ViewModel.DisplayedMaps[e.Index];
+            var fileName = await Util.GetThumbByBeatmapDbId(dataModel).ConfigureAwait(false);
+            Execute.OnUiThread(() => dataModel.ThumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg"));
             Console.WriteLine(e.Index);
         }
     }

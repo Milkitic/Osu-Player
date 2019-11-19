@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Milky.WpfApi.Collections;
 using osu.Shared;
 using OSharp.Beatmap;
@@ -6,8 +8,10 @@ using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.Common.Metadata
 {
-    public class BeatmapDataModel : NumberableModel, IMapIdentifiable
+    public class BeatmapDataModel : NumberableModel, IMapIdentifiable, INotifyPropertyChanged
     {
+        private string _thumbPath;
+
         public BeatmapDataModel()
         {
 
@@ -42,5 +46,22 @@ namespace Milky.OsuPlayer.Common.Metadata
         public string ExportFile { get; set; }
         public bool InOwnDb { get; set; }
         public Guid BeatmapDbId { get; set; }
+
+        public string ThumbPath
+        {
+            get => _thumbPath;
+            set
+            {
+                _thumbPath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

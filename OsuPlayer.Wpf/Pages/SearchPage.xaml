@@ -149,7 +149,6 @@
             Background="Transparent"
             BorderThickness="0"
             ItemContainerStyle="{StaticResource GridView}"
-            MouseDoubleClick="ResultList_MouseDoubleClick"
             Visibility="Collapsed">
             <!--<ListView.ContextMenu>
                 <ContextMenu Style="{StaticResource DefaultContextMenu}">
@@ -325,14 +324,20 @@
                                             <Border
                                                 Height="{StaticResource GalleryWidth}"
                                                 Margin="5"
-                                                Background="#F0F0F0" />
+                                                Background="#F0F0F0">
+                                                <Image
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Source="{Binding ThumbPath}"
+                                                    Stretch="UniformToFill" />
+                                            </Border>
                                             <TextBlock
                                                 Grid.Row="1"
                                                 Margin="5,1"
                                                 Text="{Binding AutoArtist}" />
                                             <TextBlock
                                                 Grid.Row="2"
-                                                Margin="5,1"
+                                                Margin="5,2"
                                                 Text="{Binding AutoTitle}" />
                                         </Grid>
                                     </Border>
