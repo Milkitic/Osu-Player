@@ -5,22 +5,28 @@ using Milky.WpfApi.Commands;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data.EF.Model;
+using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
+using System.Windows.Markup;
+using System.Xaml;
+using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.Windows;
+using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.ViewModels
 {
     public class SearchPageViewModel : ViewModelBase
     {
-        private BeatmapDbOperator _dbOperator;
-
-        public SearchPageViewModel()
-        {
-            _dbOperator = new BeatmapDbOperator();
-        }
+        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
 
         private const int MaxListCount = 100;
         private List<BeatmapDataModel> _searchedMaps;
@@ -136,7 +142,7 @@ namespace Milky.OsuPlayer.ViewModels
                     Thread.Sleep(1);
                 _querySw.Stop();
 
-                SearchedDbMaps = _dbOperator
+                SearchedDbMaps = _beatmapDbOperator
                     .SearchBeatmapByOptions(SearchText, SortMode.Artist, startIndex, int.MaxValue);
                 List<BeatmapDataModel> sorted = SearchedDbMaps
                     .ToDataModelList(true);
@@ -234,6 +240,143 @@ namespace Milky.OsuPlayer.ViewModels
                     }
                 });
             }
+        }
+
+        public ICommand SearchByConditionCommand
+        {
+            get
+            {
+                return new DelegateCommand(param =>
+                {
+                    WindowBase.GetCurrentFirst<MainWindow>()
+                        .SwitchSearch
+                        .CheckAndAction(page => ((SearchPage)page).Search((string)param));
+                });
+            }
+        }
+
+        public ICommand OpenSourceFolderCommand
+        {
+            get
+            {
+                return new DelegateCommand(param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var map = GetHighestSrBeatmap(beatmap);
+                    if (map == null) return;
+                    var fileName = Path.Combine(Domain.OsuSongPath, map.FolderName);
+                    if (!File.Exists(fileName))
+                    {
+                        Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
+                        return;
+                    }
+
+                    Process.Start(fileName);
+                });
+            }
+        }
+
+        public ICommand OpenScorePageCommand
+        {
+            get
+            {
+                return new DelegateCommand(param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var map = GetHighestSrBeatmap(beatmap);
+                    if (map == null) return;
+                    Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
+                });
+            }
+        }
+
+        public ICommand SaveCollectionCommand
+        {
+            get
+            {
+                return new DelegateCommand(param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var control = new DiffSelectControl(
+                        _beatmapDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName),
+                        selected =>
+                        {
+                            var entry = _beatmapDbOperator.GetBeatmapsFromFolder(selected.FolderName)
+                                .FirstOrDefault(k => k.Version == selected.Version);
+                            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
+                                DialogOptionFactory.SelectCollectionOptions);
+                        });
+                    FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
+                });
+            }
+        }
+
+        public ICommand ExportCommand
+        {
+            get
+            {
+                return new DelegateCommand(param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var map = GetHighestSrBeatmap(beatmap);
+                    if (map == null) return;
+                    ExportPage.QueueEntry(map);
+                });
+            }
+        }
+
+        public ICommand DirectPlayCommand
+        {
+            get
+            {
+                return new DelegateCommand(async param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var map = GetHighestSrBeatmap(beatmap);
+                    if (map == null) return;
+                    await PlayController.Default.PlayNewFile(map);
+                    await Services.Get<PlayerList>()
+                        .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+                });
+            }
+        }
+
+        public ICommand PlayCommand
+        {
+            get
+            {
+                return new DelegateCommand(param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var beatmaps = _beatmapDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName);
+                    var control = new DiffSelectControl(
+                        beatmaps,
+                        async selected =>
+                        {
+                            var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
+                            await PlayController.Default.PlayNewFile(map);
+                            await Services.Get<PlayerList>()
+                                .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+                        });
+                    FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
+                });
+            }
+        }
+
+        private Beatmap GetHighestSrBeatmap(IMapIdentifiable beatmap)
+        {
+            var map = _beatmapDbOperator.GetBeatmapsFromFolder(beatmap.FolderName).GetHighestDiff();
+            return map;
+        }
+    }
+
+    [MarkupExtensionReturnType(typeof(ContentControl))]
+    public class RootObject : MarkupExtension
+    {
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            var rootObjectProvider = (IRootObjectProvider)serviceProvider.GetService(typeof(IRootObjectProvider));
+            return rootObjectProvider?.RootObject;
         }
     }
 }

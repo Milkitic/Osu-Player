@@ -185,6 +185,7 @@
       <DependentUpon>SelectCollectionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\SwitchRadio.cs" />
+    <Compile Include="Control\VirtualizingGalleryWrapPanel.cs" />
     <Compile Include="Control\VolumeControl.xaml.cs">
       <DependentUpon>VolumeControl.xaml</DependentUpon>
     </Compile>
