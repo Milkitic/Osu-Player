@@ -519,7 +519,8 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
         public virtual int InsertArray(string table, ICollection<Dictionary<string, object>> insertColumns)
         {
             int count = 0;
-            SingletonConnection.Open();
+            if (SingletonConnection.State != ConnectionState.Open)
+                SingletonConnection.Open();
             using (var transaction = SingletonConnection.BeginTransaction())
             {
                 foreach (var insertColumn in insertColumns)

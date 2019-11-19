@@ -18,6 +18,7 @@ namespace Milky.OsuPlayer.Common.Data
     {
         private const string TABLE_RELATION = "collection_relation";
         private const string TABLE_MAP = "map_info";
+        private const string TABLE_THUMB = "map_thumb";
         private const string TABLE_COLLECTION = "collection";
 
         static AppDbOperator()
@@ -31,12 +32,12 @@ namespace Milky.OsuPlayer.Common.Data
                 {
                     ["collection"] = @"
 CREATE TABLE collection (
-    [id]          NVARCHAR (128)        NOT NULL,
-    [name]        NVARCHAR (2147483647) NOT NULL,
+    [id]          NVARCHAR (40)        NOT NULL,
+    [name]        NVARCHAR (100) NOT NULL,
     [locked]      INT                   NOT NULL,
     [index]       INT                   NOT NULL,
-    [imagePath]   NVARCHAR (2147483647),
-    [description] NVARCHAR (2147483647),
+    [imagePath]   NVARCHAR (700),
+    [description] NVARCHAR (700),
     [createTime]  DATETIME              NOT NULL,
     PRIMARY KEY (
         id
@@ -44,9 +45,9 @@ CREATE TABLE collection (
 );",
                     ["collection_relation"] = @"
 CREATE TABLE collection_relation (
-    [id]           NVARCHAR (128)        NOT NULL,
-    [collectionId] NVARCHAR (2147483647) NOT NULL,
-    [mapId]        NVARCHAR (2147483647) NOT NULL,
+    [id]           NVARCHAR (40)        NOT NULL,
+    [collectionId] NVARCHAR (40) NOT NULL,
+    [mapId]        NVARCHAR (40) NOT NULL,
     [addTime]      DATETIME,
     PRIMARY KEY (
         id
@@ -54,17 +55,25 @@ CREATE TABLE collection_relation (
 );",
                     ["map_info"] = @"
 CREATE TABLE map_info (
-    [id]           NVARCHAR (128)        NOT NULL,
-    [version]      NVARCHAR (2147483647) NOT NULL,
-    [folder]       NVARCHAR (2147483647) NOT NULL,
+    [id]           NVARCHAR (40)        NOT NULL,
+    [version]      NVARCHAR (255) NOT NULL,
+    [folder]       NVARCHAR (255) NOT NULL,
     [offset]       INT                   NOT NULL,
     [lastPlayTime] DATETIME,
-    [exportFile]   NVARCHAR (2147483647),
+    [exportFile]   NVARCHAR (700),
     PRIMARY KEY (
         id
     )
 );
-PRAGMA case_sensitive_like=false;"
+PRAGMA case_sensitive_like=false;",
+                    ["map_thumb"] = @"
+CREATE TABLE map_thumb (
+    [id]           NVARCHAR (40) PRIMARY KEY
+                                         NOT NULL,
+    [mapId]        NVARCHAR (40) NOT NULL,
+    [thumbPath]    NVARCHAR (40) NOT NULL
+);
+"
                 });
 
         private static ThreadLocal<SQLiteProvider> _provider = new ThreadLocal<SQLiteProvider>(() =>
@@ -349,6 +358,51 @@ SELECT collection.id,
             }
         }
 
+        public bool GetMapThumb(Guid beatmapDbId, out string thumbPath)
+        {
+            var dy = ThreadedProvider.Query(TABLE_THUMB,
+                ("mapId", beatmapDbId, "=="),
+                count: 1).FirstOrDefault();
+            thumbPath = dy?.thumbPath;
+            return !(dy is null);
+        }
+
+        public bool GetMapThumb(Beatmap beatmap, out string thumbPath)
+        {
+            return GetMapThumb(beatmap.Id, out thumbPath);
+        }
+
+        public void SetMapThumb(Guid beatmapDbId, string thumbPath)
+        {
+            var hasResult = GetMapThumb(beatmapDbId, out _);
+
+            if (hasResult)
+            {
+                ThreadedProvider.Update(TABLE_THUMB,
+                    new Dictionary<string, object>
+                    {
+                        ["thumbPath"] = thumbPath
+                    },
+                    ("mapId", beatmapDbId, "=="));
+            }
+            else
+            {
+                ThreadedProvider.Insert(TABLE_THUMB,
+                    new Dictionary<string, object>
+                    {
+                        ["id"] = Guid.NewGuid().ToString(),
+                        ["mapId"] = beatmapDbId,
+                        ["thumbPath"] = thumbPath
+                    }
+                );
+            }
+        }
+
+        public void SetMapThumb(Beatmap beatmap, string thumbPath)
+        {
+            SetMapThumb(beatmap.Id, thumbPath);
+        }
+        
         private void InnerUpdateMap(MapIdentity id, Dictionary<string, object> updateColumns)
         {
             GetMapFromDb(id);

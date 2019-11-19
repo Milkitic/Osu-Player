@@ -394,7 +394,8 @@ namespace Milky.OsuPlayer.Windows
 
         private void Controller_OnLikeClick(object sender, RoutedEventArgs e)
         {
-            var entry = _beatmapDbOperator.GetBeatmapByIdentifiable(Services.Get<PlayerList>().CurrentIdentity);
+            var id = Services.Get<PlayerList>().CurrentIdentity;
+            var entry = _beatmapDbOperator.GetBeatmapByIdentifiable(id);
             if (entry == null)
             {
                 Notification.Show("该图不存在于该osu!db中", Title);
