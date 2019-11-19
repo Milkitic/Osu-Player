@@ -21,9 +21,59 @@
         <converter:ButtonColorConverter x:Key="ButtonColorConverter" />
         <converter:BooleanToCursorConverter x:Key="BooleanToCursorConverter" />
         <converter:TrueToVisibleConverter x:Key="TrueToVisibleConverter" />
-        <system:Double x:Key="GalleryWidth">150</system:Double>
+        <system:Double x:Key="GalleryWidth">160</system:Double>
         <system:Double x:Key="GalleryHeight">220</system:Double>
         <QuinticEase x:Key="QuinticEaseOut" EasingMode="EaseOut" />
+        <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
+            <MenuItem
+                Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="播放...(Enter)"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding AutoTitle}"
+                Header="搜索标题"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding AutoArtist}"
+                Header="搜索艺术家"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding SongSource}"
+                Header="搜索来源"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding Creator}"
+                Header="搜索作者"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.OpenSourceFolderCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="打开所在目录(Ctrl+O)"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.OpenScorePageCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="打开成绩页"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.SaveCollectionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="收藏至...(Ctrl+S)"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.ExportCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="导出"
+                Style="{StaticResource DefaultMenuItem}" />
+        </ContextMenu>
     </Page.Resources>
     <Page.DataContext>
         <viewModels:SearchPageViewModel />
@@ -101,7 +151,7 @@
             ItemContainerStyle="{StaticResource GridView}"
             MouseDoubleClick="ResultList_MouseDoubleClick"
             Visibility="Collapsed">
-            <ListView.ContextMenu>
+            <!--<ListView.ContextMenu>
                 <ContextMenu Style="{StaticResource DefaultContextMenu}">
                     <MenuItem
                         x:Name="ItemPlay"
@@ -152,10 +202,10 @@
                         Header="打开所在目录"
                         Style="{DynamicResource DefaultMenuItem}" />
                 </ContextMenu>
-            </ListView.ContextMenu>
+            </ListView.ContextMenu>-->
             <ListView.Resources>
                 <DataTemplate x:Key="TitleSourceDt">
-                    <StackPanel>
+                    <StackPanel ContextMenu="{StaticResource DataModelListContextMenu}">
                         <Label
                             Margin="15,7,0,7"
                             VerticalAlignment="Center"
@@ -215,6 +265,7 @@
         <ListBox
             x:Name="ResultCardList"
             Grid.Row="2"
+            Padding="3,0"
             Background="Transparent"
             BorderThickness="0"
             ItemsSource="{Binding DisplayedMaps, Mode=OneWay}">
@@ -230,74 +281,25 @@
             </ListBox.ItemsPanel>
             <ListBox.Resources>
                 <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
-                    <Button Cursor="Hand">
+                    <Button
+                        Command="{Binding DataContext.DirectPlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                        CommandParameter="{Binding}"
+                        Cursor="Hand">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Grid
                                     x:Name="mainGrid"
                                     Width="{StaticResource GalleryWidth}"
                                     Height="{StaticResource GalleryHeight}"
+                                    ContextMenu="{StaticResource DataModelListContextMenu}"
                                     RenderTransformOrigin="0.5,0.5">
-                                    <Grid.ContextMenu>
-                                        <ContextMenu Style="{StaticResource DefaultContextMenu}">
-                                            <MenuItem
-                                                x:Name="ItemPlay"
-                                                Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                                                CommandParameter="{Binding}"
-                                                Header="播放..."
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <Separator />
-                                            <MenuItem
-                                                x:Name="ItemCollect"
-                                                Click="ItemCollect_Click"
-                                                Header="收藏..."
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <MenuItem
-                                                x:Name="ItemExport"
-                                                Click="ItemExport_Click"
-                                                Header="导出"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <Separator />
-                                            <MenuItem
-                                                x:Name="ItemSearchTitle"
-                                                Click="ItemSearchTitle_Click"
-                                                Header="搜索该标题"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <MenuItem
-                                                x:Name="ItemSearchArtist"
-                                                Click="ItemSearchArtist_Click"
-                                                Header="搜索该艺术家"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <MenuItem
-                                                x:Name="ItemSearchSource"
-                                                Click="ItemSearchSource_Click"
-                                                Header="搜索该来源"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <MenuItem
-                                                x:Name="ItemSearchMapper"
-                                                Click="ItemSearchMapper_Click"
-                                                Header="搜索该作者"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <Separator />
-                                            <MenuItem
-                                                x:Name="ItemSet"
-                                                Click="ItemSet_Click"
-                                                Header="打开成绩页"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <MenuItem
-                                                x:Name="ItemFolder"
-                                                Click="ItemFolder_Click"
-                                                Header="打开所在目录"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                        </ContextMenu>
-                                    </Grid.ContextMenu>
                                     <Grid.RenderTransform>
                                         <ScaleTransform ScaleX="1" ScaleY="1" />
                                     </Grid.RenderTransform>
                                     <Border
                                         x:Name="dropDownBorder"
                                         Grid.RowSpan="3"
-                                        Margin="5"
+                                        Margin="3"
                                         Background="#FBFBFB"
                                         BorderThickness="1"
                                         Visibility="Collapsed">
@@ -311,7 +313,7 @@
                                         </Border.Effect>
                                     </Border>
                                     <Border
-                                        Margin="5"
+                                        Margin="3"
                                         BorderBrush="#20646464"
                                         BorderThickness="1">
                                         <Grid x:Name="cardGrid" Background="#FBFBFB">
@@ -324,8 +326,14 @@
                                                 Height="{StaticResource GalleryWidth}"
                                                 Margin="5"
                                                 Background="#F0F0F0" />
-                                            <Label Grid.Row="1" Content="{Binding AutoArtist}" />
-                                            <Label Grid.Row="2" Content="{Binding AutoTitle}" />
+                                            <TextBlock
+                                                Grid.Row="1"
+                                                Margin="5,1"
+                                                Text="{Binding AutoArtist}" />
+                                            <TextBlock
+                                                Grid.Row="2"
+                                                Margin="5,1"
+                                                Text="{Binding AutoTitle}" />
                                         </Grid>
                                     </Border>
                                 </Grid>
