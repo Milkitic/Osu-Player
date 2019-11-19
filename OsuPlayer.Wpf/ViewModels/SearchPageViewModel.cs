@@ -1,7 +1,15 @@
-﻿using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Metadata;
+using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.Windows;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
+using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,16 +19,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 using System.Windows.Markup;
 using System.Xaml;
-using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Control.FrontDialog;
-using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Windows;
-using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.ViewModels
 {
