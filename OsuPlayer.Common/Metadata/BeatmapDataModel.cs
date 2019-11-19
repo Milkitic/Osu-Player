@@ -1,4 +1,5 @@
-﻿using Milky.WpfApi.Collections;
+﻿using System;
+using Milky.WpfApi.Collections;
 using osu.Shared;
 using OSharp.Beatmap;
 using OSharp.Beatmap.MetaData;
@@ -7,6 +8,11 @@ namespace Milky.OsuPlayer.Common.Metadata
 {
     public class BeatmapDataModel : NumberableModel, IMapIdentifiable
     {
+        public BeatmapDataModel()
+        {
+
+        }
+
         public string Artist { get; set; }
         public string ArtistUnicode { get; set; }
         public string Title { get; set; }
@@ -35,5 +41,6 @@ namespace Milky.OsuPlayer.Common.Metadata
         public string ExportTime { get; set; }
         public string ExportFile { get; set; }
         public bool InOwnDb { get; set; }
+        public Guid BeatmapDbId { get; set; }
     }
 }

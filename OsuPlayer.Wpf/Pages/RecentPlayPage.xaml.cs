@@ -19,7 +19,6 @@ using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Utils;
-using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 
 namespace Milky.OsuPlayer.Pages
 {

@@ -126,7 +126,7 @@ namespace Milky.OsuPlayer.Windows
         private bool IsMapFavorite(MapInfo info)
         {
             var album = _appDbOperator.GetCollectionsByMap(info);
-            bool isFavorite = album != null && album.Any(k => k.Locked);
+            bool isFavorite = album != null && album.Any(k => k.LockedBool);
 
             return isFavorite;
         }
@@ -394,7 +394,8 @@ namespace Milky.OsuPlayer.Windows
 
         private void Controller_OnLikeClick(object sender, RoutedEventArgs e)
         {
-            var entry = _beatmapDbOperator.GetBeatmapByIdentifiable(Services.Get<PlayerList>().CurrentIdentity);
+            var id = Services.Get<PlayerList>().CurrentIdentity;
+            var entry = _beatmapDbOperator.GetBeatmapByIdentifiable(id);
             if (entry == null)
             {
                 Notification.Show("该图不存在于该osu!db中", Title);

@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Common.Data.EF;
 using Milky.WpfApi;
-using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 
 namespace Milky.OsuPlayer.Common.Player
 {
