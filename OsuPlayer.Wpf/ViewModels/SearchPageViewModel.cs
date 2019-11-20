@@ -202,6 +202,7 @@ namespace Milky.OsuPlayer.ViewModels
                 page.IsActivated = true;
 
             CurrentPage = page;
+            GalleryWrapPanel.ClearNotificationCount();
             DisplayedMaps = SearchedMaps.Skip(nowIndex * MaxListCount).Take(MaxListCount).ToList();
         }
 
@@ -267,7 +268,7 @@ namespace Milky.OsuPlayer.ViewModels
                     var fileName = beatmap.InOwnDb
                         ? Path.Combine(Domain.CustomSongPath, map.FolderName)
                         : Path.Combine(Domain.OsuSongPath, map.FolderName);
-                    if (!File.Exists(fileName))
+                    if (!Directory.Exists(fileName))
                     {
                         Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
                         return;
@@ -364,6 +365,8 @@ namespace Milky.OsuPlayer.ViewModels
                 });
             }
         }
+
+        public VirtualizingGalleryWrapPanel GalleryWrapPanel { get; set; }
 
         private Beatmap GetHighestSrBeatmap(IMapIdentifiable beatmap)
         {
