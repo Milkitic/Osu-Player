@@ -74,7 +74,13 @@ namespace Milky.OsuPlayer.Utils
                 return null;
             }
 
-            var osuFile = await OSharp.Beatmap.OsuFile.ReadFromFileAsync(@"\\?\" + osuFilePath).ConfigureAwait(false);
+            var osuFile = await OSharp.Beatmap.OsuFile.ReadFromFileAsync(@"\\?\" + osuFilePath, options =>
+                {
+                    options.IncludeSection("Events");
+                    options.IgnoreSample();
+                    options.IgnoreStoryboard();
+                })
+                .ConfigureAwait(false);
             var guidStr = Guid.NewGuid().ToString();
 
             var sourceBgFile = osuFile.Events?.BackgroundInfo?.Filename;

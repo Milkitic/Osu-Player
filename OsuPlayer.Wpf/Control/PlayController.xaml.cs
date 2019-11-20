@@ -304,7 +304,7 @@ namespace Milky.OsuPlayer.Control
             {
                 try
                 {
-                    var osuFile = await OsuFile.ReadFromFileAsync(path); //50 ms
+                    var osuFile = await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor")); //50 ms
                     var fi = new FileInfo(path);
                     if (!fi.Exists)
                         throw new FileNotFoundException("Cannot locate.", fi.FullName);

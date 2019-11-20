@@ -83,7 +83,13 @@ namespace Milky.OsuPlayer.Common.Scanning
                     return;
                 try
                 {
-                    var osuFile = await OsuFile.ReadFromFileAsync(@"\\?\" + fileInfo.FullName);
+                    var osuFile = await OsuFile.ReadFromFileAsync(@"\\?\" + fileInfo.FullName,
+                        options =>
+                        {
+                            options.IncludeSection("General", "Metadata", "HitObjects", "Events");
+                            options.IgnoreSample();
+                            options.IgnoreStoryboard();
+                        });
                     var beatmap = GetBeatmapObj(osuFile, fileInfo);
                     beatmaps.Add(beatmap);
                 }

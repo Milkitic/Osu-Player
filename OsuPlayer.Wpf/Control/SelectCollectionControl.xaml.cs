@@ -81,7 +81,12 @@ namespace Milky.OsuPlayer.Control
                     ? Path.Combine(Domain.CustomSongPath, first.FolderName)
                     : Path.Combine(Domain.OsuSongPath, first.FolderName);
                 var filePath = Path.Combine(dir, first.BeatmapFileName);
-                var osuFile = await OsuFile.ReadFromFileAsync(@"\\?\" + filePath);
+                var osuFile = await OsuFile.ReadFromFileAsync(@"\\?\" + filePath, options =>
+                {
+                    options.IncludeSection("Events");
+                    options.IgnoreSample();
+                    options.IgnoreStoryboard();
+                });
                 if (osuFile.Events.BackgroundInfo != null)
                 {
                     var imgPath = Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
