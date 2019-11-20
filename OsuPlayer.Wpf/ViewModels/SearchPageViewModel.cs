@@ -264,7 +264,9 @@ namespace Milky.OsuPlayer.ViewModels
                     var beatmap = (BeatmapDataModel)param;
                     var map = GetHighestSrBeatmap(beatmap);
                     if (map == null) return;
-                    var fileName = Path.Combine(Domain.OsuSongPath, map.FolderName);
+                    var fileName = beatmap.InOwnDb
+                        ? Path.Combine(Domain.CustomSongPath, map.FolderName)
+                        : Path.Combine(Domain.OsuSongPath, map.FolderName);
                     if (!File.Exists(fileName))
                     {
                         Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");

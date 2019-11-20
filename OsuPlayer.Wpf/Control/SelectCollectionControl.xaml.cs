@@ -77,13 +77,14 @@ namespace Milky.OsuPlayer.Control
             if (string.IsNullOrEmpty(col.ImagePath))
             {
                 var first = entries[0];
-                var osuFile =
-                    await OsuFile.ReadFromFileAsync(Path.Combine(Domain.OsuSongPath, first.FolderName,
-                        first.BeatmapFileName));
+                var dir = first.InOwnFolder
+                    ? Path.Combine(Domain.CustomSongPath, first.FolderName)
+                    : Path.Combine(Domain.OsuSongPath, first.FolderName);
+                var filePath = Path.Combine(dir, first.BeatmapFileName);
+                var osuFile = await OsuFile.ReadFromFileAsync(@"\\?\" + filePath);
                 if (osuFile.Events.BackgroundInfo != null)
                 {
-                    var imgPath = Path.Combine(Domain.OsuSongPath, first.FolderName,
-                        osuFile.Events.BackgroundInfo.Filename);
+                    var imgPath = Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
                     if (File.Exists(imgPath))
                     {
                         col.ImagePath = imgPath;

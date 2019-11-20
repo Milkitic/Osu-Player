@@ -42,7 +42,12 @@ namespace Milky.OsuPlayer.Common
         public static string PluginPath => Path.Combine(ExternalPath, "Plugins");
 
         public static string CustomSongPath => AppSettings.Default == null ? null : new FileInfo(AppSettings.Default.General.CustomSongsPath).FullName;
-        public static string OsuPath => AppSettings.Default == null ? null : new FileInfo(AppSettings.Default.General.DbPath).Directory.FullName;
+        public static string OsuPath =>
+            AppSettings.Default == null
+                ? null
+                : (AppSettings.Default.General.DbPath == null
+                    ? null
+                    : new FileInfo(AppSettings.Default.General.DbPath).Directory.FullName);
         public static string OsuSongPath => OsuPath == null ? null : Path.Combine(OsuPath, "Songs");
     }
 }

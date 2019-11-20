@@ -187,7 +187,16 @@ namespace Milky.OsuPlayer.Pages
             if (MapList.SelectedItem == null)
                 return;
             var searchInfo = (BeatmapDataModel)MapList.SelectedItem;
-            Process.Start(Path.Combine(Domain.OsuSongPath, searchInfo.FolderName));
+            var dir = searchInfo.InOwnDb
+                ? Path.Combine(Domain.CustomSongPath, searchInfo.FolderName)
+                : Path.Combine(Domain.OsuSongPath, searchInfo.FolderName);
+            if (!Directory.Exists(dir))
+            {
+                Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
+                return;
+            }
+
+            Process.Start(dir);
         }
 
         private async void PlaySelected()

@@ -89,7 +89,9 @@ namespace Milky.OsuPlayer.Pages
         {
             try
             {
-                string folder = Path.Combine(Domain.OsuSongPath, entry.FolderName);
+                var folder = entry.InOwnFolder
+                    ? Path.Combine(Domain.CustomSongPath, entry.FolderName)
+                    : Path.Combine(Domain.OsuSongPath, entry.FolderName);
                 var mp3FileInfo = new FileInfo(Path.Combine(folder, entry.AudioFileName));
                 var osuFile = await OsuFile.ReadFromFileAsync(Path.Combine(folder, entry.BeatmapFileName));
                 var bgFileInfo = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));

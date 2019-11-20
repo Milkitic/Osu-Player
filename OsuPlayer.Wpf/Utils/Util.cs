@@ -68,7 +68,7 @@ namespace Milky.OsuPlayer.Utils
             var osuFilePath = dataModel.InOwnDb
                 ? Path.Combine(Domain.OwnSongsPath, dataModel.FolderName, dataModel.BeatmapFileName)
                 : Path.Combine(Domain.OsuSongPath, dataModel.FolderName, dataModel.BeatmapFileName);
-            var osuFile = await OSharp.Beatmap.OsuFile.ReadFromFileAsync(osuFilePath).ConfigureAwait(false);
+            var osuFile = await OSharp.Beatmap.OsuFile.ReadFromFileAsync(@"\\?\" + osuFilePath).ConfigureAwait(false);
             var guidStr = Guid.NewGuid().ToString();
 
             var sourceBgFile = osuFile.Events?.BackgroundInfo?.Filename;
@@ -137,7 +137,7 @@ namespace Milky.OsuPlayer.Utils
             }
 
             result.StreamSource = new MemoryStream(imageData);
-            result.CreateOptions = BitmapCreateOptions.None;
+            result.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
             result.CacheOption = BitmapCacheOption.Default;
             result.EndInit();
             return result;
