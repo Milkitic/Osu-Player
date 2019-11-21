@@ -17,7 +17,9 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Control.Notification;
@@ -34,6 +36,14 @@ namespace Milky.OsuPlayer.Pages
         private IEnumerable<Beatmap> _entries;
         private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
         private AppDbOperator _appDbOperator = new AppDbOperator();
+
+        private static Binding _sourceBinding = new Binding(nameof(CollectionPageViewModel.DisplayedBeatmaps))
+        {
+            Mode = BindingMode.OneWay
+        };
+
+        private static bool _minimal = false;
+
         public CollectionPageViewModel ViewModel { get; set; }
         public string Id { get; set; }
 
@@ -44,6 +54,7 @@ namespace Milky.OsuPlayer.Pages
 
             ViewModel = (CollectionPageViewModel)this.DataContext;
         }
+
         public CollectionPage(string colId) : this()
         {
             UpdateView(colId);
@@ -67,6 +78,27 @@ namespace Milky.OsuPlayer.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            var minimal = AppSettings.Default.Interface.MinimalMode;
+            if (minimal != _minimal)
+            {
+                if (minimal)
+                {
+                    MapCardList.ItemsSource = null;
+                    MapList.SetBinding(ItemsControl.ItemsSourceProperty, _sourceBinding);
+                    MapCardList.Visibility = Visibility.Collapsed;
+                    MapList.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    MapList.ItemsSource = null;
+                    MapCardList.SetBinding(ItemsControl.ItemsSourceProperty, _sourceBinding);
+                    MapList.Visibility = Visibility.Collapsed;
+                    MapCardList.Visibility = Visibility.Visible;
+                }
+
+                _minimal = minimal;
+            }
+
             var item = ViewModel.Beatmaps?.FirstOrDefault(k =>
                 k.GetIdentity().Equals(Services.Get<PlayerList>()?.CurrentInfo?.Identity));
             if (item != null)
@@ -240,6 +272,16 @@ namespace Milky.OsuPlayer.Pages
         }
 
         private void BtnPlayAll_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
+        {
+
+        }
+
+        private void Panel_Loaded(object sender, RoutedEventArgs e)
         {
 
         }

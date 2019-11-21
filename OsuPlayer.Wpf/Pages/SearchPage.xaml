@@ -15,7 +15,9 @@
     Title="SearchPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    Initialized="CurrentPage_Initialized"
     KeepAlive="True"
+    Loaded="CurrentPage_Loaded"
     mc:Ignorable="d">
     <Page.Resources>
         <converter:ButtonColorConverter x:Key="ButtonColorConverter" />
@@ -24,6 +26,16 @@
         <system:Double x:Key="GalleryWidth">160</system:Double>
         <system:Double x:Key="GalleryHeight">220</system:Double>
         <QuinticEase x:Key="QuinticEaseOut" EasingMode="EaseOut" />
+        <!--<Style
+            x:Key="SongsContextMenu"
+            BasedOn="{StaticResource DefaultContextMenu}"
+            TargetType="ContextMenu">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                    <Setter Property="DataContext" Value="{Binding}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>-->
         <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
             <MenuItem
                 Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
@@ -73,6 +85,7 @@
                 CommandParameter="{Binding}"
                 Header="导出"
                 Style="{StaticResource DefaultMenuItem}" />
+
         </ContextMenu>
     </Page.Resources>
     <Page.DataContext>
@@ -150,61 +163,9 @@
             BorderThickness="0"
             ItemContainerStyle="{StaticResource GridView}"
             Visibility="Collapsed">
-            <!--<ListView.ContextMenu>
-                <ContextMenu Style="{StaticResource DefaultContextMenu}">
-                    <MenuItem
-                        x:Name="ItemPlay"
-                        Click="ItemPlay_Click"
-                        Header="播放..."
-                        Style="{DynamicResource DefaultMenuItem}" />
-                    <Separator />
-                    <MenuItem
-                        x:Name="ItemCollect"
-                        Click="ItemCollect_Click"
-                        Header="收藏..."
-                        Style="{DynamicResource DefaultMenuItem}" />
-                    <MenuItem
-                        x:Name="ItemExport"
-                        Click="ItemExport_Click"
-                        Header="导出"
-                        Style="{DynamicResource DefaultMenuItem}" />
-                    <Separator />
-                    <MenuItem
-                        x:Name="ItemSearchTitle"
-                        Click="ItemSearchTitle_Click"
-                        Header="搜索该标题"
-                        Style="{DynamicResource DefaultMenuItem}" />
-                    <MenuItem
-                        x:Name="ItemSearchArtist"
-                        Click="ItemSearchArtist_Click"
-                        Header="搜索该艺术家"
-                        Style="{DynamicResource DefaultMenuItem}" />
-                    <MenuItem
-                        x:Name="ItemSearchSource"
-                        Click="ItemSearchSource_Click"
-                        Header="搜索该来源"
-                        Style="{DynamicResource DefaultMenuItem}" />
-                    <MenuItem
-                        x:Name="ItemSearchMapper"
-                        Click="ItemSearchMapper_Click"
-                        Header="搜索该作者"
-                        Style="{DynamicResource DefaultMenuItem}" />
-                    <Separator />
-                    <MenuItem
-                        x:Name="ItemSet"
-                        Click="ItemSet_Click"
-                        Header="打开成绩页"
-                        Style="{DynamicResource DefaultMenuItem}" />
-                    <MenuItem
-                        x:Name="ItemFolder"
-                        Click="ItemFolder_Click"
-                        Header="打开所在目录"
-                        Style="{DynamicResource DefaultMenuItem}" />
-                </ContextMenu>
-            </ListView.ContextMenu>-->
             <ListView.Resources>
                 <DataTemplate x:Key="TitleSourceDt">
-                    <StackPanel ContextMenu="{StaticResource DataModelListContextMenu}">
+                    <StackPanel Background="Transparent">
                         <Label
                             Margin="15,7,0,7"
                             VerticalAlignment="Center"
@@ -270,7 +231,6 @@
             ItemsSource="{Binding DisplayedMaps, Mode=OneWay}">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <!--<local:VirtualizingWrapPanel ScrollOffset="50" ChildHeight="70" ChildWidth="70"/>-->
                     <control:VirtualizingGalleryWrapPanel
                         ChildHeight="{StaticResource GalleryHeight}"
                         ChildWidth="{StaticResource GalleryWidth}"
@@ -292,7 +252,8 @@
                                     Width="{StaticResource GalleryWidth}"
                                     Height="{StaticResource GalleryHeight}"
                                     ContextMenu="{StaticResource DataModelListContextMenu}"
-                                    RenderTransformOrigin="0.5,0.5">
+                                    RenderTransformOrigin="0.5,0.5"
+                                    ToolTip="{StaticResource DataModelListToolTip}">
                                     <Grid.RenderTransform>
                                         <ScaleTransform ScaleX="1" ScaleY="1" />
                                     </Grid.RenderTransform>

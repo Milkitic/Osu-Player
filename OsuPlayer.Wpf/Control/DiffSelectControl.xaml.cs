@@ -36,7 +36,7 @@ namespace Milky.OsuPlayer.Control
             }
         }
 
-        public Action<Beatmap> Callback { get; set; }
+        public Action<Beatmap, CallbackObj> Callback { get; set; }
 
         public ICommand SelectCommand
         {
@@ -45,11 +45,18 @@ namespace Milky.OsuPlayer.Control
                 return new DelegateCommand(obj =>
                 {
                     var selectedMap = Entries.FirstOrDefault(k => k.Version == (string)obj);
-                    Callback?.Invoke(selectedMap);
-                    FrontDialogOverlay.Default.RaiseCancel();
+                    var callbackObj = new CallbackObj();
+                    Callback?.Invoke(selectedMap, callbackObj);
+                    if (!callbackObj.Handled)
+                        FrontDialogOverlay.Default.RaiseCancel();
                 });
             }
         }
+    }
+
+    public class CallbackObj
+    {
+        public bool Handled { get; set; } = false;
     }
 
     /// <summary>
@@ -58,7 +65,7 @@ namespace Milky.OsuPlayer.Control
     public partial class DiffSelectControl : UserControl
     {
         private readonly DiffSelectPageViewModel _viewModel;
-        public DiffSelectControl(IEnumerable<Beatmap> entries, Action<Beatmap> onSelect)
+        public DiffSelectControl(IEnumerable<Beatmap> entries, Action<Beatmap, CallbackObj> onSelect)
         {
             InitializeComponent();
 

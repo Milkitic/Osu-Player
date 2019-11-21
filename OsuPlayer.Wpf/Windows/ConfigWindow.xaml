@@ -71,6 +71,11 @@
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:PlayPage}" />
                     <control:SwitchRadio
+                        Content="界面"
+                        Style="{StaticResource ConfigSwitchRadio}"
+                        TargetFrameControl="MainFrame"
+                        TargetPageType="{x:Type settings:InterfacePage}" />
+                    <control:SwitchRadio
                         Content="热键"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"

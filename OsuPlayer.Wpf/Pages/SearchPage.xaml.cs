@@ -14,7 +14,9 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Control.FrontDialog;
@@ -33,25 +35,55 @@ namespace Milky.OsuPlayer.Pages
 
         public SearchPageViewModel ViewModel { get; set; }
 
+        private static Binding _sourceBinding = new Binding(nameof(SearchPageViewModel.DisplayedMaps))
+        {
+            Mode = BindingMode.OneWay
+        };
+
+        private static bool _minimal = false;
         public SearchPage()
         {
-            InitializeComponent();
-            _mainWindow = (MainWindow)Application.Current.MainWindow; ;
+            _mainWindow = (MainWindow)Application.Current.MainWindow;
             _beatmapDbOperator = new BeatmapDbOperator();
 
-            ViewModel = (SearchPageViewModel)DataContext;
-            SearchBox.Text = "";
+            InitializeComponent();
         }
-
-        //private async void Page_Initialized(object sender, EventArgs e)
-        //{
-        //    await ViewModel.PlayListQueryAsync();
-        //}
 
         public SearchPage Search(string keyword)
         {
             SearchBox.Text = keyword;
             return this;
+        }
+
+        private async void CurrentPage_Initialized(object sender, EventArgs e)
+        {
+            ViewModel = (SearchPageViewModel)DataContext;
+            await ViewModel.PlayListQueryAsync();
+        }
+
+        private async void CurrentPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            var minimal = AppSettings.Default.Interface.MinimalMode;
+            if (minimal != _minimal)
+            {
+                if (minimal)
+                {
+                    ResultCardList.ItemsSource = null;
+                    ResultList.SetBinding(ItemsControl.ItemsSourceProperty, _sourceBinding);
+                    ResultCardList.Visibility = Visibility.Collapsed;
+                    ResultList.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ResultList.ItemsSource = null;
+                    ResultCardList.SetBinding(ItemsControl.ItemsSourceProperty, _sourceBinding);
+                    ResultList.Visibility = Visibility.Collapsed;
+                    ResultCardList.Visibility = Visibility.Visible;
+                }
+
+                _minimal = minimal;
+                await ViewModel.PlayListQueryAsync();
+            }
         }
 
         private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)

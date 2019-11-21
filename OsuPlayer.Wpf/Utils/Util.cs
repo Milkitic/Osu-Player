@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -58,6 +59,9 @@ namespace Milky.OsuPlayer.Utils
             return result;
         }
 
+        private static readonly object CountLock = new object();
+        private static int _thumbCount;
+
         public static async Task<string> GetThumbByBeatmapDbId(BeatmapDataModel dataModel)
         {
             if (_appDbOperator.GetMapThumb(dataModel.BeatmapDbId, out var path) && path != null)
@@ -66,13 +70,18 @@ namespace Milky.OsuPlayer.Utils
             }
 
             var osuFilePath = dataModel.InOwnDb
-                ? Path.Combine(Domain.OwnSongsPath, dataModel.FolderName, dataModel.BeatmapFileName)
+                ? Path.Combine(Domain.CustomSongPath, dataModel.FolderName, dataModel.BeatmapFileName)
                 : Path.Combine(Domain.OsuSongPath, dataModel.FolderName, dataModel.BeatmapFileName);
 
             if (!File.Exists(osuFilePath))
             {
                 return null;
             }
+
+            //lock (CountLock)
+            //{
+            //    _thumbCount++;
+            //}
 
             var osuFile = await OSharp.Beatmap.OsuFile.ReadFromFileAsync(@"\\?\" + osuFilePath, options =>
                 {
@@ -83,6 +92,11 @@ namespace Milky.OsuPlayer.Utils
                 .ConfigureAwait(false);
             var guidStr = Guid.NewGuid().ToString();
 
+            //lock (CountLock)
+            //{
+            //    _thumbCount--;
+            //}
+
             var sourceBgFile = osuFile.Events?.BackgroundInfo?.Filename;
             if (string.IsNullOrWhiteSpace(sourceBgFile))
             {
@@ -91,7 +105,7 @@ namespace Milky.OsuPlayer.Utils
             }
 
             var sourceBgPath = dataModel.InOwnDb
-                ? Path.Combine(Domain.OwnSongsPath, dataModel.FolderName, sourceBgFile)
+                ? Path.Combine(Domain.CustomSongPath, dataModel.FolderName, sourceBgFile)
                 : Path.Combine(Domain.OsuSongPath, dataModel.FolderName, sourceBgFile);
             if (!File.Exists(sourceBgPath))
             {

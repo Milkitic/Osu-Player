@@ -191,6 +191,9 @@
     </Compile>
     <Compile Include="Converter\IconColorConverter.cs" />
     <Compile Include="DialogOptionFactory.cs" />
+    <Compile Include="Pages\Settings\InterfacePage.xaml.cs">
+      <DependentUpon>InterfacePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils\GridViewHelper.cs" />
     <Compile Include="Control\MaxButton.cs" />
     <Compile Include="Control\MinButton.cs" />
@@ -385,11 +388,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\Settings\InterfacePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles\BrushDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\ButtonDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\Components.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

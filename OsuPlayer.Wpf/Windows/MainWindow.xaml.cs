@@ -199,10 +199,10 @@ namespace Milky.OsuPlayer.Windows
                 });
                 //WelcomeControl.Show();
                 await Services.Get<OsuDbInst>().LoadLocalDbAsync();
+                await Services.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Default.General.CustomSongsPath);
             }
             else
             {
-                await Services.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Default.General.CustomSongsPath);
                 if (DateTime.Now - AppSettings.Default.LastTimeScanOsuDb > TimeSpan.FromDays(1))
                 {
                     await Services.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, true);

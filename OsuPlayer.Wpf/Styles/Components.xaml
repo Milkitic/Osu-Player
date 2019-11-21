@@ -1,0 +1,66 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Milky.OsuPlayer.Styles"
+                    xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels">
+    <Style TargetType="{x:Type ToolTip}">
+        <Setter Property="Background" Value="#F8F8F8" />
+        <Setter Property="BorderBrush" Value="#40646464" />
+        <Setter Property="Margin" Value="5" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Opacity" Value="0.95" />
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect
+                        BlurRadius="5"
+                        Opacity="0.3"
+                        ShadowDepth="0" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <ToolTip x:Key="DataModelListToolTip">
+        <ToolTip.Resources>
+            <Style x:Key="ToolTipPrefix" TargetType="{x:Type Label}">
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="FontSize" Value="9" />
+                <Setter Property="Foreground" Value="#848484" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+            </Style>
+        </ToolTip.Resources>
+        <Border Padding="5">
+            <Border.Background>
+                <ImageBrush
+                        ImageSource="{StaticResource TextureSource2}"
+                        Opacity="0.3"
+                        TileMode="Tile"
+                        Viewport="0,0,500,500"
+                        ViewportUnits="Absolute" />
+            </Border.Background>
+            <StackPanel>
+                <Border Height="150" Margin="5">
+                    <Image
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Source="{Binding ThumbPath}"
+                            Stretch="UniformToFill" />
+                </Border>
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="ARTIST" Style="{StaticResource ToolTipPrefix}" />
+                    <Label Content="{Binding AutoArtist}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="TITLE" Style="{StaticResource ToolTipPrefix}" />
+                    <Label Content="{Binding AutoTitle}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="SOURCE" Style="{StaticResource ToolTipPrefix}" />
+                    <Label Content="{Binding SongSource}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="CREATOR" Style="{StaticResource ToolTipPrefix}" />
+                    <Label Content="{Binding Creator}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </ToolTip>
+</ResourceDictionary>

@@ -25,6 +25,7 @@
                 <ResourceDictionary Source="Control/Buttons.xaml" />
                 <ResourceDictionary Source="Styles/ScrollBarStyle.xaml" />
                 <ResourceDictionary Source="Themes/Generic.xaml" />
+                <ResourceDictionary Source="Styles/Components.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

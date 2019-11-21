@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
@@ -10,5 +11,20 @@ namespace Milky.OsuPlayer.Common.Configuration
         public bool? ExitWhenClosed { get; set; } = null;
         public bool FirstOpen { get; set; } = true;
         public double[] MiniPosition { get; set; }
+    }
+
+    public class InterfaceControl : ViewModelBase
+    {
+        private bool _minimalMode = false;
+
+        public bool MinimalMode
+        {
+            get => _minimalMode;
+            set
+            {
+                _minimalMode = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }

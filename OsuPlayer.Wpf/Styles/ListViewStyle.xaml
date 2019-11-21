@@ -62,6 +62,7 @@
         <!--<EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick" />-->
         <Setter Property="Padding" Value="0" />
         <Setter Property="Background" Value="#b0fafafa" />
+        <Setter Property="ContextMenu" Value="{DynamicResource DataModelListContextMenu}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListViewItem}">
