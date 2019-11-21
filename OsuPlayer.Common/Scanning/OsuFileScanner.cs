@@ -86,7 +86,7 @@ namespace Milky.OsuPlayer.Common.Scanning
                     var osuFile = await OsuFile.ReadFromFileAsync(@"\\?\" + fileInfo.FullName,
                         options =>
                         {
-                            options.IncludeSection("General", "Metadata", "HitObjects", "Events");
+                            options.IncludeSection("General", "Metadata", "TimingPoints", "Difficulty", "HitObjects", "Events");
                             options.IgnoreSample();
                             options.IgnoreStoryboard();
                         });
