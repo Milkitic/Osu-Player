@@ -281,6 +281,8 @@ SELECT collection.id,
                         ["name"] = collection.Name,
                         ["locked"] = collection.LockedBool ? 1 : 0,
                         ["index"] = collection.Index,
+                        ["imagePath"] = collection.ImagePath,
+                        ["description"] = collection.Description,
                         ["createTime"] = collection.CreateTime
                     },
                     new Where[] { ("id", collection.Id) },
