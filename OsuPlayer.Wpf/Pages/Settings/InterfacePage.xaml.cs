@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -32,6 +33,21 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void interface_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            AppSettings.SaveDefault();
+        }
+
+        private void InterfacePage_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            var l = I18nUtil.AvailableLangDic.Keys.ToList();
+            Language.ItemsSource = l;
+            Language.SelectedItem = I18nUtil.CurrentLocale.Key;
+        }
+
+        private void Language_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var locale = I18nUtil.AvailableLangDic[(string)e.AddedItems[0]];
+            I18nUtil.SwitchToLang(locale);
+            AppSettings.Default.Interface.Locale = locale;
             AppSettings.SaveDefault();
         }
     }

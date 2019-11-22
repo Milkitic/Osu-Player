@@ -111,13 +111,13 @@
                             Height="30"
                             Style="{StaticResource NavigationLabelStyle}"
                             Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
-                            <TextBlock Margin="5,0,0,0">库</TextBlock>
+                            <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-library}" />
                         </Label>
                         <control:SwitchRadio
                             x:Name="SwitchSearch"
                             Padding="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
                             CheckedIconColor="#4050A0"
-                            Content="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavText}, ConverterParameter=搜索}"
+                            Content="{DynamicResource ui-nav-search}"
                             IconTemplate="{StaticResource NavSearchTempl}"
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
@@ -134,13 +134,13 @@
                             Height="30"
                             Style="{StaticResource NavigationLabelStyle}"
                             Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
-                            <TextBlock Margin="5,0,0,0">我的</TextBlock>
+                            <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-mine}" />
                         </Label>
                         <control:SwitchRadio
                             x:Name="SwitchRecent"
                             Padding="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
                             CheckedIconColor="#A04090"
-                            Content="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavText}, ConverterParameter=最近播放}"
+                            Content="{DynamicResource ui-nav-recent}"
                             IconTemplate="{StaticResource NavHistoryTempl}"
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
@@ -148,14 +148,14 @@
                         <control:SwitchRadio
                             Padding="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
                             CheckedIconColor="#A09040"
-                            Content="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavText}, ConverterParameter=导出管理}"
+                            Content="{DynamicResource ui-nav-export}"
                             IconTemplate="{StaticResource NavExportTempl}"
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
                             TargetPageType="{x:Type pages:ExportPage}" />
                         <DockPanel Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
                             <Label Height="30" Style="{StaticResource NavigationLabelStyle}">
-                                <TextBlock Margin="5,0,0,0">收藏夹</TextBlock>
+                                <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-collection}" />
                             </Label>
                             <control:CommonButton
                                 Width="20"
@@ -318,7 +318,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="上一首" Style="{DynamicResource DefaultMenuItem}">
+                <MenuItem Header="{DynamicResource ui-prev}" Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
                         <Viewbox
                             Width="16"
@@ -339,7 +339,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="下一首" Style="{DynamicResource DefaultMenuItem}">
+                <MenuItem Header="{DynamicResource ui-next}" Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
                         <Viewbox
                             Width="16"
@@ -374,7 +374,7 @@
                 <MenuItem
                     x:Name="MenuConfig"
                     Click="MenuConfig_Click"
-                    Header="设置"
+                    Header="{DynamicResource ui-sets}"
                     Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
                         <Viewbox
@@ -397,7 +397,7 @@
                 <MenuItem
                     x:Name="MenuExit"
                     Click="MenuExit_Click"
-                    Header="退出"
+                    Header="{DynamicResource ui-exit}"
                     Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
                         <Viewbox

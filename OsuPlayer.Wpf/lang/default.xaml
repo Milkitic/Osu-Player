@@ -6,6 +6,18 @@
     <sys:String x:Key="ui-ok">确定</sys:String>
     <sys:String x:Key="ui-cancel">取消</sys:String>
     <sys:String x:Key="ui-play">播放</sys:String>
+    <sys:String x:Key="ui-prev">上一首</sys:String>
+    <sys:String x:Key="ui-next">下一首</sys:String>
     <sys:String x:Key="ui-pause">暂停</sys:String>
+    <sys:String x:Key="ui-lockLyric">锁定歌词</sys:String>
+    <sys:String x:Key="ui-unlockLyric">解锁歌词</sys:String>
+    <sys:String x:Key="ui-sets">设置</sys:String>
+    <sys:String x:Key="ui-exit">退出</sys:String>
     <sys:String x:Key="ui-sets-playing">播放</sys:String>
+    <sys:String x:Key="ui-nav-library">库</sys:String>
+    <sys:String x:Key="ui-nav-mine">我的</sys:String>
+    <sys:String x:Key="ui-nav-collection">收藏夹</sys:String>
+    <sys:String x:Key="ui-nav-search">搜索</sys:String>
+    <sys:String x:Key="ui-nav-recent">最近播放</sys:String>
+    <sys:String x:Key="ui-nav-export">导出管理</sys:String>
 </ResourceDictionary>

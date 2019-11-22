@@ -42,8 +42,8 @@
                 CommandParameter="{Binding}"
                 Style="{StaticResource DefaultMenuItem}">
                 <MenuItem.Header>
-                    <TextBlock >
-                        <Run Text="{DynamicResource ui-play}"/><Run Text="...(Enter)"/>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-play}" /><Run Text="...(Enter)" />
                     </TextBlock>
                 </MenuItem.Header>
             </MenuItem>
