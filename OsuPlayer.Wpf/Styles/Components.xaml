@@ -1,7 +1,8 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Milky.OsuPlayer.Styles"
-                    xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Milky.OsuPlayer.Styles"
+    xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels">
     <Style TargetType="{x:Type ToolTip}">
         <Setter Property="Background" Value="#F8F8F8" />
         <Setter Property="BorderBrush" Value="#40646464" />
@@ -11,9 +12,9 @@
         <Setter Property="Effect">
             <Setter.Value>
                 <DropShadowEffect
-                        BlurRadius="5"
-                        Opacity="0.3"
-                        ShadowDepth="0" />
+                    BlurRadius="5"
+                    Opacity="0.3"
+                    ShadowDepth="0" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -30,19 +31,19 @@
         <Border Padding="5">
             <Border.Background>
                 <ImageBrush
-                        ImageSource="{StaticResource TextureSource2}"
-                        Opacity="0.3"
-                        TileMode="Tile"
-                        Viewport="0,0,500,500"
-                        ViewportUnits="Absolute" />
+                    ImageSource="{StaticResource TextureSource2}"
+                    Opacity="0.3"
+                    TileMode="Tile"
+                    Viewport="0,0,500,500"
+                    ViewportUnits="Absolute" />
             </Border.Background>
             <StackPanel>
                 <Border Height="150" Margin="5">
                     <Image
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Source="{Binding ThumbPath}"
-                            Stretch="UniformToFill" />
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Source="{Binding ThumbPath}"
+                        Stretch="UniformToFill" />
                 </Border>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="ARTIST" Style="{StaticResource ToolTipPrefix}" />

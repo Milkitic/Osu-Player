@@ -5,19 +5,35 @@
     x:Name="UiLangInternal">
     <sys:String x:Key="ui-ok">确定</sys:String>
     <sys:String x:Key="ui-cancel">取消</sys:String>
+
     <sys:String x:Key="ui-play">播放</sys:String>
     <sys:String x:Key="ui-prev">上一首</sys:String>
     <sys:String x:Key="ui-next">下一首</sys:String>
     <sys:String x:Key="ui-pause">暂停</sys:String>
     <sys:String x:Key="ui-lockLyric">锁定歌词</sys:String>
     <sys:String x:Key="ui-unlockLyric">解锁歌词</sys:String>
+
     <sys:String x:Key="ui-sets">设置</sys:String>
     <sys:String x:Key="ui-exit">退出</sys:String>
+
     <sys:String x:Key="ui-sets-playing">播放</sys:String>
+
     <sys:String x:Key="ui-nav-library">库</sys:String>
     <sys:String x:Key="ui-nav-mine">我的</sys:String>
     <sys:String x:Key="ui-nav-collection">收藏夹</sys:String>
     <sys:String x:Key="ui-nav-search">搜索</sys:String>
     <sys:String x:Key="ui-nav-recent">最近播放</sys:String>
     <sys:String x:Key="ui-nav-export">导出管理</sys:String>
+
+    <sys:String x:Key="ui-openFileFolder">打开文件所在目录</sys:String>
+    <sys:String x:Key="ui-size">大小</sys:String>
+    <sys:String x:Key="ui-exportTime">导出时间</sys:String>
+    <sys:String x:Key="ui-exportPath">导出目录</sys:String>
+    <sys:String x:Key="ui-exporting">正在进行</sys:String>
+    <sys:String x:Key="ui-exported">已导出</sys:String>
+    <sys:String x:Key="ui-exportAgain">重新导出</sys:String>
+    <sys:String x:Key="ui-deleteExported">删除导出文件</sys:String>
+
+    <sys:String x:Key="ui-artist">艺术家</sys:String>
+    <sys:String x:Key="ui-title">标题</sys:String>
 </ResourceDictionary>

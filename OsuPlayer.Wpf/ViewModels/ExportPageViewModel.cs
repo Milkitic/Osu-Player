@@ -2,7 +2,6 @@
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.I18N;
 using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Utils;
@@ -21,28 +20,11 @@ namespace Milky.OsuPlayer.ViewModels
 {
     public class ExportPageViewModel : ViewModelBase
     {
-        public ExportPageViewModel()
-        {
-            _uiMetadata = Services.Get<UiMetadata>();
-        }
-
         private string _exportPath;
         private NumberableObservableCollection<BeatmapDataModel> _dataModelList;
         private IEnumerable<Beatmap> _entries;
-        private readonly UiMetadata _uiMetadata;
         private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
         private AppDbOperator _appDbOperator = new AppDbOperator();
-
-        public string UiStrExported => _uiMetadata.Exported;
-        public string UiStrExporting => _uiMetadata.Exporting;
-        public string UiStrExportPath => _uiMetadata.ExportPath;
-        public string UiStrTitle => _uiMetadata.Title;
-        public string UiStrArtist => _uiMetadata.Artist;
-        public string UiStrFileSize => _uiMetadata.FileSize;
-        public string UiStrExportTime => _uiMetadata.ExportTime;
-        public string UiStrDeleteExported => _uiMetadata.DeleteExported;
-        public string UiStrExportAgain => _uiMetadata.ExportAgain;
-        public string UiStrOpenFolder => _uiMetadata.OpenFileFolder;
 
         public NumberableObservableCollection<BeatmapDataModel> DataModelList
         {

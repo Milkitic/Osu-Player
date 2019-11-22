@@ -1,7 +1,6 @@
 ﻿using Microsoft.Win32;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.I18N;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Common.Scanning;
@@ -37,7 +36,6 @@ namespace Milky.OsuPlayer
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
             StartupConfig.Startup();
 
-            Services.TryAddInstance(new UiMetadata());
             var playerList = new PlayerList { PlayerMode = AppSettings.Default.Play.PlayerMode };
             Services.TryAddInstance(playerList);
             Services.TryAddInstance(new OsuDbInst());
