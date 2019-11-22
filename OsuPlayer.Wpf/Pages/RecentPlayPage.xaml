@@ -68,7 +68,7 @@
                                 <MenuItem
                                     x:Name="ItemPlay"
                                     Click="ItemPlay_Click"
-                                    Header="播放"
+                                    Header="{DynamicResource ui-play}"
                                     Style="{DynamicResource DefaultMenuItem}" />
                                 <!--<MenuItem x:Name="ItemNextPlay" Header="下一首播放" Click="ItemNextPlay_Click" />-->
                                 <Separator />

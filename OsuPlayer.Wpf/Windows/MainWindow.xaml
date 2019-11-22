@@ -297,7 +297,7 @@
             <!--<Popup x:Key="TrayStatusPopup"></Popup>-->
             <ContextMenu x:Key="TrayMenu" Style="{StaticResource DefaultContextMenu}">
                 <!--<ContextMenu x:Key="TrayMenu">-->
-                <MenuItem Header="播放" Style="{DynamicResource DefaultMenuItem}">
+                <MenuItem Header="{DynamicResource ui-play}" Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
                         <Viewbox
                             Width="16"

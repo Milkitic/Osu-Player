@@ -167,7 +167,7 @@
                         Margin="0"
                         Background="#F4F4F4"
                         Click="OK_Click"
-                        Content="确定"
+                        Content="{DynamicResource ui-ok}"
                         Style="{StaticResource SettingsButton}"
                         TextBlock.FontSize="13" />
                 </StackPanel>

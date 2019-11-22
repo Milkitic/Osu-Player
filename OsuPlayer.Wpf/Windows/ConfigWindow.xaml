@@ -66,7 +66,7 @@
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:GeneralPage}" />
                     <control:SwitchRadio
-                        Content="播放"
+                        Content="{DynamicResource ui-sets-playing}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:PlayPage}" />

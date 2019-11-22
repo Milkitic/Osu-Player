@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -57,6 +59,31 @@ namespace Milky.OsuPlayer.Utils
             var result = fbd.ShowDialog();
             path = fbd.FileName;
             return result;
+        }
+
+        public static IEnumerable<FileInfo> EnumerateFiles(string path, params string[] extName)
+        {
+            var lowerExtName = extName?.Select(k => k.ToLower()).ToArray();
+            DirectoryInfo currentDir = new DirectoryInfo(path);
+            //IEnumerable<string> subDirs = Directory.EnumerateDirectories(path).AsParallel(); // 目录列表                    
+            IEnumerable<FileInfo> files = currentDir.EnumerateFiles().AsParallel();
+
+            foreach (FileInfo f in files) // 显示当前目录所有文件   
+            {
+                if (lowerExtName == null || lowerExtName.Length == 0 || lowerExtName.Contains(f.Extension.ToLower()))
+                {
+                    yield return f;
+                }
+            }
+
+            //foreach (string d in subDirs)
+            //{
+            //    var subFiles = EnumerateFiles(d, extName);
+            //    foreach (var subFile in subFiles)
+            //    {
+            //        yield return subFile;
+            //    }
+            //}
         }
 
         private static readonly object CountLock = new object();
