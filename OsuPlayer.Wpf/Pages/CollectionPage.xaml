@@ -21,7 +21,63 @@
     <Page.Resources>
         <system:Double x:Key="GalleryWidth">160</system:Double>
         <system:Double x:Key="GalleryHeight">220</system:Double>
+        <QuinticEase x:Key="QuinticEaseOut" EasingMode="EaseOut" />
         <cvt:DateTimeConverter x:Key="CvtDate" />
+        <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
+            <MenuItem
+                Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="播放...(Enter)"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding AutoTitle}"
+                Header="搜索标题"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding AutoArtist}"
+                Header="搜索艺术家"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding SongSource}"
+                Header="搜索来源"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding Creator}"
+                Header="搜索作者"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.OpenSourceFolderCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="打开所在目录(Ctrl+O)"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.OpenScorePageCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="打开成绩页"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.SaveCollectionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="收藏至...(Ctrl+S)"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.ExportCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="导出"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.RemoveCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                Header="从列表中移除(Delete)"
+                Style="{StaticResource DefaultMenuItem}" />
+        </ContextMenu>
     </Page.Resources>
     <Page.DataContext>
         <viewModels:CollectionPageViewModel />
@@ -223,8 +279,8 @@
                                     x:Name="MapList"
                                     Background="{StaticResource WhiteBrush40}"
                                     BorderThickness="0"
-                                    Visibility="Collapsed"
-                                    ItemContainerStyle="{StaticResource GridView}">
+                                    ItemContainerStyle="{StaticResource GridView}"
+                                    Visibility="Collapsed">
                                     <ListView.ContextMenu>
                                         <ContextMenu Style="{StaticResource DefaultContextMenu}">
                                             <MenuItem
@@ -392,7 +448,7 @@
                                                                         <RowDefinition Height="auto" />
                                                                         <RowDefinition Height="auto" />
                                                                     </Grid.RowDefinitions>
-                                                                    <Border
+                                                                    <Grid
                                                                         Height="{StaticResource GalleryWidth}"
                                                                         Margin="5"
                                                                         Background="#F0F0F0">
@@ -401,7 +457,21 @@
                                                                             VerticalAlignment="Center"
                                                                             Source="{Binding ThumbPath}"
                                                                             Stretch="UniformToFill" />
-                                                                    </Border>
+                                                                        <Rectangle>
+                                                                            <Rectangle.Fill>
+                                                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                                                    <GradientStop Offset="0.5" Color="#00000000" />
+                                                                                    <GradientStop Offset="1" Color="#B0000000" />
+                                                                                </LinearGradientBrush>
+                                                                            </Rectangle.Fill>
+                                                                        </Rectangle>
+                                                                        <Label
+                                                                            VerticalAlignment="Bottom"
+                                                                            Content="{Binding Version}"
+                                                                            FontSize="13"
+                                                                            FontWeight="Bold"
+                                                                            Foreground="#F0F0F0" />
+                                                                    </Grid>
                                                                     <TextBlock
                                                                         Grid.Row="1"
                                                                         Margin="5,1"
