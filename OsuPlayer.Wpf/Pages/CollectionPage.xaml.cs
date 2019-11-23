@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Common;
+﻿using System;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
@@ -24,6 +25,7 @@ using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Control.Notification;
 using Milky.OsuPlayer.Utils;
+using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -276,9 +278,20 @@ namespace Milky.OsuPlayer.Pages
 
         }
 
-        private void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
+        private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
         {
+            var dataModel = ViewModel.DisplayedBeatmaps[e.Index];
+            try
+            {
+                var fileName = await Util.GetThumbByBeatmapDbId(dataModel).ConfigureAwait(false);
+                Execute.OnUiThread(() => dataModel.ThumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
 
+            Console.WriteLine(e.Index);
         }
 
         private void Panel_Loaded(object sender, RoutedEventArgs e)
