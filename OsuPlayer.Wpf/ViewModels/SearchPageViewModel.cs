@@ -1,7 +1,15 @@
-﻿using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Metadata;
+using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.Windows;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
+using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,16 +19,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using BeatmapDbOperator = Milky.OsuPlayer.Common.Data.EF.BeatmapDbOperator;
 using System.Windows.Markup;
 using System.Xaml;
-using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Control.FrontDialog;
-using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Windows;
-using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -115,6 +115,8 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
+        public VirtualizingGalleryWrapPanel GalleryWrapPanel { get; set; }
+
         private readonly Stopwatch _querySw = new Stopwatch();
         private bool _isQuerying;
         private List<Beatmap> _searchedDbMaps;
@@ -147,9 +149,8 @@ namespace Milky.OsuPlayer.ViewModels
                 List<BeatmapDataModel> sorted = SearchedDbMaps
                     .ToDataModelList(true);
 
-
                 SearchedMaps = sorted;
-                SetPage(SearchedMaps.Count(), 0);
+                SetPage(SearchedMaps.Count, 0);
             });
 
             lock (QueryLock)
@@ -202,6 +203,7 @@ namespace Milky.OsuPlayer.ViewModels
                 page.IsActivated = true;
 
             CurrentPage = page;
+            GalleryWrapPanel?.ClearNotificationCount();
             DisplayedMaps = SearchedMaps.Skip(nowIndex * MaxListCount).Take(MaxListCount).ToList();
         }
 
@@ -264,8 +266,10 @@ namespace Milky.OsuPlayer.ViewModels
                     var beatmap = (BeatmapDataModel)param;
                     var map = GetHighestSrBeatmap(beatmap);
                     if (map == null) return;
-                    var fileName = Path.Combine(Domain.OsuSongPath, map.FolderName);
-                    if (!File.Exists(fileName))
+                    var fileName = beatmap.InOwnDb
+                        ? Path.Combine(Domain.CustomSongPath, map.FolderName)
+                        : Path.Combine(Domain.OsuSongPath, map.FolderName);
+                    if (!Directory.Exists(fileName))
                     {
                         Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
                         return;
@@ -299,8 +303,9 @@ namespace Milky.OsuPlayer.ViewModels
                     var beatmap = (BeatmapDataModel)param;
                     var control = new DiffSelectControl(
                         _beatmapDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName),
-                        selected =>
+                        (selected, arg) =>
                         {
+                            arg.Handled = true;
                             var entry = _beatmapDbOperator.GetBeatmapsFromFolder(selected.FolderName)
                                 .FirstOrDefault(k => k.Version == selected.Version);
                             FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
@@ -351,7 +356,7 @@ namespace Milky.OsuPlayer.ViewModels
                     var beatmaps = _beatmapDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName);
                     var control = new DiffSelectControl(
                         beatmaps,
-                        async selected =>
+                        async (selected, arg) =>
                         {
                             var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
                             await PlayController.Default.PlayNewFile(map);
@@ -365,6 +370,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private Beatmap GetHighestSrBeatmap(IMapIdentifiable beatmap)
         {
+            if (beatmap == null) return null;
             var map = _beatmapDbOperator.GetBeatmapsFromFolder(beatmap.FolderName).GetHighestDiff();
             return map;
         }

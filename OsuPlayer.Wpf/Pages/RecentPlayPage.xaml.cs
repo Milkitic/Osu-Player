@@ -145,7 +145,16 @@ namespace Milky.OsuPlayer.Pages
         private void ItemFolder_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
-            Process.Start(Path.Combine(Domain.OsuSongPath, map.FolderName));
+            var dir = map.InOwnFolder
+                ? Path.Combine(Domain.CustomSongPath, map.FolderName)
+                : Path.Combine(Domain.OsuSongPath, map.FolderName);
+            if (!Directory.Exists(dir))
+            {
+                Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
+                return;
+            }
+
+            Process.Start(dir);
         }
 
         private async void PlaySelected()

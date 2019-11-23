@@ -359,31 +359,31 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
             int count = 0,
             bool asc = true)
         {
-            var sw = Stopwatch.StartNew();
+            //var sw = Stopwatch.StartNew();
             if (!VerifyTableAndColumn(table, columns, orderColumn, whereConditions, out var keyword))
             {
                 throw new Exception($"不存在表或者相关列名：{keyword}");
             }
 
-            Console.WriteLine($"check table: {sw.ElapsedMilliseconds}");
-            sw.Restart();
+            //Console.WriteLine($"check table: {sw.ElapsedMilliseconds}");
+            //sw.Restart();
 
             GetWhereStrAndParameters(whereConditions, out var whereStr, out var @params);
-            Console.WriteLine($"get where && params: {sw.ElapsedMilliseconds}");
-            sw.Restart();
+            //Console.WriteLine($"get where && params: {sw.ElapsedMilliseconds}");
+            //sw.Restart();
 
             FixCount(ref count);
-            Console.WriteLine($"fix count: {sw.ElapsedMilliseconds}");
-            sw.Restart();
+            //Console.WriteLine($"fix count: {sw.ElapsedMilliseconds}");
+            //sw.Restart();
 
             var sql = GetSelectCommandTemplate(table, columns, orderColumn, whereStr, count, asc);
-            Console.WriteLine($"select template: {sw.ElapsedMilliseconds}");
-            sw.Restart();
+            //Console.WriteLine($"select template: {sw.ElapsedMilliseconds}");
+            //sw.Restart();
 
             try
             {
                 var result = InnerQuery<T>(@params, sql);
-                Console.WriteLine($"query: {sw.ElapsedMilliseconds}");
+                //Console.WriteLine($"query: {sw.ElapsedMilliseconds}");
                 return result;
             }
             catch (Exception exc)
@@ -393,7 +393,7 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
             }
             finally
             {
-                sw.Stop();
+                //sw.Stop();
             }
         }
 

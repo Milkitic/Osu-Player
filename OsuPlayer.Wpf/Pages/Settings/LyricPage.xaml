@@ -17,7 +17,7 @@
                 <Label
                     Height="26"
                     HorizontalAlignment="Left"
-                    Content="桌面歌词："
+                    Content="{DynamicResource ui-sets-title-desktopLyric}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <CheckBox
                     x:Name="EnableLyric"
@@ -30,7 +30,7 @@
                 <Label
                     Height="26"
                     HorizontalAlignment="Left"
-                    Content="源："
+                    Content="{DynamicResource ui-sets-title-lyricSource}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <Canvas Height="100" HorizontalAlignment="Left">
                     <RadioButton
@@ -68,7 +68,7 @@
                 <Label
                     Height="26"
                     HorizontalAlignment="Left"
-                    Content="翻译："
+                    Content="{DynamicResource ui-sets-title-translation}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <Canvas Height="75" HorizontalAlignment="Left">
                     <RadioButton
@@ -98,7 +98,7 @@
                 <Label
                     Height="26"
                     HorizontalAlignment="Left"
-                    Content="匹配："
+                    Content="{DynamicResource ui-sets-title-matchMode}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <CheckBox
                     x:Name="StrictMode"

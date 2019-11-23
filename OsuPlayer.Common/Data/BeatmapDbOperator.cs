@@ -228,6 +228,7 @@ SELECT *
                 ["title"] = k.Title,
                 ["titleU"] = k.TitleUnicode,
                 ["creator"] = k.Creator,
+                ["version"] = k.Version,
                 ["fileName"] = k.BeatmapFileName,
                 ["lastModified"] = k.LastModifiedTime,
                 ["diffSrStd"] = k.DiffSrNoneStandard,

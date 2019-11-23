@@ -21,7 +21,7 @@
             <StackPanel Margin="10">
                 <Label
                     HorizontalAlignment="Left"
-                    Content="启动："
+                    Content="{DynamicResource ui-sets-title-startup}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <CheckBox
                     x:Name="RunOnStartup"
@@ -33,7 +33,7 @@
                     Unchecked="RunOnStartup_CheckChanged" />
                 <Label
                     HorizontalAlignment="Left"
-                    Content="osu!db位置："
+                    Content="{DynamicResource ui-sets-title-osuDbLocation}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <control:CommonTextBox
@@ -74,7 +74,7 @@
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
-                    Content="自定义曲库路径："
+                    Content="{DynamicResource ui-sets-title-customSongPath}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <control:CommonTextBox
@@ -120,7 +120,7 @@
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
-                    Content="关闭窗体："
+                    Content="{DynamicResource ui-sets-title-closeWindow}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel HorizontalAlignment="Left">
                     <RadioButton

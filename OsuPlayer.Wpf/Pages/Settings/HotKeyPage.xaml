@@ -15,6 +15,7 @@
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
+                <Label Content="{DynamicResource ui-sets-title-hotKeySettings}" Style="{StaticResource ConfigTitleStyle}" />
                 <Grid x:Name="FrameGrid" Style="{StaticResource ConfigGridStyle}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="150" />

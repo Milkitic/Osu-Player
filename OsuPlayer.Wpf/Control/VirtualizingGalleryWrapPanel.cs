@@ -66,6 +66,11 @@ namespace Milky.OsuPlayer.Control
             set => SetValue(ScrollOffsetProperty, value);
         }
 
+        public void ClearNotificationCount()
+        {
+            _loadedIndex.Clear();
+        }
+
         protected override Size MeasureOverride(Size availableSize)
         {
             UpdateScrollInfo(availableSize); //availableSize更新后，更新滚动条

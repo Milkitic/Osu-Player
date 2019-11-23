@@ -1,0 +1,68 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    x:Name="UiLangInternal">
+    <sys:String x:Key="ui-win-sets">播放器设置</sys:String>
+
+    <sys:String x:Key="ui-ok">确定</sys:String>
+    <sys:String x:Key="ui-cancel">取消</sys:String>
+
+    <sys:String x:Key="ui-play">播放</sys:String>
+    <sys:String x:Key="ui-prev">上一首</sys:String>
+    <sys:String x:Key="ui-next">下一首</sys:String>
+    <sys:String x:Key="ui-pause">暂停</sys:String>
+    <sys:String x:Key="ui-lockLyric">锁定歌词</sys:String>
+    <sys:String x:Key="ui-unlockLyric">解锁歌词</sys:String>
+
+    <sys:String x:Key="ui-sets">设置</sys:String>
+    <sys:String x:Key="ui-exit">退出</sys:String>
+
+    <sys:String x:Key="ui-sets-common">常规</sys:String>
+    <sys:String x:Key="ui-sets-playing">播放</sys:String>
+    <sys:String x:Key="ui-sets-interface">界面</sys:String>
+    <sys:String x:Key="ui-sets-hotKey">热键</sys:String>
+    <sys:String x:Key="ui-sets-lyric">歌词</sys:String>
+    <sys:String x:Key="ui-sets-export">导出</sys:String>
+    <sys:String x:Key="ui-sets-about">关于</sys:String>
+
+
+    <sys:String x:Key="ui-sets-title-startup">启动</sys:String>
+    <sys:String x:Key="ui-sets-title-osuDbLocation">osu!db位置</sys:String>
+    <sys:String x:Key="ui-sets-title-customSongPath">自定义曲库路径</sys:String>
+    <sys:String x:Key="ui-sets-title-closeWindow">关闭窗体</sys:String>
+    <sys:String x:Key="ui-sets-title-globalHitsoundDelay">全局音效延迟</sys:String>
+    <sys:String x:Key="ui-sets-title-autoPlay">自动播放</sys:String>
+    <sys:String x:Key="ui-sets-title-playProgress">播放进度</sys:String>
+    <sys:String x:Key="ui-sets-title-audioDelayExperimental">音频延迟（实验性）</sys:String>
+    <sys:String x:Key="ui-sets-title-language">语言</sys:String>
+    <sys:String x:Key="ui-sets-title-minimalEffectMode">低配模式</sys:String>
+    <sys:String x:Key="ui-sets-title-hotKeySettings">热键设置</sys:String>
+    <sys:String x:Key="ui-sets-title-desktopLyric">桌面歌词</sys:String>
+    <sys:String x:Key="ui-sets-title-lyricSource">歌词源</sys:String>
+    <sys:String x:Key="ui-sets-title-translation">翻译</sys:String>
+    <sys:String x:Key="ui-sets-title-matchMode">匹配模式</sys:String>
+    <sys:String x:Key="ui-sets-title-exportPath">导出目录</sys:String>
+    <sys:String x:Key="ui-sets-title-fileNamingFormat">文件命名格式</sys:String>
+    <sys:String x:Key="ui-sets-title-directoryGrouping">目录分类</sys:String>
+    <sys:String x:Key="ui-sets-title-softwareUpdate">软件更新</sys:String>
+
+    <sys:String x:Key="ui-nav-library">库</sys:String>
+    <sys:String x:Key="ui-nav-mine">我的</sys:String>
+    <sys:String x:Key="ui-nav-collection">收藏夹</sys:String>
+    <sys:String x:Key="ui-nav-search">搜索</sys:String>
+    <sys:String x:Key="ui-nav-recent">最近播放</sys:String>
+    <sys:String x:Key="ui-nav-export">导出管理</sys:String>
+
+    <sys:String x:Key="ui-openFileFolder">打开文件所在目录</sys:String>
+    <sys:String x:Key="ui-size">大小</sys:String>
+    <sys:String x:Key="ui-exportTime">导出时间</sys:String>
+    <sys:String x:Key="ui-exportPath">导出目录</sys:String>
+    <sys:String x:Key="ui-exporting">正在进行</sys:String>
+    <sys:String x:Key="ui-exported">已导出</sys:String>
+    <sys:String x:Key="ui-exportAgain">重新导出</sys:String>
+    <sys:String x:Key="ui-deleteExported">删除导出文件</sys:String>
+
+    <sys:String x:Key="ui-artist">艺术家</sys:String>
+    <sys:String x:Key="ui-title">标题</sys:String>
+</ResourceDictionary>
