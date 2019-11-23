@@ -26,5 +26,7 @@ namespace Milky.OsuPlayer.Common.Configuration
                 OnPropertyChanged();
             }
         }
+
+        public string Locale { get; set; }
     }
 }

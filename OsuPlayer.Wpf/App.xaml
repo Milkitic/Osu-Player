@@ -4,10 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
     DispatcherUnhandledException="Application_DispatcherUnhandledException"
+    Startup="Application_Startup"
     StartupUri="Windows/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="i18nXaml" Source="Themes/i18n.xaml" />
                 <ResourceDictionary Source="Styles/ConverterDictionary.xaml" />
                 <ResourceDictionary Source="Styles/GeneralStyle.xaml" />
                 <ResourceDictionary Source="Styles/BrushDictionary.xaml" />

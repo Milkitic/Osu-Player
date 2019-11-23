@@ -17,7 +17,7 @@
             <StackPanel Margin="10">
                 <Label
                     HorizontalAlignment="Left"
-                    Content="全局音效延迟"
+                    Content="{DynamicResource ui-sets-title-globalHitsoundDelay}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                     <Slider
@@ -57,7 +57,7 @@
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
-                    Content="自动播放："
+                    Content="{DynamicResource ui-sets-title-autoPlay}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <CheckBox
                     x:Name="ChkAutoPlay"
@@ -69,7 +69,7 @@
                     Unchecked="ChkAutoPlay_CheckChanged" />
                 <Label
                     HorizontalAlignment="Left"
-                    Content="播放进度："
+                    Content="{DynamicResource ui-sets-title-playProgress}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <CheckBox
                     x:Name="ChkMemory"
@@ -81,7 +81,7 @@
                     Unchecked="ChkMemory_CheckChanged" />
                 <Label
                     HorizontalAlignment="Left"
-                    Content="音频延迟（实验性）："
+                    Content="{DynamicResource ui-sets-title-audioDelayExperimental}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                     <Slider

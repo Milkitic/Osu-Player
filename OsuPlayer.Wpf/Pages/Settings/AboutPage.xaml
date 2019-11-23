@@ -17,7 +17,7 @@
             <StackPanel Margin="10">
                 <Label
                     HorizontalAlignment="Left"
-                    Content="软件更新："
+                    Content="{DynamicResource ui-sets-title-softwareUpdate}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel
                     Margin="0"

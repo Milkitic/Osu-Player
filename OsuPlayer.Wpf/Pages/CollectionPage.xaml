@@ -286,7 +286,7 @@
                                             <MenuItem
                                                 x:Name="ItemPlay"
                                                 Click="ItemPlay_Click"
-                                                Header="播放"
+                                                Header="{DynamicResource ui-play}"
                                                 Style="{DynamicResource DefaultMenuItem}" />
                                             <Separator />
                                             <MenuItem

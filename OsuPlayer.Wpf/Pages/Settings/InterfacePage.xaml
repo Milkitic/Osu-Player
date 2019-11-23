@@ -13,11 +13,19 @@
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    Loaded="InterfacePage_OnLoaded"
     mc:Ignorable="d">
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
-                <Label Content="低配模式" Style="{StaticResource ConfigTitleStyle}" />
+                <Label Content="{DynamicResource ui-sets-title-language}" Style="{StaticResource ConfigTitleStyle}" />
+                <ComboBox
+                    x:Name="Language"
+                    Width="150"
+                    Margin="8,0"
+                    HorizontalAlignment="Left"
+                    SelectionChanged="Language_OnSelectionChanged" />
+                <Label Content="{DynamicResource ui-sets-title-minimalEffectMode}" Style="{StaticResource ConfigTitleStyle}" />
                 <CheckBox
                     x:Name="RunOnStartup"
                     Margin="8,0"
