@@ -8,7 +8,7 @@
     xmlns:settings="clr-namespace:Milky.OsuPlayer.Pages.Settings"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
     x:Name="CfgWindow"
-    Title="播放器设置"
+    Title="{DynamicResource ui-win-sets}"
     Height="400"
     MinWidth="600"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
@@ -57,11 +57,11 @@
                         Width="150"
                         Height="30"
                         Style="{StaticResource NavigationLabelStyle}">
-                        <TextBlock Margin="5,0,0,0">设置</TextBlock>
+                        <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-sets}" />
                     </Label>
                     <control:SwitchRadio
                         x:Name="SwitchGeneral"
-                        Content="常规"
+                        Content="{DynamicResource ui-sets-common}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:GeneralPage}" />
@@ -71,27 +71,27 @@
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:PlayPage}" />
                     <control:SwitchRadio
-                        Content="界面"
+                        Content="{DynamicResource ui-sets-interface}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:InterfacePage}" />
                     <control:SwitchRadio
-                        Content="热键"
+                        Content="{DynamicResource ui-sets-hotKey}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:HotKeyPage}" />
                     <control:SwitchRadio
-                        Content="歌词"
+                        Content="{DynamicResource ui-sets-lyric}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:LyricPage}" />
                     <control:SwitchRadio
-                        Content="导出设置"
+                        Content="{DynamicResource ui-sets-export}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:ExportPage}" />
                     <control:SwitchRadio
-                        Content="关于"
+                        Content="{DynamicResource ui-sets-about}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:AboutPage}" />

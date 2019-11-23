@@ -17,7 +17,7 @@
             <StackPanel Margin="10">
                 <Label
                     HorizontalAlignment="Left"
-                    Content="导出目录："
+                    Content="{DynamicResource ui-sets-title-exportPath}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <Label
@@ -79,7 +79,7 @@
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
-                    Content="文件命名格式："
+                    Content="{DynamicResource ui-sets-title-fileNamingFormat}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel HorizontalAlignment="Left">
                     <RadioButton
@@ -106,7 +106,7 @@
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
-                    Content="目录分类："
+                    Content="{DynamicResource ui-sets-title-directoryGrouping}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel HorizontalAlignment="Left">
                     <RadioButton
