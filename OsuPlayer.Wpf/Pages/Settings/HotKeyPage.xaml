@@ -35,38 +35,44 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="播放/暂停："
-                        Style="{StaticResource ConfigLabelStyle}" />
+                        Style="{StaticResource ConfigLabelStyle}">
+                        <TextBlock>
+                            <Run Text="{DynamicResource ui-play}" /><Run Text=" / " /><Run Text="{DynamicResource ui-pause}" />
+                        </TextBlock>
+                    </Label>
                     <Label
                         Grid.Row="1"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="上一首："
+                        Content="{DynamicResource ui-prevMusic}"
                         Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         Grid.Row="2"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="下一首："
+                        Content="{DynamicResource ui-nextMusic}"
                         Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         Grid.Row="3"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="音量+："
+                        Content="{DynamicResource ui-volumeUp}"
                         Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         Grid.Row="4"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="音量-："
+                        Content="{DynamicResource ui-volumeDown}"
                         Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         Grid.Row="5"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="迷你/完整模式"
-                        Style="{StaticResource ConfigLabelStyle}" />
+                        Style="{StaticResource ConfigLabelStyle}">
+                        <TextBlock>
+                            <Run Text="{DynamicResource ui-switch}" /><Run Text="{DynamicResource ui-miniMode}" />
+                        </TextBlock>
+                    </Label>
                     <Label
                         Grid.Row="6"
                         Grid.Column="0"
@@ -77,8 +83,11 @@
                         Grid.Row="7"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="打开/关闭桌面歌词"
-                        Style="{StaticResource ConfigLabelStyle}" />
+                        Style="{StaticResource ConfigLabelStyle}" >
+                        <TextBlock>
+                            <Run Text="{DynamicResource ui-open}" /><Run Text=" / " /><Run Text="{DynamicResource ui-close}" /><Run Text="{DynamicResource ui-desktopLyric}" />
+                        </TextBlock>
+                    </Label>
                     <control:CommonTextBox
                         x:Name="PlayPause"
                         Grid.Row="0"

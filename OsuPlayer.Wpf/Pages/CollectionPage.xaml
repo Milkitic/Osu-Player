@@ -92,7 +92,7 @@
                     <TextBlock
                         Cursor="Hand"
                         FontSize="16"
-                        Text="我的收藏" />
+                        Text="{DynamicResource ui-tab-myCollection}" />
                 </TabItem.Header>
                 <Grid
                     x:Name="FrameGrid"
@@ -175,7 +175,7 @@
                                         MouseOverForeground="White" />
                                 </WrapPanel>
                                 <StackPanel Margin="5" Orientation="Horizontal">
-                                    <Label Content="创建时间：" Foreground="#303030" />
+                                    <Label Content="{DynamicResource ui-createTime}" Foreground="#303030" Margin="0,0,5,0" />
                                     <Label Content="{Binding Path=CollectionInfo.CreateTime, Converter={StaticResource CvtDate}}" Foreground="#303030" />
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
@@ -199,7 +199,7 @@
                                     </control:CommonButton>
                                 </StackPanel>
                                 <StackPanel Margin="5" Orientation="Horizontal">
-                                    <Label Content="简介：" Foreground="#303030" />
+                                    <Label Content="{DynamicResource ui-briefIntroduction}" Margin="0,0,5,0" Foreground="#303030" />
                                     <Label x:Name="LblDescription" Content="{Binding Path=CollectionInfo.Description}">
                                         <Label.Style>
                                             <Style TargetType="{x:Type Label}">
@@ -216,7 +216,7 @@
                                     </Label>
                                     <Label
                                         x:Name="LblAdd"
-                                        Content="暂无"
+                                        Content="{DynamicResource ui-none}"
                                         Foreground="#939393">
                                         <Label.Style>
                                             <Style TargetType="{x:Type Label}">
@@ -237,7 +237,7 @@
                             <StackPanel Grid.Column="2" Margin="10,10,20,10">
                                 <Label
                                     HorizontalAlignment="Right"
-                                    Content="歌曲数"
+                                    Content="{DynamicResource ui-musicCount}"
                                     Foreground="#7A7A7A" />
                                 <Label
                                     x:Name="ListCount"
@@ -259,7 +259,7 @@
                                     Padding="3"
                                     Cursor="Hand"
                                     FontSize="15"
-                                    Text="音乐列表" />
+                                    Text="{DynamicResource ui-tab-musicList}" />
                             </TabItem.Header>
                             <Grid>
                                 <control:CommonTextBox
@@ -273,7 +273,7 @@
                                     BorderBrush="#DCDFE6"
                                     BorderThickness="1"
                                     CornerRadius="13"
-                                    Hint="搜索收藏夹音乐"
+                                    Hint="{DynamicResource ui-searchCollectionMusic3Dot}"
                                     TextChanged="SearchBox_TextChanged" />
                                 <ListView
                                     x:Name="MapList"

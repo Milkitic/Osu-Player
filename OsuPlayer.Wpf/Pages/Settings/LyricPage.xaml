@@ -24,7 +24,7 @@
                     Margin="8,0"
                     HorizontalAlignment="Left"
                     Checked="EnableLyric_CheckChanged"
-                    Content="启用桌面歌词"
+                    Content="{DynamicResource ui-sets-content-enableDesktopLyric}"
                     Style="{StaticResource CommonCheckBox}"
                     Unchecked="EnableLyric_CheckChanged" />
                 <Label
@@ -38,7 +38,7 @@
                         Height="25"
                         Margin="8,0"
                         Checked="Source_CheckChanged"
-                        Content="自动"
+                        Content="{DynamicResource ui-auto}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="SourceNetease"
@@ -46,7 +46,7 @@
                         Height="25"
                         Margin="8,0"
                         Checked="Source_CheckChanged"
-                        Content="网易云音乐"
+                        Content="{DynamicResource ui-neteaseMusic}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="SourceKugou"
@@ -54,7 +54,7 @@
                         Height="25"
                         Margin="8,0"
                         Checked="Source_CheckChanged"
-                        Content="酷狗音乐"
+                        Content="{DynamicResource ui-kugouMusic}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="SourceQqMusic"
@@ -62,7 +62,7 @@
                         Height="25"
                         Margin="8,0"
                         Checked="Source_CheckChanged"
-                        Content="QQ音乐"
+                        Content="{DynamicResource ui-qqMusic}"
                         Style="{StaticResource CommonRadioButton}" />
                 </Canvas>
                 <Label
@@ -76,7 +76,7 @@
                         Height="25"
                         Margin="8,0"
                         Checked="Show_CheckChanged"
-                        Content="显示全部歌词"
+                        Content="{DynamicResource ui-sets-content-displayAllLyrics}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="ShowOrigin"
@@ -84,7 +84,7 @@
                         Height="25"
                         Margin="8,0"
                         Checked="Show_CheckChanged"
-                        Content="偏好源歌词（仅Netease源有效）"
+                        Content="{DynamicResource ui-sets-content-preferOriginLyricNeteaseOnly}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="ShowTrans"
@@ -92,7 +92,7 @@
                         Height="25"
                         Margin="8,0"
                         Checked="Show_CheckChanged"
-                        Content="偏好翻译歌词（仅Netease源有效）"
+                        Content="{DynamicResource ui-sets-content-preferTranslateLyricNeteaseOnly}"
                         Style="{StaticResource CommonRadioButton}" />
                 </Canvas>
                 <Label
@@ -105,7 +105,7 @@
                     Margin="8,0"
                     HorizontalAlignment="Left"
                     Checked="StrictMode_CheckChanged"
-                    Content="启用严格匹配"
+                    Content="{DynamicResource ui-sets-content-enableStrictMatching}"
                     Style="{StaticResource CommonCheckBox}"
                     Unchecked="StrictMode_CheckChanged" />
                 <Label

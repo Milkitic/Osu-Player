@@ -63,7 +63,7 @@
                                         </Path>
                                     </Canvas>
                                 </Viewbox>
-                                <Label Content="打开目录" />
+                                <Label Content="{DynamicResource ui-btn-openDirectory}" />
                             </StackPanel>
                         </control:CommonButton>
                         <StackPanel

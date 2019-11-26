@@ -28,7 +28,7 @@
                     Margin="8,0"
                     HorizontalAlignment="Left"
                     Checked="RunOnStartup_CheckChanged"
-                    Content="开机自动运行"
+                    Content="{DynamicResource ui-sets-content-runOnStartup}"
                     Style="{StaticResource CommonCheckBox}"
                     Unchecked="RunOnStartup_CheckChanged" />
                 <Label
@@ -68,7 +68,7 @@
                         VerticalAlignment="Center"
                         Background="#E3E3E3"
                         Click="SyncNow_Click"
-                        Content="手动同步"
+                        Content="{DynamicResource ui-btn-syncManually}"
                         IsEnabled="{Binding IsScanning, Converter={StaticResource NegativeBooleanConverter}}"
                         Style="{StaticResource SettingsButton}" />
                 </StackPanel>
@@ -106,7 +106,7 @@
                         FillColor="#303030"
                         Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
                     <Label
-                        Content="正在扫描..."
+                        Content="{DynamicResource ui-sets-content-scanning3Dot}"
                         Foreground="#303030"
                         Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
                     <control:CommonButton
@@ -114,7 +114,7 @@
                         Padding="2,0"
                         VerticalAlignment="Center"
                         Click="CancelScan_Click"
-                        Content="取消扫描"
+                        Content="{DynamicResource ui-btn-cancelScan}"
                         Style="{StaticResource LinkButton}"
                         Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
                 </StackPanel>
@@ -128,21 +128,21 @@
                         Margin="8,0"
                         HorizontalAlignment="Left"
                         Checked="Radio_CheckChanged"
-                        Content="最小化到系统托盘"
+                        Content="{DynamicResource ui-sets-content-minToNotificationPanel}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="RadioExit"
                         Margin="8,0"
                         HorizontalAlignment="Left"
                         Checked="Radio_CheckChanged"
-                        Content="退出程序"
+                        Content="{DynamicResource ui-sets-content-exitProgram}"
                         Style="{StaticResource CommonRadioButton}" />
                     <CheckBox
                         x:Name="AsDefault"
                         Margin="8,10"
                         HorizontalAlignment="Left"
                         Checked="AsDefault_CheckChanged"
-                        Content="设置默认选项"
+                        Content="{DynamicResource ui-sets-content-setAsDefaultOptions}"
                         Style="{StaticResource CommonCheckBox}"
                         Unchecked="AsDefault_CheckChanged" />
                 </StackPanel>

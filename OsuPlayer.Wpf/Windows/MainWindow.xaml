@@ -318,7 +318,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="{DynamicResource ui-prev}" Style="{DynamicResource DefaultMenuItem}">
+                <MenuItem Header="{DynamicResource ui-prevMusic}" Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
                         <Viewbox
                             Width="16"
@@ -339,7 +339,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="{DynamicResource ui-next}" Style="{DynamicResource DefaultMenuItem}">
+                <MenuItem Header="{DynamicResource ui-nextMusic}" Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
                         <Viewbox
                             Width="16"
