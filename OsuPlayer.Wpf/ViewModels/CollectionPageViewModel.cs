@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
@@ -75,7 +76,7 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = GetHighestSrBeatmap(beatmap);
+                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     var fileName = beatmap.InOwnDb
                         ? Path.Combine(Domain.CustomSongPath, map.FolderName)
@@ -98,7 +99,7 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = GetHighestSrBeatmap(beatmap);
+                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
                 });
@@ -134,7 +135,7 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = GetHighestSrBeatmap(beatmap);
+                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     ExportPage.QueueEntry(map);
                 });
@@ -148,7 +149,7 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = GetHighestSrBeatmap(beatmap);
+                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     await PlayController.Default.PlayNewFile(map);
                     await Services.Get<PlayerList>()

@@ -25,7 +25,6 @@
     <sys:String x:Key="ui-briefIntroduction">简介</sys:String>
     <sys:String x:Key="ui-none">暂无</sys:String>
     <sys:String x:Key="ui-musicCount">歌曲数</sys:String>
-    <sys:String x:Key="ui-searchCollectionMusic3Dot">搜索收藏夹音乐...</sys:String>
 
     <sys:String x:Key="ui-sets">设置</sys:String>
     <sys:String x:Key="ui-exit">退出</sys:String>
@@ -39,10 +38,25 @@
     <sys:String x:Key="ui-kugouMusic">酷狗音乐</sys:String>
     <sys:String x:Key="ui-qqMusic">QQ音乐</sys:String>
 
+    <sys:String x:Key="ui-hint-searchPageBox">标题、艺术家、Mapper、来源、标签、收藏</sys:String>
+    <sys:String x:Key="ui-hint-searchCollectionMusic3Dot">搜索收藏夹音乐...</sys:String>
+
     <sys:String x:Key="ui-btn-openDirectory">打开目录</sys:String>
     <sys:String x:Key="ui-btn-checkUpdate">检查更新</sys:String>
     <sys:String x:Key="ui-btn-syncManually">手动同步</sys:String>
     <sys:String x:Key="ui-btn-cancelScan">取消扫描</sys:String>
+    <sys:String x:Key="ui-btn-playAll">全部播放</sys:String>
+    <sys:String x:Key="ui-btn-deleteAll">全部删除</sys:String>
+    <sys:String x:Key="ui-btn-queueAll">排队删除</sys:String>
+
+    <sys:String x:Key="ui-ctxMenu-searchTitle">搜索标题</sys:String>
+    <sys:String x:Key="ui-ctxMenu-searchArtist">搜索艺术家</sys:String>
+    <sys:String x:Key="ui-ctxMenu-searchSource">搜索来源</sys:String>
+    <sys:String x:Key="ui-ctxMenu-searchCreator">搜索作者</sys:String>
+    <sys:String x:Key="ui-ctxMenu-openSourceFolder">打开所在目录</sys:String>
+    <sys:String x:Key="ui-ctxMenu-saveTo">收藏至</sys:String>
+    <sys:String x:Key="ui-ctxMenu-openScorePage">打开成绩页</sys:String>
+    <sys:String x:Key="ui-ctxMenu-export">导出</sys:String>
 
     <sys:String x:Key="ui-sets-nav-common">常规</sys:String>
     <sys:String x:Key="ui-sets-nav-playing">播放</sys:String>
@@ -104,6 +118,7 @@
     <sys:String x:Key="ui-nav-search">搜索</sys:String>
     <sys:String x:Key="ui-nav-recent">最近播放</sys:String>
     <sys:String x:Key="ui-nav-export">导出管理</sys:String>
+    <sys:String x:Key="ui-nav-music">音乐</sys:String>
 
     <sys:String x:Key="ui-openFileFolder">打开文件所在目录</sys:String>
     <sys:String x:Key="ui-size">大小</sys:String>
@@ -116,4 +131,7 @@
     <sys:String x:Key="ui-deleteExported">删除导出文件</sys:String>
     <sys:String x:Key="ui-artist">艺术家</sys:String>
     <sys:String x:Key="ui-title">标题</sys:String>
+    <sys:String x:Key="ui-creator">作者</sys:String>
+    <sys:String x:Key="ui-mapDifficulty">难度</sys:String>
+    <sys:String x:Key="ui-storyboard">故事板</sys:String>
 </ResourceDictionary>

@@ -20,7 +20,7 @@
                 Style="{StaticResource PinkTabItem}"
                 WindowChrome.IsHitTestVisibleInChrome="True">
                 <TabItem.Header>
-                    <TextBlock FontSize="16" Text="音乐" />
+                    <TextBlock FontSize="16" Text="{DynamicResource ui-nav-music}" />
                 </TabItem.Header>
                 <Grid Margin="0,0,0,0" Cursor="Arrow">
                     <Grid.RowDefinitions>
@@ -52,7 +52,7 @@
                                         <Path Data="{StaticResource Delete}" Fill="#303030" />
                                     </Canvas>
                                 </Viewbox>
-                                <Label Content="全部删除" />
+                                <Label Content="{DynamicResource ui-btn-deleteAll}" />
                             </StackPanel>
                         </control:CommonButton>
                     </StackPanel>
@@ -162,19 +162,19 @@
                                 <GridViewColumn
                                     Width="300"
                                     CellTemplate="{StaticResource TitleDt}"
-                                    Header="标题" />
+                                    Header="{DynamicResource ui-title}" />
                                 <GridViewColumn
                                     Width="200"
                                     CellTemplate="{StaticResource ArtistDt}"
-                                    Header="艺术家" />
+                                    Header="{DynamicResource ui-artist}" />
                                 <GridViewColumn
                                     Width="100"
                                     CellTemplate="{StaticResource CreatorDt}"
-                                    Header="作者" />
+                                    Header="{DynamicResource ui-creator}" />
                                 <GridViewColumn
                                     Width="150"
                                     CellTemplate="{StaticResource VersionDt}"
-                                    Header="难度" />
+                                    Header="{DynamicResource ui-mapDifficulty}" />
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -186,7 +186,7 @@
                         Padding="18,10"
                         Cursor="Hand"
                         FontSize="16"
-                        Text="故事板" />
+                        Text="{DynamicResource ui-storyboard}" />
                 </TabItem.Header>
             </TabItem>
         </TabControl>

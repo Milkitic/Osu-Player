@@ -26,16 +26,6 @@
         <system:Double x:Key="GalleryWidth">160</system:Double>
         <system:Double x:Key="GalleryHeight">220</system:Double>
         <QuinticEase x:Key="QuinticEaseOut" EasingMode="EaseOut" />
-        <!--<Style
-            x:Key="SongsContextMenu"
-            BasedOn="{StaticResource DefaultContextMenu}"
-            TargetType="ContextMenu">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding}" Value="{x:Null}">
-                    <Setter Property="DataContext" Value="{Binding}" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>-->
         <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
             <MenuItem
                 Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
@@ -43,7 +33,7 @@
                 Style="{StaticResource DefaultMenuItem}">
                 <MenuItem.Header>
                     <TextBlock>
-                        <Run Text="{DynamicResource ui-play}" /><Run Text="...(Enter)" />
+                        <Run Text="{DynamicResource ui-play}" /><Run Text="... (Enter)" />
                     </TextBlock>
                 </MenuItem.Header>
             </MenuItem>
@@ -51,44 +41,54 @@
             <MenuItem
                 Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding AutoTitle}"
-                Header="搜索标题"
+                Header="{DynamicResource ui-ctxMenu-searchTitle}"
                 Style="{StaticResource DefaultMenuItem}" />
             <MenuItem
                 Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding AutoArtist}"
-                Header="搜索艺术家"
+                Header="{DynamicResource ui-ctxMenu-searchArtist}"
                 Style="{StaticResource DefaultMenuItem}" />
             <MenuItem
                 Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding SongSource}"
-                Header="搜索来源"
+                Header="{DynamicResource ui-ctxMenu-searchSource}"
                 Style="{StaticResource DefaultMenuItem}" />
             <MenuItem
                 Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding Creator}"
-                Header="搜索作者"
+                Header="{DynamicResource ui-ctxMenu-searchCreator}"
                 Style="{StaticResource DefaultMenuItem}" />
             <Separator />
             <MenuItem
                 Command="{Binding DataContext.OpenSourceFolderCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding}"
-                Header="打开所在目录(Ctrl+O)"
-                Style="{StaticResource DefaultMenuItem}" />
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-ctxMenu-openSourceFolder}"/><Run Text=" (Ctrl+O)"/>
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
             <MenuItem
                 Command="{Binding DataContext.OpenScorePageCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding}"
-                Header="打开成绩页"
+                Header="{DynamicResource ui-ctxMenu-openScorePage}"
                 Style="{StaticResource DefaultMenuItem}" />
             <Separator />
             <MenuItem
                 Command="{Binding DataContext.SaveCollectionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding}"
-                Header="收藏至...(Ctrl+S)"
-                Style="{StaticResource DefaultMenuItem}" />
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-ctxMenu-saveTo}"/><Run Text="... (Ctrl+O)"/>
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
             <MenuItem
                 Command="{Binding DataContext.ExportCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding}"
-                Header="导出"
+                Header="{DynamicResource ui-ctxMenu-export}"
                 Style="{StaticResource DefaultMenuItem}" />
 
         </ContextMenu>
@@ -130,7 +130,7 @@
             FontSize="15px"
             Foreground="#dddddd"
             IsHitTestVisible="False"
-            Text="标题、艺术家、Mapper、来源、标签、收藏">
+            Text="{DynamicResource ui-hint-searchPageBox}">
             <TextBlock.Style>
                 <Style TargetType="{x:Type TextBlock}">
                     <Setter Property="Visibility" Value="Collapsed" />
@@ -156,7 +156,7 @@
                 Click="BtnQueueAll_Click"
                 Command="{Binding ItemFolderCommand}"
                 CommandParameter="{Binding ExportPath}"
-                Content="排队全部"
+                Content="{DynamicResource ui-btn-queueAll}"
                 IconTemplate="{StaticResource FolderTempl}"
                 Style="{StaticResource SettingsButton}" />
         </StackPanel>
@@ -215,15 +215,15 @@
                     <GridViewColumn
                         Width="300"
                         CellTemplate="{StaticResource TitleSourceDt}"
-                        Header="标题" />
+                        Header="{DynamicResource ui-title}" />
                     <GridViewColumn
                         Width="200"
                         CellTemplate="{StaticResource ArtistDt}"
-                        Header="艺术家" />
+                        Header="{DynamicResource ui-artist}"/>
                     <GridViewColumn
                         Width="100"
                         CellTemplate="{StaticResource CreatorDt}"
-                        Header="作者" />
+                        Header="{DynamicResource ui-creator}" />
                 </GridView>
             </ListView.View>
         </ListView>
