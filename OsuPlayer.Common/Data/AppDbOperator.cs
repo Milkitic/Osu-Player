@@ -173,7 +173,7 @@ SELECT map.id,
        map.[offset],
        map.lastPlayTime,
        map.exportFile,
-       relation.addTime
+       CAST (relation.addTime AS VARCHAR (30) ) AS addTime
   FROM (
            SELECT *
              FROM collection_relation
@@ -183,7 +183,7 @@ SELECT map.id,
        INNER JOIN
        map_info AS map ON relation.mapId = map.id;
 ", new { collectionId = collection.Id }).ToList();
-            return new List<MapInfo>();
+            return result;
         }
 
         public List<Collection> GetCollections()
