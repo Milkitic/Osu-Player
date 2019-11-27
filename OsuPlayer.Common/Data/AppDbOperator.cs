@@ -165,7 +165,7 @@ CREATE TABLE map_thumb (
 
         public List<MapInfo> GetMapsFromCollection(Collection collection)
         {
-            return ThreadedProvider.GetDbConnection()
+            var result = ThreadedProvider.GetDbConnection()
                 .Query<MapInfo>(@"
 SELECT map.id,
        map.version,
@@ -183,6 +183,7 @@ SELECT map.id,
        INNER JOIN
        map_info AS map ON relation.mapId = map.id;
 ", new { collectionId = collection.Id }).ToList();
+            return new List<MapInfo>();
         }
 
         public List<Collection> GetCollections()
@@ -250,7 +251,8 @@ SELECT collection.id,
             var sb = new StringBuilder($"INSERT INTO {TABLE_RELATION} (id, collectionId, mapId, addTime) VALUES ");
             foreach (var beatmap in beatmaps)
             {
-                sb.Append($"('{Guid.NewGuid().ToString()}', '{collection.Id}', '{beatmap.Id}', '{DateTime.Now}'),"); // maybe no injection here
+                var map = GetMapFromDb(beatmap.GetIdentity());
+                sb.Append($"('{Guid.NewGuid().ToString()}', '{collection.Id}', '{map.Id}', '{DateTime.Now}'),"); // maybe no injection here
 
                 // todo: not suitable position
                 if (currentInfo == null) continue;
@@ -404,7 +406,7 @@ SELECT collection.id,
         {
             SetMapThumb(beatmap.Id, thumbPath);
         }
-        
+
         private void InnerUpdateMap(MapIdentity id, Dictionary<string, object> updateColumns)
         {
             GetMapFromDb(id);
