@@ -30,13 +30,13 @@
             <Label
                 Grid.Row="0"
                 Grid.Column="0"
-                Margin="0,5"
-                Content="收藏夹名：" />
+                Margin="0,5,5,0"
+                Content="{DynamicResource ui-collectionName}" />
             <Label
                 Grid.Row="1"
                 Grid.Column="0"
-                Margin="0,5"
-                Content="简介：" />
+                Margin="0,5,5,0"
+                Content="{DynamicResource ui-briefIntroduction}" />
             <local:CommonTextBox
                 Grid.Row="0"
                 Grid.Column="1"
@@ -66,7 +66,7 @@
                     Margin="0"
                     BorderBrush="Transparent"
                     Click="BtnSave_Click"
-                    Content="保存"
+                    Content="{DynamicResource ui-btn-save}"
                     IconTemplate="{x:Null}"
                     Style="{StaticResource PlayButton}" />
             </StackPanel>
@@ -90,7 +90,7 @@
                     Width="auto"
                     Margin="10,0"
                     Click="BtnChooseImg_Click"
-                    Content="编辑封面"
+                    Content="{DynamicResource ui-btn-editCover}"
                     Style="{StaticResource SettingsButton}" />
             </StackPanel>
         </Grid>

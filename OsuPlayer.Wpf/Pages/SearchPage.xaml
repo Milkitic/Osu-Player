@@ -81,7 +81,7 @@
                 Style="{StaticResource DefaultMenuItem}">
                 <MenuItem.Header>
                     <TextBlock>
-                        <Run Text="{DynamicResource ui-ctxMenu-saveTo}" /><Run Text="... (Ctrl+O)" />
+                        <Run Text="{DynamicResource ui-ctxMenu-saveTo}" /><Run Text="... (Ctrl+S)" />
                     </TextBlock>
                 </MenuItem.Header>
             </MenuItem>
@@ -90,7 +90,6 @@
                 CommandParameter="{Binding}"
                 Header="{DynamicResource ui-ctxMenu-export}"
                 Style="{StaticResource DefaultMenuItem}" />
-
         </ContextMenu>
 
         <Style

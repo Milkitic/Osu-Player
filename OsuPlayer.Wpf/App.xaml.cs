@@ -90,7 +90,5 @@ namespace Milky.OsuPlayer
         {
             I18nUtil.LoadI18N();
         }
-
-
     }
 }

@@ -26,56 +26,76 @@
             <MenuItem
                 Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding}"
-                Header="播放...(Enter)"
-                Style="{StaticResource DefaultMenuItem}" />
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-play}" /><Run Text="... (Enter)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
             <Separator />
             <MenuItem
                 Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding AutoTitle}"
-                Header="搜索标题"
+                Header="{DynamicResource ui-ctxMenu-searchTitle}"
                 Style="{StaticResource DefaultMenuItem}" />
             <MenuItem
                 Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding AutoArtist}"
-                Header="搜索艺术家"
+                Header="{DynamicResource ui-ctxMenu-searchArtist}"
                 Style="{StaticResource DefaultMenuItem}" />
             <MenuItem
                 Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding SongSource}"
-                Header="搜索来源"
+                Header="{DynamicResource ui-ctxMenu-searchSource}"
                 Style="{StaticResource DefaultMenuItem}" />
             <MenuItem
                 Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding Creator}"
-                Header="搜索作者"
+                Header="{DynamicResource ui-ctxMenu-searchCreator}"
                 Style="{StaticResource DefaultMenuItem}" />
             <Separator />
             <MenuItem
                 Command="{Binding DataContext.OpenSourceFolderCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding}"
-                Header="打开所在目录(Ctrl+O)"
-                Style="{StaticResource DefaultMenuItem}" />
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-ctxMenu-openSourceFolder}" /><Run Text=" (Ctrl+O)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
             <MenuItem
                 Command="{Binding DataContext.OpenScorePageCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding}"
-                Header="打开成绩页"
+                Header="{DynamicResource ui-ctxMenu-openScorePage}"
                 Style="{StaticResource DefaultMenuItem}" />
             <Separator />
             <MenuItem
                 Command="{Binding DataContext.SaveCollectionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding}"
-                Header="收藏至...(Ctrl+S)"
-                Style="{StaticResource DefaultMenuItem}" />
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-ctxMenu-saveTo}" /><Run Text="... (Ctrl+S)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
             <MenuItem
                 Command="{Binding DataContext.ExportCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding}"
-                Header="导出"
+                Header="{DynamicResource ui-ctxMenu-export}"
                 Style="{StaticResource DefaultMenuItem}" />
             <Separator />
             <MenuItem
                 Command="{Binding DataContext.RemoveCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                Header="从列表中移除(Delete)"
-                Style="{StaticResource DefaultMenuItem}" />
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-ctxMenu-removeFromList}" /><Run Text=" (Delete)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
         </ContextMenu>
         <Style
             x:Key="EventGridViewItem"
@@ -199,7 +219,7 @@
                                                     <Path Data="{StaticResource Export2}" Fill="#303030" />
                                                 </Canvas>
                                             </Viewbox>
-                                            <Label Content="全部导出" />
+                                            <Label Content="{DynamicResource ui-btn-exportAll}" />
                                         </StackPanel>
                                     </control:CommonButton>
                                 </StackPanel>
@@ -319,19 +339,19 @@
                                             <GridViewColumn
                                                 Width="300"
                                                 CellTemplate="{StaticResource TitleDt}"
-                                                Header="标题" />
+                                                Header="{StaticResource ui-title}" />
                                             <GridViewColumn
                                                 Width="200"
                                                 CellTemplate="{StaticResource ArtistDt}"
-                                                Header="艺术家" />
+                                                Header="{StaticResource ui-artist}" />
                                             <GridViewColumn
                                                 Width="100"
                                                 CellTemplate="{StaticResource CreatorDt}"
-                                                Header="作者" />
+                                                Header="{StaticResource ui-creator}"  />
                                             <GridViewColumn
                                                 Width="150"
                                                 CellTemplate="{StaticResource VersionDt}"
-                                                Header="难度" />
+                                                Header="{StaticResource ui-mapDifficulty}"  />
                                         </GridView>
                                     </ListView.View>
                                 </ListView>

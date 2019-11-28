@@ -21,7 +21,7 @@
                 <Label Content="{DynamicResource ui-sets-title-language}" Style="{StaticResource ConfigTitleStyle}" />
                 <ComboBox
                     x:Name="Language"
-                    Width="150"
+                    Width="220"
                     Margin="8,0"
                     HorizontalAlignment="Left"
                     SelectionChanged="Language_OnSelectionChanged" />

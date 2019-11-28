@@ -235,12 +235,7 @@ namespace Milky.OsuPlayer.Windows
             {
                 e.Cancel = true;
                 var closingControl = new ClosingControl();
-                FrontDialogOverlay.ShowContent(closingControl, new FrontDialogOverlay.ShowContentOptions
-                {
-                    Width = 280,
-                    Height = 180,
-                    Title = "关闭确认"
-                }, (obj, arg) =>
+                FrontDialogOverlay.ShowContent(closingControl, DialogOptionFactory.ClosingOptions, (obj, arg) =>
                 {
                     if (closingControl.AsDefault.IsChecked == true)
                     {

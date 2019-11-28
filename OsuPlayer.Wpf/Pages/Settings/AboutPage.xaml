@@ -46,7 +46,6 @@
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <control:CommonButton
                         x:Name="CheckUpdate"
-                        Width="80"
                         Height="25"
                         Margin="8"
                         HorizontalAlignment="Left"

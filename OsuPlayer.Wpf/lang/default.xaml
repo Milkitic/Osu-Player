@@ -4,6 +4,11 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     x:Name="UiLangInternal">
     <sys:String x:Key="ui-win-sets">播放器设置</sys:String>
+    <sys:String x:Key="ui-win-editCollection">编辑收藏</sys:String>
+    <sys:String x:Key="ui-win-newCollection">新建收藏</sys:String>
+    <sys:String x:Key="ui-win-selectCollection">选择收藏</sys:String>
+    <sys:String x:Key="ui-win-selectDifficulty">选择难度</sys:String>
+    <sys:String x:Key="ui-win-closing">关闭确认</sys:String>
 
     <sys:String x:Key="ui-ok">确定</sys:String>
     <sys:String x:Key="ui-cancel">取消</sys:String>
@@ -11,6 +16,8 @@
     <sys:String x:Key="ui-close">关闭</sys:String>
     <sys:String x:Key="ui-yes">是</sys:String>
     <sys:String x:Key="ui-no">否</sys:String>
+    <sys:String x:Key="ui-switchOn">开</sys:String>
+    <sys:String x:Key="ui-switchOff">关</sys:String>
 
     <sys:String x:Key="ui-play">播放</sys:String>
     <sys:String x:Key="ui-pause">暂停</sys:String>
@@ -25,6 +32,11 @@
     <sys:String x:Key="ui-briefIntroduction">简介</sys:String>
     <sys:String x:Key="ui-none">暂无</sys:String>
     <sys:String x:Key="ui-musicCount">歌曲数</sys:String>
+    <sys:String x:Key="ui-max30Char">30字符以内</sys:String>
+    <sys:String x:Key="ui-collectionName">收藏夹名</sys:String>
+    <sys:String x:Key="ui-addNewCollection">添加新的收藏夹</sys:String>
+    <sys:String x:Key="ui-total">共</sys:String>
+    <sys:String x:Key="ui-songsClassifier">首</sys:String>
 
     <sys:String x:Key="ui-sets">设置</sys:String>
     <sys:String x:Key="ui-exit">退出</sys:String>
@@ -47,7 +59,12 @@
     <sys:String x:Key="ui-btn-cancelScan">取消扫描</sys:String>
     <sys:String x:Key="ui-btn-playAll">全部播放</sys:String>
     <sys:String x:Key="ui-btn-deleteAll">全部删除</sys:String>
-    <sys:String x:Key="ui-btn-queueAll">排队删除</sys:String>
+    <sys:String x:Key="ui-btn-queueAll">全部排队</sys:String>
+    <sys:String x:Key="ui-btn-exportAll">全部导出</sys:String>
+    <sys:String x:Key="ui-btn-saveAll">全部收藏</sys:String>
+    <sys:String x:Key="ui-btn-save">保存</sys:String>
+    <sys:String x:Key="ui-btn-editCover">编辑封面</sys:String>
+    <sys:String x:Key="ui-btn-clearList">清空列表</sys:String>
 
     <sys:String x:Key="ui-ctxMenu-searchTitle">搜索标题</sys:String>
     <sys:String x:Key="ui-ctxMenu-searchArtist">搜索艺术家</sys:String>
@@ -57,6 +74,7 @@
     <sys:String x:Key="ui-ctxMenu-saveTo">收藏至</sys:String>
     <sys:String x:Key="ui-ctxMenu-openScorePage">打开成绩页</sys:String>
     <sys:String x:Key="ui-ctxMenu-export">导出</sys:String>
+    <sys:String x:Key="ui-ctxMenu-removeFromList">从列表中移除</sys:String>
 
     <sys:String x:Key="ui-sets-nav-common">常规</sys:String>
     <sys:String x:Key="ui-sets-nav-playing">播放</sys:String>

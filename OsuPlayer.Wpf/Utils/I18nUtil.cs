@@ -188,6 +188,11 @@ namespace Milky.OsuPlayer.Utils
             CurrentLocale = AvailableLangDic.First(k => k.Value == locale);
         }
 
+        public static string GetString(string key)
+        {
+            return (string)Application.Current.FindResource(key);
+        }
+
         public static Dictionary<string, string> AvailableLangDic { get; set; } = new Dictionary<string, string>();
     }
 }

@@ -344,7 +344,7 @@
                             VerticalAlignment="Center"
                             FontSize="12"
                             Foreground="{TemplateBinding Foreground}"
-                            Text="关" />
+                            Text="{DynamicResource ui-switchOff}" />
                     </StackPanel>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="true">
@@ -408,7 +408,7 @@
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
-                            <Setter TargetName="txt" Property="Text" Value="开" />
+                            <Setter TargetName="txt" Property="Text" Value="{DynamicResource ui-switchOn}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
                             <Setter Property="Background" Value="#616161" />
