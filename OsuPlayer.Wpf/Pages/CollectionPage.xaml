@@ -13,7 +13,6 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     Focusable="False"
-    Initialized="Page_Initialized"
     IsHitTestVisible="True"
     Loaded="Page_Loaded"
     Unloaded="Page_Unloaded"
@@ -78,6 +77,12 @@
                 Header="从列表中移除(Delete)"
                 Style="{StaticResource DefaultMenuItem}" />
         </ContextMenu>
+        <Style
+            x:Key="EventGridViewItem"
+            BasedOn="{StaticResource GridView}"
+            TargetType="ListViewItem">
+            <EventSetter Event="MouseDoubleClick" Handler="MapListItem_MouseDoubleClick" />
+        </Style>
     </Page.Resources>
     <Page.DataContext>
         <viewModels:CollectionPageViewModel />
@@ -279,66 +284,8 @@
                                     x:Name="MapList"
                                     Background="{StaticResource WhiteBrush40}"
                                     BorderThickness="0"
-                                    ItemContainerStyle="{StaticResource GridView}"
+                                    ItemContainerStyle="{StaticResource EventGridViewItem}"
                                     Visibility="Collapsed">
-                                    <ListView.ContextMenu>
-                                        <ContextMenu Style="{StaticResource DefaultContextMenu}">
-                                            <MenuItem
-                                                x:Name="ItemPlay"
-                                                Click="ItemPlay_Click"
-                                                Header="{DynamicResource ui-play}"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <Separator />
-                                            <MenuItem
-                                                x:Name="ItemCollect"
-                                                Click="ItemCollect_Click"
-                                                Header="收藏..."
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <MenuItem
-                                                x:Name="ItemExport"
-                                                Click="ItemExport_Click"
-                                                Header="导出"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <Separator />
-                                            <MenuItem
-                                                x:Name="ItemSearchTitle"
-                                                Click="ItemSearchTitle_Click"
-                                                Header="搜索该标题"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <MenuItem
-                                                x:Name="ItemSearchArtist"
-                                                Click="ItemSearchArtist_Click"
-                                                Header="搜索该艺术家"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <MenuItem
-                                                x:Name="ItemSearchSource"
-                                                Click="ItemSearchSource_Click"
-                                                Header="搜索该来源"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <MenuItem
-                                                x:Name="ItemSearchMapper"
-                                                Click="ItemSearchMapper_Click"
-                                                Header="搜索该作者"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <Separator />
-                                            <MenuItem
-                                                x:Name="ItemDelete"
-                                                Click="ItemDelete_Click"
-                                                Header="从收藏夹中移除"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <Separator />
-                                            <MenuItem
-                                                x:Name="ItemSet"
-                                                Click="ItemSet_Click"
-                                                Header="打开成绩页"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                            <MenuItem
-                                                x:Name="ItemFolder"
-                                                Click="ItemFolder_Click"
-                                                Header="打开所在目录"
-                                                Style="{DynamicResource DefaultMenuItem}" />
-                                        </ContextMenu>
-                                    </ListView.ContextMenu>
                                     <ListView.Resources>
                                         <DataTemplate x:Key="IdDt">
                                             <Label

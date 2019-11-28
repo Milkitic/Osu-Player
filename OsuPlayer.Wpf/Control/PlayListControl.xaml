@@ -58,6 +58,13 @@
                 Header="从列表中移除(Delete)"
                 Style="{StaticResource DefaultMenuItem}" />
         </ContextMenu>
+
+        <Style
+            x:Key="EventGridViewItem"
+            BasedOn="{StaticResource GridView}"
+            TargetType="ListViewItem">
+            <EventSetter Event="MouseDoubleClick" Handler="PlayListItem_MouseDoubleClick" />
+        </Style>
     </UserControl.Resources>
     <UserControl.DataContext>
         <local:PlayListControlVm />
@@ -159,7 +166,7 @@
                 Background="Transparent"
                 ContextMenu="{StaticResource PlayListCtxMenu}"
                 ContextMenuOpening="PlayList_ContextMenuOpening"
-                ItemContainerStyle="{StaticResource GridView}"
+                ItemContainerStyle="{StaticResource EventGridViewItem}"
                 ItemsSource="{Binding PlayList.Entries}"
                 MouseMove="PlayList_MouseMove"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"

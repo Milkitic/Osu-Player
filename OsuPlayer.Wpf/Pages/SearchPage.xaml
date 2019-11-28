@@ -15,9 +15,9 @@
     Title="SearchPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Initialized="CurrentPage_Initialized"
+    Initialized="SearchPage_Initialized"
     KeepAlive="True"
-    Loaded="CurrentPage_Loaded"
+    Loaded="SearchPage_Loaded"
     mc:Ignorable="d">
     <Page.Resources>
         <converter:ButtonColorConverter x:Key="ButtonColorConverter" />
@@ -65,7 +65,7 @@
                 Style="{StaticResource DefaultMenuItem}">
                 <MenuItem.Header>
                     <TextBlock>
-                        <Run Text="{DynamicResource ui-ctxMenu-openSourceFolder}"/><Run Text=" (Ctrl+O)"/>
+                        <Run Text="{DynamicResource ui-ctxMenu-openSourceFolder}" /><Run Text=" (Ctrl+O)" />
                     </TextBlock>
                 </MenuItem.Header>
             </MenuItem>
@@ -81,7 +81,7 @@
                 Style="{StaticResource DefaultMenuItem}">
                 <MenuItem.Header>
                     <TextBlock>
-                        <Run Text="{DynamicResource ui-ctxMenu-saveTo}"/><Run Text="... (Ctrl+O)"/>
+                        <Run Text="{DynamicResource ui-ctxMenu-saveTo}" /><Run Text="... (Ctrl+O)" />
                     </TextBlock>
                 </MenuItem.Header>
             </MenuItem>
@@ -92,6 +92,13 @@
                 Style="{StaticResource DefaultMenuItem}" />
 
         </ContextMenu>
+
+        <Style
+            x:Key="EventGridViewItem"
+            BasedOn="{StaticResource GridView}"
+            TargetType="ListViewItem">
+            <EventSetter Event="MouseDoubleClick" Handler="ResultListItem_MouseDoubleClick" />
+        </Style>
     </Page.Resources>
     <Page.DataContext>
         <viewModels:SearchPageViewModel />
@@ -166,7 +173,7 @@
             Margin="0,20,0,2"
             Background="Transparent"
             BorderThickness="0"
-            ItemContainerStyle="{StaticResource GridView}"
+            ItemContainerStyle="{StaticResource EventGridViewItem}"
             Visibility="Collapsed">
             <ListView.Resources>
                 <DataTemplate x:Key="TitleSourceDt">
@@ -219,7 +226,7 @@
                     <GridViewColumn
                         Width="200"
                         CellTemplate="{StaticResource ArtistDt}"
-                        Header="{DynamicResource ui-artist}"/>
+                        Header="{DynamicResource ui-artist}" />
                     <GridViewColumn
                         Width="100"
                         CellTemplate="{StaticResource CreatorDt}"

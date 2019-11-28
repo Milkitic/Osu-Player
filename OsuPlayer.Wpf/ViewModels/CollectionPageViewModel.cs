@@ -22,6 +22,7 @@ namespace Milky.OsuPlayer.ViewModels
     public class CollectionPageViewModel : ViewModelBase
     {
         private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private AppDbOperator _appDbOperator = new AppDbOperator();
 
         private NumberableObservableCollection<BeatmapDataModel> _beatmaps;
         private NumberableObservableCollection<BeatmapDataModel> _displayedBeatmaps;
@@ -36,6 +37,7 @@ namespace Milky.OsuPlayer.ViewModels
                 OnPropertyChanged();
             }
         }
+
         public NumberableObservableCollection<BeatmapDataModel> DisplayedBeatmaps
         {
             get => _displayedBeatmaps;
@@ -113,17 +115,9 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var control = new DiffSelectControl(
-                        _beatmapDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName),
-                        (selected, arg) =>
-                        {
-                            arg.Handled = true;
-                            var entry = _beatmapDbOperator.GetBeatmapsFromFolder(selected.FolderName)
-                                .FirstOrDefault(k => k.Version == selected.Version);
-                            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
-                                DialogOptionFactory.SelectCollectionOptions);
-                        });
-                    FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
+                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(map),
+                        DialogOptionFactory.SelectCollectionOptions);
                 });
             }
         }
@@ -162,20 +156,29 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
+                return new DelegateCommand(async param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    await PlayController.Default.PlayNewFile(map);
+                    await Services.Get<PlayerList>()
+                        .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+
+                });
+            }
+        }
+
+        public ICommand RemoveCommand
+        {
+            get
+            {
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var beatmaps = _beatmapDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName);
-                    var control = new DiffSelectControl(
-                        beatmaps,
-                        async (selected, arg) =>
-                        {
-                            var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
-                            await PlayController.Default.PlayNewFile(map);
-                            await Services.Get<PlayerList>()
-                                .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
-                        });
-                    FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
+                    _appDbOperator.RemoveMapFromCollection(beatmap.GetIdentity(), CollectionInfo);
+                    Beatmaps.Remove(beatmap);
+                    DisplayedBeatmaps.Remove(beatmap);
+                    //await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
                 });
             }
         }

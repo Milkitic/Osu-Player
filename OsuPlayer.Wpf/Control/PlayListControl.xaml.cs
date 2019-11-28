@@ -226,12 +226,10 @@ namespace Milky.OsuPlayer.Control
         {
             ViewModel = (PlayListControlVm)this.DataContext;
             ViewModel.PlayList = Services.Get<PlayerList>();
-            var helper = new GridViewHelper(PlayList);
-            helper.OnMouseDoubleClick(PlayList_GridViewRow_DoubleClick);
             _signed = false;
         }
 
-        private void PlayList_GridViewRow_DoubleClick(object sender, RoutedEventArgs e)
+        private void PlayListItem_MouseDoubleClick(object sender, RoutedEventArgs e)
         {
             ViewModel.PlayCommand?.Execute(null);
         }

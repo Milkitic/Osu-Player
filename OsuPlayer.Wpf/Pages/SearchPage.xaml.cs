@@ -55,13 +55,13 @@ namespace Milky.OsuPlayer.Pages
             return this;
         }
 
-        private async void CurrentPage_Initialized(object sender, EventArgs e)
+        private async void SearchPage_Initialized(object sender, EventArgs e)
         {
             ViewModel = (SearchPageViewModel)DataContext;
             await ViewModel.PlayListQueryAsync();
         }
 
-        private async void CurrentPage_Loaded(object sender, RoutedEventArgs e)
+        private async void SearchPage_Loaded(object sender, RoutedEventArgs e)
         {
             var minimal = AppSettings.Default.Interface.MinimalMode;
             if (minimal != _minimal)
@@ -99,10 +99,10 @@ namespace Milky.OsuPlayer.Pages
             ViewModel.GalleryWrapPanel = _virtualizingGalleryWrapPanel;
         }
 
-        //private void ResultList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        //{
-        //    PlaySelectedDefault();
-        //}
+        private void ResultListItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            PlaySelectedDefault();
+        }
 
         //private void ItemPlay_Click(object sender, RoutedEventArgs e)
         //{
@@ -191,26 +191,26 @@ namespace Milky.OsuPlayer.Pages
         //    Process.Start(Path.Combine(Domain.OsuSongPath, map.FolderName));
         //}
 
-        //private async void PlaySelectedDefault()
-        //{
-        //    var map = GetSelectedDefault();
-        //    if (map == null)
-        //        return;
-        //    //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
-        //    //    map.BeatmapFileName));
-        //    await PlayController.Default.PlayNewFile(map);
-        //    await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
-        //}
+        private async void PlaySelectedDefault()
+        {
+            var map = GetSelectedDefault();
+            if (map == null)
+                return;
+            //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
+            //    map.BeatmapFileName));
+            await PlayController.Default.PlayNewFile(map);
+            await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+        }
 
-        //private Beatmap GetSelectedDefault()
-        //{
-        //    if (ResultList.SelectedItem == null)
-        //        return null;
-        //    var map = _beatmapDbOperator
-        //        .GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
-        //        .GetHighestDiff();
-        //    return map;
-        //}
+        private Beatmap GetSelectedDefault()
+        {
+            if (ResultList.SelectedItem == null)
+                return null;
+            var map = _beatmapDbOperator
+                .GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
+                .GetHighestDiff();
+            return map;
+        }
 
         private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {

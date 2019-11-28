@@ -9,10 +9,16 @@
     Title="RecentPlayPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Initialized="Page_Initialized"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
-
+    <Page.Resources>
+        <Style
+            x:Key="EventGridViewItem"
+            BasedOn="{StaticResource GridView}"
+            TargetType="ListViewItem">
+            <EventSetter Event="MouseDoubleClick" Handler="RecentListItem_MouseDoubleClick" />
+        </Style>
+    </Page.Resources>
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem
@@ -61,7 +67,7 @@
                         Grid.Row="1"
                         Background="Transparent"
                         BorderThickness="0"
-                        ItemContainerStyle="{StaticResource GridView}"
+                        ItemContainerStyle="{StaticResource EventGridViewItem}"
                         ItemsSource="{Binding Mode=OneWay}">
                         <ListView.ContextMenu>
                             <ContextMenu Style="{DynamicResource DefaultContextMenu}">

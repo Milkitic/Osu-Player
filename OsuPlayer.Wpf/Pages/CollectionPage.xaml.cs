@@ -125,7 +125,7 @@ namespace Milky.OsuPlayer.Pages
             // todo
         }
 
-        private void MapList_MouseDoubleClick(object sender, RoutedEventArgs e)
+        private void MapListItem_MouseDoubleClick(object sender, RoutedEventArgs e)
         {
             PlaySelected();
         }
@@ -167,71 +167,71 @@ namespace Milky.OsuPlayer.Pages
             ExportPage.QueueEntries(_entries);
         }
 
-        private void ItemSearchMapper_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelected();
-            if (map == null) return;
-            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.Creator));
-        }
+        //private void ItemSearchMapper_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var map = GetSelected();
+        //    if (map == null) return;
+        //    _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.Creator));
+        //}
 
-        private void ItemSearchSource_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelected();
-            if (map == null) return;
-            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.SongSource));
-        }
+        //private void ItemSearchSource_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var map = GetSelected();
+        //    if (map == null) return;
+        //    _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.SongSource));
+        //}
 
-        private void ItemSearchArtist_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelected();
-            if (map == null) return;
-            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoArtist));
-        }
+        //private void ItemSearchArtist_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var map = GetSelected();
+        //    if (map == null) return;
+        //    _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoArtist));
+        //}
 
-        private void ItemSearchTitle_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelected();
-            if (map == null) return;
-            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoTitle));
-        }
+        //private void ItemSearchTitle_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var map = GetSelected();
+        //    if (map == null) return;
+        //    _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoTitle));
+        //}
 
-        private void ItemExport_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelected();
-            if (map == null) return;
-            ExportPage.QueueEntry(map);
-        }
+        //private void ItemExport_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var map = GetSelected();
+        //    if (map == null) return;
+        //    ExportPage.QueueEntry(map);
+        //}
 
-        private void ItemCollect_Click(object sender, RoutedEventArgs e)
-        {
-            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(GetSelected()),
-                DialogOptionFactory.SelectCollectionOptions);
-        }
+        //private void ItemCollect_Click(object sender, RoutedEventArgs e)
+        //{
+        //    FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(GetSelected()),
+        //        DialogOptionFactory.SelectCollectionOptions);
+        //}
 
-        private void ItemSet_Click(object sender, RoutedEventArgs e)
-        {
-            if (MapList.SelectedItem == null)
-                return;
-            var searchInfo = (BeatmapDataModel)MapList.SelectedItem;
-            Process.Start($"https://osu.ppy.sh/b/{searchInfo.BeatmapId}");
-        }
+        //private void ItemSet_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (MapList.SelectedItem == null)
+        //        return;
+        //    var searchInfo = (BeatmapDataModel)MapList.SelectedItem;
+        //    Process.Start($"https://osu.ppy.sh/b/{searchInfo.BeatmapId}");
+        //}
 
-        private void ItemFolder_Click(object sender, RoutedEventArgs e)
-        {
-            if (MapList.SelectedItem == null)
-                return;
-            var searchInfo = (BeatmapDataModel)MapList.SelectedItem;
-            var dir = searchInfo.InOwnDb
-                ? Path.Combine(Domain.CustomSongPath, searchInfo.FolderName)
-                : Path.Combine(Domain.OsuSongPath, searchInfo.FolderName);
-            if (!Directory.Exists(dir))
-            {
-                Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
-                return;
-            }
+        //private void ItemFolder_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (MapList.SelectedItem == null)
+        //        return;
+        //    var searchInfo = (BeatmapDataModel)MapList.SelectedItem;
+        //    var dir = searchInfo.InOwnDb
+        //        ? Path.Combine(Domain.CustomSongPath, searchInfo.FolderName)
+        //        : Path.Combine(Domain.OsuSongPath, searchInfo.FolderName);
+        //    if (!Directory.Exists(dir))
+        //    {
+        //        Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
+        //        return;
+        //    }
 
-            Process.Start(dir);
-        }
+        //    Process.Start(dir);
+        //}
 
         private async void PlaySelected()
         {
@@ -265,12 +265,6 @@ namespace Milky.OsuPlayer.Pages
         private IEnumerable<Beatmap> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)
         {
             return dataModels.Select(ConvertToEntry);
-        }
-
-        private void Page_Initialized(object sender, System.EventArgs e)
-        {
-            var helper = new GridViewHelper(MapList);
-            helper.OnMouseDoubleClick(MapList_MouseDoubleClick);
         }
 
         private void BtnPlayAll_Click(object sender, RoutedEventArgs e)
