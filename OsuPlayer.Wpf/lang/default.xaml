@@ -37,6 +37,14 @@
     <sys:String x:Key="ui-addNewCollection">添加新的收藏夹</sys:String>
     <sys:String x:Key="ui-total">共</sys:String>
     <sys:String x:Key="ui-songsClassifier">首</sys:String>
+    <sys:String x:Key="ui-volumeMaster">总体</sys:String>
+    <sys:String x:Key="ui-volumeMusic">音乐</sys:String>
+    <sys:String x:Key="ui-volumeSound">音效</sys:String>
+    <sys:String x:Key="ui-volumeSample">音轨</sys:String>
+    <sys:String x:Key="ui-3dSoundEffect">3D音效</sys:String>
+    <sys:String x:Key="ui-currentMapOffset">单曲偏移</sys:String>
+    <sys:String x:Key="ui-openDesktopLyric">打开桌面歌词</sys:String>
+    <sys:String x:Key="ui-closeDesktopLyric">关闭桌面歌词</sys:String>
 
     <sys:String x:Key="ui-sets">设置</sys:String>
     <sys:String x:Key="ui-exit">退出</sys:String>
@@ -111,6 +119,7 @@
     <sys:String x:Key="ui-sets-content-setAsDefaultOptions">设置默认选项</sys:String>
     <sys:String x:Key="ui-sets-content-autoPlayOnProgramStartup">程序启动时自动播放</sys:String>
     <sys:String x:Key="ui-sets-content-resumePlaylistOnProgramStartup">程序启动时恢复上次播放</sys:String>
+    <sys:String x:Key="ui-sets-content-addToFavorite">添加到最喜爱的</sys:String>
     <sys:String x:Key="ui-sets-content-enableDesktopLyric">启用桌面歌词</sys:String>
     <sys:String x:Key="ui-sets-content-displayAllLyrics">显示全部歌词</sys:String>
     <sys:String x:Key="ui-sets-content-preferOriginLyricNeteaseOnly">偏好源歌词（仅Netease源有效）</sys:String>

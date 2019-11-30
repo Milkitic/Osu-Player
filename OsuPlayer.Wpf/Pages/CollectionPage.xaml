@@ -89,6 +89,7 @@
             <Separator />
             <MenuItem
                 Command="{Binding DataContext.RemoveCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
                 Style="{StaticResource DefaultMenuItem}">
                 <MenuItem.Header>
                     <TextBlock>
@@ -200,7 +201,10 @@
                                         MouseOverForeground="White" />
                                 </WrapPanel>
                                 <StackPanel Margin="5" Orientation="Horizontal">
-                                    <Label Content="{DynamicResource ui-createTime}" Foreground="#303030" Margin="0,0,5,0" />
+                                    <Label
+                                        Margin="0,0,5,0"
+                                        Content="{DynamicResource ui-createTime}"
+                                        Foreground="#303030" />
                                     <Label Content="{Binding Path=CollectionInfo.CreateTime, Converter={StaticResource CvtDate}}" Foreground="#303030" />
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
@@ -224,7 +228,10 @@
                                     </control:CommonButton>
                                 </StackPanel>
                                 <StackPanel Margin="5" Orientation="Horizontal">
-                                    <Label Content="{DynamicResource ui-briefIntroduction}" Margin="0,0,5,0" Foreground="#303030" />
+                                    <Label
+                                        Margin="0,0,5,0"
+                                        Content="{DynamicResource ui-briefIntroduction}"
+                                        Foreground="#303030" />
                                     <Label x:Name="LblDescription" Content="{Binding Path=CollectionInfo.Description}">
                                         <Label.Style>
                                             <Style TargetType="{x:Type Label}">
@@ -347,11 +354,11 @@
                                             <GridViewColumn
                                                 Width="100"
                                                 CellTemplate="{StaticResource CreatorDt}"
-                                                Header="{StaticResource ui-creator}"  />
+                                                Header="{StaticResource ui-creator}" />
                                             <GridViewColumn
                                                 Width="150"
                                                 CellTemplate="{StaticResource VersionDt}"
-                                                Header="{StaticResource ui-mapDifficulty}"  />
+                                                Header="{StaticResource ui-mapDifficulty}" />
                                         </GridView>
                                     </ListView.View>
                                 </ListView>

@@ -1,23 +1,26 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Milky.OsuPlayer">
-    <Style TargetType="Button" x:Key="FlatButtonStyle">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Milky.OsuPlayer">
+    <Style x:Key="FlatButtonStyle" TargetType="Button">
         <Style.Setters>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid x:Name="Grid">
-                            <Border Background="{StaticResource GreyBrush}"
-                                    CornerRadius="1"
-                                    x:Name="Border"
-                                    Opacity="0">
-                                <ContentPresenter Content="{TemplateBinding Content}"/>
+                            <Border
+                                x:Name="Border"
+                                Background="{StaticResource GreyBrush}"
+                                CornerRadius="1"
+                                Opacity="0">
+                                <ContentPresenter Content="{TemplateBinding Content}" />
                             </Border>
-                            <Border Background="{TemplateBinding Background}"
-                                    CornerRadius="1"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}">
-                                <ContentPresenter Content="{TemplateBinding Content}"/>
+                            <Border
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="1">
+                                <ContentPresenter Content="{TemplateBinding Content}" />
                             </Border>
                         </Grid>
                         <ControlTemplate.Triggers>
@@ -28,7 +31,7 @@
                                 <Setter TargetName="Grid" Property="Opacity" Value="0.8" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.5"/>
+                                <Setter Property="Opacity" Value="0.5" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

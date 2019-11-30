@@ -29,7 +29,6 @@
     SizeChanged="Window_SizeChanged"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-
     <WindowChrome.WindowChrome>
         <WindowChrome
             CaptionHeight="46"

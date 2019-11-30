@@ -12,19 +12,19 @@
         <RadioButton
             x:Name="RadioMinimum"
             HorizontalAlignment="Left"
-            Content="最小化到系统托盘"
+            Content="{DynamicResource ui-sets-content-minToNotificationPanel}"
             IsChecked="True"
             Style="{StaticResource CommonRadioButton}" />
         <RadioButton
             x:Name="RadioExit"
             HorizontalAlignment="Left"
-            Content="退出程序"
+            Content="{DynamicResource ui-sets-content-exitProgram}"
             Style="{StaticResource CommonRadioButton}" />
         <CheckBox
             x:Name="AsDefault"
             Margin="0,10,0,0"
             HorizontalAlignment="Left"
-            Content="设置默认选项"
+            Content="{DynamicResource ui-sets-content-setAsDefaultOptions}"
             Style="{StaticResource CommonCheckBox}" />
     </StackPanel>
 </UserControl>

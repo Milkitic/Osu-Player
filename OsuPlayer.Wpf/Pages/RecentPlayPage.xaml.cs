@@ -19,38 +19,181 @@ using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Utils;
+using Milky.WpfApi;
+using Milky.WpfApi.Commands;
 
 namespace Milky.OsuPlayer.Pages
 {
+    public class RecentPlayPageVm : ViewModelBase
+    {
+        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private AppDbOperator _appDbOperator = new AppDbOperator();
+        private NumberableObservableCollection<BeatmapDataModel> _beatmaps;
+
+        public NumberableObservableCollection<BeatmapDataModel> Beatmaps
+        {
+            get => _beatmaps;
+            set
+            {
+                _beatmaps = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand SearchByConditionCommand
+        {
+            get
+            {
+                return new DelegateCommand(param =>
+                {
+                    WindowBase.GetCurrentFirst<MainWindow>()
+                        .SwitchSearch
+                        .CheckAndAction(page => ((SearchPage)page).Search((string)param));
+                });
+            }
+        }
+
+        public ICommand OpenSourceFolderCommand
+        {
+            get
+            {
+                return new DelegateCommand(param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    if (map == null) return;
+                    var fileName = beatmap.InOwnDb
+                        ? Path.Combine(Domain.CustomSongPath, map.FolderName)
+                        : Path.Combine(Domain.OsuSongPath, map.FolderName);
+                    if (!Directory.Exists(fileName))
+                    {
+                        Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
+                        return;
+                    }
+
+                    Process.Start(fileName);
+                });
+            }
+        }
+
+        public ICommand OpenScorePageCommand
+        {
+            get
+            {
+                return new DelegateCommand(param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    if (map == null) return;
+                    Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
+                });
+            }
+        }
+
+        public ICommand SaveCollectionCommand
+        {
+            get
+            {
+                return new DelegateCommand(param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(map),
+                        DialogOptionFactory.SelectCollectionOptions);
+                });
+            }
+        }
+
+        public ICommand ExportCommand
+        {
+            get
+            {
+                return new DelegateCommand(param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    if (map == null) return;
+                    ExportPage.QueueEntry(map);
+                });
+            }
+        }
+
+        public ICommand DirectPlayCommand
+        {
+            get
+            {
+                return new DelegateCommand(async param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    if (map == null) return;
+                    await PlayController.Default.PlayNewFile(map);
+                    await Services.Get<PlayerList>()
+                        .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+                });
+            }
+        }
+
+        public ICommand PlayCommand
+        {
+            get
+            {
+                return new DelegateCommand(async param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    await PlayController.Default.PlayNewFile(map);
+                    await Services.Get<PlayerList>()
+                        .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+
+                });
+            }
+        }
+
+        public ICommand RemoveCommand
+        {
+            get
+            {
+                return new DelegateCommand(param =>
+                {
+                    var beatmap = (BeatmapDataModel)param;
+                    _appDbOperator.RemoveFromRecent(beatmap.GetIdentity());
+                    Beatmaps.Remove(beatmap);
+                    //await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
+                });
+            }
+        }
+    }
+
     /// <summary>
     /// RecentPlayPage.xaml 的交互逻辑
     /// </summary>
     public partial class RecentPlayPage : Page
     {
         private ObservableCollection<Beatmap> _recentBeatmaps;
-        public NumberableObservableCollection<BeatmapDataModel> DataModels;
         private readonly MainWindow _mainWindow;
         private BeatmapDbOperator _beatmapOperator = new BeatmapDbOperator();
         private AppDbOperator _appDbOperator = new AppDbOperator();
+        private RecentPlayPageVm _viewModel;
 
         public RecentPlayPage()
         {
             InitializeComponent();
-            _mainWindow = (MainWindow)Application.Current.MainWindow; ;
+            _mainWindow = (MainWindow)Application.Current.MainWindow;
+            _viewModel = (RecentPlayPageVm)DataContext;
         }
 
         public void UpdateList()
         {
             _recentBeatmaps = new ObservableCollection<Beatmap>(
                 _beatmapOperator.GetBeatmapsByMapInfo(_appDbOperator.GetRecentList(), TimeSortMode.PlayTime));
-            DataModels = new NumberableObservableCollection<BeatmapDataModel>(_recentBeatmaps.ToDataModelList(false));
-            RecentList.DataContext = DataModels.ToList();
+            _viewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_recentBeatmaps.ToDataModelList(false));
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             UpdateList();
-            var item = DataModels.FirstOrDefault(k =>
+            var item = _viewModel.Beatmaps.FirstOrDefault(k =>
                 k.GetIdentity().Equals(Services.Get<PlayerList>().CurrentInfo?.Identity));
             RecentList.SelectedItem = item;
         }

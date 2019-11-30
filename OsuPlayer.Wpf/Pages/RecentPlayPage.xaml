@@ -6,6 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:metadata="clr-namespace:Milky.OsuPlayer.Common.Metadata;assembly=OsuPlayer.Common"
+    xmlns:pages="clr-namespace:Milky.OsuPlayer.Pages"
+    xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     Title="RecentPlayPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -18,7 +20,86 @@
             TargetType="ListViewItem">
             <EventSetter Event="MouseDoubleClick" Handler="RecentListItem_MouseDoubleClick" />
         </Style>
+        <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
+            <MenuItem
+                Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-play}" /><Run Text="... (Enter)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding AutoTitle}"
+                Header="{DynamicResource ui-ctxMenu-searchTitle}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding AutoArtist}"
+                Header="{DynamicResource ui-ctxMenu-searchArtist}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding SongSource}"
+                Header="{DynamicResource ui-ctxMenu-searchSource}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding Creator}"
+                Header="{DynamicResource ui-ctxMenu-searchCreator}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.OpenSourceFolderCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-ctxMenu-openSourceFolder}" /><Run Text=" (Ctrl+O)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem
+                Command="{Binding DataContext.OpenScorePageCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="{DynamicResource ui-ctxMenu-openScorePage}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.SaveCollectionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-ctxMenu-saveTo}" /><Run Text="... (Ctrl+S)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem
+                Command="{Binding DataContext.ExportCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="{DynamicResource ui-ctxMenu-export}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.RemoveCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-ctxMenu-removeFromList}" /><Run Text=" (Delete)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
+        </ContextMenu>
     </Page.Resources>
+    <Page.DataContext>
+        <pages:RecentPlayPageVm />
+    </Page.DataContext>
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem
@@ -68,15 +149,18 @@
                         Background="Transparent"
                         BorderThickness="0"
                         ItemContainerStyle="{StaticResource EventGridViewItem}"
-                        ItemsSource="{Binding Mode=OneWay}">
-                        <ListView.ContextMenu>
+                        ItemsSource="{Binding Beatmaps, Mode=OneWay}">
+                        <!--<ListView.ContextMenu>
                             <ContextMenu Style="{DynamicResource DefaultContextMenu}">
                                 <MenuItem
                                     x:Name="ItemPlay"
                                     Click="ItemPlay_Click"
                                     Header="{DynamicResource ui-play}"
                                     Style="{DynamicResource DefaultMenuItem}" />
-                                <!--<MenuItem x:Name="ItemNextPlay" Header="下一首播放" Click="ItemNextPlay_Click" />-->
+                                <MenuItem
+                                    x:Name="ItemNextPlay"
+                                    Header="下一首播放"
+                                    Visibility="Collapsed" />
                                 <Separator />
                                 <MenuItem
                                     x:Name="ItemCollect"
@@ -114,11 +198,7 @@
                                     x:Name="ItemDelete"
                                     Click="ItemDelete_Click"
                                     Header="从最近播放中移除"
-                                    Style="{DynamicResource DefaultMenuItem}">
-                                    <!--<MenuItem.Icon>
-                            <Image Source="delect.jpg" Width="20" Height="20"  />
-                        </MenuItem.Icon>-->
-                                </MenuItem>
+                                    Style="{DynamicResource DefaultMenuItem}" />
                                 <Separator />
                                 <MenuItem
                                     x:Name="ItemSet"
@@ -131,10 +211,7 @@
                                     Header="打开所在目录"
                                     Style="{DynamicResource DefaultMenuItem}" />
                             </ContextMenu>
-                        </ListView.ContextMenu>
-                        <ListView.DataContext>
-                            <metadata:BeatmapDataModel />
-                        </ListView.DataContext>
+                        </ListView.ContextMenu>-->
                         <ListView.Resources>
                             <DataTemplate x:Key="IdDt">
                                 <Label

@@ -18,8 +18,8 @@
                 <Label Content="{DynamicResource ui-sets-title-hotKeySettings}" Style="{StaticResource ConfigTitleStyle}" />
                 <Grid x:Name="FrameGrid" Style="{StaticResource ConfigGridStyle}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="150" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" MinWidth="150" />
+                        <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition />
@@ -77,13 +77,13 @@
                         Grid.Row="6"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="添加到最喜爱的"
+                        Content="{DynamicResource ui-sets-content-addToFavorite}"
                         Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         Grid.Row="7"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Style="{StaticResource ConfigLabelStyle}" >
+                        Style="{StaticResource ConfigLabelStyle}">
                         <TextBlock>
                             <Run Text="{DynamicResource ui-open}" /><Run Text=" / " /><Run Text="{DynamicResource ui-close}" /><Run Text="{DynamicResource ui-desktopLyric}" />
                         </TextBlock>
@@ -95,6 +95,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -109,6 +110,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -123,6 +125,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -137,6 +140,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -151,6 +155,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -165,6 +170,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -179,6 +185,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -193,6 +200,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"

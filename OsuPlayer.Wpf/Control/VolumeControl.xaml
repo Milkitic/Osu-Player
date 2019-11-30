@@ -54,7 +54,7 @@
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
-                            Content="总体"
+                            Content="{DynamicResource ui-volumeMaster}"
                             Foreground="#303030" />
                     </StackPanel>
                     <StackPanel Grid.Column="1">
@@ -70,7 +70,7 @@
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
-                            Content="音乐"
+                            Content="{DynamicResource ui-volumeMusic}"
                             Foreground="#303030" />
                     </StackPanel>
                     <StackPanel Grid.Column="2">
@@ -86,7 +86,7 @@
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
-                            Content="音效"
+                            Content="{DynamicResource ui-volumeSound}"
                             Foreground="#303030" />
                     </StackPanel>
                     <StackPanel Grid.Column="3">
@@ -102,7 +102,7 @@
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
-                            Content="音轨"
+                            Content="{DynamicResource ui-volumeSample}"
                             Foreground="#303030" />
                     </StackPanel>
                 </Grid>
@@ -121,7 +121,7 @@
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
-                            Content="3D差异度"
+                            Content="{DynamicResource ui-3dSoundEffect}"
                             Foreground="#303030" />
                         <Slider
                             x:Name="Offset"
@@ -136,7 +136,7 @@
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
-                            Content="单曲偏移"
+                            Content="{DynamicResource ui-currentMapOffset}"
                             Foreground="#303030" />
                     </StackPanel>
                 </Grid>
