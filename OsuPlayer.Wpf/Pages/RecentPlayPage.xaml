@@ -146,7 +146,6 @@
                     <ListView
                         x:Name="RecentList"
                         Grid.Row="1"
-                        Background="Transparent"
                         BorderThickness="0"
                         ItemContainerStyle="{StaticResource EventGridViewItem}"
                         ItemsSource="{Binding Beatmaps, Mode=OneWay}">

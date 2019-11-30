@@ -22,6 +22,11 @@
         x:Key="TextureSource3"
         CacheOption="OnLoad"
         UriSource="pack://application:,,,/OsuPlayer;component/Resources/store.jpg" />
+    <BitmapImage
+        x:Key="OsuTextureBlue"
+        CacheOption="OnLoad"
+        UriSource="pack://application:,,,/OsuPlayer;component/Resources/osu_texture_blue.png" />
+    <ImageBrush x:Key="OsuTextureBlueBrush" ImageSource="{StaticResource OsuTextureBlue}" />
     <ImageBrush x:Key="TextureBrush" ImageSource="{StaticResource TextureSource1}" />
     <ImageBrush x:Key="TextureBrush2" ImageSource="{StaticResource TextureSource2}" />
     <ImageBrush

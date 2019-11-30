@@ -44,7 +44,7 @@ namespace Milky.OsuPlayer.Pages
             Mode = BindingMode.OneWay
         };
 
-        private static bool _minimal = false;
+        private bool _minimal = false;
 
         public CollectionPageViewModel ViewModel { get; set; }
         public string Id { get; set; }

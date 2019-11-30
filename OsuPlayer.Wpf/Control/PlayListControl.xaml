@@ -165,6 +165,7 @@
             <ListView
                 x:Name="PlayList"
                 Grid.Row="1"
+                AlternationCount="2"
                 Background="Transparent"
                 ContextMenu="{StaticResource PlayListCtxMenu}"
                 ContextMenuOpening="PlayList_ContextMenuOpening"

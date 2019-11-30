@@ -571,6 +571,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="Resources\osu_texture_blue.png" />
     <Resource Include="Resources\title_sm.png" />
     <Resource Include="osuPlayer.ico" />
     <Resource Include="Resources\osu_texture2.png" />
