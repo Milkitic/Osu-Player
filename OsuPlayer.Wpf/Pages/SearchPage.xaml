@@ -15,6 +15,7 @@
     Title="SearchPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
     Initialized="SearchPage_Initialized"
     KeepAlive="True"
     Loaded="SearchPage_Loaded"

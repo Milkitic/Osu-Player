@@ -9,10 +9,12 @@
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
     x:Name="CfgWindow"
     Title="{DynamicResource ui-win-sets}"
-    Height="400"
-    MinWidth="600"
+    Width="640"
+    Height="440"
+    MinWidth="580"
+    FontFamily="{StaticResource SspRegular}"
+    FontSize="13"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
-    ResizeMode="NoResize"
     Shown="Window_Shown"
     SizeToContent="Width"
     WindowStartupLocation="CenterScreen"
@@ -22,7 +24,7 @@
             CaptionHeight="32"
             CornerRadius="0"
             GlassFrameThickness="1,1,1,1"
-            ResizeBorderThickness="0"
+            ResizeBorderThickness="4"
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
     <Grid Background="#323232">
@@ -51,7 +53,7 @@
             Grid.Row="1"
             Width="Auto"
             Height="Auto">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <StackPanel Width="150">
                     <Label
                         Width="150"

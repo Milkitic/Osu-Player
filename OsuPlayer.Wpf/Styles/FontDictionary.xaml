@@ -1,0 +1,11 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Milky.OsuPlayer.Styles">
+    <FontFamily x:Key="SspExtraLight">pack://application:,,,/OsuPlayer;component/Resources/Fonts/#Source Sans Pro ExtraLight</FontFamily>
+    <FontFamily x:Key="SspLight">pack://application:,,,/OsuPlayer;component/Resources/Fonts/#Source Sans Pro Light</FontFamily>
+    <FontFamily x:Key="SspRegular">pack://application:,,,/OsuPlayer;component/Resources/Fonts/#Source Sans Pro</FontFamily>
+    <FontFamily x:Key="SspSemibold">pack://application:,,,/OsuPlayer;component/Resources/Fonts/#Source Sans Pro Semibold</FontFamily>
+    <FontFamily x:Key="SspBlack">pack://application:,,,/OsuPlayer;component/Resources/Fonts/#Source Sans Pro Black</FontFamily>
+
+</ResourceDictionary>

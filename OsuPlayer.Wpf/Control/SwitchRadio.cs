@@ -405,7 +405,7 @@ namespace Milky.OsuPlayer.Control
 
             Ta1 = new DoubleAnimation
             {
-                From = 1.05,
+                From = 0.95,
                 To = 1,
                 EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,

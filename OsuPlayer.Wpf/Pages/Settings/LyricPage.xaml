@@ -8,14 +8,13 @@
     Title="LyricPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
-
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
                 <Label
-                    Height="26"
                     HorizontalAlignment="Left"
                     Content="{DynamicResource ui-sets-title-desktopLyric}"
                     Style="{StaticResource ConfigTitleStyle}" />
@@ -28,11 +27,10 @@
                     Style="{StaticResource CommonCheckBox}"
                     Unchecked="EnableLyric_CheckChanged" />
                 <Label
-                    Height="26"
                     HorizontalAlignment="Left"
                     Content="{DynamicResource ui-sets-title-lyricSource}"
                     Style="{StaticResource ConfigTitleStyle}" />
-                <Canvas Height="100" HorizontalAlignment="Left">
+                <StackPanel Margin="0,-5,0,0" HorizontalAlignment="Left">
                     <RadioButton
                         x:Name="SourceAuto"
                         Height="25"
@@ -42,7 +40,6 @@
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="SourceNetease"
-                        Canvas.Top="25"
                         Height="25"
                         Margin="8,0"
                         Checked="Source_CheckChanged"
@@ -50,7 +47,6 @@
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="SourceKugou"
-                        Canvas.Top="50"
                         Height="25"
                         Margin="8,0"
                         Checked="Source_CheckChanged"
@@ -58,19 +54,17 @@
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="SourceQqMusic"
-                        Canvas.Top="75"
                         Height="25"
                         Margin="8,0"
                         Checked="Source_CheckChanged"
                         Content="{DynamicResource ui-qqMusic}"
                         Style="{StaticResource CommonRadioButton}" />
-                </Canvas>
+                </StackPanel>
                 <Label
-                    Height="26"
                     HorizontalAlignment="Left"
                     Content="{DynamicResource ui-sets-title-translation}"
                     Style="{StaticResource ConfigTitleStyle}" />
-                <Canvas Height="75" HorizontalAlignment="Left">
+                <StackPanel Margin="0,-5,0,0" HorizontalAlignment="Left">
                     <RadioButton
                         x:Name="ShowAll"
                         Height="25"
@@ -80,7 +74,6 @@
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="ShowOrigin"
-                        Canvas.Top="25"
                         Height="25"
                         Margin="8,0"
                         Checked="Show_CheckChanged"
@@ -88,15 +81,13 @@
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="ShowTrans"
-                        Canvas.Top="50"
                         Height="25"
                         Margin="8,0"
                         Checked="Show_CheckChanged"
                         Content="{DynamicResource ui-sets-content-preferTranslateLyricNeteaseOnly}"
                         Style="{StaticResource CommonRadioButton}" />
-                </Canvas>
+                </StackPanel>
                 <Label
-                    Height="26"
                     HorizontalAlignment="Left"
                     Content="{DynamicResource ui-sets-title-matchMode}"
                     Style="{StaticResource ConfigTitleStyle}" />
@@ -109,7 +100,6 @@
                     Style="{StaticResource CommonCheckBox}"
                     Unchecked="StrictMode_CheckChanged" />
                 <Label
-                    Height="26"
                     HorizontalAlignment="Left"
                     Content="缓存："
                     Style="{StaticResource ConfigTitleStyle}"

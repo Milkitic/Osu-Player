@@ -412,6 +412,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Styles\FontDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles\Radios.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -571,6 +575,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="Resources\Fonts\SourceSansPro-Black.ttf" />
+    <Resource Include="Resources\Fonts\SourceSansPro-Bold.ttf" />
+    <Resource Include="Resources\Fonts\SourceSansPro-ExtraLight.ttf" />
+    <Resource Include="Resources\Fonts\SourceSansPro-Light.ttf" />
+    <Resource Include="Resources\Fonts\SourceSansPro-Regular.ttf" />
+    <Resource Include="Resources\Fonts\SourceSansPro-Semibold.ttf" />
     <Resource Include="Resources\osu_texture_blue.png" />
     <Resource Include="Resources\title_sm.png" />
     <Resource Include="osuPlayer.ico" />

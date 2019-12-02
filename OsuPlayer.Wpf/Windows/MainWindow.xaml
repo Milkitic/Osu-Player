@@ -24,6 +24,8 @@
     MinHeight="600"
     Closing="Window_Closing"
     Deactivated="WindowBase_Deactivated"
+    FontFamily="{StaticResource SspRegular}"
+    FontSize="13"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
     Loaded="Window_Loaded"
     SizeChanged="Window_SizeChanged"
@@ -108,6 +110,7 @@
                             Style="{StaticResource NavButton}" />
                         <Label
                             Height="30"
+                            FontWeight="SemiBold"
                             Style="{StaticResource NavigationLabelStyle}"
                             Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
                             <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-library}" />
@@ -131,6 +134,7 @@
                             TargetPageType="{x:Type pages:StoryboardPage}" />-->
                         <Label
                             Height="30"
+                            FontWeight="SemiBold"
                             Style="{StaticResource NavigationLabelStyle}"
                             Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
                             <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-mine}" />
@@ -153,7 +157,10 @@
                             TargetFrameControl="MainFrame"
                             TargetPageType="{x:Type pages:ExportPage}" />
                         <DockPanel Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
-                            <Label Height="30" Style="{StaticResource NavigationLabelStyle}">
+                            <Label
+                                Height="30"
+                                FontWeight="SemiBold"
+                                Style="{StaticResource NavigationLabelStyle}">
                                 <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-collection}" />
                             </Label>
                             <control:CommonButton

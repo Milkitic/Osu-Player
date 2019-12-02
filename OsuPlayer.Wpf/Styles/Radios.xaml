@@ -21,7 +21,7 @@
         <Setter Property="Foreground" Value="#484848" />
         <Setter Property="BorderThickness" Value="1,0" />
         <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Height" Value="36" />
         <Setter Property="MouseOverBackground" Value="#A0F0F0F0" />

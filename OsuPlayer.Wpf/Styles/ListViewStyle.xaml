@@ -29,10 +29,11 @@
                                 Y2="28" />
                         </Grid>
                         <Border
-                            Width="1"
+                            Width="2"
                             Margin="0,5"
                             HorizontalAlignment="Center"
-                            Background="#60303030"
+                            Background="#18727272"
+                            CornerRadius="1"
                             SnapsToDevicePixels="True" />
                         <Border
                             Width="{TemplateBinding Width}"
@@ -51,10 +52,12 @@
     </Style>
     <Style x:Key="GridViewColumnHeaderStyle" TargetType="GridViewColumnHeader">
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="Padding" Value="1" />
+        <Setter Property="FontWeight" Value="Light" />
+        <Setter Property="Padding" Value="10,0,0,0" />
         <Setter Property="Margin" Value="0" />
+        <Setter Property="Foreground" Value="#484848" />
         <!--<Setter Property="Foreground" Value="White" />-->
         <Setter Property="Template">
             <Setter.Value>
@@ -63,13 +66,13 @@
                         <Border
                             Name="HeaderBorder"
                             Height="25"
-                            Background="#F4F4F8"
-                            BorderBrush="#50303030"
                             BorderThickness="0,1"
                             CornerRadius="5">
+                            <!--<Border.Background>#F4F4F8</Border.Background>-->
+                            <!--<Border.BorderBrush>#50303030</Border.BorderBrush>-->
                             <Border
                                 x:Name="Cover"
-                                Padding="5,0,0,0"
+                                Padding="{TemplateBinding Padding}"
                                 Background="Transparent">
                                 <ContentPresenter
                                     Name="HeaderContent"
@@ -89,6 +92,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
                             <Setter TargetName="Cover" Property="Background" Value="#90FFFFFF" />
+                            <Setter Property="Foreground" Value="#242424" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -101,7 +105,9 @@
         <Setter Property="Padding" Value="0" />
         <Setter Property="BorderBrush" Value="#20303030" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Background" Value="White" />
+        <Setter Property="Background" Value="#80FFFFFF" />
+        <Setter Property="FontFamily" Value="{StaticResource SspRegular}" />
+        <Setter Property="TextBlock.FontSize" Value="13" />
         <Setter Property="ContextMenu" Value="{DynamicResource DataModelListContextMenu}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -113,7 +119,7 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="Transparent"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="10"
+                            CornerRadius="3"
                             Visibility="Collapsed">
                             <Border.Effect>
                                 <DropShadowEffect
@@ -129,13 +135,17 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="12">
+                            CornerRadius="0"
+                            RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                            </Border.RenderTransform>
                             <GridViewRowPresenter Columns="{TemplateBinding GridView.ColumnCollection}" Content="{TemplateBinding Content}" />
                         </Border>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="ListBox.AlternationIndex" Value="1">
-                            <Setter Property="Background" Value="#FAFAFA" />
+                            <Setter Property="Background" Value="#80F0F0F0" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="#F0F0F0" />
@@ -148,6 +158,12 @@
                             <Setter Property="TextBlock.Foreground" Value="White" />
                             <Setter TargetName="Shadow" Property="Visibility" Value="Visible" />
                             <Setter Property="Panel.ZIndex" Value="99" />
+                            <Setter TargetName="SelectedItem" Property="CornerRadius" Value="5" />
+                            <Setter TargetName="SelectedItem" Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="1.005" ScaleY="1.005" />
+                                </Setter.Value>
+                            </Setter>
                         </Trigger>
                         <!--<MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -163,7 +179,7 @@
     </Style>
     <Style TargetType="{x:Type ListView}">
         <Setter Property="AlternationCount" Value="2" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Background" Value="#B0FFFFFF" />
     </Style>
     <Style x:Key="ListView" TargetType="{x:Type ListView}">
         <Setter Property="BorderThickness" Value="0" />

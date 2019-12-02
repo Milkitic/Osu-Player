@@ -11,6 +11,7 @@
     Title="GeneralPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
     <Page.DataContext>
@@ -122,7 +123,7 @@
                     HorizontalAlignment="Left"
                     Content="{DynamicResource ui-sets-title-closeWindow}"
                     Style="{StaticResource ConfigTitleStyle}" />
-                <StackPanel HorizontalAlignment="Left">
+                <StackPanel Margin="0,-5,0,0" HorizontalAlignment="Left">
                     <RadioButton
                         x:Name="RadioMinimum"
                         Margin="8,0"

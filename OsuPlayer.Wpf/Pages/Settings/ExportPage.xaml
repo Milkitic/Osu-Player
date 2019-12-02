@@ -9,6 +9,7 @@
     Title="ExportPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
 
@@ -81,7 +82,7 @@
                     HorizontalAlignment="Left"
                     Content="{DynamicResource ui-sets-title-fileNamingFormat}"
                     Style="{StaticResource ConfigTitleStyle}" />
-                <StackPanel HorizontalAlignment="Left">
+                <StackPanel Margin="0,-5,0,0" HorizontalAlignment="Left">
                     <RadioButton
                         x:Name="RadioT"
                         Margin="8,0"
@@ -114,7 +115,7 @@
                     HorizontalAlignment="Left"
                     Content="{DynamicResource ui-sets-title-directoryGrouping}"
                     Style="{StaticResource ConfigTitleStyle}" />
-                <StackPanel HorizontalAlignment="Left">
+                <StackPanel Margin="0,-5,0,0" HorizontalAlignment="Left">
                     <RadioButton
                         x:Name="SortNone"
                         Margin="8,0"

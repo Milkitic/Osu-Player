@@ -128,7 +128,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Content=""
-                        TextBlock.FontSize="13" />
+                        TextBlock.FontSize="14" />
                     <control:CommonButton
                         Width="34"
                         Height="34"
@@ -168,6 +168,7 @@
                         Background="#F4F4F4"
                         Click="OK_Click"
                         Content="{DynamicResource ui-ok}"
+                        FontWeight="SemiBold"
                         Style="{StaticResource SettingsButton}"
                         TextBlock.FontSize="13" />
                 </StackPanel>
