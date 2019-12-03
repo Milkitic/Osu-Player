@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="220"
+    FontFamily="{StaticResource SspRegular}"
     d:DesignWidth="170"
     mc:Ignorable="d">
     <UserControl.DataContext>

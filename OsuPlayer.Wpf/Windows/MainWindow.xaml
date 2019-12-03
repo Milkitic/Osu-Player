@@ -301,7 +301,11 @@
                 <TextBlock Text="OsuPlayer" />
             </ToolTip>
             <!--<Popup x:Key="TrayStatusPopup"></Popup>-->
-            <ContextMenu x:Key="TrayMenu" Style="{StaticResource DefaultContextMenu}">
+            <ContextMenu
+                x:Key="TrayMenu"
+                FontFamily="{StaticResource SspRegular}"
+                FontSize="13"
+                Style="{StaticResource DefaultContextMenu}">
                 <!--<ContextMenu x:Key="TrayMenu">-->
                 <MenuItem Header="{DynamicResource ui-play}" Style="{DynamicResource DefaultMenuItem}">
                     <MenuItem.Icon>
