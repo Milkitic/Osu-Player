@@ -25,7 +25,7 @@
     </Style>
     <!--  Config label style  -->
     <Style x:Key="ConfigLabelStyle" TargetType="{x:Type Label}">
-        <Setter Property="FontSize" Value="12px" />
+        <Setter Property="FontSize" Value="13px" />
         <Setter Property="Foreground" Value="#606060" />
         <Setter Property="Margin" Value="4,4" />
     </Style>
