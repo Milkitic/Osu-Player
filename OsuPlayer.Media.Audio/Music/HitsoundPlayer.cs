@@ -217,10 +217,21 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         internal void SetDuration(int musicPlayerDuration)
         {
+            var enumerable = _hitsoundList.Select(k =>
+            {
+                var arr = k.FilePaths.Select(o => (Engine.GetOrCreateCacheSound(o)?.Duration ?? 0) + k.Offset).ToArray();
+                return arr.Any() ? arr.Max() : 0;
+            }).ToArray();
+            var hitsoundDuration = enumerable.Any() ? enumerable.Max() : 0;
+
+            //Duration = (int)Math.Ceiling(_hitsoundList.Count == 0
+            //    ? 0
+            //    : Math.Max(_hitsoundList.Max(k => k.Offset),
+            //        musicPlayerDuration)
+            //);
             Duration = (int)Math.Ceiling(_hitsoundList.Count == 0
-                ? 0
-                : Math.Max(_hitsoundList.Max(k => k.Offset),
-                    musicPlayerDuration)
+                ? musicPlayerDuration
+                : Math.Max(hitsoundDuration, musicPlayerDuration)
             );
         }
 

@@ -48,6 +48,16 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             }
         }
 
+        public CachedSound GetOrCreateCacheSound(string path)
+        {
+            if (!_cachedDictionary.ContainsKey(path))
+            {
+                CreateCacheSound(path);
+            }
+
+            return _cachedDictionary[path];
+        }
+
         public void CreateCacheSound(string path)
         {
             string newPath = path;
