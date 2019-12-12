@@ -51,6 +51,38 @@ namespace Milky.OsuPlayer.Media.Audio
             SetNamesWithoutTrack();
             SetFullPath();
         }
+        public HitsoundElement(string mapFolderName,
+            string[] mapWaveFiles,
+            GameMode gameMode,
+            double offset,
+            int track,
+            TimingSamplesetType lineSample,
+            bool isTickOrSlide,
+            ObjectSamplesetType sample,
+            ObjectSamplesetType addition,
+            float volume,
+            float balance,
+            int forceTrack,
+            HitsoundType? fullHitsoundType)
+        {
+            _mapFolderName = mapFolderName;
+            _mapWaveFiles = mapWaveFiles;
+            _forceTrack = forceTrack;
+            _fullHitsoundType = fullHitsoundType;
+            GameMode = gameMode;
+            Offset = offset;
+            Track = track;
+            LineSample = lineSample;
+            IsTickOrSlide = isTickOrSlide;
+            Sample = sample;
+            Addition = addition;
+            Volume = volume;
+            Balance = balance;
+            SetNamesWithoutTrack();
+            SetFullPath();
+        }
+
+        public bool? IsTickOrSlide { get; set; }
 
         public GameMode GameMode { get; }
         public double Offset { get; }

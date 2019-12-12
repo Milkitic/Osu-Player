@@ -373,6 +373,31 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
                         hitsoundList.Add(element);
                     }
+
+                    var ticks = obj.SliderInfo.Ticks;
+                    foreach (var sliderTick in ticks)
+                    {
+                        var currentLine = _osuFile.TimingPoints.GetLine(sliderTick.Offset);
+                        float balance = GetObjectBalance(sliderTick.Point.X);
+
+                        var element = new HitsoundElement(
+                            mapFolderName: dirInfo.FullName,
+                            mapWaveFiles: mapWaves,
+                            gameMode: osuFile.General.Mode,
+                            offset: sliderTick.Offset,
+                            track: currentLine.Track,
+                            lineSample: currentLine.TimingSampleset,
+                            isTickOrSlide: true,
+                            sample: obj.SampleSet,
+                            addition: obj.AdditionSet,
+                            volume: (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f,
+                            balance: balance,
+                            forceTrack: obj.CustomIndex,
+                            fullHitsoundType: obj.SliderInfo.EdgeHitsounds == null ? obj.Hitsound : (HitsoundType?)null
+                        );
+
+                        hitsoundList.Add(element);
+                    }
                 }
                 else
                 {
