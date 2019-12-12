@@ -14,10 +14,12 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         public static string CachePath = "_temp.wav";
 
+        public long Duration { get; private set; }
+
         public CachedSound(string audioFileName)
         {
             var newFileName = CachePath;
-        
+
 
             try
             {
@@ -51,6 +53,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 }
 
                 AudioData = wholeFile.ToArray();
+                Duration = audioFileReader.TotalTime.Milliseconds;
             }
         }
     }

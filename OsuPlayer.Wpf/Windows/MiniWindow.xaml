@@ -13,6 +13,8 @@
     AllowsTransparency="True"
     Background="Transparent"
     Closing="Window_Closing"
+    FontFamily="{StaticResource SspRegular}"
+    FontSize="13"
     Loaded="Window_Loaded"
     ResizeMode="NoResize"
     ShowInTaskbar="False"

@@ -12,6 +12,7 @@
     <SolidColorBrush x:Key="ButtonHoverBrush" Color="#e0e0e0" />
     <SolidColorBrush x:Key="ButtonPressedBrush" Color="#d0d0d0" />
 
+    <CubicEase x:Key="CubicEaseOut" EasingMode="EaseOut" />
 
     <Style TargetType="{x:Type control:SwitchRadio}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -20,7 +21,7 @@
         <Setter Property="Foreground" Value="#484848" />
         <Setter Property="BorderThickness" Value="1,0" />
         <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Height" Value="36" />
         <Setter Property="MouseOverBackground" Value="#A0F0F0F0" />
@@ -181,6 +182,7 @@
     <!--  Normal CheckBox Style  -->
     <Style x:Key="CommonCheckBox" TargetType="CheckBox">
         <Setter Property="Foreground" Value="{StaticResource ForeBrush}" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
@@ -243,6 +245,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="#303030" />
         <Setter Property="Padding" Value="0,3" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RadioButton}">
@@ -295,4 +298,147 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style x:Key="ScrollCheckBox" TargetType="CheckBox">
+        <Setter Property="IsChecked" Value="False" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="#303030" />
+        <Setter Property="BorderBrush" Value="#303030" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <StackPanel Orientation="Horizontal">
+                        <Grid>
+                            <Border
+                                x:Name="Border1"
+                                Width="40"
+                                Height="18"
+                                Padding="3,0"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="2"
+                                CornerRadius="9" />
+                            <Border
+                                x:Name="Border"
+                                Width="40"
+                                Height="18"
+                                Padding="3,0"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="Transparent"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                                <Ellipse
+                                    x:Name="Icon"
+                                    Width="10"
+                                    Height="10"
+                                    Margin="1,0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Fill="{TemplateBinding BorderBrush}">
+                                    <Ellipse.RenderTransform>
+                                        <TranslateTransform X="0" />
+                                    </Ellipse.RenderTransform>
+                                </Ellipse>
+                            </Border>
+                        </Grid>
+                        <TextBlock
+                            x:Name="txt"
+                            Margin="10,0,0,0"
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            Foreground="{TemplateBinding Foreground}"
+                            Text="{DynamicResource ui-switchOff}" />
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            EasingFunction="{StaticResource CubicEaseOut}"
+                                            Storyboard.TargetName="Icon"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                            To="21"
+                                            Duration="00:00:0.2" />
+                                        <ColorAnimation
+                                            EasingFunction="{StaticResource CubicEaseOut}"
+                                            Storyboard.TargetName="Border"
+                                            Storyboard.TargetProperty="Background.Color"
+                                            To="#FFFD629A"
+                                            Duration="00:00:0" />
+                                        <ColorAnimation
+                                            EasingFunction="{StaticResource CubicEaseOut}"
+                                            Storyboard.TargetName="Border1"
+                                            Storyboard.TargetProperty="BorderBrush.Color"
+                                            To="#FFFD629A"
+                                            Duration="00:00:0" />
+                                        <ColorAnimation
+                                            EasingFunction="{StaticResource CubicEaseOut}"
+                                            Storyboard.TargetName="Icon"
+                                            Storyboard.TargetProperty="Fill.Color"
+                                            To="White"
+                                            Duration="00:00:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            EasingFunction="{StaticResource CubicEaseOut}"
+                                            Storyboard.TargetName="Icon"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                            To="0"
+                                            Duration="00:00:0.2" />
+                                        <ColorAnimation
+                                            EasingFunction="{StaticResource CubicEaseOut}"
+                                            Storyboard.TargetName="Border"
+                                            Storyboard.TargetProperty="Background.Color"
+                                            To="Transparent"
+                                            Duration="00:00:0" />
+                                        <ColorAnimation
+                                            EasingFunction="{StaticResource CubicEaseOut}"
+                                            Storyboard.TargetName="Border1"
+                                            Storyboard.TargetProperty="BorderBrush.Color"
+                                            To="#303030"
+                                            Duration="00:00:0" />
+                                        <ColorAnimation
+                                            EasingFunction="{StaticResource CubicEaseOut}"
+                                            Storyboard.TargetName="Icon"
+                                            Storyboard.TargetProperty="Fill.Color"
+                                            To="#303030"
+                                            Duration="00:00:0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                            <Setter TargetName="txt" Property="Text" Value="{DynamicResource ui-switchOn}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter Property="Background" Value="#616161" />
+                            <Setter TargetName="Border1" Property="BorderBrush" Value="#616161" />
+                            <Setter TargetName="Icon" Property="Fill" Value="White" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsPressed" Value="false" />
+                                <Condition Property="IsChecked" Value="true" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" Value="#FFFD629A" />
+                            <Setter TargetName="Border1" Property="BorderBrush" Value="#FFFD629A" />
+                            <Setter TargetName="Icon" Property="Fill" Value="White" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsPressed" Value="false" />
+                                <Condition Property="IsChecked" Value="false" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter TargetName="Border1" Property="BorderBrush" Value="#303030" />
+                            <Setter TargetName="Icon" Property="Fill" Value="#303030" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

@@ -121,11 +121,12 @@ namespace Milky.OsuPlayer.Control
             _loadedAction = null;
             var endOpacity = page.Opacity;
             var originTransform = page.RenderTransform;
-
+            page.RenderTransformOrigin = new Point(0.5, 0.5);
             Storyboard.SetTarget(Da1, page);
             Storyboard.SetTarget(Ta1, page);
-            if (page.RenderTransform.GetType() != typeof(TranslateTransform))
-                page.RenderTransform = new TranslateTransform();
+            Storyboard.SetTarget(Ta1Clone, page);
+            if (page.RenderTransform.GetType() != typeof(ScaleTransform))
+                page.RenderTransform = new ScaleTransform();
             frame.NavigationService.Navigate(page);
 
             FadeinSb.Completed += OnSbOnCompleted;
@@ -404,16 +405,19 @@ namespace Milky.OsuPlayer.Control
 
             Ta1 = new DoubleAnimation
             {
-                From = 30,
-                To = 0,
+                From = 0.95,
+                To = 1,
                 EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,
                 Duration = TimeSpan.FromMilliseconds(300)
             };
-            Storyboard.SetTargetProperty(Ta1, new PropertyPath("RenderTransform.X"));
+            Ta1Clone = Ta1.Clone();
+            Storyboard.SetTargetProperty(Ta1, new PropertyPath("RenderTransform.ScaleX"));
+            Storyboard.SetTargetProperty(Ta1Clone, new PropertyPath("RenderTransform.ScaleY"));
 
             FadeinSb.Children.Add(Da1);
             FadeinSb.Children.Add(Ta1);
+            FadeinSb.Children.Add(Ta1Clone);
 
             FadeoutSb = new Storyboard { Name = "FadeoutSb" };
             Da2 = new DoubleAnimation
@@ -430,6 +434,7 @@ namespace Milky.OsuPlayer.Control
 
         private static readonly DoubleAnimation Da1;
         private static readonly DoubleAnimation Ta1;
+        private static readonly DoubleAnimation Ta1Clone;
         private static readonly DoubleAnimation Da2;
         private static readonly Storyboard FadeoutSb;
         private static readonly Storyboard FadeinSb;

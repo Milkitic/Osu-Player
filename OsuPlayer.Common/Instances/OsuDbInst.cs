@@ -47,7 +47,7 @@ namespace Milky.OsuPlayer.Common.Instances
         }
         public async Task LoadLocalDbAsync()
         {
-            Beatmaps = new HashSet<Beatmap>(await BeatmapDatabaseQuery.GetWholeListFromDbAsync());
+            await Task.Run(() => Beatmaps = new HashSet<Beatmap>(_beatmapDbOperator.GetAllBeatmaps()));
         }
 
         public async Task SyncOsuDbAsync(string path, bool addOnly)

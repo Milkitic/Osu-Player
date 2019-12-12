@@ -13,6 +13,8 @@
     Height="340"
     MaxWidth="400"
     Background="#323232"
+    FontFamily="{StaticResource SspRegular}"
+    FontSize="13"
     ResizeMode="NoResize"
     SizeToContent="Height"
     WindowStartupLocation="CenterScreen"

@@ -14,6 +14,8 @@
     Title="有可用更新"
     Width="800"
     Height="600"
+    FontFamily="{StaticResource SspRegular}"
+    FontSize="13"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"

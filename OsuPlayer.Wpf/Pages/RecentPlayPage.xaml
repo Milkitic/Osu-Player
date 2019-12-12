@@ -6,13 +6,101 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:metadata="clr-namespace:Milky.OsuPlayer.Common.Metadata;assembly=OsuPlayer.Common"
+    xmlns:pages="clr-namespace:Milky.OsuPlayer.Pages"
+    xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     Title="RecentPlayPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Initialized="Page_Initialized"
+    FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
-
+    <Page.Resources>
+        <Style
+            x:Key="EventGridViewItem"
+            BasedOn="{StaticResource GridView}"
+            TargetType="ListViewItem">
+            <EventSetter Event="MouseDoubleClick" Handler="RecentListItem_MouseDoubleClick" />
+        </Style>
+        <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
+            <MenuItem
+                Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-play}" /><Run Text="... (Enter)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding AutoTitle}"
+                Header="{DynamicResource ui-ctxMenu-searchTitle}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding AutoArtist}"
+                Header="{DynamicResource ui-ctxMenu-searchArtist}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding SongSource}"
+                Header="{DynamicResource ui-ctxMenu-searchSource}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding Creator}"
+                Header="{DynamicResource ui-ctxMenu-searchCreator}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.OpenSourceFolderCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-ctxMenu-openSourceFolder}" /><Run Text=" (Ctrl+O)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem
+                Command="{Binding DataContext.OpenScorePageCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="{DynamicResource ui-ctxMenu-openScorePage}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.SaveCollectionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-ctxMenu-saveTo}" /><Run Text="... (Ctrl+S)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem
+                Command="{Binding DataContext.ExportCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Header="{DynamicResource ui-ctxMenu-export}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding DataContext.RemoveCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                CommandParameter="{Binding}"
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-ctxMenu-removeFromList}" /><Run Text=" (Delete)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
+        </ContextMenu>
+    </Page.Resources>
+    <Page.DataContext>
+        <pages:RecentPlayPageVm />
+    </Page.DataContext>
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem
@@ -20,7 +108,7 @@
                 Style="{StaticResource PinkTabItem}"
                 WindowChrome.IsHitTestVisibleInChrome="True">
                 <TabItem.Header>
-                    <TextBlock FontSize="16" Text="音乐" />
+                    <TextBlock FontSize="16" Text="{DynamicResource ui-nav-music}" />
                 </TabItem.Header>
                 <Grid Margin="0,0,0,0" Cursor="Arrow">
                     <Grid.RowDefinitions>
@@ -52,25 +140,27 @@
                                         <Path Data="{StaticResource Delete}" Fill="#303030" />
                                     </Canvas>
                                 </Viewbox>
-                                <Label Content="全部删除" />
+                                <Label Content="{DynamicResource ui-btn-deleteAll}" />
                             </StackPanel>
                         </control:CommonButton>
                     </StackPanel>
                     <ListView
                         x:Name="RecentList"
                         Grid.Row="1"
-                        Background="Transparent"
                         BorderThickness="0"
-                        ItemContainerStyle="{StaticResource GridView}"
-                        ItemsSource="{Binding Mode=OneWay}">
-                        <ListView.ContextMenu>
+                        ItemContainerStyle="{StaticResource EventGridViewItem}"
+                        ItemsSource="{Binding Beatmaps, Mode=OneWay}">
+                        <!--<ListView.ContextMenu>
                             <ContextMenu Style="{DynamicResource DefaultContextMenu}">
                                 <MenuItem
                                     x:Name="ItemPlay"
                                     Click="ItemPlay_Click"
-                                    Header="播放"
+                                    Header="{DynamicResource ui-play}"
                                     Style="{DynamicResource DefaultMenuItem}" />
-                                <!--<MenuItem x:Name="ItemNextPlay" Header="下一首播放" Click="ItemNextPlay_Click" />-->
+                                <MenuItem
+                                    x:Name="ItemNextPlay"
+                                    Header="下一首播放"
+                                    Visibility="Collapsed" />
                                 <Separator />
                                 <MenuItem
                                     x:Name="ItemCollect"
@@ -108,11 +198,7 @@
                                     x:Name="ItemDelete"
                                     Click="ItemDelete_Click"
                                     Header="从最近播放中移除"
-                                    Style="{DynamicResource DefaultMenuItem}">
-                                    <!--<MenuItem.Icon>
-                            <Image Source="delect.jpg" Width="20" Height="20"  />
-                        </MenuItem.Icon>-->
-                                </MenuItem>
+                                    Style="{DynamicResource DefaultMenuItem}" />
                                 <Separator />
                                 <MenuItem
                                     x:Name="ItemSet"
@@ -125,10 +211,7 @@
                                     Header="打开所在目录"
                                     Style="{DynamicResource DefaultMenuItem}" />
                             </ContextMenu>
-                        </ListView.ContextMenu>
-                        <ListView.DataContext>
-                            <metadata:BeatmapDataModel />
-                        </ListView.DataContext>
+                        </ListView.ContextMenu>-->
                         <ListView.Resources>
                             <DataTemplate x:Key="IdDt">
                                 <Label
@@ -162,19 +245,19 @@
                                 <GridViewColumn
                                     Width="300"
                                     CellTemplate="{StaticResource TitleDt}"
-                                    Header="标题" />
+                                    Header="{DynamicResource ui-title}" />
                                 <GridViewColumn
                                     Width="200"
                                     CellTemplate="{StaticResource ArtistDt}"
-                                    Header="艺术家" />
+                                    Header="{DynamicResource ui-artist}" />
                                 <GridViewColumn
                                     Width="100"
                                     CellTemplate="{StaticResource CreatorDt}"
-                                    Header="作者" />
+                                    Header="{DynamicResource ui-creator}" />
                                 <GridViewColumn
                                     Width="150"
                                     CellTemplate="{StaticResource VersionDt}"
-                                    Header="难度" />
+                                    Header="{DynamicResource ui-mapDifficulty}" />
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -186,7 +269,7 @@
                         Padding="18,10"
                         Cursor="Hand"
                         FontSize="16"
-                        Text="故事板" />
+                        Text="{DynamicResource ui-storyboard}" />
                 </TabItem.Header>
             </TabItem>
         </TabControl>

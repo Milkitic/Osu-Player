@@ -8,108 +8,98 @@
     Title="LyricPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
-
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
                 <Label
-                    Height="26"
                     HorizontalAlignment="Left"
-                    Content="桌面歌词："
+                    Content="{DynamicResource ui-sets-title-desktopLyric}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <CheckBox
                     x:Name="EnableLyric"
                     Margin="8,0"
                     HorizontalAlignment="Left"
                     Checked="EnableLyric_CheckChanged"
-                    Content="启用桌面歌词"
+                    Content="{DynamicResource ui-sets-content-enableDesktopLyric}"
                     Style="{StaticResource CommonCheckBox}"
                     Unchecked="EnableLyric_CheckChanged" />
                 <Label
-                    Height="26"
                     HorizontalAlignment="Left"
-                    Content="源："
+                    Content="{DynamicResource ui-sets-title-lyricSource}"
                     Style="{StaticResource ConfigTitleStyle}" />
-                <Canvas Height="100" HorizontalAlignment="Left">
+                <StackPanel Margin="0,-5,0,0" HorizontalAlignment="Left">
                     <RadioButton
                         x:Name="SourceAuto"
                         Height="25"
                         Margin="8,0"
                         Checked="Source_CheckChanged"
-                        Content="自动"
+                        Content="{DynamicResource ui-auto}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="SourceNetease"
-                        Canvas.Top="25"
                         Height="25"
                         Margin="8,0"
                         Checked="Source_CheckChanged"
-                        Content="网易云音乐"
+                        Content="{DynamicResource ui-neteaseMusic}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="SourceKugou"
-                        Canvas.Top="50"
                         Height="25"
                         Margin="8,0"
                         Checked="Source_CheckChanged"
-                        Content="酷狗音乐"
+                        Content="{DynamicResource ui-kugouMusic}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="SourceQqMusic"
-                        Canvas.Top="75"
                         Height="25"
                         Margin="8,0"
                         Checked="Source_CheckChanged"
-                        Content="QQ音乐"
+                        Content="{DynamicResource ui-qqMusic}"
                         Style="{StaticResource CommonRadioButton}" />
-                </Canvas>
+                </StackPanel>
                 <Label
-                    Height="26"
                     HorizontalAlignment="Left"
-                    Content="翻译："
+                    Content="{DynamicResource ui-sets-title-translation}"
                     Style="{StaticResource ConfigTitleStyle}" />
-                <Canvas Height="75" HorizontalAlignment="Left">
+                <StackPanel Margin="0,-5,0,0" HorizontalAlignment="Left">
                     <RadioButton
                         x:Name="ShowAll"
                         Height="25"
                         Margin="8,0"
                         Checked="Show_CheckChanged"
-                        Content="显示全部歌词"
+                        Content="{DynamicResource ui-sets-content-displayAllLyrics}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="ShowOrigin"
-                        Canvas.Top="25"
                         Height="25"
                         Margin="8,0"
                         Checked="Show_CheckChanged"
-                        Content="偏好源歌词（仅Netease源有效）"
+                        Content="{DynamicResource ui-sets-content-preferOriginLyricNeteaseOnly}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="ShowTrans"
-                        Canvas.Top="50"
                         Height="25"
                         Margin="8,0"
                         Checked="Show_CheckChanged"
-                        Content="偏好翻译歌词（仅Netease源有效）"
+                        Content="{DynamicResource ui-sets-content-preferTranslateLyricNeteaseOnly}"
                         Style="{StaticResource CommonRadioButton}" />
-                </Canvas>
+                </StackPanel>
                 <Label
-                    Height="26"
                     HorizontalAlignment="Left"
-                    Content="匹配："
+                    Content="{DynamicResource ui-sets-title-matchMode}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <CheckBox
                     x:Name="StrictMode"
                     Margin="8,0"
                     HorizontalAlignment="Left"
                     Checked="StrictMode_CheckChanged"
-                    Content="启用严格匹配"
+                    Content="{DynamicResource ui-sets-content-enableStrictMatching}"
                     Style="{StaticResource CommonCheckBox}"
                     Unchecked="StrictMode_CheckChanged" />
                 <Label
-                    Height="26"
                     HorizontalAlignment="Left"
                     Content="缓存："
                     Style="{StaticResource ConfigTitleStyle}"

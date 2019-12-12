@@ -1,0 +1,164 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    x:Name="UiLangInternal">
+    <sys:String x:Key="ui-win-sets">播放器设置</sys:String>
+    <sys:String x:Key="ui-win-editCollection">编辑收藏</sys:String>
+    <sys:String x:Key="ui-win-newCollection">新建收藏</sys:String>
+    <sys:String x:Key="ui-win-selectCollection">选择收藏</sys:String>
+    <sys:String x:Key="ui-win-selectDifficulty">选择难度</sys:String>
+    <sys:String x:Key="ui-win-closing">关闭确认</sys:String>
+
+    <sys:String x:Key="ui-ok">确定</sys:String>
+    <sys:String x:Key="ui-cancel">取消</sys:String>
+    <sys:String x:Key="ui-open">开启</sys:String>
+    <sys:String x:Key="ui-close">关闭</sys:String>
+    <sys:String x:Key="ui-yes">是</sys:String>
+    <sys:String x:Key="ui-no">否</sys:String>
+    <sys:String x:Key="ui-switchOn">开</sys:String>
+    <sys:String x:Key="ui-switchOff">关</sys:String>
+
+    <sys:String x:Key="ui-play">播放</sys:String>
+    <sys:String x:Key="ui-pause">暂停</sys:String>
+    <sys:String x:Key="ui-prevMusic">上一首</sys:String>
+    <sys:String x:Key="ui-nextMusic">下一首</sys:String>
+    <sys:String x:Key="ui-volumeUp">音量+</sys:String>
+    <sys:String x:Key="ui-volumeDown">音量-</sys:String>
+    <sys:String x:Key="ui-lockLyric">锁定歌词</sys:String>
+    <sys:String x:Key="ui-unlockLyric">解锁歌词</sys:String>
+    <sys:String x:Key="ui-miniMode">迷你模式</sys:String>
+    <sys:String x:Key="ui-desktopLyric">桌面歌词</sys:String>
+    <sys:String x:Key="ui-briefIntroduction">简介</sys:String>
+    <sys:String x:Key="ui-none">暂无</sys:String>
+    <sys:String x:Key="ui-musicCount">歌曲数</sys:String>
+    <sys:String x:Key="ui-max30Char">30字符以内</sys:String>
+    <sys:String x:Key="ui-collectionName">收藏夹名</sys:String>
+    <sys:String x:Key="ui-addNewCollection">添加新的收藏夹</sys:String>
+    <sys:String x:Key="ui-total">共</sys:String>
+    <sys:String x:Key="ui-songsClassifier">首</sys:String>
+    <sys:String x:Key="ui-volumeMaster">总体</sys:String>
+    <sys:String x:Key="ui-volumeMusic">音乐</sys:String>
+    <sys:String x:Key="ui-volumeSound">音效</sys:String>
+    <sys:String x:Key="ui-volumeSample">音轨</sys:String>
+    <sys:String x:Key="ui-3dSoundEffect">3D音效</sys:String>
+    <sys:String x:Key="ui-currentMapOffset">单曲偏移</sys:String>
+    <sys:String x:Key="ui-openDesktopLyric">打开桌面歌词</sys:String>
+    <sys:String x:Key="ui-closeDesktopLyric">关闭桌面歌词</sys:String>
+
+    <sys:String x:Key="ui-sets">设置</sys:String>
+    <sys:String x:Key="ui-exit">退出</sys:String>
+    <sys:String x:Key="ui-switch">切换</sys:String>
+
+    <sys:String x:Key="ui-tab-myCollection">我的收藏</sys:String>
+    <sys:String x:Key="ui-tab-musicList">音乐列表</sys:String>
+
+    <sys:String x:Key="ui-auto">自动</sys:String>
+    <sys:String x:Key="ui-neteaseMusic">网易云音乐</sys:String>
+    <sys:String x:Key="ui-kugouMusic">酷狗音乐</sys:String>
+    <sys:String x:Key="ui-qqMusic">QQ音乐</sys:String>
+
+    <sys:String x:Key="ui-hint-searchPageBox">标题、艺术家、Mapper、来源、标签、收藏</sys:String>
+    <sys:String x:Key="ui-hint-searchCollectionMusic3Dot">搜索收藏夹音乐...</sys:String>
+
+    <sys:String x:Key="ui-btn-openDirectory">打开目录</sys:String>
+    <sys:String x:Key="ui-btn-checkUpdate">检查更新</sys:String>
+    <sys:String x:Key="ui-btn-syncManually">手动同步</sys:String>
+    <sys:String x:Key="ui-btn-cancelScan">取消扫描</sys:String>
+    <sys:String x:Key="ui-btn-playAll">全部播放</sys:String>
+    <sys:String x:Key="ui-btn-deleteAll">全部删除</sys:String>
+    <sys:String x:Key="ui-btn-queueAll">全部排队</sys:String>
+    <sys:String x:Key="ui-btn-exportAll">全部导出</sys:String>
+    <sys:String x:Key="ui-btn-saveAll">全部收藏</sys:String>
+    <sys:String x:Key="ui-btn-save">保存</sys:String>
+    <sys:String x:Key="ui-btn-editCover">编辑封面</sys:String>
+    <sys:String x:Key="ui-btn-clearList">清空列表</sys:String>
+
+    <sys:String x:Key="ui-ctxMenu-searchTitle">搜索标题</sys:String>
+    <sys:String x:Key="ui-ctxMenu-searchArtist">搜索艺术家</sys:String>
+    <sys:String x:Key="ui-ctxMenu-searchSource">搜索来源</sys:String>
+    <sys:String x:Key="ui-ctxMenu-searchCreator">搜索作者</sys:String>
+    <sys:String x:Key="ui-ctxMenu-openSourceFolder">打开所在目录</sys:String>
+    <sys:String x:Key="ui-ctxMenu-saveTo">收藏至</sys:String>
+    <sys:String x:Key="ui-ctxMenu-openScorePage">打开成绩页</sys:String>
+    <sys:String x:Key="ui-ctxMenu-export">导出</sys:String>
+    <sys:String x:Key="ui-ctxMenu-removeFromList">从列表中移除</sys:String>
+
+    <sys:String x:Key="ui-sets-nav-common">常规</sys:String>
+    <sys:String x:Key="ui-sets-nav-playing">播放</sys:String>
+    <sys:String x:Key="ui-sets-nav-interface">界面</sys:String>
+    <sys:String x:Key="ui-sets-nav-hotKey">热键</sys:String>
+    <sys:String x:Key="ui-sets-nav-lyric">歌词</sys:String>
+    <sys:String x:Key="ui-sets-nav-export">导出</sys:String>
+    <sys:String x:Key="ui-sets-nav-about">关于</sys:String>
+
+    <sys:String x:Key="ui-sets-title-startup">启动</sys:String>
+    <sys:String x:Key="ui-sets-title-osuDbLocation">osu!db位置</sys:String>
+    <sys:String x:Key="ui-sets-title-customSongPath">自定义曲库路径</sys:String>
+    <sys:String x:Key="ui-sets-title-closeWindow">关闭窗体</sys:String>
+    <sys:String x:Key="ui-sets-title-globalHitsoundDelay">全局音效延迟</sys:String>
+    <sys:String x:Key="ui-sets-title-autoPlay">自动播放</sys:String>
+    <sys:String x:Key="ui-sets-title-playProgress">播放进度</sys:String>
+    <sys:String x:Key="ui-sets-title-audioDelayExperimental">音频延迟（实验性）</sys:String>
+    <sys:String x:Key="ui-sets-title-language">语言</sys:String>
+    <sys:String x:Key="ui-sets-title-minimalEffectMode">低配模式</sys:String>
+    <sys:String x:Key="ui-sets-title-hotKeySettings">热键设置</sys:String>
+    <sys:String x:Key="ui-sets-title-desktopLyric">桌面歌词</sys:String>
+    <sys:String x:Key="ui-sets-title-lyricSource">歌词源</sys:String>
+    <sys:String x:Key="ui-sets-title-translation">翻译</sys:String>
+    <sys:String x:Key="ui-sets-title-matchMode">匹配模式</sys:String>
+    <sys:String x:Key="ui-sets-title-exportPath">导出目录</sys:String>
+    <sys:String x:Key="ui-sets-title-fileNamingFormat">文件命名格式</sys:String>
+    <sys:String x:Key="ui-sets-title-directoryGrouping">目录分类</sys:String>
+    <sys:String x:Key="ui-sets-title-softwareUpdate">软件更新</sys:String>
+
+    <sys:String x:Key="ui-sets-content-scanning3Dot">正在扫描...</sys:String>
+    <sys:String x:Key="ui-sets-content-runOnStartup">开机自动运行</sys:String>
+    <sys:String x:Key="ui-sets-content-minToNotificationPanel">最小化到系统托盘</sys:String>
+    <sys:String x:Key="ui-sets-content-exitProgram">退出程序</sys:String>
+    <sys:String x:Key="ui-sets-content-setAsDefaultOptions">设置默认选项</sys:String>
+    <sys:String x:Key="ui-sets-content-autoPlayOnProgramStartup">程序启动时自动播放</sys:String>
+    <sys:String x:Key="ui-sets-content-resumePlaylistOnProgramStartup">程序启动时恢复上次播放</sys:String>
+    <sys:String x:Key="ui-sets-content-addToFavorite">添加到最喜爱的</sys:String>
+    <sys:String x:Key="ui-sets-content-enableDesktopLyric">启用桌面歌词</sys:String>
+    <sys:String x:Key="ui-sets-content-displayAllLyrics">显示全部歌词</sys:String>
+    <sys:String x:Key="ui-sets-content-preferOriginLyricNeteaseOnly">偏好源歌词（仅Netease源有效）</sys:String>
+    <sys:String x:Key="ui-sets-content-preferTranslateLyricNeteaseOnly">偏好翻译歌词（仅Netease源有效）</sys:String>
+    <sys:String x:Key="ui-sets-content-enableStrictMatching">启用严格匹配</sys:String>
+    <sys:String x:Key="ui-sets-content-musicDirectory">音乐目录</sys:String>
+    <sys:String x:Key="ui-sets-content-bgDirectory">背景目录</sys:String>
+    <sys:String x:Key="ui-sets-content-dirNoGroup">不分目录</sys:String>
+    <sys:String x:Key="ui-sets-content-dirGroupByArtist">按艺术家（Artist）分目录</sys:String>
+    <sys:String x:Key="ui-sets-content-dirGroupByMapper">按作者（Mapper）分目录</sys:String>
+    <sys:String x:Key="ui-sets-content-dirGroupBySource">按来源（Source）分目录</sys:String>
+    <sys:String x:Key="ui-sets-content-currentVersion">当前版本</sys:String>
+    <sys:String x:Key="ui-sets-content-lastCheckTime">上次检查时间</sys:String>
+    <sys:String x:Key="ui-sets-content-projectUrl">项目地址</sys:String>
+    <sys:String x:Key="ui-sets-content-feedback">意见反馈</sys:String>
+    <sys:String x:Key="ui-sets-content-licenseInfo">许可证信息</sys:String>
+    <sys:String x:Key="ui-sets-content-privacyPolicy">隐私政策</sys:String>
+
+
+    <sys:String x:Key="ui-nav-library">库</sys:String>
+    <sys:String x:Key="ui-nav-mine">我的</sys:String>
+    <sys:String x:Key="ui-nav-collection">收藏夹</sys:String>
+    <sys:String x:Key="ui-nav-search">搜索</sys:String>
+    <sys:String x:Key="ui-nav-recent">最近播放</sys:String>
+    <sys:String x:Key="ui-nav-export">导出管理</sys:String>
+    <sys:String x:Key="ui-nav-music">音乐</sys:String>
+
+    <sys:String x:Key="ui-openFileFolder">打开文件所在目录</sys:String>
+    <sys:String x:Key="ui-size">大小</sys:String>
+    <sys:String x:Key="ui-createTime">创建时间</sys:String>
+    <sys:String x:Key="ui-exportTime">导出时间</sys:String>
+    <sys:String x:Key="ui-exportPath">导出目录</sys:String>
+    <sys:String x:Key="ui-exporting">正在进行</sys:String>
+    <sys:String x:Key="ui-exported">已导出</sys:String>
+    <sys:String x:Key="ui-exportAgain">重新导出</sys:String>
+    <sys:String x:Key="ui-deleteExported">删除导出文件</sys:String>
+    <sys:String x:Key="ui-artist">艺术家</sys:String>
+    <sys:String x:Key="ui-title">标题</sys:String>
+    <sys:String x:Key="ui-creator">作者</sys:String>
+    <sys:String x:Key="ui-mapDifficulty">难度</sys:String>
+    <sys:String x:Key="ui-storyboard">故事板</sys:String>
+</ResourceDictionary>

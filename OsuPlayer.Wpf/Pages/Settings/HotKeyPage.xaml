@@ -9,16 +9,18 @@
     Title="HotKeyPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
 
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
+                <Label Content="{DynamicResource ui-sets-title-hotKeySettings}" Style="{StaticResource ConfigTitleStyle}" />
                 <Grid x:Name="FrameGrid" Style="{StaticResource ConfigGridStyle}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="150" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" MinWidth="150" />
+                        <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition />
@@ -34,50 +36,59 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="播放/暂停："
-                        Style="{StaticResource ConfigLabelStyle}" />
+                        Style="{StaticResource ConfigLabelStyle}">
+                        <TextBlock>
+                            <Run Text="{DynamicResource ui-play}" /><Run Text=" / " /><Run Text="{DynamicResource ui-pause}" />
+                        </TextBlock>
+                    </Label>
                     <Label
                         Grid.Row="1"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="上一首："
+                        Content="{DynamicResource ui-prevMusic}"
                         Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         Grid.Row="2"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="下一首："
+                        Content="{DynamicResource ui-nextMusic}"
                         Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         Grid.Row="3"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="音量+："
+                        Content="{DynamicResource ui-volumeUp}"
                         Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         Grid.Row="4"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="音量-："
+                        Content="{DynamicResource ui-volumeDown}"
                         Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         Grid.Row="5"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="迷你/完整模式"
-                        Style="{StaticResource ConfigLabelStyle}" />
+                        Style="{StaticResource ConfigLabelStyle}">
+                        <TextBlock>
+                            <Run Text="{DynamicResource ui-switch}" /><Run Text="{DynamicResource ui-miniMode}" />
+                        </TextBlock>
+                    </Label>
                     <Label
                         Grid.Row="6"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="添加到最喜爱的"
+                        Content="{DynamicResource ui-sets-content-addToFavorite}"
                         Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         Grid.Row="7"
                         Grid.Column="0"
                         HorizontalAlignment="Left"
-                        Content="打开/关闭桌面歌词"
-                        Style="{StaticResource ConfigLabelStyle}" />
+                        Style="{StaticResource ConfigLabelStyle}">
+                        <TextBlock>
+                            <Run Text="{DynamicResource ui-open}" /><Run Text=" / " /><Run Text="{DynamicResource ui-close}" /><Run Text="{DynamicResource ui-desktopLyric}" />
+                        </TextBlock>
+                    </Label>
                     <control:CommonTextBox
                         x:Name="PlayPause"
                         Grid.Row="0"
@@ -85,6 +96,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -99,6 +111,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -113,6 +126,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -127,6 +141,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -141,6 +156,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -155,6 +171,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -169,6 +186,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"
@@ -183,6 +201,7 @@
                         Width="150"
                         Margin="2"
                         Padding="1,0"
+                        HorizontalAlignment="Left"
                         Background="White"
                         CornerRadius="5"
                         GotFocus="TextBox_GotFocus"

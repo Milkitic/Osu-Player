@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="220"
+    FontFamily="{StaticResource SspRegular}"
     d:DesignWidth="170"
     mc:Ignorable="d">
     <UserControl.DataContext>
@@ -46,6 +47,7 @@
                             Height="70"
                             Margin="10,5"
                             HorizontalAlignment="Center"
+                            LargeChange="0.1"
                             Maximum="1"
                             Orientation="Vertical"
                             Style="{StaticResource VerticalSliderWhiteStyle}"
@@ -54,7 +56,7 @@
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
-                            Content="总体"
+                            Content="{DynamicResource ui-volumeMaster}"
                             Foreground="#303030" />
                     </StackPanel>
                     <StackPanel Grid.Column="1">
@@ -62,6 +64,7 @@
                             Height="70"
                             Margin="10,5"
                             HorizontalAlignment="Center"
+                            LargeChange="0.1"
                             Maximum="1"
                             Orientation="Vertical"
                             Style="{StaticResource VerticalSliderWhiteStyle}"
@@ -70,7 +73,7 @@
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
-                            Content="音乐"
+                            Content="{DynamicResource ui-volumeMusic}"
                             Foreground="#303030" />
                     </StackPanel>
                     <StackPanel Grid.Column="2">
@@ -78,6 +81,7 @@
                             Height="70"
                             Margin="10,5"
                             HorizontalAlignment="Center"
+                            LargeChange="0.1"
                             Maximum="1"
                             Orientation="Vertical"
                             Style="{StaticResource VerticalSliderWhiteStyle}"
@@ -86,7 +90,7 @@
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
-                            Content="音效"
+                            Content="{DynamicResource ui-volumeSound}"
                             Foreground="#303030" />
                     </StackPanel>
                     <StackPanel Grid.Column="3">
@@ -94,6 +98,7 @@
                             Height="70"
                             Margin="10,5"
                             HorizontalAlignment="Center"
+                            LargeChange="0.1"
                             Maximum="1"
                             Orientation="Vertical"
                             Style="{StaticResource VerticalSliderWhiteStyle}"
@@ -102,7 +107,7 @@
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
-                            Content="音轨"
+                            Content="{DynamicResource ui-volumeSample}"
                             Foreground="#303030" />
                     </StackPanel>
                 </Grid>
@@ -111,9 +116,11 @@
                         <Slider
                             Margin="10,5"
                             AutoToolTipPlacement="BottomRight"
+                            LargeChange="5"
                             Maximum="100"
                             Minimum="0"
                             Orientation="Horizontal"
+                            SmallChange="1"
                             Style="{StaticResource HorizontalSliderWhiteStyle}"
                             Thumb.DragCompleted="Balance_DragComplete"
                             TickFrequency="1"
@@ -121,22 +128,25 @@
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
-                            Content="3D差异度"
+                            Content="{DynamicResource ui-3dSoundEffect}"
                             Foreground="#303030" />
                         <Slider
                             x:Name="Offset"
                             Margin="10,5"
                             AutoToolTipPlacement="BottomRight"
+                            LargeChange="10"
                             Maximum="200"
                             Minimum="-200"
                             Orientation="Horizontal"
+                            SmallChange="1"
                             Style="{StaticResource HorizontalSliderWhiteStyle}"
                             Thumb.DragCompleted="Offset_DragComplete"
-                            Thumb.DragDelta="Offset_DragDelta" />
+                            Thumb.DragDelta="Offset_DragDelta"
+                            TickFrequency="1" />
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
-                            Content="单曲偏移"
+                            Content="{DynamicResource ui-currentMapOffset}"
                             Foreground="#303030" />
                     </StackPanel>
                 </Grid>

@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Converter
 {
@@ -137,7 +138,7 @@ namespace Milky.OsuPlayer.Converter
             var shown = (bool)value;
             if (System.Convert.ToString(parameter) == "string")
             {
-                return shown ? "关闭桌面歌词" : "打开桌面歌词";
+                return shown ? I18nUtil.GetString("ui-closeDesktopLyric") : I18nUtil.GetString("ui-openDesktopLyric");
             }
             else if (System.Convert.ToString(parameter) == "bool")
             {
@@ -157,7 +158,7 @@ namespace Milky.OsuPlayer.Converter
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var locked = (bool)value;
-            return locked ? "解锁歌词" : "锁定歌词";
+            return locked ? I18nUtil.GetString("ui-unlockLyric") : I18nUtil.GetString("ui-lockLyric");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

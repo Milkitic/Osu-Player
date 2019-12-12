@@ -9,6 +9,7 @@
     Title="PlayPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
 
@@ -17,7 +18,7 @@
             <StackPanel Margin="10">
                 <Label
                     HorizontalAlignment="Left"
-                    Content="全局音效延迟"
+                    Content="{DynamicResource ui-sets-title-globalHitsoundDelay}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                     <Slider
@@ -57,31 +58,31 @@
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
-                    Content="自动播放："
+                    Content="{DynamicResource ui-sets-title-autoPlay}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <CheckBox
                     x:Name="ChkAutoPlay"
                     Margin="8,0"
                     HorizontalAlignment="Left"
                     Checked="ChkAutoPlay_CheckChanged"
-                    Content="程序启动时自动播放"
+                    Content="{DynamicResource ui-sets-content-autoPlayOnProgramStartup}"
                     Style="{StaticResource CommonCheckBox}"
                     Unchecked="ChkAutoPlay_CheckChanged" />
                 <Label
                     HorizontalAlignment="Left"
-                    Content="播放进度："
+                    Content="{DynamicResource ui-sets-title-playProgress}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <CheckBox
                     x:Name="ChkMemory"
                     Margin="8,0"
                     HorizontalAlignment="Left"
                     Checked="ChkMemory_CheckChanged"
-                    Content="程序启动时恢复上次播放"
+                    Content="{DynamicResource ui-sets-content-resumePlaylistOnProgramStartup}"
                     Style="{StaticResource CommonCheckBox}"
                     Unchecked="ChkMemory_CheckChanged" />
                 <Label
                     HorizontalAlignment="Left"
-                    Content="音频延迟（实验性）："
+                    Content="{DynamicResource ui-sets-title-audioDelayExperimental}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                     <Slider

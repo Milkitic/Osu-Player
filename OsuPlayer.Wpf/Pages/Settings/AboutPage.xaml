@@ -9,6 +9,7 @@
     Title="AboutPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
 
@@ -17,16 +18,16 @@
             <StackPanel Margin="10">
                 <Label
                     HorizontalAlignment="Left"
-                    Content="软件更新："
+                    Content="{DynamicResource ui-sets-title-softwareUpdate}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel
                     Margin="0"
                     Orientation="Horizontal"
                     Style="{StaticResource ConfigStackHoriStyle}">
-                    <Label Content="当前版本：" Style="{StaticResource ConfigLabelStyle}" />
+                    <Label Content="{DynamicResource ui-sets-content-currentVersion}" Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         x:Name="CurrentVer"
-                        Margin="-5,0,0,0"
+                        Margin="5,0,0,0"
                         VerticalContentAlignment="Center"
                         Content="v100.20"
                         Style="{StaticResource ConfigLabel2Style}" />
@@ -35,10 +36,10 @@
                     Margin="0"
                     Orientation="Horizontal"
                     Style="{StaticResource ConfigStackHoriStyle}">
-                    <Label Content="上次检查时间：" Style="{StaticResource ConfigLabelStyle}" />
+                    <Label Content="{DynamicResource ui-sets-content-lastCheckTime}" Style="{StaticResource ConfigLabelStyle}" />
                     <Label
                         x:Name="LastUpdate"
-                        Margin="-5,0,0,0"
+                        Margin="5,0,0,0"
                         VerticalContentAlignment="Center"
                         Content="1970-06-07"
                         Style="{StaticResource ConfigLabel2Style}" />
@@ -46,13 +47,12 @@
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <control:CommonButton
                         x:Name="CheckUpdate"
-                        Width="80"
                         Height="25"
                         Margin="8"
                         HorizontalAlignment="Left"
                         Background="#E3E3E3"
                         Click="CheckUpdate_Click"
-                        Content="检查更新"
+                        Content="{DynamicResource ui-btn-checkUpdate}"
                         Style="{StaticResource SettingsButton}" />
                     <Label
                         x:Name="NewVersion"
@@ -80,33 +80,33 @@
                     <Label>
                         <control:CommonButton
                             Click="LinkGithub_Click"
-                            Content="项目地址"
+                            Content="{DynamicResource ui-sets-content-projectUrl}"
                             Style="{StaticResource LinkButton}" />
                     </Label>
                     <Label>
                         <control:CommonButton
                             Click="LinkFeedback_Click"
-                            Content="意见反馈"
+                            Content="{DynamicResource ui-sets-content-feedback}"
                             Style="{StaticResource LinkButton}" />
                     </Label>
                 </StackPanel>
-                <Label Margin="0,60,0,5">
+                <!--<Label Margin="0,60,0,5">
                     <TextBlock>
                         Developed by Milkitic (yf_bmp).<LineBreak />
                         Collaborator: bleetingsheep.<LineBreak />
                         Special thanks for testing by Kencho, kpx-x.</TextBlock>
-                </Label>
+                </Label>-->
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <Label>
                         <control:CommonButton
                             Click="LinkLicense_Click"
-                            Content="License"
+                            Content="{DynamicResource ui-sets-content-licenseInfo}"
                             Style="{StaticResource LinkButton}" />
                     </Label>
                     <Label>
                         <control:CommonButton
                             Click="LinkPrivacy_Click"
-                            Content="Privacy Policy"
+                            Content="{DynamicResource ui-sets-content-privacyPolicy}"
                             Style="{StaticResource LinkButton}" />
                     </Label>
                 </StackPanel>

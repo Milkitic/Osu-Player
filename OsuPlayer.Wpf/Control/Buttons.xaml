@@ -272,7 +272,7 @@
         <!--<Setter Property="BorderBrush" Value="#4d8cdc" />-->
         <Setter Property="BorderBrush" Value="#5d9cec" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Content" Value="全部播放" />
+        <Setter Property="Content" Value="{DynamicResource ui-btn-playAll}" />
         <Setter Property="Foreground" Value="White" />
         <Setter Property="IconTemplate" Value="{StaticResource SettingsPlayTempl}" />
         <Setter Property="Background" Value="#5d9cec" />

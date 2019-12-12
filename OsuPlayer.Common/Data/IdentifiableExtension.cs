@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Metadata;
@@ -13,7 +12,7 @@ namespace Milky.OsuPlayer.Common.Data
 {
     public static class IdentifiableExtension
     {
-        private static EF.BeatmapDbOperator _beatmapDbOperator = new EF.BeatmapDbOperator();
+        private static BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
         public static bool EqualsTo(this IMapIdentifiable id1, IMapIdentifiable id2) =>
             id1.FolderName == id2.FolderName && id1.Version == id2.Version;
 
@@ -69,7 +68,8 @@ namespace Milky.OsuPlayer.Common.Data
                     TitleUnicode = beatmap.TitleUnicode,
                     Version = beatmap.Version,
                     BeatmapFileName = beatmap.BeatmapFileName,
-                    InOwnDb = beatmap.InOwnFolder
+                    InOwnDb = beatmap.InOwnFolder,
+                    BeatmapDbId = beatmap.Id
                 };
                 try
                 {

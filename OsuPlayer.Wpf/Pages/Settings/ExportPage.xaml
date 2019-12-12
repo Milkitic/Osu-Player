@@ -9,6 +9,7 @@
     Title="ExportPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
 
@@ -17,18 +18,18 @@
             <StackPanel Margin="10">
                 <Label
                     HorizontalAlignment="Left"
-                    Content="导出目录："
+                    Content="{DynamicResource ui-sets-title-exportPath}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <Label
                         VerticalContentAlignment="Center"
-                        Content="音乐目录："
+                        Content="{DynamicResource ui-sets-content-musicDirectory}"
                         Style="{StaticResource ConfigLabelStyle}" />
                     <control:CommonTextBox
                         x:Name="LblMp3Path"
                         Width="250"
                         Height="27"
-                        Margin="-5,0,-1,0"
+                        Margin="5,0,-1,0"
                         VerticalContentAlignment="Center"
                         Background="White"
                         CornerRadius="5"
@@ -51,13 +52,13 @@
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <Label
                         VerticalContentAlignment="Center"
-                        Content="背景目录："
+                        Content="{DynamicResource ui-sets-content-bgDirectory}"
                         Style="{StaticResource ConfigLabelStyle}" />
                     <control:CommonTextBox
                         x:Name="LblBgPath"
                         Width="250"
                         Height="27"
-                        Margin="-5,0,-1,0"
+                        Margin="5,0,-1,0"
                         VerticalContentAlignment="Center"
                         Background="White"
                         CornerRadius="5"
@@ -79,63 +80,69 @@
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
-                    Content="文件命名格式："
+                    Content="{DynamicResource ui-sets-title-fileNamingFormat}"
                     Style="{StaticResource ConfigTitleStyle}" />
-                <StackPanel HorizontalAlignment="Left">
+                <StackPanel Margin="0,-5,0,0" HorizontalAlignment="Left">
                     <RadioButton
                         x:Name="RadioT"
                         Margin="8,0"
                         HorizontalAlignment="Left"
                         Checked="Naming_CheckChanged"
-                        Content="标题"
+                        Content="{DynamicResource ui-title}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="RadioAt"
                         Margin="8,0"
                         HorizontalAlignment="Left"
                         Checked="Naming_CheckChanged"
-                        Content="艺术家 - 标题"
-                        Style="{StaticResource CommonRadioButton}" />
+                        Style="{StaticResource CommonRadioButton}">
+                        <TextBlock>
+                            <Run Text="{DynamicResource ui-artist}" /><Run Text=" - " /><Run Text="{DynamicResource ui-title}" />
+                        </TextBlock>
+                    </RadioButton>
                     <RadioButton
                         x:Name="RadioTa"
                         Margin="8,0"
                         HorizontalAlignment="Left"
                         Checked="Naming_CheckChanged"
-                        Content="标题 - 艺术家"
-                        Style="{StaticResource CommonRadioButton}" />
+                        Style="{StaticResource CommonRadioButton}">
+                        <TextBlock>
+                            <Run Text="{DynamicResource ui-title}" /><Run Text=" - " /><Run Text="{DynamicResource ui-artist}" />
+                        </TextBlock>
+                    </RadioButton>
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
-                    Content="目录分类："
+                    Content="{DynamicResource ui-sets-title-directoryGrouping}"
                     Style="{StaticResource ConfigTitleStyle}" />
-                <StackPanel HorizontalAlignment="Left">
+                <StackPanel Margin="0,-5,0,0" HorizontalAlignment="Left">
                     <RadioButton
                         x:Name="SortNone"
                         Margin="8,0"
                         HorizontalAlignment="Left"
                         Checked="Sort_CheckChanged"
-                        Content="不分目录"
+                        Content="{DynamicResource ui-sets-content-dirNoGroup}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="SortArtist"
                         Margin="8,0"
                         HorizontalAlignment="Left"
                         Checked="Sort_CheckChanged"
-                        Content="按艺术家（Artist）分目录"
+                        Content="{DynamicResource ui-sets-content-dirGroupByArtist}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="SortMapper"
                         Margin="8,0"
                         HorizontalAlignment="Left"
                         Checked="Sort_CheckChanged"
-                        Content="按作者（Mapper）分目录"
+                        Content="{DynamicResource ui-sets-content-dirGroupByMapper}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="SortSource"
                         Margin="8,0"
                         HorizontalAlignment="Left"
                         Checked="Sort_CheckChanged"
-                        Content="按来源（Source）分目录"
+                        Content="{DynamicResource ui-sets-content-dirGroupBySource}"
                         Style="{StaticResource CommonRadioButton}" />
                 </StackPanel>
             </StackPanel>

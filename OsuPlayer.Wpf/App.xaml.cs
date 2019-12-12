@@ -1,7 +1,6 @@
 ﻿using Microsoft.Win32;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.I18N;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Common.Scanning;
@@ -9,8 +8,12 @@ using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 using System.Windows;
+using System.Xaml;
 using Milky.OsuPlayer.Control.Notification;
 
 #if !DEBUG
@@ -33,7 +36,6 @@ namespace Milky.OsuPlayer
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
             StartupConfig.Startup();
 
-            Services.TryAddInstance(new UiMetadata());
             var playerList = new PlayerList { PlayerMode = AppSettings.Default.Play.PlayerMode };
             Services.TryAddInstance(playerList);
             Services.TryAddInstance(new OsuDbInst());
@@ -83,5 +85,10 @@ namespace Milky.OsuPlayer
         }
 
         public static ObservableCollection<NotificationOption> NotificationList { get; set; }
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            I18nUtil.LoadI18N();
+        }
     }
 }

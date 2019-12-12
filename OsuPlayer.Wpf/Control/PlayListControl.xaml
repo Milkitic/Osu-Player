@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
     Initialized="UserControl_Initialized"
     Loaded="UserControl_Loaded"
     mc:Ignorable="d">
@@ -58,6 +59,13 @@
                 Header="从列表中移除(Delete)"
                 Style="{StaticResource DefaultMenuItem}" />
         </ContextMenu>
+
+        <Style
+            x:Key="EventGridViewItem"
+            BasedOn="{StaticResource GridView}"
+            TargetType="ListViewItem">
+            <EventSetter Event="MouseDoubleClick" Handler="PlayListItem_MouseDoubleClick" />
+        </Style>
     </UserControl.Resources>
     <UserControl.DataContext>
         <local:PlayListControlVm />
@@ -97,7 +105,9 @@
                             Foreground="#727272">
                             <Label.Content>
                                 <TextBlock>
-                                    <Run Text="共" /><Run Text="{Binding PlayList.Entries.Count, Mode=OneWay}" /><Run Text="首" />
+                                    <Run Text="{DynamicResource ui-total}" />
+                                    <Run Text="{Binding PlayList.Entries.Count, Mode=OneWay}" />
+                                    <Run Text="{DynamicResource ui-songsClassifier}" />
                                 </TextBlock>
                             </Label.Content>
                         </Label>
@@ -109,7 +119,7 @@
                             BorderThickness="0"
                             Click="CloseButton_Click"
                             Command="{Binding SaveAllCollectionCommand}"
-                            Content="收藏全部"
+                            Content="{DynamicResource ui-btn-saveAll}"
                             Cursor="Hand"
                             FontSize="11"
                             Foreground="#a0a0a0"
@@ -131,7 +141,7 @@
                         Background="Transparent"
                         BorderThickness="0"
                         Command="{Binding ClearPlayListCommand}"
-                        Content="清空列表"
+                        Content="{DynamicResource ui-btn-clearList}"
                         Cursor="Hand"
                         FontSize="11"
                         Foreground="#a0a0a0"
@@ -156,10 +166,11 @@
             <ListView
                 x:Name="PlayList"
                 Grid.Row="1"
+                AlternationCount="2"
                 Background="Transparent"
                 ContextMenu="{StaticResource PlayListCtxMenu}"
                 ContextMenuOpening="PlayList_ContextMenuOpening"
-                ItemContainerStyle="{StaticResource GridView}"
+                ItemContainerStyle="{StaticResource EventGridViewItem}"
                 ItemsSource="{Binding PlayList.Entries}"
                 MouseMove="PlayList_MouseMove"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -167,7 +178,10 @@
                 Style="{StaticResource ListView}">
                 <ListView.Resources>
                     <DataTemplate x:Key="PlayingDt">
-                        <Border HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" >
+                        <Border
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Cursor="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
                             <Border.Visibility>
                                 <MultiBinding Converter="{StaticResource Multi_EqualityToVisibilityConverter}">
                                     <Binding />
@@ -175,7 +189,7 @@
                                 </MultiBinding>
                             </Border.Visibility>
                             <Viewbox Width="22" Height="22">
-                                <ContentControl Template="{StaticResource Volume2Templ}" Foreground="{StaticResource PinkBrushOsu}"/>
+                                <ContentControl Foreground="{StaticResource PinkBrushOsu}" Template="{StaticResource Volume2Templ}" />
                             </Viewbox>
                         </Border>
                     </DataTemplate>
@@ -221,7 +235,11 @@
                 <ListView.SelectedItem>
                     <MultiBinding Converter="{StaticResource Multi_ListViewSelectAndScrollConverter}">
                         <Binding ElementName="PlayList" Mode="OneWay" />
-                        <Binding Path="DataContext.PlayList.CurrentInfo.Beatmap" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:PlayListControl}}" Mode="OneWay" />
+                        <Binding
+                            Mode="OneWay"
+                            Path="DataContext.PlayList.CurrentInfo.Beatmap"
+                            RelativeSource="{RelativeSource FindAncestor,
+                                                            AncestorType={x:Type local:PlayListControl}}" />
                     </MultiBinding>
                 </ListView.SelectedItem>
             </ListView>

@@ -11,6 +11,7 @@
     Title="GeneralPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
     <Page.DataContext>
@@ -21,19 +22,19 @@
             <StackPanel Margin="10">
                 <Label
                     HorizontalAlignment="Left"
-                    Content="启动："
+                    Content="{DynamicResource ui-sets-title-startup}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <CheckBox
                     x:Name="RunOnStartup"
                     Margin="8,0"
                     HorizontalAlignment="Left"
                     Checked="RunOnStartup_CheckChanged"
-                    Content="开机自动运行"
+                    Content="{DynamicResource ui-sets-content-runOnStartup}"
                     Style="{StaticResource CommonCheckBox}"
                     Unchecked="RunOnStartup_CheckChanged" />
                 <Label
                     HorizontalAlignment="Left"
-                    Content="osu!db位置："
+                    Content="{DynamicResource ui-sets-title-osuDbLocation}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <control:CommonTextBox
@@ -68,13 +69,13 @@
                         VerticalAlignment="Center"
                         Background="#E3E3E3"
                         Click="SyncNow_Click"
-                        Content="手动同步"
+                        Content="{DynamicResource ui-btn-syncManually}"
                         IsEnabled="{Binding IsScanning, Converter={StaticResource NegativeBooleanConverter}}"
                         Style="{StaticResource SettingsButton}" />
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
-                    Content="自定义曲库路径："
+                    Content="{DynamicResource ui-sets-title-customSongPath}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <control:CommonTextBox
@@ -106,7 +107,7 @@
                         FillColor="#303030"
                         Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
                     <Label
-                        Content="正在扫描..."
+                        Content="{DynamicResource ui-sets-content-scanning3Dot}"
                         Foreground="#303030"
                         Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
                     <control:CommonButton
@@ -114,35 +115,35 @@
                         Padding="2,0"
                         VerticalAlignment="Center"
                         Click="CancelScan_Click"
-                        Content="取消扫描"
+                        Content="{DynamicResource ui-btn-cancelScan}"
                         Style="{StaticResource LinkButton}"
                         Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
-                    Content="关闭窗体："
+                    Content="{DynamicResource ui-sets-title-closeWindow}"
                     Style="{StaticResource ConfigTitleStyle}" />
-                <StackPanel HorizontalAlignment="Left">
+                <StackPanel Margin="0,-5,0,0" HorizontalAlignment="Left">
                     <RadioButton
                         x:Name="RadioMinimum"
                         Margin="8,0"
                         HorizontalAlignment="Left"
                         Checked="Radio_CheckChanged"
-                        Content="最小化到系统托盘"
+                        Content="{DynamicResource ui-sets-content-minToNotificationPanel}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="RadioExit"
                         Margin="8,0"
                         HorizontalAlignment="Left"
                         Checked="Radio_CheckChanged"
-                        Content="退出程序"
+                        Content="{DynamicResource ui-sets-content-exitProgram}"
                         Style="{StaticResource CommonRadioButton}" />
                     <CheckBox
                         x:Name="AsDefault"
                         Margin="8,10"
                         HorizontalAlignment="Left"
                         Checked="AsDefault_CheckChanged"
-                        Content="设置默认选项"
+                        Content="{DynamicResource ui-sets-content-setAsDefaultOptions}"
                         Style="{StaticResource CommonCheckBox}"
                         Unchecked="AsDefault_CheckChanged" />
                 </StackPanel>

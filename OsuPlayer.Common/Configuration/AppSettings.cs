@@ -19,6 +19,7 @@ namespace Milky.OsuPlayer.Common.Configuration
 
         public VolumeControl Volume { get; set; } = new VolumeControl();
         public GeneralControl General { get; set; } = new GeneralControl();
+        public InterfaceControl Interface { get; set; } = new InterfaceControl();
         public PlayControl Play { get; set; } = new PlayControl();
         public List<HotKey> HotKeys { get; set; } = new List<HotKey>();
         public LyricControl Lyric { get; set; } = new LyricControl();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Dapper.FluentMap.Mapping;
 using Newtonsoft.Json;
 using OSharp.Beatmap.MetaData;
 
@@ -57,5 +58,14 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model.V1
         //[Column("addTime")]
         public DateTime? AddTime { get; }
 
+    }
+
+    public class MapInfoMap : EntityMap<MapInfo>
+    {
+        public MapInfoMap()
+        {
+            // Map property 'Name' to column 'strName'.
+            Map(p => p.FolderName).ToColumn("folder");
+        }
     }
 }

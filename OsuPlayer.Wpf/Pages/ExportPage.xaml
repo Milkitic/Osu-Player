@@ -14,6 +14,7 @@
     Title="ExportPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
     <Page.DataContext>
@@ -31,7 +32,7 @@
                 Style="{StaticResource PinkTabItem}"
                 WindowChrome.IsHitTestVisibleInChrome="True">
                 <TabItem.Header>
-                    <TextBlock FontSize="16" Text="{Binding UiStrExported}" />
+                    <TextBlock FontSize="16" Text="{DynamicResource ui-exported}" />
                 </TabItem.Header>
                 <Grid Background="Transparent" Cursor="Arrow">
                     <Grid.RowDefinitions>
@@ -63,7 +64,7 @@
                                         </Path>
                                     </Canvas>
                                 </Viewbox>
-                                <Label Content="打开目录" />
+                                <Label Content="{DynamicResource ui-btn-openDirectory}" />
                             </StackPanel>
                         </control:CommonButton>
                         <StackPanel
@@ -72,7 +73,7 @@
                             Orientation="Horizontal">
                             <Label
                                 Margin="0,0,-10,0"
-                                Content="{Binding UiStrExportPath}"
+                                Content="{DynamicResource ui-exportPath}"
                                 Foreground="#303030" />
                             <Label
                                 Margin="0,0,-10,0"
@@ -95,20 +96,20 @@
                                     x:Name="ItemOpenFolder"
                                     Command="{Binding ItemFolderCommand}"
                                     CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"
-                                    Header="{Binding UiStrOpenFolder}"
+                                    Header="{DynamicResource ui-openFileFolder}"
                                     Style="{DynamicResource DefaultMenuItem}" />
                                 <Separator />
                                 <MenuItem
                                     x:Name="ItemRexport"
                                     Command="{Binding ItemReExportCommand}"
                                     CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"
-                                    Header="{Binding UiStrExportAgain}"
+                                    Header="{DynamicResource ui-exportAgain}"
                                     Style="{DynamicResource DefaultMenuItem}" />
                                 <MenuItem
                                     x:Name="ItemDelete"
                                     Command="{Binding ItemDeleteCommand}"
                                     CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"
-                                    Header="{Binding UiStrDeleteExported}"
+                                    Header="{DynamicResource ui-deleteExported}"
                                     Style="{DynamicResource DefaultMenuItem}" />
                             </ContextMenu>
                         </ListView.ContextMenu>
@@ -148,19 +149,19 @@
                                 <GridViewColumn
                                     Width="300"
                                     CellTemplate="{StaticResource TitleDt}"
-                                    Header="{Binding UiStrTitle}" />
+                                    Header="{DynamicResource ui-title}" />
                                 <GridViewColumn
                                     Width="200"
                                     CellTemplate="{StaticResource ArtistDt}"
-                                    Header="{Binding UiStrArtist}" />
+                                    Header="{DynamicResource ui-artist}" />
                                 <GridViewColumn
                                     Width="100"
                                     CellTemplate="{StaticResource SizeDt}"
-                                    Header="{Binding UiStrFileSize}" />
+                                    Header="{DynamicResource ui-size}" />
                                 <GridViewColumn
                                     Width="150"
                                     CellTemplate="{StaticResource TimeDt}"
-                                    Header="{Binding UiStrExportTime}" />
+                                    Header="{DynamicResource ui-exportTime}" />
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -172,7 +173,7 @@
                 Style="{StaticResource PinkTabItem}"
                 WindowChrome.IsHitTestVisibleInChrome="True">
                 <TabItem.Header>
-                    <TextBlock FontSize="16" Text="{Binding UiStrExporting}" />
+                    <TextBlock FontSize="16" Text="{DynamicResource ui-exporting}" />
                 </TabItem.Header>
                 <Grid Background="Transparent" Cursor="Arrow" />
             </TabItem>
