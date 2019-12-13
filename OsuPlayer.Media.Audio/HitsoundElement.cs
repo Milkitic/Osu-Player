@@ -12,7 +12,7 @@ namespace Milky.OsuPlayer.Media.Audio
     public class HitsoundElement
     {
         private readonly string _mapFolderName;
-        private readonly string[] _mapWaveFiles;
+        private readonly HashSet<string> _mapWaveFiles;
         private readonly int _forceTrack;
         private readonly HitsoundType? _fullHitsoundType;
         private string[] _fileNamesWithoutTrack;
@@ -20,7 +20,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private string _oggExtension = ".ogg";
 
         public HitsoundElement(string mapFolderName,
-            string[] mapWaveFiles,
+            HashSet<string> mapWaveFiles,
             GameMode gameMode,
             double offset,
             int track,
@@ -52,7 +52,7 @@ namespace Milky.OsuPlayer.Media.Audio
             SetFullPath();
         }
         public HitsoundElement(string mapFolderName,
-            string[] mapWaveFiles,
+            HashSet<string> mapWaveFiles,
             GameMode gameMode,
             double offset,
             int track,
@@ -152,8 +152,11 @@ namespace Milky.OsuPlayer.Media.Audio
             string addition;
 
             addition = GetObjectAddition(sample);
-
-            if (_fullHitsoundType == null)
+            if (IsTickOrSlide == true)
+            {
+                tracks.Add($"{sample}-slidertick");
+            }
+            else if (_fullHitsoundType == null)
             {
                 if (Hitsound == 0)
                     tracks.Add($"{sample}-hitnormal");

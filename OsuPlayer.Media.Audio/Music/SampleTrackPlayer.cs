@@ -32,7 +32,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             {
                 var element = new HitsoundElement(
                     mapFolderName: dirInfo.FullName,
-                    mapWaveFiles: new string[0],
+                    mapWaveFiles: new HashSet<string>(),
                     gameMode: osuFile.General.Mode,
                     offset: sampleData.Offset,
                     track: -1,

@@ -339,10 +339,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             List<RawHitObject> hitObjects = _osuFile.HitObjects.HitObjectList;
             List<HitsoundElement> hitsoundList = new List<HitsoundElement>();
 
-            var mapWaves = dirInfo.EnumerateFiles()
+            HashSet<string> mapWaves = new HashSet<string>(dirInfo.EnumerateFiles()
                 .Where(k => k.Extension.ToLower() == ".wav" || k.Extension.ToLower() == ".ogg")
-                .Select(p => Path.GetFileNameWithoutExtension(p.FullName))
-                .ToArray();
+                .Select(p => Path.GetFileNameWithoutExtension(p.FullName)));
 
             foreach (var obj in hitObjects)
             {
@@ -390,7 +389,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                             isTickOrSlide: true,
                             sample: obj.SampleSet,
                             addition: obj.AdditionSet,
-                            volume: (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f,
+                            volume: (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f * 1.25f,
                             balance: balance,
                             forceTrack: obj.CustomIndex,
                             fullHitsoundType: obj.SliderInfo.EdgeHitsounds == null ? obj.Hitsound : (HitsoundType?)null
