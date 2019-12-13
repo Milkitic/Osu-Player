@@ -9,7 +9,7 @@ using OSharp.Beatmap.Sections.Timing;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
-    public class HitsoundElement
+    public class HitsoundElement : ISoundElement
     {
         private readonly string _mapFolderName;
         private readonly HashSet<string> _mapWaveFiles;

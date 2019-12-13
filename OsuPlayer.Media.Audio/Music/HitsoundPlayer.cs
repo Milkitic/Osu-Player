@@ -11,6 +11,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Media.Audio.Music.SampleProviders;
+using Milky.OsuPlayer.Media.Audio.Music.WaveProviders;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using OSharp.Beatmap.Sections.GamePlay;
 using OSharp.Beatmap.Sections.Timing;
 
@@ -63,10 +67,17 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                               !_offsetTask.IsFaulted;
 
         protected AudioPlaybackEngine Engine = new AudioPlaybackEngine();
+        private WasapiOut _slideDevice = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 5);
+        private WasapiOut _slideAddDevice = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 5);
+        private LoopStream _slideLoop;
+        private CachedSoundSampleProvider _slideSound;
+        private CachedSoundSampleProvider _slideAddSound;
+        private ChannelSampleProvider _currentChannel;
+        private VolumeSampleProvider _currentVolume;
 
         private readonly string _defaultDir = Domain.DefaultPath;
-        private ConcurrentQueue<HitsoundElement> _hsQueue;
-        private List<HitsoundElement> _hitsoundList;
+        private ConcurrentQueue<ISoundElement> _hsQueue;
+        private List<ISoundElement> _hitsoundList;
         private readonly string _filePath;
 
         // Play Control
@@ -94,13 +105,14 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             if (dirInfo == null)
                 throw new DirectoryNotFoundException("获取" + fileInfo.Name + "所在目录失败了？");
 
-            List<HitsoundElement> hitsoundList = FillHitsoundList(_osuFile, dirInfo);
-            _hitsoundList = hitsoundList.OrderBy(t => t.Offset).ToList(); // Sorted before enqueue.
+            List<ISoundElement> hitsoundList = FillHitsoundList(_osuFile, dirInfo);
+            _hitsoundList = hitsoundList.OrderBy(t => t.Offset).Cast<ISoundElement>().ToList(); // Sorted before enqueue.
             Requeue(0);
             var allPaths = hitsoundList.Select(t => t.FilePaths).SelectMany(sbx2 => sbx2).Distinct();
             await Task.Run(() =>
             {
                 Engine.CreateCacheSounds(allPaths);
+                Engine.CreateCacheSounds(new DirectoryInfo(Domain.DefaultPath).GetFiles().Select(k => k.FullName));
             });
             PlayerStatus = PlayerStatus.Ready;
             SetPlayMod(AppSettings.Default.Play.PlayMod, false);
@@ -118,7 +130,6 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         {
             Engine.Volume = 1f * AppSettings.Default.Volume.Hitsound * AppSettings.Default.Volume.Main;
         }
-
 
         public void SetPlayMod(PlayMod mod, bool play)
         {
@@ -209,7 +220,10 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             _playingTask?.Dispose();
             _cts?.Dispose();
             Engine?.Dispose();
-
+            _slideDevice?.Stop();
+            _slideDevice?.Dispose();
+            _slideAddDevice?.Stop();
+            _slideAddDevice?.Dispose();
             AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
 
             GC.Collect();
@@ -257,11 +271,52 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                         if (!_hsQueue.TryDequeue(out var hs))
                             continue;
 
-                        foreach (var path in hs.FilePaths)
+                        if (hs is HitsoundElement he)
                         {
-                            Engine.PlaySound(path, hs.Volume * 1f,
-                                hs.Balance * AppSettings.Default.Volume.BalanceFactor / 100f);
-                            //Task.Run(() =>);
+                            foreach (var path in he.FilePaths)
+                            {
+                                Engine.PlaySound(path, he.Volume * 1f,
+                                    he.Balance * AppSettings.Default.Volume.BalanceFactor / 100f);
+                                //Task.Run(() =>);
+                            }
+                        }
+                        else if (hs is SlideControlElement sce)
+                        {
+                            var path = sce.FilePaths[0];
+
+                            switch (sce.ControlMode)
+                            {
+                                case SlideControlMode.NewSample:
+                                    {
+                                        //var device = sce.IsAddition ? _slideAddDevice : _slideDevice;
+                                        var sound = sce.IsAddition ? NewProviderAndRet(ref _slideAddSound, path) : NewProviderAndRet(ref _slideSound, path);
+                                        //var s = new RawSourceWaveStream(
+                                        //    sound.SourceSound.AudioData.Select(k => (byte)k).ToArray(), 0,
+                                        //    sound.SourceSound.AudioData.Length, sound.WaveFormat);
+                                        var myf = new WaveFileReader(path);
+                                        var loop = new LoopStream(myf);
+                                        _currentVolume = new VolumeSampleProvider(loop.ToSampleProvider());
+                                        _currentVolume.Volume = sce.Volume;
+                                        _currentChannel = new ChannelSampleProvider(_currentVolume);
+                                        _currentChannel.Balance = sce.Balance;
+
+                                        //device.Stop();
+                                        var device = sce.IsAddition ? NewDeviceAndRet(ref _slideAddDevice) : NewDeviceAndRet(ref _slideDevice);
+                                        device.Init(_currentChannel);
+                                        device.Play();
+                                    }
+                                    break;
+                                case SlideControlMode.ChangeBalance:
+                                    break;
+                                case SlideControlMode.Stop:
+                                    {
+                                        var device = sce.IsAddition ? _slideAddDevice : _slideDevice;
+                                        device.Stop();
+                                        break;
+                                    }
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
                         }
                     }
                 }
@@ -274,6 +329,18 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
             PlayerStatus = PlayerStatus.Finished;
             Task.Run(() => { RaisePlayerFinishedEvent(this, new EventArgs()); });
+        }
+
+        private WasapiOut NewDeviceAndRet(ref WasapiOut device)
+        {
+            device?.Stop();
+            device?.Dispose();
+            return device = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 5);
+        }
+
+        private CachedSoundSampleProvider NewProviderAndRet(ref CachedSoundSampleProvider slideAddSound, string path)
+        {
+            return slideAddSound = new CachedSoundSampleProvider(Engine.GetOrCreateCacheSound(path));
         }
 
         private void DynamicOffset()
@@ -307,7 +374,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         private void Requeue(long startTime)
         {
-            _hsQueue = new ConcurrentQueue<HitsoundElement>();
+            _hsQueue = new ConcurrentQueue<ISoundElement>();
             if (_hitsoundList != null)
                 foreach (var i in _hitsoundList)
                 {
@@ -334,10 +401,10 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         #region Load
 
-        protected virtual List<HitsoundElement> FillHitsoundList(OsuFile osuFile, DirectoryInfo dirInfo)
+        protected virtual List<ISoundElement> FillHitsoundList(OsuFile osuFile, DirectoryInfo dirInfo)
         {
             List<RawHitObject> hitObjects = _osuFile.HitObjects.HitObjectList;
-            List<HitsoundElement> hitsoundList = new List<HitsoundElement>();
+            List<ISoundElement> hitsoundList = new List<ISoundElement>();
 
             HashSet<string> mapWaves = new HashSet<string>(dirInfo.EnumerateFiles()
                 .Where(k => k.Extension.ToLower() == ".wav" || k.Extension.ToLower() == ".ogg")
@@ -396,6 +463,25 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                         );
 
                         hitsoundList.Add(element);
+                    }
+
+                    // slide
+                    {
+                        var start = obj.Offset;
+                        var currentLine = _osuFile.TimingPoints.GetLine(start);
+                        var volume = (obj.SampleVolume != 0 ? obj.SampleVolume : currentLine.Volume) / 100f;
+                        float balance = GetObjectBalance(obj.X);
+
+                        var track = currentLine.Track;
+                        var lineSample = currentLine.TimingSampleset;
+                        var addition = obj.AdditionSet;
+                        var forceTrack = obj.CustomIndex;
+
+                        hitsoundList.Add(new SlideControlElement(start, volume, balance, track, lineSample, addition, forceTrack,
+                            SlideControlMode.NewSample, false));
+                        var end = obj.SliderInfo.Edges.Last().Offset;
+                        hitsoundList.Add(new SlideControlElement((int)end, volume, balance, track, lineSample, addition, forceTrack,
+                            SlideControlMode.Stop, false));
                     }
                 }
                 else

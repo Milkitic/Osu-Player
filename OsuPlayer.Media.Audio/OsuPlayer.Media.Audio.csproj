@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ISoundElement.cs" />
     <Compile Include="Music\AudioPlaybackEngine.cs" />
     <Compile Include="ComponentPlayer.cs" />
     <Compile Include="HitsoundElement.cs" />
@@ -71,9 +72,11 @@
     <Compile Include="Music\WaveProviders\AutoDisposeFileReader.cs" />
     <Compile Include="Music\WaveProviders\CachedSoundSampleProvider.cs" />
     <Compile Include="Music\WaveProviders\CusBufferedWaveProvider.cs" />
+    <Compile Include="Music\WaveProviders\LoopStream.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Music\SampleTrackPlayer.cs" />
+    <Compile Include="SlideControlElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -89,5 +92,6 @@
       <Name>OsuPlayer.Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

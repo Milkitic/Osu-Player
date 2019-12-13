@@ -22,9 +22,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             Engine.Volume = 1f * AppSettings.Default.Volume.Sample * AppSettings.Default.Volume.Main;
         }
 
-        protected override List<HitsoundElement> FillHitsoundList(OsuFile osuFile, DirectoryInfo dirInfo)
+        protected override List<ISoundElement> FillHitsoundList(OsuFile osuFile, DirectoryInfo dirInfo)
         {
-            List<HitsoundElement> hitsoundList = new List<HitsoundElement>();
+            List<ISoundElement> hitsoundList = new List<ISoundElement>();
             var sampleList = osuFile.Events.SampleInfo;
             if (sampleList == null)
                 return hitsoundList;
