@@ -56,7 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ISoundElement.cs" />
+    <Compile Include="SoundElement.cs" />
     <Compile Include="Music\AudioPlaybackEngine.cs" />
     <Compile Include="ComponentPlayer.cs" />
     <Compile Include="HitsoundElement.cs" />

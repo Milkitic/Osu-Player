@@ -9,15 +9,13 @@ using OSharp.Beatmap.Sections.Timing;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
-    public class HitsoundElement : ISoundElement
+    public sealed class HitsoundElement : SoundElement
     {
         private readonly string _mapFolderName;
         private readonly HashSet<string> _mapWaveFiles;
         private readonly int _forceTrack;
         private readonly HitsoundType? _fullHitsoundType;
         private string[] _fileNamesWithoutTrack;
-        private string _wavExtension = ".wav";
-        private string _oggExtension = ".ogg";
 
         public HitsoundElement(string mapFolderName,
             HashSet<string> mapWaveFiles,
@@ -57,7 +55,7 @@ namespace Milky.OsuPlayer.Media.Audio
             double offset,
             int track,
             TimingSamplesetType lineSample,
-            bool isTickOrSlide,
+            bool isTick,
             ObjectSamplesetType sample,
             ObjectSamplesetType addition,
             float volume,
@@ -73,7 +71,7 @@ namespace Milky.OsuPlayer.Media.Audio
             Offset = offset;
             Track = track;
             LineSample = lineSample;
-            IsTickOrSlide = isTickOrSlide;
+            IsTick = isTick;
             Sample = sample;
             Addition = addition;
             Volume = volume;
@@ -82,12 +80,9 @@ namespace Milky.OsuPlayer.Media.Audio
             SetFullPath();
         }
 
-        public bool? IsTickOrSlide { get; set; }
+        public bool IsTick { get; set; }
 
         public GameMode GameMode { get; }
-        public double Offset { get; }
-        public float Volume { get; }
-        public float Balance { get; }
         public HitsoundType Hitsound { get; }
         public int Track { get; }
         public TimingSamplesetType LineSample { get; }
@@ -95,7 +90,10 @@ namespace Milky.OsuPlayer.Media.Audio
         public ObjectSamplesetType Addition { get; }
         public string CustomFile { get; }
 
-        public string[] FilePaths { get; private set; }
+        public override double Offset { get; protected set; }
+        public override float Volume { get; protected set; }
+        public override float Balance { get; protected set; }
+        public override string[] FilePaths { get; protected set; }
 
         private void SetFullPath()
         {
@@ -116,12 +114,16 @@ namespace Milky.OsuPlayer.Media.Audio
                     trackStr = (Track > 1 ? Track.ToString() : "");
                 }
                 var name = _fileNamesWithoutTrack[i] + trackStr;
-                if (_mapWaveFiles.Contains(name))
+                if (Track == 0)
                 {
-                    var path = Path.Combine(_mapFolderName, name + _wavExtension);
+                    FilePaths = new[] { Path.Combine(Domain.DefaultPath, _fileNamesWithoutTrack[i] + WavExtension) };
+                }
+                else if (_mapWaveFiles.Contains(name))
+                {
+                    var path = Path.Combine(_mapFolderName, name + WavExtension);
                     if (!File.Exists(path))
                     {
-                        path = Path.Combine(_mapFolderName, name + _oggExtension);
+                        path = Path.Combine(_mapFolderName, name + OggExtension);
                     }
 
                     FilePaths[i] = path;
@@ -132,7 +134,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
                 else
                 {
-                    FilePaths[i] = Path.Combine(Domain.DefaultPath, _fileNamesWithoutTrack[i] + _wavExtension);
+                    FilePaths[i] = Path.Combine(Domain.DefaultPath, _fileNamesWithoutTrack[i] + WavExtension);
                 }
             }
         }
@@ -152,7 +154,7 @@ namespace Milky.OsuPlayer.Media.Audio
             string addition;
 
             addition = GetObjectAddition(sample);
-            if (IsTickOrSlide == true)
+            if (IsTick)
             {
                 tracks.Add($"{sample}-slidertick");
             }
