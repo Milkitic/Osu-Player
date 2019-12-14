@@ -74,6 +74,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         private CachedSoundSampleProvider _slideAddSound;
         private ChannelSampleProvider _currentChannel;
         private VolumeSampleProvider _currentVolume;
+        private ChannelSampleProvider _currentChannelAdd;
+        private VolumeSampleProvider _currentVolumeAdd;
 
         private readonly string _defaultDir = Domain.DefaultPath;
         private ConcurrentQueue<SoundElement> _hsQueue;
@@ -289,29 +291,50 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                 case SlideControlMode.NewSample:
                                     {
                                         //var device = sce.IsAddition ? _slideAddDevice : _slideDevice;
-                                        var sound = sce.IsAddition ? NewProviderAndRet(ref _slideAddSound, path) : NewProviderAndRet(ref _slideSound, path);
+                                        //var sound = sce.IsAddition ? NewProviderAndRet(ref _slideAddSound, path) : NewProviderAndRet(ref _slideSound, path);
                                         //var s = new RawSourceWaveStream(
                                         //    sound.SourceSound.AudioData.Select(k => (byte)k).ToArray(), 0,
                                         //    sound.SourceSound.AudioData.Length, sound.WaveFormat);
                                         var myf = new WaveFileReader(path);
                                         var loop = new LoopStream(myf);
-                                        _currentVolume = new VolumeSampleProvider(loop.ToSampleProvider());
-                                        _currentVolume.Volume = sce.Volume;
-                                        _currentChannel = new ChannelSampleProvider(_currentVolume);
-                                        _currentChannel.Balance = sce.Balance;
+                                        if (!sce.IsAddition)
+                                        {
+                                            _currentVolume = new VolumeSampleProvider(loop.ToSampleProvider());
+                                            _currentVolume.Volume = sce.Volume * 0.7f;
+                                            _currentChannel = new ChannelSampleProvider(_currentVolume);
+                                            _currentChannel.Balance = sce.Balance;
+                                        }
+                                        else
+                                        {
+                                            _currentVolumeAdd = new VolumeSampleProvider(loop.ToSampleProvider());
+                                            _currentVolumeAdd.Volume = sce.Volume * 0.7f;
+                                            _currentChannelAdd = new ChannelSampleProvider(_currentVolumeAdd);
+                                            _currentChannelAdd.Balance = sce.Balance;
+                                        }
 
                                         //device.Stop();
                                         var device = sce.IsAddition ? NewDeviceAndRet(ref _slideAddDevice) : NewDeviceAndRet(ref _slideDevice);
-                                        device.Init(_currentChannel);
+                                        device.Init(sce.IsAddition ? _currentChannelAdd : _currentChannel);
                                         device.Play();
                                     }
                                     break;
                                 case SlideControlMode.ChangeBalance:
+                                    if (_currentChannel != null)
+                                    {
+                                        _currentChannel.Balance = sce.Balance;
+                                    }
+
+                                    if (_currentChannelAdd != null)
+                                    {
+                                        _currentChannelAdd.Balance = sce.Balance;
+                                    }
                                     break;
                                 case SlideControlMode.Stop:
                                     {
-                                        var device = sce.IsAddition ? _slideAddDevice : _slideDevice;
-                                        device.Stop();
+                                        //var device = sce.IsAddition ? _slideAddDevice : _slideDevice;
+                                        //device.Stop();
+                                        _slideDevice.Stop();
+                                        _slideAddDevice.Stop();
                                         break;
                                     }
                                 default:
@@ -482,7 +505,13 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                         hitsoundList.Add(new SlideControlElement(dirInfo.FullName,
                             mapWaves, start, volume, balance, track, lineSample, sample, addition, forceTrack,
                             SlideControlMode.NewSample, false));
-               
+                        if (obj.Hitsound.HasFlag(HitsoundType.Whistle))
+                        {
+                            hitsoundList.Add(new SlideControlElement(dirInfo.FullName,
+                                mapWaves, start, volume, balance, track, lineSample, sample, addition, forceTrack,
+                                SlideControlMode.NewSample, true));
+                        }
+
                         var timings = _osuFile.TimingPoints.TimingList.Where(k => k.Offset > start && k.Offset < end)
                             .ToList();
                         for (int i = 0; i < timings.Count; i++)
@@ -496,6 +525,13 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                 hitsoundList.Add(new SlideControlElement(dirInfo.FullName,
                                     mapWaves, (int)timing.Offset, volume2, balance, track2, timing.TimingSampleset, sample, addition, forceTrack,
                                     SlideControlMode.NewSample, false));
+                                if (obj.Hitsound.HasFlag(HitsoundType.Whistle))
+                                {
+                                    hitsoundList.Add(new SlideControlElement(dirInfo.FullName,
+                                        mapWaves, (int)timing.Offset, volume2, balance, track2, timing.TimingSampleset, sample, addition, forceTrack,
+                                        SlideControlMode.NewSample, true));
+                                }
+
                                 continue;
                             }
 
@@ -506,6 +542,21 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                         hitsoundList.Add(new SlideControlElement(dirInfo.FullName,
                            mapWaves, (int)end, volume, balance, track, lineSample, sample, addition, forceTrack,
                            SlideControlMode.Stop, false));
+                    }
+
+                    var trails = obj.SliderInfo.BallTrail;
+                    foreach (var trailFrame in trails)
+                    {
+                        //var currentLine = _osuFile.TimingPoints.GetLine(trailFrame.Offset);
+                        float balance = GetObjectBalance(trailFrame.Point.X);
+
+                        var element = new SlideControlElement(
+                            dirInfo.FullName,
+                            mapWaves, (int)trailFrame.Offset, 0, balance, 0, 0, 0, 0, 0,
+                            SlideControlMode.ChangeBalance, false
+                        );
+
+                        hitsoundList.Add(element);
                     }
                 }
                 else

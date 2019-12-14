@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Milky.OsuPlayer.Common;
 using OSharp.Beatmap.Sections.HitObject;
@@ -62,7 +63,21 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             string sample = GetFromLineSample();
             AdjustObjectSample(ref sample);
-
+            if (IsAddition && Addition != ObjectSamplesetType.Auto)
+            {
+                switch (Addition)
+                {
+                    case ObjectSamplesetType.Normal:
+                        sample = "normal";
+                        break;
+                    case ObjectSamplesetType.Soft:
+                        sample = "soft";
+                        break;
+                    case ObjectSamplesetType.Drum:
+                        sample = "drum";
+                        break;
+                }
+            }
             _fileNameWithoutTrack = $"{sample}-slider{(IsAddition ? "whistle" : "slide")}";
         }
 
