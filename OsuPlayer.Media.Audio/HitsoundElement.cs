@@ -9,18 +9,16 @@ using OSharp.Beatmap.Sections.Timing;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
-    public class HitsoundElement
+    public sealed class HitsoundElement : SoundElement
     {
         private readonly string _mapFolderName;
-        private readonly string[] _mapWaveFiles;
+        private readonly HashSet<string> _mapWaveFiles;
         private readonly int _forceTrack;
         private readonly HitsoundType? _fullHitsoundType;
         private string[] _fileNamesWithoutTrack;
-        private string _wavExtension = ".wav";
-        private string _oggExtension = ".ogg";
 
         public HitsoundElement(string mapFolderName,
-            string[] mapWaveFiles,
+            HashSet<string> mapWaveFiles,
             GameMode gameMode,
             double offset,
             int track,
@@ -51,11 +49,40 @@ namespace Milky.OsuPlayer.Media.Audio
             SetNamesWithoutTrack();
             SetFullPath();
         }
+        public HitsoundElement(string mapFolderName,
+            HashSet<string> mapWaveFiles,
+            GameMode gameMode,
+            double offset,
+            int track,
+            TimingSamplesetType lineSample,
+            bool isTick,
+            ObjectSamplesetType sample,
+            ObjectSamplesetType addition,
+            float volume,
+            float balance,
+            int forceTrack,
+            HitsoundType? fullHitsoundType)
+        {
+            _mapFolderName = mapFolderName;
+            _mapWaveFiles = mapWaveFiles;
+            _forceTrack = forceTrack;
+            _fullHitsoundType = fullHitsoundType;
+            GameMode = gameMode;
+            Offset = offset;
+            Track = track;
+            LineSample = lineSample;
+            IsTick = isTick;
+            Sample = sample;
+            Addition = addition;
+            Volume = volume;
+            Balance = balance;
+            SetNamesWithoutTrack();
+            SetFullPath();
+        }
+
+        public bool IsTick { get; set; }
 
         public GameMode GameMode { get; }
-        public double Offset { get; }
-        public float Volume { get; }
-        public float Balance { get; }
         public HitsoundType Hitsound { get; }
         public int Track { get; }
         public TimingSamplesetType LineSample { get; }
@@ -63,7 +90,10 @@ namespace Milky.OsuPlayer.Media.Audio
         public ObjectSamplesetType Addition { get; }
         public string CustomFile { get; }
 
-        public string[] FilePaths { get; private set; }
+        public override double Offset { get; protected set; }
+        public override float Volume { get; protected set; }
+        public override float Balance { get; protected set; }
+        public override string[] FilePaths { get; protected set; }
 
         private void SetFullPath()
         {
@@ -84,12 +114,16 @@ namespace Milky.OsuPlayer.Media.Audio
                     trackStr = (Track > 1 ? Track.ToString() : "");
                 }
                 var name = _fileNamesWithoutTrack[i] + trackStr;
-                if (_mapWaveFiles.Contains(name))
+                if (Track == 0)
                 {
-                    var path = Path.Combine(_mapFolderName, name + _wavExtension);
+                    FilePaths = new[] { Path.Combine(Domain.DefaultPath, _fileNamesWithoutTrack[i] + WavExtension) };
+                }
+                else if (_mapWaveFiles.Contains(name))
+                {
+                    var path = Path.Combine(_mapFolderName, name + WavExtension);
                     if (!File.Exists(path))
                     {
-                        path = Path.Combine(_mapFolderName, name + _oggExtension);
+                        path = Path.Combine(_mapFolderName, name + OggExtension);
                     }
 
                     FilePaths[i] = path;
@@ -100,7 +134,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
                 else
                 {
-                    FilePaths[i] = Path.Combine(Domain.DefaultPath, _fileNamesWithoutTrack[i] + _wavExtension);
+                    FilePaths[i] = Path.Combine(Domain.DefaultPath, _fileNamesWithoutTrack[i] + WavExtension);
                 }
             }
         }
@@ -120,8 +154,11 @@ namespace Milky.OsuPlayer.Media.Audio
             string addition;
 
             addition = GetObjectAddition(sample);
-
-            if (_fullHitsoundType == null)
+            if (IsTick)
+            {
+                tracks.Add($"{sample}-slidertick");
+            }
+            else if (_fullHitsoundType == null)
             {
                 if (Hitsound == 0)
                     tracks.Add($"{sample}-hitnormal");

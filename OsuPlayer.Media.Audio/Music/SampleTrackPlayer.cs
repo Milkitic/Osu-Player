@@ -22,9 +22,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             Engine.Volume = 1f * AppSettings.Default.Volume.Sample * AppSettings.Default.Volume.Main;
         }
 
-        protected override List<HitsoundElement> FillHitsoundList(OsuFile osuFile, DirectoryInfo dirInfo)
+        protected override List<SoundElement> FillHitsoundList(OsuFile osuFile, DirectoryInfo dirInfo)
         {
-            List<HitsoundElement> hitsoundList = new List<HitsoundElement>();
+            List<SoundElement> hitsoundList = new List<SoundElement>();
             var sampleList = osuFile.Events.SampleInfo;
             if (sampleList == null)
                 return hitsoundList;
@@ -32,7 +32,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             {
                 var element = new HitsoundElement(
                     mapFolderName: dirInfo.FullName,
-                    mapWaveFiles: new string[0],
+                    mapWaveFiles: new HashSet<string>(),
                     gameMode: osuFile.General.Mode,
                     offset: sampleData.Offset,
                     track: -1,
