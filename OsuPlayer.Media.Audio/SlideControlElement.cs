@@ -55,7 +55,7 @@ namespace Milky.OsuPlayer.Media.Audio
         public int ForceTrack { get; set; }
 
         public bool IsAddition { get; }
-        public SlideControlMode ControlMode { get; }
+        public SlideControlMode ControlMode { get; set; }
 
         private string _fileNameWithoutTrack;
 
@@ -159,6 +159,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
     public enum SlideControlMode
     {
-        NewSample, ChangeBalance, Stop
+        NewSample, ChangeBalance, Stop,
+        Volume
     }
 }
