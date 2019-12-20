@@ -69,7 +69,10 @@
                                     </ContentControl.Foreground>
                                 </ContentControl>
                             </Viewbox>
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <ContentPresenter
+                                x:Name="Presenter"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
                         </StackPanel>
                     </Border>
                     <ControlTemplate.Triggers>

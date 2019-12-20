@@ -4,20 +4,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
-    xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
     xmlns:frontdialog="clr-namespace:Milky.OsuPlayer.Control.FrontDialog"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:notification="clr-namespace:Milky.OsuPlayer.Control.Notification"
-    xmlns:osuPlayer="clr-namespace:Milky.OsuPlayer"
     xmlns:pages="clr-namespace:Milky.OsuPlayer.Pages"
-    xmlns:shaderEffects="clr-namespace:MDS.ShaderEffects;assembly=ShaderEffects"
     xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
-    Title="Full Window"
+    Title="Osu Player"
     Width="998"
     Height="759"
     MinWidth="800"
@@ -44,13 +40,13 @@
     </wpfApi:WindowBase.DataContext>
     <wpfApi:WindowBase.Resources>
         <converter:NavigationWidthConverter x:Key="CvtNavigationWidth" />
-        <converter:IconMarginConverter x:Key="CvtIconMargin" />
+        <!--<converter:IconMarginConverter x:Key="CvtIconMargin" />-->
         <converter:TitleIconConverter x:Key="CvtTitleIcon" />
         <converter:TitleVisibleConverter x:Key="CvtTitleVisible" />
-        <converter:NavTextConverter x:Key="CvtNavText" />
         <converter:LyricWindowShownConverter x:Key="CvtLyricWindowShown" />
         <converter:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
         <converter:MsToStringConverter x:Key="MsToStringConverter" />
+        <converter:SwitchRadioChangeConverter x:Key="SwitchRadioChangeConverter" />
     </wpfApi:WindowBase.Resources>
     <Grid Margin="{Binding WindowState, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource WindowMarginConverter}}">
         <Grid.Background>
@@ -97,7 +93,13 @@
                 Height="Auto"
                 Margin="0,0,1,0">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Width="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavigationWidth}}" ButtonBase.Click="ButtonBase_Click">
+                    <StackPanel ButtonBase.Click="ButtonBase_Click">
+                        <StackPanel.Tag>
+                            <MultiBinding Converter="{StaticResource CvtNavigationWidth}">
+                                <Binding Path="IsNavigationCollapsed" />
+                                <Binding RelativeSource="{RelativeSource Self}" />
+                            </MultiBinding>
+                        </StackPanel.Tag>
                         <control:CommonButton
                             Width="28"
                             Height="28"
@@ -111,52 +113,92 @@
                         <Label
                             Height="30"
                             FontWeight="SemiBold"
-                            Style="{StaticResource NavigationLabelStyle}"
-                            Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
+                            Style="{StaticResource NavigationLabelStyle}">
+                            <Label.Tag>
+                                <MultiBinding Converter="{StaticResource CvtTitleVisible}">
+                                    <Binding Path="IsNavigationCollapsed" />
+                                    <Binding RelativeSource="{RelativeSource Self}" />
+                                </MultiBinding>
+                            </Label.Tag>
                             <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-library}" />
                         </Label>
                         <control:SwitchRadio
                             x:Name="SwitchSearch"
-                            Padding="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
                             CheckedIconColor="#4050A0"
                             Content="{DynamicResource ui-nav-search}"
                             IconTemplate="{StaticResource NavSearchTempl}"
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
-                            TargetPageType="{x:Type pages:SearchPage}" />
-                        <!--<control:SwitchRadio
-                            Padding="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
+                            TargetPageType="{x:Type pages:SearchPage}">
+                            <control:SwitchRadio.Tag>
+                                <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
+                                    <Binding Path="IsNavigationCollapsed" />
+                                    <Binding RelativeSource="{RelativeSource Self}" />
+                                </MultiBinding>
+                            </control:SwitchRadio.Tag>
+                        </control:SwitchRadio>
+                        <control:SwitchRadio
                             CheckedIconColor="#508030"
-                            Content="{Binding IsNavigationCollapsed, Converter={StaticResource CvtNavText}, ConverterParameter=故事板}"
+                            Content="{DynamicResource ui-nav-storyboard}"
                             IconTemplate="{StaticResource NavStoryboardTempl}"
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
-                            TargetPageType="{x:Type pages:StoryboardPage}" />-->
+                            TargetPageType="{x:Type pages:StoryboardPage}">
+                            <control:SwitchRadio.Tag>
+                                <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
+                                    <Binding Path="IsNavigationCollapsed" />
+                                    <Binding RelativeSource="{RelativeSource Self}" />
+                                </MultiBinding>
+                            </control:SwitchRadio.Tag>
+                        </control:SwitchRadio>
                         <Label
                             Height="30"
                             FontWeight="SemiBold"
-                            Style="{StaticResource NavigationLabelStyle}"
-                            Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
+                            Style="{StaticResource NavigationLabelStyle}">
+                            <Label.Tag>
+                                <MultiBinding Converter="{StaticResource CvtTitleVisible}">
+                                    <Binding Path="IsNavigationCollapsed" />
+                                    <Binding RelativeSource="{RelativeSource Self}" />
+                                </MultiBinding>
+                            </Label.Tag>
                             <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-mine}" />
                         </Label>
                         <control:SwitchRadio
                             x:Name="SwitchRecent"
-                            Padding="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
                             CheckedIconColor="#A04090"
                             Content="{DynamicResource ui-nav-recent}"
                             IconTemplate="{StaticResource NavHistoryTempl}"
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
-                            TargetPageType="{x:Type pages:RecentPlayPage}" />
+                            TargetPageType="{x:Type pages:RecentPlayPage}">
+                            <control:SwitchRadio.Tag>
+                                <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
+                                    <Binding Path="IsNavigationCollapsed" />
+                                    <Binding RelativeSource="{RelativeSource Self}" />
+                                </MultiBinding>
+                            </control:SwitchRadio.Tag>
+                        </control:SwitchRadio>
                         <control:SwitchRadio
-                            Padding="{Binding IsNavigationCollapsed, Converter={StaticResource CvtIconMargin}}"
                             CheckedIconColor="#A09040"
                             Content="{DynamicResource ui-nav-export}"
                             IconTemplate="{StaticResource NavExportTempl}"
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
-                            TargetPageType="{x:Type pages:ExportPage}" />
-                        <DockPanel Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
+                            TargetPageType="{x:Type pages:ExportPage}">
+                            <control:SwitchRadio.Tag>
+                                <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
+                                    <Binding Path="IsNavigationCollapsed" />
+                                    <Binding RelativeSource="{RelativeSource Self}" />
+                                </MultiBinding>
+                            </control:SwitchRadio.Tag>
+                        </control:SwitchRadio>
+                        <DockPanel>
+                            <DockPanel.Tag>
+                                <MultiBinding Converter="{StaticResource CvtTitleVisible}" ConverterParameter="0">
+                                    <Binding Path="IsNavigationCollapsed" />
+                                    <Binding RelativeSource="{RelativeSource Self}" />
+                                </MultiBinding>
+                            </DockPanel.Tag>
                             <Label
                                 Height="30"
                                 FontWeight="SemiBold"
@@ -180,13 +222,13 @@
                             Background="Transparent"
                             BorderThickness="0"
                             ItemsSource="{Binding Collection, Mode=OneWay}"
-                            Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleVisible}}">
+                            ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                             <ListView.Resources>
                                 <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
                                     <control:SwitchRadio
                                         x:Name="BtnCollection"
                                         Height="31"
-                                        Padding="18,0,0,0"
+                                        Padding="14,0,0,0"
                                         VerticalAlignment="Center"
                                         CheckedIconColor="#4090A0"
                                         Content="{Binding Name}"
@@ -196,7 +238,14 @@
                                         TargetFrameControl="MainFrame"
                                         TargetPageData="{Binding Id}"
                                         TargetPageSingleton="False"
-                                        TargetPageType="{x:Type pages:CollectionPage}" />
+                                        TargetPageType="{x:Type pages:CollectionPage}" >
+                                        <control:SwitchRadio.Tag>
+                                            <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}" ConverterParameter="0">
+                                                <Binding Path="DataContext.IsNavigationCollapsed" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}"/>
+                                                <Binding RelativeSource="{RelativeSource Self}" />
+                                            </MultiBinding>
+                                        </control:SwitchRadio.Tag>
+                                    </control:SwitchRadio>
                                 </ControlTemplate>
                                 <Style TargetType="{x:Type ListViewItem}">
                                     <Setter Property="BorderThickness" Value="0" />

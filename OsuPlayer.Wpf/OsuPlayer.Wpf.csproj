@@ -224,6 +224,7 @@
     <Compile Include="Utils\I18nUtil.cs" />
     <Compile Include="Utils\NativeUser32.cs" />
     <Compile Include="ViewModels\ListPageViewModel.cs" />
+    <Compile Include="ViewModels\StoryboardVm.cs" />
     <Compile Include="Windows\BeatmapInfoWindow.xaml.cs">
       <DependentUpon>BeatmapInfoWindow.xaml</DependentUpon>
     </Compile>
@@ -575,6 +576,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="Resources\osu_texture_black.png" />
+    <None Include="Resources\default.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Resource Include="Resources\Fonts\SourceSansPro-Black.ttf" />
     <Resource Include="Resources\Fonts\SourceSansPro-Bold.ttf" />
     <Resource Include="Resources\Fonts\SourceSansPro-ExtraLight.ttf" />

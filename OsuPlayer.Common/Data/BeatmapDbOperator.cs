@@ -21,7 +21,7 @@ namespace Milky.OsuPlayer.Common.Data
 {
     public class BeatmapDbOperator
     {
-        private const string TABLE_BEATMAP = "beatmap";
+        private const string TABLE_BEATMAP = AppDbOperator.TABLE_BEATMAP;
 
         static BeatmapDbOperator()
         {

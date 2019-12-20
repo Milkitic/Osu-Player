@@ -143,6 +143,7 @@
     <sys:String x:Key="ui-nav-mine">我的</sys:String>
     <sys:String x:Key="ui-nav-collection">收藏夹</sys:String>
     <sys:String x:Key="ui-nav-search">搜索</sys:String>
+    <sys:String x:Key="ui-nav-storyboard">故事版</sys:String>
     <sys:String x:Key="ui-nav-recent">最近播放</sys:String>
     <sys:String x:Key="ui-nav-export">导出管理</sys:String>
     <sys:String x:Key="ui-nav-music">音乐</sys:String>
