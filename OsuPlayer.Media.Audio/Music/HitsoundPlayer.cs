@@ -300,14 +300,14 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                         if (!sce.IsAddition)
                                         {
                                             _currentVolume = new VolumeSampleProvider(loop.ToSampleProvider());
-                                            _currentVolume.Volume = sce.Volume * 0.7f;
+                                            _currentVolume.Volume = sce.Volume;
                                             _currentChannel = new ChannelSampleProvider(_currentVolume);
                                             _currentChannel.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
                                         }
                                         else
                                         {
                                             _currentVolumeAdd = new VolumeSampleProvider(loop.ToSampleProvider());
-                                            _currentVolumeAdd.Volume = sce.Volume * 0.7f;
+                                            _currentVolumeAdd.Volume = sce.Volume;
                                             _currentChannelAdd = new ChannelSampleProvider(_currentVolumeAdd);
                                             _currentChannelAdd.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
                                         }
@@ -621,7 +621,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                     osuFile.General.Mode != GameMode.Catch &&
                     osuFile.General.Mode != GameMode.Mania)
                 {
-                    return 1;
+                    return 0;
                 }
 
                 if (x > 512) x = 512;
