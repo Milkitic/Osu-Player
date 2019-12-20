@@ -14,7 +14,7 @@ namespace Milky.OsuPlayer.Common.Player
     public class PlayerList : ViewModelBase
     {
         private int _pointer;
-        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
         private AppDbOperator _appDbOperator = new AppDbOperator();
         private ObservableCollection<Beatmap> _entries = new ObservableCollection<Beatmap>();
         private CurrentInfo _currentInfo;

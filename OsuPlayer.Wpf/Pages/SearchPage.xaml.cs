@@ -30,7 +30,7 @@ namespace Milky.OsuPlayer.Pages
     /// </summary>
     public partial class SearchPage : Page
     {
-        private BeatmapDbOperator _beatmapDbOperator;
+        private AppDbOperator _beatmapDbOperator;
         private MainWindow _mainWindow;
 
         public SearchPageViewModel ViewModel { get; set; }
@@ -44,7 +44,7 @@ namespace Milky.OsuPlayer.Pages
         public SearchPage()
         {
             _mainWindow = (MainWindow)Application.Current.MainWindow;
-            _beatmapDbOperator = new BeatmapDbOperator();
+            _beatmapDbOperator = new AppDbOperator();
 
             InitializeComponent();
         }

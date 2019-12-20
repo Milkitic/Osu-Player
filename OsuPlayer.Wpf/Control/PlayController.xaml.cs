@@ -168,8 +168,6 @@ namespace Milky.OsuPlayer.Control
         public event EventHandler<HandledEventArgs> OnNewFileLoaded;
         #endregion
 
-
-        private readonly BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
         private readonly AppDbOperator _appDbOperator = new AppDbOperator();
 
         private readonly OptionContainer _modeOptionContainer = new OptionContainer();
@@ -322,7 +320,7 @@ namespace Milky.OsuPlayer.Control
                     var nowIdentity = new MapIdentity(fi.Directory.Name, osuFile.Metadata.Version);
 
                     MapInfo mapInfo = _appDbOperator.GetMapFromDb(nowIdentity);
-                    Beatmap beatmap = _beatmapDbOperator.GetBeatmapByIdentifiable(nowIdentity);
+                    Beatmap beatmap = _appDbOperator.GetBeatmapByIdentifiable(nowIdentity);
 
                     bool isFavorite = IsMapFavorite(mapInfo); //50 ms
 

@@ -26,7 +26,7 @@ namespace Milky.OsuPlayer.ViewModels
 {
     public class SearchPageViewModel : ViewModelBase
     {
-        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
 
         private const int MaxListCount = 100;
         private List<BeatmapDataModel> _searchedMaps;

@@ -21,7 +21,6 @@ namespace Milky.OsuPlayer.ViewModels
 {
     public class CollectionPageViewModel : ViewModelBase
     {
-        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
         private AppDbOperator _appDbOperator = new AppDbOperator();
 
         private NumberableObservableCollection<BeatmapDataModel> _beatmaps;
@@ -78,7 +77,7 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     var fileName = beatmap.InOwnDb
                         ? Path.Combine(Domain.CustomSongPath, map.FolderName)
@@ -101,7 +100,7 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
                 });
@@ -115,7 +114,7 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
                     FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(map),
                         DialogOptionFactory.SelectCollectionOptions);
                 });
@@ -129,7 +128,7 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     ExportPage.QueueEntry(map);
                 });
@@ -143,7 +142,7 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     await PlayController.Default.PlayNewFile(map);
                     await Services.Get<PlayerList>()
@@ -159,7 +158,7 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
                     await PlayController.Default.PlayNewFile(map);
                     await Services.Get<PlayerList>()
                         .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
