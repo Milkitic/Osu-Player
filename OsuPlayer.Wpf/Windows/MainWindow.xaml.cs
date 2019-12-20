@@ -41,7 +41,6 @@ namespace Milky.OsuPlayer.Windows
 
         private WindowState _lastState;
 
-        private readonly BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
         private readonly AppDbOperator _appDbOperator = new AppDbOperator();
 
         private Task _searchLyricTask;
@@ -291,7 +290,7 @@ namespace Milky.OsuPlayer.Windows
             Animation.StartScene(async () =>
             {
                 // 加至播放列表
-                var entries = _beatmapDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList);
+                var entries = _appDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList);
 
                 await Services.Get<PlayerList>()
                     .RefreshPlayListAsync(PlayerList.FreshType.All, beatmaps: entries);
@@ -390,7 +389,7 @@ namespace Milky.OsuPlayer.Windows
         private void Controller_OnLikeClick(object sender, RoutedEventArgs e)
         {
             var id = Services.Get<PlayerList>().CurrentIdentity;
-            var entry = _beatmapDbOperator.GetBeatmapByIdentifiable(id);
+            var entry = _appDbOperator.GetBeatmapByIdentifiable(id);
             if (entry == null)
             {
                 Notification.Show("该图不存在于该osu!db中", Title);

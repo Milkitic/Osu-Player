@@ -67,7 +67,6 @@ namespace Milky.OsuPlayer
             });
 
             AppDbOperator.ValidateDb();
-            BeatmapDbOperator.ValidateDb();
 
             var appDbOperator = new AppDbOperator();
             var defCol = appDbOperator.GetCollections();

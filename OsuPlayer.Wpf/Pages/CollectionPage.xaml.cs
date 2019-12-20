@@ -36,7 +36,6 @@ namespace Milky.OsuPlayer.Pages
     {
         private readonly MainWindow _mainWindow;
         private IEnumerable<Beatmap> _entries;
-        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
         private AppDbOperator _appDbOperator = new AppDbOperator();
 
         private static Binding _sourceBinding = new Binding(nameof(CollectionPageViewModel.DisplayedBeatmaps))
@@ -72,7 +71,7 @@ namespace Milky.OsuPlayer.Pages
         public void UpdateList()
         {
             var infos = _appDbOperator.GetMapsFromCollection(ViewModel.CollectionInfo);
-            _entries = _beatmapDbOperator.GetBeatmapsByMapInfo(infos, TimeSortMode.AddTime);
+            _entries = _appDbOperator.GetBeatmapsByMapInfo(infos, TimeSortMode.AddTime);
             ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModelList(false));
             ViewModel.DisplayedBeatmaps = ViewModel.Beatmaps;
             ListCount.Content = ViewModel.Beatmaps.Count;
@@ -246,7 +245,7 @@ namespace Milky.OsuPlayer.Pages
             if (MapList.SelectedItem == null)
                 return null;
             var selectedItem = (BeatmapDataModel)MapList.SelectedItem;
-            return _beatmapDbOperator.GetBeatmapsFromFolder(selectedItem.FolderName)
+            return _appDbOperator.GetBeatmapsFromFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
 
@@ -258,7 +257,7 @@ namespace Milky.OsuPlayer.Pages
 
         private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _beatmapDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
+            return _appDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 

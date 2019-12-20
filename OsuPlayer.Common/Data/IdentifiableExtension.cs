@@ -12,7 +12,7 @@ namespace Milky.OsuPlayer.Common.Data
 {
     public static class IdentifiableExtension
     {
-        private static BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private static AppDbOperator _beatmapDbOperator = new AppDbOperator();
         public static bool EqualsTo(this IMapIdentifiable id1, IMapIdentifiable id2) =>
             id1.FolderName == id2.FolderName && id1.Version == id2.Version;
 

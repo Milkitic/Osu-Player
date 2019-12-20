@@ -16,7 +16,7 @@ namespace Milky.OsuPlayer.Common.Data
 {
     public class AppDbOperator
     {
-        private const string TABLE_BEATMAP = "beatmap";
+        public const string TABLE_BEATMAP = "beatmap";
         private const string TABLE_RELATION = "collection_relation";
         private const string TABLE_MAP = "map_info";
         private const string TABLE_THUMB = "map_thumb";
@@ -123,7 +123,7 @@ PRAGMA case_sensitive_like=false;"
         private static ThreadLocal<SQLiteProvider> _provider = new ThreadLocal<SQLiteProvider>(() =>
             (SQLiteProvider)new SQLiteProvider().ConfigureConnectionString("data source=player.db"));
 
-        private static SQLiteProvider ThreadedProvider => _provider.Value;
+        public SQLiteProvider ThreadedProvider => _provider.Value;
 
         private List<CollectionRelation> GetCollectionsRelations()
         {
@@ -143,14 +143,16 @@ PRAGMA case_sensitive_like=false;"
                 File.WriteAllText(dbFile, "");
             }
 
-            var tables = ThreadedProvider.GetAllTables();
+            var prov= _provider.Value;
+            
+            var tables = prov.GetAllTables();
 
             foreach (var pair in _creationMapping)
             {
                 if (tables.Contains(pair.Key)) continue;
                 try
                 {
-                    ThreadedProvider.GetDbConnection().Execute(pair.Value);
+                    prov.GetDbConnection().Execute(pair.Value);
                 }
                 catch (Exception exc)
                 {

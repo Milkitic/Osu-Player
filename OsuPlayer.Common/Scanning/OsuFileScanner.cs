@@ -16,7 +16,7 @@ namespace Milky.OsuPlayer.Common.Scanning
     {
         public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();
         private CancellationTokenSource _scanCts;
-        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
 
         private static readonly object ScanObject = new object();
         private static readonly object CancelObject = new object();
