@@ -67,8 +67,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                               !_offsetTask.IsFaulted;
 
         protected AudioPlaybackEngine Engine = new AudioPlaybackEngine();
-        private WasapiOut _slideDevice = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 5);
-        private WasapiOut _slideAddDevice = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 5);
+        private IWavePlayer _slideDevice = DeviceProvider.CreateDefaultDevice();
+        private IWavePlayer _slideAddDevice = DeviceProvider.CreateDefaultDevice();
         private LoopStream _slideLoop;
         private CachedSoundSampleProvider _slideSound;
         private CachedSoundSampleProvider _slideAddSound;
@@ -354,11 +354,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             Task.Run(() => { RaisePlayerFinishedEvent(this, new EventArgs()); });
         }
 
-        private WasapiOut NewDeviceAndRet(ref WasapiOut device)
+        private IWavePlayer NewDeviceAndRet(ref IWavePlayer device)
         {
             device?.Stop();
             device?.Dispose();
-            return device = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 5);
+            return device = DeviceProvider.CreateDefaultDevice();
         }
 
         private CachedSoundSampleProvider NewProviderAndRet(ref CachedSoundSampleProvider slideAddSound, string path)

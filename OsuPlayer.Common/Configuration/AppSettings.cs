@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
@@ -35,7 +34,14 @@ namespace Milky.OsuPlayer.Common.Configuration
 
         public static void SaveDefault()
         {
-            ConcurrentFile.WriteAllText(Domain.ConfigFile, JsonConvert.SerializeObject(Default, Formatting.Indented));
+            ConcurrentFile.WriteAllText(Domain.ConfigFile,
+                JsonConvert.SerializeObject(Default, Formatting.Indented,
+                    new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.Auto
+                    }
+                )
+            );
         }
 
         public static void Load(AppSettings config)

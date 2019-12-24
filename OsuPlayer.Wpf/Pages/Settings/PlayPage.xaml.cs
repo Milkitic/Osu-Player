@@ -1,6 +1,9 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
+﻿using System.Linq;
+using Milky.OsuPlayer.Common.Configuration;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Media.Audio;
+using OsuPlayer.Devices;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -83,6 +86,19 @@ namespace Milky.OsuPlayer.Pages.Settings
             ChkMemory.IsChecked = AppSettings.Default.Play.Memory;
             SliderLatency.Value = AppSettings.Default.Play.DesiredLatency;
             BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
+            var itemsSource = DeviceProvider.EnumerateAvailableDevices().ToList();
+            DeviceInfoCombo.ItemsSource = itemsSource;
+            if (itemsSource.Contains(AppSettings.Default.Play.DeviceInfo))
+            {
+                DeviceInfoCombo.SelectedItem = AppSettings.Default.Play.DeviceInfo;
+            }
+            else
+            {
+                DeviceInfoCombo.SelectedIndex = 0;
+            }
+
+            var selectedItem = (IDeviceInfo)DeviceInfoCombo.SelectedItem;
+            SliderLatency.IsEnabled = selectedItem.OutputMethod != OutputMethod.Asio;
         }
 
         private void BoxLatency_TextChanged(object sender, TextChangedEventArgs e)
@@ -112,6 +128,16 @@ namespace Milky.OsuPlayer.Pages.Settings
             AppSettings.Default.Play.DesiredLatency = (int)SliderLatency.Value;
             BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
             AppSettings.SaveDefault();
+        }
+
+        private void DeviceInfoCombo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var newVal = (IDeviceInfo)e.AddedItems[0];
+            SliderLatency.IsEnabled = newVal.OutputMethod != OutputMethod.Asio;
+            AppSettings.Default.Play.DeviceInfo = newVal;
+            AppSettings.SaveDefault();
+            //CheckExclusive.Visibility =
+            //    newVal.OutputMethod == OutputMethod.Wasapi ? Visibility.Visible : Visibility.Hidden;
         }
     }
 }

@@ -39,11 +39,17 @@ namespace Milky.OsuPlayer
                 try
                 {
                     var content = ConcurrentFile.ReadAllText(file);
-                    AppSettings.Load(JsonConvert.DeserializeObject<AppSettings>(content));
+                    AppSettings.Load(JsonConvert.DeserializeObject<AppSettings>(content,
+                            new JsonSerializerSettings
+                            {
+                                TypeNameHandling = TypeNameHandling.Auto
+                            }
+                        )
+                    );
                 }
                 catch (JsonException e)
                 {
-                    var result = MessageBox.Show(@"载入配置文件时失败，用默认配置覆盖继续打开吗？\r\n" + e.Message,
+                    var result = MessageBox.Show("载入配置文件时失败，用默认配置覆盖继续打开吗？" + Environment.NewLine + e.Message,
                         "Osu Player", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
