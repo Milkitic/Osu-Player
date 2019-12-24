@@ -73,26 +73,41 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public static IWavePlayer CreateDevice(IDeviceInfo deviceInfo = null, int latency = 1, bool isExclusive = true)
         {
+            return new WasapiOut(AudioClientShareMode.Shared, 1);
             if (deviceInfo is null)
             {
                 Console.WriteLine("Device is null, use wasapi default.");
                 deviceInfo = WasapiInfo.Default;
             }
 
+            if (CacheList == null) EnumerateAvailableDevices().ToList();
             //if (CacheList == null)
             //{
             //    CacheList = EnumerateAvailableDevices().ToList();
             //}
 
-            //if (!CacheList.Contains(deviceInfo))
-            //{
-            //    CacheList = EnumerateAvailableDevices().ToList();
-            //    if (!CacheList.Contains(deviceInfo))
-            //    {
-            //        Console.WriteLine("Device not found, use wasapi default.");
-            //        return new WasapiOut(AudioClientShareMode.Shared, 1);
-            //    }
-            //}
+            if (!CacheList.Contains(deviceInfo))
+            {
+                if (deviceInfo is WasapiInfo wasapiInfo)
+                {
+                    var foundResult = CacheList.Where(k => k.OutputMethod == OutputMethod.Wasapi).Cast<WasapiInfo>()
+                        .FirstOrDefault(k => k.DeviceId == wasapiInfo.DeviceId);
+                    if (foundResult.Device != null)
+                    {
+                        wasapiInfo.Device = foundResult.Device;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Device not found, use wasapi default.");
+                        return new WasapiOut(AudioClientShareMode.Shared, 1);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Device not found, use wasapi default.");
+                    return new WasapiOut(AudioClientShareMode.Shared, 1);
+                }
+            }
 
             IWavePlayer device;
             switch (deviceInfo.OutputMethod)
@@ -150,7 +165,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
             for (int n = -1; n < WaveOut.DeviceCount; n++)
             {
-                WaveOutInfo? info = null;
+                WaveOutInfo info = null;
                 try
                 {
                     var caps = WaveOut.GetCapabilities(n);
@@ -170,7 +185,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
             foreach (var dev in DirectSoundOut.Devices)
             {
-                DirectSoundOutInfo? info = null;
+                DirectSoundOutInfo info = null;
                 try
                 {
                     info = new DirectSoundOutInfo(dev.Description, dev.Guid);
@@ -189,11 +204,14 @@ namespace Milky.OsuPlayer.Media.Audio
 
             foreach (var wasapi in MMDeviceEnumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.All))
             {
-                WasapiInfo? info = null;
+                WasapiInfo info = null;
                 try
                 {
                     if (wasapi.DataFlow != DataFlow.Render || wasapi.State != DeviceState.Active) continue;
-                    info = new WasapiInfo(wasapi.FriendlyName, wasapi);
+                    info = new WasapiInfo(wasapi.FriendlyName, wasapi.ID)
+                    {
+                        Device = wasapi
+                    };
                 }
                 catch (Exception ex)
                 {
@@ -209,7 +227,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
             foreach (var asio in AsioOut.GetDriverNames())
             {
-                AsioOutInfo? info = null;
+                AsioOutInfo info = null;
                 try
                 {
                     info = new AsioOutInfo(asio);
