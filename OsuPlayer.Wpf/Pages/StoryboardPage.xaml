@@ -16,47 +16,121 @@
         <Style x:Key="ScanButtonStyle" TargetType="Button">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border
-                                Width="200"
-                                Height="200"
-                                Background="White"
-                                BorderBrush="White"
-                                CornerRadius="100">
-                                <Border.Effect>
-                                    <DropShadowEffect
-                                        BlurRadius="15"
-                                        Direction="-90"
-                                        Opacity="0.3"
-                                        ShadowDepth="0" />
-                                </Border.Effect>
-                            </Border>
-                            <Border
-                                Width="200"
-                                Height="200"
-                                Background="{StaticResource OsuTextureBlueBrush}"
-                                BorderBrush="White"
-                                BorderThickness="6"
-                                CornerRadius="100">
-                                <ContentPresenter
-                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                    TextBlock.FontSize="28"
-                                    TextBlock.FontWeight="Black"
-                                    TextBlock.Foreground="White">
-                                    <ContentPresenter.Effect>
+                        <Grid x:Name="MainGrid" RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                            </Grid.RenderTransform>
+                            <Grid x:Name="InnerGrid" RenderTransformOrigin="0.5,0.5">
+                                <Grid.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </Grid.RenderTransform>
+                                <Border
+                                    Width="200"
+                                    Height="200"
+                                    Background="White"
+                                    BorderBrush="White"
+                                    CornerRadius="100">
+                                    <Border.Effect>
                                         <DropShadowEffect
-                                            BlurRadius="5"
+                                            BlurRadius="15"
                                             Direction="-90"
                                             Opacity="0.3"
-                                            ShadowDepth="2" />
-                                    </ContentPresenter.Effect>
-                                </ContentPresenter>
-                            </Border>
+                                            ShadowDepth="0" />
+                                    </Border.Effect>
+                                </Border>
+                                <Border
+                                    Width="200"
+                                    Height="200"
+                                    Background="{StaticResource OsuTextureBlueBrush}"
+                                    BorderBrush="White"
+                                    BorderThickness="6"
+                                    CornerRadius="100">
+                                    <ContentPresenter
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        TextBlock.FontSize="28"
+                                        TextBlock.FontWeight="Black"
+                                        TextBlock.Foreground="{TemplateBinding Foreground}">
+                                        <ContentPresenter.Effect>
+                                            <DropShadowEffect
+                                                BlurRadius="5"
+                                                Direction="-90"
+                                                Opacity="0.3"
+                                                ShadowDepth="2" />
+                                        </ContentPresenter.Effect>
+                                    </ContentPresenter>
+                                </Border>
+                            </Grid>
                         </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever">
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="InnerGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
+                                                From="1.1"
+                                                To="1"
+                                                Duration="0:0:0.62" />
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="InnerGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
+                                                From="1.1"
+                                                To="1"
+                                                Duration="0:0:0.62" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="MainGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
+                                                To="1.1"
+                                                Duration="0:0:0.12" />
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="MainGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
+                                                To="1.1"
+                                                Duration="0:0:0.12" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="MainGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
+                                                To="1"
+                                                Duration="0:0:0.12" />
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="MainGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
+                                                To="1"
+                                                Duration="0:0:0.12" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -71,9 +145,9 @@
                 Margin="20,20,0,0">
                 <Button
                     x:Name="ScanButton"
-                    Content="开始扫描 !"
+                    Content="{DynamicResource ui-startScan}"
                     Style="{StaticResource ScanButtonStyle}" />
-                <Label Content="" />
+                <!--<Label Content="" />-->
             </Grid>
         </Border>
     </Grid>
