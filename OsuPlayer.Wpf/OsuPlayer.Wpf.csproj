@@ -222,6 +222,7 @@
     </Compile>
     <Compile Include="Converter\NullToHiddenConverter.cs" />
     <Compile Include="Notification.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Utils\I18nUtil.cs" />
     <Compile Include="Utils\NativeUser32.cs" />
     <Compile Include="ViewModels\ListPageViewModel.cs" />

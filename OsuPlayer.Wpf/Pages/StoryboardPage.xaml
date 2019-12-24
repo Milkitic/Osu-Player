@@ -31,7 +31,7 @@
                                 <Grid.RenderTransform>
                                     <ScaleTransform ScaleX="1" ScaleY="1" />
                                 </Grid.RenderTransform>
-                                <Border
+                                <!--<Border
                                     Width="200"
                                     Height="200"
                                     Background="White"
@@ -44,27 +44,35 @@
                                             Opacity="0.3"
                                             ShadowDepth="0" />
                                     </Border.Effect>
-                                </Border>
+                                </Border>-->
                                 <Border
                                     Width="200"
                                     Height="200"
-                                    Background="{StaticResource OsuTextureBlueBrush}"
                                     BorderBrush="White"
                                     BorderThickness="6"
                                     CornerRadius="100">
+                                    <Border.Background>
+                                        <RadialGradientBrush GradientOrigin="0.67,0.3" RadiusX="10" RadiusY="1">
+                                            <GradientStop Offset="0" Color="HotPink" />
+                                            <GradientStop Offset="1" Color="{StaticResource PinkColorOsu}" />
+                                        </RadialGradientBrush>
+                                    </Border.Background>
+                                    <!--<Border.Background>
+                                        <StaticResource ResourceKey="OsuTextureBlueBrush" />
+                                    </Border.Background>-->
                                     <ContentPresenter
                                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                         VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                        TextBlock.FontSize="28"
+                                        TextBlock.FontSize="36"
                                         TextBlock.FontWeight="Black"
                                         TextBlock.Foreground="{TemplateBinding Foreground}">
-                                        <ContentPresenter.Effect>
+                                        <!--<ContentPresenter.Effect>
                                             <DropShadowEffect
                                                 BlurRadius="5"
                                                 Direction="-90"
                                                 Opacity="0.3"
                                                 ShadowDepth="2" />
-                                        </ContentPresenter.Effect>
+                                        </ContentPresenter.Effect>-->
                                     </ContentPresenter>
                                 </Border>
                             </Grid>
@@ -91,11 +99,29 @@
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="InnerGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
+                                                To="1"
+                                                Duration="0:0:0.62" />
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="InnerGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
+                                                To="1"
+                                                Duration="0:0:0.62" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Trigger.EnterActions>
                                     <BeginStoryboard>
-                                        <Storyboard>
+                                        <Storyboard RepeatBehavior="1x">
                                             <DoubleAnimation
                                                 EasingFunction="{StaticResource CircleEaseOut}"
                                                 Storyboard.TargetName="MainGrid"
@@ -113,7 +139,7 @@
                                 </Trigger.EnterActions>
                                 <Trigger.ExitActions>
                                     <BeginStoryboard>
-                                        <Storyboard>
+                                        <Storyboard RepeatBehavior="1x">
                                             <DoubleAnimation
                                                 EasingFunction="{StaticResource CircleEaseOut}"
                                                 Storyboard.TargetName="MainGrid"
@@ -145,6 +171,7 @@
                 Margin="20,20,0,0">
                 <Button
                     x:Name="ScanButton"
+                    Click="ScanButton_Click"
                     Content="{DynamicResource ui-startScan}"
                     Style="{StaticResource ScanButtonStyle}" />
                 <!--<Label Content="" />-->

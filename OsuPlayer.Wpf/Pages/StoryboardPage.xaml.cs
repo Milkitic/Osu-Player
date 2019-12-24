@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.Pages
@@ -19,12 +20,17 @@ namespace Milky.OsuPlayer.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            // todo
+if(StoryboardVm.Default.BeatmapModels)
         }
-        
+
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             // todo
+        }
+
+        private void ScanButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
