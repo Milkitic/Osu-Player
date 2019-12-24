@@ -2,10 +2,12 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio.Music.SampleProviders;
 using Milky.OsuPlayer.Media.Audio.Music.WaveProviders;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using OsuPlayer.Devices;
 
 namespace Milky.OsuPlayer.Media.Audio.Music
 {
@@ -29,7 +31,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         public AudioPlaybackEngine(int sampleRate = 44100, int channelCount = 2)
         {
-            _outputDevice = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 5);
+            _outputDevice = DeviceProvider.CreateDefaultDevice();
             _mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channelCount))
             {
                 ReadFully = true

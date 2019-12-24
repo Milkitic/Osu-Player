@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{02773E4B-21FC-47DB-A7C1-BD096F325136}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>Milky.OsuPlayer</RootNamespace>
     <AssemblyName>OsuPlayer</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -189,6 +189,7 @@
     <Compile Include="Control\VolumeControl.xaml.cs">
       <DependentUpon>VolumeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converter\DeviceInfoToStringConverter.cs" />
     <Compile Include="Converter\IconColorConverter.cs" />
     <Compile Include="DialogOptionFactory.cs" />
     <Compile Include="Pages\Settings\InterfacePage.xaml.cs">
@@ -624,6 +625,10 @@
     <ProjectReference Include="..\OsuPlayer.ControlLibrary\OsuPlayer.ControlLibrary.csproj">
       <Project>{30dfc628-f9a6-42b1-9bbd-73489e3ab204}</Project>
       <Name>OsuPlayer.ControlLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Devices\OsuPlayer.Devices.csproj">
+      <Project>{E290C0D7-06B7-47DC-81E7-98F08654FB0D}</Project>
+      <Name>OsuPlayer.Devices</Name>
     </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj">
       <Project>{3cd240f8-da65-44f0-ab58-d78f58109786}</Project>

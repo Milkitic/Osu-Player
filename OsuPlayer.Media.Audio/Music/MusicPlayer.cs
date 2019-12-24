@@ -15,7 +15,6 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 {
     internal sealed class MusicPlayer : Player, IDisposable
     {
-        private const int Latency = 5;
         private static bool UseSoundTouch => AppSettings.Default.Play.UsePlayerV2;
         private static bool WaitingMode => true;
 
@@ -48,7 +47,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 Volume = 1f * AppSettings.Default.Volume.Music * AppSettings.Default.Volume.Main
             };
 
-            _device = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, Latency);
+            _device = DeviceProvider.CreateDefaultDevice();
             _device.PlaybackStopped += (sender, args) =>
             {
                 PlayerStatus = PlayerStatus.Finished;
@@ -58,7 +57,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             _device.Init(_reader);
 
             AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
-            Task.Factory.StartNew(UpdateProgress, TaskCreationOptions.LongRunning);
+            var task = Task.Factory.StartNew(UpdateProgress, TaskCreationOptions.LongRunning);
 
             PlayerStatus = PlayerStatus.Ready;
             RaisePlayerLoadedEvent(this, new EventArgs());
@@ -153,7 +152,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
             AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
         }
-        
+
         #region Properties
 
         public override int ProgressRefreshInterval

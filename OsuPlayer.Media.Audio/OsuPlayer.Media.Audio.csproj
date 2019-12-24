@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeviceProvider.cs" />
     <Compile Include="SoundElement.cs" />
     <Compile Include="Music\AudioPlaybackEngine.cs" />
     <Compile Include="ComponentPlayer.cs" />
@@ -90,6 +91,10 @@
     <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
       <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>
       <Name>OsuPlayer.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Devices\OsuPlayer.Devices.csproj">
+      <Project>{E290C0D7-06B7-47DC-81E7-98F08654FB0D}</Project>
+      <Name>OsuPlayer.Devices</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

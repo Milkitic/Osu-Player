@@ -66,13 +66,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\AppDbOperator.cs" />
-    <Compile Include="ConcurrentFile.cs" />
     <Compile Include="Configuration\AppSettings.cs" />
     <Compile Include="Configuration\ExportControl.cs" />
     <Compile Include="Configuration\GeneralControl.cs" />
     <Compile Include="Configuration\HotKey.cs" />
     <Compile Include="Configuration\LyricControl.cs" />
+    <Compile Include="Configuration\PlayControl.cs" />
+    <Compile Include="Configuration\VolumeControl.cs" />
+    <Compile Include="Data\AppDbOperator.cs" />
+    <Compile Include="ConcurrentFile.cs" />
     <Compile Include="Data\Dapper\DataBaseType.cs" />
     <Compile Include="Data\Dapper\DbPoolConfiguration.cs" />
     <Compile Include="Data\Dapper\Provider\DbProviderBase.cs" />
@@ -94,8 +96,6 @@
     <Compile Include="Metadata\BeatmapDataModel.cs" />
     <Compile Include="Metadata\DataModelComparer.cs" />
     <Compile Include="Metadata\LyricSource.cs" />
-    <Compile Include="Configuration\PlayControl.cs" />
-    <Compile Include="Configuration\VolumeControl.cs" />
     <Compile Include="Metadata\LyricProvideType.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="Metadata\NamingStyle.cs" />
@@ -131,6 +131,10 @@
     <ProjectReference Include="..\Libraries\WpfApi\WpfApi.csproj">
       <Project>{028e6f4e-d538-4b83-904c-c94c2f1e3c83}</Project>
       <Name>WpfApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Devices\OsuPlayer.Devices.csproj">
+      <Project>{E290C0D7-06B7-47DC-81E7-98F08654FB0D}</Project>
+      <Name>OsuPlayer.Devices</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
