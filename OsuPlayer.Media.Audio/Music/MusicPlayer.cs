@@ -22,15 +22,18 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         private PlayerStatus _playerStatus;
 
         private readonly object _propertiesLock = new object();
-        private IWavePlayer _device;
         private MyAudioFileReader _reader;
 
         private int _progressRefreshInterval;
 
+        private readonly AudioPlaybackEngine _engine;
+        private readonly IWavePlayer _device;
         private string _filePath;
 
-        public MusicPlayer(string filePath)
+        public MusicPlayer(AudioPlaybackEngine engine, IWavePlayer device, string filePath)
         {
+            _engine = engine;
+            _device = device;
             _filePath = filePath;
         }
 
@@ -47,14 +50,14 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 Volume = 1f * AppSettings.Default.Volume.Music * AppSettings.Default.Volume.Main
             };
 
-            _device = DeviceProvider.CreateDefaultDevice();
-            _device.PlaybackStopped += (sender, args) =>
-            {
-                PlayerStatus = PlayerStatus.Finished;
-                RaisePlayerFinishedEvent(this, new EventArgs());
-            };
 
-            _device.Init(_reader);
+            //_device.PlaybackStopped += (sender, args) =>
+            //{
+            //    PlayerStatus = PlayerStatus.Finished;
+            //    RaisePlayerFinishedEvent(this, new EventArgs());
+            //};
+
+            _engine.AddSample(_reader);
 
             AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
             var task = Task.Factory.StartNew(UpdateProgress, TaskCreationOptions.LongRunning);
@@ -70,7 +73,15 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             {
                 if (_reader != null && PlayerStatus != PlayerStatus.NotInitialized && PlayerStatus != PlayerStatus.Finished)
                 {
-                    PlayTime = (int)_reader?.CurrentTime.TotalMilliseconds;
+                    if (_reader.CurrentTime < _reader.TotalTime)
+                    {
+                        PlayTime = (int)_reader.CurrentTime.TotalMilliseconds;
+                    }
+                    else
+                    {
+                        PlayerStatus = PlayerStatus.Finished;
+                        RaisePlayerFinishedEvent(this, new EventArgs());
+                    }
                 }
 
                 Thread.Sleep(5);
@@ -144,8 +155,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             base.Dispose();
 
             _cts.Cancel();
-            _device?.Dispose();
-            _device = null;
+            //_device?.Dispose();
+            //_device = null;
             _reader?.Dispose();
             _reader = null;
             _cts?.Dispose();

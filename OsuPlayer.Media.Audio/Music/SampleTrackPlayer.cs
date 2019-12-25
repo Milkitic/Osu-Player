@@ -9,9 +9,10 @@ namespace Milky.OsuPlayer.Media.Audio.Music
     {
         protected override string Flag { get; } = "SampleTrack";
 
-        public SampleTrackPlayer(string filePath, OsuFile osuFile) : base(filePath, osuFile)
+        public SampleTrackPlayer(AudioPlaybackEngine engine, string filePath, OsuFile osuFile) : base(engine, filePath, osuFile)
         {
         }
+
         protected override void InitVolume()
         {
             Engine.Volume = 1f * AppSettings.Default.Volume.Sample * AppSettings.Default.Volume.Main;

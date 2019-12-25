@@ -30,9 +30,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             set => _volumeProvider.Volume = value;
         }
 
-        public AudioPlaybackEngine(int sampleRate = 44100, int channelCount = 2)
+        public AudioPlaybackEngine(IWavePlayer outputDevice, int sampleRate = 44100, int channelCount = 2)
         {
-            _outputDevice = DeviceProvider.CreateDefaultDevice();
+            _outputDevice = outputDevice;
             _mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channelCount))
             {
                 ReadFully = true

@@ -66,7 +66,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                               !_offsetTask.IsCompleted &&
                                               !_offsetTask.IsFaulted;
 
-        protected AudioPlaybackEngine Engine = new AudioPlaybackEngine();
+
         //private LoopStream _slideLoop;
         //private CachedSoundSampleProvider _slideSound;
         //private CachedSoundSampleProvider _slideAddSound;
@@ -89,9 +89,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         private PlayerStatus _playerStatus;
         private PlayMod _mod;
         private readonly OsuFile _osuFile;
+        protected readonly AudioPlaybackEngine Engine;
 
-        public HitsoundPlayer(string filePath, OsuFile osuFile)
+        public HitsoundPlayer(AudioPlaybackEngine engine, string filePath, OsuFile osuFile)
         {
+            Engine = engine;
             _osuFile = osuFile;
             _filePath = filePath;
         }
@@ -106,9 +108,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 throw new DirectoryNotFoundException("获取" + fileInfo.Name + "所在目录失败了？");
 
             List<SoundElement> hitsoundList = FillHitsoundList(_osuFile, dirInfo);
-            _hitsoundList = hitsoundList.OrderBy(t => t.Offset).Cast<SoundElement>().ToList(); // Sorted before enqueue.
+            _hitsoundList = hitsoundList.OrderBy(t => t.Offset).ToList(); // Sorted before enqueue.
             Requeue(0);
             var allPaths = hitsoundList.Select(t => t.FilePaths).SelectMany(sbx2 => sbx2).Distinct();
+            //_outputDevice = DeviceProvider.CreateOrGetDefaultDevice();
+            //Engine = new AudioPlaybackEngine(_outputDevice);
             await Task.Run(() =>
             {
                 Engine.CreateCacheSounds(allPaths);
@@ -284,6 +288,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                             {
                                 case SlideControlMode.NewSample:
                                     {
+                                        Engine.RemoveSample(_currentChannel);
+                                        Engine.RemoveSample(_currentChannelAdd);
                                         //var sound = sce.IsAddition ? NewProviderAndRet(ref _slideAddSound, path) : NewProviderAndRet(ref _slideSound, path);
                                         //var s = new RawSourceWaveStream(
                                         //    sound.SourceSound.AudioData.Select(k => (byte)k).ToArray(), 0,

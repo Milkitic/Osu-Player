@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
@@ -16,6 +17,9 @@ namespace Milky.OsuPlayer.Media.Audio
         private int _stopCount;
 
         public override int ProgressRefreshInterval { get; set; } = 500;
+
+        private static IWavePlayer _outputDevice;
+        private static AudioPlaybackEngine _engine;
 
         public OsuFile OsuFile { get; private set; }
         internal HitsoundPlayer HitsoundPlayer { get; private set; }
@@ -60,13 +64,14 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             Current?.Dispose();
             Current = this;
-
+            _outputDevice = DeviceProvider.CreateOrGetDefaultDevice();
+            _engine = new AudioPlaybackEngine(_outputDevice);
             FileInfo fileInfo = new FileInfo(_filePath);
             DirectoryInfo dirInfo = fileInfo.Directory;
             FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, OsuFile.General.AudioFilename));
-            HitsoundPlayer = new HitsoundPlayer(_filePath, OsuFile);
-            SampleTrackPlayer = new SampleTrackPlayer(_filePath, OsuFile);
-            MusicPlayer = new MusicPlayer(musicInfo.FullName);
+            HitsoundPlayer = new HitsoundPlayer(_engine, _filePath, OsuFile);
+            SampleTrackPlayer = new SampleTrackPlayer(_engine, _filePath, OsuFile);
+            MusicPlayer = new MusicPlayer(_engine, _outputDevice, musicInfo.FullName);
 
             await HitsoundPlayer.InitializeAsync();
             await SampleTrackPlayer.InitializeAsync();
@@ -158,6 +163,8 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             base.Dispose();
 
+            _engine?.Dispose();
+            _outputDevice?.Dispose();
             _cts?.Cancel();
             _cts?.Dispose();
             HitsoundPlayer?.Dispose();

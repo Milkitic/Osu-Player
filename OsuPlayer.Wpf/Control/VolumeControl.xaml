@@ -5,9 +5,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="220"
-    FontFamily="{StaticResource SspRegular}"
+    d:DesignHeight="260"
     d:DesignWidth="170"
+    FontFamily="{StaticResource SspRegular}"
+    Loaded="VolumeControl_OnLoaded"
     mc:Ignorable="d">
     <UserControl.DataContext>
         <local:VolumeControlVm />
@@ -32,6 +33,7 @@
         <Border Margin="10" Background="#A0ffffff">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
@@ -150,6 +152,13 @@
                             Foreground="#303030" />
                     </StackPanel>
                 </Grid>
+                <Button
+                    x:Name="BtnAsio"
+                    Grid.Row="2"
+                    Height="28" Click="BtnAsio_OnClick"
+                    Style="{StaticResource CollectionButtonStyle}">
+                    ASIO 音频设置
+                </Button>
             </Grid>
         </Border>
     </Grid>

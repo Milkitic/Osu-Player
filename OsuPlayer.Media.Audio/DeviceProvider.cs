@@ -14,6 +14,7 @@ namespace Milky.OsuPlayer.Media.Audio
     {
         private static readonly MMDeviceEnumerator MMDeviceEnumerator;
         private static readonly MMNotificationClient MmNotificationClient;
+        private static IWavePlayer _currentDevice;
 
         private class MMNotificationClient : IMMNotificationClient
         {
@@ -66,14 +67,24 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private static List<IDeviceInfo> CacheList { get; set; }
 
-        public static IWavePlayer CreateDefaultDevice()
+        public static IWavePlayer CreateOrGetDefaultDevice()
         {
             var play = AppSettings.Default.Play;
             return CreateDevice(play.DeviceInfo, play.DesiredLatency, play.IsExclusive);
         }
 
+        public static IWavePlayer GetCurrentDevice()
+        {
+            return _currentDevice;
+        }
+
         public static IWavePlayer CreateDevice(IDeviceInfo deviceInfo = null, int latency = 1, bool isExclusive = true)
         {
+            //if (_currentDevice != null)
+            //{
+            //    return _currentDevice;
+            //}
+
             var apartmentState = Thread.CurrentThread.GetApartmentState();
             if (apartmentState != ApartmentState.STA)
             {
@@ -154,6 +165,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
             }
 
+            _currentDevice = device;
             return device;
         }
 
