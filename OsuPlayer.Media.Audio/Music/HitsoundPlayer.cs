@@ -300,16 +300,16 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                         if (!sce.IsAddition)
                                         {
                                             _currentVolume = new VolumeSampleProvider(loop.ToSampleProvider());
-                                            _currentVolume.Volume = sce.Volume * 0.7f;
+                                            _currentVolume.Volume = sce.Volume;
                                             _currentChannel = new ChannelSampleProvider(_currentVolume);
-                                            _currentChannel.Balance = sce.Balance;
+                                            _currentChannel.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
                                         }
                                         else
                                         {
                                             _currentVolumeAdd = new VolumeSampleProvider(loop.ToSampleProvider());
-                                            _currentVolumeAdd.Volume = sce.Volume * 0.7f;
+                                            _currentVolumeAdd.Volume = sce.Volume;
                                             _currentChannelAdd = new ChannelSampleProvider(_currentVolumeAdd);
-                                            _currentChannelAdd.Balance = sce.Balance;
+                                            _currentChannelAdd.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
                                         }
 
                                         //device.Stop();
@@ -321,12 +321,23 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                 case SlideControlMode.ChangeBalance:
                                     if (_currentChannel != null)
                                     {
-                                        _currentChannel.Balance = sce.Balance;
+                                        _currentChannel.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
                                     }
 
                                     if (_currentChannelAdd != null)
                                     {
-                                        _currentChannelAdd.Balance = sce.Balance;
+                                        _currentChannelAdd.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
+                                    }
+                                    break;
+                                case SlideControlMode.Volume:
+                                    if (_currentChannel != null && !sce.IsAddition)
+                                    {
+                                        _currentVolume.Volume = sce.Volume;
+                                    }
+
+                                    if (_currentChannelAdd != null && sce.IsAddition)
+                                    {
+                                        _currentVolumeAdd.Volume = sce.Volume;
                                     }
                                     break;
                                 case SlideControlMode.Stop:
@@ -522,14 +533,28 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                             {
                                 var volume2 = (obj.SampleVolume != 0 ? obj.SampleVolume : timing.Volume) / 100f;
                                 var track2 = timing.Track;
-                                hitsoundList.Add(new SlideControlElement(dirInfo.FullName,
+                                var slideControlElement = new SlideControlElement(dirInfo.FullName,
                                     mapWaves, (int)timing.Offset, volume2, balance, track2, timing.TimingSampleset, sample, addition, forceTrack,
-                                    SlideControlMode.NewSample, false));
+                                    SlideControlMode.NewSample, false);
+                                if (slideControlElement.FilePaths.First() ==
+                                    hitsoundList.OfType<SlideControlElement>().Last(k => !k.IsAddition).FilePaths.First())
+                                {
+                                    slideControlElement.ControlMode = SlideControlMode.Volume;
+                                }
+
+                                hitsoundList.Add(slideControlElement);
                                 if (obj.Hitsound.HasFlag(HitsoundType.Whistle))
                                 {
-                                    hitsoundList.Add(new SlideControlElement(dirInfo.FullName,
+                                    var controlElement = new SlideControlElement(dirInfo.FullName,
                                         mapWaves, (int)timing.Offset, volume2, balance, track2, timing.TimingSampleset, sample, addition, forceTrack,
-                                        SlideControlMode.NewSample, true));
+                                        SlideControlMode.NewSample, true);
+                                    if (controlElement.FilePaths.First() ==
+                                        hitsoundList.OfType<SlideControlElement>().Last(k => k.IsAddition).FilePaths.First())
+                                    {
+                                        controlElement.ControlMode = SlideControlMode.Volume;
+                                    }
+
+                                    hitsoundList.Add(controlElement);
                                 }
 
                                 continue;
@@ -553,7 +578,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                         var element = new SlideControlElement(
                             dirInfo.FullName,
                             mapWaves, (int)trailFrame.Offset, 0, balance, 0, 0, 0, 0, 0,
-                            SlideControlMode.ChangeBalance, false
+                            SlideControlMode.ChangeBalance, true
                         );
 
                         hitsoundList.Add(element);
@@ -596,7 +621,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                     osuFile.General.Mode != GameMode.Catch &&
                     osuFile.General.Mode != GameMode.Mania)
                 {
-                    return 1;
+                    return 0;
                 }
 
                 if (x > 512) x = 512;

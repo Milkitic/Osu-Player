@@ -14,7 +14,7 @@ namespace Milky.OsuPlayer.Common.Instances
     public class OsuDbInst
     {
         private readonly object _scanningObject = new object();
-        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
 
         public class ViewModelClass : ViewModelBase
         {

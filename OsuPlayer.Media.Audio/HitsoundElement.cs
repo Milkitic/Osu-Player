@@ -114,7 +114,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     trackStr = (Track > 1 ? Track.ToString() : "");
                 }
                 var name = _fileNamesWithoutTrack[i] + trackStr;
-                if (Track == 0)
+                if (Track == 0 && string.IsNullOrWhiteSpace(CustomFile))
                 {
                     FilePaths = new[] { Path.Combine(Domain.DefaultPath, _fileNamesWithoutTrack[i] + WavExtension) };
                 }

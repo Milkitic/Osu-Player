@@ -67,12 +67,12 @@ namespace Milky.OsuPlayer
         {
             FluentMapper.Initialize(config =>
             {
+                config.AddMap(new StoryboardInfoMap());
                 config.AddMap(new BeatmapMap());
                 config.AddMap(new MapInfoMap());
             });
 
             AppDbOperator.ValidateDb();
-            BeatmapDbOperator.ValidateDb();
 
             var appDbOperator = new AppDbOperator();
             var defCol = appDbOperator.GetCollections();

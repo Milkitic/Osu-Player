@@ -26,7 +26,6 @@ namespace Milky.OsuPlayer.Pages
 {
     public class RecentPlayPageVm : ViewModelBase
     {
-        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
         private AppDbOperator _appDbOperator = new AppDbOperator();
         private NumberableObservableCollection<BeatmapDataModel> _beatmaps;
 
@@ -60,7 +59,7 @@ namespace Milky.OsuPlayer.Pages
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     var fileName = beatmap.InOwnDb
                         ? Path.Combine(Domain.CustomSongPath, map.FolderName)
@@ -83,7 +82,7 @@ namespace Milky.OsuPlayer.Pages
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
                 });
@@ -97,7 +96,7 @@ namespace Milky.OsuPlayer.Pages
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
                     FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(map),
                         DialogOptionFactory.SelectCollectionOptions);
                 });
@@ -111,7 +110,7 @@ namespace Milky.OsuPlayer.Pages
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     ExportPage.QueueEntry(map);
                 });
@@ -125,7 +124,7 @@ namespace Milky.OsuPlayer.Pages
                 return new DelegateCommand(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     await PlayController.Default.PlayNewFile(map);
                     await Services.Get<PlayerList>()
@@ -141,7 +140,7 @@ namespace Milky.OsuPlayer.Pages
                 return new DelegateCommand(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
                     await PlayController.Default.PlayNewFile(map);
                     await Services.Get<PlayerList>()
                         .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
@@ -172,7 +171,6 @@ namespace Milky.OsuPlayer.Pages
     {
         private ObservableCollection<Beatmap> _recentBeatmaps;
         private readonly MainWindow _mainWindow;
-        private BeatmapDbOperator _beatmapOperator = new BeatmapDbOperator();
         private AppDbOperator _appDbOperator = new AppDbOperator();
         private RecentPlayPageVm _viewModel;
 
@@ -186,7 +184,7 @@ namespace Milky.OsuPlayer.Pages
         public void UpdateList()
         {
             _recentBeatmaps = new ObservableCollection<Beatmap>(
-                _beatmapOperator.GetBeatmapsByMapInfo(_appDbOperator.GetRecentList(), TimeSortMode.PlayTime));
+                _appDbOperator.GetBeatmapsByMapInfo(_appDbOperator.GetRecentList(), TimeSortMode.PlayTime));
             _viewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_recentBeatmaps.ToDataModelList(false));
         }
 

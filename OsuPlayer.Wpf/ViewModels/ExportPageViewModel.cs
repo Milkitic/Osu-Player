@@ -23,7 +23,6 @@ namespace Milky.OsuPlayer.ViewModels
         private string _exportPath;
         private NumberableObservableCollection<BeatmapDataModel> _dataModelList;
         private IEnumerable<Beatmap> _entries;
-        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
         private AppDbOperator _appDbOperator = new AppDbOperator();
 
         public NumberableObservableCollection<BeatmapDataModel> DataModelList
@@ -137,7 +136,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _beatmapDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
+            return _appDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 
@@ -168,7 +167,7 @@ namespace Milky.OsuPlayer.ViewModels
                 }
             }
 
-            _entries = _beatmapDbOperator.GetBeatmapsByIdentifiable(maps);
+            _entries = _appDbOperator.GetBeatmapsByIdentifiable(maps);
             var viewModels = _entries.ToDataModelList(true).ToList();
             for (var i = 0; i < viewModels.Count; i++)
             {

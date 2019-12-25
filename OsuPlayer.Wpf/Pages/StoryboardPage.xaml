@@ -12,16 +12,170 @@
     Loaded="Page_Loaded"
     Unloaded="Page_Unloaded"
     mc:Ignorable="d">
-
+    <Page.Resources>
+        <Style x:Key="ScanButtonStyle" TargetType="Button">
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="MainGrid" RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                            </Grid.RenderTransform>
+                            <Grid x:Name="InnerGrid" RenderTransformOrigin="0.5,0.5">
+                                <Grid.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </Grid.RenderTransform>
+                                <!--<Border
+                                    Width="200"
+                                    Height="200"
+                                    Background="White"
+                                    BorderBrush="White"
+                                    CornerRadius="100">
+                                    <Border.Effect>
+                                        <DropShadowEffect
+                                            BlurRadius="15"
+                                            Direction="-90"
+                                            Opacity="0.3"
+                                            ShadowDepth="0" />
+                                    </Border.Effect>
+                                </Border>-->
+                                <Border
+                                    Width="200"
+                                    Height="200"
+                                    BorderBrush="White"
+                                    BorderThickness="6"
+                                    CornerRadius="100">
+                                    <Border.Background>
+                                        <RadialGradientBrush GradientOrigin="0.67,0.3" RadiusX="10" RadiusY="1">
+                                            <GradientStop Offset="0" Color="HotPink" />
+                                            <GradientStop Offset="1" Color="{StaticResource PinkColorOsu}" />
+                                        </RadialGradientBrush>
+                                    </Border.Background>
+                                    <!--<Border.Background>
+                                        <StaticResource ResourceKey="OsuTextureBlueBrush" />
+                                    </Border.Background>-->
+                                    <ContentPresenter
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        TextBlock.FontSize="36"
+                                        TextBlock.FontWeight="Black"
+                                        TextBlock.Foreground="{TemplateBinding Foreground}">
+                                        <!--<ContentPresenter.Effect>
+                                            <DropShadowEffect
+                                                BlurRadius="5"
+                                                Direction="-90"
+                                                Opacity="0.3"
+                                                ShadowDepth="2" />
+                                        </ContentPresenter.Effect>-->
+                                    </ContentPresenter>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever">
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="InnerGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
+                                                From="1.1"
+                                                To="1"
+                                                Duration="0:0:0.62" />
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="InnerGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
+                                                From="1.1"
+                                                To="1"
+                                                Duration="0:0:0.62" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="InnerGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
+                                                To="1"
+                                                Duration="0:0:0.62" />
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="InnerGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
+                                                To="1"
+                                                Duration="0:0:0.62" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="1x">
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="MainGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
+                                                To="1.1"
+                                                Duration="0:0:0.12" />
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="MainGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
+                                                To="1.1"
+                                                Duration="0:0:0.12" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="1x">
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="MainGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
+                                                To="1"
+                                                Duration="0:0:0.12" />
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                Storyboard.TargetName="MainGrid"
+                                                Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
+                                                To="1"
+                                                Duration="0:0:0.12" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
     <Grid>
-        <Grid
-            x:Name="SbScene"
-            Width="640"
-            Height="360"
-            Margin="20,20,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Background="Black"
-            Visibility="Hidden" />
+        <Border>
+            <Grid
+                x:Name="ScanScene"
+                Width="640"
+                Height="360"
+                Margin="20,20,0,0">
+                <Button
+                    x:Name="ScanButton"
+                    Click="ScanButton_Click"
+                    Content="{DynamicResource ui-startScan}"
+                    Style="{StaticResource ScanButtonStyle}" />
+                <!--<Label Content="" />-->
+            </Grid>
+        </Border>
     </Grid>
 </Page>
