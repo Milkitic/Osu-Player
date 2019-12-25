@@ -1,4 +1,6 @@
-﻿namespace OsuPlayer.Devices
+﻿using Newtonsoft.Json;
+
+namespace OsuPlayer.Devices
 {
     public class AsioOutInfo : IDeviceInfo
     {
@@ -13,6 +15,7 @@
         }
 
         public OutputMethod OutputMethod => OutputMethod.Asio;
+        [JsonProperty]
         public string FriendlyName { get; private set; }
 
         public override bool Equals(object obj)

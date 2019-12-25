@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio.Music.SampleProviders;
 using Milky.OsuPlayer.Media.Audio.Music.WaveProviders;
@@ -117,6 +118,18 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             }
 
             PlaySound(_cachedDictionary[path], volume, balance);
+        }
+
+        public void AddSample(ISampleProvider input)
+        {
+            if (!_mixer.MixerInputs.Contains(input))
+                _mixer.AddMixerInput(input);
+        }
+
+        public void RemoveSample(ISampleProvider input)
+        {
+            if (_mixer.MixerInputs.Contains(input))
+                _mixer.RemoveMixerInput(input);
         }
 
         private void PlaySound(CachedSound sound, float volume, float balance)

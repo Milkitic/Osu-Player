@@ -67,11 +67,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                               !_offsetTask.IsFaulted;
 
         protected AudioPlaybackEngine Engine = new AudioPlaybackEngine();
-        private IWavePlayer _slideDevice = DeviceProvider.CreateDefaultDevice();
-        private IWavePlayer _slideAddDevice = DeviceProvider.CreateDefaultDevice();
-        private LoopStream _slideLoop;
-        private CachedSoundSampleProvider _slideSound;
-        private CachedSoundSampleProvider _slideAddSound;
+        //private LoopStream _slideLoop;
+        //private CachedSoundSampleProvider _slideSound;
+        //private CachedSoundSampleProvider _slideAddSound;
         private ChannelSampleProvider _currentChannel;
         private VolumeSampleProvider _currentVolume;
         private ChannelSampleProvider _currentChannelAdd;
@@ -222,10 +220,6 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             _playingTask?.Dispose();
             _cts?.Dispose();
             Engine?.Dispose();
-            _slideDevice?.Stop();
-            _slideDevice?.Dispose();
-            _slideAddDevice?.Stop();
-            _slideAddDevice?.Dispose();
             AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
 
             GC.Collect();
@@ -290,7 +284,6 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                             {
                                 case SlideControlMode.NewSample:
                                     {
-                                        //var device = sce.IsAddition ? _slideAddDevice : _slideDevice;
                                         //var sound = sce.IsAddition ? NewProviderAndRet(ref _slideAddSound, path) : NewProviderAndRet(ref _slideSound, path);
                                         //var s = new RawSourceWaveStream(
                                         //    sound.SourceSound.AudioData.Select(k => (byte)k).ToArray(), 0,
@@ -303,6 +296,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                             _currentVolume.Volume = sce.Volume;
                                             _currentChannel = new ChannelSampleProvider(_currentVolume);
                                             _currentChannel.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
+                                            Engine.AddSample(_currentChannel);
                                         }
                                         else
                                         {
@@ -310,12 +304,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                             _currentVolumeAdd.Volume = sce.Volume;
                                             _currentChannelAdd = new ChannelSampleProvider(_currentVolumeAdd);
                                             _currentChannelAdd.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
+                                            Engine.AddSample(_currentChannelAdd);
                                         }
-
-                                        //device.Stop();
-                                        var device = sce.IsAddition ? NewDeviceAndRet(ref _slideAddDevice) : NewDeviceAndRet(ref _slideDevice);
-                                        device.Init(sce.IsAddition ? _currentChannelAdd : _currentChannel);
-                                        device.Play();
                                     }
                                     break;
                                 case SlideControlMode.ChangeBalance:
@@ -342,10 +332,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                     break;
                                 case SlideControlMode.Stop:
                                     {
-                                        //var device = sce.IsAddition ? _slideAddDevice : _slideDevice;
-                                        //device.Stop();
-                                        _slideDevice.Stop();
-                                        _slideAddDevice.Stop();
+                                        Engine.RemoveSample(_currentChannel);
+                                        Engine.RemoveSample(_currentChannelAdd);
                                         break;
                                     }
                                 default:
@@ -363,18 +351,6 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
             PlayerStatus = PlayerStatus.Finished;
             Task.Run(() => { RaisePlayerFinishedEvent(this, new EventArgs()); });
-        }
-
-        private IWavePlayer NewDeviceAndRet(ref IWavePlayer device)
-        {
-            device?.Stop();
-            device?.Dispose();
-            return device = DeviceProvider.CreateDefaultDevice();
-        }
-
-        private CachedSoundSampleProvider NewProviderAndRet(ref CachedSoundSampleProvider slideAddSound, string path)
-        {
-            return slideAddSound = new CachedSoundSampleProvider(Engine.GetOrCreateCacheSound(path));
         }
 
         private void DynamicOffset()
