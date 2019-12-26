@@ -88,6 +88,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         private readonly OsuFile _osuFile;
         protected readonly AudioPlaybackEngine Engine;
 
+        private int _dcOffset;
+        private bool? _useTempo;
+
         public HitsoundPlayer(AudioPlaybackEngine engine, string filePath, OsuFile osuFile)
         {
             Engine = engine;
@@ -116,6 +119,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 Engine.CreateCacheSounds(new DirectoryInfo(Domain.DefaultPath).GetFiles().Select(k => k.FullName));
             });
             PlayerStatus = PlayerStatus.Ready;
+            SetTempoMode(AppSettings.Default.Play.PlayUseTempo);
             SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, false);
             InitVolume();
             AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
@@ -194,38 +198,40 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             );
         }
 
+        internal void SetTempoMode(bool useTempo)
+        {
+            _useTempo = useTempo;
+            if (Math.Abs(_multiplier - 0.75) < 0.001 && _useTempo == false)
+            {
+                _dcOffset = -25;
+            }
+            else
+            {
+                _dcOffset = 0;
+            }
+        }
+
         internal void SetPlaybackRate(float rate, bool b)
         {
             _multiplier = rate;
-            //SetTime(PlayTime, b);
-            //_mod = mod;
-            //switch (mod)
-            //{
-            //    case PlayMod.None:
-            //        SetTime(PlayTime, play);
-            //        _multiplier = 1f;
-            //        break;
-            //    case PlayMod.DoubleTime:
-            //    case PlayMod.NightCore:
-            //        SetTime(PlayTime, play);
-            //        _multiplier = 1.5f;
-            //        break;
-            //    case PlayMod.HalfTime:
-            //    case PlayMod.DayCore:
-            //        SetTime(PlayTime, play);
-            //        _multiplier = 0.75f;
-            //        break;
-            //}
+            if (Math.Abs(rate - 0.75) < 0.001 && _useTempo == false)
+            {
+                _dcOffset = -25;
+            }
+            else
+            {
+                _dcOffset = 0;
+            }
         }
 
         protected virtual void InitVolume()
         {
-            Engine.Volume = 1f * AppSettings.Default.Volume.Hitsound * AppSettings.Default.Volume.Main;
+            Engine.HitsoundVolume = 1f * AppSettings.Default.Volume.Hitsound * AppSettings.Default.Volume.Main;
         }
 
         protected virtual void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            Engine.Volume = 1f * AppSettings.Default.Volume.Hitsound * AppSettings.Default.Volume.Main;
+            Engine.HitsoundVolume = 1f * AppSettings.Default.Volume.Hitsound * AppSettings.Default.Volume.Main;
         }
 
         //private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -246,6 +252,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
         private void PlayHitsound()
         {
+            var isHitsound = !(this is SampleTrackPlayer);
             _sw.Restart();
             while (_hsQueue.Count > 0 && _mod == PlayMod.None ||
                    ComponentPlayer.Current.MusicPlayer.PlayerStatus != PlayerStatus.Finished)
@@ -271,7 +278,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                             foreach (var path in he.FilePaths)
                             {
                                 Engine.PlaySound(path, he.Volume * 1f,
-                                    he.Balance * AppSettings.Default.Volume.BalanceFactor / 100f);
+                                    he.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);
                                 //Task.Run(() =>);
                             }
                         }
@@ -283,8 +290,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                             {
                                 case SlideControlMode.NewSample:
                                     {
-                                        Engine.RemoveSample(_currentChannel);
-                                        Engine.RemoveSample(_currentChannelAdd);
+                                        Engine.RemoveHitsoundSample(_currentChannel);
+                                        Engine.RemoveHitsoundSample(_currentChannelAdd);
                                         //var sound = sce.IsAddition ? NewProviderAndRet(ref _slideAddSound, path) : NewProviderAndRet(ref _slideSound, path);
                                         //var s = new RawSourceWaveStream(
                                         //    sound.SourceSound.AudioData.Select(k => (byte)k).ToArray(), 0,
@@ -297,7 +304,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                             _currentVolume.Volume = sce.Volume;
                                             _currentChannel = new ChannelSampleProvider(_currentVolume);
                                             _currentChannel.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
-                                            Engine.AddSample(_currentChannel);
+                                            Engine.AddHitsoundSample(_currentChannel);
                                         }
                                         else
                                         {
@@ -305,7 +312,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                             _currentVolumeAdd.Volume = sce.Volume;
                                             _currentChannelAdd = new ChannelSampleProvider(_currentVolumeAdd);
                                             _currentChannelAdd.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
-                                            Engine.AddSample(_currentChannelAdd);
+                                            Engine.AddHitsoundSample(_currentChannelAdd);
                                         }
                                     }
                                     break;
@@ -333,8 +340,8 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                                     break;
                                 case SlideControlMode.Stop:
                                     {
-                                        Engine.RemoveSample(_currentChannel);
-                                        Engine.RemoveSample(_currentChannelAdd);
+                                        Engine.RemoveHitsoundSample(_currentChannel);
+                                        Engine.RemoveHitsoundSample(_currentChannelAdd);
                                         break;
                                     }
                                 default:
@@ -368,7 +375,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                         if (nowMs != preMs) // 音乐play time变动
                         {
                             preMs = nowMs;
-                            var d = nowMs - (PlayTime + SingleOffset); // Single：单曲offset（人工调），PlayTime：音效play time
+                            var d = nowMs - (PlayTime + SingleOffset + _dcOffset); // Single：单曲offset（人工调），PlayTime：音效play time
                             var r = AppSettings.Default.Play.GeneralOffset - d; // General：全局offset
                             if (Math.Abs(r) > 5)
                             {

@@ -11,7 +11,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         private bool _playUseTempo;
         private float _playbackRate;
 
-        public int GeneralOffset { get; set; } = 25;
+        public int GeneralOffset { get; set; } = 141;// = 25;
         public bool ReplacePlayList { get; set; } = true;
         public bool UsePlayerV2 { get; set; } = false;
 

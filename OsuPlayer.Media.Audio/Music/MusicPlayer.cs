@@ -29,7 +29,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         private VarispeedSampleProvider _speedProvider;
         private readonly IWavePlayer _device;
         private string _filePath;
-        private bool _useTempo;
+        private bool? _useTempo;
         private float _currentSpeed;
 
         private bool _soundTouchMode = false;
@@ -94,19 +94,19 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             //    PlayerStatus = PlayerStatus.Finished;
             //    RaisePlayerFinishedEvent(this, new EventArgs());
             //};
-            _speedProvider = new VarispeedSampleProvider(_reader, AppSettings.Default.Play.DesiredLatency,
+            _speedProvider = new VarispeedSampleProvider(_reader, 3,
                 new SoundTouchProfile(AppSettings.Default.Play.PlayUseTempo, false));
             var playbackRate = AppSettings.Default.Play.PlaybackRate;
-            _engine.AddSample(_speedProvider);
+            _engine.AddRootSample(_speedProvider);
             SetPlaybackRate(playbackRate);
             //if (Math.Round(playbackRate, 3) - 1 < 0.001)
             //{
-            //    _engine.AddSample(_reader);
+            //    _engine.AddRootSample(_reader);
             //    _soundTouchMode = false;
             //}
             //else
             //{
-            //    _engine.AddSample(_speedProvider);
+            //    _engine.AddRootSample(_speedProvider);
             //    _soundTouchMode = true;
             //}
 
@@ -176,14 +176,14 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         {
             //if (Math.Abs(speed - 1) < 0.001)
             //{
-            //    _engine.RemoveSample(_speedProvider);
-            //    _engine.AddSample(_reader);
+            //    _engine.RemoveRootSample(_speedProvider);
+            //    _engine.AddRootSample(_reader);
             //    _soundTouchMode = false;
             //}
             //else
             //{
-            //    _engine.RemoveSample(_reader);
-            //    _engine.AddSample(_speedProvider);
+            //    _engine.RemoveRootSample(_reader);
+            //    _engine.AddRootSample(_speedProvider);
             //    _soundTouchMode = true;
             _currentSpeed = speed;
             _speedProvider.PlaybackRate = speed;

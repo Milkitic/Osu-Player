@@ -50,7 +50,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music.SampleProviders
         }
 
         /// <summary>
-        /// Gets or Sets the Volume of this AudioFileReader. 1.0f is full volume
+        /// Gets or Sets the AddtionVolume of this AudioFileReader. 1.0f is full volume
         /// </summary>
         public float Volume
         {

@@ -182,6 +182,8 @@ namespace Milky.OsuPlayer.Media.Audio
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mod), mod, null);
             }
+
+            AppSettings.SaveDefault();
         }
 
         private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -199,6 +201,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public void SetTempoMode(bool useTempo)
         {
+            HitsoundPlayer.SetTempoMode(useTempo);
             MusicPlayer.SetTempoMode(useTempo);
             SetTime(MusicPlayer.PlayTime);
         }
