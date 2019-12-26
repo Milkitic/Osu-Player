@@ -93,6 +93,7 @@
     <Compile Include="Data\EF\Model\V1\MapInfo.cs" />
     <Compile Include="Data\IdentifiableExtension.cs" />
     <Compile Include="DictionaryExtension.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services.cs" />
     <Compile Include="Metadata\BeatmapDataModel.cs" />
     <Compile Include="Metadata\DataModelComparer.cs" />

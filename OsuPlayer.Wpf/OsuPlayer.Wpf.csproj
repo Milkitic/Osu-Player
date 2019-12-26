@@ -617,6 +617,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Content Include="Default\nightcore-clap.wav" />
+    <Content Include="Default\nightcore-finish.wav" />
+    <Content Include="Default\nightcore-hat.wav" />
+    <Content Include="Default\nightcore-kick.wav" />
     <Content Include="External\font\default.ttc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -810,10 +814,16 @@
     <Content Include="External\plugins\ffmpeg\swscale-5.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="External\plugins\SoundTouch.dll">
+    <Content Include="External\plugins\ShaderEffects.dll">
+    </Content>
+    <Content Include="External\plugins\SoundTouch\COPYING.TXT">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="External\plugins\ShaderEffects.dll">
+    <Content Include="External\plugins\SoundTouch\SoundTouch.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="External\plugins\SoundTouch\SoundTouch_x64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="External\texture\osu.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

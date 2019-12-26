@@ -2,6 +2,6 @@
 {
     public enum PlayMod
     {
-        None, DoubleTime, NightCore, HalfTime, DayCore, Custom
+        None, DoubleTime, NightCore, HalfTime, DayCore
     }
 }

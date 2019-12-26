@@ -130,5 +130,10 @@ namespace Milky.OsuPlayer.Control
                 asio.ShowControlPanel();
             }
         }
+
+        private void BtnPlayMod_OnClick(object sender, RoutedEventArgs e)
+        {
+            ComponentPlayer.Current.SetPlayMod((PlayMod)((Button)sender).Tag);
+        }
     }
 }

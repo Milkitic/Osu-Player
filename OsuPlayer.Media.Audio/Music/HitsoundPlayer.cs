@@ -6,6 +6,7 @@ using OSharp.Beatmap.Sections.HitObject;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,10 +24,6 @@ namespace Milky.OsuPlayer.Media.Audio.Music
     internal class HitsoundPlayer : Player, IDisposable
     {
         protected virtual string Flag { get; } = "Hitsound";
-        static HitsoundPlayer()
-        {
-            CachedSound.CachePath = Path.Combine(Domain.CachePath, "_temp.sound");
-        }
 
         public override int ProgressRefreshInterval { get; set; }
 
@@ -59,7 +56,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         public bool IsPlaying => _playingTask != null &&
                                  !_playingTask.IsCanceled &&
                                  !_playingTask.IsCompleted &&
-                                 !_playingTask.IsFaulted;
+                                 !_playingTask.IsFaulted && PlayerStatus == PlayerStatus.Playing;
 
         public bool IsRunningDynamicOffset => _offsetTask != null &&
                                               !_offsetTask.IsCanceled &&
@@ -119,42 +116,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 Engine.CreateCacheSounds(new DirectoryInfo(Domain.DefaultPath).GetFiles().Select(k => k.FullName));
             });
             PlayerStatus = PlayerStatus.Ready;
-            SetPlayMod(AppSettings.Default.Play.PlayMod, false);
+            SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, false);
             InitVolume();
             AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
+            //AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
             RaisePlayerLoadedEvent(this, new EventArgs());
-        }
-
-        protected virtual void InitVolume()
-        {
-            Engine.Volume = 1f * AppSettings.Default.Volume.Hitsound * AppSettings.Default.Volume.Main;
-        }
-
-        protected virtual void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            Engine.Volume = 1f * AppSettings.Default.Volume.Hitsound * AppSettings.Default.Volume.Main;
-        }
-
-        public void SetPlayMod(PlayMod mod, bool play)
-        {
-            _mod = mod;
-            switch (mod)
-            {
-                case PlayMod.None:
-                    SetTime(PlayTime, play);
-                    _multiplier = 1f;
-                    break;
-                case PlayMod.DoubleTime:
-                case PlayMod.NightCore:
-                    SetTime(PlayTime, play);
-                    _multiplier = 1.5f;
-                    break;
-                case PlayMod.HalfTime:
-                case PlayMod.DayCore:
-                    SetTime(PlayTime, play);
-                    _multiplier = 0.75f;
-                    break;
-            }
         }
 
         public override void Play()
@@ -189,13 +155,6 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             RaisePlayerStoppedEvent(this, new EventArgs());
         }
 
-        internal void ResetWithoutNotify(bool finished = false)
-        {
-            CancelTask(true);
-            SetTimePurely(0);
-            PlayerStatus = finished ? PlayerStatus.Finished : PlayerStatus.Stopped;
-        }
-
         public override void Replay()
         {
             Stop();
@@ -208,25 +167,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             SetTimePurely(ms);
         }
 
-        private void SetTimePurely(int ms)
+        internal void ResetWithoutNotify(bool finished = false)
         {
-            PlayTime = ms;
-            Requeue(ms);
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-
-            Stop();
-            if (_playingTask != null)
-                Task.WaitAll(_playingTask);
-            _playingTask?.Dispose();
-            _cts?.Dispose();
-            Engine?.Dispose();
-            AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
-
-            GC.Collect();
+            CancelTask(true);
+            SetTimePurely(0);
+            PlayerStatus = finished ? PlayerStatus.Finished : PlayerStatus.Stopped;
         }
 
         internal void SetDuration(int musicPlayerDuration)
@@ -247,6 +192,56 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 ? musicPlayerDuration
                 : Math.Max(hitsoundDuration, musicPlayerDuration)
             );
+        }
+
+        internal void SetPlaybackRate(float rate, bool b)
+        {
+            _multiplier = rate;
+            //SetTime(PlayTime, b);
+            //_mod = mod;
+            //switch (mod)
+            //{
+            //    case PlayMod.None:
+            //        SetTime(PlayTime, play);
+            //        _multiplier = 1f;
+            //        break;
+            //    case PlayMod.DoubleTime:
+            //    case PlayMod.NightCore:
+            //        SetTime(PlayTime, play);
+            //        _multiplier = 1.5f;
+            //        break;
+            //    case PlayMod.HalfTime:
+            //    case PlayMod.DayCore:
+            //        SetTime(PlayTime, play);
+            //        _multiplier = 0.75f;
+            //        break;
+            //}
+        }
+
+        protected virtual void InitVolume()
+        {
+            Engine.Volume = 1f * AppSettings.Default.Volume.Hitsound * AppSettings.Default.Volume.Main;
+        }
+
+        protected virtual void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            Engine.Volume = 1f * AppSettings.Default.Volume.Hitsound * AppSettings.Default.Volume.Main;
+        }
+
+        //private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        //{
+        //    switch (e.PropertyName)
+        //    {
+        //        case nameof(AppSettings.Play.PlaybackRate):
+        //            SetPlaybackRate(AppSettings.Default.Play.PlaybackRate,);
+        //            break;
+        //    }
+        //}
+
+        private void SetTimePurely(int ms)
+        {
+            PlayTime = ms;
+            Requeue(ms);
         }
 
         private void PlayHitsound()
@@ -615,5 +610,21 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         }
 
         #endregion Load
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            Stop();
+            if (_playingTask != null)
+                Task.WaitAll(_playingTask);
+            _playingTask?.Dispose();
+            _cts?.Dispose();
+            Engine?.Dispose();
+            AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
+            //AppSettings.Default.Play.PropertyChanged -= Play_PropertyChanged;
+
+            GC.Collect();
+        }
     }
 }
