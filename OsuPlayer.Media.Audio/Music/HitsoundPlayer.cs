@@ -201,22 +201,24 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         internal void SetTempoMode(bool useTempo)
         {
             _useTempo = useTempo;
-            if (Math.Abs(_multiplier - 0.75) < 0.001 && _useTempo == false)
-            {
-                _dcOffset = -25;
-            }
-            else
-            {
-                _dcOffset = 0;
-            }
+            AdjustModOffset();
         }
 
         internal void SetPlaybackRate(float rate, bool b)
         {
             _multiplier = rate;
-            if (Math.Abs(rate - 0.75) < 0.001 && _useTempo == false)
+            AdjustModOffset();
+        }
+
+        private void AdjustModOffset()
+        {
+            if (Math.Abs(_multiplier - 0.75) < 0.001 && _useTempo == false)
             {
                 _dcOffset = -25;
+            }
+            else if (Math.Abs(_multiplier - 1.5) < 0.001 && _useTempo == true)
+            {
+                _dcOffset = 15;
             }
             else
             {
