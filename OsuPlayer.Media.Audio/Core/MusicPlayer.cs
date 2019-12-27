@@ -93,7 +93,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
             //    PlayerStatus = PlayerStatus.Finished;
             //    RaisePlayerFinishedEvent(this, new EventArgs());
             //};
-            _speedProvider = new VarispeedSampleProvider(_reader, 3,
+            _speedProvider = new VarispeedSampleProvider(_reader, 10,
                 new SoundTouchProfile(AppSettings.Default.Play.PlayUseTempo, false));
             var playbackRate = AppSettings.Default.Play.PlaybackRate;
             _engine.AddRootSample(_speedProvider);
