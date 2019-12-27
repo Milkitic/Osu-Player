@@ -11,6 +11,7 @@ using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Media.Audio.Core.SampleProviders;
 using Milky.OsuPlayer.Media.Audio.Core.WaveProviders;
+using Milky.OsuPlayer.Media.Audio.Sounds;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using OSharp.Beatmap;

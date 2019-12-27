@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Media.Audio.Sounds;
 using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Media.Audio.Core

@@ -5,7 +5,7 @@ using OSharp.Beatmap.Sections.GamePlay;
 using OSharp.Beatmap.Sections.HitObject;
 using OSharp.Beatmap.Sections.Timing;
 
-namespace Milky.OsuPlayer.Media.Audio.Core
+namespace Milky.OsuPlayer.Media.Audio.Sounds
 {
     public sealed class HitsoundElement : SoundElement
     {
