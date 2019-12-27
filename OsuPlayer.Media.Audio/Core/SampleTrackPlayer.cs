@@ -3,7 +3,7 @@ using System.IO;
 using Milky.OsuPlayer.Common.Configuration;
 using OSharp.Beatmap;
 
-namespace Milky.OsuPlayer.Media.Audio.Music
+namespace Milky.OsuPlayer.Media.Audio.Core
 {
     internal class SampleTrackPlayer : HitsoundPlayer
     {

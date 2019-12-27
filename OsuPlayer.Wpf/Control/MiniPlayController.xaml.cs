@@ -16,6 +16,7 @@ using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Instances;
+using Milky.OsuPlayer.Media.Audio.Core;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
@@ -103,7 +104,7 @@ namespace Milky.OsuPlayer.Control
             _playersInst.AudioPlayer.PositionSet += AudioPlayer_PositionChanged;
         }
 
-        private void AudioPlayer_PositionChanged(object sender, Media.Audio.Music.ProgressEventArgs e)
+        private void AudioPlayer_PositionChanged(object sender, ProgressEventArgs e)
         {
             _viewModel.PositionPercent = e.Position / (double)e.Duration;
         }

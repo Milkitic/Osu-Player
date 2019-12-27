@@ -2,7 +2,7 @@
 using OSharp.Beatmap;
 using System.Linq;
 using System.Text;
-using Milky.OsuPlayer.Media.Audio.Music;
+using Milky.OsuPlayer.Media.Audio.Core;
 
 namespace Milky.OsuPlayer.Instances
 {

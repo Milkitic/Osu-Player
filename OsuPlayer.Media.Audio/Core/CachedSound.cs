@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Media.Audio.Music.SampleProviders;
 using NAudio.Wave;
 
-namespace Milky.OsuPlayer.Media.Audio.Music
+namespace Milky.OsuPlayer.Media.Audio.Core
 {
     public class CachedSound
     {

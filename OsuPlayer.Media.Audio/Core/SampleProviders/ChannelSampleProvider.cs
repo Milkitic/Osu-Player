@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
+﻿using NAudio.Wave;
 
-namespace Milky.OsuPlayer.Media.Audio.Music.SampleProviders
+namespace Milky.OsuPlayer.Media.Audio.Core.SampleProviders
 {
     class ChannelSampleProvider : ISampleProvider
     {

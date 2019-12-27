@@ -1,16 +1,15 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Media.Audio.Music.SampleProviders;
-using NAudio.Wave;
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Media.Audio.Music.SoundTouch;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Media.Audio.Core.SampleProviders;
+using Milky.OsuPlayer.Media.Audio.Core.SoundTouch;
+using NAudio.Wave;
 
-namespace Milky.OsuPlayer.Media.Audio.Music
+namespace Milky.OsuPlayer.Media.Audio.Core
 {
     internal sealed class MusicPlayer : Player, IDisposable
     {

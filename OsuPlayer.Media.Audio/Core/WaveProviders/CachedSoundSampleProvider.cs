@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Linq;
 using NAudio.Wave;
 
-namespace Milky.OsuPlayer.Media.Audio.Music.WaveProviders
+namespace Milky.OsuPlayer.Media.Audio.Core.WaveProviders
 {
     class CachedSoundSampleProvider : ISampleProvider
     {

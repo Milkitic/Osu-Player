@@ -3,14 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Media.Audio.Music.SampleProviders;
-using Milky.OsuPlayer.Media.Audio.Music.WaveProviders;
+using Milky.OsuPlayer.Media.Audio.Core.SampleProviders;
+using Milky.OsuPlayer.Media.Audio.Core.WaveProviders;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using OsuPlayer.Devices;
 
-namespace Milky.OsuPlayer.Media.Audio.Music
+namespace Milky.OsuPlayer.Media.Audio.Core
 {
     public class AudioPlaybackEngine : IDisposable
     {

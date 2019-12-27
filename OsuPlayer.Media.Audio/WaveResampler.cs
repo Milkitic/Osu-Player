@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Media.Audio.Music.SampleProviders;
+using Milky.OsuPlayer.Media.Audio.Core.SampleProviders;
 using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Media.Audio

@@ -1,25 +1,23 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Player;
-using OSharp.Beatmap;
-using OSharp.Beatmap.Sections.HitObject;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Media.Audio.Music.SampleProviders;
-using Milky.OsuPlayer.Media.Audio.Music.WaveProviders;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Media.Audio.Core.SampleProviders;
+using Milky.OsuPlayer.Media.Audio.Core.WaveProviders;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using OSharp.Beatmap;
 using OSharp.Beatmap.Sections.GamePlay;
-using OSharp.Beatmap.Sections.Timing;
+using OSharp.Beatmap.Sections.HitObject;
 
-namespace Milky.OsuPlayer.Media.Audio.Music
+namespace Milky.OsuPlayer.Media.Audio.Core
 {
     internal class HitsoundPlayer : Player, IDisposable
     {

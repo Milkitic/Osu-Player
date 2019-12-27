@@ -1,5 +1,4 @@
 ﻿using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Media.Audio.Music;
 using OSharp.Beatmap;
 using System;
 using System.ComponentModel;
@@ -9,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Media.Audio.Core;
 using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Media.Audio

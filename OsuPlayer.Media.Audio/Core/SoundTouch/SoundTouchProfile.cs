@@ -1,4 +1,4 @@
-namespace Milky.OsuPlayer.Media.Audio.Music.SoundTouch
+namespace Milky.OsuPlayer.Media.Audio.Core.SoundTouch
 {
     internal class SoundTouchProfile
     {
