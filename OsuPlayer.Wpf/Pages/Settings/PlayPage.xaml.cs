@@ -3,6 +3,7 @@ using Milky.OsuPlayer.Common.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Audio.Core;
 using OsuPlayer.Devices;
 
 namespace Milky.OsuPlayer.Pages.Settings

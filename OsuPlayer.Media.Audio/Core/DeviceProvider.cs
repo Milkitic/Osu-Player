@@ -8,7 +8,7 @@ using NAudio.CoreAudioApi.Interfaces;
 using NAudio.Wave;
 using OsuPlayer.Devices;
 
-namespace Milky.OsuPlayer.Media.Audio
+namespace Milky.OsuPlayer.Media.Audio.Core
 {
     public static class DeviceProvider
     {

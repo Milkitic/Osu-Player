@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Milky.OsuPlayer.Media.Audio.Core.SampleProviders;
 using NAudio.Wave;
 
-namespace Milky.OsuPlayer.Media.Audio
+namespace Milky.OsuPlayer.Media.Audio.Core
 {
     public static class WaveResampler
     {

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Milky.OsuPlayer.Common;
 using OSharp.Beatmap.Sections.GamePlay;
 using OSharp.Beatmap.Sections.HitObject;
 using OSharp.Beatmap.Sections.Timing;
 
-namespace Milky.OsuPlayer.Media.Audio
+namespace Milky.OsuPlayer.Media.Audio.Core
 {
     public sealed class HitsoundElement : SoundElement
     {
