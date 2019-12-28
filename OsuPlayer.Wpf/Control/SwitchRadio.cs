@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Utils;
 using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Control
@@ -57,8 +59,15 @@ namespace Milky.OsuPlayer.Control
                     {
 
                         Storyboard.SetTarget(Da2, ui);
+                        if (AppSettings.Default.Interface.MinimalMode)
+                        {
+                            OnSbOnCompleted(null, null);
+                        }
+                        else
+                        {
+                            FadeoutSb.Completed += OnSbOnCompleted;
+                        }
 
-                        FadeoutSb.Completed += OnSbOnCompleted;
                         FadeoutSb.Begin();
 
                         void OnSbOnCompleted(object obj, EventArgs args)
@@ -399,7 +408,7 @@ namespace Milky.OsuPlayer.Control
                 To = 1,
                 EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,
-                Duration = TimeSpan.FromMilliseconds(300)
+                Duration = Utils.Util.GetDuration(TimeSpan.FromMilliseconds(300))
             };
             Storyboard.SetTargetProperty(Da1, new PropertyPath(OpacityProperty));
 
@@ -409,7 +418,7 @@ namespace Milky.OsuPlayer.Control
                 To = 1,
                 EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,
-                Duration = TimeSpan.FromMilliseconds(300)
+                Duration = Utils.Util.GetDuration(TimeSpan.FromMilliseconds(300))
             };
             Ta1Clone = Ta1.Clone();
             Storyboard.SetTargetProperty(Ta1, new PropertyPath("RenderTransform.ScaleX"));
@@ -426,7 +435,7 @@ namespace Milky.OsuPlayer.Control
                 To = 0,
                 EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,
-                Duration = TimeSpan.FromMilliseconds(100)
+                Duration = Utils.Util.GetDuration(TimeSpan.FromMilliseconds(100))
             };
             FadeoutSb.Children.Add(Da2);
             Storyboard.SetTargetProperty(Da2, new PropertyPath(OpacityProperty));

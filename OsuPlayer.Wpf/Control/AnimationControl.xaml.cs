@@ -106,6 +106,17 @@ namespace Milky.OsuPlayer.Control
         private static void OnBlurChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (!(d is AnimationControl @this && e.NewValue is bool useEffect)) return;
+            if (AppSettings.Default.Interface.MinimalMode)
+            {
+                if (@this.Effect is BlurEffect effect)
+                {
+                    effect.Radius = 0;
+                }
+
+                @this.Effect = null;
+                return;
+            }
+
             if (useEffect)
             {
                 if (@this.Effect is BlurEffect effect)

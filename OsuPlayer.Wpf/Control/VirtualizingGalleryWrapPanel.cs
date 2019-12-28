@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -394,7 +395,7 @@ namespace Milky.OsuPlayer.Control
                 To = -offset,
                 EasingFunction = new CircleEase() { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,
-                Duration = new Duration(TimeSpan.FromMilliseconds(150))
+                Duration = Util.GetDuration(TimeSpan.FromMilliseconds(150))
             };
 
             Storyboard.SetTarget(da, this);

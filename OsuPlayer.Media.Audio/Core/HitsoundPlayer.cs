@@ -347,9 +347,8 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                     }
                     else if (!_useTempo && _multiplier >= 1.5 && hs is SpecificFileSoundElement specific)
                     {
-                        if (!_useTempo && _multiplier >= 1.5)
-                            Engine.PlaySound(specific.FilePaths[0], specific.Volume * 1f,
-                                        specific.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);
+                        Engine.PlaySound(specific.FilePaths[0], specific.Volume * 1f,
+                                    specific.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);
                     }
                 }
 
