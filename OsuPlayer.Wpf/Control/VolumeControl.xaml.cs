@@ -18,8 +18,10 @@ using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Audio.Core;
 using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
+using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Control
 {
@@ -64,6 +66,7 @@ namespace Milky.OsuPlayer.Control
         }
 
         private readonly AppDbOperator _appDbOperator = new AppDbOperator();
+        private IWavePlayer _device;
 
         public VolumeControl()
         {
@@ -106,6 +109,32 @@ namespace Milky.OsuPlayer.Control
         {
             _appDbOperator.UpdateMap(Services.Get<PlayerList>().CurrentInfo.Identity,
                 ComponentPlayer.Current.HitsoundOffset);
+        }
+
+        private void VolumeControl_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            _device = DeviceProvider.GetCurrentDevice();
+            if (_device is AsioOut asio)
+            {
+                BtnAsio.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                BtnAsio.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void BtnAsio_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_device is AsioOut asio)
+            {
+                asio.ShowControlPanel();
+            }
+        }
+
+        private void BtnPlayMod_OnClick(object sender, RoutedEventArgs e)
+        {
+            ComponentPlayer.Current.SetPlayMod((PlayMod)((Button)sender).Tag);
         }
     }
 }

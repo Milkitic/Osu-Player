@@ -17,7 +17,6 @@ namespace OsuPlayer.Devices
             Device = null;
         }
 
-        [JsonProperty]
         public OutputMethod OutputMethod => OutputMethod.Wasapi;
         [JsonProperty]
         public string FriendlyName { get; private set; }

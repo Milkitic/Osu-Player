@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Linq;
 using NAudio.Wave;
 
-namespace Milky.OsuPlayer.Media.Audio.Music.WaveProviders
+namespace Milky.OsuPlayer.Media.Audio.Core.WaveProviders
 {
     class CachedSoundSampleProvider : ISampleProvider
     {
@@ -25,17 +24,5 @@ namespace Milky.OsuPlayer.Media.Audio.Music.WaveProviders
         }
 
         public WaveFormat WaveFormat => SourceSound.WaveFormat;
-        //public override int Read(byte[] buffer, int offset, int count)
-        //{
-        //    return Read(buffer.Select(k => (float)k).ToArray(), offset, count);
-        //}
-
-        //public override long Length { get; }
-
-        //public override long Position
-        //{
-        //    get => _position;
-        //    set => _position = value;
-        //}
     }
 }

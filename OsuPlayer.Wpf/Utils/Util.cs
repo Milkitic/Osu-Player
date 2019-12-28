@@ -4,10 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Metadata;
 
@@ -240,6 +242,13 @@ namespace Milky.OsuPlayer.Utils
             }
 
             return result;
+        }
+
+        public static Duration GetDuration(TimeSpan ts)
+        {
+            if (AppSettings.Default.Interface.MinimalMode)
+                return new Duration(TimeSpan.Zero);
+            return new Duration(ts);
         }
     }
 }

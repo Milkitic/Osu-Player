@@ -1,6 +1,6 @@
 ﻿using NAudio.Wave;
 
-namespace Milky.OsuPlayer.Media.Audio.Music.WaveProviders
+namespace Milky.OsuPlayer.Media.Audio.Core.WaveProviders
 {
     /// <summary>
     /// Stream for looping playback

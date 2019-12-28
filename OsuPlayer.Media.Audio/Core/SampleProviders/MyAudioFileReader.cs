@@ -3,7 +3,7 @@ using NAudio.Vorbis;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
-namespace Milky.OsuPlayer.Media.Audio.Music.SampleProviders
+namespace Milky.OsuPlayer.Media.Audio.Core.SampleProviders
 {
     /// <summary>
     /// From https://github.com/naudio/NAudio/blob/master/NAudio/Wave/WaveStreams/AudioFileReader.cs.
@@ -50,7 +50,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music.SampleProviders
         }
 
         /// <summary>
-        /// Gets or Sets the Volume of this AudioFileReader. 1.0f is full volume
+        /// Gets or Sets the AddtionVolume of this AudioFileReader. 1.0f is full volume
         /// </summary>
         public float Volume
         {

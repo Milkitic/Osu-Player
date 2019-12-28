@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Milky.OsuPlayer.Common.Configuration;
 using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
 using NAudio.Wave;
 using OsuPlayer.Devices;
 
-namespace Milky.OsuPlayer.Media.Audio
+namespace Milky.OsuPlayer.Media.Audio.Core
 {
     public static class DeviceProvider
     {
         private static readonly MMDeviceEnumerator MMDeviceEnumerator;
         private static readonly MMNotificationClient MmNotificationClient;
+        private static IWavePlayer _currentDevice;
 
         private class MMNotificationClient : IMMNotificationClient
         {
@@ -65,15 +67,30 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private static List<IDeviceInfo> CacheList { get; set; }
 
-        public static IWavePlayer CreateDefaultDevice()
+        public static IWavePlayer CreateOrGetDefaultDevice()
         {
             var play = AppSettings.Default.Play;
             return CreateDevice(play.DeviceInfo, play.DesiredLatency, play.IsExclusive);
         }
 
+        public static IWavePlayer GetCurrentDevice()
+        {
+            return _currentDevice;
+        }
+
         public static IWavePlayer CreateDevice(IDeviceInfo deviceInfo = null, int latency = 1, bool isExclusive = true)
         {
-            return new WasapiOut(AudioClientShareMode.Shared, 1);
+            //if (_currentDevice != null)
+            //{
+            //    return _currentDevice;
+            //}
+
+            var apartmentState = Thread.CurrentThread.GetApartmentState();
+            if (apartmentState != ApartmentState.STA)
+            {
+                throw new Exception($"Need {ApartmentState.STA}, but actual {apartmentState}.");
+            }
+
             if (deviceInfo is null)
             {
                 Console.WriteLine("Device is null, use wasapi default.");
@@ -86,65 +103,69 @@ namespace Milky.OsuPlayer.Media.Audio
             //    CacheList = EnumerateAvailableDevices().ToList();
             //}
 
+            IWavePlayer device = null;
             if (!CacheList.Contains(deviceInfo))
             {
                 if (deviceInfo is WasapiInfo wasapiInfo)
                 {
                     var foundResult = CacheList.Where(k => k.OutputMethod == OutputMethod.Wasapi).Cast<WasapiInfo>()
                         .FirstOrDefault(k => k.DeviceId == wasapiInfo.DeviceId);
-                    if (foundResult.Device != null)
+                    if (foundResult?.Device != null)
                     {
                         wasapiInfo.Device = foundResult.Device;
                     }
                     else
                     {
                         Console.WriteLine("Device not found, use wasapi default.");
-                        return new WasapiOut(AudioClientShareMode.Shared, 1);
+                        device = new WasapiOut(AudioClientShareMode.Shared, 1);
                     }
                 }
                 else
                 {
                     Console.WriteLine("Device not found, use wasapi default.");
-                    return new WasapiOut(AudioClientShareMode.Shared, 1);
+                    device = new WasapiOut(AudioClientShareMode.Shared, 1);
                 }
             }
 
-            IWavePlayer device;
-            switch (deviceInfo.OutputMethod)
+            if (device is null)
             {
-                case OutputMethod.WaveOut:
-                    var waveOut = (WaveOutInfo)deviceInfo;
-                    device = new WaveOutEvent
-                    {
-                        DeviceNumber = waveOut.DeviceNumber,
-                        DesiredLatency = latency
-                    };
-                    break;
-                case OutputMethod.DirectSound:
-                    var dsOut = (DirectSoundOutInfo)deviceInfo;
-                    device = new DirectSoundOut(dsOut.DeviceGuid, latency);
-                    break;
-                case OutputMethod.Wasapi:
-                    var wasapi = (WasapiInfo)deviceInfo;
-                    if (wasapi.Equals(WasapiInfo.Default))
-                    {
-                        device = new WasapiOut(AudioClientShareMode.Shared, 1);
-                    }
-                    else
-                    {
-                        device = new WasapiOut(wasapi.Device,
-                            isExclusive ? AudioClientShareMode.Exclusive : AudioClientShareMode.Shared, true,
-                            latency);
-                    }
-                    break;
-                case OutputMethod.Asio:
-                    var asio = (AsioOutInfo)deviceInfo;
-                    device = new AsioOut(asio.FriendlyName);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                switch (deviceInfo.OutputMethod)
+                {
+                    case OutputMethod.WaveOut:
+                        var waveOut = (WaveOutInfo)deviceInfo;
+                        device = new WaveOutEvent
+                        {
+                            DeviceNumber = waveOut.DeviceNumber,
+                            DesiredLatency = latency
+                        };
+                        break;
+                    case OutputMethod.DirectSound:
+                        var dsOut = (DirectSoundOutInfo)deviceInfo;
+                        device = new DirectSoundOut(dsOut.DeviceGuid, latency);
+                        break;
+                    case OutputMethod.Wasapi:
+                        var wasapi = (WasapiInfo)deviceInfo;
+                        if (wasapi.Equals(WasapiInfo.Default))
+                        {
+                            device = new WasapiOut(AudioClientShareMode.Shared, 1);
+                        }
+                        else
+                        {
+                            device = new WasapiOut(wasapi.Device,
+                                isExclusive ? AudioClientShareMode.Exclusive : AudioClientShareMode.Shared, true,
+                                latency);
+                        }
+                        break;
+                    case OutputMethod.Asio:
+                        var asio = (AsioOutInfo)deviceInfo;
+                        device = new AsioOut(asio.FriendlyName);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
 
+            _currentDevice = device;
             return device;
         }
 

@@ -8,10 +8,11 @@ using System.Windows.Controls;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Instances;
-using Milky.OsuPlayer.Media.Audio.Music;
+using Milky.OsuPlayer.Media.Audio.Core;
 using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
 using Unosquare.FFME.Common;
@@ -70,6 +71,18 @@ namespace Milky.OsuPlayer.Control
             PlayController.Default.OnPlayClick += Controller_OnPlayClick;
             PlayController.Default.OnPauseClick += Controller_OnPauseClick;
             PlayController.Default.OnProgressDragComplete += Controller_OnProgressDragComplete;
+            AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
+        }
+
+        private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(AppSettings.Play.PlaybackRate):
+                    if (!(VideoElement is null))
+                        VideoElement.SpeedRatio = AppSettings.Default.Play.PlaybackRate;
+                    break;
+            }
         }
 
         public AnimationControlVm ViewModel { get; set; }
@@ -93,6 +106,17 @@ namespace Milky.OsuPlayer.Control
         private static void OnBlurChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (!(d is AnimationControl @this && e.NewValue is bool useEffect)) return;
+            if (AppSettings.Default.Interface.MinimalMode)
+            {
+                if (@this.Effect is BlurEffect effect)
+                {
+                    effect.Radius = 0;
+                }
+
+                @this.Effect = null;
+                return;
+            }
+
             if (useEffect)
             {
                 if (@this.Effect is BlurEffect effect)
@@ -353,7 +377,13 @@ namespace Milky.OsuPlayer.Control
                 VideoElement = null;
                 VideoElementBorder.Child = null;
                 //VideoElementBorder.Visibility = Visibility.Hidden;
-                VideoElement = new Unosquare.FFME.MediaElement { IsMuted = true, LoadedBehavior = MediaPlaybackState.Manual, Visibility = Visibility.Visible, };
+                VideoElement = new Unosquare.FFME.MediaElement
+                {
+                    IsMuted = true,
+                    LoadedBehavior = MediaPlaybackState.Manual,
+                    Visibility = Visibility.Visible,
+                    SpeedRatio = AppSettings.Default.Play.PlaybackRate
+                };
                 VideoElement.MediaOpened += OnMediaOpened;
                 VideoElement.MediaFailed += OnMediaFailed;
                 VideoElement.MediaEnded += OnMediaEnded;

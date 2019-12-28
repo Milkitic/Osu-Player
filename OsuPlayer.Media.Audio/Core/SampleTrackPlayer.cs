@@ -1,25 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Media.Audio.Sounds;
+using Milky.OsuPlayer.Media.Audio.TrackProvider;
 using OSharp.Beatmap;
 
-namespace Milky.OsuPlayer.Media.Audio.Music
+namespace Milky.OsuPlayer.Media.Audio.Core
 {
     internal class SampleTrackPlayer : HitsoundPlayer
     {
         protected override string Flag { get; } = "SampleTrack";
 
-        public SampleTrackPlayer(string filePath, OsuFile osuFile) : base(filePath, osuFile)
+        public SampleTrackPlayer(AudioPlaybackEngine engine, string filePath, OsuFile osuFile) : base(engine, filePath, osuFile)
         {
         }
+
         protected override void InitVolume()
         {
-            Engine.Volume = 1f * AppSettings.Default.Volume.Sample * AppSettings.Default.Volume.Main;
+            Engine.SampleVolume = 1f * AppSettings.Default.Volume.Sample * AppSettings.Default.Volume.Main;
         }
 
         protected override void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            Engine.Volume = 1f * AppSettings.Default.Volume.Sample * AppSettings.Default.Volume.Main;
+            Engine.SampleVolume = 1f * AppSettings.Default.Volume.Sample * AppSettings.Default.Volume.Main;
         }
 
         protected override List<SoundElement> FillHitsoundList(OsuFile osuFile, DirectoryInfo dirInfo)
@@ -50,6 +53,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 hitsoundList.Add(element);
             }
 
+            var sb = new NightcoreTilingTrackProvider(osuFile);
+            var eles = sb.GetSoundElements();
+            hitsoundList.AddRange(eles);
             return hitsoundList;
         }
     }

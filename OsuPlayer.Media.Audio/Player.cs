@@ -1,5 +1,4 @@
 ﻿using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Media.Audio.Music;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Media.Audio.Core;
 
 namespace Milky.OsuPlayer.Media.Audio
 {

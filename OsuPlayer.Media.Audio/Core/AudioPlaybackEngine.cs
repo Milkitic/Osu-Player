@@ -2,43 +2,66 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Media.Audio.Music.SampleProviders;
-using Milky.OsuPlayer.Media.Audio.Music.WaveProviders;
+using System.Linq;
+using Milky.OsuPlayer.Media.Audio.Core.SampleProviders;
+using Milky.OsuPlayer.Media.Audio.Core.WaveProviders;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using OsuPlayer.Devices;
 
-namespace Milky.OsuPlayer.Media.Audio.Music
+namespace Milky.OsuPlayer.Media.Audio.Core
 {
     public class AudioPlaybackEngine : IDisposable
     {
         static ConcurrentDictionary<string, CachedSound> _cachedDictionary = new ConcurrentDictionary<string, CachedSound>();
 
         private readonly IWavePlayer _outputDevice;
-        private readonly MixingSampleProvider _mixer;
-        private VolumeSampleProvider _volumeProvider;
+        private VolumeSampleProvider _hitsoundVolumeProvider;
 
         private static string[] _supportExtensions = { ".wav", ".mp3", ".ogg" };
+        private readonly MixingSampleProvider _rootMixer;
+        private MixingSampleProvider _hitsoundMixer;
+        private MixingSampleProvider _sampleMixer;
+        private VolumeSampleProvider _sampleVolumeProvider;
 
         public bool Enable3dEffect { get; } = true;
 
-        public float Volume
+        public float HitsoundVolume
         {
-            get => _volumeProvider.Volume;
-            set => _volumeProvider.Volume = value;
+            get => _hitsoundVolumeProvider.Volume;
+            set => _hitsoundVolumeProvider.Volume = value;
+        }
+        public float SampleVolume
+        {
+            get => _sampleVolumeProvider.Volume;
+            set => _sampleVolumeProvider.Volume = value;
         }
 
-        public AudioPlaybackEngine(int sampleRate = 44100, int channelCount = 2)
+        public AudioPlaybackEngine(IWavePlayer outputDevice, int sampleRate = 44100, int channelCount = 2)
         {
-            _outputDevice = DeviceProvider.CreateDefaultDevice();
-            _mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channelCount))
+            _outputDevice = outputDevice;
+            var waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channelCount);
+            _rootMixer = new MixingSampleProvider(waveFormat)
             {
                 ReadFully = true
             };
-            _volumeProvider = new VolumeSampleProvider(_mixer);
 
-            _outputDevice.Init(_volumeProvider);
+            _hitsoundMixer = new MixingSampleProvider(waveFormat)
+            {
+                ReadFully = true
+            };
+
+            _sampleMixer = new MixingSampleProvider(waveFormat)
+            {
+                ReadFully = true
+            };
+
+            _hitsoundVolumeProvider = new VolumeSampleProvider(_hitsoundMixer);
+            _sampleVolumeProvider = new VolumeSampleProvider(_sampleMixer);
+
+            _rootMixer.AddMixerInput(_hitsoundVolumeProvider);
+            _rootMixer.AddMixerInput(_sampleVolumeProvider);
+
+            _outputDevice.Init(_rootMixer);
             _outputDevice.Play();
         }
 
@@ -109,33 +132,63 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             return path;
         }
 
-        public void PlaySound(string path, float volume, float balance = 0f)
+        public void PlaySound(string path, float volume, float balance = 0f, bool isHitsound = true)
         {
             if (!_cachedDictionary.ContainsKey(path))
             {
                 CreateCacheSound(path);
             }
 
-            PlaySound(_cachedDictionary[path], volume, balance);
+            PlaySound(_cachedDictionary[path], volume, balance, isHitsound);
         }
 
-        private void PlaySound(CachedSound sound, float volume, float balance)
+        public void AddRootSample(ISampleProvider input)
+        {
+            if (!_rootMixer.MixerInputs.Contains(input))
+                _rootMixer.AddMixerInput(input);
+        }
+
+        public void RemoveRootSample(ISampleProvider input)
+        {
+            if (_rootMixer.MixerInputs.Contains(input))
+                _rootMixer.RemoveMixerInput(input);
+        }
+
+        public void AddHitsoundSample(ISampleProvider input)
+        {
+            if (!_hitsoundMixer.MixerInputs.Contains(input))
+                _hitsoundMixer.AddMixerInput(input);
+        }
+
+        public void RemoveHitsoundSample(ISampleProvider input)
+        {
+            if (_hitsoundMixer.MixerInputs.Contains(input))
+                _hitsoundMixer.RemoveMixerInput(input);
+        }
+
+        private void PlaySound(CachedSound sound, float volume, float balance, bool isHitsound)
         {
             if (sound == null) return;
-            AddMixerInput(new CachedSoundSampleProvider(sound), volume, balance);
+            AddMixerInput(new CachedSoundSampleProvider(sound), volume, balance, isHitsound);
         }
 
-        private void AddMixerInput(ISampleProvider input, float volume, float balance)
+        private void AddMixerInput(ISampleProvider input, float volume, float balance, bool isHitsound)
         {
             var volumed = AdjustVolume(input, volume);
             if (Enable3dEffect)
             {
                 var balanced = AdjustBalance(volumed, balance);
-                _mixer.AddMixerInput(balanced);
+                if (isHitsound)
+                    _hitsoundMixer.AddMixerInput(balanced);
+                else
+                    _sampleMixer.AddMixerInput(balanced);
             }
             else
             {
-                _mixer.AddMixerInput(volumed);
+                if (isHitsound)
+                    _hitsoundMixer.AddMixerInput(volumed);
+                else
+                    _sampleMixer.AddMixerInput(volumed);
             }
         }
 

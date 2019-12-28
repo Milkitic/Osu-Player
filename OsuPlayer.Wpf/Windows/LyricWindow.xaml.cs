@@ -28,6 +28,7 @@ using FontFamily = System.Drawing.FontFamily;
 using Image = System.Drawing.Image;
 using Pen = System.Drawing.Pen;
 using Size = System.Windows.Size;
+using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -188,14 +189,14 @@ namespace Milky.OsuPlayer.Windows
                 From = new Thickness(0),
                 To = new Thickness(0),
                 BeginTime = TimeSpan.FromMilliseconds(0),
-                Duration = new Duration(TimeSpan.FromMilliseconds(startTime))
+                Duration = Util.GetDuration(TimeSpan.FromMilliseconds(startTime))
             };
             var translateAnimation = new ThicknessAnimation
             {
                 From = new Thickness(0),
                 To = new Thickness(viewWidth - width, 0, 0, 0),
                 BeginTime = TimeSpan.FromMilliseconds(startTime),
-                Duration = new Duration(TimeSpan.FromMilliseconds(duration))
+                Duration = Util.GetDuration(TimeSpan.FromMilliseconds(duration))
             };
 
             Storyboard.SetTarget(defaultAnimation, LyricBar);

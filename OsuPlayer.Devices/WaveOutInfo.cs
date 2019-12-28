@@ -1,4 +1,6 @@
-﻿namespace OsuPlayer.Devices
+﻿using Newtonsoft.Json;
+
+namespace OsuPlayer.Devices
 {
     public class WaveOutInfo : IDeviceInfo
     {
@@ -14,7 +16,9 @@
         }
 
         public OutputMethod OutputMethod => OutputMethod.WaveOut;
+        [JsonProperty]
         public string FriendlyName { get; private set; }
+        [JsonProperty]
         public int DeviceNumber { get; private set; }
 
         public override bool Equals(object obj)

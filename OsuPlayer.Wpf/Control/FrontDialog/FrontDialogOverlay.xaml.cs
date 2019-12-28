@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Utils;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -247,7 +248,7 @@ namespace Milky.OsuPlayer.Control.FrontDialog
             var circ = new CircleEase { EasingMode = EasingMode.EaseIn };
 
             var dialogTs = TimeSpan.FromMilliseconds(300);
-            var dialogDuration = new Duration(dialogTs);
+            var dialogDuration = Util.GetDuration(dialogTs);
             var da2 = new DoubleAnimation()
             {
                 From = 1,
@@ -277,7 +278,7 @@ namespace Milky.OsuPlayer.Control.FrontDialog
                 From = 1,
                 To = 0,
                 BeginTime = TimeSpan.FromMilliseconds(dialogTs.TotalMilliseconds / 2f),
-                Duration = new Duration(TimeSpan.FromMilliseconds(150)),
+                Duration = Util.GetDuration(TimeSpan.FromMilliseconds(150)),
                 EasingFunction = sine
             };
             Storyboard.SetTarget(da, MainCanvas);
@@ -312,7 +313,7 @@ namespace Milky.OsuPlayer.Control.FrontDialog
             {
                 From = 0,
                 To = 1,
-                Duration = new Duration(canvasTs),
+                Duration = Util.GetDuration(canvasTs),
                 EasingFunction = sine
             };
             Storyboard.SetTarget(da, MainCanvas);
@@ -321,7 +322,7 @@ namespace Milky.OsuPlayer.Control.FrontDialog
             var back = new BackEase { EasingMode = EasingMode.EaseOut, Amplitude = 0.3 };
             var circ = new CircleEase { EasingMode = EasingMode.EaseOut };
 
-            var dialogDuration = new Duration(TimeSpan.FromMilliseconds(300));
+            var dialogDuration = Util.GetDuration(TimeSpan.FromMilliseconds(300));
             var da2 = new DoubleAnimation
             {
                 From = 0.7,

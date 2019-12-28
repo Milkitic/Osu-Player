@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace OsuPlayer.Devices
 {
@@ -16,7 +17,9 @@ namespace OsuPlayer.Devices
         }
 
         public OutputMethod OutputMethod => OutputMethod.DirectSound;
+        [JsonProperty]
         public string FriendlyName { get; private set; }
+        [JsonProperty]
         public Guid DeviceGuid { get; private set; }
 
         public override bool Equals(object obj)

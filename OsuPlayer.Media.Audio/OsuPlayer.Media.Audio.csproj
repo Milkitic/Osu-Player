@@ -56,28 +56,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeviceProvider.cs" />
-    <Compile Include="SoundElement.cs" />
-    <Compile Include="Music\AudioPlaybackEngine.cs" />
+    <Compile Include="Core\DeviceProvider.cs" />
+    <Compile Include="Core\SoundTouch\SoundTouch.cs" />
+    <Compile Include="Core\SoundTouch\SoundTouchInterop32.cs" />
+    <Compile Include="Core\SoundTouch\SoundTouchInterop64.cs" />
+    <Compile Include="Core\SoundTouch\SoundTouchProfile.cs" />
+    <Compile Include="Core\SoundTouch\SoundTouchSettings.cs" />
+    <Compile Include="Core\SoundTouch\VarispeedSampleProvider.cs" />
+    <Compile Include="Sounds\SoundElement.cs" />
+    <Compile Include="Core\AudioPlaybackEngine.cs" />
     <Compile Include="ComponentPlayer.cs" />
-    <Compile Include="HitsoundElement.cs" />
+    <Compile Include="Sounds\HitsoundElement.cs" />
     <Compile Include="IPlayer.cs" />
-    <Compile Include="Music\CachedSound.cs" />
-    <Compile Include="Music\HitsoundPlayer.cs" />
-    <Compile Include="Music\MusicPlayer.cs" />
-    <Compile Include="Music\ProgressEventArgs.cs" />
-    <Compile Include="Music\SampleProviders\ChannelSampleProvider.cs" />
-    <Compile Include="Music\SampleProviders\MyAudioFileReader.cs" />
-    <Compile Include="Music\SoundTouch\SoundTouchApi.cs" />
-    <Compile Include="Music\TimeStretchProfile.cs" />
-    <Compile Include="Music\WaveProviders\AutoDisposeFileReader.cs" />
-    <Compile Include="Music\WaveProviders\CachedSoundSampleProvider.cs" />
-    <Compile Include="Music\WaveProviders\CusBufferedWaveProvider.cs" />
-    <Compile Include="Music\WaveProviders\LoopStream.cs" />
+    <Compile Include="Core\CachedSound.cs" />
+    <Compile Include="Core\HitsoundPlayer.cs" />
+    <Compile Include="Core\MusicPlayer.cs" />
+    <Compile Include="Core\ProgressEventArgs.cs" />
+    <Compile Include="Core\SampleProviders\ChannelSampleProvider.cs" />
+    <Compile Include="Core\SampleProviders\MyAudioFileReader.cs" />
+    <Compile Include="Core\WaveProviders\CachedSoundSampleProvider.cs" />
+    <Compile Include="Core\WaveProviders\LoopStream.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Music\SampleTrackPlayer.cs" />
-    <Compile Include="SlideControlElement.cs" />
+    <Compile Include="Core\SampleTrackPlayer.cs" />
+    <Compile Include="Sounds\SlideControlElement.cs" />
+    <Compile Include="Core\WaveResampler.cs" />
+    <Compile Include="Sounds\SpecificFileSoundElement.cs" />
+    <Compile Include="TrackProvider\TrackProviderBase.cs" />
+    <Compile Include="TrackProvider\NightcoreTilingTrackProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

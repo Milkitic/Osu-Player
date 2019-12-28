@@ -1,9 +1,4 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Player;
-using OSharp.Beatmap;
-using OSharp.Beatmap.Sections.HitObject;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,22 +6,23 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Media.Audio.Music.SampleProviders;
-using Milky.OsuPlayer.Media.Audio.Music.WaveProviders;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Media.Audio.Core.SampleProviders;
+using Milky.OsuPlayer.Media.Audio.Core.WaveProviders;
+using Milky.OsuPlayer.Media.Audio.Sounds;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using OSharp.Beatmap;
 using OSharp.Beatmap.Sections.GamePlay;
-using OSharp.Beatmap.Sections.Timing;
+using OSharp.Beatmap.Sections.HitObject;
 
-namespace Milky.OsuPlayer.Media.Audio.Music
+namespace Milky.OsuPlayer.Media.Audio.Core
 {
     internal class HitsoundPlayer : Player, IDisposable
     {
         protected virtual string Flag { get; } = "Hitsound";
-        static HitsoundPlayer()
-        {
-            CachedSound.CachePath = Path.Combine(Domain.CachePath, "_temp.sound");
-        }
 
         public override int ProgressRefreshInterval { get; set; }
 
@@ -59,19 +55,17 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         public bool IsPlaying => _playingTask != null &&
                                  !_playingTask.IsCanceled &&
                                  !_playingTask.IsCompleted &&
-                                 !_playingTask.IsFaulted;
+                                 !_playingTask.IsFaulted && PlayerStatus == PlayerStatus.Playing;
 
         public bool IsRunningDynamicOffset => _offsetTask != null &&
                                               !_offsetTask.IsCanceled &&
                                               !_offsetTask.IsCompleted &&
                                               !_offsetTask.IsFaulted;
 
-        protected AudioPlaybackEngine Engine = new AudioPlaybackEngine();
-        private IWavePlayer _slideDevice = DeviceProvider.CreateDefaultDevice();
-        private IWavePlayer _slideAddDevice = DeviceProvider.CreateDefaultDevice();
-        private LoopStream _slideLoop;
-        private CachedSoundSampleProvider _slideSound;
-        private CachedSoundSampleProvider _slideAddSound;
+
+        //private LoopStream _slideLoop;
+        //private CachedSoundSampleProvider _slideSound;
+        //private CachedSoundSampleProvider _slideAddSound;
         private ChannelSampleProvider _currentChannel;
         private VolumeSampleProvider _currentVolume;
         private ChannelSampleProvider _currentChannelAdd;
@@ -89,11 +83,15 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         private float _multiplier = 1f;
         private readonly Stopwatch _sw = new Stopwatch();
         private PlayerStatus _playerStatus;
-        private PlayMod _mod;
         private readonly OsuFile _osuFile;
+        protected readonly AudioPlaybackEngine Engine;
 
-        public HitsoundPlayer(string filePath, OsuFile osuFile)
+        private int _dcOffset;
+        private bool _useTempo;
+
+        public HitsoundPlayer(AudioPlaybackEngine engine, string filePath, OsuFile osuFile)
         {
+            Engine = engine;
             _osuFile = osuFile;
             _filePath = filePath;
         }
@@ -108,51 +106,23 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 throw new DirectoryNotFoundException("获取" + fileInfo.Name + "所在目录失败了？");
 
             List<SoundElement> hitsoundList = FillHitsoundList(_osuFile, dirInfo);
-            _hitsoundList = hitsoundList.OrderBy(t => t.Offset).Cast<SoundElement>().ToList(); // Sorted before enqueue.
+            _hitsoundList = hitsoundList.OrderBy(t => t.Offset).ToList(); // Sorted before enqueue.
             Requeue(0);
             var allPaths = hitsoundList.Select(t => t.FilePaths).SelectMany(sbx2 => sbx2).Distinct();
+            //_outputDevice = DeviceProvider.CreateOrGetDefaultDevice();
+            //Engine = new AudioPlaybackEngine(_outputDevice);
             await Task.Run(() =>
             {
                 Engine.CreateCacheSounds(allPaths);
                 Engine.CreateCacheSounds(new DirectoryInfo(Domain.DefaultPath).GetFiles().Select(k => k.FullName));
             });
             PlayerStatus = PlayerStatus.Ready;
-            SetPlayMod(AppSettings.Default.Play.PlayMod, false);
+            SetTempoMode(AppSettings.Default.Play.PlayUseTempo);
+            SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, false);
             InitVolume();
             AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
+            //AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
             RaisePlayerLoadedEvent(this, new EventArgs());
-        }
-
-        protected virtual void InitVolume()
-        {
-            Engine.Volume = 1f * AppSettings.Default.Volume.Hitsound * AppSettings.Default.Volume.Main;
-        }
-
-        protected virtual void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            Engine.Volume = 1f * AppSettings.Default.Volume.Hitsound * AppSettings.Default.Volume.Main;
-        }
-
-        public void SetPlayMod(PlayMod mod, bool play)
-        {
-            _mod = mod;
-            switch (mod)
-            {
-                case PlayMod.None:
-                    SetTime(PlayTime, play);
-                    _multiplier = 1f;
-                    break;
-                case PlayMod.DoubleTime:
-                case PlayMod.NightCore:
-                    SetTime(PlayTime, play);
-                    _multiplier = 1.5f;
-                    break;
-                case PlayMod.HalfTime:
-                case PlayMod.DayCore:
-                    SetTime(PlayTime, play);
-                    _multiplier = 0.75f;
-                    break;
-            }
         }
 
         public override void Play()
@@ -161,10 +131,9 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             //    return;
             StartTask();
             //App.MusicPlayer.Play();
-            if (_mod == PlayMod.None)
-            {
-                DynamicOffset();
-            }
+
+            DynamicOffset();
+
             _playingTask = new Task(PlayHitsound);
             _playingTask.Start();
 
@@ -187,13 +156,6 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             RaisePlayerStoppedEvent(this, new EventArgs());
         }
 
-        internal void ResetWithoutNotify(bool finished = false)
-        {
-            CancelTask(true);
-            SetTimePurely(0);
-            PlayerStatus = finished ? PlayerStatus.Finished : PlayerStatus.Stopped;
-        }
-
         public override void Replay()
         {
             Stop();
@@ -206,29 +168,11 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             SetTimePurely(ms);
         }
 
-        private void SetTimePurely(int ms)
+        internal void ResetWithoutNotify(bool finished = false)
         {
-            PlayTime = ms;
-            Requeue(ms);
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-
-            Stop();
-            if (_playingTask != null)
-                Task.WaitAll(_playingTask);
-            _playingTask?.Dispose();
-            _cts?.Dispose();
-            Engine?.Dispose();
-            _slideDevice?.Stop();
-            _slideDevice?.Dispose();
-            _slideAddDevice?.Stop();
-            _slideAddDevice?.Dispose();
-            AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
-
-            GC.Collect();
+            CancelTask(true);
+            SetTimePurely(0);
+            PlayerStatus = finished ? PlayerStatus.Finished : PlayerStatus.Stopped;
         }
 
         internal void SetDuration(int musicPlayerDuration)
@@ -251,11 +195,65 @@ namespace Milky.OsuPlayer.Media.Audio.Music
             );
         }
 
+        internal void SetTempoMode(bool useTempo)
+        {
+            _useTempo = useTempo;
+            AdjustModOffset();
+        }
+
+        internal void SetPlaybackRate(float rate, bool b)
+        {
+            _multiplier = rate;
+            AdjustModOffset();
+        }
+
+        private void AdjustModOffset()
+        {
+            if (Math.Abs(_multiplier - 0.75) < 0.001 && !_useTempo)
+            {
+                _dcOffset = -25;
+            }
+            else if (Math.Abs(_multiplier - 1.5) < 0.001 && _useTempo)
+            {
+                _dcOffset = 15;
+            }
+            else
+            {
+                _dcOffset = 0;
+            }
+        }
+
+        protected virtual void InitVolume()
+        {
+            Engine.HitsoundVolume = 1f * AppSettings.Default.Volume.Hitsound * AppSettings.Default.Volume.Main;
+        }
+
+        protected virtual void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            Engine.HitsoundVolume = 1f * AppSettings.Default.Volume.Hitsound * AppSettings.Default.Volume.Main;
+        }
+
+        //private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        //{
+        //    switch (e.PropertyName)
+        //    {
+        //        case nameof(AppSettings.Play.PlaybackRate):
+        //            SetPlaybackRate(AppSettings.Default.Play.PlaybackRate,);
+        //            break;
+        //    }
+        //}
+
+        private void SetTimePurely(int ms)
+        {
+            PlayTime = ms;
+            Requeue(ms);
+        }
+
         private void PlayHitsound()
         {
+            var isHitsound = !(this is SampleTrackPlayer);
             _sw.Restart();
-            while (_hsQueue.Count > 0 && _mod == PlayMod.None ||
-                   ComponentPlayer.Current.MusicPlayer.PlayerStatus != PlayerStatus.Finished)
+            while (_hsQueue.Count > 0 || ComponentPlayer.Current.MusicPlayer.PlayerStatus != PlayerStatus.Finished)
             {
                 if (_cts.Token.IsCancellationRequested)
                 {
@@ -266,94 +264,94 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                 //_sw.Start();
 
                 // Loop
-                if (_mod == PlayMod.None)
+
+                while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= PlayTime)
                 {
-                    while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= PlayTime)
+                    if (!_hsQueue.TryDequeue(out var hs))
+                        continue;
+
+                    if (hs is HitsoundElement he)
                     {
-                        if (!_hsQueue.TryDequeue(out var hs))
-                            continue;
-
-                        if (hs is HitsoundElement he)
+                        foreach (var path in he.FilePaths)
                         {
-                            foreach (var path in he.FilePaths)
-                            {
-                                Engine.PlaySound(path, he.Volume * 1f,
-                                    he.Balance * AppSettings.Default.Volume.BalanceFactor / 100f);
-                                //Task.Run(() =>);
-                            }
-                        }
-                        else if (hs is SlideControlElement sce)
-                        {
-                            var path = sce.FilePaths[0];
-
-                            switch (sce.ControlMode)
-                            {
-                                case SlideControlMode.NewSample:
-                                    {
-                                        //var device = sce.IsAddition ? _slideAddDevice : _slideDevice;
-                                        //var sound = sce.IsAddition ? NewProviderAndRet(ref _slideAddSound, path) : NewProviderAndRet(ref _slideSound, path);
-                                        //var s = new RawSourceWaveStream(
-                                        //    sound.SourceSound.AudioData.Select(k => (byte)k).ToArray(), 0,
-                                        //    sound.SourceSound.AudioData.Length, sound.WaveFormat);
-                                        var myf = new WaveFileReader(path);
-                                        var loop = new LoopStream(myf);
-                                        if (!sce.IsAddition)
-                                        {
-                                            _currentVolume = new VolumeSampleProvider(loop.ToSampleProvider());
-                                            _currentVolume.Volume = sce.Volume;
-                                            _currentChannel = new ChannelSampleProvider(_currentVolume);
-                                            _currentChannel.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
-                                        }
-                                        else
-                                        {
-                                            _currentVolumeAdd = new VolumeSampleProvider(loop.ToSampleProvider());
-                                            _currentVolumeAdd.Volume = sce.Volume;
-                                            _currentChannelAdd = new ChannelSampleProvider(_currentVolumeAdd);
-                                            _currentChannelAdd.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
-                                        }
-
-                                        //device.Stop();
-                                        var device = sce.IsAddition ? NewDeviceAndRet(ref _slideAddDevice) : NewDeviceAndRet(ref _slideDevice);
-                                        device.Init(sce.IsAddition ? _currentChannelAdd : _currentChannel);
-                                        device.Play();
-                                    }
-                                    break;
-                                case SlideControlMode.ChangeBalance:
-                                    if (_currentChannel != null)
-                                    {
-                                        _currentChannel.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
-                                    }
-
-                                    if (_currentChannelAdd != null)
-                                    {
-                                        _currentChannelAdd.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
-                                    }
-                                    break;
-                                case SlideControlMode.Volume:
-                                    if (_currentChannel != null && !sce.IsAddition)
-                                    {
-                                        _currentVolume.Volume = sce.Volume;
-                                    }
-
-                                    if (_currentChannelAdd != null && sce.IsAddition)
-                                    {
-                                        _currentVolumeAdd.Volume = sce.Volume;
-                                    }
-                                    break;
-                                case SlideControlMode.Stop:
-                                    {
-                                        //var device = sce.IsAddition ? _slideAddDevice : _slideDevice;
-                                        //device.Stop();
-                                        _slideDevice.Stop();
-                                        _slideAddDevice.Stop();
-                                        break;
-                                    }
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
+                            Engine.PlaySound(path, he.Volume * 1f,
+                                he.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);
+                            //Task.Run(() =>);
                         }
                     }
+                    else if (hs is SlideControlElement sce)
+                    {
+                        var path = sce.FilePaths[0];
+
+                        switch (sce.ControlMode)
+                        {
+                            case SlideControlMode.NewSample:
+                                {
+                                    Engine.RemoveHitsoundSample(_currentChannel);
+                                    Engine.RemoveHitsoundSample(_currentChannelAdd);
+                                    //var sound = sce.IsAddition ? NewProviderAndRet(ref _slideAddSound, path) : NewProviderAndRet(ref _slideSound, path);
+                                    //var s = new RawSourceWaveStream(
+                                    //    sound.SourceSound.AudioData.Select(k => (byte)k).ToArray(), 0,
+                                    //    sound.SourceSound.AudioData.Length, sound.WaveFormat);
+                                    var myf = new WaveFileReader(path);
+                                    var loop = new LoopStream(myf);
+                                    if (!sce.IsAddition)
+                                    {
+                                        _currentVolume = new VolumeSampleProvider(loop.ToSampleProvider());
+                                        _currentVolume.Volume = sce.Volume;
+                                        _currentChannel = new ChannelSampleProvider(_currentVolume);
+                                        _currentChannel.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
+                                        Engine.AddHitsoundSample(_currentChannel);
+                                    }
+                                    else
+                                    {
+                                        _currentVolumeAdd = new VolumeSampleProvider(loop.ToSampleProvider());
+                                        _currentVolumeAdd.Volume = sce.Volume;
+                                        _currentChannelAdd = new ChannelSampleProvider(_currentVolumeAdd);
+                                        _currentChannelAdd.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
+                                        Engine.AddHitsoundSample(_currentChannelAdd);
+                                    }
+                                }
+                                break;
+                            case SlideControlMode.ChangeBalance:
+                                if (_currentChannel != null)
+                                {
+                                    _currentChannel.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
+                                }
+
+                                if (_currentChannelAdd != null)
+                                {
+                                    _currentChannelAdd.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
+                                }
+                                break;
+                            case SlideControlMode.Volume:
+                                if (_currentChannel != null && !sce.IsAddition)
+                                {
+                                    _currentVolume.Volume = sce.Volume;
+                                }
+
+                                if (_currentChannelAdd != null && sce.IsAddition)
+                                {
+                                    _currentVolumeAdd.Volume = sce.Volume;
+                                }
+                                break;
+                            case SlideControlMode.Stop:
+                                {
+                                    Engine.RemoveHitsoundSample(_currentChannel);
+                                    Engine.RemoveHitsoundSample(_currentChannelAdd);
+                                    break;
+                                }
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    }
+                    else if (!_useTempo && _multiplier >= 1.5 && hs is SpecificFileSoundElement specific)
+                    {
+                        Engine.PlaySound(specific.FilePaths[0], specific.Volume * 1f,
+                                    specific.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);
+                    }
                 }
+
 
                 Thread.Sleep(1);
             }
@@ -363,18 +361,6 @@ namespace Milky.OsuPlayer.Media.Audio.Music
 
             PlayerStatus = PlayerStatus.Finished;
             Task.Run(() => { RaisePlayerFinishedEvent(this, new EventArgs()); });
-        }
-
-        private IWavePlayer NewDeviceAndRet(ref IWavePlayer device)
-        {
-            device?.Stop();
-            device?.Dispose();
-            return device = DeviceProvider.CreateDefaultDevice();
-        }
-
-        private CachedSoundSampleProvider NewProviderAndRet(ref CachedSoundSampleProvider slideAddSound, string path)
-        {
-            return slideAddSound = new CachedSoundSampleProvider(Engine.GetOrCreateCacheSound(path));
         }
 
         private void DynamicOffset()
@@ -391,7 +377,7 @@ namespace Milky.OsuPlayer.Media.Audio.Music
                         if (nowMs != preMs) // 音乐play time变动
                         {
                             preMs = nowMs;
-                            var d = nowMs - (PlayTime + SingleOffset); // Single：单曲offset（人工调），PlayTime：音效play time
+                            var d = nowMs - (PlayTime + SingleOffset + _dcOffset); // Single：单曲offset（人工调），PlayTime：音效play time
                             var r = AppSettings.Default.Play.GeneralOffset - d; // General：全局offset
                             if (Math.Abs(r) > 5)
                             {
@@ -633,5 +619,21 @@ namespace Milky.OsuPlayer.Media.Audio.Music
         }
 
         #endregion Load
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            Stop();
+            if (_playingTask != null)
+                Task.WaitAll(_playingTask);
+            _playingTask?.Dispose();
+            _cts?.Dispose();
+            Engine?.Dispose();
+            AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
+            //AppSettings.Default.Play.PropertyChanged -= Play_PropertyChanged;
+
+            GC.Collect();
+        }
     }
 }

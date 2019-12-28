@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Media.Audio
+﻿namespace Milky.OsuPlayer.Media.Audio.Sounds
 {
     public abstract class SoundElement
     {
