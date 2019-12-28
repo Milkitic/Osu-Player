@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Media.Audio.Sounds;
 using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Media.Audio.TrackProvider
@@ -16,6 +17,6 @@ namespace Milky.OsuPlayer.Media.Audio.TrackProvider
             OsuFile = osuFile;
         }
 
-        public abstract void GetSoundElements();
+        public abstract IEnumerable<SoundElement> GetSoundElements();
     }
 }

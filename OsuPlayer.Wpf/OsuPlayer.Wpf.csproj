@@ -617,10 +617,18 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Content Include="Default\nightcore-clap.wav" />
-    <Content Include="Default\nightcore-finish.wav" />
-    <Content Include="Default\nightcore-hat.wav" />
-    <Content Include="Default\nightcore-kick.wav" />
+    <Content Include="Default\nightcore-clap.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Default\nightcore-finish.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Default\nightcore-hat.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Default\nightcore-kick.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="External\font\default.ttc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

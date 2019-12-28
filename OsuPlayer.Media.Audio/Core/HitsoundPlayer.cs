@@ -83,7 +83,6 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         private float _multiplier = 1f;
         private readonly Stopwatch _sw = new Stopwatch();
         private PlayerStatus _playerStatus;
-        private PlayMod _mod;
         private readonly OsuFile _osuFile;
         protected readonly AudioPlaybackEngine Engine;
 
@@ -132,10 +131,9 @@ namespace Milky.OsuPlayer.Media.Audio.Core
             //    return;
             StartTask();
             //App.MusicPlayer.Play();
-            if (_mod == PlayMod.None)
-            {
-                DynamicOffset();
-            }
+
+            DynamicOffset();
+
             _playingTask = new Task(PlayHitsound);
             _playingTask.Start();
 
@@ -255,8 +253,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         {
             var isHitsound = !(this is SampleTrackPlayer);
             _sw.Restart();
-            while (_hsQueue.Count > 0 && _mod == PlayMod.None ||
-                   ComponentPlayer.Current.MusicPlayer.PlayerStatus != PlayerStatus.Finished)
+            while (_hsQueue.Count > 0 || ComponentPlayer.Current.MusicPlayer.PlayerStatus != PlayerStatus.Finished)
             {
                 if (_cts.Token.IsCancellationRequested)
                 {
@@ -267,90 +264,95 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                 //_sw.Start();
 
                 // Loop
-                if (_mod == PlayMod.None)
+
+                while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= PlayTime)
                 {
-                    while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= PlayTime)
+                    if (!_hsQueue.TryDequeue(out var hs))
+                        continue;
+
+                    if (hs is HitsoundElement he)
                     {
-                        if (!_hsQueue.TryDequeue(out var hs))
-                            continue;
-
-                        if (hs is HitsoundElement he)
+                        foreach (var path in he.FilePaths)
                         {
-                            foreach (var path in he.FilePaths)
-                            {
-                                Engine.PlaySound(path, he.Volume * 1f,
-                                    he.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);
-                                //Task.Run(() =>);
-                            }
-                        }
-                        else if (hs is SlideControlElement sce)
-                        {
-                            var path = sce.FilePaths[0];
-
-                            switch (sce.ControlMode)
-                            {
-                                case SlideControlMode.NewSample:
-                                    {
-                                        Engine.RemoveHitsoundSample(_currentChannel);
-                                        Engine.RemoveHitsoundSample(_currentChannelAdd);
-                                        //var sound = sce.IsAddition ? NewProviderAndRet(ref _slideAddSound, path) : NewProviderAndRet(ref _slideSound, path);
-                                        //var s = new RawSourceWaveStream(
-                                        //    sound.SourceSound.AudioData.Select(k => (byte)k).ToArray(), 0,
-                                        //    sound.SourceSound.AudioData.Length, sound.WaveFormat);
-                                        var myf = new WaveFileReader(path);
-                                        var loop = new LoopStream(myf);
-                                        if (!sce.IsAddition)
-                                        {
-                                            _currentVolume = new VolumeSampleProvider(loop.ToSampleProvider());
-                                            _currentVolume.Volume = sce.Volume;
-                                            _currentChannel = new ChannelSampleProvider(_currentVolume);
-                                            _currentChannel.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
-                                            Engine.AddHitsoundSample(_currentChannel);
-                                        }
-                                        else
-                                        {
-                                            _currentVolumeAdd = new VolumeSampleProvider(loop.ToSampleProvider());
-                                            _currentVolumeAdd.Volume = sce.Volume;
-                                            _currentChannelAdd = new ChannelSampleProvider(_currentVolumeAdd);
-                                            _currentChannelAdd.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
-                                            Engine.AddHitsoundSample(_currentChannelAdd);
-                                        }
-                                    }
-                                    break;
-                                case SlideControlMode.ChangeBalance:
-                                    if (_currentChannel != null)
-                                    {
-                                        _currentChannel.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
-                                    }
-
-                                    if (_currentChannelAdd != null)
-                                    {
-                                        _currentChannelAdd.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
-                                    }
-                                    break;
-                                case SlideControlMode.Volume:
-                                    if (_currentChannel != null && !sce.IsAddition)
-                                    {
-                                        _currentVolume.Volume = sce.Volume;
-                                    }
-
-                                    if (_currentChannelAdd != null && sce.IsAddition)
-                                    {
-                                        _currentVolumeAdd.Volume = sce.Volume;
-                                    }
-                                    break;
-                                case SlideControlMode.Stop:
-                                    {
-                                        Engine.RemoveHitsoundSample(_currentChannel);
-                                        Engine.RemoveHitsoundSample(_currentChannelAdd);
-                                        break;
-                                    }
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
+                            Engine.PlaySound(path, he.Volume * 1f,
+                                he.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);
+                            //Task.Run(() =>);
                         }
                     }
+                    else if (hs is SlideControlElement sce)
+                    {
+                        var path = sce.FilePaths[0];
+
+                        switch (sce.ControlMode)
+                        {
+                            case SlideControlMode.NewSample:
+                                {
+                                    Engine.RemoveHitsoundSample(_currentChannel);
+                                    Engine.RemoveHitsoundSample(_currentChannelAdd);
+                                    //var sound = sce.IsAddition ? NewProviderAndRet(ref _slideAddSound, path) : NewProviderAndRet(ref _slideSound, path);
+                                    //var s = new RawSourceWaveStream(
+                                    //    sound.SourceSound.AudioData.Select(k => (byte)k).ToArray(), 0,
+                                    //    sound.SourceSound.AudioData.Length, sound.WaveFormat);
+                                    var myf = new WaveFileReader(path);
+                                    var loop = new LoopStream(myf);
+                                    if (!sce.IsAddition)
+                                    {
+                                        _currentVolume = new VolumeSampleProvider(loop.ToSampleProvider());
+                                        _currentVolume.Volume = sce.Volume;
+                                        _currentChannel = new ChannelSampleProvider(_currentVolume);
+                                        _currentChannel.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
+                                        Engine.AddHitsoundSample(_currentChannel);
+                                    }
+                                    else
+                                    {
+                                        _currentVolumeAdd = new VolumeSampleProvider(loop.ToSampleProvider());
+                                        _currentVolumeAdd.Volume = sce.Volume;
+                                        _currentChannelAdd = new ChannelSampleProvider(_currentVolumeAdd);
+                                        _currentChannelAdd.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
+                                        Engine.AddHitsoundSample(_currentChannelAdd);
+                                    }
+                                }
+                                break;
+                            case SlideControlMode.ChangeBalance:
+                                if (_currentChannel != null)
+                                {
+                                    _currentChannel.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
+                                }
+
+                                if (_currentChannelAdd != null)
+                                {
+                                    _currentChannelAdd.Balance = sce.Balance * AppSettings.Default.Volume.BalanceFactor / 100f;
+                                }
+                                break;
+                            case SlideControlMode.Volume:
+                                if (_currentChannel != null && !sce.IsAddition)
+                                {
+                                    _currentVolume.Volume = sce.Volume;
+                                }
+
+                                if (_currentChannelAdd != null && sce.IsAddition)
+                                {
+                                    _currentVolumeAdd.Volume = sce.Volume;
+                                }
+                                break;
+                            case SlideControlMode.Stop:
+                                {
+                                    Engine.RemoveHitsoundSample(_currentChannel);
+                                    Engine.RemoveHitsoundSample(_currentChannelAdd);
+                                    break;
+                                }
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    }
+                    else if (hs is SpecificFileSoundElement specific)
+                    {
+                        if (_useTempo == false && _multiplier >= 1.5)
+                            Engine.PlaySound(specific.FilePaths[0], specific.Volume * 1f,
+                                        specific.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);
+                    }
                 }
+
 
                 Thread.Sleep(1);
             }

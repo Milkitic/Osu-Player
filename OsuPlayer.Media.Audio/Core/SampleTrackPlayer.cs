@@ -2,6 +2,7 @@
 using System.IO;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio.Sounds;
+using Milky.OsuPlayer.Media.Audio.TrackProvider;
 using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Media.Audio.Core
@@ -52,6 +53,9 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                 hitsoundList.Add(element);
             }
 
+            var sb = new NightcoreTilingTrackProvider(osuFile);
+            var eles = sb.GetSoundElements();
+            hitsoundList.AddRange(eles);
             return hitsoundList;
         }
     }
