@@ -87,7 +87,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         protected readonly AudioPlaybackEngine Engine;
 
         private int _dcOffset;
-        private bool? _useTempo;
+        private bool _useTempo;
 
         public HitsoundPlayer(AudioPlaybackEngine engine, string filePath, OsuFile osuFile)
         {
@@ -209,11 +209,11 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         private void AdjustModOffset()
         {
-            if (Math.Abs(_multiplier - 0.75) < 0.001 && _useTempo == false)
+            if (Math.Abs(_multiplier - 0.75) < 0.001 && !_useTempo)
             {
                 _dcOffset = -25;
             }
-            else if (Math.Abs(_multiplier - 1.5) < 0.001 && _useTempo == true)
+            else if (Math.Abs(_multiplier - 1.5) < 0.001 && _useTempo)
             {
                 _dcOffset = 15;
             }
@@ -345,9 +345,9 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                                 throw new ArgumentOutOfRangeException();
                         }
                     }
-                    else if (hs is SpecificFileSoundElement specific)
+                    else if (!_useTempo && _multiplier >= 1.5 && hs is SpecificFileSoundElement specific)
                     {
-                        if (_useTempo == false && _multiplier >= 1.5)
+                        if (!_useTempo && _multiplier >= 1.5)
                             Engine.PlaySound(specific.FilePaths[0], specific.Volume * 1f,
                                         specific.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);
                     }

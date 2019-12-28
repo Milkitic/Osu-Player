@@ -51,7 +51,11 @@ namespace Milky.OsuPlayer.Media.Audio
         public int HitsoundOffset
         {
             get => HitsoundPlayer.SingleOffset;
-            set => HitsoundPlayer.SingleOffset = value;
+            set
+            {
+                HitsoundPlayer.SingleOffset = value;
+                SampleTrackPlayer.SingleOffset = value;
+            }
         }
 
         public static ComponentPlayer Current { get; set; }
@@ -71,13 +75,14 @@ namespace Milky.OsuPlayer.Media.Audio
             FileInfo fileInfo = new FileInfo(_filePath);
             DirectoryInfo dirInfo = fileInfo.Directory;
             FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, OsuFile.General.AudioFilename));
+            MusicPlayer = new MusicPlayer(_engine, _outputDevice, musicInfo.FullName);
+            await MusicPlayer.InitializeAsync();
+
             HitsoundPlayer = new HitsoundPlayer(_engine, _filePath, OsuFile);
             SampleTrackPlayer = new SampleTrackPlayer(_engine, _filePath, OsuFile);
-            MusicPlayer = new MusicPlayer(_engine, _outputDevice, musicInfo.FullName);
 
             await HitsoundPlayer.InitializeAsync();
             await SampleTrackPlayer.InitializeAsync();
-            await MusicPlayer.InitializeAsync();
 
             HitsoundPlayer.SetDuration(MusicPlayer.Duration);
             HitsoundPlayer.PlayerFinished += Players_OnFinished;
@@ -202,6 +207,7 @@ namespace Milky.OsuPlayer.Media.Audio
         public void SetTempoMode(bool useTempo)
         {
             HitsoundPlayer.SetTempoMode(useTempo);
+            SampleTrackPlayer.SetTempoMode(useTempo);
             MusicPlayer.SetTempoMode(useTempo);
             SetTime(MusicPlayer.PlayTime);
         }

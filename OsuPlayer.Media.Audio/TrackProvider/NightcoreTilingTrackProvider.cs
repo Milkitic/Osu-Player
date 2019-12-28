@@ -71,10 +71,6 @@ namespace Milky.OsuPlayer.Media.Audio.TrackProvider
                 })
             };
 
-        public NightcoreTilingTrackProvider(OsuFile osuFile) : base(osuFile)
-        {
-        }
-
         public override IEnumerable<SoundElement> GetSoundElements()
         {
             var timingSection = OsuFile.TimingPoints;
@@ -86,13 +82,15 @@ namespace Milky.OsuPlayer.Media.Audio.TrackProvider
                 )
                 .ToList();
 
+            var maxTime = Math.Max(Math.Max(ComponentPlayer.Current.MusicPlayer.Duration, OsuFile.HitObjects.MaxTime),
+                timingSection.MaxTime);
             var hitsoundList = new List<SpecificFileSoundElement>();
 
             for (int i = 0; i < redlineGroups.Count; i++)
             {
                 var (currentLine, interval) = redlineGroups[i];
                 var startTime = currentLine.Offset;
-                var endTime = i == redlineGroups.Count - 1 ? timingSection.MaxTime : redlineGroups[i + 1].k.Offset;
+                var endTime = i == redlineGroups.Count - 1 ? maxTime : redlineGroups[i + 1].k.Offset;
                 var rhythm = currentLine.Rhythm;
 
                 double period; // 一个周期的1/2数量
@@ -138,6 +136,10 @@ namespace Milky.OsuPlayer.Media.Audio.TrackProvider
             var ele = new SpecificFileSoundElement(1, 0, fileName, currentTime);
             currentTime += skipTime;
             return ele;
+        }
+
+        public NightcoreTilingTrackProvider(OsuFile osuFile) : base(osuFile)
+        {
         }
     }
 }
