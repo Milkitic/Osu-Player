@@ -20,7 +20,11 @@ namespace Milky.OsuPlayer.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-//if(StoryboardVm.Default.BeatmapModels)
+            //if(StoryboardVm.Default.BeatmapModels)
+            if (!StoryboardVm.Default.IsScanned)
+            {
+
+            }
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -28,9 +32,14 @@ namespace Milky.OsuPlayer.Pages
             // todo
         }
 
-        private void ScanButton_Click(object sender, RoutedEventArgs e)
+        private async void ScanButton_Click(object sender, RoutedEventArgs e)
         {
+            StoryboardVm.Default.IsScanning = true;
 
+            await StoryboardVm.Default.ScanBeatmap().ConfigureAwait(false);
+
+            StoryboardVm.Default.IsScanning = false;
+            StoryboardVm.Default.IsScanned = true;
         }
     }
 }

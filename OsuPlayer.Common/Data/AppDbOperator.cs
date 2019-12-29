@@ -21,6 +21,7 @@ namespace Milky.OsuPlayer.Common.Data
         private const string TABLE_MAP = "map_info";
         private const string TABLE_THUMB = "map_thumb";
         private const string TABLE_SB = "sb_info";
+        private const string TABLE_SB_FULL = "sb_info_full";
         private const string TABLE_COLLECTION = "collection";
 
         static AppDbOperator()
@@ -81,10 +82,18 @@ CREATE TABLE {TABLE_SB} (
     [id]               NVARCHAR (40) PRIMARY KEY
                                          NOT NULL,
     [mapId]            NVARCHAR (40) NOT NULL,
-    [thumbPath]        NVARCHAR (40) NOT NULL,
-    [thumbVideoPath]   NVARCHAR (40) NOT NULL,
     [version]          NVARCHAR (255) NOT NULL,
     [folder]           NVARCHAR (255) NOT NULL
+);
+",
+                    [TABLE_SB_FULL] = $@"
+CREATE TABLE {TABLE_SB_FULL} (
+    [id]               NVARCHAR (40) PRIMARY KEY
+                                         NOT NULL,
+    [thumbPath]        NVARCHAR (40),
+    [thumbVideoPath]   NVARCHAR (40),
+    [folder]           NVARCHAR (255) NOT NULL,
+    [own]              BIT            NOT NULL
 );
 ",
                     [TABLE_BEATMAP] = $@"
@@ -143,8 +152,8 @@ PRAGMA case_sensitive_like=false;"
                 File.WriteAllText(dbFile, "");
             }
 
-            var prov= _provider.Value;
-            
+            var prov = _provider.Value;
+
             var tables = prov.GetAllTables();
 
             foreach (var pair in _creationMapping)
@@ -455,15 +464,15 @@ SELECT collection.id,
 
         public void SetMapSbInfo(Guid beatmapDbId, StoryboardInfo sbInfo)
         {
-            var hasResult = GetMapThumb(beatmapDbId, out _);
+            var hasResult = GetMapSbInfo(beatmapDbId, out _);
 
             if (hasResult)
             {
                 ThreadedProvider.Update(TABLE_SB,
                     new Dictionary<string, object>
                     {
-                        ["thumbPath"] = sbInfo.SbThumbPath,
-                        ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
+                        //["thumbPath"] = sbInfo.SbThumbPath,
+                        //["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
                         ["version"] = sbInfo.Version,
                         ["folder"] = sbInfo.FolderName
                     },
@@ -476,8 +485,8 @@ SELECT collection.id,
                     {
                         ["id"] = Guid.NewGuid().ToString(),
                         ["mapId"] = beatmapDbId,
-                        ["thumbPath"] = sbInfo.SbThumbPath,
-                        ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
+                        //["thumbPath"] = sbInfo.SbThumbPath,
+                        //["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
                         ["version"] = sbInfo.Version,
                         ["folder"] = sbInfo.FolderName
                     }
@@ -485,9 +494,90 @@ SELECT collection.id,
             }
         }
 
+        public void RemoveMapSbInfo(Guid beatmapDbId)
+        {
+            var hasResult = GetMapSbInfo(beatmapDbId, out _);
+
+            if (hasResult)
+            {
+                ThreadedProvider.Delete(TABLE_SB,
+                    ("mapId", beatmapDbId, "=="));
+            }
+        }
+
+        public void RemoveMapSbInfo(Beatmap beatmap)
+        {
+            RemoveMapSbInfo(beatmap.Id);
+        }
+
         public void SetMapSbInfo(Beatmap beatmap, StoryboardInfo sbInfo)
         {
             SetMapSbInfo(beatmap.Id, sbInfo);
+        }
+
+        public bool GetMapSbInfo(Guid beatmapDbId, out StoryboardInfo sbInfo)
+        {
+            var dy = ThreadedProvider.Query<StoryboardInfo>(TABLE_SB,
+                ("mapId", beatmapDbId, "=="),
+                count: 1).FirstOrDefault();
+            sbInfo = dy;
+            return !(dy is null);
+        }
+
+        public bool GetMapSbInfo(Beatmap beatmap, out StoryboardInfo sbInfo)
+        {
+            return GetMapSbInfo(beatmap.Id, out sbInfo);
+        }
+
+
+        public void SetMapSbFullInfo(StoryboardFullInfo sbInfo)
+        {
+            var hasResult = GetMapSbFullInfo(sbInfo.FolderName, out _);
+
+            if (hasResult)
+            {
+                ThreadedProvider.Update(TABLE_SB_FULL,
+                    new Dictionary<string, object>
+                    {
+                        ["thumbPath"] = sbInfo.SbThumbPath,
+                        ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
+                        ["own"] = sbInfo.InOwnFolder
+                    },
+                    ("folder", sbInfo.FolderName, "=="));
+            }
+            else
+            {
+                ThreadedProvider.Insert(TABLE_SB_FULL,
+                    new Dictionary<string, object>
+                    {
+                        ["id"] = Guid.NewGuid().ToString(),
+                        ["thumbPath"] = sbInfo.SbThumbPath,
+                        ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
+                        ["folder"] = sbInfo.FolderName,
+                        ["own"] = sbInfo.InOwnFolder
+                    }
+                );
+            }
+        }
+
+        public void RemoveMapSbFullInfo(string folder)
+        {
+            var hasResult = GetMapSbFullInfo(folder, out _);
+
+            if (hasResult)
+            {
+                ThreadedProvider.Delete(TABLE_SB_FULL,
+                    ("mapId", folder, "=="));
+            }
+        }
+
+        public bool GetMapSbFullInfo(string folder, out StoryboardFullInfo sbInfo)
+        {
+            var dy = ThreadedProvider.Query<StoryboardFullInfo>(TABLE_SB_FULL,
+                ("folder", folder, "=="),
+                count: 1).FirstOrDefault();
+            sbInfo = dy;
+            return !(dy is null);
         }
 
         private void InnerUpdateMap(MapIdentity id, Dictionary<string, object> updateColumns)
