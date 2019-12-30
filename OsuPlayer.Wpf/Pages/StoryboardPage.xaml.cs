@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 
@@ -21,9 +22,10 @@ namespace Milky.OsuPlayer.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             //if(StoryboardVm.Default.BeatmapModels)
-            if (!StoryboardVm.Default.IsScanned)
+            if (AppSettings.Default.General.SbScanned)
             {
-
+                ScanScene.Visibility = Visibility.Collapsed;
+                ScanScene.IsEnabled = false;
             }
         }
 
@@ -39,7 +41,8 @@ namespace Milky.OsuPlayer.Pages
             await StoryboardVm.Default.ScanBeatmap().ConfigureAwait(false);
 
             StoryboardVm.Default.IsScanning = false;
-            StoryboardVm.Default.IsScanned = true;
+            AppSettings.Default.General.SbScanned = true;
+            AppSettings.SaveDefault();
         }
     }
 }

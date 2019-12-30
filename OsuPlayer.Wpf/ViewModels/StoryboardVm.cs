@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Annotations;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Metadata;
@@ -20,23 +21,11 @@ namespace Milky.OsuPlayer.ViewModels
 {
     class StoryboardVm : INotifyPropertyChanged
     {
-        private bool _isScanned;
         private bool _isScanning;
         private ObservableCollection<BeatmapDataModel> _beatmapModels;
         private AppDbOperator _dbOperator = new AppDbOperator();
 
-        public bool IsScanned
-        {
-            get => _isScanned;
-            set
-            {
-                if (value == _isScanned) return;
-                _isScanned = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsScanning
+                public bool IsScanning
         {
             get => _isScanning;
             set
@@ -49,10 +38,11 @@ namespace Milky.OsuPlayer.ViewModels
 
         internal async Task ScanBeatmap()
         {
-            var beatmaps = _dbOperator.GetAllBeatmaps();
-            var folderGroup = beatmaps.GroupBy(k => (k.FolderName, k.InOwnFolder));
             await Task.Factory.StartNew(async () =>
             {
+                var beatmaps = _dbOperator.GetAllBeatmaps();
+                var folderGroup = beatmaps.GroupBy(k => (k.FolderName, k.InOwnFolder));
+         
                 foreach (var group in folderGroup)
                 {
                     var inOwnFolder = group.Key.InOwnFolder;
