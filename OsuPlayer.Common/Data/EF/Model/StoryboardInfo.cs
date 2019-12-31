@@ -44,6 +44,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         public string BeatmapDbId { get; set; }
         public string Version { get; set; }
         public string FolderName { get; set; }
+        public bool InOwnFolder { get; set; }
     }
 
     public class StoryboardFullInfo

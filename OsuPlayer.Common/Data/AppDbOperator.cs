@@ -83,7 +83,8 @@ CREATE TABLE {TABLE_SB} (
                                          NOT NULL,
     [mapId]            NVARCHAR (40) NOT NULL,
     [version]          NVARCHAR (255) NOT NULL,
-    [folder]           NVARCHAR (255) NOT NULL
+    [folder]           NVARCHAR (255) NOT NULL,
+    [own]              BIT            NOT NULL
 );
 ",
                     [TABLE_SB_FULL] = $@"
@@ -474,7 +475,8 @@ SELECT collection.id,
                         //["thumbPath"] = sbInfo.SbThumbPath,
                         //["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
                         ["version"] = sbInfo.Version,
-                        ["folder"] = sbInfo.FolderName
+                        ["folder"] = sbInfo.FolderName,
+                        ["own"] = sbInfo.InOwnFolder
                     },
                     ("mapId", beatmapDbId, "=="));
             }
@@ -488,7 +490,8 @@ SELECT collection.id,
                         //["thumbPath"] = sbInfo.SbThumbPath,
                         //["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
                         ["version"] = sbInfo.Version,
-                        ["folder"] = sbInfo.FolderName
+                        ["folder"] = sbInfo.FolderName,
+                        ["own"] = sbInfo.InOwnFolder
                     }
                 );
             }
@@ -570,6 +573,17 @@ SELECT collection.id,
                     ("mapId", folder, "=="));
             }
         }
+
+        public List<StoryboardInfo> GetAllMapSbInfos()
+        {
+            return ThreadedProvider.Query<StoryboardInfo>(TABLE_SB).ToList();
+        }
+
+        public List<StoryboardFullInfo> GetAllMapSbFullInfos()
+        {
+            return ThreadedProvider.Query<StoryboardFullInfo>(TABLE_SB_FULL).ToList();
+        }
+
 
         public bool GetMapSbFullInfo(string folder, out StoryboardFullInfo sbInfo)
         {

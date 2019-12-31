@@ -4,6 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:Milky.OsuPlayer.Models"
+    xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     Title="StoryboardPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -12,6 +14,9 @@
     Loaded="Page_Loaded"
     Unloaded="Page_Unloaded"
     mc:Ignorable="d">
+    <d:Page.DataContext>
+        <viewModels:StoryboardVm />
+    </d:Page.DataContext>
     <Page.Resources>
         <Style x:Key="ScanButtonStyle" TargetType="Button">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -176,6 +181,29 @@
                     Style="{StaticResource ScanButtonStyle}" />
                 <!--<Label Content="" />-->
             </Grid>
+        </Border>
+        <Border x:Name="ListScene" Visibility="Collapsed"> 
+            <ListBox ItemsSource="{Binding StoryboardDataModels}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <d:DataTemplate.DataContext>
+                            <models:StoryboardDataModel />
+                        </d:DataTemplate.DataContext>
+                        <StackPanel>
+                            <Label Content="{Binding Artist}" />
+                            <Label Content="{Binding Title}" />
+                            <Label Content="{Binding DiffHasStoryboardOnly}" />
+                            <Label Content="{Binding Folder}" />
+                            <Label Content="{Binding Length}" />
+                            <Label Content="{Binding OsbSize}" />
+                            <Label Content="{Binding ThumbPath}" />
+                            <Label Content="{Binding ThumbVideoPath}" />
+                            <ItemsControl ItemsSource="{Binding ContainsVersions}" />
+                        </StackPanel>
+
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Border>
     </Grid>
 </Page>

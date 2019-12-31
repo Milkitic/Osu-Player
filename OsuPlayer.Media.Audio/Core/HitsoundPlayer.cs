@@ -88,6 +88,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         private int _dcOffset;
         private bool _useTempo;
+        private WaveFileReader _myf;
 
         public HitsoundPlayer(AudioPlaybackEngine engine, string filePath, OsuFile osuFile)
         {
@@ -289,12 +290,15 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                                 {
                                     Engine.RemoveHitsoundSample(_currentChannel);
                                     Engine.RemoveHitsoundSample(_currentChannelAdd);
+                                    _myf?.Dispose();
                                     //var sound = sce.IsAddition ? NewProviderAndRet(ref _slideAddSound, path) : NewProviderAndRet(ref _slideSound, path);
                                     //var s = new RawSourceWaveStream(
                                     //    sound.SourceSound.AudioData.Select(k => (byte)k).ToArray(), 0,
                                     //    sound.SourceSound.AudioData.Length, sound.WaveFormat);
-                                    var myf = new WaveFileReader(path);
-                                    var loop = new LoopStream(myf);
+                                    var targetPath = Path.Combine(Domain.CachePath, "slide.sound");
+                                    WaveResampler.Resample(path, targetPath);
+                                    _myf = new WaveFileReader(targetPath);
+                                    var loop = new LoopStream(_myf);
                                     if (!sce.IsAddition)
                                     {
                                         _currentVolume = new VolumeSampleProvider(loop.ToSampleProvider());
