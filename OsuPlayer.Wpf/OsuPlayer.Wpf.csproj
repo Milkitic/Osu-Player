@@ -203,6 +203,7 @@
     </Compile>
     <Compile Include="Converter\DeviceInfoToStringConverter.cs" />
     <Compile Include="Converter\IconColorConverter.cs" />
+    <Compile Include="Converter\RatioConverter.cs" />
     <Compile Include="DialogOptionFactory.cs" />
     <Compile Include="Pages\Settings\InterfacePage.xaml.cs">
       <DependentUpon>InterfacePage.xaml</DependentUpon>
@@ -235,6 +236,7 @@
     <Compile Include="Converter\NullToHiddenConverter.cs" />
     <Compile Include="Notification.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="TimelinePlayer.cs" />
     <Compile Include="Utils\I18nUtil.cs" />
     <Compile Include="Utils\NativeUser32.cs" />
     <Compile Include="ViewModels\ListPageViewModel.cs" />
@@ -641,6 +643,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ReOsuStoryboardPlayer\ReOsuStoryboardPlayer.WPFControl\ReOsuStoryboardPlayer.WPFControl.csproj">
+      <Project>{585a9e6b-a055-46c9-9055-3a46e9dc2760}</Project>
+      <Name>ReOsuStoryboardPlayer.WPFControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ReOsuStoryboardPlayer\ReOsuStoryboardPlayer\ReOsuStoryBoardPlayer.csproj">
+      <Project>{5116D93A-A7D9-4312-B052-FBC2FE5D0444}</Project>
+      <Name>ReOsuStoryBoardPlayer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
       <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
       <Name>OSharp.Beatmap</Name>

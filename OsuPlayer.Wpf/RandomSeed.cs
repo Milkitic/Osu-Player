@@ -1,5 +1,4 @@
-﻿using System;
-using OSharp.Common;
+﻿using OSharp.Common;
 
 namespace Milky.OsuPlayer
 {

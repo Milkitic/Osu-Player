@@ -12,6 +12,7 @@ using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Instances;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Core;
 using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
@@ -72,6 +73,9 @@ namespace Milky.OsuPlayer.Control
             PlayController.Default.OnPauseClick += Controller_OnPauseClick;
             PlayController.Default.OnProgressDragComplete += Controller_OnProgressDragComplete;
             AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
+
+            MyStoryboardPlayer.SetPlayer(ComponentPlayer.Current);
+            TimelinePlayer
         }
 
         private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -414,6 +418,16 @@ namespace Milky.OsuPlayer.Control
         public void StartScene(Action action)
         {
             action?.Invoke();
+        }
+
+        private void Grid_MouseLeftButtonDown_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void MyStoryboardPlayer_StoryboardUpdated()
+        {
+
         }
     }
 }

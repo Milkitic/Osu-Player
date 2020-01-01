@@ -11,7 +11,7 @@ using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Media.Audio.Core
 {
-    internal sealed class MusicPlayer : Player, IDisposable
+    public sealed class MusicPlayer : Player, IDisposable
     {
         private static readonly string CachePath = Path.Combine(Domain.CachePath, "_temp.music");
         private static readonly object CacheLock = new object();
