@@ -1,5 +1,6 @@
 ﻿using System;
 using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Media.Audio;
 using ReOsuStoryboardPlayer.Player;
 using MusicPlayer = Milky.OsuPlayer.Media.Audio.Core.MusicPlayer;
 
@@ -7,9 +8,9 @@ namespace Milky.OsuPlayer
 {
     public class TimelinePlayer : PlayerBase, IDisposable
     {
-        private readonly MusicPlayer _player;
+        private readonly Player _player;
 
-        public TimelinePlayer(MusicPlayer player)
+        public TimelinePlayer(Player player)
         {
             _player = player;
         }
@@ -28,8 +29,8 @@ namespace Milky.OsuPlayer
 
         public override float PlaybackSpeed
         {
-            get => _player.Playback;
-            set => _player.Playback = value;
+            get => _player.PlaybackRate;
+            set => _player.PlaybackRate = value;
         }
 
         public void Dispose()

@@ -20,7 +20,7 @@ using OSharp.Beatmap.Sections.HitObject;
 
 namespace Milky.OsuPlayer.Media.Audio.Core
 {
-    internal class HitsoundPlayer : Player, IDisposable
+    public class HitsoundPlayer : Player, IDisposable
     {
         protected virtual string Flag { get; } = "Hitsound";
 
@@ -42,13 +42,21 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         public override int PlayTime
         {
-            get => (int)(_sw.ElapsedMilliseconds * _multiplier + _controlOffset); // _multiplier播放速率
+            get => (int)(_sw.ElapsedMilliseconds * _playbackRate + _controlOffset); // _multiplier播放速率
             protected set
             {
                 _controlOffset = value;
                 _sw.Reset(); // sw是秒表
             }
         }
+
+        public override float PlaybackRate
+        {
+            get => _playbackRate;
+            set => SetPlaybackRate(value);
+        }
+
+        public override float Volume { get => Engine.HitsoundVolume; set => Engine.HitsoundVolume = value; }
 
         public int SingleOffset { get; set; }
 
@@ -80,7 +88,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private int _controlOffset;
         private Task _playingTask, _offsetTask;
-        private float _multiplier = 1f;
+        private float _playbackRate = 1f;
         private readonly Stopwatch _sw = new Stopwatch();
         private PlayerStatus _playerStatus;
         private readonly OsuFile _osuFile;
@@ -119,7 +127,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
             });
             PlayerStatus = PlayerStatus.Ready;
             SetTempoMode(AppSettings.Default.Play.PlayUseTempo);
-            SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, false);
+            SetPlaybackRate(AppSettings.Default.Play.PlaybackRate);
             InitVolume();
             AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
             //AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
@@ -202,19 +210,19 @@ namespace Milky.OsuPlayer.Media.Audio.Core
             AdjustModOffset();
         }
 
-        internal void SetPlaybackRate(float rate, bool b)
+        internal void SetPlaybackRate(float rate)
         {
-            _multiplier = rate;
+            _playbackRate = rate;
             AdjustModOffset();
         }
 
         private void AdjustModOffset()
         {
-            if (Math.Abs(_multiplier - 0.75) < 0.001 && !_useTempo)
+            if (Math.Abs(_playbackRate - 0.75) < 0.001 && !_useTempo)
             {
                 _dcOffset = -25;
             }
-            else if (Math.Abs(_multiplier - 1.5) < 0.001 && _useTempo)
+            else if (Math.Abs(_playbackRate - 1.5) < 0.001 && _useTempo)
             {
                 _dcOffset = 15;
             }
@@ -351,7 +359,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                                     throw new ArgumentOutOfRangeException();
                             }
                         }
-                        else if (!_useTempo && _multiplier >= 1.5 && hs is SpecificFileSoundElement specific)
+                        else if (!_useTempo && _playbackRate >= 1.5 && hs is SpecificFileSoundElement specific)
                         {
                             Engine.PlaySound(specific.FilePaths[0], specific.Volume * 1f,
                                 specific.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);

@@ -50,6 +50,8 @@ namespace Milky.OsuPlayer.Media.Audio
         public abstract PlayerStatus PlayerStatus { get; protected set; }
         public abstract int Duration { get; protected set; }
         public abstract int PlayTime { get; protected set; }
+        public abstract float PlaybackRate { get; set; }
+        public abstract float Volume { get; set; }
 
         public abstract Task InitializeAsync();
         public abstract void Play();

@@ -1,10 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
@@ -44,7 +49,9 @@ namespace Milky.OsuPlayer.Pages
                 {
                     var storyboardDataModel = new StoryboardDataModel
                     {
-                        Folder = storyboardFullInfo.FolderName,
+                        Folder = storyboardFullInfo.InOwnFolder
+                            ? Path.Combine(Domain.CustomSongPath, storyboardFullInfo.FolderName)
+                            : Path.Combine(Domain.OsuSongPath, storyboardFullInfo.FolderName),
                         ContainsVersions = new List<string>(),
                         ThumbPath = storyboardFullInfo.SbThumbPath,
                         ThumbVideoPath = storyboardFullInfo.SbThumbVideoPath
@@ -83,6 +90,30 @@ namespace Milky.OsuPlayer.Pages
             StoryboardVm.Default.IsScanning = false;
             AppSettings.Default.General.SbScanned = true;
             AppSettings.SaveDefault();
+        }
+
+        private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            var sb = (StoryboardDataModel)((Button)sender).Tag;
+            var folder = new DirectoryInfo(sb.Folder);
+            if (folder.Exists)
+            {
+                var beatmaps = _appDbOperator.GetBeatmapsFromFolder(folder.Name);
+                if (beatmaps.Count > 0)
+                {
+                    await PlayController.Default.PlayNewFile(beatmaps.OrderByDescending(k => k.DiffSrNoneStandard)
+                        .First());
+                    var osb = folder.GetFiles("*.osb");
+                    if (osb.Length > 0)
+                    {
+                        var sbFile = osb[0];
+                        await Task.Delay(2000);
+                        AnimationControl.Default.MyStoryboardPlayer.SetPlayer(
+                            new TimelinePlayer(ComponentPlayer.Current.HitsoundPlayer));
+                        AnimationControl.Default.SetStoryboard(sbFile.FullName);
+                    }
+                }
+            }
         }
     }
 }

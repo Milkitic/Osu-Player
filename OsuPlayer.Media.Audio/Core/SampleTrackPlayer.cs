@@ -7,7 +7,7 @@ using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Media.Audio.Core
 {
-    internal class SampleTrackPlayer : HitsoundPlayer
+    public class SampleTrackPlayer : HitsoundPlayer
     {
         protected override string Flag { get; } = "SampleTrack";
 

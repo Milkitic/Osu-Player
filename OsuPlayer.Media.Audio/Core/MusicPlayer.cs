@@ -64,6 +64,18 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         public override int PlayTime { get; protected set; }
 
+        public override float PlaybackRate
+        {
+            get => _speedProvider.PlaybackRate;
+            set => _speedProvider.PlaybackRate = value;
+        }
+
+        public override float Volume
+        {
+            get => _reader.Volume;
+            set => _reader.Volume = value;
+        }
+
         #endregion
 
         public MusicPlayer(AudioPlaybackEngine engine, IWavePlayer device, string filePath)

@@ -24,9 +24,9 @@ namespace Milky.OsuPlayer.Media.Audio
         private static AudioPlaybackEngine _engine;
 
         public OsuFile OsuFile { get; private set; }
-        internal HitsoundPlayer HitsoundPlayer { get; private set; }
-        internal SampleTrackPlayer SampleTrackPlayer { get; private set; }
-        internal MusicPlayer MusicPlayer { get; private set; }
+        public HitsoundPlayer HitsoundPlayer { get; private set; }
+        public SampleTrackPlayer SampleTrackPlayer { get; private set; }
+        public MusicPlayer MusicPlayer { get; private set; }
 
         private CancellationTokenSource _cts = new CancellationTokenSource();
 
@@ -47,6 +47,9 @@ namespace Milky.OsuPlayer.Media.Audio
             get => HitsoundPlayer?.PlayTime ?? 0;
             protected set => throw new InvalidOperationException();
         }
+
+        public override float PlaybackRate { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        public override float Volume { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
         public int HitsoundOffset
         {
@@ -215,8 +218,8 @@ namespace Milky.OsuPlayer.Media.Audio
         public void SetPlaybackRate(float rate, bool b)
         {
             MusicPlayer.SetPlaybackRate(rate);
-            HitsoundPlayer.SetPlaybackRate(rate, b);
-            SampleTrackPlayer.SetPlaybackRate(rate, b);
+            HitsoundPlayer.SetPlaybackRate(rate);
+            SampleTrackPlayer.SetPlaybackRate(rate);
             SetTime(MusicPlayer.PlayTime);
         }
 

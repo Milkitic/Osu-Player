@@ -189,17 +189,19 @@
                         <d:DataTemplate.DataContext>
                             <models:StoryboardDataModel />
                         </d:DataTemplate.DataContext>
-                        <StackPanel>
-                            <Label Content="{Binding Artist}" />
-                            <Label Content="{Binding Title}" />
-                            <Label Content="{Binding DiffHasStoryboardOnly}" />
-                            <Label Content="{Binding Folder}" />
-                            <Label Content="{Binding Length}" />
-                            <Label Content="{Binding OsbSize}" />
-                            <Label Content="{Binding ThumbPath}" />
-                            <Label Content="{Binding ThumbVideoPath}" />
-                            <ItemsControl ItemsSource="{Binding ContainsVersions}" />
-                        </StackPanel>
+                        <Button Background="AliceBlue" Tag="{Binding}" Click="ButtonBase_OnClick">
+                           <StackPanel>
+                               <Label Content="{Binding Artist}" />
+                               <Label Content="{Binding Title}" />
+                               <Label Content="{Binding DiffHasStoryboardOnly}" />
+                               <Label Content="{Binding Folder}" />
+                               <Label Content="{Binding Length}" />
+                               <Label Content="{Binding OsbSize}" />
+                               <Label Content="{Binding ThumbPath}" />
+                               <Label Content="{Binding ThumbVideoPath}" />
+                               <ItemsControl ItemsSource="{Binding ContainsVersions}" />
+                            </StackPanel>
+                        </Button>
 
                     </DataTemplate>
                 </ListBox.ItemTemplate>

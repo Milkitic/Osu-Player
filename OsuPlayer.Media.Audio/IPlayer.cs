@@ -7,6 +7,8 @@ namespace Milky.OsuPlayer.Media.Audio
         PlayerStatus PlayerStatus { get; }
         int Duration { get; }
         int PlayTime { get; }
+        float PlaybackRate { get; set; }
+        float Volume { get; set; }
 
         void Play();
         void Pause();

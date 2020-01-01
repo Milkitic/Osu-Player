@@ -16,6 +16,7 @@ using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Core;
 using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
+using ReOsuStoryboardPlayer.Player;
 using Unosquare.FFME.Common;
 using ViewModelBase = Milky.WpfApi.ViewModelBase;
 
@@ -55,6 +56,7 @@ namespace Milky.OsuPlayer.Control
         public AnimationControl()
         {
             InitializeComponent();
+            Default = this;
             var path = Path.Combine(Domain.ResourcePath, "default.jpg");
             if (File.Exists(path))
             {
@@ -66,6 +68,35 @@ namespace Milky.OsuPlayer.Control
             ViewModel.Player = PlayerViewModel.Current;
         }
 
+        public static AnimationControl Default { get; set; }
+
+        public async void SetStoryboard(string path)
+        {
+            if (File.Exists(path))
+            {
+                MyStoryboardPlayer.InitializePlayer += OnMyStoryboardPlayerOnInitializePlayer;
+                await MyStoryboardPlayer.SwitchStoryboard(path, true);
+
+                //var current_time = MyStoryboardPlayer.SourcePlayer.Length;
+
+                //var span = TimeSpan.FromMilliseconds(current_time);
+
+                ////Dispatcher.Invoke(() =>
+                ////{
+                //CurrentPlayingText = Path.GetDirectoryName(path);
+                //PlaybackLength = $"{span.TotalMinutes:F0}:{span.Seconds:F0}";
+                ////});
+            }
+
+            MyStoryboardPlayer.SetPlayer(new TimelinePlayer(ComponentPlayer.Current.MusicPlayer));
+        }
+
+        private void OnMyStoryboardPlayerOnInitializePlayer(PlayerBase player, string audioPath)
+        {
+            
+
+        }
+
         private void AnimationControl_Loaded(object sender, RoutedEventArgs e)
         {
             PlayController.Default.OnNewFileLoaded += Controller_OnNewFileLoaded;
@@ -73,9 +104,6 @@ namespace Milky.OsuPlayer.Control
             PlayController.Default.OnPauseClick += Controller_OnPauseClick;
             PlayController.Default.OnProgressDragComplete += Controller_OnProgressDragComplete;
             AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
-
-            MyStoryboardPlayer.SetPlayer(ComponentPlayer.Current);
-            TimelinePlayer
         }
 
         private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
