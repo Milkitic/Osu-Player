@@ -8,8 +8,8 @@ namespace Milky.OsuPlayer.Common.Configuration
 {
     public class PlayControl : INotifyPropertyChanged
     {
-        private bool _playUseTempo;
-        private float _playbackRate;
+        private bool _playUseTempo = false;
+        private float _playbackRate = 1f;
 
         public int GeneralOffset { get; set; } = 141;// = 25;
         public bool ReplacePlayList { get; set; } = true;

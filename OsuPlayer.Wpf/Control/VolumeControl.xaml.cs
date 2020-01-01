@@ -59,9 +59,9 @@ namespace Milky.OsuPlayer.Control
 
         private static void OffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is VolumeControl ctrl && ComponentPlayer.Current != null)
+            if (d is VolumeControl ctrl)
             {
-                ctrl.Offset.Value = ComponentPlayer.Current.HitsoundOffset;
+                ctrl.Offset.Value = ComponentPlayer.Current != null ? ComponentPlayer.Current.HitsoundOffset : 0;
             }
         }
 
