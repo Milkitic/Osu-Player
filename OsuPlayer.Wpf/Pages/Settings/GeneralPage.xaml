@@ -3,11 +3,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
-    xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Pages.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:scanning="clr-namespace:Milky.OsuPlayer.Common.Scanning;assembly=OsuPlayer.Common"
+    xmlns:customControls="clr-namespace:Milky.OsuPlayer.Control.CustomControls"
     Title="GeneralPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -101,7 +101,7 @@
                         IconMargin="0"
                         IconTemplate="{StaticResource FolderTempl}"
                         Style="{StaticResource SettingsButton}" />
-                    <custom:Loader
+                    <customControls:Loader
                         Width="25"
                         Height="25"
                         FillColor="#303030"

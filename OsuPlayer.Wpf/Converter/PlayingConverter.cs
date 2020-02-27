@@ -1,5 +1,4 @@
-﻿using Milky.OsuPlayer.ControlLibrary.Custom;
-using Milky.OsuPlayer.Windows;
+﻿using Milky.OsuPlayer.Windows;
 using Milky.WpfApi;
 using System;
 using System.Globalization;

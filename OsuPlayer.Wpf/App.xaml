@@ -16,6 +16,7 @@
                 <ResourceDictionary Source="Styles/GeneralStyle.xaml" />
                 <ResourceDictionary Source="Styles/BrushDictionary.xaml" />
                 <ResourceDictionary Source="Styles/SvgDictionary.xaml" />
+                <ResourceDictionary Source="Styles/OldStyles.xaml" />
                 <ResourceDictionary Source="Styles/ButtonStyle.xaml" />
                 <ResourceDictionary Source="Styles/ButtonDictionary.xaml" />
                 <ResourceDictionary Source="Styles/ConfigStyle.xaml" />
