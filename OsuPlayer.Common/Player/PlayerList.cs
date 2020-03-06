@@ -58,7 +58,7 @@ namespace Milky.OsuPlayer.Common.Player
         public int Pointer
         {
             get => _pointer;
-            set => _pointer = value < 0 ? Indexes.Count - 1 : value;
+            set => _pointer = value < 0 ? (Indexes.Count < 1 ? 1 : Indexes.Count) - 1 : value;
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Milky.OsuPlayer.Common.Player
             }
             if (beatmaps != null)
                 PlayListMode = PlayListMode.Collection;
-            if (force || beatmaps != null || freshType == FreshType.All || Entries.Count == 0)
+            if (force || beatmaps != null || freshType == FreshType.All)
                 switch (PlayListMode)
                 {
                     case PlayListMode.RecentList:
@@ -96,7 +96,7 @@ namespace Milky.OsuPlayer.Common.Player
                         break;
                 }
 
-            if (force || beatmaps != null || freshType != FreshType.None || Indexes == null || Indexes.Count == 0)
+            if (force || beatmaps != null || freshType != FreshType.None || Indexes == null)
                 switch (PlayerMode)
                 {
                     default:
