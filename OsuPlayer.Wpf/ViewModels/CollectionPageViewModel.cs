@@ -145,12 +145,12 @@ namespace Milky.OsuPlayer.ViewModels
                     var beatmap = (BeatmapDataModel)param;
                     var map = _beatmapDbOperator.GetBeatmapByIdentifiable(beatmap);
                     var maps = Beatmaps.Select(m => _beatmapDbOperator.GetBeatmapByIdentifiable(m)).Where(m => m != null).ToList();
-                    var i = maps.FindIndex(m => m == map);
+                    //var i = maps.FindIndex(m => m == map);
                     if (map == null) return;
                     await PlayController.Default.PlayNewFile(map);
                     await Services.Get<PlayerList>()
                         .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.Collection, maps);
-                    Services.Get<PlayerList>().Pointer = i == -1 ? 0 : i;
+                    //Services.Get<PlayerList>().Pointer = i == -1 ? 0 : i;
                 });
             }
         }

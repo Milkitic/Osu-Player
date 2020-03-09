@@ -82,7 +82,7 @@ namespace Milky.OsuPlayer.Common.Player
             }
             if (beatmaps != null)
                 PlayListMode = PlayListMode.Collection;
-            if (force || beatmaps != null || freshType == FreshType.All)
+            if (force || beatmaps != null || freshType == FreshType.All || Entries.Count == 0)
                 switch (PlayListMode)
                 {
                     case PlayListMode.RecentList:
@@ -96,7 +96,7 @@ namespace Milky.OsuPlayer.Common.Player
                         break;
                 }
 
-            if (force || beatmaps != null || freshType != FreshType.None || Indexes == null)
+            if (force || beatmaps != null || freshType != FreshType.None || Indexes == null || Indexes.Count == 0)
                 switch (PlayerMode)
                 {
                     default:
