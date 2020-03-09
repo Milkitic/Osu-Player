@@ -236,6 +236,8 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {
+            Services.Get<PlayerList>()
+                        .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
         }
 
         private void ItemCollect_Click(object sender, RoutedEventArgs e)

@@ -58,7 +58,7 @@ namespace Milky.OsuPlayer.Common.Player
         public int Pointer
         {
             get => _pointer;
-            set => _pointer = value < 0 ? Indexes.Count - 1 : value;
+            set => _pointer = value < 0 ? (Indexes.Count < 1 ? 1 : Indexes.Count) - 1 : value;
         }
 
         /// <summary>
