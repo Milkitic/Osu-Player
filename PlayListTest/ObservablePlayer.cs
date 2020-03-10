@@ -2,7 +2,7 @@
 
 namespace PlayListTest
 {
-    public class ObservablePlaylistPlayer : Player
+    public class ObservablePlayer : Player
     {
         public event Action MetaLoaded;
         public event Action BackgroundInfoLoaded;
@@ -10,8 +10,5 @@ namespace PlayListTest
         public event Action StoryboardInfoLoaded;
         public event Action FullLoaded;
         public event Action SongChanged;
-
-        public PlayList PlayList { get; private set; } = new PlayList();
-
     }
 }

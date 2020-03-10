@@ -63,7 +63,7 @@ namespace PlayListTest
 
         public void SkipTo(int milliseconds)
         {
-            _sw.Stop();
+            _sw.SkipTo(TimeSpan.FromMilliseconds(milliseconds));
             PlayStatus = PlayStatus.Paused;
         }
 
