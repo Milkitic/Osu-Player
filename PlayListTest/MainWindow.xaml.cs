@@ -99,5 +99,23 @@ namespace PlayListTest
                 ListSong.SelectedIndex = (int)e.AddedItems[0];
             }
         }
+
+        private void BtnAppend_Click(object sender, RoutedEventArgs e)
+        {
+            var text = AddText.Text;
+            text = text.Trim();
+            AddText.Clear();
+            if (!string.IsNullOrEmpty(text))
+                _playList.SongList.Add(new SongInfo { Title = text });
+        }
+
+        private void BtnRemove_Click(object sender, RoutedEventArgs e)
+        {
+            var o = (SongInfo)ListSong.SelectedItem;
+            if (o != null)
+            {
+                _playList.SongList.Remove(o);
+            }
+        }
     }
 }

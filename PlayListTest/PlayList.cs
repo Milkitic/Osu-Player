@@ -68,14 +68,24 @@ namespace PlayListTest
             return await SwitchToAsync(control == PlayControl.Next, true);
         }
 
-        private delegate void TemporaryPointerChangedHandler(ref int indexPointer);
-        private TemporaryPointerChangedHandler _temporaryPointerChanged;
+        private Func<int, int> _temporaryPointerChanged;
 
         private PlayMode _playMode;
         private int _indexPointer = -1;
         private List<int> _songIndexList = new List<int>();
         private SongInfo _currentInfo;
-        public List<int> SongIndexList => _songIndexList;
+        private ObservableCollection<int> _songIndexList1;
+
+        public ObservableCollection<int> SongIndexList
+        {
+            get => _songIndexList1;
+            set
+            {
+                if (Equals(value, _songIndexList1)) return;
+                _songIndexList1 = value;
+                OnPropertyChanged();
+            }
+        }
 
         public int IndexPointer
         {
@@ -88,7 +98,11 @@ namespace PlayListTest
                 if (Equals(value, _indexPointer)) return;
                 _indexPointer = value;
 
-                if (_indexPointer != -1) _temporaryPointerChanged?.Invoke(ref _indexPointer);
+                if (_indexPointer != -1 && _temporaryPointerChanged != null)
+                {
+                    _indexPointer = _temporaryPointerChanged.Invoke(_indexPointer);
+                    Console.WriteLine(_indexPointer);
+                }
                 _temporaryPointerChanged = null;
 
                 CurrentInfo = _indexPointer == -1 ? null : SongList[_songIndexList[_indexPointer]];
@@ -162,7 +176,7 @@ namespace PlayListTest
 
             _songIndexList = SongList.Select((o, i) => i).ToList();
             if (IsRandom) _songIndexList.Shuffle();
-            OnPropertyChanged(nameof(SongIndexList));
+            SongIndexList = new ObservableCollection<int>(_songIndexList);
 
             if (forceIndex != null)
             {
@@ -198,7 +212,12 @@ namespace PlayListTest
             if (e.NewItems != null && e.NewItems.Count > 0)
             {
                 var rnd = new Random();
-                if (IsRandom) _songIndexList.Insert(rnd.Next(IndexPointer + 1, _songIndexList.Count), e.NewStartingIndex);
+                if (IsRandom)
+                {
+                    var index = rnd.Next(IndexPointer + 1, _songIndexList.Count);
+                    _songIndexList.Insert(index, e.NewStartingIndex);
+                }
+
                 if (e.NewStartingIndex < SongList.Count - 1)
                 {
                     for (var i = 0; i < _songIndexList.Count - 1; i++)
@@ -207,27 +226,37 @@ namespace PlayListTest
                     }
                 }
 
-                OnPropertyChanged(nameof(SongIndexList));
+                SongIndexList = new ObservableCollection<int>(_songIndexList);
             }
             else if (e.OldItems != null && e.OldItems.Count > 0)
             {
                 var songIndex = e.OldStartingIndex;
-                var oldIndexPointer = _songIndexList.BinarySearch(songIndex);
+                var oldIndexPointer = _songIndexList.IndexOf(songIndex);
+
+                if (oldIndexPointer == IndexPointer)
+                {
+                    _temporaryPointerChanged = indexPointer =>
+                    {
+                        if (oldIndexPointer < 0) return indexPointer;
+                        _songIndexList.RemoveAt(oldIndexPointer);
+                        if (oldIndexPointer < indexPointer) indexPointer--;
+                        _temporaryPointerChanged = null;
+                        Console.WriteLine(_indexPointer);
+                        SongIndexList = new ObservableCollection<int>(_songIndexList);
+                        return indexPointer;
+                    };
+                }
+                else
+                {
+                    _songIndexList.RemoveAt(oldIndexPointer);
+                }
+
                 for (var i = 0; i < _songIndexList.Count; i++)
                 {
                     if (_songIndexList[i] > songIndex) _songIndexList[i]--;
                 }
 
-                if (songIndex == IndexPointer)
-                {
-                    _temporaryPointerChanged = (ref int indexPointer) =>
-                    {
-                        _songIndexList.RemoveAt(oldIndexPointer);
-                        if (oldIndexPointer < indexPointer) indexPointer--;
-                    };
-                }
-
-                OnPropertyChanged(nameof(SongIndexList));
+                SongIndexList = new ObservableCollection<int>(_songIndexList);
             }
         }
     }
