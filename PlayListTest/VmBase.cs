@@ -4,7 +4,7 @@ using PlayListTest.Annotations;
 
 namespace PlayListTest
 {
-    public class VmBase
+    public class VmBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

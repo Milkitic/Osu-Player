@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace PlayListTest
 {
-    public class Player
+    public class Player : IDisposable
     {
         public event Action<PlayStatus> PlayStatusChanged;
 
@@ -76,6 +76,10 @@ namespace PlayListTest
         public void Restart()
         {
             _sw.Restart();
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

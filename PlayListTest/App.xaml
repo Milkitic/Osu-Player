@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:PlayListTest"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <local:EnumToItemSourceConverter x:Key="EnumToItemSourceConverter" />
     </Application.Resources>
 </Application>
