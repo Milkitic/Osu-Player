@@ -23,15 +23,15 @@ namespace PlayListTest
 {
     public class MainWindowVm : INotifyPropertyChanged
     {
-        private PlayList _playList;
+        private ObservablePlayerMixer _playerMixer;
 
-        public PlayList PlayList
+        public ObservablePlayerMixer PlayerMixer
         {
-            get => _playList;
+            get => _playerMixer;
             set
             {
-                if (Equals(value, _playList)) return;
-                _playList = value;
+                if (Equals(value, _playerMixer)) return;
+                _playerMixer = value;
                 OnPropertyChanged();
             }
         }
@@ -50,8 +50,10 @@ namespace PlayListTest
     /// </summary>
     public partial class MainWindow : Window
     {
-        PlayList _playList = new PlayList();
+        private readonly ObservablePlayerMixer _playerMixer = new ObservablePlayerMixer();
         private MainWindowVm _viewModel;
+
+        private Action _playPauseButtonAction;
 
         public MainWindow()
         {
@@ -61,35 +63,75 @@ namespace PlayListTest
         private void Window_Initialized(object sender, EventArgs e)
         {
             _viewModel = (MainWindowVm)DataContext;
-            _viewModel.PlayList = _playList;
+            _viewModel.PlayerMixer = _playerMixer;
+            _playerMixer.PlayStatusChanged += PlayerMixer_PlayStatusChanged;
+            _playerMixer.ProgressUpdated += PlayerMixer_ProgressUpdated;
+            _playerMixer.LoadFinished += PlayerMixer_LoadFinished;
+            _playPauseButtonAction = () => _playerMixer.Player?.Play();
         }
 
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        private void PlayerMixer_LoadFinished(SongInfo obj)
+        {
+            Dispatcher?.Invoke(() =>
+            {
+                PlayerDuration.Content = _playerMixer.Player.Duration.ToString(@"mm\:ss");
+                SliderProgress.Maximum = _playerMixer.Player.Duration.TotalMilliseconds;
+            });
+        }
+
+        private void PlayerMixer_ProgressUpdated(TimeSpan playTime, TimeSpan duration)
+        {
+            Dispatcher?.Invoke(() =>
+            {
+                PlayerPlayTime.Content = playTime.ToString(@"mm\:ss");
+                SliderProgress.Value = playTime.TotalMilliseconds;
+            });
+        }
+
+        private void PlayerMixer_PlayStatusChanged(PlayStatus obj)
+        {
+            if (obj == PlayStatus.Playing)
+            {
+                _playPauseButtonAction = () => _playerMixer.Player?.Pause();
+                PlayPause.Content = "STOP";
+            }
+            else
+            {
+                _playPauseButtonAction = () => _playerMixer.Player?.Play();
+                PlayPause.Content = "PLAY";
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var fi = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             var files = fi.GetFiles().Select(k => new SongInfo { Title = k.Name });
-            _viewModel.PlayList.SongList.Add(new SongInfo() { Title = "haha" });
-            await _viewModel.PlayList.SetSongListAsync(new ObservableCollection<SongInfo>(files), true);
+            //_viewModel.PlayerMixer.PlayList.SongList.Add(new SongInfo { Title = "haha" });
+            _viewModel.PlayerMixer.PlayList.SetSongList(new ObservableCollection<SongInfo>(files), true);
         }
 
-        private async void ManualPrev_Click(object sender, RoutedEventArgs e)
+        private void ManualPrev_Click(object sender, RoutedEventArgs e)
         {
-            await _playList.SwitchToAsync(false, true);
+            var result = _playerMixer.PlayList.SwitchByControl(PlayControl.Previous);
+            Console.WriteLine(result);
         }
 
-        private async void ManualNext_Click(object sender, RoutedEventArgs e)
+        private void ManualNext_Click(object sender, RoutedEventArgs e)
         {
-            await _playList.SwitchToAsync(true, true);
+            var result = _playerMixer.PlayList.SwitchByControl(PlayControl.Next);
+            Console.WriteLine(result);
         }
 
-        private async void AutoPrev_Click(object sender, RoutedEventArgs e)
+        private void AutoPrev_Click(object sender, RoutedEventArgs e)
         {
-            await _playList.SwitchToAsync(false, false);
+            //var result = await _playList.SwitchToAsync(false, false);
+            //Console.WriteLine(result);
         }
 
-        private async void AutoNext_Click(object sender, RoutedEventArgs e)
+        private void AutoNext_Click(object sender, RoutedEventArgs e)
         {
-            await _playList.SwitchToAsync(true, false);
+            //var result = await _playList.SwitchToAsync(true, false);
+            //Console.WriteLine(result);
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -106,16 +148,18 @@ namespace PlayListTest
             text = text.Trim();
             AddText.Clear();
             if (!string.IsNullOrEmpty(text))
-                _playList.SongList.Add(new SongInfo { Title = text });
+                _playerMixer.PlayList.SongList.Add(new SongInfo { Title = text });
         }
 
         private void BtnRemove_Click(object sender, RoutedEventArgs e)
         {
             var o = (SongInfo)ListSong.SelectedItem;
-            if (o != null)
-            {
-                _playList.SongList.Remove(o);
-            }
+            if (o != null) _playerMixer.PlayList.SongList.Remove(o);
+        }
+
+        private void PlayPause_Click(object sender, RoutedEventArgs e)
+        {
+            _playPauseButtonAction?.Invoke();
         }
     }
 }

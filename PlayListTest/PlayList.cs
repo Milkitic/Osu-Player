@@ -10,11 +10,14 @@ namespace PlayListTest
 {
     public class PlayList : VmBase
     {
+        public event Action<PlayControlResult, SongInfo> AutoSwitched;
+
         public PlayList()
         {
             SongList = new ObservableCollection<SongInfo>();
             SongList.CollectionChanged += SongList_CollectionChanged;
             PlayMode = PlayMode.Random;
+            //PlayerMixer = new ObservablePlayerMixer(this);
         }
 
         public ObservableCollection<SongInfo> SongList { get; set; }
@@ -30,7 +33,7 @@ namespace PlayListTest
             }
         }
 
-        public ObservableMixPlayer MixPlayer { get; private set; } = new ObservableMixPlayer();
+        //public ObservablePlayerMixer PlayerMixer { get; private set; }
 
         public PlayMode PlayMode
         {
@@ -48,24 +51,6 @@ namespace PlayListTest
 
                 OnPropertyChanged();
             }
-        }
-
-        public async Task SetSongListAsync(ObservableCollection<SongInfo> value, bool startAnew)
-        {
-            if (Equals(value, SongList)) return;
-            if (SongList != null) SongList.CollectionChanged -= SongList_CollectionChanged;
-            SongList = value;
-            SongList.CollectionChanged += SongList_CollectionChanged;
-
-            var changed = RearrangeIndexesAndReposition(startAnew ? (int?)0 : null);
-            if (changed) await SwitchToAsync(null, true);
-
-            OnPropertyChanged(nameof(SongList));
-        }
-
-        public async Task<PlayControlResult> SwitchToAsync(PlayControl control)
-        {
-            return await SwitchToAsync(control == PlayControl.Next, true);
         }
 
         private Func<int, int> _temporaryPointerChanged;
@@ -113,47 +98,108 @@ namespace PlayListTest
         private bool IsRandom => _playMode == PlayMode.Random || _playMode == PlayMode.LoopRandom;
         private bool IsLoop => _playMode == PlayMode.Loop || _playMode == PlayMode.LoopRandom;
 
-        internal async Task<PlayControlResult> SwitchToAsync(bool? isNext, bool isManual)
+        /// <summary>
+        /// 播放列表替换
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="startAnew">若为true，则播放列表中若有相同曲，保持指针继续播放</param>
+        /// <returns></returns>
+        public PlayControlResult SetSongList(ObservableCollection<SongInfo> value, bool startAnew)
         {
-            if (isNext == null)
+            if (SongList != null) SongList.CollectionChanged -= SongList_CollectionChanged;
+            SongList = value;
+            SongList.CollectionChanged += SongList_CollectionChanged;
+
+            var changed = RearrangeIndexesAndReposition(startAnew ? (int?)0 : null);
+            var result = changed
+                ? AutoSwitchAfterCollectionChanged()
+                : new PlayControlResult(PlayControlResult.PlayControlStatus.Keep,
+                    PlayControlResult.PointerControlStatus.Keep); // 这里可能混入空/不空的情况
+
+            OnPropertyChanged(nameof(SongList));
+            return result;
+        }
+
+        /// <summary>
+        /// 播放指定歌曲，若播放列表不存在则自动添加
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        public void AddOrSwitchTo(SongInfo info)
+        {
+            if (!SongList.Contains(info)) SongList.Add(info);
+            IndexPointer = _songIndexList.IndexOf(SongList.IndexOf(info));
+        }
+
+        public PlayControlResult SwitchByControl(PlayControl control)
+        {
+            return SwitchByControl(control == PlayControl.Next, true);
+        }
+
+        public PlayControlResult InvokeAutoNext()
+        {
+            return SwitchByControl(true, false);
+        }
+
+        private PlayControlResult AutoSwitchAfterCollectionChanged()
+        {
+            if (CurrentInfo != null)
             {
-                if (CurrentInfo == null)
+                var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Unknown,
+                    PlayControlResult.PointerControlStatus.Default);
+                AutoSwitched?.Invoke(playControlResult, CurrentInfo);
+                return playControlResult;
+            }
+
+            // 播放列表空
+            IndexPointer = -1;
+            var controlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+                PlayControlResult.PointerControlStatus.Clear);
+            AutoSwitched?.Invoke(controlResult, CurrentInfo);
+            return controlResult;
+        }
+
+        private PlayControlResult SwitchByControl(bool isNext, bool isManual)
+        {
+            if (!isManual) // auto
+            {
+                if (PlayMode == PlayMode.Single)
                 {
-                    IndexPointer = -1;
-                    return PlayControlResult.Clear;
+                    var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+                        PlayControlResult.PointerControlStatus.Keep);
+                    AutoSwitched?.Invoke(playControlResult, CurrentInfo);
+                    return playControlResult;
                 }
 
-                await MixPlayer.LoadAsync(CurrentInfo);
-                return PlayControlResult.Success;
-            }
-
-            if (!IsLoop && !isManual)
-            {
-                if (IndexPointer == 0 && isNext == false ||
-                    IndexPointer == _songIndexList.Count - 1 && isNext == true)
+                if (PlayMode == PlayMode.SingleLoop)
                 {
-                    return PlayControlResult.Clear;
+                    var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
+                        PlayControlResult.PointerControlStatus.Keep);
+                    AutoSwitched?.Invoke(playControlResult, CurrentInfo);
+                    return playControlResult;
+                }
+
+                if (!IsLoop)
+                {
+                    if (IndexPointer == 0 && !isNext ||
+                        IndexPointer == _songIndexList.Count - 1 && isNext)
+                    {
+                        var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+                            PlayControlResult.PointerControlStatus.Reset);
+                        AutoSwitched?.Invoke(playControlResult, CurrentInfo);
+                        return playControlResult;
+                    }
                 }
             }
 
-            if (PlayMode == PlayMode.Single && !isManual)
-            {
-                return PlayControlResult.Clear;
-            }
-
-            if (PlayMode == PlayMode.SingleLoop && !isManual)
-            {
-                return PlayControlResult.Keep;
-            }
-
-            if (isNext == true)
+            if (isNext)
             {
                 if (IndexPointer == _songIndexList.Count - 1 && (isManual || IsLoop))
                     IndexPointer = 0;
                 else
                     IndexPointer++;
             }
-            else if (isNext == false)
+            else
             {
                 if (IndexPointer == 0 && (isManual || IsLoop))
                     IndexPointer = _songIndexList.Count - 1;
@@ -161,8 +207,9 @@ namespace PlayListTest
                     IndexPointer--;
             }
 
-            await MixPlayer.LoadAsync(CurrentInfo);
-            return PlayControlResult.Success;
+            var result = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
+                PlayControlResult.PointerControlStatus.Default);
+            return result;
         }
 
         // returns CurrentInfo changed?
@@ -171,7 +218,7 @@ namespace PlayListTest
             if (SongList.Count == 0)
             {
                 IndexPointer = -1;
-                return CurrentInfo != null;
+                return CurrentInfo != null; // 从有到无，则为true
             }
 
             _songIndexList = SongList.Select((o, i) => i).ToList();
@@ -180,17 +227,16 @@ namespace PlayListTest
 
             if (forceIndex != null)
             {
+                var currentInfo = CurrentInfo;
                 IndexPointer = forceIndex.Value;
-                return true; // force return true
+                return currentInfo != CurrentInfo; // force return false
             }
 
             var indexOf = SongList.IndexOf(CurrentInfo);
             if (indexOf == -1)
             {
-                MixPlayer?.Dispose();
                 IndexPointer = 0;
                 return true;
-                //await Player.LoadAsync(CurrentInfo);
             }
             else
             {

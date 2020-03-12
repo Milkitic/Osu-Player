@@ -6,30 +6,23 @@ namespace PlayListTest
     public class WiseStopwatch : Stopwatch
     {
         private TimeSpan _skipOffset;
-
-        public new void Start()
-        {
-
-        }
-
-        public new void Stop()
-        {
-
-        }
-
+        
         public new void Restart()
         {
-
+            _skipOffset = TimeSpan.Zero;
+            base.Restart();
         }
 
         public new void Reset()
         {
-
+            _skipOffset = TimeSpan.Zero;
+            base.Reset();
         }
 
         public void SkipTo(TimeSpan startOffset)
         {
             _skipOffset = startOffset;
+            Restart();
         }
 
         public new long ElapsedMilliseconds => base.ElapsedMilliseconds + (long)_skipOffset.TotalMilliseconds;

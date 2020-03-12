@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 
 namespace PlayListTest
 {
-    public class Player : IDisposable
+    public class Player : VmBase, IDisposable
     {
         public event Action<PlayStatus> PlayStatusChanged;
+        public event Action<TimeSpan, TimeSpan> ProgressUpdated;
 
         public PlayStatus PlayStatus
         {
@@ -19,11 +20,22 @@ namespace PlayListTest
             }
         }
 
-        public double Duration { get; } = Rnd.Next(120000) + 120000;
-        public double PlayTime { get; private set; }
+        public TimeSpan Duration { get; } = TimeSpan.FromMilliseconds(Rnd.Next(120000) + 120000);
+
+        public TimeSpan PlayTime
+        {
+            get => _playTime;
+            private set
+            {
+                if (Equals(_playTime, value)) return;
+                _playTime = value;
+                OnPropertyChanged();
+            }
+        }
 
         private readonly WiseStopwatch _sw = new WiseStopwatch();
         private PlayStatus _playStatus;
+        private TimeSpan _playTime;
 
         private static readonly Random Rnd = new Random();
 
@@ -33,15 +45,18 @@ namespace PlayListTest
             {
                 while (true)
                 {
-                    if (_sw.ElapsedMilliseconds >= Duration && _sw.IsRunning)
+                    if (_sw.Elapsed >= Duration && _sw.IsRunning)
                     {
                         PlayTime = Duration;
+                        ProgressUpdated?.Invoke(PlayTime, Duration);
                         _sw.Stop();
-                        PlayStatus = PlayStatus.Finished;
+                        if (PlayStatus == PlayStatus.Playing)
+                            PlayStatus = PlayStatus.Finished;
                     }
-                    else if (_sw.ElapsedMilliseconds < Duration)
+                    else if (_sw.Elapsed < Duration)
                     {
-                        PlayTime = _sw.ElapsedMilliseconds;
+                        PlayTime = _sw.Elapsed;
+                        ProgressUpdated?.Invoke(PlayTime, Duration);
                     }
 
                     Thread.Sleep(50);
@@ -71,11 +86,6 @@ namespace PlayListTest
         {
             _sw.Reset();
             PlayStatus = PlayStatus.Paused;
-        }
-
-        public void Restart()
-        {
-            _sw.Restart();
         }
 
         public void Dispose()
