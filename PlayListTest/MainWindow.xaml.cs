@@ -24,6 +24,7 @@ namespace PlayListTest
     public class MainWindowVm : INotifyPropertyChanged
     {
         private ObservablePlayerMixer _playerMixer;
+        private SongInfo _currentInfo;
 
         public ObservablePlayerMixer PlayerMixer
         {
@@ -32,6 +33,17 @@ namespace PlayListTest
             {
                 if (Equals(value, _playerMixer)) return;
                 _playerMixer = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public SongInfo CurrentInfo
+        {
+            get => _currentInfo;
+            set
+            {
+                if (Equals(value, _currentInfo)) return;
+                _currentInfo = value;
                 OnPropertyChanged();
             }
         }
@@ -54,6 +66,7 @@ namespace PlayListTest
         private MainWindowVm _viewModel;
 
         private Action _playPauseButtonAction;
+        private bool _scrollLock;
 
         public MainWindow()
         {
@@ -64,25 +77,58 @@ namespace PlayListTest
         {
             _viewModel = (MainWindowVm)DataContext;
             _viewModel.PlayerMixer = _playerMixer;
+            _playerMixer.LoadStarted += PlayerMixer_LoadStarted;
             _playerMixer.PlayStatusChanged += PlayerMixer_PlayStatusChanged;
             _playerMixer.ProgressUpdated += PlayerMixer_ProgressUpdated;
             _playerMixer.LoadFinished += PlayerMixer_LoadFinished;
+            _playerMixer.InterfaceClearRequest += PlayerMixer_InterfaceClearRequest;
             _playPauseButtonAction = () => _playerMixer.Player?.Play();
+        }
+
+        private void PlayerMixer_InterfaceClearRequest()
+        {
+            Dispatcher?.Invoke(() =>
+            {
+                PlayerDuration.Content = TimeSpan.Zero.ToString(@"mm\:ss");
+                PlayerPlayTime.Content = TimeSpan.Zero.ToString(@"mm\:ss");
+                SliderProgress.Maximum = 1;
+                SliderProgress.Value = 0;
+                _viewModel.CurrentInfo = SongInfo.Logo;
+            });
+        }
+
+        private void PlayerMixer_LoadStarted(SongInfo obj)
+        {
+            Dispatcher?.Invoke(() =>
+            {
+                PlayerDuration.Content = TimeSpan.Zero.ToString(@"mm\:ss");
+                PlayerPlayTime.Content = TimeSpan.Zero.ToString(@"mm\:ss");
+                SliderProgress.Maximum = 1;
+                SliderProgress.Value = 0;
+                Loading.Visibility = Visibility.Visible;
+                PlayPause.IsEnabled = false;
+            });
         }
 
         private void PlayerMixer_LoadFinished(SongInfo obj)
         {
             Dispatcher?.Invoke(() =>
             {
+                _viewModel.CurrentInfo = obj;
                 PlayerDuration.Content = _playerMixer.Player.Duration.ToString(@"mm\:ss");
                 SliderProgress.Maximum = _playerMixer.Player.Duration.TotalMilliseconds;
+                Loading.Visibility = Visibility.Hidden;
+                PlayPause.IsEnabled = true;
             });
         }
 
         private void PlayerMixer_ProgressUpdated(TimeSpan playTime, TimeSpan duration)
         {
+            if (_scrollLock) return;
+
             Dispatcher?.Invoke(() =>
             {
+                if (_scrollLock) return;
                 PlayerPlayTime.Content = playTime.ToString(@"mm\:ss");
                 SliderProgress.Value = playTime.TotalMilliseconds;
             });
@@ -93,13 +139,13 @@ namespace PlayListTest
             if (obj == PlayStatus.Playing)
             {
                 _playPauseButtonAction = () => _playerMixer.Player?.Pause();
-                PlayPause.Content = "STOP";
             }
             else
             {
                 _playPauseButtonAction = () => _playerMixer.Player?.Play();
-                PlayPause.Content = "PLAY";
             }
+
+            Dispatcher?.Invoke(() => PlayPause.Content = obj == PlayStatus.Playing ? "STOP" : "PLAY");
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -107,18 +153,18 @@ namespace PlayListTest
             var fi = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             var files = fi.GetFiles().Select(k => new SongInfo { Title = k.Name });
             //_viewModel.PlayerMixer.PlayList.SongList.Add(new SongInfo { Title = "haha" });
-            _viewModel.PlayerMixer.PlayList.SetSongList(new ObservableCollection<SongInfo>(files), true);
+            _playerMixer.PlayList.SetSongList(new ObservableCollection<SongInfo>(files), true);
         }
 
         private void ManualPrev_Click(object sender, RoutedEventArgs e)
         {
-            var result = _playerMixer.PlayList.SwitchByControl(PlayControl.Previous);
+            var result = _playerMixer.PrevAsync();
             Console.WriteLine(result);
         }
 
         private void ManualNext_Click(object sender, RoutedEventArgs e)
         {
-            var result = _playerMixer.PlayList.SwitchByControl(PlayControl.Next);
+            var result = _playerMixer.NextAsync();
             Console.WriteLine(result);
         }
 
@@ -160,6 +206,23 @@ namespace PlayListTest
         private void PlayPause_Click(object sender, RoutedEventArgs e)
         {
             _playPauseButtonAction?.Invoke();
+        }
+
+        private void SliderProgress_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
+            _scrollLock = true;
+        }
+
+        private void SliderProgress_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            var progress = (int)SliderProgress.Value;
+            _playerMixer.Player.SkipTo(progress);
+            _scrollLock = false;
+        }
+
+        private void SliderProgress_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+            PlayerPlayTime.Content = TimeSpan.FromMilliseconds(SliderProgress.Value).ToString(@"mm\:ss");
         }
     }
 }

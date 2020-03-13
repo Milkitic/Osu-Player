@@ -80,6 +80,8 @@ namespace PlayListTest
                 if (value < -1) value = -1;
                 else if (value > SongList.Count - 1) value = SongList.Count - 1;
 
+                CurrentInfo = value == -1 ? null : SongList[_songIndexList[value]];
+
                 if (Equals(value, _indexPointer)) return;
                 _indexPointer = value;
 
@@ -88,9 +90,8 @@ namespace PlayListTest
                     _indexPointer = _temporaryPointerChanged.Invoke(_indexPointer);
                     Console.WriteLine(_indexPointer);
                 }
-                _temporaryPointerChanged = null;
 
-                CurrentInfo = _indexPointer == -1 ? null : SongList[_songIndexList[_indexPointer]];
+                _temporaryPointerChanged = null;
                 OnPropertyChanged();
             }
         }
@@ -181,6 +182,14 @@ namespace PlayListTest
 
                 if (!IsLoop)
                 {
+                    if (SongList.Count == 0)
+                    {
+                        var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+                            PlayControlResult.PointerControlStatus.Clear);
+                        AutoSwitched?.Invoke(playControlResult, CurrentInfo);
+                        return playControlResult;
+                    }
+
                     if (IndexPointer == 0 && !isNext ||
                         IndexPointer == _songIndexList.Count - 1 && isNext)
                     {
@@ -190,6 +199,13 @@ namespace PlayListTest
                         return playControlResult;
                     }
                 }
+            }
+
+
+            if (SongList.Count == 0)
+            {
+                return new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+                    PlayControlResult.PointerControlStatus.Clear);
             }
 
             if (isNext)
@@ -217,8 +233,11 @@ namespace PlayListTest
         {
             if (SongList.Count == 0)
             {
+                var current = CurrentInfo;
                 IndexPointer = -1;
-                return CurrentInfo != null; // 从有到无，则为true
+                _songIndexList.Clear();
+                SongIndexList = new ObservableCollection<int>(_songIndexList);
+                return CurrentInfo != current; // 从有到无，则为true
             }
 
             _songIndexList = SongList.Select((o, i) => i).ToList();
@@ -249,9 +268,16 @@ namespace PlayListTest
         // 如果随机，改变集合是否重排？
         private void SongList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if ((e.NewItems?.Count ?? 0) + (e.OldItems?.Count ?? 0) > 1)
+            if ((e.NewItems?.Count ?? 0) + (e.OldItems?.Count ?? 0) > 1 || _temporaryPointerChanged != null ||
+                SongList.Count == 0)
             {
+                _temporaryPointerChanged = null;
                 RearrangeIndexesAndReposition();
+
+                if (!CheckCount())
+                {
+
+                }
                 return;
             }
 
@@ -278,6 +304,17 @@ namespace PlayListTest
             {
                 var songIndex = e.OldStartingIndex;
                 var oldIndexPointer = _songIndexList.IndexOf(songIndex);
+                if (oldIndexPointer == -1)
+                {
+                    _temporaryPointerChanged = null;
+                    RearrangeIndexesAndReposition();
+
+                    if (!CheckCount())
+                    {
+
+                    }
+                    return;
+                }
 
                 if (oldIndexPointer == IndexPointer)
                 {
@@ -294,6 +331,7 @@ namespace PlayListTest
                 }
                 else
                 {
+                    _temporaryPointerChanged = null;
                     _songIndexList.RemoveAt(oldIndexPointer);
                 }
 
@@ -303,7 +341,17 @@ namespace PlayListTest
                 }
 
                 SongIndexList = new ObservableCollection<int>(_songIndexList);
+
+                if (!CheckCount())
+                {
+
+                }
             }
+        }
+
+        private bool CheckCount()
+        {
+            return _temporaryPointerChanged != null || SongList.Count == _songIndexList.Count;
         }
     }
 }

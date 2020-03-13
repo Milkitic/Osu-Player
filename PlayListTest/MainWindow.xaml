@@ -47,10 +47,17 @@
             Grid.RowSpan="2"
             Padding="20,20,0,0"
             Background="#101010"
-            Content="{Binding PlayerMixer.PlayList.CurrentInfo}"
+            Content="{Binding CurrentInfo}"
             FontSize="20"
             FontWeight="Bold"
             Foreground="White" />
+        <Label
+            x:Name="Loading"
+            Grid.Row="1"
+            Grid.Column="0"
+            Content="Loading..."
+            Foreground="White"
+            Visibility="Hidden" />
         <Grid Grid.Row="0" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition />
@@ -126,6 +133,9 @@
                 x:Name="SliderProgress"
                 Width="200"
                 VerticalAlignment="Center"
+                Thumb.DragCompleted="SliderProgress_DragCompleted"
+                Thumb.DragDelta="SliderProgress_DragDelta"
+                Thumb.DragStarted="SliderProgress_DragStarted"
                 TickFrequency="1" />
             <Label x:Name="PlayerDuration" Content="00:00" />
             <ComboBox

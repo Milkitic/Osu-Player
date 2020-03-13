@@ -38,12 +38,14 @@ namespace PlayListTest
         private TimeSpan _playTime;
 
         private static readonly Random Rnd = new Random();
+        private readonly Task _updateTask;
+        private readonly CancellationTokenSource _updateCts = new CancellationTokenSource();
 
         public Player()
         {
-            Task.Run(() =>
+            _updateTask = Task.Run(() =>
             {
-                while (true)
+                while (!_updateCts.IsCancellationRequested)
                 {
                     if (_sw.Elapsed >= Duration && _sw.IsRunning)
                     {
@@ -79,7 +81,7 @@ namespace PlayListTest
         public void SkipTo(int milliseconds)
         {
             _sw.SkipTo(TimeSpan.FromMilliseconds(milliseconds));
-            PlayStatus = PlayStatus.Paused;
+            //PlayStatus = PlayStatus.Paused;
         }
 
         public void Stop()
@@ -90,6 +92,9 @@ namespace PlayListTest
 
         public void Dispose()
         {
+            _updateCts?.Cancel();
+            Task.WaitAll(_updateTask);
+            _updateCts?.Dispose();
         }
     }
 }
