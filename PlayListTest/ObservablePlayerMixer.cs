@@ -13,15 +13,15 @@ namespace PlayListTest
 
         public event Action InterfaceClearRequest;
 
-        public event Action<SongInfo> LoadStarted;
+        public event Action<SongInfo, CancellationToken> LoadStarted;
 
-        public event Action<SongInfo> MetaLoaded;
-        public event Action<SongInfo> BackgroundInfoLoaded;
-        public event Action<SongInfo> MusicLoaded;
-        public event Action<SongInfo> VideoLoadRequested;
-        public event Action<SongInfo> StoryboardLoadRequested;
+        public event Action<SongInfo, CancellationToken> MetaLoaded;
+        public event Action<SongInfo, CancellationToken> BackgroundInfoLoaded;
+        public event Action<SongInfo, CancellationToken> MusicLoaded;
+        public event Action<SongInfo, CancellationToken> VideoLoadRequested;
+        public event Action<SongInfo, CancellationToken> StoryboardLoadRequested;
 
-        public event Action<SongInfo> LoadFinished;
+        public event Action<SongInfo, CancellationToken> LoadFinished;
 
         public Player Player
         {
@@ -63,25 +63,25 @@ namespace PlayListTest
 
         public async Task LoadAsync(SongInfo songInfo)
         {
-            await _readLock.WaitAsync();
-
             try
             {
-                LoadStarted?.Invoke(songInfo);
+                await _readLock.WaitAsync(_cts.Token);
+
+                LoadStarted?.Invoke(songInfo, _cts.Token);
                 ClearPlayer();
 
                 await Task.Delay(TimeSpan.FromSeconds(2), _cts.Token);
-                MetaLoaded?.Invoke(songInfo);
-                BackgroundInfoLoaded?.Invoke(songInfo);
+                MetaLoaded?.Invoke(songInfo, _cts.Token);
+                BackgroundInfoLoaded?.Invoke(songInfo, _cts.Token);
 
                 Player = new Player();
                 Player.PlayStatusChanged += Player_PlayStatusChanged;
                 Player.ProgressUpdated += Player_ProgressUpdated;
-                MusicLoaded?.Invoke(songInfo);
+                MusicLoaded?.Invoke(songInfo, _cts.Token);
 
-                VideoLoadRequested?.Invoke(songInfo);
-                StoryboardLoadRequested?.Invoke(songInfo);
-                LoadFinished?.Invoke(songInfo);
+                VideoLoadRequested?.Invoke(songInfo, _cts.Token);
+                StoryboardLoadRequested?.Invoke(songInfo, _cts.Token);
+                LoadFinished?.Invoke(songInfo, _cts.Token);
             }
             catch (Exception ex)
             {

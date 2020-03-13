@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -97,7 +98,7 @@ namespace PlayListTest
             });
         }
 
-        private void PlayerMixer_LoadStarted(SongInfo obj)
+        private void PlayerMixer_LoadStarted(SongInfo obj, CancellationToken token)
         {
             Dispatcher?.Invoke(() =>
             {
@@ -110,7 +111,7 @@ namespace PlayListTest
             });
         }
 
-        private void PlayerMixer_LoadFinished(SongInfo obj)
+        private void PlayerMixer_LoadFinished(SongInfo obj, CancellationToken token)
         {
             Dispatcher?.Invoke(() =>
             {
