@@ -16,6 +16,7 @@ using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Instances;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Core;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.ViewModels;
@@ -26,11 +27,11 @@ namespace Milky.OsuPlayer.Control
 {
     public class MiniPlayListControlVm : ViewModelBase
     {
-        private PlayerList _playerList;
+        private ObservablePlayController _playerList;
         private double _positionPercent;
         private PlayerViewModel _player = PlayerViewModel.Current;
 
-        public PlayerList PlayerList
+        public ObservablePlayController PlayerList
         {
             get => _playerList;
             set
@@ -83,7 +84,7 @@ namespace Milky.OsuPlayer.Control
             InitializeComponent();
             _viewModel = (MiniPlayListControlVm)DataContext;
             _playersInst = Services.Get<PlayersInst>();
-            _viewModel.PlayerList = Services.Get<PlayerList>();
+            _viewModel.PlayerList = Services.Get<ObservablePlayController>();
             Default = this;
         }
 
@@ -106,7 +107,7 @@ namespace Milky.OsuPlayer.Control
 
         private void AudioPlayer_PositionChanged(object sender, ProgressEventArgs e)
         {
-            _viewModel.PositionPercent = e.Position / (double)e.Duration;
+            _viewModel.PositionPercent = e.Position.TotalMilliseconds / e.Duration.TotalMilliseconds;
         }
         
         private void MaxButton_Click(object sender, RoutedEventArgs e)

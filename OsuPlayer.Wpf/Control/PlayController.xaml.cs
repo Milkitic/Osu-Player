@@ -207,9 +207,9 @@ namespace Milky.OsuPlayer.Control
                 return;
             }
 
-            switch (ComponentPlayer.Current.PlayerStatus)
+            switch (ComponentPlayer.Current.PlayStatus)
             {
-                case PlayerStatus.Playing:
+                case PlayStatus.Playing:
                     {
                         var args = new RoutedEventArgs(PreviewPauseEvent, this);
                         RaiseEvent(args);
@@ -220,9 +220,9 @@ namespace Milky.OsuPlayer.Control
 
                         break;
                     }
-                case PlayerStatus.Ready:
-                case PlayerStatus.Stopped:
-                case PlayerStatus.Paused:
+                case PlayStatus.Ready:
+                case PlayStatus.Stopped:
+                case PlayStatus.Paused:
                     {
                         var args = new RoutedEventArgs(PreviewPlayEvent, this);
                         RaiseEvent(args);
@@ -258,7 +258,7 @@ namespace Milky.OsuPlayer.Control
             await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None);
         }
 
-        public async Task SetPlayMode(PlayerMode playMode)
+        public async Task SetPlayMode(PlayMode playMode)
         {
             if (playMode == Services.Get<PlayerList>().PlayerMode)
             {
@@ -267,7 +267,7 @@ namespace Milky.OsuPlayer.Control
 
             Services.Get<PlayerList>().PlayerMode = playMode;
             await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.IndexOnly);
-            AppSettings.Default.Play.PlayerMode = playMode;
+            AppSettings.Default.Play.PlayMode = playMode;
             AppSettings.SaveDefault();
         }
 
@@ -368,7 +368,7 @@ namespace Milky.OsuPlayer.Control
                     audioPlayer.HitsoundOffset = mapInfo.Offset;
                     VolumeControl.HitsoundOffset = audioPlayer.HitsoundOffset;
 
-                    var currentInfo = new CurrentInfo(
+                    var currentInfo = new BeatmapDetail(
                         osuFile.Metadata.Artist,
                         osuFile.Metadata.ArtistUnicode,
                         osuFile.Metadata.Title,
@@ -424,7 +424,7 @@ namespace Milky.OsuPlayer.Control
                     OsuPlayer.Notification.Show(@"发生未处理的错误：" + (ex.InnerException?.Message ?? ex?.Message));
 
                     if (audioPlayer == null) return;
-                    if (audioPlayer.PlayerStatus != PlayerStatus.Playing)
+                    if (audioPlayer.PlayStatus != PlayStatus.Playing)
                     {
                         await PlayNextAsync(false, true);
                     }
@@ -572,18 +572,18 @@ namespace Milky.OsuPlayer.Control
         private void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
         {
             var progress = (int)PlayProgress.Value;
-            var args = new DragCompleteEventArgs(ComponentPlayer.Current.PlayerStatus, progress);
+            var args = new DragCompleteEventArgs(ComponentPlayer.Current.PlayStatus, progress);
             OnProgressDragComplete?.Invoke(this, args);
             if (!args.Handled)
             {
-                switch (ComponentPlayer.Current.PlayerStatus)
+                switch (ComponentPlayer.Current.PlayStatus)
                 {
-                    case PlayerStatus.Playing:
+                    case PlayStatus.Playing:
                         ComponentPlayer.Current.SetTime(progress, false);
                         ComponentPlayer.Current.Play();
                         break;
-                    case PlayerStatus.Paused:
-                    case PlayerStatus.Stopped:
+                    case PlayStatus.Paused:
+                    case PlayStatus.Stopped:
                         _forcePaused = true;
                         ComponentPlayer.Current.SetTime(progress, false);
                         ComponentPlayer.Current.Pause();
@@ -642,18 +642,18 @@ namespace Milky.OsuPlayer.Control
 
     public class DragCompleteEventArgs : HandledEventArgs
     {
-        public DragCompleteEventArgs(PlayerStatus playerStatus)
+        public DragCompleteEventArgs(PlayStatus playStatus)
         {
-            PlayerStatus = playerStatus;
+            PlayStatus = playStatus;
         }
 
-        public DragCompleteEventArgs(PlayerStatus playerStatus, int currentPlayTime)
+        public DragCompleteEventArgs(PlayStatus playStatus, int currentPlayTime)
         {
-            PlayerStatus = playerStatus;
+            PlayStatus = playStatus;
             CurrentPlayTime = currentPlayTime;
         }
 
-        public PlayerStatus PlayerStatus { get; }
+        public PlayStatus PlayStatus { get; }
         public int CurrentPlayTime { get; }
     }
 

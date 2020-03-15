@@ -33,7 +33,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private long _position;
         private long _duration;
-        private CurrentInfo _currentInfo;
+        private BeatmapDetail _currentInfo;
         private VolumeControl _currentVolume;
 
         public PlayListMode PlayListMode
@@ -86,7 +86,7 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public CurrentInfo CurrentInfo
+        public BeatmapDetail CurrentInfo
         {
             get => _currentInfo;
             set

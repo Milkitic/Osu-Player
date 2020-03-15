@@ -12,6 +12,7 @@ using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Instances;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Core;
 using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
@@ -42,7 +43,7 @@ namespace Milky.OsuPlayer.Control
     {
         private PlayersInst _playerInst = Services.Get<PlayersInst>();
         private OsuDbInst _dbInst = Services.Get<OsuDbInst>();
-        private PlayerList _playList = Services.Get<PlayerList>();
+        private readonly ObservablePlayController _obsController = Services.Get<ObservablePlayController>();
 
         private bool _playAfterSeek;
         private Action _waitAction;
@@ -144,7 +145,7 @@ namespace Milky.OsuPlayer.Control
         private void Controller_OnNewFileLoaded(object sender, HandledEventArgs e)
         {
             var osuFile = _playerInst.AudioPlayer.OsuFile;
-            var path = _playList.CurrentInfo.Path;
+            var path = _obsController.PlayList.CurrentInfo.Path;
             var dir = Path.GetDirectoryName(path);
             _pauseThisSession = (bool)sender;
             Execute.OnUiThread(() =>
@@ -282,13 +283,13 @@ namespace Milky.OsuPlayer.Control
                     VideoElement.Position = TimeSpan.FromMilliseconds(trueOffset);
                 }
 
-                switch (e.PlayerStatus)
+                switch (e.PlayStatus)
                 {
-                    case PlayerStatus.Playing:
+                    case PlayStatus.Playing:
                         _playAfterSeek = true;
                         break;
-                    case PlayerStatus.Paused:
-                    case PlayerStatus.Stopped:
+                    case PlayStatus.Paused:
+                    case PlayStatus.Stopped:
                         _playAfterSeek = false;
                         break;
                 }

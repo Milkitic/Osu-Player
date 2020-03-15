@@ -60,26 +60,26 @@ namespace Milky.OsuPlayer.Control
             }
         }
 
-        private void SwitchOption(PlayerMode playerMode)
+        private void SwitchOption(PlayMode playMode)
         {
-            switch (playerMode)
+            switch (playMode)
             {
-                case PlayerMode.Normal:
+                case PlayMode.Normal:
                     ModeNormal.IsChecked = true;
                     break;
-                case PlayerMode.Random:
+                case PlayMode.Random:
                     ModeRandom.IsChecked = true;
                     break;
-                case PlayerMode.Loop:
+                case PlayMode.Loop:
                     ModeLoop.IsChecked = true;
                     break;
-                case PlayerMode.LoopRandom:
+                case PlayMode.LoopRandom:
                     ModeLoopRandom.IsChecked = true;
                     break;
-                case PlayerMode.Single:
+                case PlayMode.Single:
                     ModeSingle.IsChecked = true;
                     break;
-                case PlayerMode.SingleLoop:
+                case PlayMode.SingleLoop:
                     ModeSingleLoop.IsChecked = true;
                     break;
                 default:
@@ -91,7 +91,7 @@ namespace Milky.OsuPlayer.Control
         {
             if (e.OriginalSource is RadioButton radio)
             {
-                await PlayController.Default.SetPlayMode((PlayerMode)radio.Tag);
+                await PlayController.Default.SetPlayMode((PlayMode)radio.Tag);
                 RaiseEvent(new RoutedEventArgs(CloseRequestedEvent, this));
             }
         }

@@ -21,9 +21,9 @@ namespace Milky.OsuPlayer.Windows
     /// </summary>
     public partial class BeatmapInfoWindow : Window
     {
-        private CurrentInfo _info;
+        private BeatmapDetail _info;
 
-        public BeatmapInfoWindow(CurrentInfo info)
+        public BeatmapInfoWindow(BeatmapDetail info)
         {
             InitializeComponent();
             DataContext = info;

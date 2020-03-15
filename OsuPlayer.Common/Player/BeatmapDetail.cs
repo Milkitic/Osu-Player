@@ -6,16 +6,16 @@ using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Common.Player
 {
-    public class CurrentInfo : ViewModelBase
+    public class BeatmapDetail : ViewModelBase
     {
         private bool _isFavorite;
         private string _artist;
         private string _artistUnicode;
         private string _title;
         private string _titleUnicode;
-        public CurrentInfo() { }
+        public BeatmapDetail() { }
 
-        public CurrentInfo(string artist, string artistUnicode, string title, string titleUnicode, string creator,
+        public BeatmapDetail(string artist, string artistUnicode, string title, string titleUnicode, string creator,
             string source, List<string> tags, int beatmapId, int beatmapsetId, double stars, double hp, double cs,
             double ar,
             double od, long songLength, MapIdentity identity, MapInfo mapInfo, Beatmap beatmap, bool isFavorite,

@@ -1,17 +1,18 @@
-﻿using Milky.OsuPlayer.Common.Player;
+﻿using System;
+using Milky.OsuPlayer.Common.Player;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
     public interface IPlayer
     {
-        PlayerStatus PlayerStatus { get; }
-        int Duration { get; }
-        int PlayTime { get; }
+        PlayStatus PlayStatus { get; }
+        TimeSpan Duration { get; }
+        TimeSpan PlayTime { get; }
 
         void Play();
         void Pause();
         void Stop();
         void Replay();
-        void SetTime(int ms, bool play = true);
+        void SetTime(TimeSpan time, bool play = true);
     }
 }

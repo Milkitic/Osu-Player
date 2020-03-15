@@ -29,7 +29,7 @@
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
     <Window.DataContext>
-        <player:CurrentInfo />
+        <player:BeatmapDetail />
     </Window.DataContext>
     <Window.Resources>
         <system:Double x:Key="LabelWidth">110</system:Double>

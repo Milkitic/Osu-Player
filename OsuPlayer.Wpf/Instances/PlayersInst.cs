@@ -6,24 +6,24 @@ using Milky.OsuPlayer.Media.Audio.Core;
 
 namespace Milky.OsuPlayer.Instances
 {
-    public class PlayersInst
-    {
-        public ComponentPlayer AudioPlayer { get; private set; }
+    //public class PlayersInst
+    //{
+    //    public ComponentPlayer AudioPlayer { get; private set; }
 
-        public void SetAudioPlayer(string filePath, OsuFile osuFile)
-        {
-            AudioPlayer = new ComponentPlayer(filePath, osuFile);
-        }
+    //    public void SetAudioPlayer(string filePath, OsuFile osuFile)
+    //    {
+    //        AudioPlayer = new ComponentPlayer(filePath, osuFile);
+    //    }
 
-        public void ClearAudioPlayer()
-        {
-            AudioPlayer?.Stop();
-            AudioPlayer?.Dispose();
-            AudioPlayer = null;
-        }
-        public void ClearHitsoundCache()
-        {
-            AudioPlaybackEngine.ClearCacheSounds();
-        }
-    }
+    //    public void ClearAudioPlayer()
+    //    {
+    //        AudioPlayer?.Stop();
+    //        AudioPlayer?.Dispose();
+    //        AudioPlayer = null;
+    //    }
+    //    public void ClearHitsoundCache()
+    //    {
+    //        AudioPlaybackEngine.ClearCacheSounds();
+    //    }
+    //}
 }

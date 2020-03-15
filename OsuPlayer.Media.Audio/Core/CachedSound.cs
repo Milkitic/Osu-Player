@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Milky.OsuPlayer.Common;
@@ -14,7 +15,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         private static readonly string CachePath = Path.Combine(Domain.CachePath, "_temp.sound");
         private static readonly object CacheLock = new object();
 
-        public long Duration { get; private set; }
+        public TimeSpan Duration { get; private set; }
         public long Length { get; private set; }
 
         public CachedSound(string audioFileName)
@@ -35,7 +36,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                     }
 
                     AudioData = wholeFile.ToArray();
-                    Duration = audioFileReader.TotalTime.Milliseconds;
+                    Duration = audioFileReader.TotalTime;
                     Length = audioFileReader.Length;
                 }
             }

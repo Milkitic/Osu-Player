@@ -17,7 +17,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         private static readonly object CacheLock = new object();
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-        private PlayerStatus _playerStatus;
+        private PlayStatus _playStatus;
 
         private readonly object _propertiesLock = new object();
         private MyAudioFileReader _reader;
@@ -46,23 +46,23 @@ namespace Milky.OsuPlayer.Media.Audio.Core
             }
         }
 
-        public override PlayerStatus PlayerStatus
+        public override PlayStatus PlayStatus
         {
-            get => _playerStatus;
+            get => _playStatus;
             protected set
             {
                 Console.WriteLine(@"Music: " + value);
-                _playerStatus = value;
+                _playStatus = value;
             }
         }
 
-        public override int Duration
+        public override TimeSpan Duration
         {
-            get => (int)_reader.TotalTime.TotalMilliseconds;
+            get => _reader.TotalTime;
             protected set => throw new InvalidOperationException();
         }
 
-        public override int PlayTime { get; protected set; }
+        public override TimeSpan PlayTime { get; protected set; }
 
         #endregion
 
@@ -90,7 +90,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
             //_device.PlaybackStopped += (sender, args) =>
             //{
-            //    PlayerStatus = PlayerStatus.Finished;
+            //    PlayStatus = PlayStatus.Finished;
             //    RaisePlayerFinishedEvent(this, new EventArgs());
             //};
             _speedProvider = new VarispeedSampleProvider(_reader, 10,
@@ -109,13 +109,13 @@ namespace Milky.OsuPlayer.Media.Audio.Core
             //    _soundTouchMode = true;
             //}
 
-            SetTime(0, false);
+            SetTime(TimeSpan.Zero, false);
 
             AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
             //AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
             var task = Task.Factory.StartNew(UpdateProgress, TaskCreationOptions.LongRunning);
 
-            PlayerStatus = PlayerStatus.Ready;
+            PlayStatus = PlayStatus.Ready;
             RaisePlayerLoadedEvent(this, new EventArgs());
             await Task.CompletedTask;
         }
@@ -124,7 +124,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         {
             PlayWithoutNotify();
 
-            PlayerStatus = PlayerStatus.Playing;
+            PlayStatus = PlayStatus.Playing;
             RaisePlayerStartedEvent(this, new ProgressEventArgs(PlayTime, Duration));
         }
 
@@ -132,27 +132,26 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         {
             PauseWithoutNotify();
 
-            PlayerStatus = PlayerStatus.Paused;
+            PlayStatus = PlayStatus.Paused;
             RaisePlayerPausedEvent(this, new ProgressEventArgs(PlayTime, Duration));
         }
 
         public override void Replay()
         {
-            SetTime(0);
+            SetTime(TimeSpan.Zero);
             Play();
         }
 
-        public override void SetTime(int ms, bool play = true)
+        public override void SetTime(TimeSpan time, bool play = true)
         {
-            if (ms < 0) ms = 0;
-            var span = TimeSpan.FromMilliseconds(ms);
+            if (time < TimeSpan.Zero) time = TimeSpan.Zero;
             if (_reader != null)
             {
                 _reader.CurrentTime =
-                    span >= _reader.TotalTime ? _reader.TotalTime - TimeSpan.FromMilliseconds(1) : span;
+                    time >= _reader.TotalTime ? _reader.TotalTime - TimeSpan.FromMilliseconds(1) : time;
                 _speedProvider.Reposition();
             }
-            //PlayerStatus = PlayerStatus.Playing;
+            //PlayStatus = PlayStatus.Playing;
             if (!play) PauseWithoutNotify();
             //else PlayWithoutNotify();
         }
@@ -203,15 +202,15 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         {
             while (!_cts.IsCancellationRequested)
             {
-                if (_reader != null && PlayerStatus != PlayerStatus.NotInitialized && PlayerStatus != PlayerStatus.Finished)
+                if (_reader != null && PlayStatus != PlayStatus.NotInitialized && PlayStatus != PlayStatus.Finished)
                 {
                     if (_reader.CurrentTime < _reader.TotalTime)
                     {
-                        PlayTime = (int)_reader.CurrentTime.TotalMilliseconds;
+                        PlayTime = _reader.CurrentTime;
                     }
                     else
                     {
-                        PlayerStatus = PlayerStatus.Finished;
+                        PlayStatus = PlayStatus.Finished;
                         RaisePlayerFinishedEvent(this, new EventArgs());
                     }
                 }
@@ -240,8 +239,8 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         internal void ResetWithoutNotify()
         {
-            SetTime(0, false);
-            PlayerStatus = PlayerStatus.Stopped;
+            SetTime(TimeSpan.Zero, false);
+            PlayStatus = PlayStatus.Stopped;
         }
 
         public override void Dispose()

@@ -36,10 +36,10 @@ namespace Milky.OsuPlayer
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
             StartupConfig.Startup();
 
-            var playerList = new PlayerList { PlayerMode = AppSettings.Default.Play.PlayerMode };
+            var playerList = new  { PlayerMode = AppSettings.Default.Play.PlayMode };
             Services.TryAddInstance(playerList);
             Services.TryAddInstance(new OsuDbInst());
-            Services.TryAddInstance(new PlayersInst());
+            //Services.TryAddInstance(new PlayersInst());
             Services.TryAddInstance(new LyricsInst());
             Services.TryAddInstance(new Updater());
             Services.TryAddInstance(new OsuFileScanner());

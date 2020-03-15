@@ -13,7 +13,9 @@ namespace Milky.OsuPlayer.Media.Audio
     public abstract class Player : IPlayer, IDisposable
     {
         private static readonly SynchronizationContext UiContext;
+        private PlayStatus _playStatus;
 
+        public event Action<PlayStatus> PlayStatusChanged;
         public event EventHandler PlayerLoaded;
         public event EventHandler<ProgressEventArgs> PlayerStarted;
         public event EventHandler PlayerStopped;
@@ -47,16 +49,26 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public abstract int ProgressRefreshInterval { get; set; }
 
-        public abstract PlayerStatus PlayerStatus { get; protected set; }
-        public abstract int Duration { get; protected set; }
-        public abstract int PlayTime { get; protected set; }
+        public virtual PlayStatus PlayStatus
+        {
+            get => _playStatus;
+            protected set
+            {
+                if (Equals(value, _playStatus)) return;
+                _playStatus = value;
+                PlayStatusChanged?.Invoke(value);
+            }
+        }
+
+        public abstract TimeSpan Duration { get; protected set; }
+        public abstract TimeSpan PlayTime { get; protected set; }
 
         public abstract Task InitializeAsync();
         public abstract void Play();
         public abstract void Pause();
         public abstract void Stop();
         public abstract void Replay();
-        public abstract void SetTime(int ms, bool play = true);
+        public abstract void SetTime(TimeSpan time, bool play = true);
 
         static Player()
         {
@@ -102,7 +114,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     var newT = PlayTime;
                     if (newT != oldT &&
                         sw.ElapsedMilliseconds > ProgressRefreshInterval - 10 &&
-                        PlayerStatus == PlayerStatus.Playing)
+                        PlayStatus == PlayStatus.Playing)
                     {
                         oldT = newT;
                         RaiseProgressChangedEvent(this, new ProgressEventArgs(PlayTime, Duration));
