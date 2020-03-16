@@ -23,17 +23,7 @@ namespace Milky.OsuPlayer.Control
 {
     public class AnimationControlVm : ViewModelBase
     {
-        private PlayerViewModel _player;
-
-        public PlayerViewModel Player
-        {
-            get => _player;
-            set
-            {
-                _player = value;
-                OnPropertyChanged();
-            }
-        }
+        public SharedVm Player { get; } = SharedVm.Default;
     }
 
     /// <summary>
@@ -62,7 +52,6 @@ namespace Milky.OsuPlayer.Control
             }
 
             ViewModel = (AnimationControlVm)DataContext;
-            ViewModel.Player = PlayerViewModel.Current;
         }
 
         private void AnimationControl_Loaded(object sender, RoutedEventArgs e)
@@ -164,7 +153,7 @@ namespace Milky.OsuPlayer.Control
                     {
                         SafelyRecreateVideoElement(ViewModel.Player.EnableVideo).Wait();
 
-                        if (PlayerViewModel.Current.EnableVideo)
+                        if (SharedVm.Default.EnableVideo)
                         {
                             var videoName = osuFile.Events.VideoInfo?.Filename;
                             if (videoName == null)
@@ -234,7 +223,7 @@ namespace Milky.OsuPlayer.Control
                 }
                 catch (Exception ex)
                 {
-                    OsuPlayer.Notification.Show(@"发生未处理的错误：" + (ex.InnerException ?? ex));
+                    Common.Notification.Push(@"发生未处理的错误：" + (ex.InnerException ?? ex));
                 }
             });
         }
@@ -310,7 +299,7 @@ namespace Milky.OsuPlayer.Control
             async void OnMediaOpened(object sender, MediaOpenedEventArgs e)
             {
                 VideoElementBorder.Visibility = Visibility.Visible;
-                if (!PlayerViewModel.Current.EnableVideo)
+                if (!SharedVm.Default.EnableVideo)
                     return;
                 await Task.Run(() => _waitAction?.Invoke());
 
@@ -327,7 +316,7 @@ namespace Milky.OsuPlayer.Control
             {
                 VideoElementBorder.Visibility = Visibility.Hidden;
                 //MsgBox.Show(this, e.ErrorException.ToString(), "不支持的视频格式", MessageBoxButton.OK, MessageBoxImage.Error);
-                if (!PlayerViewModel.Current.EnableVideo)
+                if (!SharedVm.Default.EnableVideo)
                     return;
                 await SafelyRecreateVideoElement(false);
                 _controller.Player.TogglePlay();
@@ -345,7 +334,7 @@ namespace Milky.OsuPlayer.Control
 
             void OnSeekingEnded(object sender, EventArgs e)
             {
-                if (!PlayerViewModel.Current.EnableVideo)
+                if (!SharedVm.Default.EnableVideo)
                     return;
                 _controller.Player.SetTime(VideoElement.Position - TimeSpan.FromMilliseconds(_videoOffset), false);
                 if (_playAfterSeek)

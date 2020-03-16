@@ -5,6 +5,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using Milky.OsuPlayer.Common;
 
 namespace Milky.OsuPlayer.Control.Notification
 {

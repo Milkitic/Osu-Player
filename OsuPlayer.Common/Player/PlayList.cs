@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
@@ -20,6 +21,7 @@ namespace Milky.OsuPlayer.Common.Player
         }
 
         private static AppDbOperator _operator = new AppDbOperator();
+
         public static async Task<BeatmapContext> CreateAsync(Beatmap beatmap)
         {
             return new BeatmapContext(beatmap)
@@ -33,9 +35,10 @@ namespace Milky.OsuPlayer.Common.Player
         public BeatmapSettings BeatmapSettings { get; private set; }
         public BeatmapDetail BeatmapDetail { get; }
         public OsuFile OsuFile { get; set; }
-        public bool PlayInstantly { get; set; }
+        //public bool PlayInstantly { get; set; }
         public Action PlayHandle { get; set; }
         public Action StopHandle { get; set; }
+        public Action<double, bool> SetTimeHandle { get; set; }
 
         public static bool operator ==(BeatmapContext bc1, BeatmapContext bc2)
         {
@@ -91,6 +94,17 @@ namespace Milky.OsuPlayer.Common.Player
             }
         }
 
+        public BeatmapContext PreInfo
+        {
+            get => _preInfo;
+            set
+            {
+                if (Equals(value, _preInfo)) return;
+                _preInfo = value;
+                OnPropertyChanged();
+            }
+        }
+
         //public ObservablePlayerMixer PlayerMixer { get; private set; }
 
         public PlayMode PlayMode
@@ -107,6 +121,8 @@ namespace Milky.OsuPlayer.Common.Player
                     if (b) throw new Exception("PlayMode changes cause current info changed");
                 }
 
+                AppSettings.Default.Play.PlayMode = _playMode;
+                AppSettings.SaveDefault();
                 OnPropertyChanged();
             }
         }
@@ -118,6 +134,7 @@ namespace Milky.OsuPlayer.Common.Player
         private List<int> _songIndexList = new List<int>();
         private BeatmapContext _currentInfo;
         private ObservableCollection<int> _songIndexList1;
+        private BeatmapContext _preInfo;
 
         public ObservableCollection<int> SongIndexList
         {
@@ -138,6 +155,7 @@ namespace Milky.OsuPlayer.Common.Player
                 if (value < -1) value = -1;
                 else if (value > SongList.Count - 1) value = SongList.Count - 1;
 
+                PreInfo = CurrentInfo;
                 CurrentInfo = value == -1 ? null : BeatmapContext.CreateAsync(SongList[_songIndexList[value]]).Result;
 
                 if (Equals(value, _indexPointer)) return;

@@ -51,6 +51,7 @@
     <Reference Include="osu.Shared, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\osu.Shared.1.0.3\lib\net20\osu.Shared.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -94,6 +95,9 @@
     <Compile Include="Data\IdentifiableExtension.cs" />
     <Compile Include="DictionaryExtension.cs" />
     <Compile Include="ListExtension.cs" />
+    <Compile Include="Notification.cs" />
+    <Compile Include="NotificationOption.cs" />
+    <Compile Include="NotificationType.cs" />
     <Compile Include="Player\PlayControlType.cs" />
     <Compile Include="Player\PlayControlResult.cs" />
     <Compile Include="Player\PlayList.cs" />
@@ -116,6 +120,7 @@
     <Compile Include="Metadata\SortStyle.cs" />
     <Compile Include="Scanning\FileScannerViewModel.cs" />
     <Compile Include="Scanning\OsuFileScanner.cs" />
+    <Compile Include="SharedVm.cs" />
     <Compile Include="StringExtension.cs" />
     <Compile Include="Web\Downloader.cs" />
     <Compile Include="VariableStopwatch.cs" />

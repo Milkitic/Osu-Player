@@ -67,14 +67,13 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public void TogglePlay()
         {
-            if (PlayStatus == PlayStatus.Ready || PlayStatus == PlayStatus.Finished || PlayStatus == PlayStatus.Paused)
+            if (PlayStatus == PlayStatus.Ready ||
+                PlayStatus == PlayStatus.Finished ||
+                PlayStatus == PlayStatus.Paused)
             {
                 Play();
             }
-            else if (PlayStatus == PlayStatus.Playing)
-            {
-                Pause();
-            }
+            else if (PlayStatus == PlayStatus.Playing) Pause();
         }
 
         public abstract void Play();

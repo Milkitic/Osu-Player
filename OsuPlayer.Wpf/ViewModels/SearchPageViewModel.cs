@@ -272,7 +272,7 @@ namespace Milky.OsuPlayer.ViewModels
                         : Path.Combine(Domain.OsuSongPath, map.FolderName);
                     if (!Directory.Exists(fileName))
                     {
-                        Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
+                        Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
                         return;
                     }
 

@@ -54,7 +54,6 @@ namespace Milky.OsuPlayer.Windows
             InitializeComponent();
 
             ViewModel = (LyricWindowViewModel)DataContext;
-            ViewModel.Player = PlayerViewModel.Current;
             MainWindowViewModel.Current.LyricWindowViewModel = ViewModel;
 
             var fi = new FileInfo(Path.Combine(Domain.ExternalPath, "font", "default.ttc"));

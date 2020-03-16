@@ -69,7 +69,7 @@ namespace Milky.OsuPlayer.Pages
                         : Path.Combine(Domain.OsuSongPath, map.FolderName);
                     if (!Directory.Exists(fileName))
                     {
-                        Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
+                        Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
                         return;
                     }
 
@@ -291,7 +291,7 @@ namespace Milky.OsuPlayer.Pages
                 : Path.Combine(Domain.OsuSongPath, map.FolderName);
             if (!Directory.Exists(dir))
             {
-                Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
+                Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
                 return;
             }
 

@@ -89,7 +89,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 context.BeatmapDetail.MapPath = path;
                 context.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path);
 
-                context.PlayInstantly = playInstantly;
+                //context.PlayInstantly = playInstantly;
                 InitializeContextHandle(context);
                 await LoadAsync(true);
                 if (playInstantly) context.PlayHandle.Invoke();
@@ -116,9 +116,9 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private async Task LoadAsync(bool isReading)
         {
+            var context = PlayList.CurrentInfo;
             try
             {
-                var context = PlayList.CurrentInfo;
                 if (!isReading)
                 {
                     await _readLock.WaitAsync(_cts.Token);
@@ -188,6 +188,12 @@ namespace Milky.OsuPlayer.Media.Audio
                 // music
                 beatmapDetail.MusicPath = Path.Combine(beatmapDetail.BaseFolder,
                     osuFile.General.AudioFilename);
+
+                if (PlayList.PreInfo?.BeatmapDetail?.BaseFolder != PlayList.CurrentInfo?.BeatmapDetail?.BaseFolder)
+                {
+                    AudioPlaybackEngine.ClearCacheSounds();
+                }
+
                 Player = new ComponentPlayer(beatmapDetail.MapPath, osuFile)
                 {
                     HitsoundOffset = context.BeatmapSettings.Offset
@@ -221,14 +227,22 @@ namespace Milky.OsuPlayer.Media.Audio
                 context.FullLoaded = true;
                 // load finished
                 LoadFinished?.Invoke(context, _cts.Token);
+                AppSettings.Default.CurrentMap = beatmap.GetIdentity();
+                AppSettings.SaveDefault();
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Notification.Push(@"发生未处理的错误：" + (ex.InnerException?.Message ?? ex?.Message));
+
+                if (Player.PlayStatus != PlayStatus.Playing)
+                {
+                    await PlayByControl(PlayControlType.Next, true);
+                }
             }
             finally
             {
                 if (!isReading) _readLock.Release();
+                _appDbOperator.UpdateMap(context.Beatmap.GetIdentity());
             }
         }
 
@@ -321,6 +335,7 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             context.PlayHandle = () => Player.Play();
             context.StopHandle = () => Player.Stop();
+            context.SetTimeHandle = (time, play) => Player.SetTime(TimeSpan.FromMilliseconds(time), play);
         }
 
         private void InterruptPrevOperation()

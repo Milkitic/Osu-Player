@@ -86,7 +86,7 @@
         </ControlTemplate>
     </wpfApi:WindowBase.Resources>
     <wpfApi:WindowBase.DataContext>
-        <windows:LyricWindowViewModel />
+        <viewModels:LyricWindowViewModel />
     </wpfApi:WindowBase.DataContext>
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
@@ -130,7 +130,7 @@
                     Style="{StaticResource LyricButton}">
                     <control:CommonButton.IconTemplate>
                         <MultiBinding Converter="{StaticResource PlayingConverter}">
-                            <Binding Path="Player.IsPlaying" />
+                            <Binding Path="Shared.IsPlaying" />
                             <Binding RelativeSource="{RelativeSource AncestorType=Window}" />
                         </MultiBinding>
                     </control:CommonButton.IconTemplate>

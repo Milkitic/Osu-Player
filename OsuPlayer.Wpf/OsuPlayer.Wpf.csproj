@@ -212,7 +212,6 @@
     <Compile Include="Control\Notification\Converters\NotificationTypeConverter.cs" />
     <Compile Include="Control\Notification\Converters\NotificationTypeToCursorConverter.cs" />
     <Compile Include="Control\Notification\NotificationOption.cs" />
-    <Compile Include="Control\Notification\NotificationType.cs" />
     <Compile Include="Control\Notification\NotifyControl.xaml.cs">
       <DependentUpon>NotifyControl.xaml</DependentUpon>
     </Compile>
@@ -230,7 +229,6 @@
       <DependentUpon>WelcomeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converter\NullToHiddenConverter.cs" />
-    <Compile Include="Notification.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Utils\I18nUtil.cs" />
     <Compile Include="Utils\NativeUser32.cs" />
@@ -268,7 +266,6 @@
     <Compile Include="Converter\TrueToVisibleConverter.cs" />
     <Compile Include="Converter\VersionToStringConverter.cs" />
     <Compile Include="Instances\LyricsInst.cs" />
-    <Compile Include="Instances\PlayersInst.cs" />
     <Compile Include="Converter\MiniWindowConverter.cs" />
     <Compile Include="RandomSeed.cs" />
     <Compile Include="StartupConfig.cs" />

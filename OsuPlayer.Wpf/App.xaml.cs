@@ -87,8 +87,6 @@ namespace Milky.OsuPlayer
             }
         }
 
-        public static ObservableCollection<NotificationOption> NotificationList { get; set; }
-
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             I18nUtil.LoadI18N();

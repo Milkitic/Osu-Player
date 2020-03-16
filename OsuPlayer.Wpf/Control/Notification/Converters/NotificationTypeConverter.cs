@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
+using Milky.OsuPlayer.Common;
 
 namespace Milky.OsuPlayer.Control.Notification.Converters
 {

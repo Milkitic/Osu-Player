@@ -126,7 +126,7 @@ namespace Milky.OsuPlayer.Pages
             }
             catch (Exception e)
             {
-                Notification.Show("导出时出现错误：" + e.Message);
+                Notification.Push("导出时出现错误：" + e.Message);
             }
         }
 

@@ -27,16 +27,7 @@ namespace Milky.OsuPlayer.Control
 {
     public class VolumeControlVm : ViewModelBase
     {
-        private PlayerViewModel _player = PlayerViewModel.Current;
-        public PlayerViewModel Player
-        {
-            get => _player;
-            set
-            {
-                _player = value;
-                OnPropertyChanged();
-            }
-        }
+        public SharedVm Shared { get; } = SharedVm.Default;
     }
     /// <summary>
     /// VolumeControl.xaml 的交互逻辑

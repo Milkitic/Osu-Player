@@ -29,7 +29,6 @@ namespace Milky.OsuPlayer.Control
     {
         private ObservablePlayController _playerList;
         private double _positionPercent;
-        private PlayerViewModel _player = PlayerViewModel.Current;
         private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
 
         public ObservablePlayController PlayerList
@@ -41,15 +40,7 @@ namespace Milky.OsuPlayer.Control
                 OnPropertyChanged();
             }
         }
-        public PlayerViewModel Player
-        {
-            get => _player;
-            set
-            {
-                _player = value;
-                OnPropertyChanged();
-            }
-        }
+        public SharedVm Shared { get; } = SharedVm.Default;
 
         public ICommand PlayPrevCommand => new DelegateCommand(async param => await _controller.PlayPrevAsync());
 
@@ -149,7 +140,7 @@ namespace Milky.OsuPlayer.Control
             var metadata = _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata;
             if (metadata.IsFavorite)
             {
-                _appDbOperator.RemoveMapFromCollection(_viewModel.Player.CurrentInfo.Beatmap, collection);
+                _appDbOperator.RemoveMapFromCollection(_controller.PlayList.CurrentInfo.Beatmap, collection);
                 metadata.IsFavorite = false;
             }
             else
@@ -157,7 +148,7 @@ namespace Milky.OsuPlayer.Control
                 await SelectCollectionControl.AddToCollectionAsync(collection,
                     new[]
                     {
-                        _viewModel.Player.CurrentInfo.Beatmap
+                        _controller.PlayList.CurrentInfo.Beatmap
                     });
                 metadata.IsFavorite = true;
             }

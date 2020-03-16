@@ -100,7 +100,7 @@
                 Click="CommonButton_Click"
                 IconMargin="0"
                 IconSize="18"
-                IconTemplate="{Binding Player.CurrentInfo.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}"
+                IconTemplate="{Binding Shared.Controller.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}"
                 MouseDownBackground="#80D0D0D0"
                 MouseOverBackground="#80E0E0E0"
                 WindowChrome.IsHitTestVisibleInChrome="True" />
@@ -199,18 +199,18 @@
                 WindowChrome.IsHitTestVisibleInChrome="True">
                 <local:CommonButton.IconTemplate>
                     <MultiBinding Converter="{StaticResource PlayingConverter}">
-                        <Binding Path="Player.IsPlaying" />
+                        <Binding Path="Shared.IsPlaying" />
                         <Binding RelativeSource="{RelativeSource Self}" />
                     </MultiBinding>
                 </local:CommonButton.IconTemplate>
                 <local:CommonButton.Style>
                     <Style BasedOn="{StaticResource {x:Type local:CommonButton}}" TargetType="local:CommonButton">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Player.IsPlaying}" Value="True">
+                            <DataTrigger Binding="{Binding Shared.IsPlaying}" Value="True">
                                 <Setter Property="IconSize" Value="14" />
                                 <Setter Property="IconMargin" Value="0,0,0,0" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding Player.IsPlaying}" Value="False">
+                            <DataTrigger Binding="{Binding Shared.IsPlaying}" Value="False">
                                 <Setter Property="IconSize" Value="16" />
                                 <Setter Property="IconMargin" Value="1,0,0,0" />
                             </DataTrigger>

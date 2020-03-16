@@ -1,23 +1,16 @@
-﻿using Milky.OsuPlayer.ViewModels;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.WpfApi;
 
-namespace Milky.OsuPlayer.Windows
+namespace Milky.OsuPlayer.ViewModels
 {
     public class LyricWindowViewModel : ViewModelBase
     {
-        private PlayerViewModel _player;
         private bool _showFrame;
         private bool _isLyricEnabled;
 
-        public PlayerViewModel Player
-        {
-            get => _player;
-            set
-            {
-                _player = value;
-                OnPropertyChanged();
-            }
-        }
+        public ObservablePlayController Controller { get; } = Services.Get<ObservablePlayController>();
+        public SharedVm Shared { get; } = SharedVm.Default;
 
         public bool ShowFrame
         {

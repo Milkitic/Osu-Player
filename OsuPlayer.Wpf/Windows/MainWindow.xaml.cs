@@ -52,11 +52,8 @@ namespace Milky.OsuPlayer.Windows
 
         public MainWindow()
         {
-            PlayerViewModel.InitViewModel();
-
             InitializeComponent();
             ViewModel = (MainWindowViewModel)DataContext;
-            ViewModel.Player = PlayerViewModel.Current;
             LyricWindow = new LyricWindow(this);
             if (AppSettings.Default.Lyric.EnableLyric)
                 LyricWindow.Show();
@@ -73,7 +70,7 @@ namespace Milky.OsuPlayer.Windows
                 Topmost = true;
                 Topmost = false;
                 Show();
-                PlayerViewModel.Current.EnableVideo = true;
+                SharedVm.Default.EnableVideo = true;
                 GetCurrentFirst<MiniWindow>()?.Close();
             };
             TryBindHotKeys();
@@ -182,7 +179,7 @@ namespace Milky.OsuPlayer.Windows
                 mini = new MiniWindow();
                 mini.Show();
                 Hide();
-                PlayerViewModel.Current.EnableVideo = false;
+                SharedVm.Default.EnableVideo = false;
             }
         }
 
@@ -190,8 +187,7 @@ namespace Milky.OsuPlayer.Windows
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            App.NotificationList = new ObservableCollection<NotificationOption>();
-            NotificationOverlay.ItemsSource = App.NotificationList;
+            NotificationOverlay.ItemsSource = Notification.NotificationList;
             if (AppSettings.Default.General.FirstOpen)
             {
                 FrontDialogOverlay.ShowContent(new WelcomeControl(), new FrontDialogOverlay.ShowContentOptions
@@ -397,7 +393,7 @@ namespace Milky.OsuPlayer.Windows
             var entry = _appDbOperator.GetBeatmapByIdentifiable(detail.GetIdentity());
             if (entry == null)
             {
-                Notification.Show("该图不存在于该osu!db中", Title);
+                Notification.Push("该图不存在于该osu!db中", Title);
                 return;
             }
 
