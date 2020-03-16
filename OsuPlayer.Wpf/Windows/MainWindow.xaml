@@ -11,6 +11,7 @@
     xmlns:notification="clr-namespace:Milky.OsuPlayer.Control.Notification"
     xmlns:pages="clr-namespace:Milky.OsuPlayer.Pages"
     xmlns:tb="http://www.hardcodet.net/taskbar"
+    xmlns:v1="clr-namespace:Milky.OsuPlayer.Common.Data.EF.Model.V1;assembly=OsuPlayer.Common"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
     Title="Osu Player"
@@ -92,7 +93,7 @@
                 Height="Auto"
                 Margin="0,0,1,0">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel >
+                    <StackPanel>
                         <StackPanel.Tag>
                             <MultiBinding Converter="{StaticResource CvtNavigationWidth}">
                                 <Binding Path="IsNavigationCollapsed" />
@@ -224,6 +225,9 @@
                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                             <ListView.Resources>
                                 <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
+                                    <d:Object.DataContext>
+                                        <v1:Collection />
+                                    </d:Object.DataContext>
                                     <control:SwitchRadio
                                         x:Name="BtnCollection"
                                         Height="31"
@@ -237,10 +241,10 @@
                                         TargetFrameControl="MainFrame"
                                         TargetPageData="{Binding Id}"
                                         TargetPageSingleton="False"
-                                        TargetPageType="{x:Type pages:CollectionPage}" >
+                                        TargetPageType="{x:Type pages:CollectionPage}">
                                         <control:SwitchRadio.Tag>
                                             <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}" ConverterParameter="0">
-                                                <Binding Path="DataContext.IsNavigationCollapsed" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}"/>
+                                                <Binding Path="DataContext.IsNavigationCollapsed" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}" />
                                                 <Binding RelativeSource="{RelativeSource Self}" />
                                             </MultiBinding>
                                         </control:SwitchRadio.Tag>
