@@ -17,6 +17,7 @@ namespace Milky.OsuPlayer.Common.Player
     {
         private BeatmapContext(Beatmap beatmap)
         {
+            Beatmap = beatmap;
             BeatmapDetail = new BeatmapDetail(beatmap);
         }
 
@@ -134,20 +135,7 @@ namespace Milky.OsuPlayer.Common.Player
         private int _indexPointer = -1;
         private List<int> _songIndexList = new List<int>();
         private BeatmapContext _currentInfo;
-        private ObservableCollection<int> _songIndexList1;
         private BeatmapContext _preInfo;
-
-        public ObservableCollection<int> SongIndexList
-        {
-            get => _songIndexList1;
-            set
-            {
-                if (Equals(value, _songIndexList1)) return;
-                _songIndexList1 = value;
-                OnPropertyChanged();
-            }
-        }
-
         public int IndexPointer
         {
             get => _indexPointer;
@@ -316,13 +304,11 @@ namespace Milky.OsuPlayer.Common.Player
                 var current = CurrentInfo;
                 IndexPointer = -1;
                 _songIndexList.Clear();
-                SongIndexList = new ObservableCollection<int>(_songIndexList);
                 return CurrentInfo != current; // 从有到无，则为true
             }
 
             _songIndexList = SongList.Select((o, i) => i).ToList();
             if (IsRandom) _songIndexList.Shuffle();
-            SongIndexList = new ObservableCollection<int>(_songIndexList);
 
             if (forceIndex != null)
             {
@@ -368,6 +354,10 @@ namespace Milky.OsuPlayer.Common.Player
                     var index = rnd.Next(IndexPointer + 1, _songIndexList.Count);
                     _songIndexList.Insert(index, e.NewStartingIndex);
                 }
+                else
+                {
+                    _songIndexList.Add(e.NewStartingIndex);
+                }
 
                 if (e.NewStartingIndex < SongList.Count - 1)
                 {
@@ -376,8 +366,6 @@ namespace Milky.OsuPlayer.Common.Player
                         if (_songIndexList[i] <= e.NewStartingIndex) _songIndexList[i]++;
                     }
                 }
-
-                SongIndexList = new ObservableCollection<int>(_songIndexList);
             }
             else if (e.OldItems != null && e.OldItems.Count > 0)
             {
@@ -403,7 +391,6 @@ namespace Milky.OsuPlayer.Common.Player
                         if (oldIndexPointer < indexPointer) indexPointer--;
                         _temporaryPointerChanged = null;
                         Console.WriteLine(_indexPointer);
-                        SongIndexList = new ObservableCollection<int>(_songIndexList);
                         return indexPointer;
                     };
                 }
@@ -417,8 +404,6 @@ namespace Milky.OsuPlayer.Common.Player
                 {
                     if (_songIndexList[i] > songIndex) _songIndexList[i]--;
                 }
-
-                SongIndexList = new ObservableCollection<int>(_songIndexList);
 
                 if (!CheckCount())
                 { }

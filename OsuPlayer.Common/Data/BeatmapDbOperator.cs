@@ -84,7 +84,6 @@ namespace Milky.OsuPlayer.Common.Data
         public static List<Beatmap> GetBeatmapsByIdentifiable<T>(this AppDbOperator op, List<T> reqList)
             where T : IMapIdentifiable
         {
-            throw new NotImplementedException("InOwnDb not implemented");
             if (reqList.Count < 1) return new List<Beatmap>();
 
             var args = new ExpandoObject();
@@ -94,8 +93,10 @@ namespace Milky.OsuPlayer.Common.Data
             for (var i = 0; i < reqList.Count; i++)
             {
                 var id = reqList[i];
-                var valueSql = string.Format("('{0}', '{1}'),", id.FolderName.Replace(@"'", @"''"),
-                    id.Version.Replace(@"'", @"''")); // escape is still safe
+                var valueSql = string.Format("('{0}', '{1}', {2}),",
+                    id.FolderName.Replace(@"'", @"''"),
+                    id.Version.Replace(@"'", @"''"),
+                    id.InOwnDb ? 1 : 0); // escape is still safe
                 sb.Append(valueSql);
                 // sb.Append($"(@folder{i}, @version{i}),");
                 // expando.Add(new KeyValuePair<string, object>($"folder{i}", id.FolderName));
@@ -108,15 +109,17 @@ namespace Milky.OsuPlayer.Common.Data
 DROP TABLE IF EXISTS tmp_table;
 CREATE TEMPORARY TABLE tmp_table (
     folder  NVARCHAR (255),
-    version NVARCHAR (255) 
+    version NVARCHAR (255),
+    ownDb NVARCHAR (255) 
 );
-INSERT INTO tmp_table (folder, version)
+INSERT INTO tmp_table (folder, version, ownDb)
                       VALUES {sb};
 SELECT *
   FROM beatmap
        INNER JOIN
        tmp_table ON beatmap.folderName = tmp_table.folder AND 
-                    beatmap.version = tmp_table.version;
+                    beatmap.version = tmp_table.version AND 
+                    beatmap.own = tmp_table.ownDb;
 ";
 
             return op.ThreadedProvider.GetDbConnection().Query<Beatmap>(sql, args).ToList();

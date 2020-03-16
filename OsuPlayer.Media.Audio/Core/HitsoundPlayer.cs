@@ -76,7 +76,6 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         // Play Control
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private Task _playingTask, _offsetTask;
-        private float _multiplier = 1f;
         private readonly VariableStopwatch _vsw = new VariableStopwatch();
         private PlayStatus _playStatus;
         private readonly OsuFile _osuFile;
@@ -84,6 +83,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         private int _dcOffset;
         private bool _useTempo;
+        private int _i;
 
         public HitsoundPlayer(AudioPlaybackEngine engine, string filePath, OsuFile osuFile)
         {
@@ -201,17 +201,17 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         internal void SetPlaybackRate(float rate, bool b)
         {
-            _multiplier = rate;
+            _vsw.Rate = rate;
             AdjustModOffset();
         }
 
         private void AdjustModOffset()
         {
-            if (Math.Abs(_multiplier - 0.75) < 0.001 && !_useTempo)
+            if (Math.Abs(_vsw.Rate - 0.75) < 0.001 && !_useTempo)
             {
                 _dcOffset = -25;
             }
-            else if (Math.Abs(_multiplier - 1.5) < 0.001 && _useTempo)
+            else if (Math.Abs(_vsw.Rate - 1.5) < 0.001 && _useTempo)
             {
                 _dcOffset = 15;
             }
@@ -251,8 +251,16 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         {
             var isHitsound = !(this is SampleTrackPlayer);
             _vsw.Restart();
+            var pre = PlayTime.ToString();
             while (_hsQueue.Count > 0 || ComponentPlayer.Current.MusicPlayer.PlayStatus != PlayStatus.Finished)
             {
+                var playTime = PlayTime.ToString();
+                if (pre != playTime)
+                {
+                    //Console.WriteLine(playTime);
+                    pre = playTime;
+                }
+
                 if (_cts.Token.IsCancellationRequested)
                 {
                     _vsw.Stop();
@@ -263,11 +271,13 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
                 // Loop
 
-                while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= PlayTime.TotalMilliseconds)
+                while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= _vsw.ElapsedMilliseconds)
                 {
                     if (!_hsQueue.TryDequeue(out var hs))
                         continue;
 
+                    if (!(this is SampleTrackPlayer)) Console.WriteLine($"[{this}] {_i}: {PlayTime.TotalMilliseconds} actual: {hs.Offset}");
+                    _i++;
                     if (hs is HitsoundElement he)
                     {
                         foreach (var path in he.FilePaths)
@@ -343,13 +353,12 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                                 throw new ArgumentOutOfRangeException();
                         }
                     }
-                    else if (!_useTempo && _multiplier >= 1.5 && hs is SpecificFileSoundElement specific)
+                    else if (!_useTempo && _vsw.Rate >= 1.5 && hs is SpecificFileSoundElement specific)
                     {
                         Engine.PlaySound(specific.FilePaths[0], specific.Volume * 1f,
                                     specific.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);
                     }
                 }
-
 
                 Thread.Sleep(1);
             }
@@ -394,14 +403,17 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         private void Requeue(TimeSpan startTime)
         {
-            _hsQueue = new ConcurrentQueue<SoundElement>();
+            _i = 0;
+            var queue = new ConcurrentQueue<SoundElement>();
             if (_hitsoundList != null)
                 foreach (var i in _hitsoundList)
                 {
-                    if (i.Offset < startTime.Milliseconds)
+                    if (i.Offset < startTime.TotalMilliseconds)
                         continue;
-                    _hsQueue.Enqueue(i);
+                    queue.Enqueue(i);
                 }
+
+            _hsQueue = queue;
         }
 
         private void StartTask()

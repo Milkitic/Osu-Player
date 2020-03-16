@@ -60,6 +60,7 @@ CREATE TABLE {TABLE_MAP} (
     [id]           NVARCHAR (40)        NOT NULL,
     [version]      NVARCHAR (255) NOT NULL,
     [folder]       NVARCHAR (255) NOT NULL,
+    [ownDb]          BIT NOT NULL,
     [offset]       INT                   NOT NULL,
     [lastPlayTime] DATETIME,
     [exportFile]   NVARCHAR (700),
@@ -84,7 +85,8 @@ CREATE TABLE {TABLE_SB} (
     [thumbPath]        NVARCHAR (40) NOT NULL,
     [thumbVideoPath]   NVARCHAR (40) NOT NULL,
     [version]          NVARCHAR (255) NOT NULL,
-    [folder]           NVARCHAR (255) NOT NULL
+    [folder]           NVARCHAR (255) NOT NULL,
+    [own]              BIT NOT NULL
 );
 ",
                     [TABLE_BEATMAP] = $@"
@@ -167,7 +169,8 @@ PRAGMA case_sensitive_like=false;"
                     new Where[]
                     {
                         ("version", id.Version),
-                        ("folder", id.FolderName)
+                        ("folder", id.FolderName),
+                        ("ownDb", id.InOwnDb)
                     },
                     count: 1)
                 .FirstOrDefault();
@@ -180,6 +183,7 @@ PRAGMA case_sensitive_like=false;"
                     ["id"] = guid,
                     ["version"] = id.Version,
                     ["folder"] = id.FolderName,
+                    ["ownDb"] = id.InOwnDb,
                     ["offset"] = 0
                 });
 
@@ -188,6 +192,7 @@ PRAGMA case_sensitive_like=false;"
                     Id = guid,
                     Version = id.Version,
                     FolderName = id.FolderName,
+                    InOwnDb = id.InOwnDb,
                     Offset = 0
                 };
             }
@@ -216,6 +221,7 @@ PRAGMA case_sensitive_like=false;"
 SELECT map.id,
        map.version,
        map.folder,
+       map.ownDb,
        map.[offset],
        map.lastPlayTime,
        map.exportFile,
@@ -449,7 +455,8 @@ SELECT collection.id,
                         ["thumbPath"] = sbInfo.SbThumbPath,
                         ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
                         ["version"] = sbInfo.Version,
-                        ["folder"] = sbInfo.FolderName
+                        ["folder"] = sbInfo.FolderName,
+                        ["ownDb"] = sbInfo.InOwnDb
                     },
                     ("mapId", beatmapDbId, "=="));
             }
@@ -463,7 +470,8 @@ SELECT collection.id,
                         ["thumbPath"] = sbInfo.SbThumbPath,
                         ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
                         ["version"] = sbInfo.Version,
-                        ["folder"] = sbInfo.FolderName
+                        ["folder"] = sbInfo.FolderName,
+                        ["ownDb"] = sbInfo.InOwnDb
                     }
                 );
             }
@@ -484,7 +492,8 @@ SELECT collection.id,
                 new Where[]
                 {
                     ("version", id.Version),
-                    ("folder", id.FolderName)
+                    ("folder", id.FolderName),
+                    ("ownDb", id.InOwnDb)
                 },
                 count: 1);
         }

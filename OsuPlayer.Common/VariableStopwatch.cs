@@ -16,7 +16,7 @@ namespace Milky.OsuPlayer.Common
         }
 
         private TimeSpan _skipOffset;
-        private float _rate;
+        private float _rate = 1;
 
         public new void Restart()
         {
@@ -43,6 +43,6 @@ namespace Milky.OsuPlayer.Common
             (long)(base.ElapsedTicks * Rate + _skipOffset.Ticks);
 
         public new TimeSpan Elapsed =>
-            TimeSpan.FromMilliseconds(base.Elapsed.TotalMilliseconds * Rate) + _skipOffset;
+            TimeSpan.FromMilliseconds(base.Elapsed.TotalMilliseconds * Rate).Add(_skipOffset);
     }
 }

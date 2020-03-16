@@ -194,23 +194,25 @@ namespace Milky.OsuPlayer.Media.Audio
                     AudioPlaybackEngine.ClearCacheSounds();
                 }
 
-                Player = new ComponentPlayer(beatmapDetail.MapPath, osuFile)
-                {
-                    HitsoundOffset = context.BeatmapSettings.Offset
-                };
+                Player = new ComponentPlayer(beatmapDetail.MapPath, osuFile);
                 Player.PlayStatusChanged += Player_PlayStatusChanged;
                 Player.PositionChanged += Player_ProgressUpdated;
                 await Player.InitializeAsync(); //700 ms
+                Player.HitsoundOffset = context.BeatmapSettings.Offset;
 
                 MusicLoaded?.Invoke(context, _cts.Token);
 
                 // video
                 var videoName = osuFile.Events.VideoInfo?.Filename;
-                var videoPath = Path.Combine(beatmapDetail.BaseFolder, videoName);
-                if (videoName != null && File.Exists(videoPath))
+
+                if (videoName != null)
                 {
-                    beatmapDetail.VideoPath = videoPath;
-                    VideoLoadRequested?.Invoke(context, _cts.Token);
+                    var videoPath = Path.Combine(beatmapDetail.BaseFolder, videoName);
+                    if (File.Exists(videoPath))
+                    {
+                        beatmapDetail.VideoPath = videoPath;
+                        VideoLoadRequested?.Invoke(context, _cts.Token);
+                    }
                 }
 
                 // storyboard

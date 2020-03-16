@@ -63,7 +63,7 @@ namespace Milky.OsuPlayer.Control
             _controller.BackgroundInfoLoaded += Controller_BackgroundInfoLoaded;
             _controller.VideoLoadRequested += Controller_VideoLoadRequested;
 
-            _controller.Player.PlayStatusChanged += Player_PlayStatusChanged;
+            _controller.PlayStatusChanged += Player_PlayStatusChanged;
         }
 
         private void Player_PlayStatusChanged(PlayStatus obj)
@@ -278,8 +278,8 @@ namespace Milky.OsuPlayer.Control
                 VideoElement.MediaEnded -= OnMediaEnded;
                 VideoElement.SeekingStarted -= OnSeekingStarted;
                 VideoElement.SeekingEnded -= OnSeekingEnded;
-                _controller.Player.PlayerStarted -= OnAudioPlayerOnPlayerStarted;
-                _controller.Player.PlayerPaused -= OnAudioPlayerOnPlayerPaused;
+                //_controller.Player.PlayerStarted -= OnAudioPlayerOnPlayerStarted;
+                //_controller.Player.PlayerPaused -= OnAudioPlayerOnPlayerPaused;
                 VideoElement.Dispose();
                 VideoElement = null;
                 VideoElementBorder.Child = null;
@@ -300,22 +300,22 @@ namespace Milky.OsuPlayer.Control
                     VideoElement.SeekingStarted += OnSeekingStarted;
                     VideoElement.SeekingEnded += OnSeekingEnded;
 
-                    _controller.Player.PlayerStarted += OnAudioPlayerOnPlayerStarted;
-                    _controller.Player.PlayerPaused += OnAudioPlayerOnPlayerPaused;
+                    //_controller.Player.PlayerStarted += OnAudioPlayerOnPlayerStarted;
+                    //_controller.Player.PlayerPaused += OnAudioPlayerOnPlayerPaused;
                 }
 
                 VideoElementBorder.Child = VideoElement;
             }
 
-            void OnAudioPlayerOnPlayerPaused(object sender, ProgressEventArgs e)
-            {
-                //VideoElement.Pause();
-            }
+            //void OnAudioPlayerOnPlayerPaused(object sender, ProgressEventArgs e)
+            //{
+            //    //VideoElement.Pause();
+            //}
 
-            void OnAudioPlayerOnPlayerStarted(object sender, ProgressEventArgs e)
-            {
-                //VideoElement.Play();
-            }
+            //void OnAudioPlayerOnPlayerStarted(object sender, ProgressEventArgs e)
+            //{
+            //    //VideoElement.Play();
+            //}
         }
 
         public void StartScene(Action action)

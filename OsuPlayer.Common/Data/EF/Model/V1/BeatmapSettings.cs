@@ -39,7 +39,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model.V1
 
         [Required, Column("ownDb")]
         [JsonProperty("ownDb")]
-        public bool InOwnDb { get; }
+        public bool InOwnDb { get; set; }
 
         [Column("offset")]
         [JsonProperty("offset")]
