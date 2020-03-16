@@ -43,6 +43,8 @@ namespace Milky.OsuPlayer.Control
     /// </summary>
     public partial class VolumeControl : UserControl
     {
+        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+
         public int HitsoundOffset
         {
             get => (int)GetValue(HitsoundOffsetProperty);
@@ -59,13 +61,13 @@ namespace Milky.OsuPlayer.Control
 
         private static void OffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is VolumeControl ctrl && ComponentPlayer.Current != null)
+            if (d is VolumeControl ctrl && ctrl._controller.Player != null)
             {
-                ctrl.Offset.Value = ComponentPlayer.Current.HitsoundOffset;
+                ctrl.Offset.Value = ctrl._controller.Player.HitsoundOffset;
             }
         }
 
-        private readonly AppDbOperator _appDbOperator = new AppDbOperator();
+        private readonly AppDbOperator _dbOperator = new AppDbOperator();
         private IWavePlayer _device;
 
         public VolumeControl()
@@ -100,15 +102,15 @@ namespace Milky.OsuPlayer.Control
 
         private void Offset_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            if (ComponentPlayer.Current == null)
+            if (_controller.Player == null)
                 return;
-            ComponentPlayer.Current.HitsoundOffset = (int)Offset.Value;
+            _controller.Player.HitsoundOffset = (int)Offset.Value;
         }
 
         private void Offset_DragComplete(object sender, DragCompletedEventArgs e)
         {
-            _appDbOperator.UpdateMap(Services.Get<PlayerList>().CurrentInfo.Identity,
-                ComponentPlayer.Current.HitsoundOffset);
+            _dbOperator.UpdateMap(_controller.PlayList.CurrentInfo.Beatmap,
+                _controller.Player.HitsoundOffset);
         }
 
         private void VolumeControl_OnLoaded(object sender, RoutedEventArgs e)
@@ -134,7 +136,7 @@ namespace Milky.OsuPlayer.Control
 
         private void BtnPlayMod_OnClick(object sender, RoutedEventArgs e)
         {
-            ComponentPlayer.Current.SetPlayMod((PlayMod)((Button)sender).Tag);
+            _controller.Player.SetPlayMod((PlayMod)((Button)sender).Tag);
         }
     }
 }

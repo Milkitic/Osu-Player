@@ -29,14 +29,14 @@ namespace Milky.OsuPlayer.ViewModels
 
         private bool _isPlaying;
         private bool _enableVideo = true;
-        private PlayListMode _playListMode;
+        private PlayMode _playListMode;
 
         private long _position;
         private long _duration;
         private BeatmapDetail _currentInfo;
         private VolumeControl _currentVolume;
 
-        public PlayListMode PlayListMode
+        public PlayMode PlayListMode
         {
             get => _playListMode;
             set

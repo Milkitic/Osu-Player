@@ -110,7 +110,7 @@ namespace Milky.OsuPlayer.Control
         {
             _viewModel.PositionPercent = e.Position.TotalMilliseconds / e.Duration.TotalMilliseconds;
         }
-        
+
         private void MaxButton_Click(object sender, RoutedEventArgs e)
         {
             MaxButtonClicked?.Invoke();
@@ -146,15 +146,20 @@ namespace Milky.OsuPlayer.Control
         private async void CommonButton_Click(object sender, RoutedEventArgs e)
         {
             var collection = _appDbOperator.GetCollections().First(k => k.LockedBool);
-            if (_controller.PlayList.CurrentInfo.BeatmapDetail.IsFavorite)
+            var metadata = _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata;
+            if (metadata.IsFavorite)
             {
                 _appDbOperator.RemoveMapFromCollection(_viewModel.Player.CurrentInfo.Beatmap, collection);
-                _controller.PlayList.CurrentInfo.BeatmapDetail.IsFavorite = false;
+                metadata.IsFavorite = false;
             }
             else
             {
-                await SelectCollectionControl.AddToCollectionAsync(collection, new[] { _viewModel.Player.CurrentInfo.Beatmap });
-                _controller.PlayList.CurrentInfo.BeatmapDetail.IsFavorite = true;
+                await SelectCollectionControl.AddToCollectionAsync(collection,
+                    new[]
+                    {
+                        _viewModel.Player.CurrentInfo.Beatmap
+                    });
+                metadata.IsFavorite = true;
             }
         }
 

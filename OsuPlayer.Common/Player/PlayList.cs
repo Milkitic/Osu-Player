@@ -28,10 +28,14 @@ namespace Milky.OsuPlayer.Common.Player
             };
         }
 
+        public bool FullLoaded { get; set; } = false;
         public Beatmap Beatmap { get; }
         public BeatmapSettings BeatmapSettings { get; private set; }
         public BeatmapDetail BeatmapDetail { get; }
         public OsuFile OsuFile { get; set; }
+        public bool PlayInstantly { get; set; }
+        public Action PlayHandle { get; set; }
+        public Action StopHandle { get; set; }
 
         public static bool operator ==(BeatmapContext bc1, BeatmapContext bc2)
         {
@@ -65,7 +69,7 @@ namespace Milky.OsuPlayer.Common.Player
 
     public class PlayList : ViewModelBase
     {
-        public event Action<PlayControlResult, Beatmap> AutoSwitched;
+        public event Func<PlayControlResult, Beatmap, bool, Task> AutoSwitched;
 
         public PlayList()
         {
@@ -134,7 +138,7 @@ namespace Milky.OsuPlayer.Common.Player
                 if (value < -1) value = -1;
                 else if (value > SongList.Count - 1) value = SongList.Count - 1;
 
-                CurrentInfo = value == -1 ? null : new BeatmapContext(SongList[_songIndexList[value]]);
+                CurrentInfo = value == -1 ? null : BeatmapContext.CreateAsync(SongList[_songIndexList[value]]).Result;
 
                 if (Equals(value, _indexPointer)) return;
                 _indexPointer = value;
@@ -159,9 +163,10 @@ namespace Milky.OsuPlayer.Common.Player
         /// 播放列表替换
         /// </summary>
         /// <param name="value"></param>
-        /// <param name="startAnew">若为true，则播放列表中若有相同曲，保持指针继续播放</param>
+        /// <param name="startAnew">若为false，则播放列表中若有相同曲，保持指针继续播放</param>
+        /// <param name="playInstantly">立即播放</param>
         /// <returns></returns>
-        public PlayControlResult SetSongList(IEnumerable<Beatmap> value, bool startAnew)
+        public async Task<PlayControlResult> SetSongListAsync(IEnumerable<Beatmap> value, bool startAnew, bool playInstantly = true)
         {
             if (SongList != null) SongList.CollectionChanged -= SongList_CollectionChanged;
             SongList = new ObservableCollection<Beatmap>(value);
@@ -169,7 +174,7 @@ namespace Milky.OsuPlayer.Common.Player
 
             var changed = RearrangeIndexesAndReposition(startAnew ? (int?)0 : null);
             var result = changed
-                ? AutoSwitchAfterCollectionChanged()
+                ? await AutoSwitchAfterCollectionChanged(playInstantly)
                 : new PlayControlResult(PlayControlResult.PlayControlStatus.Keep,
                     PlayControlResult.PointerControlStatus.Keep); // 这里可能混入空/不空的情况
 
@@ -180,31 +185,31 @@ namespace Milky.OsuPlayer.Common.Player
         /// <summary>
         /// 播放指定歌曲，若播放列表不存在则自动添加
         /// </summary>
-        /// <param name="info"></param>
+        /// <param name="beatmap"></param>
         /// <returns></returns>
-        public void AddOrSwitchTo(Beatmap info)
+        public void AddOrSwitchTo(Beatmap beatmap)
         {
-            if (!SongList.Contains(info)) SongList.Add(info);
-            IndexPointer = _songIndexList.IndexOf(SongList.IndexOf(info));
+            if (!SongList.Contains(beatmap)) SongList.Add(beatmap);
+            IndexPointer = _songIndexList.IndexOf(SongList.IndexOf(beatmap));
         }
 
-        public PlayControlResult SwitchByControl(PlayControlType control)
+        public async Task<PlayControlResult> SwitchByControl(PlayControlType control)
         {
-            return SwitchByControl(control == PlayControlType.Next, true);
+            return await SwitchByControl(control == PlayControlType.Next, true);
         }
 
-        public PlayControlResult InvokeAutoNext()
+        public async Task<PlayControlResult> InvokeAutoNext()
         {
-            return SwitchByControl(true, false);
+            return await SwitchByControl(true, false);
         }
 
-        private PlayControlResult AutoSwitchAfterCollectionChanged()
+        private async Task<PlayControlResult> AutoSwitchAfterCollectionChanged(bool playInstantly)
         {
             if (CurrentInfo != null)
             {
                 var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Unknown,
                     PlayControlResult.PointerControlStatus.Default);
-                AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap);
+                await AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap, playInstantly);
                 return playControlResult;
             }
 
@@ -212,11 +217,11 @@ namespace Milky.OsuPlayer.Common.Player
             IndexPointer = -1;
             var controlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                 PlayControlResult.PointerControlStatus.Clear);
-            AutoSwitched?.Invoke(controlResult, null);
+            await AutoSwitched?.Invoke(controlResult, null, playInstantly);
             return controlResult;
         }
 
-        private PlayControlResult SwitchByControl(bool isNext, bool isManual)
+        private async Task<PlayControlResult> SwitchByControl(bool isNext, bool isManual)
         {
             if (!isManual) // auto
             {
@@ -224,7 +229,7 @@ namespace Milky.OsuPlayer.Common.Player
                 {
                     var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                         PlayControlResult.PointerControlStatus.Keep);
-                    AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap);
+                    await AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap, true);
                     return playControlResult;
                 }
 
@@ -232,7 +237,7 @@ namespace Milky.OsuPlayer.Common.Player
                 {
                     var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
                         PlayControlResult.PointerControlStatus.Keep);
-                    AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap);
+                    await AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap, true);
                     return playControlResult;
                 }
 
@@ -242,7 +247,7 @@ namespace Milky.OsuPlayer.Common.Player
                     {
                         var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                             PlayControlResult.PointerControlStatus.Clear);
-                        AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap);
+                        await AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap, true);
                         return playControlResult;
                     }
 
@@ -251,7 +256,7 @@ namespace Milky.OsuPlayer.Common.Player
                     {
                         var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                             PlayControlResult.PointerControlStatus.Reset);
-                        AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap);
+                        await AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap, true);
                         return playControlResult;
                     }
                 }

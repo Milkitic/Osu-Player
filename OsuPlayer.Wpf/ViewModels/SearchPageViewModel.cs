@@ -360,7 +360,7 @@ namespace Milky.OsuPlayer.ViewModels
                         {
                             var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
                             var controller = Services.Get<ObservablePlayController>();
-                            await controller.PlayNewAsync(map);
+                            await controller.PlayNewAsync(map, true);
                         });
                     FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
                 });

@@ -20,6 +20,7 @@ using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Utils;
 using Milky.WpfApi;
 
@@ -30,7 +31,9 @@ namespace Milky.OsuPlayer.Pages
     /// </summary>
     public partial class SearchPage : Page
     {
-        private AppDbOperator _beatmapDbOperator;
+        private readonly AppDbOperator _dbOperator = new AppDbOperator();
+        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+
         private MainWindow _mainWindow;
 
         public SearchPageViewModel ViewModel { get; set; }
@@ -44,7 +47,6 @@ namespace Milky.OsuPlayer.Pages
         public SearchPage()
         {
             _mainWindow = (MainWindow)Application.Current.MainWindow;
-            _beatmapDbOperator = new AppDbOperator();
 
             InitializeComponent();
         }
@@ -198,15 +200,14 @@ namespace Milky.OsuPlayer.Pages
                 return;
             //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
             //    map.BeatmapFileName));
-            await PlayController.Default.PlayNewFile(map);
-            await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+            await _controller.PlayNewAsync(map);
         }
 
         private Beatmap GetSelectedDefault()
         {
             if (ResultList.SelectedItem == null)
                 return null;
-            var map = _beatmapDbOperator
+            var map = _dbOperator
                 .GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
                 .GetHighestDiff();
             return map;
@@ -224,9 +225,7 @@ namespace Milky.OsuPlayer.Pages
             //if (map == null) return;
             //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
             //     map.BeatmapFileName));
-            await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.Collection, newBeatmaps);
-            await PlayController.Default.PlayNewFile(newBeatmaps[0]);
-
+            await _controller.PlayList.SetSongListAsync(newBeatmaps, true);
         }
 
         private void BtnQueueAll_Click(object sender, RoutedEventArgs e)

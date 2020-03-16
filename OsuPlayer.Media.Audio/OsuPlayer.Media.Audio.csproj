@@ -96,6 +96,10 @@
       <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
       <Name>OSharp.Beatmap</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Libraries\OSharp.Storyboard\OSharp.Storyboard.csproj">
+      <Project>{D18BDC44-577C-49BA-BB91-1311422D362A}</Project>
+      <Name>OSharp.Storyboard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Libraries\WpfApi\WpfApi.csproj">
       <Project>{028E6F4E-D538-4B83-904C-C94C2F1E3C83}</Project>
       <Name>WpfApi</Name>

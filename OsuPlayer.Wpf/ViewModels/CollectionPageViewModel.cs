@@ -10,6 +10,7 @@ using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.WpfApi;
 using Milky.WpfApi.Collections;
 using Milky.OsuPlayer.Models;
@@ -21,6 +22,7 @@ namespace Milky.OsuPlayer.ViewModels
 {
     public class CollectionPageViewModel : ViewModelBase
     {
+        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
         private AppDbOperator _appDbOperator = new AppDbOperator();
 
         private NumberableObservableCollection<BeatmapDataModel> _beatmaps;
@@ -144,9 +146,7 @@ namespace Milky.OsuPlayer.ViewModels
                     var beatmap = (BeatmapDataModel)param;
                     var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
-                    await PlayController.Default.PlayNewFile(map);
-                    await Services.Get<PlayerList>()
-                        .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+                    await _controller.PlayNewAsync(map);
                 });
             }
         }
@@ -159,10 +159,7 @@ namespace Milky.OsuPlayer.ViewModels
                 {
                     var beatmap = (BeatmapDataModel)param;
                     var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
-                    await PlayController.Default.PlayNewFile(map);
-                    await Services.Get<PlayerList>()
-                        .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
-
+                    await _controller.PlayNewAsync(map);
                 });
             }
         }
