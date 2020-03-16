@@ -19,7 +19,6 @@
     MinWidth="800"
     MinHeight="600"
     Closing="Window_Closing"
-    Deactivated="WindowBase_Deactivated"
     FontFamily="{StaticResource SspRegular}"
     FontSize="13"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
@@ -93,7 +92,7 @@
                 Height="Auto"
                 Margin="0,0,1,0">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel ButtonBase.Click="ButtonBase_Click">
+                    <StackPanel >
                         <StackPanel.Tag>
                             <MultiBinding Converter="{StaticResource CvtNavigationWidth}">
                                 <Binding Path="IsNavigationCollapsed" />
@@ -255,7 +254,7 @@
                         </ListView>
                     </StackPanel>
                 </ScrollViewer>
-                <Grid MouseDown="ButtonBase_Click">
+                <Grid>
                     <control:AnimationControl
                         x:Name="Animation"
                         ClipToBounds="True"

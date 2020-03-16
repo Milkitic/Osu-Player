@@ -298,13 +298,6 @@ SELECT collection.id,
             {
                 var map = GetMapFromDb(beatmap.GetIdentity());
                 sb.Append($"('{Guid.NewGuid().ToString()}', '{collection.Id}', '{map.Id}', '{DateTime.Now}'),"); // maybe no injection here
-
-                // todo: not suitable position
-                if (currentInfo == null) continue;
-                if (collection.LockedBool && currentInfo.Identity.Equals(beatmap.GetIdentity()))
-                {
-                    currentInfo.IsFavorite = true;
-                }
             }
 
             sb.Remove(sb.Length - 1, 1).Append(";");
@@ -397,14 +390,6 @@ SELECT collection.id,
         {
             var map = GetMapFromDb(id);
             ThreadedProvider.Delete(TABLE_RELATION, new Where[] { ("collectionId", collection.Id), ("mapId", map.Id) });
-
-            // todo: not suitable position
-            var currentInfo = Services.Get<PlayerList>().CurrentInfo;
-            if (currentInfo == null) return;
-            if (collection.LockedBool && currentInfo.Identity.Equals(id))
-            {
-                currentInfo.IsFavorite = false;
-            }
         }
 
         public bool GetMapThumb(Guid beatmapDbId, out string thumbPath)

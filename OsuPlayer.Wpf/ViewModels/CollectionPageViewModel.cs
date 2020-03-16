@@ -172,6 +172,12 @@ namespace Milky.OsuPlayer.ViewModels
                 {
                     var beatmap = (BeatmapDataModel)param;
                     _appDbOperator.RemoveMapFromCollection(beatmap.GetIdentity(), CollectionInfo);
+                    if (_controller.PlayList.CurrentInfo.Beatmap.GetIdentity().Equals(beatmap.GetIdentity()) &&
+                        CollectionInfo.LockedBool)
+                    {
+                        _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite = false;
+                    }
+
                     Beatmaps.Remove(beatmap);
                     DisplayedBeatmaps.Remove(beatmap);
                     //await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.Collection, _entries);

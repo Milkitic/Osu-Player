@@ -145,6 +145,10 @@ namespace Milky.OsuPlayer.Pages
             foreach (var entry in entries)
             {
                 _dbOperator.RemoveMapFromCollection(entry.GetIdentity(), ViewModel.CollectionInfo);
+                if (!_controller.PlayList.CurrentInfo.Beatmap.GetIdentity().Equals(entry.GetIdentity()) ||
+                    !ViewModel.CollectionInfo.LockedBool) continue;
+                _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite = false;
+                break;
             }
         }
 

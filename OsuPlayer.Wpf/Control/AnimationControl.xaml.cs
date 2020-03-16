@@ -35,15 +35,23 @@ namespace Milky.OsuPlayer.Control
         private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
 
         private bool _playAfterSeek;
-        private Action _waitAction;
+        private Task _waitTask;
         private TimeSpan _initialVideoPosition;
         private MyCancellationTokenSource _waitActionCts;
 
         private double _videoOffset;
 
+        private AnimationControlVm _viewModel;
+
         public AnimationControl()
         {
             InitializeComponent();
+        }
+
+        private void UserControl_Initialized(object sender, EventArgs e)
+        {
+            _viewModel = (AnimationControlVm)DataContext;
+
             var path = Path.Combine(Domain.ResourcePath, "default.jpg");
             if (File.Exists(path))
             {
@@ -51,209 +59,80 @@ namespace Milky.OsuPlayer.Control
                 BackImage.Opacity = 1;
             }
 
-            ViewModel = (AnimationControlVm)DataContext;
+            _controller.LoadStarted += Controller_LoadStarted;
+            _controller.BackgroundInfoLoaded += Controller_BackgroundInfoLoaded;
+            _controller.VideoLoadRequested += Controller_VideoLoadRequested;
+
+            _controller.Player.PlayStatusChanged += Player_PlayStatusChanged;
         }
 
-        private void AnimationControl_Loaded(object sender, RoutedEventArgs e)
+        private void Player_PlayStatusChanged(PlayStatus obj)
         {
-            PlayController.Default.OnNewFileLoaded += Controller_OnNewFileLoaded;
-            PlayController.Default.OnPlayClick += Controller_OnPlayClick;
-            PlayController.Default.OnPauseClick += Controller_OnPauseClick;
-            PlayController.Default.OnProgressDragComplete += Controller_OnProgressDragComplete;
-            AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
+            if (VideoElement.Source is null) return;
+
+            if (obj == PlayStatus.Playing)
+                VideoElement.Pause();
+            else if (obj == PlayStatus.Finished || obj == PlayStatus.Paused || obj == PlayStatus.Stopped)
+                VideoElement.Play();
         }
 
-        private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private async void Controller_LoadStarted(BeatmapContext arg1, CancellationToken arg2)
         {
-            switch (e.PropertyName)
+            await SafelyRecreateVideoElement(_viewModel.Player.EnableVideo);
+            AppSettings.Default.Play.PropertyChanged -= Play_PropertyChanged;
+        }
+
+        private void Controller_BackgroundInfoLoaded(BeatmapContext beatmapCtx, CancellationToken ct)
+        {
+            BackImage.Source = beatmapCtx.BeatmapDetail.BackgroundPath == null
+                ? null
+                : new BitmapImage(new Uri(beatmapCtx.BeatmapDetail.BackgroundPath));
+        }
+
+        private void Controller_VideoLoadRequested(BeatmapContext beatmapCtx, CancellationToken ct)
+        {
+            if (VideoElement == null) return;
+
+            if (!SharedVm.Default.EnableVideo) return;
+
+            _playAfterSeek = true;
+            VideoElement.Source = new Uri(beatmapCtx.BeatmapDetail.VideoPath);
+
+            _videoOffset = -(beatmapCtx.OsuFile.Events.VideoInfo.Offset);
+            if (_videoOffset >= 0)
             {
-                case nameof(AppSettings.Play.PlaybackRate):
-                    if (!(VideoElement is null))
-                        VideoElement.SpeedRatio = AppSettings.Default.Play.PlaybackRate;
-                    break;
-            }
-        }
-
-        public AnimationControlVm ViewModel { get; set; }
-
-        public bool IsBlur
-        {
-            get => (bool)GetValue(IsBlurProperty);
-            set => SetValue(IsBlurProperty, value);
-        }
-
-        public static readonly DependencyProperty IsBlurProperty =
-            DependencyProperty.Register("IsBlur",
-                typeof(bool),
-                typeof(AnimationControl),
-                new PropertyMetadata(false, OnBlurChanged));
-
-        private bool _pauseThisSession;
-
-        private bool IsVideoPlaying => VideoElement.Source != null;
-
-        private static void OnBlurChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (!(d is AnimationControl @this && e.NewValue is bool useEffect)) return;
-            if (AppSettings.Default.Interface.MinimalMode)
-            {
-                if (@this.Effect is BlurEffect effect)
-                {
-                    effect.Radius = 0;
-                }
-
-                @this.Effect = null;
-                return;
-            }
-
-            if (useEffect)
-            {
-                if (@this.Effect is BlurEffect effect)
-                {
-                    effect.Radius = 30;
-                }
-                else
-                {
-                    @this.Effect = new BlurEffect
-                    {
-                        Radius = 30
-                    };
-                }
+                _waitTask = Task.Delay(0);
+                _initialVideoPosition = TimeSpan.FromMilliseconds(_videoOffset);
             }
             else
             {
-                if (@this.Effect is BlurEffect effect)
-                {
-                    effect.Radius = 0;
-                }
-
-                @this.Effect = null;
+                _waitTask = Task.Delay(TimeSpan.FromMilliseconds(-_videoOffset));
             }
-        }
-        private void Controller_OnNewFileLoaded(object sender, HandledEventArgs e)
-        {
-            var osuFile = _controller.PlayList.CurrentInfo.OsuFile;
-            var path = _controller.PlayList.CurrentInfo.BeatmapDetail.MapPath;
-            var dir = Path.GetDirectoryName(path);
-            _pauseThisSession = (bool)sender;
-            Execute.OnUiThread(() =>
+
+            beatmapCtx.PlayHandle = () =>
             {
-                Console.WriteLine("id:" + Thread.CurrentThread.ManagedThreadId);
-                try
-                {
+                _controller.Player.Play();
+                PlayVideo();
+            };
 
-                    /* Set Storyboard */
-                    if (true)
-                    {
-                        // Todo: Set Storyboard
-                    }
-
-                    /* Set Video */
-                    if (VideoElement != null)
-                    {
-                        SafelyRecreateVideoElement(ViewModel.Player.EnableVideo).Wait();
-
-                        if (SharedVm.Default.EnableVideo)
-                        {
-                            var videoName = osuFile.Events.VideoInfo?.Filename;
-                            if (videoName == null)
-                            {
-                                VideoElement.Source = null;
-                                //VideoElementBorder.Visibility = Visibility.Hidden;
-                            }
-                            else
-                            {
-                                var vPath = Path.Combine(dir, videoName);
-                                if (File.Exists(vPath))
-                                {
-                                    _playAfterSeek = true;
-                                    VideoElement.Source = new Uri(vPath);
-
-                                    _videoOffset = -(osuFile.Events.VideoInfo.Offset);
-                                    if (_videoOffset >= 0)
-                                    {
-                                        _waitAction = () => { };
-                                        _initialVideoPosition = TimeSpan.FromMilliseconds(_videoOffset);
-                                    }
-                                    else
-                                    {
-                                        _waitAction = () => { Thread.Sleep(TimeSpan.FromMilliseconds(-_videoOffset)); };
-                                    }
-                                }
-                                else
-                                {
-                                    VideoElement.Source = null;
-                                    //VideoElementBorder.Visibility = Visibility.Hidden;
-                                }
-                            }
-                        }
-                    }
-
-                    var defaultPath = Path.Combine(Domain.ResourcePath, "default.jpg");
-                    /* Set Background */
-                    if (osuFile.Events.BackgroundInfo != null)
-                    {
-                        var bgPath = Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
-                        BackImage.Source = File.Exists(bgPath)
-                            ? new BitmapImage(new Uri(bgPath))
-                            : (File.Exists(defaultPath)
-                                ? new BitmapImage(new Uri(defaultPath))
-                                : null);
-                    }
-                    else
-                    {
-                        BackImage.Source = null;
-                        BackImage.Source = File.Exists(defaultPath)
-                            ? new BitmapImage(new Uri(defaultPath))
-                            : null;
-                    }
-
-                    if (ViewModel.Player.EnableVideo && VideoElement?.Source != null)
-                    {
-                        BackImage.Opacity = 0.15;
-                        BlendBorder.Visibility = Visibility.Visible;
-                        e.Handled = true;
-                    }
-                    else
-                    {
-                        BackImage.Opacity = 1;
-                        BlendBorder.Visibility = Visibility.Collapsed;
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    Common.Notification.Push(@"发生未处理的错误：" + (ex.InnerException ?? ex));
-                }
-            });
-        }
-
-        private void Controller_OnPlayClick()
-        {
-            if (IsVideoPlaying)
+            beatmapCtx.PauseHandle = () =>
             {
-                VideoElement.Play();
-            }
-        }
+                _controller.Player.Pause();
+                PauseVideo();
+            };
 
-        private void Controller_OnPauseClick()
-        {
-            if (IsVideoPlaying)
+            beatmapCtx.StopHandle = () =>
             {
-                VideoElement.Pause();
-            }
-        }
-        private async void Controller_OnProgressDragComplete(object sender, DragCompleteEventArgs e)
-        {
-            var isVideoPlaying = IsVideoPlaying;
-            if (isVideoPlaying)
-            {
-                e.Handled = true;
+                _controller.Player.Stop();
+                ResetVideo(false);
+            };
 
-                var milliseconds = e.CurrentPlayTime;
+            beatmapCtx.SetTimeHandle = async (time, play) =>
+            {
+                _playAfterSeek = play;
                 _waitActionCts = new MyCancellationTokenSource();
                 Guid? guid = _waitActionCts?.Guid;
-                var trueOffset = milliseconds + _videoOffset;
+                var trueOffset = time + _videoOffset;
                 if (trueOffset < 0)
                 {
                     await VideoElement.Pause();
@@ -269,17 +148,57 @@ namespace Milky.OsuPlayer.Control
                 {
                     VideoElement.Position = TimeSpan.FromMilliseconds(trueOffset);
                 }
+            };
 
-                switch (e.PlayStatus)
-                {
-                    case PlayStatus.Playing:
-                        _playAfterSeek = true;
-                        break;
-                    case PlayStatus.Paused:
-                    case PlayStatus.Stopped:
-                        _playAfterSeek = false;
-                        break;
-                }
+            AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
+        }
+
+        private void PlayVideo()
+        {
+
+        }
+
+        private void PauseVideo()
+        {
+
+        }
+
+        private void ResetVideo(bool play)
+        {
+
+        }
+
+        private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(AppSettings.Play.PlaybackRate))
+                VideoElement.SpeedRatio = AppSettings.Default.Play.PlaybackRate;
+        }
+
+        public bool IsBlur
+        {
+            get => (bool)GetValue(IsBlurProperty);
+            set => SetValue(IsBlurProperty, value);
+        }
+
+        public static readonly DependencyProperty IsBlurProperty =
+            DependencyProperty.Register("IsBlur",
+                typeof(bool),
+                typeof(AnimationControl),
+                new PropertyMetadata(false, OnBlurChanged));
+
+        private static void OnBlurChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(d is AnimationControl @this && e.NewValue is bool useEffect)) return;
+            var effect = @this.Effect as BlurEffect;
+            if ((AppSettings.Default.Interface.MinimalMode || !useEffect))
+            {
+                if (effect != null) effect.Radius = 0;
+                @this.Effect = null;
+            }
+            else
+            {
+                if (effect != null) effect.Radius = 30;
+                else @this.Effect = new BlurEffect { Radius = 30 };
             }
         }
 
@@ -301,11 +220,11 @@ namespace Milky.OsuPlayer.Control
                 VideoElementBorder.Visibility = Visibility.Visible;
                 if (!SharedVm.Default.EnableVideo)
                     return;
-                await Task.Run(() => _waitAction?.Invoke());
+                await _waitTask;
 
                 if (VideoElement == null/* || VideoElement.IsDisposed*/)
                     return;
-                if (_pauseThisSession)
+                if (_controller.PlayList.CurrentInfo.PlayInstantly)
                 {
                     await VideoElement.Play();
                     VideoElement.Position = _initialVideoPosition;

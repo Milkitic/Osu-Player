@@ -89,7 +89,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 context.BeatmapDetail.MapPath = path;
                 context.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path);
 
-                //context.PlayInstantly = playInstantly;
+                context.PlayInstantly = playInstantly;
                 InitializeContextHandle(context);
                 await LoadAsync(true);
                 if (playInstantly) context.PlayHandle.Invoke();
@@ -334,6 +334,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private void InitializeContextHandle(BeatmapContext context)
         {
             context.PlayHandle = () => Player.Play();
+            context.PauseHandle = () => Player.Pause();
             context.StopHandle = () => Player.Stop();
             context.SetTimeHandle = (time, play) => Player.SetTime(TimeSpan.FromMilliseconds(time), play);
         }

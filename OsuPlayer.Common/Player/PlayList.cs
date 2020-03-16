@@ -35,8 +35,9 @@ namespace Milky.OsuPlayer.Common.Player
         public BeatmapSettings BeatmapSettings { get; private set; }
         public BeatmapDetail BeatmapDetail { get; }
         public OsuFile OsuFile { get; set; }
-        //public bool PlayInstantly { get; set; }
+        public bool PlayInstantly { get; set; }
         public Action PlayHandle { get; set; }
+        public Action PauseHandle { get; set; }
         public Action StopHandle { get; set; }
         public Action<double, bool> SetTimeHandle { get; set; }
 

@@ -18,6 +18,7 @@ using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using Milky.WpfApi;
@@ -72,6 +73,7 @@ namespace Milky.OsuPlayer.Control
 
         public static async Task AddToCollectionAsync(Collection col, IList<Beatmap> entries)
         {
+            var controller = Services.Get<ObservablePlayController>();
             var appDbOperator = new AppDbOperator();
             if (entries == null || entries.Count <= 0) return;
             if (string.IsNullOrEmpty(col.ImagePath))
@@ -99,6 +101,13 @@ namespace Milky.OsuPlayer.Control
             }
 
             appDbOperator.AddMapsToCollection(entries, col);
+            foreach (var beatmap in entries)
+            {
+                if (!controller.PlayList.CurrentInfo.Beatmap.GetIdentity().Equals(beatmap.GetIdentity()) ||
+                    !col.LockedBool) continue;
+                controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite = false;
+                break;
+            }
         }
     }
 }

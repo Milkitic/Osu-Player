@@ -104,15 +104,15 @@ namespace Milky.OsuPlayer.Windows
             });
         }
 
-        private void WindowBase_Deactivated(object sender, EventArgs e)
-        {
-            PlayController.Default.PopPlayList.IsOpen = false;
-        }
+        //private void WindowBase_Deactivated(object sender, EventArgs e)
+        //{
+        //    PlayController.Default.PopPlayList.IsOpen = false;
+        //}
 
-        private void ButtonBase_Click(object sender, RoutedEventArgs e)
-        {
-            PlayController.Default.PopPlayList.IsOpen = false;
-        }
+        //private void ButtonBase_Click(object sender, RoutedEventArgs e)
+        //{
+        //    PlayController.Default.PopPlayList.IsOpen = false;
+        //}
 
         /// <summary>
         /// Update collections in the navigation bar.
@@ -213,9 +213,9 @@ namespace Milky.OsuPlayer.Windows
 
             UpdateCollections();
 
-            PlayController.Default.OnNewFileLoaded += Controller_OnNewFileLoaded;
-            PlayController.Default.OnLikeClick += Controller_OnLikeClick;
-            PlayController.Default.OnThumbClick += Controller_OnThumbClick;
+            _controller.LoadFinished += Controller_LoadFinished;
+            PlayController.OnLikeClick += Controller_OnLikeClick;
+            PlayController.OnThumbClick += Controller_OnThumbClick;
 
             var updater = Services.Get<Updater>();
             bool? hasUpdate = await updater.CheckUpdateAsync();
@@ -373,7 +373,7 @@ namespace Milky.OsuPlayer.Windows
             LyricWindow.IsLocked = !LyricWindow.IsLocked;
         }
 
-        private void Controller_OnNewFileLoaded(object sender, HandledEventArgs e)
+        private void Controller_LoadFinished(BeatmapContext arg1, CancellationToken arg2)
         {
             Execute.OnUiThread(() =>
             {
