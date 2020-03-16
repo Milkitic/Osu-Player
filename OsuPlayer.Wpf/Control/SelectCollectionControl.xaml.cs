@@ -77,7 +77,7 @@ namespace Milky.OsuPlayer.Control
             if (string.IsNullOrEmpty(col.ImagePath))
             {
                 var first = entries[0];
-                var dir = first.InOwnFolder
+                var dir = first.InOwnDb
                     ? Path.Combine(Domain.CustomSongPath, first.FolderName)
                     : Path.Combine(Domain.OsuSongPath, first.FolderName);
                 var filePath = Path.Combine(dir, first.BeatmapFileName);

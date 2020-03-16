@@ -41,9 +41,8 @@ namespace Milky.OsuPlayer.Control
     /// </summary>
     public partial class AnimationControl : UserControl
     {
-        private PlayersInst _playerInst = Services.Get<PlayersInst>();
         private OsuDbInst _dbInst = Services.Get<OsuDbInst>();
-        private readonly ObservablePlayController _obsController = Services.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
 
         private bool _playAfterSeek;
         private Action _waitAction;
@@ -144,8 +143,8 @@ namespace Milky.OsuPlayer.Control
         }
         private void Controller_OnNewFileLoaded(object sender, HandledEventArgs e)
         {
-            var osuFile = _playerInst.AudioPlayer.OsuFile;
-            var path = _obsController.PlayList.CurrentInfo.Path;
+            var osuFile = _controller.PlayList.CurrentInfo.OsuFile;
+            var path = _controller.PlayList.CurrentInfo.BeatmapDetail.MapPath;
             var dir = Path.GetDirectoryName(path);
             _pauseThisSession = (bool)sender;
             Execute.OnUiThread(() =>
@@ -262,7 +261,6 @@ namespace Milky.OsuPlayer.Control
             {
                 e.Handled = true;
 
-                Services.Get<PlayersInst>().AudioPlayer.Pause();
                 var milliseconds = e.CurrentPlayTime;
                 _waitActionCts = new MyCancellationTokenSource();
                 Guid? guid = _waitActionCts?.Guid;
@@ -332,7 +330,7 @@ namespace Milky.OsuPlayer.Control
                 if (!PlayerViewModel.Current.EnableVideo)
                     return;
                 await SafelyRecreateVideoElement(false);
-                PlayController.Default.TogglePlay();
+                _controller.Player.TogglePlay();
             }
 
             void OnMediaEnded(object sender, EventArgs e)
@@ -349,15 +347,15 @@ namespace Milky.OsuPlayer.Control
             {
                 if (!PlayerViewModel.Current.EnableVideo)
                     return;
-                Services.Get<PlayersInst>().AudioPlayer.SetTime((int)(VideoElement.Position.TotalMilliseconds - _videoOffset), false);
+                _controller.Player.SetTime(VideoElement.Position - TimeSpan.FromMilliseconds(_videoOffset), false);
                 if (_playAfterSeek)
                 {
-                    Services.Get<PlayersInst>().AudioPlayer.Play();
+                    _controller.Player.Play();
                     VideoElement.Play();
                 }
                 else
                 {
-                    Services.Get<PlayersInst>().AudioPlayer.Pause();
+                    _controller.Player.Pause();
                     VideoElement.Pause();
                 }
             }
@@ -372,8 +370,8 @@ namespace Milky.OsuPlayer.Control
                 VideoElement.MediaEnded -= OnMediaEnded;
                 VideoElement.SeekingStarted -= OnSeekingStarted;
                 VideoElement.SeekingEnded -= OnSeekingEnded;
-                Services.Get<PlayersInst>().AudioPlayer.PlayerStarted -= OnAudioPlayerOnPlayerStarted;
-                Services.Get<PlayersInst>().AudioPlayer.PlayerPaused -= OnAudioPlayerOnPlayerPaused;
+                _controller.Player.PlayerStarted -= OnAudioPlayerOnPlayerStarted;
+                _controller.Player.PlayerPaused -= OnAudioPlayerOnPlayerPaused;
                 VideoElement.Dispose();
                 VideoElement = null;
                 VideoElementBorder.Child = null;
@@ -394,8 +392,8 @@ namespace Milky.OsuPlayer.Control
                     VideoElement.SeekingStarted += OnSeekingStarted;
                     VideoElement.SeekingEnded += OnSeekingEnded;
 
-                    Services.Get<PlayersInst>().AudioPlayer.PlayerStarted += OnAudioPlayerOnPlayerStarted;
-                    Services.Get<PlayersInst>().AudioPlayer.PlayerPaused += OnAudioPlayerOnPlayerPaused;
+                    _controller.Player.PlayerStarted += OnAudioPlayerOnPlayerStarted;
+                    _controller.Player.PlayerPaused += OnAudioPlayerOnPlayerPaused;
                 }
 
                 VideoElementBorder.Child = VideoElement;

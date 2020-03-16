@@ -21,6 +21,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xaml;
+using Milky.OsuPlayer.Media.Audio;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -339,9 +340,8 @@ namespace Milky.OsuPlayer.ViewModels
                     var beatmap = (BeatmapDataModel)param;
                     var map = GetHighestSrBeatmap(beatmap);
                     if (map == null) return;
-                    await PlayController.Default.PlayNewFile(map);
-                    await Services.Get<PlayerList>()
-                        .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+                    var controller = Services.Get<ObservablePlayController>();
+                    await controller.PlayNewAsync(map);
                 });
             }
         }
@@ -359,9 +359,8 @@ namespace Milky.OsuPlayer.ViewModels
                         async (selected, arg) =>
                         {
                             var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
-                            await PlayController.Default.PlayNewFile(map);
-                            await Services.Get<PlayerList>()
-                                .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+                            var controller = Services.Get<ObservablePlayController>();
+                            await controller.PlayNewAsync(map);
                         });
                     FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
                 });

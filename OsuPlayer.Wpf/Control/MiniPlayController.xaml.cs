@@ -30,6 +30,7 @@ namespace Milky.OsuPlayer.Control
         private ObservablePlayController _playerList;
         private double _positionPercent;
         private PlayerViewModel _player = PlayerViewModel.Current;
+        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
 
         public ObservablePlayController PlayerList
         {
@@ -50,11 +51,11 @@ namespace Milky.OsuPlayer.Control
             }
         }
 
-        public ICommand PlayPrevCommand => new DelegateCommand(async param => await PlayController.Default.PlayPrev());
+        public ICommand PlayPrevCommand => new DelegateCommand(async param => await _controller.PlayPrevAsync());
 
-        public ICommand PlayNextCommand => new DelegateCommand(async param => await PlayController.Default.PlayNext());
+        public ICommand PlayNextCommand => new DelegateCommand(async param => await _controller.PlayNextAsync());
 
-        public ICommand PlayPauseCommand => new DelegateCommand(param => PlayController.Default.TogglePlay());
+        public ICommand PlayPauseCommand => new DelegateCommand(param => _controller.Player.TogglePlay());
 
         public double PositionPercent
         {
@@ -73,8 +74,9 @@ namespace Milky.OsuPlayer.Control
     public partial class MiniPlayController : UserControl
     {
         private MiniPlayListControlVm _viewModel;
-        private PlayersInst _playersInst;
         private AppDbOperator _appDbOperator = new AppDbOperator();
+
+        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
 
         public static event Action MaxButtonClicked;
         public static event Action CloseButtonClicked;
@@ -83,7 +85,6 @@ namespace Milky.OsuPlayer.Control
         {
             InitializeComponent();
             _viewModel = (MiniPlayListControlVm)DataContext;
-            _playersInst = Services.Get<PlayersInst>();
             _viewModel.PlayerList = Services.Get<ObservablePlayController>();
             Default = this;
         }
@@ -91,18 +92,18 @@ namespace Milky.OsuPlayer.Control
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             PlayModeControl.CloseRequested += (obj, args) => PopMode.IsOpen = false;
-            _playersInst.AudioPlayer.PositionChanged += AudioPlayer_PositionChanged;
+            _controller.Player.PositionChanged += AudioPlayer_PositionChanged;
         }
 
         private void UserControl_Initialized(object sender, EventArgs e)
         {
-            PlayController.Default.OnNewFileLoaded += Default_OnNewFileLoaded;
+            _controller.LoadFinished += Controller_LoadFinished;
         }
 
-        private void Default_OnNewFileLoaded(object sender, System.ComponentModel.HandledEventArgs e)
+        private void Controller_LoadFinished(BeatmapContext arg1, System.Threading.CancellationToken arg2)
         {
-            _playersInst.AudioPlayer.PositionChanged += AudioPlayer_PositionChanged;
-            _playersInst.AudioPlayer.PositionSet += AudioPlayer_PositionChanged;
+            _controller.Player.PositionChanged += AudioPlayer_PositionChanged;
+            _controller.Player.PositionSet += AudioPlayer_PositionChanged;
         }
 
         private void AudioPlayer_PositionChanged(object sender, ProgressEventArgs e)
@@ -145,15 +146,15 @@ namespace Milky.OsuPlayer.Control
         private async void CommonButton_Click(object sender, RoutedEventArgs e)
         {
             var collection = _appDbOperator.GetCollections().First(k => k.LockedBool);
-            if (_viewModel.PlayerList.CurrentInfo.IsFavorite)
+            if (_controller.PlayList.CurrentInfo.BeatmapDetail.IsFavorite)
             {
                 _appDbOperator.RemoveMapFromCollection(_viewModel.Player.CurrentInfo.Beatmap, collection);
-                _viewModel.PlayerList.CurrentInfo.IsFavorite = false;
+                _controller.PlayList.CurrentInfo.BeatmapDetail.IsFavorite = false;
             }
             else
             {
                 await SelectCollectionControl.AddToCollectionAsync(collection, new[] { _viewModel.Player.CurrentInfo.Beatmap });
-                _viewModel.PlayerList.CurrentInfo.IsFavorite = true;
+                _controller.PlayList.CurrentInfo.BeatmapDetail.IsFavorite = true;
             }
         }
 

@@ -130,9 +130,9 @@ PRAGMA case_sensitive_like=false;"
             return ThreadedProvider.Query<CollectionRelation>(TABLE_RELATION).ToList();
         }
 
-        private List<MapInfo> GetMaps()
+        private List<BeatmapSettings> GetMaps()
         {
-            return ThreadedProvider.Query<MapInfo>(TABLE_MAP).ToList();
+            return ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP).ToList();
         }
 
         public static void ValidateDb()
@@ -161,9 +161,9 @@ PRAGMA case_sensitive_like=false;"
             }
         }
 
-        public MapInfo GetMapFromDb(MapIdentity id)
+        public BeatmapSettings GetMapFromDb(MapIdentity id)
         {
-            var map = ThreadedProvider.Query<MapInfo>(TABLE_MAP,
+            var map = ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
                     new Where[]
                     {
                         ("version", id.Version),
@@ -183,7 +183,7 @@ PRAGMA case_sensitive_like=false;"
                     ["offset"] = 0
                 });
 
-                return new MapInfo
+                return new BeatmapSettings
                 {
                     Id = guid,
                     Version = id.Version,
@@ -195,24 +195,24 @@ PRAGMA case_sensitive_like=false;"
             return map;
         }
 
-        public List<MapInfo> GetRecentList()
+        public List<BeatmapSettings> GetRecentList()
         {
-            return ThreadedProvider.Query<MapInfo>(TABLE_MAP,
+            return ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
                     ("lastPlayTime", null, "!="),
                     orderColumn: "lastPlayTime")
                 .ToList();
         }
 
-        public List<MapInfo> GetExportedMaps()
+        public List<BeatmapSettings> GetExportedMaps()
         {
             return ThreadedProvider.GetDbConnection()
-                .Query<MapInfo>(@"SELECT * FROM map_info WHERE exportFile IS NOT NULL AND TRIM(exportFile) <> ''").ToList();
+                .Query<BeatmapSettings>(@"SELECT * FROM map_info WHERE exportFile IS NOT NULL AND TRIM(exportFile) <> ''").ToList();
         }
 
-        public List<MapInfo> GetMapsFromCollection(Collection collection)
+        public List<BeatmapSettings> GetMapsFromCollection(Collection collection)
         {
             var result = ThreadedProvider.GetDbConnection()
-                .Query<MapInfo>(@"
+                .Query<BeatmapSettings>(@"
 SELECT map.id,
        map.version,
        map.folder,
@@ -237,7 +237,7 @@ SELECT map.id,
             return ThreadedProvider.Query<Collection>(TABLE_COLLECTION).ToList();
         }
 
-        public List<Collection> GetCollectionsByMap(MapInfo map)
+        public List<Collection> GetCollectionsByMap(BeatmapSettings beatmapSettings)
         {
             return ThreadedProvider.GetDbConnection()
                 .Query<Collection>(@"
@@ -256,7 +256,7 @@ SELECT collection.id,
        AS relation
        INNER JOIN
        collection ON relation.collectionId = collection.id;
-", new { mapId = map.Id }).ToList();
+", new { mapId = beatmapSettings.Id }).ToList();
         }
 
         public void AddCollection(string name, bool locked = false)
@@ -291,7 +291,6 @@ SELECT collection.id,
         //todo: 添加时有误
         public void AddMapsToCollection(IList<Beatmap> beatmaps, Collection collection)
         {
-            var currentInfo = Services.Get<PlayerList>().CurrentInfo;
             if (beatmaps.Count < 1) return;
 
             var sb = new StringBuilder($"INSERT INTO {TABLE_RELATION} (id, collectionId, mapId, addTime) VALUES ");

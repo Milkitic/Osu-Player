@@ -24,7 +24,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         public LyricControl Lyric { get; set; } = new LyricControl();
         public ExportControl Export { get; set; } = new ExportControl();
         public List<MapIdentity> CurrentList { get; set; } = new List<MapIdentity>();
-        public string CurrentPath { get; set; }
+        public MapIdentity? CurrentMap { get; set; }
         public DateTime? LastUpdateCheck { get; set; } = null;
         public string IgnoredVer { get; set; } = null;
 

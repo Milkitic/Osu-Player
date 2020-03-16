@@ -12,6 +12,6 @@ namespace Milky.OsuPlayer.Common.Data
     {
         public List<Collection> Collections { get; set; }
         public List<CollectionRelation> CollectionRelations { get; set; }
-        public List<MapInfo> MapInfos { get; set; }
+        public List<BeatmapSettings> MapInfos { get; set; }
     }
 }

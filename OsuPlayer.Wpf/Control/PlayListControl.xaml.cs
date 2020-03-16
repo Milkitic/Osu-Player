@@ -124,7 +124,7 @@ namespace Milky.OsuPlayer.Control
             {
                 return new DelegateCommand(param =>
                 {
-                    Process.Start(SelectedMap.InOwnFolder
+                    Process.Start(SelectedMap.InOwnDb
                         ? Path.Combine(Domain.CustomSongPath, SelectedMap.FolderName)
                         : Path.Combine(Domain.OsuSongPath, SelectedMap.FolderName));
                 });

@@ -90,7 +90,7 @@
     <Compile Include="Data\EF\Model\StoryboardInfo.cs" />
     <Compile Include="Data\EF\Model\V1\Collection.cs" />
     <Compile Include="Data\EF\Model\V1\CollectionRelation.cs" />
-    <Compile Include="Data\EF\Model\V1\MapInfo.cs" />
+    <Compile Include="Data\EF\Model\V1\BeatmapSettings.cs" />
     <Compile Include="Data\IdentifiableExtension.cs" />
     <Compile Include="DictionaryExtension.cs" />
     <Compile Include="ListExtension.cs" />

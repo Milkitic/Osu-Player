@@ -41,17 +41,7 @@ namespace Milky.OsuPlayer.Control
 {
     public class PlayControllerVm : WpfApi.ViewModelBase
     {
-        private PlayerList _playerList = Services.Get<PlayerList>();
-
-        public PlayerList PlayerList
-        {
-            get => _playerList;
-            set
-            {
-                _playerList = value;
-                OnPropertyChanged();
-            }
-        }
+        public ObservablePlayController PlayerList { get; } = Services.Get<ObservablePlayController>();
 
         private PlayerViewModel _player = PlayerViewModel.Current;
 
@@ -71,7 +61,7 @@ namespace Milky.OsuPlayer.Control
     /// </summary>
     public partial class PlayController : UserControl, IDisposable
     {
-        public static PlayController Default { get; private set; }
+        //public static PlayController Default { get; private set; }
 
         #region Dependency Property
 
@@ -178,16 +168,17 @@ namespace Milky.OsuPlayer.Control
         public event Action OnPlayClick;
         public event Action OnPauseClick;
 
+        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+
         public PlayController()
         {
             InitializeComponent();
-            Default = this;
             PlayModeControl.CloseRequested += (sender, e) => { PopMode.IsOpen = false; };
         }
 
         public async Task PlayNewFile(Beatmap map, bool play = true)
         {
-            string path = map.InOwnFolder
+            string path = map.InOwnDb
                 ? System.IO.Path.Combine(Domain.CustomSongPath, map.FolderName, map.BeatmapFileName)
                 : System.IO.Path.Combine(Domain.OsuSongPath, map.FolderName, map.BeatmapFileName);
             await PlayNewFile(path, play);
@@ -201,13 +192,13 @@ namespace Milky.OsuPlayer.Control
         public void TogglePlay()
         {
             _forcePaused = false;
-            if (ComponentPlayer.Current == null)
+            if (!_controller.PlayList.HasCurrent)
             {
                 OpenButton_Click(null, null);
                 return;
             }
 
-            switch (ComponentPlayer.Current.PlayStatus)
+            switch (_controller.Player.PlayStatus)
             {
                 case PlayStatus.Playing:
                     {
@@ -255,18 +246,11 @@ namespace Milky.OsuPlayer.Control
             }
 
             await PlayNewFile(path);
-            await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None);
         }
 
         public async Task SetPlayMode(PlayMode playMode)
         {
-            if (playMode == Services.Get<PlayerList>().PlayerMode)
-            {
-                return;
-            }
-
-            Services.Get<PlayerList>().PlayerMode = playMode;
-            await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.IndexOnly);
+            _controller.PlayList.PlayMode = playMode;
             AppSettings.Default.Play.PlayMode = playMode;
             AppSettings.SaveDefault();
         }
@@ -292,7 +276,6 @@ namespace Milky.OsuPlayer.Control
         {
             var sw = Stopwatch.StartNew();
 
-            var playerInst = Services.Get<PlayersInst>();
             var dbInst = Services.Get<OsuDbInst>();
             ComponentPlayer audioPlayer = null;
 
@@ -310,7 +293,7 @@ namespace Milky.OsuPlayer.Control
 
                     /* Clear */
                     ClearHitsoundPlayer();
-                    if (System.IO.Path.GetDirectoryName(AppSettings.Default.CurrentPath) !=
+                    if (System.IO.Path.GetDirectoryName(AppSettings.Default.CurrentMap) !=
                         System.IO.Path.GetDirectoryName(path))
                     {
                         Services.Get<PlayersInst>()?.ClearHitsoundCache();
@@ -319,10 +302,10 @@ namespace Milky.OsuPlayer.Control
                     /* Set Meta */
                     var nowIdentity = new MapIdentity(fi.Directory.Name, osuFile.Metadata.Version);
 
-                    MapInfo mapInfo = _appDbOperator.GetMapFromDb(nowIdentity);
+                    BeatmapSettings beatmapSettings = _appDbOperator.GetMapFromDb(nowIdentity);
                     Beatmap beatmap = _appDbOperator.GetBeatmapByIdentifiable(nowIdentity);
 
-                    bool isFavorite = IsMapFavorite(mapInfo); //50 ms
+                    bool isFavorite = IsMapFavorite(beatmapSettings); //50 ms
 
                     var info = Services.Get<PlayerList>().CurrentInfo;
                     if (info != null)
@@ -365,7 +348,7 @@ namespace Milky.OsuPlayer.Control
                     audioPlayer = playerInst.AudioPlayer;
                     SignUpPlayerEvent(audioPlayer);
                     await audioPlayer.InitializeAsync(); //700 ms
-                    audioPlayer.HitsoundOffset = mapInfo.Offset;
+                    audioPlayer.HitsoundOffset = beatmapSettings.Offset;
                     VolumeControl.HitsoundOffset = audioPlayer.HitsoundOffset;
 
                     var currentInfo = new BeatmapDetail(
@@ -385,7 +368,7 @@ namespace Milky.OsuPlayer.Control
                         osuFile.Difficulty.OverallDifficulty,
                         audioPlayer.Duration,
                         nowIdentity,
-                        mapInfo,
+                        beatmapSettings,
                         beatmap,
                         isFavorite, path, truePath); // 20 ms
                     Services.Get<PlayerList>().CurrentInfo = currentInfo;
@@ -414,7 +397,7 @@ namespace Milky.OsuPlayer.Control
                     LblTotal.Visibility = Visibility.Visible;
                     LblNowFake.Visibility = Visibility.Hidden;
                     LblTotalFake.Visibility = Visibility.Hidden;
-                    AppSettings.Default.CurrentPath = path;
+                    AppSettings.Default.CurrentMap = path;
                     AppSettings.SaveDefault();
 
                     _appDbOperator.UpdateMap(nowIdentity);
@@ -486,9 +469,9 @@ namespace Milky.OsuPlayer.Control
             };
         }
 
-        private bool IsMapFavorite(MapInfo info)
+        private bool IsMapFavorite(BeatmapSettings settings)
         {
-            var album = _appDbOperator.GetCollectionsByMap(info);
+            var album = _appDbOperator.GetCollectionsByMap(settings);
             bool isFavorite = album != null && album.Any(k => k.LockedBool);
 
             return isFavorite;

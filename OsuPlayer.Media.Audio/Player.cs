@@ -64,6 +64,19 @@ namespace Milky.OsuPlayer.Media.Audio
         public abstract TimeSpan PlayTime { get; protected set; }
 
         public abstract Task InitializeAsync();
+
+        public void TogglePlay()
+        {
+            if (PlayStatus == PlayStatus.Ready || PlayStatus == PlayStatus.Finished || PlayStatus == PlayStatus.Paused)
+            {
+                Play();
+            }
+            else if (PlayStatus == PlayStatus.Playing)
+            {
+                Pause();
+            }
+        }
+
         public abstract void Play();
         public abstract void Pause();
         public abstract void Stop();

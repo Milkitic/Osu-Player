@@ -2,11 +2,67 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.WpfApi;
+using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Common.Player
 {
+    public class BeatmapContext
+    {
+        private BeatmapContext(Beatmap beatmap)
+        {
+            BeatmapDetail = new BeatmapDetail(beatmap);
+        }
+
+        private static AppDbOperator _operator = new AppDbOperator();
+        public static async Task<BeatmapContext> CreateAsync(Beatmap beatmap)
+        {
+            return new BeatmapContext(beatmap)
+            {
+                BeatmapSettings = _operator.GetMapFromDb(beatmap.GetIdentity()),
+            };
+        }
+
+        public Beatmap Beatmap { get; }
+        public BeatmapSettings BeatmapSettings { get; private set; }
+        public BeatmapDetail BeatmapDetail { get; }
+        public OsuFile OsuFile { get; set; }
+
+        public static bool operator ==(BeatmapContext bc1, BeatmapContext bc2)
+        {
+            return Equals(bc1, bc2);
+        }
+
+        public static bool operator !=(BeatmapContext bc1, BeatmapContext bc2)
+        {
+            return !(bc1 == bc2);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+                return false;
+            if (!(obj is BeatmapContext bc))
+                return false;
+            return Equals(bc);
+        }
+
+        protected bool Equals(BeatmapContext other)
+        {
+            return Equals(Beatmap, other.Beatmap);
+        }
+
+        public override int GetHashCode()
+        {
+            return Beatmap != null ? Beatmap.GetHashCode() : 0;
+        }
+    }
+
     public class PlayList : ViewModelBase
     {
         public event Action<PlayControlResult, Beatmap> AutoSwitched;
@@ -20,7 +76,7 @@ namespace Milky.OsuPlayer.Common.Player
 
         public ObservableCollection<Beatmap> SongList { get; set; }
 
-        public Beatmap CurrentInfo
+        public BeatmapContext CurrentInfo
         {
             get => _currentInfo;
             private set
@@ -56,7 +112,7 @@ namespace Milky.OsuPlayer.Common.Player
         private PlayMode _playMode;
         private int _indexPointer = -1;
         private List<int> _songIndexList = new List<int>();
-        private Beatmap _currentInfo;
+        private BeatmapContext _currentInfo;
         private ObservableCollection<int> _songIndexList1;
 
         public ObservableCollection<int> SongIndexList
@@ -78,7 +134,7 @@ namespace Milky.OsuPlayer.Common.Player
                 if (value < -1) value = -1;
                 else if (value > SongList.Count - 1) value = SongList.Count - 1;
 
-                CurrentInfo = value == -1 ? null : SongList[_songIndexList[value]];
+                CurrentInfo = value == -1 ? null : new BeatmapContext(SongList[_songIndexList[value]]);
 
                 if (Equals(value, _indexPointer)) return;
                 _indexPointer = value;
@@ -94,6 +150,8 @@ namespace Milky.OsuPlayer.Common.Player
             }
         }
 
+        public bool HasCurrent => CurrentInfo != null;
+
         private bool IsRandom => _playMode == PlayMode.Random || _playMode == PlayMode.LoopRandom;
         private bool IsLoop => _playMode == PlayMode.Loop || _playMode == PlayMode.LoopRandom;
 
@@ -103,10 +161,10 @@ namespace Milky.OsuPlayer.Common.Player
         /// <param name="value"></param>
         /// <param name="startAnew">若为true，则播放列表中若有相同曲，保持指针继续播放</param>
         /// <returns></returns>
-        public PlayControlResult SetSongList(ObservableCollection<Beatmap> value, bool startAnew)
+        public PlayControlResult SetSongList(IEnumerable<Beatmap> value, bool startAnew)
         {
             if (SongList != null) SongList.CollectionChanged -= SongList_CollectionChanged;
-            SongList = value;
+            SongList = new ObservableCollection<Beatmap>(value);
             SongList.CollectionChanged += SongList_CollectionChanged;
 
             var changed = RearrangeIndexesAndReposition(startAnew ? (int?)0 : null);
@@ -146,7 +204,7 @@ namespace Milky.OsuPlayer.Common.Player
             {
                 var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Unknown,
                     PlayControlResult.PointerControlStatus.Default);
-                AutoSwitched?.Invoke(playControlResult, CurrentInfo);
+                AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap);
                 return playControlResult;
             }
 
@@ -154,7 +212,7 @@ namespace Milky.OsuPlayer.Common.Player
             IndexPointer = -1;
             var controlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                 PlayControlResult.PointerControlStatus.Clear);
-            AutoSwitched?.Invoke(controlResult, CurrentInfo);
+            AutoSwitched?.Invoke(controlResult, null);
             return controlResult;
         }
 
@@ -166,7 +224,7 @@ namespace Milky.OsuPlayer.Common.Player
                 {
                     var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                         PlayControlResult.PointerControlStatus.Keep);
-                    AutoSwitched?.Invoke(playControlResult, CurrentInfo);
+                    AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap);
                     return playControlResult;
                 }
 
@@ -174,7 +232,7 @@ namespace Milky.OsuPlayer.Common.Player
                 {
                     var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
                         PlayControlResult.PointerControlStatus.Keep);
-                    AutoSwitched?.Invoke(playControlResult, CurrentInfo);
+                    AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap);
                     return playControlResult;
                 }
 
@@ -184,7 +242,7 @@ namespace Milky.OsuPlayer.Common.Player
                     {
                         var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                             PlayControlResult.PointerControlStatus.Clear);
-                        AutoSwitched?.Invoke(playControlResult, CurrentInfo);
+                        AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap);
                         return playControlResult;
                     }
 
@@ -193,7 +251,7 @@ namespace Milky.OsuPlayer.Common.Player
                     {
                         var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                             PlayControlResult.PointerControlStatus.Reset);
-                        AutoSwitched?.Invoke(playControlResult, CurrentInfo);
+                        AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap);
                         return playControlResult;
                     }
                 }
@@ -249,7 +307,7 @@ namespace Milky.OsuPlayer.Common.Player
                 return currentInfo != CurrentInfo; // force return false
             }
 
-            var indexOf = SongList.IndexOf(CurrentInfo);
+            var indexOf = SongList.IndexOf(CurrentInfo.Beatmap);
             if (indexOf == -1)
             {
                 IndexPointer = 0;
@@ -273,9 +331,8 @@ namespace Milky.OsuPlayer.Common.Player
                 RearrangeIndexesAndReposition();
 
                 if (!CheckCount())
-                {
+                { }
 
-                }
                 return;
             }
 
@@ -308,9 +365,8 @@ namespace Milky.OsuPlayer.Common.Player
                     RearrangeIndexesAndReposition();
 
                     if (!CheckCount())
-                    {
+                    { }
 
-                    }
                     return;
                 }
 
@@ -341,9 +397,7 @@ namespace Milky.OsuPlayer.Common.Player
                 SongIndexList = new ObservableCollection<int>(_songIndexList);
 
                 if (!CheckCount())
-                {
-
-                }
+                { }
             }
         }
 

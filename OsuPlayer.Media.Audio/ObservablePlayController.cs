@@ -1,40 +1,42 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Media.Audio.Core;
 using Milky.WpfApi;
+using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
-    public class BeatmapLoadContext
-    {
-        public Beatmap Beatmap { get; set; }
-        public BeatmapDetail BeatmapDetail { get; set; }
-        public bool IsDetailInit => BeatmapDetail != null;
-    }
 
-    public class ObservablePlayController : ViewModelBase
+    public sealed class ObservablePlayController : ViewModelBase, IDisposable
     {
-        private ComponentPlayer _player;
+        private Player _player;
         public event Action<PlayStatus> PlayStatusChanged;
         public event Action<TimeSpan, TimeSpan> ProgressUpdated;
 
         public event Action InterfaceClearRequest;
 
-        public event Action<Beatmap, CancellationToken> LoadStarted;
+        public event Action<string, CancellationToken> PreLoadStarted;
 
-        public event Action<Beatmap, CancellationToken> MetaLoaded;
-        public event Action<Beatmap, CancellationToken> BackgroundInfoLoaded;
-        public event Action<Beatmap, CancellationToken> MusicLoaded;
-        public event Action<Beatmap, CancellationToken> VideoLoadRequested;
-        public event Action<Beatmap, CancellationToken> StoryboardLoadRequested;
+        public event Action<BeatmapContext, CancellationToken> LoadStarted;
 
-        public event Action<Beatmap, CancellationToken> LoadFinished;
+        public event Action<BeatmapContext, CancellationToken> MetaLoaded;
+        public event Action<BeatmapContext, CancellationToken> BackgroundInfoLoaded;
+        public event Action<BeatmapContext, CancellationToken> MusicLoaded;
+        public event Action<BeatmapContext, CancellationToken> VideoLoadRequested;
+        public event Action<BeatmapContext, CancellationToken> StoryboardLoadRequested;
 
-        public ComponentPlayer Player
+        public event Action<BeatmapContext, CancellationToken> LoadFinished;
+
+        public Player Player
         {
             get => _player;
             private set
@@ -47,52 +49,41 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
         private CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly AppDbOperator _appDbOperator = new AppDbOperator();
 
         public PlayList PlayList { get; } = new PlayList();
+        public bool IsPlayerReady => Player != null && Player.PlayStatus != PlayStatus.NotInitialized;
 
         public ObservablePlayController()
         {
             PlayList.AutoSwitched += PlayList_AutoSwitched;
         }
 
-        public async Task PlayNewAsync(Beatmap Beatmap)
+        public async Task PlayNewAsync(Beatmap beatmap, bool playInstantly)
         {
-            PlayList.AddOrSwitchTo(Beatmap);
-            await LoadAsync(Beatmap);
-            Player.Play();
+            PlayList.AddOrSwitchTo(beatmap);
+            await LoadAsync(beatmap);
+            if (playInstantly) Player.Play();
         }
 
-        public async Task PrevAsync()
-        {
-            await PlayByControl(PlayControlType.Previous, false);
-        }
-
-        public async Task NextAsync()
-        {
-            await PlayByControl(PlayControlType.Next, false);
-        }
-
-        public async Task LoadAsync(Beatmap Beatmap)
+        public async Task PlayNewAsync(string path, bool playInstantly)
         {
             try
             {
                 await _readLock.WaitAsync(_cts.Token);
 
-                LoadStarted?.Invoke(Beatmap, _cts.Token);
+                if (!File.Exists(path))
+                    throw new FileNotFoundException("cannot locate file", path);
                 ClearPlayer();
 
-                await Task.Delay(TimeSpan.FromSeconds(2), _cts.Token);
-                MetaLoaded?.Invoke(Beatmap, _cts.Token);
-                BackgroundInfoLoaded?.Invoke(Beatmap, _cts.Token);
+                var osuFile =
+                    await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor")); //50 ms
+                var beatmap = Beatmap.ParseFromOSharp(osuFile);
+                Beatmap trueBeatmap = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
 
-                Player = new ComponentPlayer();
-                Player.PlayStatusChanged += Player_PlayStatusChanged;
-                Player.PositionChanged += Player_ProgressUpdated;
-                MusicLoaded?.Invoke(Beatmap, _cts.Token);
-
-                VideoLoadRequested?.Invoke(Beatmap, _cts.Token);
-                StoryboardLoadRequested?.Invoke(Beatmap, _cts.Token);
-                LoadFinished?.Invoke(Beatmap, _cts.Token);
+                var context = await BeatmapContext.CreateAsync(trueBeatmap ?? beatmap);
+                context.OsuFile = osuFile;
+                await LoadAsync(trueBeatmap, context);
             }
             catch (Exception ex)
             {
@@ -101,6 +92,100 @@ namespace Milky.OsuPlayer.Media.Audio
             finally
             {
                 _readLock.Release();
+            }
+        }
+
+        public async Task PlayPrevAsync()
+        {
+            await PlayByControl(PlayControlType.Previous, false);
+        }
+
+        public async Task PlayNextAsync()
+        {
+            await PlayByControl(PlayControlType.Next, false);
+        }
+
+        private async Task LoadAsync(Beatmap beatmap, BeatmapContext context = null)
+        {
+            try
+            {
+                if (context == null)
+                {
+                    await _readLock.WaitAsync(_cts.Token);
+                    ClearPlayer();
+                    context = await BeatmapContext.CreateAsync(beatmap);
+                }
+
+                beatmap = context.Beatmap;
+                LoadStarted?.Invoke(context, _cts.Token);
+
+                var osuFile = context.OsuFile;
+
+                if (osuFile == null)
+                {
+                    string path = beatmap.InOwnDb
+                        ? Path.Combine(Domain.CustomSongPath, beatmap.FolderName, beatmap.BeatmapFileName)
+                        : Path.Combine(Domain.OsuSongPath, beatmap.FolderName, beatmap.BeatmapFileName);
+                    context.OsuFile = await OsuFile.ReadFromFileAsync(path);
+                }
+
+                var album = _appDbOperator.GetCollectionsByMap(context.BeatmapSettings);
+                bool isFavorite = album != null && album.Any(k => k.LockedBool);
+
+                var metadata = context.BeatmapDetail.Metadata;
+                metadata.IsFavorite = isFavorite;
+
+                metadata.Artist = osuFile.Metadata.ArtistMeta;
+                metadata.Title = osuFile.Metadata.TitleMeta;
+                metadata.BeatmapId = osuFile.Metadata.BeatmapId;
+                metadata.BeatmapsetId = osuFile.Metadata.BeatmapSetId;
+                metadata.Creator = osuFile.Metadata.Creator;
+                metadata.Version = osuFile.Metadata.Version;
+                metadata.Source = osuFile.Metadata.Source;
+                metadata.Tags = osuFile.Metadata.TagList;
+
+                metadata.HP = osuFile.Difficulty.HpDrainRate;
+                metadata.CS = osuFile.Difficulty.CircleSize;
+                metadata.AR = osuFile.Difficulty.ApproachRate;
+                metadata.OD = osuFile.Difficulty.OverallDifficulty;
+
+                MetaLoaded?.Invoke(context, _cts.Token);
+
+                var defaultPath = Path.Combine(Domain.ResourcePath, "default.jpg");
+
+                if (osuFile.Events.BackgroundInfo != null)
+                {
+                    var bgPath = Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
+                    context.BeatmapDetail.BackgroundPath = File.Exists(bgPath)
+                        ? bgPath
+                        : File.Exists(defaultPath) ? defaultPath : null;
+                }
+                else
+                {
+                    context.BeatmapDetail.BackgroundPath = File.Exists(defaultPath)
+                        ? defaultPath
+                        : null;
+                }
+
+                BackgroundInfoLoaded?.Invoke(context, _cts.Token);
+
+                // music
+                Player = new ComponentPlayer();
+                Player.PlayStatusChanged += Player_PlayStatusChanged;
+                Player.PositionChanged += Player_ProgressUpdated;
+                MusicLoaded?.Invoke(context, _cts.Token);
+
+                VideoLoadRequested?.Invoke(context, _cts.Token);
+                StoryboardLoadRequested?.Invoke(context, _cts.Token);
+                LoadFinished?.Invoke(context, _cts.Token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            finally
+            {
+                if (context == null) _readLock.Release();
             }
         }
 
@@ -173,7 +258,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     return;
                 }
 
-                await LoadAsync(PlayList.CurrentInfo);
+                await LoadAsync(PlayList.CurrentInfo.Beatmap);
                 Player.Play();
             }
             else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
@@ -189,6 +274,13 @@ namespace Milky.OsuPlayer.Media.Audio
             _cts.Cancel();
             _cts?.Dispose();
             _cts = new CancellationTokenSource();
+        }
+
+        public void Dispose()
+        {
+            _player?.Dispose();
+            _readLock?.Dispose();
+            _cts?.Dispose();
         }
     }
 }

@@ -23,5 +23,6 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         public string SbThumbVideoPath { get; set; }
         public string Version { get; set; }
         public string FolderName { get; set; }
+        public bool InOwnDb { get; set; }
     }
 }

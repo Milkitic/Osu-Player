@@ -57,7 +57,7 @@ namespace Milky.OsuPlayer.Common.Data
                 count: 1).FirstOrDefault();
         }
 
-        public static List<Beatmap> GetBeatmapsByMapInfo(this AppDbOperator op, List<MapInfo> reqList, TimeSortMode sortMode)
+        public static List<Beatmap> GetBeatmapsByMapInfo(this AppDbOperator op, List<BeatmapSettings> reqList, TimeSortMode sortMode)
         {
             var entities = GetBeatmapsByIdentifiable(op, reqList);
 
@@ -84,6 +84,7 @@ namespace Milky.OsuPlayer.Common.Data
         public static List<Beatmap> GetBeatmapsByIdentifiable<T>(this AppDbOperator op, List<T> reqList)
             where T : IMapIdentifiable
         {
+            throw new NotImplementedException("InOwnDb not implemented");
             if (reqList.Count < 1) return new List<Beatmap>();
 
             var args = new ExpandoObject();
@@ -174,7 +175,7 @@ SELECT *
                 ["tags"] = k.SongTags,
                 ["folderName"] = k.FolderName,
                 ["audioName"] = k.AudioFileName,
-                ["own"] = k.InOwnFolder,
+                ["own"] = k.InOwnDb,
             }).ToList());
         }
         public static void AddNewMaps(this AppDbOperator op, params Beatmap[] beatmaps)

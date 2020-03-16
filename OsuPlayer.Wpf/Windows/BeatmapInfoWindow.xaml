@@ -28,9 +28,9 @@
             ResizeBorderThickness="1"
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
-    <Window.DataContext>
+    <d:Object.DataContext>
         <player:BeatmapDetail />
-    </Window.DataContext>
+    </d:Object.DataContext>
     <Window.Resources>
         <system:Double x:Key="LabelWidth">110</system:Double>
         <Style x:Key="ReadOnlyTextBox" TargetType="TextBox">

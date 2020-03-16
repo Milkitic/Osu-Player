@@ -286,7 +286,7 @@ namespace Milky.OsuPlayer.Pages
         private void ItemFolder_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
-            var dir = map.InOwnFolder
+            var dir = map.InOwnDb
                 ? Path.Combine(Domain.CustomSongPath, map.FolderName)
                 : Path.Combine(Domain.OsuSongPath, map.FolderName);
             if (!Directory.Exists(dir))

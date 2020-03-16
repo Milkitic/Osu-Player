@@ -18,12 +18,15 @@ using System.Windows;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF;
+using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Scanning;
 using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Control.Notification;
 using Milky.OsuPlayer.Instances;
+using Milky.OsuPlayer.Media.Audio;
+using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -44,6 +47,8 @@ namespace Milky.OsuPlayer.Windows
         private readonly AppDbOperator _appDbOperator = new AppDbOperator();
 
         private Task _searchLyricTask;
+
+        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
 
         public MainWindow()
         {
@@ -77,12 +82,12 @@ namespace Milky.OsuPlayer.Windows
         private void TryBindHotKeys()
         {
             var page = new Pages.Settings.HotKeyPage();
-            OverallKeyHook.AddKeyHook(page.PlayPause.Name, () => { PlayController.Default.TogglePlay(); });
+            OverallKeyHook.AddKeyHook(page.PlayPause.Name, () => { _controller.Player.TogglePlay(); });
             OverallKeyHook.AddKeyHook(page.Previous.Name, () =>
             {
                 //TODO
             });
-            OverallKeyHook.AddKeyHook(page.Next.Name, async () => { await PlayController.Default.PlayNext(); });
+            OverallKeyHook.AddKeyHook(page.Next.Name, async () => { await _controller.PlayNextAsync(); });
             OverallKeyHook.AddKeyHook(page.VolumeUp.Name, () => { AppSettings.Default.Volume.Main += 0.05f; });
             OverallKeyHook.AddKeyHook(page.VolumeDown.Name, () => { AppSettings.Default.Volume.Main -= 0.05f; });
             OverallKeyHook.AddKeyHook(page.FullMini.Name, () =>
@@ -122,9 +127,9 @@ namespace Milky.OsuPlayer.Windows
             ViewModel.Collection = new ObservableCollection<Collection>(list);
         }
 
-        private bool IsMapFavorite(MapInfo info)
+        private bool IsMapFavorite(BeatmapSettings settings)
         {
-            var album = _appDbOperator.GetCollectionsByMap(info);
+            var album = _appDbOperator.GetCollectionsByMap(settings);
             bool isFavorite = album != null && album.Any(k => k.LockedBool);
 
             return isFavorite;
@@ -151,15 +156,15 @@ namespace Milky.OsuPlayer.Windows
 
                 _searchLyricTask = Task.Run(async () =>
                 {
-                    var player = Services.Get<PlayersInst>().AudioPlayer;
-                    if (player == null)
-                        return;
+                    if (!_controller.IsPlayerReady) return;
 
-                    var meta = player.OsuFile.Metadata;
                     var lyricInst = Services.Get<LyricsInst>();
-                    var lyric = await lyricInst.LyricProvider.GetLyricAsync(meta.ArtistMeta.ToUnicodeString(),
-                        meta.TitleMeta.ToUnicodeString(), player.Duration);
-                    LyricWindow.SetNewLyric(lyric, player.OsuFile);
+                    var meta = _controller.PlayList.CurrentInfo.OsuFile.Metadata;
+                    MetaString metaArtist = meta.ArtistMeta;
+                    MetaString metaTitle = meta.TitleMeta;
+                    var lyric = await lyricInst.LyricProvider.GetLyricAsync(metaArtist.ToUnicodeString(),
+                        metaTitle.ToUnicodeString(), (int)_controller.Player.Duration.TotalMilliseconds);
+                    LyricWindow.SetNewLyric(lyric, metaArtist, metaTitle);
                     LyricWindow.StartWork();
                 });
             });
@@ -264,7 +269,7 @@ namespace Milky.OsuPlayer.Windows
             }
 
             GetCurrentFirst<MiniWindow>()?.Close();
-            PlayController.Default?.Dispose();
+            _controller?.Dispose();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
             if (ConfigWindow != null && !ConfigWindow.IsClosed && ConfigWindow.IsInitialized)
@@ -282,7 +287,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void Animation_Loaded(object sender, RoutedEventArgs e)
         {
-            if (AppSettings.Default.CurrentPath == null || !AppSettings.Default.Play.Memory)
+            if (AppSettings.Default.CurrentMap == null || !AppSettings.Default.Play.Memory)
             {
                 return;
             }
@@ -292,11 +297,11 @@ namespace Milky.OsuPlayer.Windows
                 // 加至播放列表
                 var entries = _appDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList);
 
-                await Services.Get<PlayerList>()
-                    .RefreshPlayListAsync(PlayerList.FreshType.All, beatmaps: entries);
+                _controller.PlayList.SetSongList(entries, true);
 
                 bool play = AppSettings.Default.Play.AutoPlay;
-                await PlayController.Default.PlayNewFile(AppSettings.Default.CurrentPath, play);
+                var current = _appDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
+                await _controller.PlayNewAsync(current, true);
             });
         }
 
@@ -388,8 +393,8 @@ namespace Milky.OsuPlayer.Windows
 
         private void Controller_OnLikeClick(object sender, RoutedEventArgs e)
         {
-            var id = Services.Get<PlayerList>().CurrentIdentity;
-            var entry = _appDbOperator.GetBeatmapByIdentifiable(id);
+            var detail = _controller.PlayList.CurrentInfo.Beatmap;
+            var entry = _appDbOperator.GetBeatmapByIdentifiable(detail.GetIdentity());
             if (entry == null)
             {
                 Notification.Show("该图不存在于该osu!db中", Title);
