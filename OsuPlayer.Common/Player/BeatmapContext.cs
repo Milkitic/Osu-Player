@@ -34,6 +34,7 @@ namespace Milky.OsuPlayer.Common.Player
         public Action PlayHandle { get; set; }
         public Action PauseHandle { get; set; }
         public Action StopHandle { get; set; }
+        public Action TogglePlayHandle { get; set; }
         public Action<double, bool> SetTimeHandle { get; set; }
 
         public static bool operator ==(BeatmapContext bc1, BeatmapContext bc2)

@@ -20,6 +20,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         public GeneralControl General { get; set; } = new GeneralControl();
         public InterfaceControl Interface { get; set; } = new InterfaceControl();
         public PlayControl Play { get; set; } = new PlayControl();
+        [JsonProperty("hot_keys")]
         public List<HotKey> HotKeys { get; set; } = new List<HotKey>();
         public LyricControl Lyric { get; set; } = new LyricControl();
         public ExportControl Export { get; set; } = new ExportControl();

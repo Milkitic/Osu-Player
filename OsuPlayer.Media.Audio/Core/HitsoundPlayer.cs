@@ -250,7 +250,11 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         private void PlayHitsound()
         {
             var isHitsound = !(this is SampleTrackPlayer);
-            _vsw.Restart();
+            _vsw.Start();
+            if (isHitsound)
+            {
+
+            }
             while (_hsQueue.Count > 0 || ComponentPlayer.Current.MusicPlayer.PlayStatus != PlayStatus.Finished)
             {
                 if (_cts.Token.IsCancellationRequested)

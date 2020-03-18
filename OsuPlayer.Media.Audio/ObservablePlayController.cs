@@ -65,7 +65,7 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             PlayList.AddOrSwitchTo(beatmap);
             InitializeContextHandle(PlayList.CurrentInfo);
-            await LoadAsync(false);
+            await LoadAsync(false, playInstantly);
             if (playInstantly) PlayList.CurrentInfo.PlayHandle.Invoke();
         }
 
@@ -91,9 +91,8 @@ namespace Milky.OsuPlayer.Media.Audio
                 context.BeatmapDetail.MapPath = path;
                 context.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path);
 
-                context.PlayInstantly = playInstantly;
                 InitializeContextHandle(context);
-                await LoadAsync(true);
+                await LoadAsync(true, playInstantly);
                 if (playInstantly) context.PlayHandle.Invoke();
             }
             catch (Exception ex)
@@ -116,9 +115,10 @@ namespace Milky.OsuPlayer.Media.Audio
             await PlayByControl(PlayControlType.Next, false);
         }
 
-        private async Task LoadAsync(bool isReading)
+        private async Task LoadAsync(bool isReading, bool playInstantly)
         {
             var context = PlayList.CurrentInfo;
+            context.PlayInstantly = playInstantly;
             try
             {
                 if (!isReading)
@@ -278,7 +278,7 @@ namespace Milky.OsuPlayer.Media.Audio
             {
                 var context = PlayList.CurrentInfo;
                 InitializeContextHandle(context);
-                await LoadAsync(false);
+                await LoadAsync(false, true);
                 switch (controlResult.PlayStatus)
                 {
                     case PlayControlResult.PlayControlStatus.Play:
@@ -330,7 +330,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
 
                 InitializeContextHandle(PlayList.CurrentInfo);
-                await LoadAsync(false);
+                await LoadAsync(false, true);
                 PlayList.CurrentInfo.PlayHandle.Invoke();
             }
             else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
@@ -346,6 +346,17 @@ namespace Milky.OsuPlayer.Media.Audio
             context.PlayHandle = () => Player.Play();
             context.PauseHandle = () => Player.Pause();
             context.StopHandle = () => Player.Stop();
+            context.TogglePlayHandle = () =>
+            {
+                if (Player.PlayStatus == PlayStatus.Ready ||
+                    Player.PlayStatus == PlayStatus.Finished ||
+                    Player.PlayStatus == PlayStatus.Paused)
+                {
+                    context.PlayHandle();
+                }
+                else if (Player.PlayStatus == PlayStatus.Playing) context.PauseHandle();
+            };
+
             context.SetTimeHandle = (time, play) => Player.SetTime(TimeSpan.FromMilliseconds(time), play);
         }
 

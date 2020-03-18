@@ -79,6 +79,13 @@ namespace Milky.OsuPlayer.Control
         private async void Controller_LoadStarted(BeatmapContext arg1, CancellationToken arg2)
         {
             await SafelyRecreateVideoElement(_viewModel.Player.EnableVideo);
+
+            Execute.OnUiThread(() =>
+            {
+                BackImage.Opacity = 1;
+                BlendBorder.Visibility = Visibility.Collapsed;
+            });
+
             AppSettings.Default.Play.PropertyChanged -= Play_PropertyChanged;
         }
 
@@ -109,6 +116,12 @@ namespace Milky.OsuPlayer.Control
                 _waitTask = Task.Delay(TimeSpan.FromMilliseconds(-_videoOffset));
             }
 
+            Execute.OnUiThread(() =>
+            {
+                BackImage.Opacity = 0.15;
+                BlendBorder.Visibility = Visibility.Visible;
+            });
+
             beatmapCtx.PlayHandle = () =>
             {
                 _controller.Player.Play();
@@ -129,6 +142,7 @@ namespace Milky.OsuPlayer.Control
 
             beatmapCtx.SetTimeHandle = async (time, play) =>
             {
+                _controller.Player.Pause();
                 _playAfterSeek = play;
                 _waitActionCts = new MyCancellationTokenSource();
                 Guid? guid = _waitActionCts?.Guid;
@@ -155,17 +169,17 @@ namespace Milky.OsuPlayer.Control
 
         private void PlayVideo()
         {
-
+            VideoElement.Play();
         }
 
         private void PauseVideo()
         {
-
+            VideoElement.Pause();
         }
 
         private void ResetVideo(bool play)
         {
-
+            VideoElement.Position = TimeSpan.Zero;
         }
 
         private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -278,8 +292,6 @@ namespace Milky.OsuPlayer.Control
                 VideoElement.MediaEnded -= OnMediaEnded;
                 VideoElement.SeekingStarted -= OnSeekingStarted;
                 VideoElement.SeekingEnded -= OnSeekingEnded;
-                //_controller.Player.PlayerStarted -= OnAudioPlayerOnPlayerStarted;
-                //_controller.Player.PlayerPaused -= OnAudioPlayerOnPlayerPaused;
                 VideoElement.Dispose();
                 VideoElement = null;
                 VideoElementBorder.Child = null;
@@ -299,9 +311,6 @@ namespace Milky.OsuPlayer.Control
                 {
                     VideoElement.SeekingStarted += OnSeekingStarted;
                     VideoElement.SeekingEnded += OnSeekingEnded;
-
-                    //_controller.Player.PlayerStarted += OnAudioPlayerOnPlayerStarted;
-                    //_controller.Player.PlayerPaused += OnAudioPlayerOnPlayerPaused;
                 }
 
                 VideoElementBorder.Child = VideoElement;
