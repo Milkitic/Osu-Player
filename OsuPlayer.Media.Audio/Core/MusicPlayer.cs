@@ -87,28 +87,11 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                 Volume = 1f * AppSettings.Default.Volume.Music * AppSettings.Default.Volume.Main
             };
 
-
-            //_device.PlaybackStopped += (sender, args) =>
-            //{
-            //    PlayStatus = PlayStatus.Finished;
-            //    RaisePlayerFinishedEvent(this, new EventArgs());
-            //};
             _speedProvider = new VarispeedSampleProvider(_reader, 10,
                 new SoundTouchProfile(AppSettings.Default.Play.PlayUseTempo, false));
             var playbackRate = AppSettings.Default.Play.PlaybackRate;
             _engine.AddRootSample(_speedProvider);
             SetPlaybackRate(playbackRate);
-            //if (Math.Round(playbackRate, 3) - 1 < 0.001)
-            //{
-            //    _engine.AddRootSample(_reader);
-            //    _soundTouchMode = false;
-            //}
-            //else
-            //{
-            //    _engine.AddRootSample(_speedProvider);
-            //    _soundTouchMode = true;
-            //}
-
             SetTime(TimeSpan.Zero, false);
 
             AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
@@ -151,9 +134,8 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                     time >= _reader.TotalTime ? _reader.TotalTime - TimeSpan.FromMilliseconds(1) : time;
                 _speedProvider.Reposition();
             }
-            //PlayStatus = PlayStatus.Playing;
+
             if (!play) PauseWithoutNotify();
-            //else PlayWithoutNotify();
         }
 
         public override void Stop()
@@ -172,20 +154,8 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         internal void SetPlaybackRate(float speed)
         {
-            //if (Math.Abs(speed - 1) < 0.001)
-            //{
-            //    _engine.RemoveRootSample(_speedProvider);
-            //    _engine.AddRootSample(_reader);
-            //    _soundTouchMode = false;
-            //}
-            //else
-            //{
-            //    _engine.RemoveRootSample(_reader);
-            //    _engine.AddRootSample(_speedProvider);
-            //    _soundTouchMode = true;
             _currentSpeed = speed;
             _speedProvider.PlaybackRate = speed;
-            //}
         }
 
         private void PauseWithoutNotify()
@@ -224,19 +194,6 @@ namespace Milky.OsuPlayer.Media.Audio.Core
             _reader.Volume = 1f * AppSettings.Default.Volume.Music * AppSettings.Default.Volume.Main;
         }
 
-        //private void Play_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        //{
-        //    switch (e.PropertyName)
-        //    {
-        //        case nameof(AppSettings.Play.PlayUseTempo):
-        //            SetTempoMode(AppSettings.Default.Play.PlayUseTempo);
-        //            break;
-        //        case nameof(AppSettings.Play.PlaybackRate):
-        //            SetPlaybackRate(AppSettings.Default.Play.PlaybackRate);
-        //            break;
-        //    }
-        //}
-
         internal void ResetWithoutNotify()
         {
             SetTime(TimeSpan.Zero, false);
@@ -248,8 +205,6 @@ namespace Milky.OsuPlayer.Media.Audio.Core
             base.Dispose();
 
             _cts.Cancel();
-            //_device?.Dispose();
-            //_device = null;
             _reader?.Dispose();
             _reader = null;
             _speedProvider?.Dispose();
@@ -257,7 +212,6 @@ namespace Milky.OsuPlayer.Media.Audio.Core
             _cts?.Dispose();
 
             AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
-            //AppSettings.Default.Play.PropertyChanged -= Play_PropertyChanged;
         }
     }
 }

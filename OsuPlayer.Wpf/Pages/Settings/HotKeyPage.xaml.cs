@@ -40,13 +40,13 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            string name = ((TextBox)sender).Name;
-            _mainWindow.OverallKeyHook.ConfigString = name;
+            var type = (HotKeyType)((TextBox)sender).Tag;
+            _mainWindow.OverallKeyHook.ConfigType = type;
         }
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            _mainWindow.OverallKeyHook.ConfigString = null;
+            _mainWindow.OverallKeyHook.ConfigType = null;
             TextBox_KeyUp(sender, null);
         }
 
@@ -95,19 +95,23 @@ namespace Milky.OsuPlayer.Pages.Settings
                 _holdingShift = false;
                 _holdingAlt = false;
             }
-            else switch (e.Key) {
-                case Key.LeftCtrl:
-                case Key.RightCtrl:
-                    _holdingCtrl = false;
-                    break;
-                case Key.LeftShift:
-                case Key.RightShift:
-                    _holdingShift = false;
-                    break;
-                case Key.LeftAlt:
-                case Key.RightAlt:
-                    _holdingAlt = false;
-                    break;
+            else
+            {
+                switch (e.Key)
+                {
+                    case Key.LeftCtrl:
+                    case Key.RightCtrl:
+                        _holdingCtrl = false;
+                        break;
+                    case Key.LeftShift:
+                    case Key.RightShift:
+                        _holdingShift = false;
+                        break;
+                    case Key.LeftAlt:
+                    case Key.RightAlt:
+                        _holdingAlt = false;
+                        break;
+                }
             }
 
             var textBox = (TextBox)sender;
@@ -117,7 +121,7 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private static void GetHotKeyValue(TextBox textBox)
         {
-            var hotKey = AppSettings.Default.HotKeys.First(k => k.Name == textBox.Name);
+            var hotKey = AppSettings.Default.HotKeys.First(k => k.Type == (HotKeyType)textBox.Tag);
             var strList = new List<string>();
 
             if (hotKey.UseControlKey)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -18,7 +19,6 @@ namespace Milky.OsuPlayer.Media.Audio
 
     public sealed class ObservablePlayController : ViewModelBase, IDisposable
     {
-        private ComponentPlayer _player;
         public event Action<PlayStatus> PlayStatusChanged;
         public event Action<TimeSpan, TimeSpan> ProgressUpdated;
 
@@ -47,16 +47,18 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
+        public PlayList PlayList { get; } = new PlayList();
+        public bool IsPlayerReady => Player != null && Player.PlayStatus != PlayStatus.NotInitialized;
+
+        private ComponentPlayer _player;
         private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly AppDbOperator _appDbOperator = new AppDbOperator();
 
-        public PlayList PlayList { get; } = new PlayList();
-        public bool IsPlayerReady => Player != null && Player.PlayStatus != PlayStatus.NotInitialized;
-
         public ObservablePlayController()
         {
             PlayList.AutoSwitched += PlayList_AutoSwitched;
+            PlayList.SongListChanged += PlayList_SongListChanged;
         }
 
         public async Task PlayNewAsync(Beatmap beatmap, bool playInstantly = true)
@@ -293,6 +295,12 @@ namespace Milky.OsuPlayer.Media.Audio
             }
 
             await Task.CompletedTask;
+        }
+
+        private void PlayList_SongListChanged()
+        {
+            AppSettings.Default.CurrentList = new HashSet<MapIdentity>(PlayList.SongList.Select(k => k.GetIdentity()));
+            AppSettings.SaveDefault();
         }
 
         private async Task PlayByControl(PlayControlType control, bool auto)

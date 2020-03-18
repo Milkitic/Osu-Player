@@ -81,18 +81,17 @@ namespace Milky.OsuPlayer.Common.Data
             return op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP, ("folderName", folder)).ToList();
         }
 
-        public static List<Beatmap> GetBeatmapsByIdentifiable<T>(this AppDbOperator op, List<T> reqList)
+        public static List<Beatmap> GetBeatmapsByIdentifiable<T>(this AppDbOperator op, ICollection<T> reqList)
             where T : IMapIdentifiable
         {
             if (reqList.Count < 1) return new List<Beatmap>();
 
-            var args = new ExpandoObject();
-            var expando = (ICollection<KeyValuePair<string, object>>)args;
+            //var args = new ExpandoObject();
+            //var expando = (ICollection<KeyValuePair<string, object>>)args;
 
             var sb = new StringBuilder();
-            for (var i = 0; i < reqList.Count; i++)
+            foreach (var id in reqList)
             {
-                var id = reqList[i];
                 var valueSql = string.Format("('{0}', '{1}', {2}),",
                     id.FolderName.Replace(@"'", @"''"),
                     id.Version.Replace(@"'", @"''"),
@@ -122,7 +121,7 @@ SELECT *
                     beatmap.own = tmp_table.ownDb;
 ";
 
-            return op.ThreadedProvider.GetDbConnection().Query<Beatmap>(sql, args).ToList();
+            return op.ThreadedProvider.GetDbConnection().Query<Beatmap>(sql).ToList();
         }
 
         // todo: to be optimized

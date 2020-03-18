@@ -29,7 +29,7 @@
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
     <d:Object.DataContext>
-        <player:BeatmapDetail />
+        <player:BeatmapContext />
     </d:Object.DataContext>
     <Window.Resources>
         <system:Double x:Key="LabelWidth">110</system:Double>
@@ -74,42 +74,42 @@
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="艺术家：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding ArtistUnicode}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.ArtistUnicode}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="（原始）艺术家：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding Artist}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.ArtistAscii}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="标题：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding TitleUnicode}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.TitleUnicode}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="（原始）标题：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding Title}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.TitleAscii}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="地图作者：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding Creator}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.Creator}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="来源：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding Source}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.Source}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
@@ -120,7 +120,7 @@
                         MaxWidth="270"
                         Padding="0,5,0,0"
                         Style="{StaticResource ReadOnlyTextBox}"
-                        Text="{Binding TagString}"
+                        Text="{Binding BeatmapDetail.Metadata.TagString}"
                         TextWrapping="Wrap" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
@@ -133,7 +133,7 @@
                         Click="SLink_Click"
                         Style="{StaticResource LinkButton}">
                         <TextBlock>
-                            <Run Text="s/" /><Run Text="{Binding BeatmapsetId}" />
+                            <Run Text="s/" /><Run Text="{Binding BeatmapDetail.Metadata.BeatmapsetId}" />
                         </TextBlock>
                     </control:CommonButton>
                     <control:CommonButton
@@ -142,7 +142,7 @@
                         Click="BLink_Click"
                         Style="{StaticResource LinkButton}">
                         <TextBlock>
-                            <Run Text="b/" /><Run Text="{Binding BeatmapId}" />
+                            <Run Text="b/" /><Run Text="{Binding BeatmapDetail.Metadata.BeatmapId}" />
                         </TextBlock>
                     </control:CommonButton>
                 </StackPanel>
@@ -151,7 +151,7 @@
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="星级：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding Stars}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Stars}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
@@ -161,13 +161,13 @@
 
                     <TextBlock VerticalAlignment="Center">
                         <Run Text="HP:" />
-                        <Run Text="{Binding HP}" />
+                        <Run Text="{Binding BeatmapDetail.Metadata.HP}" />
                         <Run Text="CS:" />
-                        <Run Text="{Binding CS}" />
+                        <Run Text="{Binding BeatmapDetail.Metadata.CS}" />
                         <Run Text="AR:" />
-                        <Run Text="{Binding AR}" />
+                        <Run Text="{Binding BeatmapDetail.Metadata.AR}" />
                         <Run Text="OD:" />
-                        <Run Text="{Binding OD}" />
+                        <Run Text="{Binding BeatmapDetail.Metadata.OD}" />
                     </TextBlock>
 
                 </StackPanel>

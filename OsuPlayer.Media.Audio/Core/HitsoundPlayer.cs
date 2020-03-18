@@ -140,7 +140,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         public override void Pause()
         {
             CancelTask(true);
-            PlayTime = PlayTime;
+            //PlayTime = PlayTime;
 
             PlayStatus = PlayStatus.Paused;
             RaisePlayerPausedEvent(this, new ProgressEventArgs(PlayTime, Duration));
@@ -160,7 +160,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         public override void SetTime(TimeSpan time, bool play = true)
         {
-            Pause();
+            if (!play) Pause();
             SetTimePurely(time);
         }
 
@@ -251,16 +251,8 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         {
             var isHitsound = !(this is SampleTrackPlayer);
             _vsw.Restart();
-            var pre = PlayTime.ToString();
             while (_hsQueue.Count > 0 || ComponentPlayer.Current.MusicPlayer.PlayStatus != PlayStatus.Finished)
             {
-                var playTime = PlayTime.ToString();
-                if (pre != playTime)
-                {
-                    //Console.WriteLine(playTime);
-                    pre = playTime;
-                }
-
                 if (_cts.Token.IsCancellationRequested)
                 {
                     _vsw.Stop();
@@ -387,7 +379,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                             preMs = nowMs;
                             var d = nowMs - (PlayTime.TotalMilliseconds + SingleOffset +
                                              _dcOffset); // Single：单曲offset（人工调），PlayTime：音效play time
-                            var r = AppSettings.Default.Play.GeneralOffset - d; // General：全局offset
+                            var r = AppSettings.Default.Play.GeneralActualOffset - d; // General：全局offset
                             if (Math.Abs(r) > 5)
                             {
                                 //Console.WriteLine($@"music: {App.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
@@ -423,6 +415,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         private void CancelTask(bool waitPlayTask)
         {
+            _vsw.Stop();
             _cts?.Cancel();
             if (waitPlayTask && _playingTask != null)
                 Task.WaitAll(_playingTask);

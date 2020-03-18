@@ -186,10 +186,9 @@ namespace Milky.OsuPlayer.Control
 
         private void Controller_LoadStarted(BeatmapContext beatmapCtx, CancellationToken ct)
         {
-            LblNow.Visibility = Visibility.Hidden;
-            LblTotal.Visibility = Visibility.Hidden;
-            LblNowFake.Visibility = Visibility.Visible;
-            LblTotalFake.Visibility = Visibility.Visible;
+            var zero = TimeSpan.Zero.ToString(@"mm\:ss");
+            LblNow.Content = zero;
+            LblTotal.Content = zero;
             PlayProgress.Maximum = 1;
             PlayProgress.Value = 0;
         }
@@ -204,16 +203,14 @@ namespace Milky.OsuPlayer.Control
         private void Controller_MusicLoaded(BeatmapContext beatmapCtx, CancellationToken ct)
         {
             VolumeControl.HitsoundOffset = beatmapCtx.BeatmapSettings.Offset;
-            PlayProgress.Maximum = _controller.Player.Duration.TotalMilliseconds;
+
             PlayProgress.Value = 0;
+            PlayProgress.Maximum = _controller.Player.Duration.TotalMilliseconds;
+            LblTotal.Content = _controller.Player.PlayTime.ToString(@"mm\:ss");
         }
 
         private void Controller_LoadFinished(BeatmapContext beatmapCtx, CancellationToken ct)
         {
-            LblNow.Visibility = Visibility.Visible;
-            LblTotal.Visibility = Visibility.Visible;
-            LblNowFake.Visibility = Visibility.Hidden;
-            LblTotalFake.Visibility = Visibility.Hidden;
         }
 
         #region Event handler

@@ -99,6 +99,7 @@
     <Compile Include="Notification.cs" />
     <Compile Include="NotificationOption.cs" />
     <Compile Include="NotificationType.cs" />
+    <Compile Include="Player\BeatmapContext.cs" />
     <Compile Include="Player\PlayControlType.cs" />
     <Compile Include="Player\PlayControlResult.cs" />
     <Compile Include="Player\PlayList.cs" />

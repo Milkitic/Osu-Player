@@ -78,24 +78,17 @@ namespace Milky.OsuPlayer.Windows
 
         private void TryBindHotKeys()
         {
-            var page = new Pages.Settings.HotKeyPage();
-            OverallKeyHook.AddKeyHook(page.PlayPause.Name, () => { _controller.Player.TogglePlay(); });
-            OverallKeyHook.AddKeyHook(page.Previous.Name, () =>
+            OverallKeyHook.AddKeyHook(HotKeyType.TogglePlay, () => { _controller.Player.TogglePlay(); });
+            OverallKeyHook.AddKeyHook(HotKeyType.PrevSong, async () => { await _controller.PlayPrevAsync(); });
+            OverallKeyHook.AddKeyHook(HotKeyType.NextSong, async () => { await _controller.PlayNextAsync(); });
+            OverallKeyHook.AddKeyHook(HotKeyType.VolumeUp, () => { AppSettings.Default.Volume.Main += 0.05f; });
+            OverallKeyHook.AddKeyHook(HotKeyType.VolumeDown, () => { AppSettings.Default.Volume.Main -= 0.05f; });
+            OverallKeyHook.AddKeyHook(HotKeyType.SwitchFullMiniMode, () => { TriggerMiniWindow(); });
+            OverallKeyHook.AddKeyHook(HotKeyType.AddCurrentToFav, () =>
             {
                 //TODO
             });
-            OverallKeyHook.AddKeyHook(page.Next.Name, async () => { await _controller.PlayNextAsync(); });
-            OverallKeyHook.AddKeyHook(page.VolumeUp.Name, () => { AppSettings.Default.Volume.Main += 0.05f; });
-            OverallKeyHook.AddKeyHook(page.VolumeDown.Name, () => { AppSettings.Default.Volume.Main -= 0.05f; });
-            OverallKeyHook.AddKeyHook(page.FullMini.Name, () =>
-            {
-                //TODO
-            });
-            OverallKeyHook.AddKeyHook(page.AddToFav.Name, () =>
-            {
-                //TODO
-            });
-            OverallKeyHook.AddKeyHook(page.Lyric.Name, () =>
+            OverallKeyHook.AddKeyHook(HotKeyType.SwitchLyricWindow, () =>
             {
                 if (LyricWindow.IsShown)
                     LyricWindow.Hide();
@@ -397,26 +390,8 @@ namespace Milky.OsuPlayer.Windows
                 return;
             }
 
-            //if (!ViewModel.IsMiniMode)
             FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
                 DialogOptionFactory.SelectCollectionOptions);
-            //FramePop.Navigate(new SelectCollectionPage(entry));
-            //else
-            //{
-            //    var collection = _appDbOperator.GetCollections().First(k => k.Locked);
-            //    if (Services.Get<PlayerList>().CurrentInfo.IsFavorite)
-            //    {
-            //        _appDbOperator.RemoveMapFromCollection(entry, collection);
-            //        Services.Get<PlayerList>().CurrentInfo.IsFavorite = false;
-            //    }
-            //    else
-            //    {
-            //        await SelectCollectionPage.AddToCollectionAsync(collection, new[] { entry });
-            //        Services.Get<PlayerList>().CurrentInfo.IsFavorite = true;
-            //    }
-            //}
-
-            //IsMapFavorite(Services.Get<PlayerList>().CurrentInfo.Identity);
         }
 
         #endregion Events

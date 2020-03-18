@@ -76,6 +76,7 @@ namespace Milky.OsuPlayer.Media.Audio
             FileInfo fileInfo = new FileInfo(_filePath);
             DirectoryInfo dirInfo = fileInfo.Directory;
             FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, OsuFile.General.AudioFilename));
+
             MusicPlayer = new MusicPlayer(_engine, _outputDevice, musicInfo.FullName);
             await MusicPlayer.InitializeAsync();
 
@@ -151,14 +152,7 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             HitsoundPlayer.SetTime(time, play);
             SampleTrackPlayer.SetTime(time, play);
-            if (play)
-            {
-                MusicPlayer.SetTime(time);
-                HitsoundPlayer.Play();
-                SampleTrackPlayer.Play();
-            }
-            else
-                MusicPlayer.SetTime(time, false);
+            MusicPlayer.SetTime(time, play);
         }
 
         public void SetPlayMod(PlayMod mod)

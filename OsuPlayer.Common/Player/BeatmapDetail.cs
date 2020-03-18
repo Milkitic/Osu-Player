@@ -12,8 +12,33 @@ namespace Milky.OsuPlayer.Common.Player
         public class MetaDetail : ViewModelBase
         {
             private List<string> _tags;
-            public MetaString Artist { get; set; }
-            public MetaString Title { get; set; }
+            private MetaString _artist;
+            private MetaString _title;
+
+            public MetaString Artist
+            {
+                get => _artist;
+                set
+                {
+                    if (value.Equals(_artist)) return;
+                    _artist = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(ArtistAuto));
+                }
+            }
+
+            public MetaString Title
+            {
+                get => _title;
+                set
+                {
+                    if (value.Equals(_title)) return;
+                    _title = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(TitleAuto));
+                }
+            }
+
             public string Creator { get; set; }
             public string Version { get; set; }
             public string Source { get; set; }
@@ -45,6 +70,10 @@ namespace Milky.OsuPlayer.Common.Player
 
             public string ArtistAuto => Artist.ToPreferredString();
             public string TitleAuto => Title.ToPreferredString();
+            public string ArtistAscii => Artist.ToOriginalString();
+            public string ArtistUnicode => Artist.ToUnicodeString();
+            public string TitleAscii => Title.ToOriginalString();
+            public string TitleUnicode => Title.ToUnicodeString();
         }
 
         public MetaDetail Metadata { get; } = new MetaDetail();

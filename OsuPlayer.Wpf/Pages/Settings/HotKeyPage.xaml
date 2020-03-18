@@ -2,6 +2,7 @@
     x:Class="Milky.OsuPlayer.Pages.Settings.HotKeyPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:configuration="clr-namespace:Milky.OsuPlayer.Common.Configuration;assembly=OsuPlayer.Common"
     xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Pages.Settings"
@@ -12,7 +13,21 @@
     FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
-
+    <Page.Resources>
+        <Style BasedOn="{StaticResource {x:Type control:CommonTextBox}}" TargetType="control:CommonTextBox">
+            <Setter Property="Width" Value="150" />
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="Padding" Value="1,0" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="IsReadOnly" Value="True" />
+            <EventSetter Event="GotFocus" Handler="TextBox_GotFocus" />
+            <EventSetter Event="KeyDown" Handler="TextBox_Keydown" />
+            <EventSetter Event="KeyUp" Handler="TextBox_KeyUp" />
+            <EventSetter Event="LostFocus" Handler="TextBox_LostFocus" />
+        </Style>
+    </Page.Resources>
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
@@ -90,125 +105,37 @@
                         </TextBlock>
                     </Label>
                     <control:CommonTextBox
-                        x:Name="PlayPause"
                         Grid.Row="0"
                         Grid.Column="1"
-                        Width="150"
-                        Margin="2"
-                        Padding="1,0"
-                        HorizontalAlignment="Left"
-                        Background="White"
-                        CornerRadius="5"
-                        GotFocus="TextBox_GotFocus"
-                        IsReadOnly="True"
-                        KeyDown="TextBox_Keydown"
-                        KeyUp="TextBox_KeyUp"
-                        LostFocus="TextBox_LostFocus" />
+                        Tag="{x:Static configuration:HotKeyType.TogglePlay}" />
                     <control:CommonTextBox
-                        x:Name="Previous"
                         Grid.Row="1"
                         Grid.Column="1"
-                        Width="150"
-                        Margin="2"
-                        Padding="1,0"
-                        HorizontalAlignment="Left"
-                        Background="White"
-                        CornerRadius="5"
-                        GotFocus="TextBox_GotFocus"
-                        IsReadOnly="True"
-                        KeyDown="TextBox_Keydown"
-                        KeyUp="TextBox_KeyUp"
-                        LostFocus="TextBox_LostFocus" />
+                        Tag="{x:Static configuration:HotKeyType.PrevSong}" />
                     <control:CommonTextBox
-                        x:Name="Next"
                         Grid.Row="2"
                         Grid.Column="1"
-                        Width="150"
-                        Margin="2"
-                        Padding="1,0"
-                        HorizontalAlignment="Left"
-                        Background="White"
-                        CornerRadius="5"
-                        GotFocus="TextBox_GotFocus"
-                        IsReadOnly="True"
-                        KeyDown="TextBox_Keydown"
-                        KeyUp="TextBox_KeyUp"
-                        LostFocus="TextBox_LostFocus" />
+                        Tag="{x:Static configuration:HotKeyType.NextSong}" />
                     <control:CommonTextBox
-                        x:Name="VolumeUp"
                         Grid.Row="3"
                         Grid.Column="1"
-                        Width="150"
-                        Margin="2"
-                        Padding="1,0"
-                        HorizontalAlignment="Left"
-                        Background="White"
-                        CornerRadius="5"
-                        GotFocus="TextBox_GotFocus"
-                        IsReadOnly="True"
-                        KeyDown="TextBox_Keydown"
-                        KeyUp="TextBox_KeyUp"
-                        LostFocus="TextBox_LostFocus" />
+                        Tag="{x:Static configuration:HotKeyType.VolumeUp}" />
                     <control:CommonTextBox
-                        x:Name="VolumeDown"
                         Grid.Row="4"
                         Grid.Column="1"
-                        Width="150"
-                        Margin="2"
-                        Padding="1,0"
-                        HorizontalAlignment="Left"
-                        Background="White"
-                        CornerRadius="5"
-                        GotFocus="TextBox_GotFocus"
-                        IsReadOnly="True"
-                        KeyDown="TextBox_Keydown"
-                        KeyUp="TextBox_KeyUp"
-                        LostFocus="TextBox_LostFocus" />
+                        Tag="{x:Static configuration:HotKeyType.VolumeDown}" />
                     <control:CommonTextBox
-                        x:Name="FullMini"
                         Grid.Row="5"
                         Grid.Column="1"
-                        Width="150"
-                        Margin="2"
-                        Padding="1,0"
-                        HorizontalAlignment="Left"
-                        Background="White"
-                        CornerRadius="5"
-                        GotFocus="TextBox_GotFocus"
-                        IsReadOnly="True"
-                        KeyDown="TextBox_Keydown"
-                        KeyUp="TextBox_KeyUp"
-                        LostFocus="TextBox_LostFocus" />
+                        Tag="{x:Static configuration:HotKeyType.SwitchFullMiniMode}" />
                     <control:CommonTextBox
-                        x:Name="AddToFav"
                         Grid.Row="6"
                         Grid.Column="1"
-                        Width="150"
-                        Margin="2"
-                        Padding="1,0"
-                        HorizontalAlignment="Left"
-                        Background="White"
-                        CornerRadius="5"
-                        GotFocus="TextBox_GotFocus"
-                        IsReadOnly="True"
-                        KeyDown="TextBox_Keydown"
-                        KeyUp="TextBox_KeyUp"
-                        LostFocus="TextBox_LostFocus" />
+                        Tag="{x:Static configuration:HotKeyType.AddCurrentToFav}" />
                     <control:CommonTextBox
-                        x:Name="Lyric"
                         Grid.Row="7"
                         Grid.Column="1"
-                        Width="150"
-                        Margin="2"
-                        Padding="1,0"
-                        HorizontalAlignment="Left"
-                        Background="White"
-                        CornerRadius="5"
-                        GotFocus="TextBox_GotFocus"
-                        IsReadOnly="True"
-                        KeyDown="TextBox_Keydown"
-                        KeyUp="TextBox_KeyUp"
-                        LostFocus="TextBox_LostFocus" />
+                        Tag="{x:Static configuration:HotKeyType.SwitchLyricWindow}" />
                 </Grid>
             </StackPanel>
         </ScrollViewer>

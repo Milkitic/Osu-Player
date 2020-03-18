@@ -5,75 +5,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.WpfApi;
-using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Common.Player
 {
-    public class BeatmapContext
-    {
-        private BeatmapContext(Beatmap beatmap)
-        {
-            Beatmap = beatmap;
-            BeatmapDetail = new BeatmapDetail(beatmap);
-        }
-
-        private static AppDbOperator _operator = new AppDbOperator();
-
-        public static async Task<BeatmapContext> CreateAsync(Beatmap beatmap)
-        {
-            return new BeatmapContext(beatmap)
-            {
-                BeatmapSettings = _operator.GetMapFromDb(beatmap.GetIdentity()),
-            };
-        }
-
-        public bool FullLoaded { get; set; } = false;
-        public Beatmap Beatmap { get; }
-        public BeatmapSettings BeatmapSettings { get; private set; }
-        public BeatmapDetail BeatmapDetail { get; }
-        public OsuFile OsuFile { get; set; }
-        public bool PlayInstantly { get; set; }
-        public Action PlayHandle { get; set; }
-        public Action PauseHandle { get; set; }
-        public Action StopHandle { get; set; }
-        public Action<double, bool> SetTimeHandle { get; set; }
-
-        public static bool operator ==(BeatmapContext bc1, BeatmapContext bc2)
-        {
-            return Equals(bc1, bc2);
-        }
-
-        public static bool operator !=(BeatmapContext bc1, BeatmapContext bc2)
-        {
-            return !(bc1 == bc2);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is null)
-                return false;
-            if (!(obj is BeatmapContext bc))
-                return false;
-            return Equals(bc);
-        }
-
-        protected bool Equals(BeatmapContext other)
-        {
-            return Equals(Beatmap, other.Beatmap);
-        }
-
-        public override int GetHashCode()
-        {
-            return Beatmap != null ? Beatmap.GetHashCode() : 0;
-        }
-    }
-
     public class PlayList : ViewModelBase
     {
+        public event Action SongListChanged;
         public event Func<PlayControlResult, Beatmap, bool, Task> AutoSwitched;
 
         public PlayList()
@@ -83,7 +22,17 @@ namespace Milky.OsuPlayer.Common.Player
             //PlayerMixer = new ObservablePlayerMixer(this);
         }
 
-        public ObservableCollection<Beatmap> SongList { get; set; }
+        public ObservableCollection<Beatmap> SongList
+        {
+            get => _songList;
+            set
+            {
+                if (Equals(value, _songList)) return;
+                _songList = value;
+                SongListChanged?.Invoke();
+                OnPropertyChanged();
+            }
+        }
 
         public BeatmapContext CurrentInfo
         {
@@ -107,8 +56,6 @@ namespace Milky.OsuPlayer.Common.Player
             }
         }
 
-        //public ObservablePlayerMixer PlayerMixer { get; private set; }
-
         public PlayMode PlayMode
         {
             get => _playMode;
@@ -129,13 +76,6 @@ namespace Milky.OsuPlayer.Common.Player
             }
         }
 
-        private Func<int, int> _temporaryPointerChanged;
-
-        private PlayMode _playMode;
-        private int _indexPointer = -1;
-        private List<int> _songIndexList = new List<int>();
-        private BeatmapContext _currentInfo;
-        private BeatmapContext _preInfo;
         public int IndexPointer
         {
             get => _indexPointer;
@@ -166,6 +106,14 @@ namespace Milky.OsuPlayer.Common.Player
         private bool IsRandom => _playMode == PlayMode.Random || _playMode == PlayMode.LoopRandom;
         private bool IsLoop => _playMode == PlayMode.Loop || _playMode == PlayMode.LoopRandom;
 
+        private Func<int, int> _temporaryPointerChanged;
+        private PlayMode _playMode;
+        private int _indexPointer = -1;
+        private List<int> _songIndexList = new List<int>();
+        private BeatmapContext _currentInfo;
+        private BeatmapContext _preInfo;
+        private ObservableCollection<Beatmap> _songList;
+
         /// <summary>
         /// 播放列表替换
         /// </summary>
@@ -185,7 +133,7 @@ namespace Milky.OsuPlayer.Common.Player
                 : new PlayControlResult(PlayControlResult.PlayControlStatus.Keep,
                     PlayControlResult.PointerControlStatus.Keep); // 这里可能混入空/不空的情况
 
-            OnPropertyChanged(nameof(SongList));
+            //OnPropertyChanged(nameof(SongList));
             return result;
         }
 
@@ -334,6 +282,7 @@ namespace Milky.OsuPlayer.Common.Player
         // 如果随机，改变集合是否重排？
         private void SongList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
+            SongListChanged?.Invoke();
             if ((e.NewItems?.Count ?? 0) + (e.OldItems?.Count ?? 0) > 1 || _temporaryPointerChanged != null ||
                 SongList.Count == 0)
             {
