@@ -12,6 +12,7 @@ using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Metadata;
+using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Utils
 {
@@ -77,74 +78,65 @@ namespace Milky.OsuPlayer.Utils
                     yield return f;
                 }
             }
-
-            //foreach (string d in subDirs)
-            //{
-            //    var subFiles = EnumerateFiles(d, extName);
-            //    foreach (var subFile in subFiles)
-            //    {
-            //        yield return subFile;
-            //    }
-            //}
         }
 
-        private static readonly object CountLock = new object();
-        private static int _thumbCount;
+        private static readonly SemaphoreSlim Lock = new SemaphoreSlim(5);
 
         public static async Task<string> GetThumbByBeatmapDbId(BeatmapDataModel dataModel)
         {
-            if (_appDbOperator.GetMapThumb(dataModel.BeatmapDbId, out var path) && path != null)
+            return await Task.Run(async () =>
             {
-                return path;
-            }
-
-            var osuFilePath = dataModel.InOwnDb
-                ? Path.Combine(Domain.CustomSongPath, dataModel.FolderName, dataModel.BeatmapFileName)
-                : Path.Combine(Domain.OsuSongPath, dataModel.FolderName, dataModel.BeatmapFileName);
-
-            if (!File.Exists(osuFilePath))
-            {
-                return null;
-            }
-
-            //lock (CountLock)
-            //{
-            //    _thumbCount++;
-            //}
-
-            var osuFile = await OSharp.Beatmap.OsuFile.ReadFromFileAsync(@"\\?\" + osuFilePath, options =>
+                await Lock.WaitAsync();
+                try
                 {
-                    options.IncludeSection("Events");
-                    options.IgnoreSample();
-                    options.IgnoreStoryboard();
-                })
-                .ConfigureAwait(false);
-            var guidStr = Guid.NewGuid().ToString();
+                    if (_appDbOperator.GetMapThumb(dataModel.BeatmapDbId, out var path) && path != null)
+                    {
+                        if (File.Exists(path)) return path;
+                    }
 
-            //lock (CountLock)
-            //{
-            //    _thumbCount--;
-            //}
+                    var osuFilePath = dataModel.InOwnDb
+                        ? Path.Combine(Domain.CustomSongPath, dataModel.FolderName, dataModel.BeatmapFileName)
+                        : Path.Combine(Domain.OsuSongPath, dataModel.FolderName, dataModel.BeatmapFileName);
 
-            var sourceBgFile = osuFile.Events?.BackgroundInfo?.Filename;
-            if (string.IsNullOrWhiteSpace(sourceBgFile))
-            {
-                _appDbOperator.SetMapThumb(dataModel.BeatmapDbId, null);
-                return null;
-            }
+                    if (!File.Exists(osuFilePath))
+                    {
+                        return null;
+                    }
 
-            var sourceBgPath = dataModel.InOwnDb
-                ? Path.Combine(Domain.CustomSongPath, dataModel.FolderName, sourceBgFile)
-                : Path.Combine(Domain.OsuSongPath, dataModel.FolderName, sourceBgFile);
-            if (!File.Exists(sourceBgPath))
-            {
-                //_appDbOperator.SetMapThumb(dataModel.BeatmapDbId, null);
-                return null;
-            }
+                    var osuFile = await OsuFile.ReadFromFileAsync(@"\\?\" + osuFilePath, options =>
+                        {
+                            options.IncludeSection("Events");
+                            options.IgnoreSample();
+                            options.IgnoreStoryboard();
+                        })
+                        .ConfigureAwait(false);
+                    var guidStr = Guid.NewGuid().ToString();
 
-            ResizeImageAndSave(sourceBgPath, guidStr, height: 200);
-            _appDbOperator.SetMapThumb(dataModel.BeatmapDbId, guidStr);
-            return guidStr;
+                    var sourceBgFile = osuFile.Events?.BackgroundInfo?.Filename;
+                    if (string.IsNullOrWhiteSpace(sourceBgFile))
+                    {
+                        _appDbOperator.SetMapThumb(dataModel.BeatmapDbId, null);
+                        return null;
+                    }
+
+                    var sourceBgPath = dataModel.InOwnDb
+                        ? Path.Combine(Domain.CustomSongPath, dataModel.FolderName, sourceBgFile)
+                        : Path.Combine(Domain.OsuSongPath, dataModel.FolderName, sourceBgFile);
+                    if (!File.Exists(sourceBgPath))
+                    {
+                        //_appDbOperator.SetMapThumb(dataModel.BeatmapDbId, null);
+                        return null;
+                    }
+
+                    ResizeImageAndSave(sourceBgPath, guidStr, height: 200);
+                    _appDbOperator.SetMapThumb(dataModel.BeatmapDbId, guidStr);
+                    return guidStr;
+                }
+                finally
+                {
+                    Lock.Release();
+                }
+            });
         }
 
         private static void ResizeImageAndSave(string sourcePath, string targetName, int width = 0, int height = 0)
