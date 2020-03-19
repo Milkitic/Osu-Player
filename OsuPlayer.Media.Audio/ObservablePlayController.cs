@@ -233,19 +233,20 @@ namespace Milky.OsuPlayer.Media.Audio
                 LoadFinished?.Invoke(context, _cts.Token);
                 AppSettings.Default.CurrentMap = beatmap.GetIdentity();
                 AppSettings.SaveDefault();
+                if (!isReading) _readLock.Release();
             }
             catch (Exception ex)
             {
                 Notification.Push(@"发生未处理的错误：" + (ex.InnerException?.Message ?? ex?.Message));
 
+                if (!isReading) _readLock.Release();
                 if (Player.PlayStatus != PlayStatus.Playing)
                 {
-                    await PlayByControl(PlayControlType.Next, true);
+                    await PlayByControl(PlayControlType.Next, false);
                 }
             }
             finally
             {
-                if (!isReading) _readLock.Release();
                 _appDbOperator.UpdateMap(context.Beatmap.GetIdentity());
             }
         }
