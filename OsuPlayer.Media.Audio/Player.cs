@@ -15,6 +15,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private static readonly SynchronizationContext UiContext;
         private PlayStatus _playStatus;
 
+        protected abstract string Flag { get; }
         public event Action<PlayStatus> PlayStatusChanged;
         public event EventHandler PlayerLoaded;
         public event EventHandler<ProgressEventArgs> PlayerStarted;
@@ -55,6 +56,7 @@ namespace Milky.OsuPlayer.Media.Audio
             protected set
             {
                 if (Equals(value, _playStatus)) return;
+                Console.WriteLine(Flag + ": " + value);
                 _playStatus = value;
                 PlayStatusChanged?.Invoke(value);
             }

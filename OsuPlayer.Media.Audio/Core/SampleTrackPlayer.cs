@@ -9,7 +9,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 {
     internal class SampleTrackPlayer : HitsoundPlayer
     {
-        protected override string Flag { get; } = "SampleTrack";
+        protected override string Flag { get; } = nameof(SampleTrackPlayer);
 
         public SampleTrackPlayer(AudioPlaybackEngine engine, string filePath, OsuFile osuFile) : base(engine, filePath, osuFile)
         {

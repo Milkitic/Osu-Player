@@ -15,7 +15,7 @@ namespace Milky.OsuPlayer.Common.Configuration
 
     public class InterfaceControl : ViewModelBase
     {
-        private bool _minimalMode = false;
+        private bool _minimalMode;
 
         public bool MinimalMode
         {

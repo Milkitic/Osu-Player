@@ -263,6 +263,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private async void Player_PlayStatusChanged(PlayStatus obj)
         {
             PlayStatusChanged?.Invoke(obj);
+            SharedVm.Default.IsPlaying = obj == PlayStatus.Playing;
             if (obj == PlayStatus.Finished) await PlayByControl(PlayControlType.Next, true);
         }
 

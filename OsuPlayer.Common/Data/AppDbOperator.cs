@@ -3,7 +3,6 @@ using Milky.OsuPlayer.Common.Data.Dapper;
 using Milky.OsuPlayer.Common.Data.Dapper.Provider;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
-using Milky.OsuPlayer.Common.Player;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

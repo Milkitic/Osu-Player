@@ -1,5 +1,4 @@
 ﻿using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.WpfApi;
 using System.Collections.Generic;
 using Milky.OsuPlayer.Common.Data;

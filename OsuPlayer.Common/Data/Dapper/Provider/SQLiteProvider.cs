@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SQLite;
-using System.Dynamic;
 using System.Linq;
-using System.Text;
 using Dapper;
 
 namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
@@ -34,10 +32,10 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
                 var list = dbConnection.Query<string>(sqlStr).ToList();
                 return list;
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
                 throw new Exception($"从数据库中获取数据出错：\r\n" +
-                                    $"数据库执行语句：{sqlStr}", exc);
+                                    $"数据库执行语句：{sqlStr}", ex);
             }
         }
 
@@ -52,10 +50,10 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
 
                 return list.Select(o => (string)o.name).ToList();
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
                 throw new Exception($"获取数据表{tableName}中字段名出错：\r\n" +
-                                    $"数据库执行语句：{sqlStr}", exc);
+                                    $"数据库执行语句：{sqlStr}", ex);
             }
         }
 

@@ -1,8 +1,6 @@
-﻿using Milky.OsuPlayer.Common.Data.EF;
-using Milky.OsuPlayer.Common.Data.EF.Model;
+﻿using Milky.OsuPlayer.Common.Data.EF.Model;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;
-using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;

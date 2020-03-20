@@ -68,12 +68,15 @@ namespace Milky.OsuPlayer.Control
 
         private void Player_PlayStatusChanged(PlayStatus obj)
         {
-            if (VideoElement.Source is null) return;
+            Execute.OnUiThread(() =>
+            {
+                if (VideoElement.Source is null) return;
 
-            if (obj == PlayStatus.Playing)
-                VideoElement.Pause();
-            else if (obj == PlayStatus.Finished || obj == PlayStatus.Paused || obj == PlayStatus.Stopped)
-                VideoElement.Play();
+                if (obj == PlayStatus.Playing)
+                    VideoElement.Pause();
+                else if (obj == PlayStatus.Finished || obj == PlayStatus.Paused || obj == PlayStatus.Stopped)
+                    VideoElement.Play();
+            });
         }
 
         private async void Controller_LoadStarted(BeatmapContext arg1, CancellationToken arg2)
@@ -229,59 +232,6 @@ namespace Milky.OsuPlayer.Control
                 Execute.OnUiThread(BindVideoElement);
             }
 
-            async void OnMediaOpened(object sender, MediaOpenedEventArgs e)
-            {
-                VideoElementBorder.Visibility = Visibility.Visible;
-                if (!SharedVm.Default.EnableVideo)
-                    return;
-                await _waitTask;
-
-                if (VideoElement == null/* || VideoElement.IsDisposed*/)
-                    return;
-                if (_controller.PlayList.CurrentInfo.PlayInstantly)
-                {
-                    await VideoElement.Play();
-                    VideoElement.Position = _initialVideoPosition;
-                }
-            }
-
-            async void OnMediaFailed(object sender, MediaFailedEventArgs e)
-            {
-                VideoElementBorder.Visibility = Visibility.Hidden;
-                //MsgBox.Show(this, e.ErrorException.ToString(), "不支持的视频格式", MessageBoxButton.OK, MessageBoxImage.Error);
-                if (!SharedVm.Default.EnableVideo)
-                    return;
-                await SafelyRecreateVideoElement(false);
-                _controller.Player.TogglePlay();
-            }
-
-            void OnMediaEnded(object sender, EventArgs e)
-            {
-                if (VideoElement == null /*|| VideoElement.IsDisposed*/)
-                    return;
-                //VideoElement.Position = TimeSpan.Zero;
-            }
-
-            void OnSeekingStarted(object sender, EventArgs e)
-            { }
-
-            void OnSeekingEnded(object sender, EventArgs e)
-            {
-                if (!SharedVm.Default.EnableVideo)
-                    return;
-                _controller.Player.SetTime(VideoElement.Position - TimeSpan.FromMilliseconds(_videoOffset), false);
-                if (_playAfterSeek)
-                {
-                    _controller.Player.Play();
-                    VideoElement.Play();
-                }
-                else
-                {
-                    _controller.Player.Pause();
-                    VideoElement.Pause();
-                }
-            }
-
             void BindVideoElement()
             {
                 VideoElement.Position = TimeSpan.Zero;
@@ -315,21 +265,55 @@ namespace Milky.OsuPlayer.Control
 
                 VideoElementBorder.Child = VideoElement;
             }
-
-            //void OnAudioPlayerOnPlayerPaused(object sender, ProgressEventArgs e)
-            //{
-            //    //VideoElement.Pause();
-            //}
-
-            //void OnAudioPlayerOnPlayerStarted(object sender, ProgressEventArgs e)
-            //{
-            //    //VideoElement.Play();
-            //}
         }
 
-        public void StartScene(Action action)
+        private void OnSeekingStarted(object sender, EventArgs e)
         {
-            action?.Invoke();
+        }
+
+        private void OnSeekingEnded(object sender, EventArgs e)
+        {
+            if (!SharedVm.Default.EnableVideo) return;
+            _controller.Player.SetTime(VideoElement.Position - TimeSpan.FromMilliseconds(_videoOffset), false);
+            if (_playAfterSeek)
+            {
+                _controller.Player.Play();
+                VideoElement.Play();
+            }
+            else
+            {
+                _controller.Player.Pause();
+                VideoElement.Pause();
+            }
+        }
+
+        private async void OnMediaOpened(object sender, MediaOpenedEventArgs e)
+        {
+            VideoElementBorder.Visibility = Visibility.Visible;
+            if (!SharedVm.Default.EnableVideo) return;
+            await _waitTask;
+
+            if (VideoElement == null /* || VideoElement.IsDisposed*/) return;
+            if (_controller.PlayList.CurrentInfo.PlayInstantly)
+            {
+                await VideoElement.Play();
+                VideoElement.Position = _initialVideoPosition;
+            }
+        }
+
+        private async void OnMediaFailed(object sender, MediaFailedEventArgs e)
+        {
+            VideoElementBorder.Visibility = Visibility.Hidden;
+            //MsgBox.Show(this, e.ErrorException.ToString(), "不支持的视频格式", MessageBoxButton.OK, MessageBoxImage.Error);
+            if (!SharedVm.Default.EnableVideo) return;
+            await SafelyRecreateVideoElement(false);
+            _controller.Player.TogglePlay();
+        }
+
+        private void OnMediaEnded(object sender, EventArgs e)
+        {
+            if (VideoElement == null /*|| VideoElement.IsDisposed*/) return;
+            //VideoElement.Position = TimeSpan.Zero;
         }
     }
 }

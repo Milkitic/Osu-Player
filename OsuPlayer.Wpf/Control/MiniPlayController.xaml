@@ -5,11 +5,11 @@
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
     xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    FontFamily="{StaticResource SspRegular}"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="80"
     d:DesignWidth="300"
+    FontFamily="{StaticResource SspRegular}"
     Initialized="UserControl_Initialized"
     Loaded="UserControl_Loaded"
     mc:Ignorable="d">
@@ -35,7 +35,7 @@
             <Image
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                Source="{Binding PlayerList.CurrentInfo.BgPath}"
+                Source="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.BackgroundPath}"
                 Stretch="UniformToFill" />
         </Border>
         <Rectangle
@@ -100,7 +100,7 @@
                 Click="CommonButton_Click"
                 IconMargin="0"
                 IconSize="18"
-                IconTemplate="{Binding Shared.Controller.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}"
+                IconTemplate="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}"
                 MouseDownBackground="#80D0D0D0"
                 MouseOverBackground="#80E0E0E0"
                 WindowChrome.IsHitTestVisibleInChrome="True" />
@@ -138,7 +138,7 @@
                 Foreground="#FF646C77"
                 IconMargin="0"
                 IconSize="13"
-                IconTemplate="{Binding PlayerList.PlayerMode, Converter={StaticResource PlayModeConverter}, ConverterParameter=S}"
+                IconTemplate="{Binding Controller.PlayList.PlayMode, Converter={StaticResource PlayModeConverter}, ConverterParameter=S}"
                 MouseDownBackground="#80D0D0D0"
                 MouseOverBackground="#80E0E0E0"
                 WindowChrome.IsHitTestVisibleInChrome="True" />
@@ -236,9 +236,9 @@
             Margin="0,0,0,3"
             HorizontalAlignment="Center"
             Foreground="#303030">
-            <Run Text="{Binding PlayerList.CurrentInfo.TitleAuto, Mode=OneWay}" />
+            <Run Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.TitleAuto, Mode=OneWay}" />
             <Run Text="-" />
-            <Run Foreground="#484848" Text="{Binding PlayerList.CurrentInfo.ArtistAuto, Mode=OneWay}" />
+            <Run Foreground="#484848" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.ArtistAuto, Mode=OneWay}" />
         </TextBlock>
         <Canvas
             x:Name="ProgressBar"

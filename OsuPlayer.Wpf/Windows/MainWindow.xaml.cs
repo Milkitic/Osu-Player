@@ -1,32 +1,23 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
+using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Common.Scanning;
 using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Instances;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
+using OSharp.Beatmap;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Scanning;
-using Milky.OsuPlayer.Control.FrontDialog;
-using Milky.OsuPlayer.Control.Notification;
-using Milky.OsuPlayer.Instances;
-using Milky.OsuPlayer.Media.Audio;
-using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -40,7 +31,7 @@ namespace Milky.OsuPlayer.Windows
         public readonly LyricWindow LyricWindow;
         public ConfigWindow ConfigWindow;
         public readonly OverallKeyHook OverallKeyHook;
-        public bool ForceExit = false;
+        private bool ForceExit = false;
 
         private WindowState _lastState;
 
@@ -97,16 +88,6 @@ namespace Milky.OsuPlayer.Windows
             });
         }
 
-        //private void WindowBase_Deactivated(object sender, EventArgs e)
-        //{
-        //    PlayController.Default.PopPlayList.IsOpen = false;
-        //}
-
-        //private void ButtonBase_Click(object sender, RoutedEventArgs e)
-        //{
-        //    PlayController.Default.PopPlayList.IsOpen = false;
-        //}
-
         /// <summary>
         /// Update collections in the navigation bar.
         /// </summary>
@@ -115,20 +96,6 @@ namespace Milky.OsuPlayer.Windows
             var list = _appDbOperator.GetCollections();
             list.Reverse();
             ViewModel.Collection = new ObservableCollection<Collection>(list);
-        }
-
-        private bool IsMapFavorite(BeatmapSettings settings)
-        {
-            var album = _appDbOperator.GetCollectionsByMap(settings);
-            bool isFavorite = album != null && album.Any(k => k.LockedBool);
-
-            return isFavorite;
-        }
-
-        private bool IsMapFavorite(MapIdentity identity)
-        {
-            var info = _appDbOperator.GetMapFromDb(identity);
-            return IsMapFavorite(info);
         }
 
         /// <summary>
@@ -274,24 +241,19 @@ namespace Milky.OsuPlayer.Windows
             _lastState = WindowState;
         }
 
-        private void Animation_Loaded(object sender, RoutedEventArgs e)
+        private async void Animation_Loaded(object sender, RoutedEventArgs e)
         {
             if (AppSettings.Default.CurrentMap == null || !AppSettings.Default.Play.Memory)
-            {
                 return;
-            }
 
-            Animation.StartScene(async () =>
-            {
-                // 加至播放列表
-                var entries = _appDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList);
+            // 加至播放列表
+            var entries = _appDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList);
 
-                await _controller.PlayList.SetSongListAsync(entries, true);
+            await _controller.PlayList.SetSongListAsync(entries, true);
 
-                bool play = AppSettings.Default.Play.AutoPlay;
-                var current = _appDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
-                await _controller.PlayNewAsync(current, true);
-            });
+            bool play = AppSettings.Default.Play.AutoPlay;
+            var current = _appDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
+            await _controller.PlayNewAsync(current, play);
         }
 
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
@@ -395,5 +357,11 @@ namespace Milky.OsuPlayer.Windows
         }
 
         #endregion Events
+
+        public void ForceClose()
+        {
+            ForceExit = true;
+            Close();
+        }
     }
 }

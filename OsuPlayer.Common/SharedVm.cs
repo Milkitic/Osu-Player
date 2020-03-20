@@ -1,16 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Milky.OsuPlayer.Common.Configuration;
 using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Common
 {
     public class SharedVm : ViewModelBase
     {
-        public bool EnableVideo { get; set; } = true;
-        //public bool EnableVideo { get; set; } = true;
+        private bool _enableVideo = true;
+        private bool _isPlaying = false;
+
+        public bool EnableVideo
+        {
+            get => _enableVideo;
+            set
+            {
+                if (value == _enableVideo) return;
+                _enableVideo = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsPlaying
+        {
+            get => _isPlaying;
+            set
+            {
+                if (value == _isPlaying) return;
+                _isPlaying = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public AppSettings AppSettings { get; } = AppSettings.Default;
 
         private static SharedVm _default;
         private static object _defaultLock = new object();

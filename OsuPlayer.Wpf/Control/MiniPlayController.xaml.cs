@@ -27,19 +27,19 @@ namespace Milky.OsuPlayer.Control
 {
     public class MiniPlayListControlVm : ViewModelBase
     {
-        private ObservablePlayController _playerList;
+        private ObservablePlayController _controller;
         private double _positionPercent;
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
 
-        public ObservablePlayController PlayerList
+        public ObservablePlayController Controller
         {
-            get => _playerList;
+            get => _controller;
             set
             {
-                _playerList = value;
+                _controller = value;
                 OnPropertyChanged();
             }
         }
+
         public SharedVm Shared { get; } = SharedVm.Default;
 
         public ICommand PlayPrevCommand => new DelegateCommand(async param => await _controller.PlayPrevAsync());
@@ -76,7 +76,7 @@ namespace Milky.OsuPlayer.Control
         {
             InitializeComponent();
             _viewModel = (MiniPlayListControlVm)DataContext;
-            _viewModel.PlayerList = Services.Get<ObservablePlayController>();
+            _viewModel.Controller = Services.Get<ObservablePlayController>();
             Default = this;
         }
 

@@ -23,21 +23,11 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 {
     internal class HitsoundPlayer : Player, IDisposable
     {
-        protected virtual string Flag { get; } = "Hitsound";
-
         public override int ProgressRefreshInterval { get; set; }
+        protected override string Flag { get; } = nameof(HitsoundPlayer);
 
         private static bool UseSoundTouch => AppSettings.Default.Play.UsePlayerV2;
 
-        public override PlayStatus PlayStatus
-        {
-            get => _playStatus;
-            protected set
-            {
-                Console.WriteLine(Flag + ": " + value);
-                _playStatus = value;
-            }
-        }
 
         public override TimeSpan Duration { get; protected set; }
 
@@ -251,10 +241,6 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         {
             var isHitsound = !(this is SampleTrackPlayer);
             _vsw.Start();
-            if (isHitsound)
-            {
-
-            }
             while (_hsQueue.Count > 0 || ComponentPlayer.Current.MusicPlayer.PlayStatus != PlayStatus.Finished)
             {
                 if (_cts.Token.IsCancellationRequested)
@@ -280,7 +266,6 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                         {
                             Engine.PlaySound(path, he.Volume * 1f,
                                 he.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);
-                            //Task.Run(() =>);
                         }
                     }
                     else if (hs is SlideControlElement sce)

@@ -36,34 +36,34 @@ namespace Milky.OsuPlayer.Control
     {
         private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
 
-        public int HitsoundOffset
-        {
-            get => (int)GetValue(HitsoundOffsetProperty);
-            set => SetValue(HitsoundOffsetProperty, value);
-        }
-
-        public static readonly DependencyProperty HitsoundOffsetProperty =
-            DependencyProperty.Register(
-                "HitsoundOffset",
-                typeof(int),
-                typeof(VolumeControl),
-                new PropertyMetadata(0, OffsetChanged)
-            );
-
-        private static void OffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is VolumeControl ctrl && ctrl._controller.Player != null)
-            {
-                ctrl.Offset.Value = ctrl._controller.Player.HitsoundOffset;
-            }
-        }
-
         private readonly AppDbOperator _dbOperator = new AppDbOperator();
         private IWavePlayer _device;
 
         public VolumeControl()
         {
             InitializeComponent();
+        }
+
+        private void VolumeControl_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            _device = DeviceProvider.GetCurrentDevice();
+            if (_device is AsioOut asio)
+            {
+                BtnAsio.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                BtnAsio.Visibility = Visibility.Collapsed;
+            }
+
+
+            Offset.Value = _controller.PlayList.CurrentInfo.BeatmapSettings.Offset;
+            _controller.LoadFinished += Controller_LoadFinished;
+        }
+
+        private void Controller_LoadFinished(BeatmapContext bc, System.Threading.CancellationToken arg2)
+        {
+            Offset.Value = bc.BeatmapSettings.Offset;
         }
 
         private void MasterVolume_DragComplete(object sender, DragCompletedEventArgs e)
@@ -102,19 +102,6 @@ namespace Milky.OsuPlayer.Control
         {
             _dbOperator.UpdateMap(_controller.PlayList.CurrentInfo.Beatmap,
                 _controller.Player.HitsoundOffset);
-        }
-
-        private void VolumeControl_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            _device = DeviceProvider.GetCurrentDevice();
-            if (_device is AsioOut asio)
-            {
-                BtnAsio.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                BtnAsio.Visibility = Visibility.Collapsed;
-            }
         }
 
         private void BtnAsio_OnClick(object sender, RoutedEventArgs e)

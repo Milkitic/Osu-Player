@@ -240,7 +240,6 @@
     <Compile Include="Windows\MiniWindow.xaml.cs">
       <DependentUpon>MiniWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MyCancellationTokenSource.cs" />
     <Compile Include="Windows\PageParts.cs" />
     <Page Include="Control\AddCollectionControl.xaml">
       <SubType>Designer</SubType>

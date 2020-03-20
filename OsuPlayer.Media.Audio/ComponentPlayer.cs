@@ -19,6 +19,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private string _filePath;
         private int _stopCount;
 
+        protected override string Flag { get; } = nameof(ComponentPlayer);
         public override int ProgressRefreshInterval { get; set; } = 500;
 
         private static IWavePlayer _outputDevice;
@@ -88,6 +89,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
             HitsoundPlayer.SetDuration(MusicPlayer.Duration);
             HitsoundPlayer.PlayerFinished += Players_OnFinished;
+            HitsoundPlayer.PlayStatusChanged += s => base.PlayStatus = s;
             SampleTrackPlayer.SetDuration(MusicPlayer.Duration);
             SampleTrackPlayer.PlayerFinished += Players_OnFinished;
             MusicPlayer.PlayerFinished += Players_OnFinished;
@@ -194,7 +196,8 @@ namespace Milky.OsuPlayer.Media.Audio
                     SetTempoMode(AppSettings.Default.Play.PlayUseTempo);
                     break;
                 case nameof(AppSettings.Play.PlaybackRate):
-                    SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, MusicPlayer.PlayStatus == PlayStatus.Playing);
+                    SetPlaybackRate(AppSettings.Default.Play.PlaybackRate,
+                        MusicPlayer.PlayStatus == PlayStatus.Playing);
                     break;
             }
         }

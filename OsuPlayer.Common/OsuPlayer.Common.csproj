@@ -96,6 +96,7 @@
     <Compile Include="Data\IdentifiableExtension.cs" />
     <Compile Include="DictionaryExtension.cs" />
     <Compile Include="ListExtension.cs" />
+    <Compile Include="MyCancellationTokenSource.cs" />
     <Compile Include="Notification.cs" />
     <Compile Include="NotificationOption.cs" />
     <Compile Include="NotificationType.cs" />

@@ -50,28 +50,6 @@ namespace Milky.OsuPlayer.Control
     /// </summary>
     public partial class PlayController : UserControl
     {
-        //public static PlayController Default { get; private set; }
-
-        #region Dependency Property
-
-        public ImageSource ThumbImage
-        {
-            get => (ImageSource)GetValue(ThumbImageProperty);
-            set => SetValue(ThumbImageProperty, value);
-        }
-
-        public static readonly DependencyProperty ThumbImageProperty =
-            DependencyProperty.Register(
-                "ThumbImage",
-                typeof(ImageSource),
-                typeof(PlayController),
-                null
-            );
-
-        #endregion
-
-        #region Denpendency Event
-
         public static readonly RoutedEvent OnThumbClickEvent = EventManager.RegisterRoutedEvent(
          "OnThumbClick",
          RoutingStrategy.Bubble,
@@ -82,30 +60,6 @@ namespace Milky.OsuPlayer.Control
         {
             add => AddHandler(OnThumbClickEvent, value);
             remove => RemoveHandler(OnThumbClickEvent, value);
-        }
-
-        public static readonly RoutedEvent PreviewPlayEvent = EventManager.RegisterRoutedEvent(
-            "PreviewPlay",
-            RoutingStrategy.Bubble,
-            typeof(RoutedPropertyChangedEventArgs<object>),
-            typeof(PlayController));
-
-        public event RoutedEventHandler PreviewPlay
-        {
-            add => AddHandler(PreviewPlayEvent, value);
-            remove => RemoveHandler(PreviewPlayEvent, value);
-        }
-
-        public static readonly RoutedEvent PreviewPauseEvent = EventManager.RegisterRoutedEvent(
-            "PreviewPause",
-            RoutingStrategy.Bubble,
-            typeof(RoutedPropertyChangedEventArgs<object>),
-            typeof(PlayController));
-
-        public event RoutedEventHandler PreviewPause
-        {
-            add => AddHandler(PreviewPauseEvent, value);
-            remove => RemoveHandler(PreviewPauseEvent, value);
         }
 
         public static readonly RoutedEvent OnLikeClickEvent = EventManager.RegisterRoutedEvent(
@@ -120,40 +74,7 @@ namespace Milky.OsuPlayer.Control
             remove => RemoveHandler(OnLikeClickEvent, value);
         }
 
-        //public static readonly RoutedEvent OnProgressDragCompleteEvent = EventManager.RegisterRoutedEvent(
-        //    "OnProgressDragComplete",
-        //    RoutingStrategy.Bubble,
-        //    typeof(RoutedPropertyChangedEventArgs<object>),
-        //    typeof(PlayController));
-
-        //public event RoutedEventHandler OnProgressDragComplete
-        //{
-        //    add => AddHandler(OnProgressDragCompleteEvent, value);
-        //    remove => RemoveHandler(OnProgressDragCompleteEvent, value);
-        //}
-        //public event EventHandler<DragCompleteEventArgs> OnProgressDragComplete;
-
-        //public static readonly RoutedEvent OnNewFileLoadedEvent = EventManager.RegisterRoutedEvent(
-        //    "OnNewFileLoaded",
-        //    RoutingStrategy.Bubble,
-        //    typeof(RoutedPropertyChangedEventArgs<object>),
-        //    typeof(PlayController));
-
-        //public event RoutedEventHandler OnNewFileLoaded
-        //{
-        //    add => AddHandler(OnNewFileLoadedEvent, value);
-        //    remove => RemoveHandler(OnNewFileLoadedEvent, value);
-        //}
-        public event EventHandler<HandledEventArgs> OnNewFileLoaded;
-        #endregion
-
-        private readonly AppDbOperator _appDbOperator = new AppDbOperator();
-
-        private readonly OptionContainer _modeOptionContainer = new OptionContainer();
-
-        private bool _forcePaused;
         private bool _scrollLock;
-
         private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
 
         public PlayController()
@@ -202,18 +123,14 @@ namespace Milky.OsuPlayer.Control
 
         private void Controller_MusicLoaded(BeatmapContext beatmapCtx, CancellationToken ct)
         {
-            VolumeControl.HitsoundOffset = beatmapCtx.BeatmapSettings.Offset;
-
             PlayProgress.Value = 0;
             PlayProgress.Maximum = _controller.Player.Duration.TotalMilliseconds;
-            LblTotal.Content = _controller.Player.PlayTime.ToString(@"mm\:ss");
+            LblTotal.Content = _controller.Player.Duration.ToString(@"mm\:ss");
         }
 
         private void Controller_LoadFinished(BeatmapContext beatmapCtx, CancellationToken ct)
         {
         }
-
-        #region Event handler
 
         private void ThumbButton_Click(object sender, RoutedEventArgs e)
         {
@@ -289,8 +206,6 @@ namespace Milky.OsuPlayer.Control
             PopPlayList.IsOpen = true;
         }
 
-        #endregion
-
         private void PlayListControl_CloseRequested(object sender, RoutedEventArgs e)
         {
             PopPlayList.IsOpen = false;
@@ -300,16 +215,6 @@ namespace Milky.OsuPlayer.Control
         {
             var win = new BeatmapInfoWindow(_controller.PlayList.CurrentInfo);
             win.ShowDialog();
-        }
-    }
-
-    internal class MyCancellationTokenSource : CancellationTokenSource
-    {
-        public Guid Guid { get; }
-
-        public MyCancellationTokenSource()
-        {
-            Guid = Guid.NewGuid();
         }
     }
 }

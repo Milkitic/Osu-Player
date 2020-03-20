@@ -13,11 +13,12 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 {
     internal sealed class MusicPlayer : Player, IDisposable
     {
+        protected override string Flag { get; } = nameof(HitsoundPlayer);
+
         private static readonly string CachePath = Path.Combine(Domain.CachePath, "_temp.music");
         private static readonly object CacheLock = new object();
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-        private PlayStatus _playStatus;
 
         private readonly object _propertiesLock = new object();
         private MyAudioFileReader _reader;
@@ -43,16 +44,6 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                 if (value < 10)
                     _progressRefreshInterval = 10;
                 _progressRefreshInterval = value;
-            }
-        }
-
-        public override PlayStatus PlayStatus
-        {
-            get => _playStatus;
-            protected set
-            {
-                Console.WriteLine(@"Music: " + value);
-                _playStatus = value;
             }
         }
 
