@@ -3,6 +3,6 @@
 
     public enum PlayStatus
     {
-        NotInitialized, Ready, Playing, Paused, Stopped, Finished
+        NotInitialized, Ready, Playing, Paused, Reposition, Finished
     }
 }

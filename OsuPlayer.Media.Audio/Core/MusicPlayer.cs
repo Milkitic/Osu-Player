@@ -188,7 +188,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         internal void ResetWithoutNotify()
         {
             SetTime(TimeSpan.Zero, false);
-            PlayStatus = PlayStatus.Stopped;
+            PlayStatus = PlayStatus.Paused;
         }
 
         public override void Dispose()

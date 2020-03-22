@@ -34,7 +34,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public override PlayStatus PlayStatus
         {
-            get => HitsoundPlayer?.PlayStatus ?? PlayStatus.Stopped;
+            get => HitsoundPlayer?.PlayStatus ?? PlayStatus.Paused;
             protected set => throw new InvalidOperationException();
         }
 
@@ -103,6 +103,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private void Players_OnFinished(object sender, EventArgs e)
         {
             _stopCount++;
+            Console.WriteLine($"{nameof(_stopCount)}: {_stopCount};{sender}");
             if (_stopCount < 3) return;
 
             ResetWithoutNotify();
@@ -152,9 +153,9 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public override void SetTime(TimeSpan time, bool play = true)
         {
+            MusicPlayer.SetTime(time, play);
             HitsoundPlayer.SetTime(time, play);
             SampleTrackPlayer.SetTime(time, play);
-            MusicPlayer.SetTime(time, play);
         }
 
         public void SetPlayMod(PlayMod mod)

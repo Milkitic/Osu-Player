@@ -57,7 +57,7 @@ namespace Milky.OsuPlayer.Control
             }
 
 
-            Offset.Value = _controller.PlayList.CurrentInfo.BeatmapSettings.Offset;
+            Offset.Value = _controller.PlayList.CurrentInfo?.BeatmapSettings?.Offset ?? 0;
             _controller.LoadFinished += Controller_LoadFinished;
         }
 

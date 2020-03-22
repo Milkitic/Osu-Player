@@ -276,9 +276,14 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private async Task PlayList_AutoSwitched(PlayControlResult controlResult, Beatmap beatmap, bool playInstantly)
         {
-            if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default)
+            var context = PlayList.CurrentInfo;
+
+            if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
             {
-                var context = PlayList.CurrentInfo;
+                context.SetTimeHandle(0, playInstantly || controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play);
+            }
+            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default)
+            {
                 InitializeContextHandle(context);
                 await LoadAsync(false, true);
                 switch (controlResult.PlayStatus)

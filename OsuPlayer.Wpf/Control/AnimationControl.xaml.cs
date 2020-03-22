@@ -74,7 +74,7 @@ namespace Milky.OsuPlayer.Control
 
                 if (obj == PlayStatus.Playing)
                     VideoElement.Pause();
-                else if (obj == PlayStatus.Finished || obj == PlayStatus.Paused || obj == PlayStatus.Stopped)
+                else if (obj == PlayStatus.Finished || obj == PlayStatus.Paused)
                     VideoElement.Play();
             });
         }

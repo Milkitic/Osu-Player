@@ -33,7 +33,8 @@ namespace Milky.OsuPlayer.Common
         public void SkipTo(TimeSpan startOffset)
         {
             _skipOffset = startOffset;
-            base.Restart();
+            if (IsRunning)
+                base.Restart();
         }
 
         public new long ElapsedMilliseconds =>

@@ -158,7 +158,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         {
             CancelTask(true);
             SetTimePurely(TimeSpan.Zero);
-            PlayStatus = finished ? PlayStatus.Finished : PlayStatus.Stopped;
+            PlayStatus = finished ? PlayStatus.Finished : PlayStatus.Paused;
         }
 
         internal void SetDuration(TimeSpan musicPlayerDuration)
@@ -253,12 +253,13 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
                 // Loop
 
-                while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= _vsw.ElapsedMilliseconds)
+                while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= _vsw.ElapsedMilliseconds &&
+                       !_cts.Token.IsCancellationRequested)
                 {
                     if (!_hsQueue.TryDequeue(out var hs))
                         continue;
 
-                    if (!(this is SampleTrackPlayer)) Console.WriteLine($"[{this}] {_i}: {PlayTime.TotalMilliseconds} actual: {hs.Offset}");
+                    //if (!(this is SampleTrackPlayer)) Console.WriteLine($"[{this}] {_i}: {PlayTime.TotalMilliseconds} actual: {hs.Offset}");
                     _i++;
                     if (hs is HitsoundElement he)
                     {
