@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using NAudio.Wave;
+using PlayerTest.Player;
 
 namespace PlayerTest.Wave
 {
@@ -47,8 +49,6 @@ namespace PlayerTest.Wave
             new ConcurrentDictionary<string, CachedSound>();
         private static readonly ConcurrentDictionary<string, CachedSound> InternalDictionary =
             new ConcurrentDictionary<string, CachedSound>();
-
-        private static readonly string[] SupportExtensions = { ".wav", ".mp3", ".ogg" };
 
         public static async Task CreateCacheSounds(IEnumerable<string> paths)
         {
@@ -122,7 +122,7 @@ namespace PlayerTest.Wave
 
         private static string TryGetPath(string path)
         {
-            foreach (var ext in SupportExtensions)
+            foreach (var ext in AudioPlaybackEngine.SupportExtensions)
             {
                 var autoAudioFile = path + ext;
                 if (!File.Exists(autoAudioFile))

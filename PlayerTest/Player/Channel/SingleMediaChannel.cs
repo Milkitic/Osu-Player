@@ -21,14 +21,12 @@ namespace PlayerTest.Player.Channel
         private VarispeedSampleProvider _speedProvider;
         private ISampleProvider _actualRoot;
 
-        public SampleControl SampleControl { get; } = new SampleControl();
-
         public override TimeSpan Duration { get; protected set; }
         public override TimeSpan Position { get; protected set; }
         public override float PlaybackRate { get; protected set; }
         public override bool UseTempo { get; protected set; }
 
-        public SingleMediaChannel(string path, float playbackRate, bool useTempo, AudioPlaybackEngine engine) : base(engine)
+        public SingleMediaChannel(AudioPlaybackEngine engine, string path, float playbackRate, bool useTempo) : base(engine)
         {
             _path = path;
             _playbackRate = playbackRate;

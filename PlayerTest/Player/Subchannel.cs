@@ -14,6 +14,8 @@ namespace PlayerTest.Player
         private ChannelStatus _playStatus;
         protected AudioPlaybackEngine Engine { get; }
 
+        public SampleControl SampleControl { get; } = new SampleControl();
+
         public Subchannel(AudioPlaybackEngine engine)
         {
             Engine = engine;

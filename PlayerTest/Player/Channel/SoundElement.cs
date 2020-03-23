@@ -17,7 +17,7 @@ namespace PlayerTest.Player.Channel
 
         internal CachedSound CachedSound { get; private set; }
 
-        public async Task<SoundElement> CreateAsync(double offset, float volume, float balance, string filePath)
+        public static async Task<SoundElement> CreateAsync(double offset, float volume, float balance, string filePath)
         {
             var se = new SoundElement
             {
@@ -31,7 +31,7 @@ namespace PlayerTest.Player.Channel
             return se;
         }
 
-        public async Task<SoundElement> CreateSlideSignalAsync(double offset, float volume, float balance,
+        public static async Task<SoundElement> CreateSlideSignalAsync(double offset, float volume, float balance,
             string filePath, SlideType slideType)
         {
             return new SoundElement
@@ -46,7 +46,7 @@ namespace PlayerTest.Player.Channel
             };
         }
 
-        public SoundElement CreateStopSignal(double offset)
+        public static SoundElement CreateStopSignal(double offset)
         {
             return new SoundElement
             {
@@ -55,7 +55,7 @@ namespace PlayerTest.Player.Channel
             };
         }
 
-        public SoundElement CreateVolumeSignal(double offset, float volume)
+        public static SoundElement CreateVolumeSignal(double offset, float volume)
         {
             return new SoundElement
             {
@@ -65,7 +65,7 @@ namespace PlayerTest.Player.Channel
             };
         }
 
-        public SoundElement CreateBalanceSignal(double offset, float balance)
+        public static SoundElement CreateBalanceSignal(double offset, float balance)
         {
             return new SoundElement
             {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using PlayerTest.Device;
-using PlayerTest.Player.Channel;
 
 namespace PlayerTest.Player
 {
@@ -20,15 +19,17 @@ namespace PlayerTest.Player
         public ChannelStatus PlayStatus { get; private set; }
         public StopMode StopMode { get; set; }
 
+        public float Volume { get => Engine.RootVolume; set => Engine.RootVolume = value; }
+
         private readonly List<IChannel> _subchannels = new List<IChannel>();
 
-        private readonly IWavePlayer _device;
+        private readonly IWavePlayer _outputDevice;
         protected readonly AudioPlaybackEngine Engine;
 
         public MultichannelPlayer()
         {
-            _device = DeviceProvider.CreateOrGetDefaultDevice();
-            Engine = new AudioPlaybackEngine(_device);
+            _outputDevice = DeviceProvider.CreateOrGetDefaultDevice();
+            Engine = new AudioPlaybackEngine(_outputDevice);
         }
 
         public abstract Task Initialize();

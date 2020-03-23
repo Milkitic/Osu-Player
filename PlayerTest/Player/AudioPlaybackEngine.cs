@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,9 @@ namespace PlayerTest.Player
     {
         private readonly IWavePlayer _outputDevice;
         private readonly VolumeSampleProvider _volumeProvider;
+
+        public static ICollection<string> SupportExtensions { get; } =
+            new ReadOnlyCollection<string>(new[] { ".wav", ".mp3", ".ogg" });
 
         public MixingSampleProvider RootMixer { get; }
         public float RootVolume

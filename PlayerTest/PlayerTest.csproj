@@ -97,6 +97,7 @@
     <Compile Include="Player\Channel\SingleMediaChannel.cs" />
     <Compile Include="Player\Channel\SoundElement.cs" />
     <Compile Include="Player\MixingSampleProviderExtension.cs" />
+    <Compile Include="Player\OsuMixPlayer.cs" />
     <Compile Include="Player\SampleControl.cs" />
     <Compile Include="Player\Subchannel.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -105,6 +106,8 @@
     <Compile Include="SoundTouch\SoundTouchInterop64.cs" />
     <Compile Include="SoundTouch\SoundTouchProfile.cs" />
     <Compile Include="SoundTouch\SoundTouchSettings.cs" />
+    <Compile Include="TrackProvider\NightcoreTilingTrackProvider.cs" />
+    <Compile Include="TrackProvider\ITrackProvider.cs" />
     <Compile Include="VariableStopwatch.cs" />
     <Compile Include="Wave\LoopStream.cs" />
     <Compile Include="Wave\VarispeedSampleProvider.cs" />
@@ -157,6 +160,12 @@
     <Content Include="plugins\SoundTouch\SoundTouch_x64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
+      <Project>{631A4ABE-0C76-4972-97F2-F6928F0608EE}</Project>
+      <Name>OSharp.Beatmap</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -41,12 +41,6 @@ namespace PlayerTest.Player.Channel
                                               !_calibrationTask.IsCanceled &&
                                               !_calibrationTask.IsCompleted &&
                                               !_calibrationTask.IsFaulted;
-        public MultiElementsChannel(AudioPlaybackEngine engine, List<SoundElement> soundElements,
-            SingleMediaChannel referenceChannel = null) : base(engine)
-        {
-            _soundElements = soundElements;
-            _referenceChannel = referenceChannel;
-        }
 
         public override TimeSpan Duration { get; protected set; }
         public override TimeSpan Position
@@ -62,6 +56,13 @@ namespace PlayerTest.Player.Channel
 
         public MixingSampleProvider Submixer { get; protected set; }
 
+        public MultiElementsChannel(AudioPlaybackEngine engine, List<SoundElement> soundElements,
+            SingleMediaChannel referenceChannel = null) : base(engine)
+        {
+            _soundElements = soundElements;
+            _referenceChannel = referenceChannel;
+        }
+
         public override async Task Initialize()
         {
             _soundElements.Sort(new SoundElementTimingComparer());
@@ -71,6 +72,10 @@ namespace PlayerTest.Player.Channel
             Submixer = new MixingSampleProvider(WaveFormatFactory.WaveFormat);
             _volumeProvider = new VolumeSampleProvider(Submixer);
             Engine.AddRootSample(_volumeProvider);
+
+            SampleControl.Volume = 1;
+            SampleControl.Balance = 0;
+            SampleControl.VolumeChanged = f => _volumeProvider.Volume = f;
 
             await RequeueAsync(TimeSpan.Zero);
 
