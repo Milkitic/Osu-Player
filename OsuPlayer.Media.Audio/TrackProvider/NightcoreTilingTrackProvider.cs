@@ -82,7 +82,8 @@ namespace Milky.OsuPlayer.Media.Audio.TrackProvider
                 )
                 .ToList();
 
-            var maxTime = Math.Max(Math.Max(ComponentPlayer.Current.MusicPlayer.Duration, OsuFile.HitObjects.MaxTime),
+            var maxTime = MathEx.Max(ComponentPlayer.Current.MusicPlayer.Duration.TotalMilliseconds,
+                OsuFile.HitObjects.MaxTime,
                 timingSection.MaxTime);
             var hitsoundList = new List<SpecificFileSoundElement>();
 
@@ -140,6 +141,21 @@ namespace Milky.OsuPlayer.Media.Audio.TrackProvider
 
         public NightcoreTilingTrackProvider(OsuFile osuFile) : base(osuFile)
         {
+        }
+    }
+
+    public static class MathEx
+    {
+        public static T Max<T>(params T[] values) where T : IComparable
+        {
+            var def = default(T);
+
+            foreach (var value in values)
+            {
+                if (def == null || def.CompareTo(value) < 0) def = value;
+            }
+
+            return def;
         }
     }
 }

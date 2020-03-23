@@ -89,7 +89,7 @@ namespace Milky.OsuPlayer.Pages
         {
             try
             {
-                var folder = entry.InOwnFolder
+                var folder = entry.InOwnDb
                     ? Path.Combine(Domain.CustomSongPath, entry.FolderName)
                     : Path.Combine(Domain.OsuSongPath, entry.FolderName);
                 var mp3FileInfo = new FileInfo(Path.Combine(folder, entry.AudioFileName));
@@ -126,7 +126,7 @@ namespace Milky.OsuPlayer.Pages
             }
             catch (Exception e)
             {
-                Notification.Show("导出时出现错误：" + e.Message);
+                Notification.Push("导出时出现错误：" + e.Message);
             }
         }
 

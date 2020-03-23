@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 
-namespace Milky.OsuPlayer.Windows
+namespace Milky.OsuPlayer.Common
 {
-    internal class MyCancellationTokenSource : CancellationTokenSource
+    public class MyCancellationTokenSource : CancellationTokenSource
     {
         public Guid Guid { get; }
 

@@ -12,6 +12,7 @@ using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Media.Audio.Core.SampleProviders;
 using Milky.OsuPlayer.Media.Audio.Core.WaveProviders;
 using Milky.OsuPlayer.Media.Audio.Sounds;
+using Milky.OsuPlayer.Media.Audio.TrackProvider;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using OSharp.Beatmap;
@@ -22,32 +23,18 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 {
     internal class HitsoundPlayer : Player, IDisposable
     {
-        protected virtual string Flag { get; } = "Hitsound";
-
         public override int ProgressRefreshInterval { get; set; }
+        protected override string Flag { get; } = nameof(HitsoundPlayer);
 
         private static bool UseSoundTouch => AppSettings.Default.Play.UsePlayerV2;
 
-        public override PlayerStatus PlayerStatus
-        {
-            get => _playerStatus;
-            protected set
-            {
-                Console.WriteLine(Flag + ": " + value);
-                _playerStatus = value;
-            }
-        }
 
-        public override int Duration { get; protected set; }
+        public override TimeSpan Duration { get; protected set; }
 
-        public override int PlayTime
+        public override TimeSpan PlayTime
         {
-            get => (int)(_sw.ElapsedMilliseconds * _multiplier + _controlOffset); // _multiplier播放速率
-            protected set
-            {
-                _controlOffset = value;
-                _sw.Reset(); // sw是秒表
-            }
+            get => _vsw.Elapsed;
+            protected set => _vsw.SkipTo(value);
         }
 
         public int SingleOffset { get; set; }
@@ -55,7 +42,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         public bool IsPlaying => _playingTask != null &&
                                  !_playingTask.IsCanceled &&
                                  !_playingTask.IsCompleted &&
-                                 !_playingTask.IsFaulted && PlayerStatus == PlayerStatus.Playing;
+                                 !_playingTask.IsFaulted && PlayStatus == PlayStatus.Playing;
 
         public bool IsRunningDynamicOffset => _offsetTask != null &&
                                               !_offsetTask.IsCanceled &&
@@ -78,16 +65,15 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         // Play Control
         private CancellationTokenSource _cts = new CancellationTokenSource();
-        private int _controlOffset;
         private Task _playingTask, _offsetTask;
-        private float _multiplier = 1f;
-        private readonly Stopwatch _sw = new Stopwatch();
-        private PlayerStatus _playerStatus;
+        private readonly VariableStopwatch _vsw = new VariableStopwatch();
+        private PlayStatus _playStatus;
         private readonly OsuFile _osuFile;
         protected readonly AudioPlaybackEngine Engine;
 
         private int _dcOffset;
         private bool _useTempo;
+        private int _i;
 
         public HitsoundPlayer(AudioPlaybackEngine engine, string filePath, OsuFile osuFile)
         {
@@ -107,7 +93,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
             List<SoundElement> hitsoundList = FillHitsoundList(_osuFile, dirInfo);
             _hitsoundList = hitsoundList.OrderBy(t => t.Offset).ToList(); // Sorted before enqueue.
-            Requeue(0);
+            Requeue(TimeSpan.Zero);
             var allPaths = hitsoundList.Select(t => t.FilePaths).SelectMany(sbx2 => sbx2).Distinct();
             //_outputDevice = DeviceProvider.CreateOrGetDefaultDevice();
             //Engine = new AudioPlaybackEngine(_outputDevice);
@@ -116,7 +102,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                 Engine.CreateCacheSounds(allPaths);
                 Engine.CreateCacheSounds(new DirectoryInfo(Domain.DefaultPath).GetFiles().Select(k => k.FullName));
             });
-            PlayerStatus = PlayerStatus.Ready;
+            PlayStatus = PlayStatus.Ready;
             SetTempoMode(AppSettings.Default.Play.PlayUseTempo);
             SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, false);
             InitVolume();
@@ -137,16 +123,16 @@ namespace Milky.OsuPlayer.Media.Audio.Core
             _playingTask = new Task(PlayHitsound);
             _playingTask.Start();
 
-            PlayerStatus = PlayerStatus.Playing;
+            PlayStatus = PlayStatus.Playing;
             RaisePlayerStartedEvent(this, new ProgressEventArgs(PlayTime, Duration));
         }
 
         public override void Pause()
         {
             CancelTask(true);
-            PlayTime = PlayTime;
+            //PlayTime = PlayTime;
 
-            PlayerStatus = PlayerStatus.Paused;
+            PlayStatus = PlayStatus.Paused;
             RaisePlayerPausedEvent(this, new ProgressEventArgs(PlayTime, Duration));
         }
 
@@ -162,37 +148,39 @@ namespace Milky.OsuPlayer.Media.Audio.Core
             Play();
         }
 
-        public override void SetTime(int ms, bool play = true)
+        public override void SetTime(TimeSpan time, bool play = true)
         {
-            Pause();
-            SetTimePurely(ms);
+            if (!play) Pause();
+            SetTimePurely(time);
         }
 
         internal void ResetWithoutNotify(bool finished = false)
         {
             CancelTask(true);
-            SetTimePurely(0);
-            PlayerStatus = finished ? PlayerStatus.Finished : PlayerStatus.Stopped;
+            SetTimePurely(TimeSpan.Zero);
+            PlayStatus = finished ? PlayStatus.Finished : PlayStatus.Paused;
         }
 
-        internal void SetDuration(int musicPlayerDuration)
+        internal void SetDuration(TimeSpan musicPlayerDuration)
         {
             var enumerable = _hitsoundList.Select(k =>
             {
-                var arr = k.FilePaths.Select(o => (Engine.GetOrCreateCacheSound(o)?.Duration ?? 0) + k.Offset).ToArray();
-                return arr.Any() ? arr.Max() : 0;
+                var arr = k.FilePaths.Select(o =>
+                        (Engine.GetOrCreateCacheSound(o)?.Duration ?? TimeSpan.Zero) +
+                        TimeSpan.FromMilliseconds(k.Offset))
+                    .ToArray();
+                return arr.Any() ? arr.Max() : TimeSpan.Zero;
             }).ToArray();
-            var hitsoundDuration = enumerable.Any() ? enumerable.Max() : 0;
+            var hitsoundDuration = enumerable.Any() ? enumerable.Max() : TimeSpan.Zero;
 
             //Duration = (int)Math.Ceiling(_hitsoundList.Count == 0
             //    ? 0
             //    : Math.Max(_hitsoundList.Max(k => k.Offset),
             //        musicPlayerDuration)
             //);
-            Duration = (int)Math.Ceiling(_hitsoundList.Count == 0
+            Duration = _hitsoundList.Count == 0
                 ? musicPlayerDuration
-                : Math.Max(hitsoundDuration, musicPlayerDuration)
-            );
+                : MathEx.Max(hitsoundDuration, musicPlayerDuration);
         }
 
         internal void SetTempoMode(bool useTempo)
@@ -203,17 +191,17 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         internal void SetPlaybackRate(float rate, bool b)
         {
-            _multiplier = rate;
+            _vsw.Rate = rate;
             AdjustModOffset();
         }
 
         private void AdjustModOffset()
         {
-            if (Math.Abs(_multiplier - 0.75) < 0.001 && !_useTempo)
+            if (Math.Abs(_vsw.Rate - 0.75) < 0.001 && !_useTempo)
             {
                 _dcOffset = -25;
             }
-            else if (Math.Abs(_multiplier - 1.5) < 0.001 && _useTempo)
+            else if (Math.Abs(_vsw.Rate - 1.5) < 0.001 && _useTempo)
             {
                 _dcOffset = 15;
             }
@@ -243,7 +231,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         //    }
         //}
 
-        private void SetTimePurely(int ms)
+        private void SetTimePurely(TimeSpan ms)
         {
             PlayTime = ms;
             Requeue(ms);
@@ -252,31 +240,33 @@ namespace Milky.OsuPlayer.Media.Audio.Core
         private void PlayHitsound()
         {
             var isHitsound = !(this is SampleTrackPlayer);
-            _sw.Restart();
-            while (_hsQueue.Count > 0 || ComponentPlayer.Current.MusicPlayer.PlayerStatus != PlayerStatus.Finished)
+            _vsw.Start();
+            while (_hsQueue.Count > 0 || ComponentPlayer.Current.MusicPlayer.PlayStatus != PlayStatus.Finished)
             {
                 if (_cts.Token.IsCancellationRequested)
                 {
-                    _sw.Stop();
+                    _vsw.Stop();
                     return;
                 }
 
-                //_sw.Start();
+                //_vsw.Start();
 
                 // Loop
 
-                while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= PlayTime)
+                while (_hsQueue.Count != 0 && _hsQueue.First().Offset <= _vsw.ElapsedMilliseconds &&
+                       !_cts.Token.IsCancellationRequested)
                 {
                     if (!_hsQueue.TryDequeue(out var hs))
                         continue;
 
+                    //if (!(this is SampleTrackPlayer)) Console.WriteLine($"[{this}] {_i}: {PlayTime.TotalMilliseconds} actual: {hs.Offset}");
+                    _i++;
                     if (hs is HitsoundElement he)
                     {
                         foreach (var path in he.FilePaths)
                         {
                             Engine.PlaySound(path, he.Volume * 1f,
                                 he.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);
-                            //Task.Run(() =>);
                         }
                     }
                     else if (hs is SlideControlElement sce)
@@ -345,21 +335,20 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                                 throw new ArgumentOutOfRangeException();
                         }
                     }
-                    else if (!_useTempo && _multiplier >= 1.5 && hs is SpecificFileSoundElement specific)
+                    else if (!_useTempo && _vsw.Rate >= 1.5 && hs is SpecificFileSoundElement specific)
                     {
                         Engine.PlaySound(specific.FilePaths[0], specific.Volume * 1f,
                                     specific.Balance * AppSettings.Default.Volume.BalanceFactor / 100f, isHitsound);
                     }
                 }
 
-
                 Thread.Sleep(1);
             }
 
-            SetTimePurely(0);
+            SetTimePurely(TimeSpan.Zero);
             CancelTask(false);
 
-            PlayerStatus = PlayerStatus.Finished;
+            PlayStatus = PlayStatus.Finished;
             Task.Run(() => { RaisePlayerFinishedEvent(this, new EventArgs()); });
         }
 
@@ -370,19 +359,21 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                 _offsetTask = Task.Run(() =>
                 {
                     Thread.Sleep(30);
-                    int? preMs = null;
-                    while (!_cts.IsCancellationRequested && ComponentPlayer.Current.MusicPlayer.PlayerStatus == PlayerStatus.Playing)
+                    double? preMs = null;
+                    while (!_cts.IsCancellationRequested &&
+                           ComponentPlayer.Current.MusicPlayer.PlayStatus == PlayStatus.Playing)
                     {
-                        int nowMs = ComponentPlayer.Current.MusicPlayer.PlayTime;
-                        if (nowMs != preMs) // 音乐play time变动
+                        double nowMs = ComponentPlayer.Current.MusicPlayer.PlayTime.TotalMilliseconds;
+                        if (!Equals(nowMs, preMs)) // 音乐play time变动
                         {
                             preMs = nowMs;
-                            var d = nowMs - (PlayTime + SingleOffset + _dcOffset); // Single：单曲offset（人工调），PlayTime：音效play time
-                            var r = AppSettings.Default.Play.GeneralOffset - d; // General：全局offset
+                            var d = nowMs - (PlayTime.TotalMilliseconds + SingleOffset +
+                                             _dcOffset); // Single：单曲offset（人工调），PlayTime：音效play time
+                            var r = AppSettings.Default.Play.GeneralActualOffset - d; // General：全局offset
                             if (Math.Abs(r) > 5)
                             {
                                 //Console.WriteLine($@"music: {App.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
-                                _controlOffset -= (int)(r / 2f); // 计算音效偏移量
+                                PlayTime -= TimeSpan.FromMilliseconds(r / 2f); // 计算音效偏移量
                             }
                         }
 
@@ -392,16 +383,19 @@ namespace Milky.OsuPlayer.Media.Audio.Core
             }
         }
 
-        private void Requeue(long startTime)
+        private void Requeue(TimeSpan startTime)
         {
-            _hsQueue = new ConcurrentQueue<SoundElement>();
+            _i = 0;
+            var queue = new ConcurrentQueue<SoundElement>();
             if (_hitsoundList != null)
                 foreach (var i in _hitsoundList)
                 {
-                    if (i.Offset < startTime)
+                    if (i.Offset < startTime.TotalMilliseconds)
                         continue;
-                    _hsQueue.Enqueue(i);
+                    queue.Enqueue(i);
                 }
+
+            _hsQueue = queue;
         }
 
         private void StartTask()
@@ -411,6 +405,7 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 
         private void CancelTask(bool waitPlayTask)
         {
+            _vsw.Stop();
             _cts?.Cancel();
             if (waitPlayTask && _playingTask != null)
                 Task.WaitAll(_playingTask);

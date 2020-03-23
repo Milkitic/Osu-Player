@@ -212,7 +212,6 @@
     <Compile Include="Control\Notification\Converters\NotificationTypeConverter.cs" />
     <Compile Include="Control\Notification\Converters\NotificationTypeToCursorConverter.cs" />
     <Compile Include="Control\Notification\NotificationOption.cs" />
-    <Compile Include="Control\Notification\NotificationType.cs" />
     <Compile Include="Control\Notification\NotifyControl.xaml.cs">
       <DependentUpon>NotifyControl.xaml</DependentUpon>
     </Compile>
@@ -230,7 +229,6 @@
       <DependentUpon>WelcomeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converter\NullToHiddenConverter.cs" />
-    <Compile Include="Notification.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Utils\I18nUtil.cs" />
     <Compile Include="Utils\NativeUser32.cs" />
@@ -242,7 +240,6 @@
     <Compile Include="Windows\MiniWindow.xaml.cs">
       <DependentUpon>MiniWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MyCancellationTokenSource.cs" />
     <Compile Include="Windows\PageParts.cs" />
     <Page Include="Control\AddCollectionControl.xaml">
       <SubType>Designer</SubType>
@@ -268,7 +265,6 @@
     <Compile Include="Converter\TrueToVisibleConverter.cs" />
     <Compile Include="Converter\VersionToStringConverter.cs" />
     <Compile Include="Instances\LyricsInst.cs" />
-    <Compile Include="Instances\PlayersInst.cs" />
     <Compile Include="Converter\MiniWindowConverter.cs" />
     <Compile Include="RandomSeed.cs" />
     <Compile Include="StartupConfig.cs" />
@@ -790,48 +786,54 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\ffmpeg\avcodec-58.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\ffmpeg\avdevice-58.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\ffmpeg\avfilter-7.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\ffmpeg\avformat-58.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\ffmpeg\avutil-56.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\ffmpeg\ffmpeg.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\ffmpeg\ffplay.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\ffmpeg\ffprobe.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\ffmpeg\postproc-55.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\ffmpeg\swresample-3.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\ffmpeg\swscale-5.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="External\plugins\oppai-ng\oppai.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="External\plugins\oppai-ng\oppai.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\ShaderEffects.dll">
     </Content>
     <Content Include="External\plugins\SoundTouch\COPYING.TXT">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\SoundTouch\SoundTouch.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\plugins\SoundTouch\SoundTouch_x64.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="External\texture\osu.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

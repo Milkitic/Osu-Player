@@ -13,6 +13,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
             Map(p => p.SbThumbVideoPath).ToColumn("thumbVideoPath");
             Map(p => p.Version).ToColumn("version");
             Map(p => p.FolderName).ToColumn("folder");
+            Map(p => p.InOwnDb).ToColumn("ownDb");
         }
     }
     public class StoryboardInfo : IMapIdentifiable
@@ -23,5 +24,6 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         public string SbThumbVideoPath { get; set; }
         public string Version { get; set; }
         public string FolderName { get; set; }
+        public bool InOwnDb { get; set; }
     }
 }

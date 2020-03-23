@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Dynamic;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Milky.OsuPlayer.Common.Data.Dapper;
-using Milky.OsuPlayer.Common.Data.Dapper.Provider;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Metadata;
@@ -57,7 +52,7 @@ namespace Milky.OsuPlayer.Common.Data
                 count: 1).FirstOrDefault();
         }
 
-        public static List<Beatmap> GetBeatmapsByMapInfo(this AppDbOperator op, List<MapInfo> reqList, TimeSortMode sortMode)
+        public static List<Beatmap> GetBeatmapsByMapInfo(this AppDbOperator op, List<BeatmapSettings> reqList, TimeSortMode sortMode)
         {
             var entities = GetBeatmapsByIdentifiable(op, reqList);
 
@@ -81,20 +76,21 @@ namespace Milky.OsuPlayer.Common.Data
             return op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP, ("folderName", folder)).ToList();
         }
 
-        public static List<Beatmap> GetBeatmapsByIdentifiable<T>(this AppDbOperator op, List<T> reqList)
+        public static List<Beatmap> GetBeatmapsByIdentifiable<T>(this AppDbOperator op, ICollection<T> reqList)
             where T : IMapIdentifiable
         {
             if (reqList.Count < 1) return new List<Beatmap>();
 
-            var args = new ExpandoObject();
-            var expando = (ICollection<KeyValuePair<string, object>>)args;
+            //var args = new ExpandoObject();
+            //var expando = (ICollection<KeyValuePair<string, object>>)args;
 
             var sb = new StringBuilder();
-            for (var i = 0; i < reqList.Count; i++)
+            foreach (var id in reqList)
             {
-                var id = reqList[i];
-                var valueSql = string.Format("('{0}', '{1}'),", id.FolderName.Replace(@"'", @"''"),
-                    id.Version.Replace(@"'", @"''")); // escape is still safe
+                var valueSql = string.Format("('{0}', '{1}', {2}),",
+                    id.FolderName.Replace(@"'", @"''"),
+                    id.Version.Replace(@"'", @"''"),
+                    id.InOwnDb ? 1 : 0); // escape is still safe
                 sb.Append(valueSql);
                 // sb.Append($"(@folder{i}, @version{i}),");
                 // expando.Add(new KeyValuePair<string, object>($"folder{i}", id.FolderName));
@@ -107,18 +103,20 @@ namespace Milky.OsuPlayer.Common.Data
 DROP TABLE IF EXISTS tmp_table;
 CREATE TEMPORARY TABLE tmp_table (
     folder  NVARCHAR (255),
-    version NVARCHAR (255) 
+    version NVARCHAR (255),
+    ownDb NVARCHAR (255) 
 );
-INSERT INTO tmp_table (folder, version)
+INSERT INTO tmp_table (folder, version, ownDb)
                       VALUES {sb};
 SELECT *
   FROM beatmap
        INNER JOIN
        tmp_table ON beatmap.folderName = tmp_table.folder AND 
-                    beatmap.version = tmp_table.version;
+                    beatmap.version = tmp_table.version AND 
+                    beatmap.own = tmp_table.ownDb;
 ";
 
-            return op.ThreadedProvider.GetDbConnection().Query<Beatmap>(sql, args).ToList();
+            return op.ThreadedProvider.GetDbConnection().Query<Beatmap>(sql).ToList();
         }
 
         // todo: to be optimized
@@ -174,7 +172,7 @@ SELECT *
                 ["tags"] = k.SongTags,
                 ["folderName"] = k.FolderName,
                 ["audioName"] = k.AudioFileName,
-                ["own"] = k.InOwnFolder,
+                ["own"] = k.InOwnDb,
             }).ToList());
         }
         public static void AddNewMaps(this AppDbOperator op, params Beatmap[] beatmaps)

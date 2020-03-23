@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio.Core;
+using Milky.OsuPlayer.Media.Audio.TrackProvider;
 using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Media.Audio
@@ -18,6 +19,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private string _filePath;
         private int _stopCount;
 
+        protected override string Flag { get; } = nameof(ComponentPlayer);
         public override int ProgressRefreshInterval { get; set; } = 500;
 
         private static IWavePlayer _outputDevice;
@@ -30,21 +32,21 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private CancellationTokenSource _cts = new CancellationTokenSource();
 
-        public override PlayerStatus PlayerStatus
+        public override PlayStatus PlayStatus
         {
-            get => HitsoundPlayer?.PlayerStatus ?? PlayerStatus.Stopped;
+            get => HitsoundPlayer?.PlayStatus ?? PlayStatus.Paused;
             protected set => throw new InvalidOperationException();
         }
 
-        public override int Duration
+        public override TimeSpan Duration
         {
-            get => Math.Max(HitsoundPlayer?.Duration ?? 0, SampleTrackPlayer?.Duration ?? 0);
+            get => MathEx.Max(HitsoundPlayer?.Duration ?? TimeSpan.Zero, SampleTrackPlayer?.Duration ?? TimeSpan.Zero);
             protected set => throw new InvalidOperationException();
         }
 
-        public override int PlayTime
+        public override TimeSpan PlayTime
         {
-            get => HitsoundPlayer?.PlayTime ?? 0;
+            get => HitsoundPlayer?.PlayTime ?? TimeSpan.Zero;
             protected set => throw new InvalidOperationException();
         }
 
@@ -58,23 +60,24 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
-        public static ComponentPlayer Current { get; set; }
+        internal static ComponentPlayer Current { get; private set; }
 
         public ComponentPlayer(string filePath, OsuFile osuFile)
         {
+            Current?.Dispose();
+            Current = this;
             _filePath = filePath;
             OsuFile = osuFile;
         }
 
         public override async Task InitializeAsync()
         {
-            Current?.Dispose();
-            Current = this;
             _outputDevice = DeviceProvider.CreateOrGetDefaultDevice();
             _engine = new AudioPlaybackEngine(_outputDevice);
             FileInfo fileInfo = new FileInfo(_filePath);
             DirectoryInfo dirInfo = fileInfo.Directory;
             FileInfo musicInfo = new FileInfo(Path.Combine(dirInfo.FullName, OsuFile.General.AudioFilename));
+
             MusicPlayer = new MusicPlayer(_engine, _outputDevice, musicInfo.FullName);
             await MusicPlayer.InitializeAsync();
 
@@ -86,6 +89,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
             HitsoundPlayer.SetDuration(MusicPlayer.Duration);
             HitsoundPlayer.PlayerFinished += Players_OnFinished;
+            HitsoundPlayer.PlayStatusChanged += s => base.PlayStatus = s;
             SampleTrackPlayer.SetDuration(MusicPlayer.Duration);
             SampleTrackPlayer.PlayerFinished += Players_OnFinished;
             MusicPlayer.PlayerFinished += Players_OnFinished;
@@ -99,6 +103,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private void Players_OnFinished(object sender, EventArgs e)
         {
             _stopCount++;
+            Console.WriteLine($"{nameof(_stopCount)}: {_stopCount};{sender}");
             if (_stopCount < 3) return;
 
             ResetWithoutNotify();
@@ -146,18 +151,11 @@ namespace Milky.OsuPlayer.Media.Audio
             Play();
         }
 
-        public override void SetTime(int ms, bool play = true)
+        public override void SetTime(TimeSpan time, bool play = true)
         {
-            HitsoundPlayer.SetTime(ms, play);
-            SampleTrackPlayer.SetTime(ms, play);
-            if (play)
-            {
-                MusicPlayer.SetTime(ms);
-                HitsoundPlayer.Play();
-                SampleTrackPlayer.Play();
-            }
-            else
-                MusicPlayer.SetTime(ms, false);
+            MusicPlayer.SetTime(time, play);
+            HitsoundPlayer.SetTime(time, play);
+            SampleTrackPlayer.SetTime(time, play);
         }
 
         public void SetPlayMod(PlayMod mod)
@@ -199,7 +197,8 @@ namespace Milky.OsuPlayer.Media.Audio
                     SetTempoMode(AppSettings.Default.Play.PlayUseTempo);
                     break;
                 case nameof(AppSettings.Play.PlaybackRate):
-                    SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, MusicPlayer.PlayerStatus == PlayerStatus.Playing);
+                    SetPlaybackRate(AppSettings.Default.Play.PlaybackRate,
+                        MusicPlayer.PlayStatus == PlayStatus.Playing);
                     break;
             }
         }

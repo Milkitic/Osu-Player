@@ -8,11 +8,11 @@ using OSharp.Beatmap.MetaData;
 namespace Milky.OsuPlayer.Common.Data.EF.Model.V1
 {
     [Table("map_info")]
-    public class MapInfo : IMapIdentifiable
+    public class BeatmapSettings : IMapIdentifiable
     {
-        public MapInfo() { }
+        public BeatmapSettings() { }
 
-        public MapInfo(string id, string version, string folderName, int offset, DateTime? lastPlayTime,
+        public BeatmapSettings(string id, string version, string folderName, int offset, DateTime? lastPlayTime,
             string exportFile = null, DateTime? addTime = null)
         {
             Id = id;
@@ -37,6 +37,10 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model.V1
         [JsonProperty("folder")]
         public string FolderName { get; set; }
 
+        [Required, Column("ownDb")]
+        [JsonProperty("ownDb")]
+        public bool InOwnDb { get; set; }
+
         [Column("offset")]
         [JsonProperty("offset")]
         public int Offset { get; set; }
@@ -60,7 +64,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model.V1
 
     }
 
-    public class MapInfoMap : EntityMap<MapInfo>
+    public class MapInfoMap : EntityMap<BeatmapSettings>
     {
         public MapInfoMap()
         {

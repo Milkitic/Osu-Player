@@ -28,7 +28,7 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
             Map(p => p.SongSource).ToColumn("source");
             Map(p => p.SongTags).ToColumn("tags");
             Map(p => p.AudioFileName).ToColumn("audioName");
-            Map(p => p.InOwnFolder).ToColumn("own");
+            Map(p => p.InOwnDb).ToColumn("own");
             Map(p => p.Version).ToColumn("version");
         }
     }
@@ -106,10 +106,12 @@ namespace Milky.OsuPlayer.Common.Data.EF.Model
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required, Column("own")]
-        public bool InOwnFolder { get; set; }
+        public bool InOwnDb { get; set; }
 
         public string AutoTitle => MetaString.GetUnicode(Title, TitleUnicode) ?? "未知标题";
         public string AutoArtist => MetaString.GetUnicode(Artist, ArtistUnicode) ?? "未知艺术家";
+
+        public bool IsTemporary { get; set; }
 
         #region Only used in HoLLy
         //public string BeatmapChecksum { get; set; }

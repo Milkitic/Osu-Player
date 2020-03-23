@@ -44,6 +44,7 @@
     <Reference Include="NVorbis, Version=0.8.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NVorbis.0.8.6\lib\net35\NVorbis.dll</HintPath>
     </Reference>
+    <Reference Include="osu-database-reader, Version=2.1.1.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -63,6 +64,7 @@
     <Compile Include="Core\SoundTouch\SoundTouchProfile.cs" />
     <Compile Include="Core\SoundTouch\SoundTouchSettings.cs" />
     <Compile Include="Core\SoundTouch\VarispeedSampleProvider.cs" />
+    <Compile Include="ObservablePlayController.cs" />
     <Compile Include="Sounds\SoundElement.cs" />
     <Compile Include="Core\AudioPlaybackEngine.cs" />
     <Compile Include="ComponentPlayer.cs" />
@@ -93,6 +95,14 @@
     <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
       <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
       <Name>OSharp.Beatmap</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Libraries\OSharp.Storyboard\OSharp.Storyboard.csproj">
+      <Project>{D18BDC44-577C-49BA-BB91-1311422D362A}</Project>
+      <Name>OSharp.Storyboard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Libraries\WpfApi\WpfApi.csproj">
+      <Project>{028E6F4E-D538-4B83-904C-C94C2F1E3C83}</Project>
+      <Name>WpfApi</Name>
     </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
       <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>

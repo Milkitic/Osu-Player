@@ -18,6 +18,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Utils;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
@@ -26,7 +27,9 @@ namespace Milky.OsuPlayer.Pages
 {
     public class RecentPlayPageVm : ViewModelBase
     {
-        private AppDbOperator _appDbOperator = new AppDbOperator();
+        private readonly AppDbOperator _dbOperator = new AppDbOperator();
+        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+
         private NumberableObservableCollection<BeatmapDataModel> _beatmaps;
 
         public NumberableObservableCollection<BeatmapDataModel> Beatmaps
@@ -59,14 +62,14 @@ namespace Milky.OsuPlayer.Pages
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _dbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     var fileName = beatmap.InOwnDb
                         ? Path.Combine(Domain.CustomSongPath, map.FolderName)
                         : Path.Combine(Domain.OsuSongPath, map.FolderName);
                     if (!Directory.Exists(fileName))
                     {
-                        Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
+                        Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
                         return;
                     }
 
@@ -82,7 +85,7 @@ namespace Milky.OsuPlayer.Pages
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _dbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
                 });
@@ -96,7 +99,7 @@ namespace Milky.OsuPlayer.Pages
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _dbOperator.GetBeatmapByIdentifiable(beatmap);
                     FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(map),
                         DialogOptionFactory.SelectCollectionOptions);
                 });
@@ -110,7 +113,7 @@ namespace Milky.OsuPlayer.Pages
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _dbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
                     ExportPage.QueueEntry(map);
                 });
@@ -124,11 +127,9 @@ namespace Milky.OsuPlayer.Pages
                 return new DelegateCommand(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
+                    var map = _dbOperator.GetBeatmapByIdentifiable(beatmap);
                     if (map == null) return;
-                    await PlayController.Default.PlayNewFile(map);
-                    await Services.Get<PlayerList>()
-                        .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+                    await _controller.PlayNewAsync(map);
                 });
             }
         }
@@ -140,11 +141,8 @@ namespace Milky.OsuPlayer.Pages
                 return new DelegateCommand(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
-                    await PlayController.Default.PlayNewFile(map);
-                    await Services.Get<PlayerList>()
-                        .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
-
+                    var map = _dbOperator.GetBeatmapByIdentifiable(beatmap);
+                    await _controller.PlayNewAsync(map);
                 });
             }
         }
@@ -156,7 +154,7 @@ namespace Milky.OsuPlayer.Pages
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    _appDbOperator.RemoveFromRecent(beatmap.GetIdentity());
+                    _dbOperator.RemoveFromRecent(beatmap.GetIdentity());
                     Beatmaps.Remove(beatmap);
                     //await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
                 });
@@ -171,7 +169,8 @@ namespace Milky.OsuPlayer.Pages
     {
         private ObservableCollection<Beatmap> _recentBeatmaps;
         private readonly MainWindow _mainWindow;
-        private AppDbOperator _appDbOperator = new AppDbOperator();
+        private readonly AppDbOperator _appDbOperator = new AppDbOperator();
+        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
         private RecentPlayPageVm _viewModel;
 
         public RecentPlayPage()
@@ -192,7 +191,7 @@ namespace Milky.OsuPlayer.Pages
         {
             UpdateList();
             var item = _viewModel.Beatmaps.FirstOrDefault(k =>
-                k.GetIdentity().Equals(Services.Get<PlayerList>().CurrentInfo?.Identity));
+                k.GetIdentity().Equals(_controller.PlayList.CurrentInfo?.Beatmap?.GetIdentity()));
             RecentList.SelectedItem = item;
         }
 
@@ -217,8 +216,9 @@ namespace Milky.OsuPlayer.Pages
             {
                 _appDbOperator.RemoveFromRecent(entry.GetIdentity());
             }
+
             UpdateList();
-            await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+            //await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
         }
 
         private void BtnDelAll_Click(object sender, RoutedEventArgs e)
@@ -286,12 +286,12 @@ namespace Milky.OsuPlayer.Pages
         private void ItemFolder_Click(object sender, RoutedEventArgs e)
         {
             var map = GetSelected();
-            var dir = map.InOwnFolder
+            var dir = map.InOwnDb
                 ? Path.Combine(Domain.CustomSongPath, map.FolderName)
                 : Path.Combine(Domain.OsuSongPath, map.FolderName);
             if (!Directory.Exists(dir))
             {
-                Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
+                Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
                 return;
             }
 
@@ -303,10 +303,7 @@ namespace Milky.OsuPlayer.Pages
             var map = GetSelected();
             if (map == null) return;
 
-            //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
-            //       map.BeatmapFileName));
-            await PlayController.Default.PlayNewFile(map);
-            await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.RecentList);
+            await _controller.PlayNewAsync(map);
         }
 
         private Beatmap GetSelected()

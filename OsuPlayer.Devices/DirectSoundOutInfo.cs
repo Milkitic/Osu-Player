@@ -7,10 +7,10 @@ namespace OsuPlayer.Devices
     {
         public DirectSoundOutInfo()
         {
-            
+
         }
 
-        public DirectSoundOutInfo(string friendlyName,  Guid deviceGuid)
+        public DirectSoundOutInfo(string friendlyName, Guid deviceGuid)
         {
             FriendlyName = friendlyName;
             DeviceGuid = deviceGuid;
@@ -21,6 +21,8 @@ namespace OsuPlayer.Devices
         public string FriendlyName { get; private set; }
         [JsonProperty]
         public Guid DeviceGuid { get; private set; }
+
+        public static IDeviceInfo Default { get; set; } = new DirectSoundOutInfo(null, Guid.Empty);
 
         public override bool Equals(object obj)
         {

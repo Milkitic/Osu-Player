@@ -1,5 +1,4 @@
-﻿using Milky.OsuPlayer.Common.Player;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
 

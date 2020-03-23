@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Control.Notification
+﻿namespace Milky.OsuPlayer.Common
 {
     public enum NotificationType
     {

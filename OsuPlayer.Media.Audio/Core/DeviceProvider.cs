@@ -91,10 +91,12 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                 throw new Exception($"Need {ApartmentState.STA}, but actual {apartmentState}.");
             }
 
+            bool useDefault = false;
             if (deviceInfo is null)
             {
-                Console.WriteLine("Device is null, use wasapi default.");
-                deviceInfo = WasapiInfo.Default;
+                Console.Write("The output device was not set in app's config");
+                deviceInfo = GetDefaultDeviceInfo();
+                useDefault = true;
             }
 
             if (CacheList == null) EnumerateAvailableDevices().ToList();
@@ -104,11 +106,13 @@ namespace Milky.OsuPlayer.Media.Audio.Core
             //}
 
             IWavePlayer device = null;
-            if (!CacheList.Contains(deviceInfo))
+            if (!useDefault && !CacheList.Contains(deviceInfo))
             {
                 if (deviceInfo is WasapiInfo wasapiInfo)
                 {
-                    var foundResult = CacheList.Where(k => k.OutputMethod == OutputMethod.Wasapi).Cast<WasapiInfo>()
+                    var foundResult = CacheList
+                        .Where(k => k.OutputMethod == OutputMethod.Wasapi)
+                        .Cast<WasapiInfo>()
                         .FirstOrDefault(k => k.DeviceId == wasapiInfo.DeviceId);
                     if (foundResult?.Device != null)
                     {
@@ -116,57 +120,78 @@ namespace Milky.OsuPlayer.Media.Audio.Core
                     }
                     else
                     {
-                        Console.WriteLine("Device not found, use wasapi default.");
-                        device = new WasapiOut(AudioClientShareMode.Shared, 1);
+                        Console.Write("The output device in app's config was not detected in this system");
+                        deviceInfo = GetDefaultDeviceInfo();
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Device not found, use wasapi default.");
-                    device = new WasapiOut(AudioClientShareMode.Shared, 1);
+                    Console.Write("The output device in app's config was not detected in this system");
+                    deviceInfo = GetDefaultDeviceInfo();
                 }
             }
 
-            if (device is null)
+            switch (deviceInfo.OutputMethod)
             {
-                switch (deviceInfo.OutputMethod)
-                {
-                    case OutputMethod.WaveOut:
-                        var waveOut = (WaveOutInfo)deviceInfo;
-                        device = new WaveOutEvent
-                        {
-                            DeviceNumber = waveOut.DeviceNumber,
-                            DesiredLatency = latency
-                        };
-                        break;
-                    case OutputMethod.DirectSound:
-                        var dsOut = (DirectSoundOutInfo)deviceInfo;
+                case OutputMethod.WaveOut:
+                    var waveOut = (WaveOutInfo)deviceInfo;
+                    device = new WaveOutEvent
+                    {
+                        DeviceNumber = waveOut.DeviceNumber,
+                        DesiredLatency = latency
+                    };
+                    break;
+                case OutputMethod.DirectSound:
+                    var dsOut = (DirectSoundOutInfo)deviceInfo;
+                    if (dsOut.Equals(DirectSoundOutInfo.Default))
+                    {
+                        device = new DirectSoundOut(40);
+                    }
+                    else
+                    {
                         device = new DirectSoundOut(dsOut.DeviceGuid, latency);
-                        break;
-                    case OutputMethod.Wasapi:
-                        var wasapi = (WasapiInfo)deviceInfo;
-                        if (wasapi.Equals(WasapiInfo.Default))
-                        {
-                            device = new WasapiOut(AudioClientShareMode.Shared, 1);
-                        }
-                        else
-                        {
-                            device = new WasapiOut(wasapi.Device,
-                                isExclusive ? AudioClientShareMode.Exclusive : AudioClientShareMode.Shared, true,
-                                latency);
-                        }
-                        break;
-                    case OutputMethod.Asio:
-                        var asio = (AsioOutInfo)deviceInfo;
-                        device = new AsioOut(asio.FriendlyName);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                    }
+                    break;
+                case OutputMethod.Wasapi:
+                    var wasapi = (WasapiInfo)deviceInfo;
+                    if (wasapi.Equals(WasapiInfo.Default))
+                    {
+                        device = new WasapiOut(AudioClientShareMode.Shared, 1);
+                    }
+                    else
+                    {
+                        device = new WasapiOut(wasapi.Device,
+                              isExclusive ? AudioClientShareMode.Exclusive : AudioClientShareMode.Shared, true,
+                              latency);
+                    }
+                    break;
+                case OutputMethod.Asio:
+                    var asio = (AsioOutInfo)deviceInfo;
+                    device = new AsioOut(asio.FriendlyName);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             _currentDevice = device;
             return device;
+        }
+
+        private static IDeviceInfo GetDefaultDeviceInfo()
+        {
+            IDeviceInfo deviceInfo;
+            if (MMDeviceEnumerator.HasDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia))
+            {
+                deviceInfo = WasapiInfo.Default;
+                Console.WriteLine(", use WASAPI default.");
+            }
+            else
+            {
+                deviceInfo = DirectSoundOutInfo.Default;
+                Console.WriteLine(", use DirectSound default.");
+            }
+
+            return deviceInfo;
         }
 
         public static IEnumerable<IDeviceInfo> EnumerateAvailableDevices()

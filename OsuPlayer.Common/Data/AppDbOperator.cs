@@ -3,7 +3,6 @@ using Milky.OsuPlayer.Common.Data.Dapper;
 using Milky.OsuPlayer.Common.Data.Dapper.Provider;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
-using Milky.OsuPlayer.Common.Player;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -60,6 +59,7 @@ CREATE TABLE {TABLE_MAP} (
     [id]           NVARCHAR (40)        NOT NULL,
     [version]      NVARCHAR (255) NOT NULL,
     [folder]       NVARCHAR (255) NOT NULL,
+    [ownDb]          BIT NOT NULL,
     [offset]       INT                   NOT NULL,
     [lastPlayTime] DATETIME,
     [exportFile]   NVARCHAR (700),
@@ -84,7 +84,8 @@ CREATE TABLE {TABLE_SB} (
     [thumbPath]        NVARCHAR (40) NOT NULL,
     [thumbVideoPath]   NVARCHAR (40) NOT NULL,
     [version]          NVARCHAR (255) NOT NULL,
-    [folder]           NVARCHAR (255) NOT NULL
+    [folder]           NVARCHAR (255) NOT NULL,
+    [own]              BIT NOT NULL
 );
 ",
                     [TABLE_BEATMAP] = $@"
@@ -130,9 +131,9 @@ PRAGMA case_sensitive_like=false;"
             return ThreadedProvider.Query<CollectionRelation>(TABLE_RELATION).ToList();
         }
 
-        private List<MapInfo> GetMaps()
+        private List<BeatmapSettings> GetMaps()
         {
-            return ThreadedProvider.Query<MapInfo>(TABLE_MAP).ToList();
+            return ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP).ToList();
         }
 
         public static void ValidateDb()
@@ -161,13 +162,14 @@ PRAGMA case_sensitive_like=false;"
             }
         }
 
-        public MapInfo GetMapFromDb(MapIdentity id)
+        public BeatmapSettings GetMapFromDb(MapIdentity id)
         {
-            var map = ThreadedProvider.Query<MapInfo>(TABLE_MAP,
+            var map = ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
                     new Where[]
                     {
                         ("version", id.Version),
-                        ("folder", id.FolderName)
+                        ("folder", id.FolderName),
+                        ("ownDb", id.InOwnDb)
                     },
                     count: 1)
                 .FirstOrDefault();
@@ -180,14 +182,16 @@ PRAGMA case_sensitive_like=false;"
                     ["id"] = guid,
                     ["version"] = id.Version,
                     ["folder"] = id.FolderName,
+                    ["ownDb"] = id.InOwnDb,
                     ["offset"] = 0
                 });
 
-                return new MapInfo
+                return new BeatmapSettings
                 {
                     Id = guid,
                     Version = id.Version,
                     FolderName = id.FolderName,
+                    InOwnDb = id.InOwnDb,
                     Offset = 0
                 };
             }
@@ -195,27 +199,28 @@ PRAGMA case_sensitive_like=false;"
             return map;
         }
 
-        public List<MapInfo> GetRecentList()
+        public List<BeatmapSettings> GetRecentList()
         {
-            return ThreadedProvider.Query<MapInfo>(TABLE_MAP,
+            return ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
                     ("lastPlayTime", null, "!="),
                     orderColumn: "lastPlayTime")
                 .ToList();
         }
 
-        public List<MapInfo> GetExportedMaps()
+        public List<BeatmapSettings> GetExportedMaps()
         {
             return ThreadedProvider.GetDbConnection()
-                .Query<MapInfo>(@"SELECT * FROM map_info WHERE exportFile IS NOT NULL AND TRIM(exportFile) <> ''").ToList();
+                .Query<BeatmapSettings>(@"SELECT * FROM map_info WHERE exportFile IS NOT NULL AND TRIM(exportFile) <> ''").ToList();
         }
 
-        public List<MapInfo> GetMapsFromCollection(Collection collection)
+        public List<BeatmapSettings> GetMapsFromCollection(Collection collection)
         {
             var result = ThreadedProvider.GetDbConnection()
-                .Query<MapInfo>(@"
+                .Query<BeatmapSettings>(@"
 SELECT map.id,
        map.version,
        map.folder,
+       map.ownDb,
        map.[offset],
        map.lastPlayTime,
        map.exportFile,
@@ -237,7 +242,7 @@ SELECT map.id,
             return ThreadedProvider.Query<Collection>(TABLE_COLLECTION).ToList();
         }
 
-        public List<Collection> GetCollectionsByMap(MapInfo map)
+        public List<Collection> GetCollectionsByMap(BeatmapSettings beatmapSettings)
         {
             return ThreadedProvider.GetDbConnection()
                 .Query<Collection>(@"
@@ -256,7 +261,7 @@ SELECT collection.id,
        AS relation
        INNER JOIN
        collection ON relation.collectionId = collection.id;
-", new { mapId = map.Id }).ToList();
+", new { mapId = beatmapSettings.Id }).ToList();
         }
 
         public void AddCollection(string name, bool locked = false)
@@ -291,7 +296,6 @@ SELECT collection.id,
         //todo: 添加时有误
         public void AddMapsToCollection(IList<Beatmap> beatmaps, Collection collection)
         {
-            var currentInfo = Services.Get<PlayerList>().CurrentInfo;
             if (beatmaps.Count < 1) return;
 
             var sb = new StringBuilder($"INSERT INTO {TABLE_RELATION} (id, collectionId, mapId, addTime) VALUES ");
@@ -299,13 +303,6 @@ SELECT collection.id,
             {
                 var map = GetMapFromDb(beatmap.GetIdentity());
                 sb.Append($"('{Guid.NewGuid().ToString()}', '{collection.Id}', '{map.Id}', '{DateTime.Now}'),"); // maybe no injection here
-
-                // todo: not suitable position
-                if (currentInfo == null) continue;
-                if (collection.LockedBool && currentInfo.Identity.Equals(beatmap.GetIdentity()))
-                {
-                    currentInfo.IsFavorite = true;
-                }
             }
 
             sb.Remove(sb.Length - 1, 1).Append(";");
@@ -398,14 +395,6 @@ SELECT collection.id,
         {
             var map = GetMapFromDb(id);
             ThreadedProvider.Delete(TABLE_RELATION, new Where[] { ("collectionId", collection.Id), ("mapId", map.Id) });
-
-            // todo: not suitable position
-            var currentInfo = Services.Get<PlayerList>().CurrentInfo;
-            if (currentInfo == null) return;
-            if (collection.LockedBool && currentInfo.Identity.Equals(id))
-            {
-                currentInfo.IsFavorite = false;
-            }
         }
 
         public bool GetMapThumb(Guid beatmapDbId, out string thumbPath)
@@ -465,7 +454,8 @@ SELECT collection.id,
                         ["thumbPath"] = sbInfo.SbThumbPath,
                         ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
                         ["version"] = sbInfo.Version,
-                        ["folder"] = sbInfo.FolderName
+                        ["folder"] = sbInfo.FolderName,
+                        ["ownDb"] = sbInfo.InOwnDb
                     },
                     ("mapId", beatmapDbId, "=="));
             }
@@ -479,7 +469,8 @@ SELECT collection.id,
                         ["thumbPath"] = sbInfo.SbThumbPath,
                         ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
                         ["version"] = sbInfo.Version,
-                        ["folder"] = sbInfo.FolderName
+                        ["folder"] = sbInfo.FolderName,
+                        ["ownDb"] = sbInfo.InOwnDb
                     }
                 );
             }
@@ -500,7 +491,8 @@ SELECT collection.id,
                 new Where[]
                 {
                     ("version", id.Version),
-                    ("folder", id.FolderName)
+                    ("folder", id.FolderName),
+                    ("ownDb", id.InOwnDb)
                 },
                 count: 1);
         }

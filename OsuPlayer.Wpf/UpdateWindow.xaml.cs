@@ -34,8 +34,7 @@ namespace Milky.OsuPlayer
         {
             var asset = _release?.Assets.FirstOrDefault(k => k.Name == "Osu-Player.zip");
             if (asset == null) return;
-            _mainWindow.ForceExit = true;
-            _mainWindow.Close();
+            _mainWindow.ForceClose();
             _downloader = new Downloader(asset.BrowserDownloadUrl);
             _downloader.OnStartDownloading += Downloader_OnStartDownloading;
             _downloader.OnDownloading += Downloader_OnDownloading;

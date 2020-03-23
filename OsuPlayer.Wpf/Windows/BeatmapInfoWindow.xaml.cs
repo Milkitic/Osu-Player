@@ -21,9 +21,9 @@ namespace Milky.OsuPlayer.Windows
     /// </summary>
     public partial class BeatmapInfoWindow : Window
     {
-        private CurrentInfo _info;
+        private BeatmapContext _info;
 
-        public BeatmapInfoWindow(CurrentInfo info)
+        public BeatmapInfoWindow(BeatmapContext info)
         {
             InitializeComponent();
             DataContext = info;
@@ -32,12 +32,12 @@ namespace Milky.OsuPlayer.Windows
 
         private void SLink_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://osu.ppy.sh/s/" + _info.BeatmapsetId);
+            Process.Start("https://osu.ppy.sh/s/" + _info.BeatmapDetail.Metadata.BeatmapsetId);
         }
 
         private void BLink_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://osu.ppy.sh/b/" + _info.BeatmapId);
+            Process.Start("https://osu.ppy.sh/b/" + _info.BeatmapDetail.Metadata.BeatmapId);
         }
     }
 }

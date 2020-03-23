@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Instances;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
 
@@ -37,49 +38,47 @@ namespace Milky.OsuPlayer.Control
             remove => RemoveHandler(CloseRequestedEvent, value);
         }
 
-        private PlayerList _player;
+        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
 
         public PlayModeControl()
         {
             InitializeComponent();
-            _player = Services.Get<PlayerList>();
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            if (_player == null) return;
-            _player.PropertyChanged += Player_PropertyChanged;
-            SwitchOption(_player.PlayerMode);
+            _controller.PlayList.PropertyChanged += Player_PropertyChanged;
+            SwitchOption(_controller.PlayList.PlayMode);
         }
 
         private void Player_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(_player.PlayerMode))
+            if (e.PropertyName == nameof(_controller.PlayList.PlayMode))
             {
-                SwitchOption(_player.PlayerMode);
+                SwitchOption(_controller.PlayList.PlayMode);
             }
         }
 
-        private void SwitchOption(PlayerMode playerMode)
+        private void SwitchOption(PlayMode playMode)
         {
-            switch (playerMode)
+            switch (playMode)
             {
-                case PlayerMode.Normal:
+                case PlayMode.Normal:
                     ModeNormal.IsChecked = true;
                     break;
-                case PlayerMode.Random:
+                case PlayMode.Random:
                     ModeRandom.IsChecked = true;
                     break;
-                case PlayerMode.Loop:
+                case PlayMode.Loop:
                     ModeLoop.IsChecked = true;
                     break;
-                case PlayerMode.LoopRandom:
+                case PlayMode.LoopRandom:
                     ModeLoopRandom.IsChecked = true;
                     break;
-                case PlayerMode.Single:
+                case PlayMode.Single:
                     ModeSingle.IsChecked = true;
                     break;
-                case PlayerMode.SingleLoop:
+                case PlayMode.SingleLoop:
                     ModeSingleLoop.IsChecked = true;
                     break;
                 default:
@@ -87,11 +86,11 @@ namespace Milky.OsuPlayer.Control
             }
         }
 
-        private async void Mode_Changed(object sender, RoutedEventArgs e)
+        private void Mode_Changed(object sender, RoutedEventArgs e)
         {
             if (e.OriginalSource is RadioButton radio)
             {
-                await PlayController.Default.SetPlayMode((PlayerMode)radio.Tag);
+                _controller.PlayList.PlayMode = (PlayMode)radio.Tag;
                 RaiseEvent(new RoutedEventArgs(CloseRequestedEvent, this));
             }
         }

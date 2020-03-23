@@ -4,13 +4,13 @@ namespace Milky.OsuPlayer.Media.Audio.Core
 {
     public class ProgressEventArgs : EventArgs
     {
-        public ProgressEventArgs(long position, long duration)
+        public ProgressEventArgs(TimeSpan position, TimeSpan duration)
         {
             Position = position;
             Duration = duration;
         }
 
-        public long Position { get; }
-        public long Duration { get; }
+        public TimeSpan Position { get; }
+        public TimeSpan Duration { get; }
     }
 }

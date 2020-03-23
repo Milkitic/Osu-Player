@@ -21,6 +21,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xaml;
+using Milky.OsuPlayer.Media.Audio;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -271,7 +272,7 @@ namespace Milky.OsuPlayer.ViewModels
                         : Path.Combine(Domain.OsuSongPath, map.FolderName);
                     if (!Directory.Exists(fileName))
                     {
-                        Notification.Show(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
+                        Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
                         return;
                     }
 
@@ -339,9 +340,8 @@ namespace Milky.OsuPlayer.ViewModels
                     var beatmap = (BeatmapDataModel)param;
                     var map = GetHighestSrBeatmap(beatmap);
                     if (map == null) return;
-                    await PlayController.Default.PlayNewFile(map);
-                    await Services.Get<PlayerList>()
-                        .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+                    var controller = Services.Get<ObservablePlayController>();
+                    await controller.PlayNewAsync(map);
                 });
             }
         }
@@ -359,9 +359,8 @@ namespace Milky.OsuPlayer.ViewModels
                         async (selected, arg) =>
                         {
                             var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
-                            await PlayController.Default.PlayNewFile(map);
-                            await Services.Get<PlayerList>()
-                                .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+                            var controller = Services.Get<ObservablePlayController>();
+                                await controller.PlayNewAsync(map, true);
                         });
                     FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
                 });

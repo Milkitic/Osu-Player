@@ -14,13 +14,13 @@ namespace Milky.OsuPlayer.Common.Data
     {
         private static AppDbOperator _beatmapDbOperator = new AppDbOperator();
         public static bool EqualsTo(this IMapIdentifiable id1, IMapIdentifiable id2) =>
-            id1.FolderName == id2.FolderName && id1.Version == id2.Version;
+            id1.FolderName == id2.FolderName && id1.Version == id2.Version && id1.InOwnDb == id2.InOwnDb;
 
         public static MapIdentity GetIdentity(this BeatmapEntry entry) => entry != null ?
-            new MapIdentity(entry.FolderName, entry.Version) : default;
+            new MapIdentity(entry.FolderName, entry.Version, false) : default;
         public static MapIdentity GetIdentity(this IMapIdentifiable identifiable) =>
             identifiable != null
-                ? new MapIdentity(identifiable.FolderName, identifiable.Version)
+                ? new MapIdentity(identifiable.FolderName, identifiable.Version, identifiable.InOwnDb)
                 : default;
 
         public static List<BeatmapDataModel> ToDataModelList(this IEnumerable<IMapIdentifiable> identifiable, bool distinctByVersion = false)
@@ -40,7 +40,7 @@ namespace Milky.OsuPlayer.Common.Data
                 case List<BeatmapDataModel> dataModels:
                     ret = dataModels;
                     break;
-                case List<MapInfo> infos:
+                case List<BeatmapSettings> infos:
                     ret = _beatmapDbOperator.GetBeatmapsByIdentifiable(infos).InnerToDataModelList();
                     break;
                 default:
@@ -68,7 +68,7 @@ namespace Milky.OsuPlayer.Common.Data
                     TitleUnicode = beatmap.TitleUnicode,
                     Version = beatmap.Version,
                     BeatmapFileName = beatmap.BeatmapFileName,
-                    InOwnDb = beatmap.InOwnFolder,
+                    InOwnDb = beatmap.InOwnDb,
                     BeatmapDbId = beatmap.Id
                 };
                 try
