@@ -158,7 +158,6 @@ namespace Milky.OsuPlayer.Media.Audio.Sounds
 
     public enum SlideControlMode
     {
-        NewSample, ChangeBalance, Stop,
-        Volume
+        NewSample, ChangeBalance, Stop, Volume
     }
 }
