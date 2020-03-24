@@ -11,10 +11,12 @@ namespace PlayerTest.TrackProvider
     class NightcoreTilingTrackProvider : ITrackProvider
     {
         private readonly OsuFile _osuFile;
+        private readonly TimeSpan _maxDuration;
 
-        public NightcoreTilingTrackProvider(OsuFile osuFile)
+        public NightcoreTilingTrackProvider(OsuFile osuFile, TimeSpan maxDuration)
         {
             _osuFile = osuFile;
+            _maxDuration = maxDuration;
         }
 
         private static readonly string NC_FINISH = Path.Combine(Domain.DefaultPath, "nightcore-finish.wav");
@@ -42,36 +44,23 @@ namespace PlayerTest.TrackProvider
             {
                 [3] = new RhythmGroup(6, 4, new[]
                 {
-                     (NC_KICK, 2),
-                     (NC_CLAP, 1),
-                     (NC_KICK, 2),
-                     (NC_CLAP, 1),
+                     (NC_KICK, 2), (NC_CLAP, 1), (NC_KICK, 2), (NC_CLAP, 1),
                 }),
                 [4] = new RhythmGroup(8, 4, new[]
                 {
-                     (NC_KICK, 2),
-                     (NC_CLAP, 2),
-                     (NC_KICK, 2),
-                     (NC_CLAP, 2),
+                     (NC_KICK, 2), (NC_CLAP, 2), (NC_KICK, 2), (NC_CLAP, 2),
                 }),
                 [5] = new RhythmGroup(5, 8, new[]
                 {
-                     (NC_KICK, 2),
-                     (NC_CLAP, 2),
-                     (NC_KICK, 1),
+                     (NC_KICK, 2), (NC_CLAP, 2), (NC_KICK, 1),
                 }),
                 [6] = new RhythmGroup(6, 8, new[]
                 {
-                     (NC_KICK, 2),
-                     (NC_CLAP, 2),
-                     (NC_KICK, 2),
+                     (NC_KICK, 2), (NC_CLAP, 2), (NC_KICK, 2),
                 }),
                 [7] = new RhythmGroup(7, 8, new[]
                 {
-                     (NC_KICK, 2),
-                     (NC_CLAP, 2),
-                     (NC_KICK, 2),
-                     (NC_CLAP, 1),
+                     (NC_KICK, 2), (NC_CLAP, 2), (NC_KICK, 2), (NC_CLAP, 1),
                 })
             };
 
@@ -86,10 +75,11 @@ namespace PlayerTest.TrackProvider
                 )
                 .ToList();
 
-            var maxTime = MathEx.Max(ComponentPlayer.Current.MusicPlayer.Duration.TotalMilliseconds,
-                OsuFile.HitObjects.MaxTime,
-                timingSection.MaxTime);
-            var hitsoundList = new List<SpecificFileSoundElement>();
+            var maxTime = MathEx.Max(_maxDuration.TotalMilliseconds,
+                _osuFile.HitObjects.MaxTime,
+                timingSection.MaxTime
+            );
+            var hitsoundList = new List<SoundElement>();
 
             for (int i = 0; i < redlineGroups.Count; i++)
             {
@@ -118,21 +108,27 @@ namespace PlayerTest.TrackProvider
                         if (exit) break;
                         if (j == 0)
                         {
-                            var value = GetHitsoundAndSkip( currentTime, 0, NC_FINISH);
-                            hitsoundList.Add(value);
+                            var (updatedCurrent, soundElement) =
+                                 GetHitsoundAndSkip(currentTime, 0, NC_FINISH);
+                            hitsoundList.Add(soundElement);
+                            currentTime = updatedCurrent;
                         }
 
                         foreach (var (fileName, skipRhythm) in ncRhythm.RelativeNodes)
                         {
-                            if (exit) break;
-                            var ele = GetHitsoundAndSkip( currentTime, interval * skipRhythm, fileName);
-                            if (ele.Offset >= endTime)
+                            var (updatedCurrent, soundElement) =
+                                 GetHitsoundAndSkip(currentTime, interval * skipRhythm, fileName);
+                            currentTime = updatedCurrent;
+                            if (!(soundElement.Offset >= endTime))
                             {
+                                hitsoundList.Add(soundElement);
+                            }
+                            else
+                            {
+                                if (soundElement.Offset.Equals(endTime)) hitsoundList.Add(soundElement);
                                 exit = true;
                                 break;
                             }
-
-                            hitsoundList.Add(ele);
                         }
                     }
                 }
@@ -141,13 +137,13 @@ namespace PlayerTest.TrackProvider
             return hitsoundList;
         }
 
-        private async Task<(double, SoundElement)> GetHitsoundAndSkip(double currentTime, double skipTime, string fileName)
+        private static (double, SoundElement) GetHitsoundAndSkip(double currentTime, double skipTime,
+            string fileName)
         {
-            var ele = await SoundElement.CreateAsync(currentTime, 1, 0, fileName);
+            var ele = SoundElement.Create(currentTime, 1, 0, fileName);
             currentTime += skipTime;
             return (currentTime, ele);
         }
-
     }
 
     public static class MathEx

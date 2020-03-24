@@ -1,23 +1,33 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using PlayerTest.Wave;
 
 namespace PlayerTest.Player.Channel
 {
     public sealed class SoundElement
     {
+        private CachedSound _cachedSound;
         private SoundElement() { }
 
         public double Offset { get; private set; }
-        internal double NearlyPlayEndTime => CachedSound.Duration.TotalMilliseconds + Offset;
+        internal double NearlyPlayEndTime => GetCachedSoundAsync().Result.Duration.TotalMilliseconds + Offset;
         public float Volume { get; private set; }
         public float Balance { get; private set; }
         public string FilePath { get; private set; }
         public SlideType SlideType { get; private set; }
         public SlideControlType ControlType { get; private set; } = SlideControlType.None;
 
-        internal CachedSound CachedSound { get; private set; }
+        internal async Task<CachedSound> GetCachedSoundAsync()
+        {
+            if (_cachedSound != null)
+                return _cachedSound;
 
-        public static async Task<SoundElement> CreateAsync(double offset, float volume, float balance, string filePath)
+            var result = await CachedSound.GetOrCreateCacheSound(FilePath);
+            _cachedSound = result;
+            return result;
+        }
+
+        public static SoundElement Create(double offset, float volume, float balance, string filePath)
         {
             var se = new SoundElement
             {
@@ -25,13 +35,12 @@ namespace PlayerTest.Player.Channel
                 Volume = volume,
                 Balance = balance,
                 FilePath = filePath,
-                CachedSound = await CachedSound.GetOrCreateCacheSound(filePath)
             };
 
             return se;
         }
 
-        public static async Task<SoundElement> CreateSlideSignalAsync(double offset, float volume, float balance,
+        public static SoundElement CreateSlideSignal(double offset, float volume, float balance,
             string filePath, SlideType slideType)
         {
             return new SoundElement
@@ -40,7 +49,6 @@ namespace PlayerTest.Player.Channel
                 Volume = volume,
                 Balance = balance,
                 FilePath = filePath,
-                CachedSound = await CachedSound.GetOrCreateCacheSound(filePath),
                 ControlType = SlideControlType.StartNew,
                 SlideType = slideType
             };

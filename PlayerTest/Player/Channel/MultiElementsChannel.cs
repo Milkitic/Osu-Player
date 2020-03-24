@@ -127,14 +127,15 @@ namespace PlayerTest.Player.Channel
                         switch (soundElement.ControlType)
                         {
                             case SlideControlType.None:
+                                var cachedSound = await soundElement.GetCachedSoundAsync();
                                 Submixer.RemoveMixerInput(_sliderSlideBalance);
                                 Submixer.RemoveMixerInput(_sliderAdditionBalance);
-                                Submixer.PlaySound(soundElement.CachedSound,
-                                    soundElement.Volume,
+                                Submixer.PlaySound(cachedSound, soundElement.Volume,
                                     soundElement.Balance * BalanceFactor);
                                 break;
                             case SlideControlType.StartNew:
-                                using (var mem = new MemoryStream(soundElement.CachedSound.RawFileData))
+                                cachedSound = await soundElement.GetCachedSoundAsync();
+                                using (var mem = new MemoryStream(cachedSound.RawFileData))
                                 {
                                     var myf = new WaveFileReader(mem);
                                     var loop = new LoopStream(myf);

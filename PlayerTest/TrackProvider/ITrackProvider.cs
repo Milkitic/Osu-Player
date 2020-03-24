@@ -5,7 +5,6 @@ namespace PlayerTest.TrackProvider
 {
     public interface ITrackProvider
     {
-
         IEnumerable<SoundElement> GetSoundElements();
     }
 }

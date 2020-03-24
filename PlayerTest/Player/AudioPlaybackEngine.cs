@@ -17,7 +17,11 @@ namespace PlayerTest.Player
         private readonly VolumeSampleProvider _volumeProvider;
 
         public static ICollection<string> SupportExtensions { get; } =
-            new ReadOnlyCollection<string>(new[] { ".wav", ".mp3", ".ogg" });
+            new ReadOnlyCollection<string>(new[] { WavExtension, Mp3Extension, OggExtension });
+
+        public const string WavExtension = ".wav";
+        public const string OggExtension = ".ogg";
+        public const string Mp3Extension = ".mp3";
 
         public MixingSampleProvider RootMixer { get; }
         public float RootVolume

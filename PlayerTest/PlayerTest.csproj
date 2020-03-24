@@ -106,6 +106,7 @@
     <Compile Include="SoundTouch\SoundTouchInterop64.cs" />
     <Compile Include="SoundTouch\SoundTouchProfile.cs" />
     <Compile Include="SoundTouch\SoundTouchSettings.cs" />
+    <Compile Include="Domain.cs" />
     <Compile Include="TrackProvider\NightcoreTilingTrackProvider.cs" />
     <Compile Include="TrackProvider\ITrackProvider.cs" />
     <Compile Include="VariableStopwatch.cs" />
