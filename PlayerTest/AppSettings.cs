@@ -17,7 +17,7 @@ namespace PlayerTest
             Default = this;
         }
         public static AppSettings Default { get; private set; }
-        public PlaySection Play { get; set; }
+        public PlaySection Play { get; set; } = new PlaySection();
 
         public static void SaveDefault()
         {

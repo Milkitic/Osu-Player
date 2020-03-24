@@ -43,8 +43,8 @@ namespace PlayerTest.Player.Channel
                 PlaybackRate = _playbackRate
             };
 
-            var stream = await WaveFormatFactory.Resample(_path);
-            _fileReader = new MyAudioFileReader(stream, StreamType.Wav);
+            var type = StreamType.Wav;
+            _fileReader = new MyAudioFileReader(await WaveFormatFactory.Resample(_path, type), type);
 
             Duration = _fileReader.TotalTime;
 

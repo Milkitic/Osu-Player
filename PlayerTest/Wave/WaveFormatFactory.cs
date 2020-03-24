@@ -12,7 +12,8 @@ namespace PlayerTest.Wave
     {
         public static int SampleRate { get; set; } = 44100;
         public static int Channels { get; set; } = 2;
-        public static WaveFormat WaveFormat => WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, Channels);
+        public static WaveFormat IeeeWaveFormat => WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, Channels);
+        public static WaveFormat PcmWaveFormat => new WaveFormat(SampleRate, Channels);
 
         public static async Task Resample(string path, string targetPath)
         {
@@ -21,7 +22,7 @@ namespace PlayerTest.Wave
                 try
                 {
                     using (var audioFileReader = new MyAudioFileReader(path))
-                    using (var resampler = new MediaFoundationResampler(audioFileReader, WaveFormat))
+                    using (var resampler = new MediaFoundationResampler(audioFileReader, PcmWaveFormat))
                     using (var stream = new FileStream(targetPath, FileMode.Create))
                     {
                         resampler.ResamplerQuality = ResamplerQuality.Highest;
@@ -36,19 +37,30 @@ namespace PlayerTest.Wave
             }).ConfigureAwait(false);
         }
 
-        public static async Task<MemoryStream> Resample(string path)
+        public static async Task<MemoryStream> Resample(string path, StreamType type)
         {
             return await Task.Run(() =>
             {
                 try
                 {
-                    using (var audioFileReader = new AudioFileReader(path))
-                    using (var resampler = new MediaFoundationResampler(audioFileReader, WaveFormat))
+                    using (var audioFileReader = new MyAudioFileReader(path))
                     {
-                        var stream = new MemoryStream();
-                        resampler.ResamplerQuality = 60;
-                        WaveFileWriter.WriteWavFileToStream(stream, resampler);
-                        return stream;
+                        if (type == StreamType.Wav)
+                        {
+                            using (var resampler = new MediaFoundationResampler(audioFileReader, PcmWaveFormat))
+                            {
+                                var stream = new MemoryStream();
+                                resampler.ResamplerQuality = 60;
+                                WaveFileWriter.WriteWavFileToStream(stream, resampler);
+                                stream.Position = 0;
+                                return stream;
+                                //return stream.ToArray();
+                            }
+                        }
+                        else
+                        {
+                            throw new NotSupportedException();
+                        }
                     }
                 }
                 catch (Exception ex)

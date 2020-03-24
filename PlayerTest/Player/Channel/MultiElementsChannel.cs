@@ -32,6 +32,7 @@ namespace PlayerTest.Player.Channel
         private VolumeSampleProvider _sliderSlideVolume;
         private BalanceSampleProvider _sliderAdditionBalance;
         private VolumeSampleProvider _sliderAdditionVolume;
+        private MemoryStream _mem;
 
         public bool IsPlayRunning => _playingTask != null &&
                                      !_playingTask.IsCanceled &&
@@ -70,7 +71,7 @@ namespace PlayerTest.Player.Channel
 
             Duration = TimeSpan.FromMilliseconds(_soundElements.Max(k => k.Offset));
 
-            Submixer = new MixingSampleProvider(WaveFormatFactory.WaveFormat);
+            Submixer = new MixingSampleProvider(WaveFormatFactory.IeeeWaveFormat);
             _volumeProvider = new VolumeSampleProvider(Submixer);
             Engine.AddRootSample(_volumeProvider);
 
@@ -136,34 +137,34 @@ namespace PlayerTest.Player.Channel
                                 break;
                             case SlideControlType.StartNew:
                                 cachedSound = await soundElement.GetCachedSoundAsync();
-                                using (var mem = new MemoryStream(cachedSound.RawFileData))
+                                _mem?.Dispose();
+                                _mem = new MemoryStream(cachedSound.AudioData);
+                                //var myf = new WaveFileReader(mem);
+                                var myf = new RawSourceWaveStream(_mem, cachedSound.WaveFormat);
+                                var loop = new LoopStream(myf);
+                                if (soundElement.SlideType.HasFlag(HitsoundType.Slide))
                                 {
-                                    var myf = new WaveFileReader(mem);
-                                    var loop = new LoopStream(myf);
-                                    if (soundElement.SlideType.HasFlag(HitsoundType.Slide))
+                                    _sliderSlideVolume = new VolumeSampleProvider(loop.ToSampleProvider())
                                     {
-                                        _sliderSlideVolume = new VolumeSampleProvider(loop.ToSampleProvider())
-                                        {
-                                            Volume = soundElement.Volume
-                                        };
-                                        _sliderSlideBalance = new BalanceSampleProvider(_sliderSlideVolume)
-                                        {
-                                            Balance = soundElement.Balance * BalanceFactor
-                                        };
-                                        Submixer.AddMixerInput(_sliderSlideBalance);
-                                    }
-                                    else if (soundElement.SlideType.HasFlag(HitsoundType.SlideWhistle))
+                                        Volume = soundElement.Volume
+                                    };
+                                    _sliderSlideBalance = new BalanceSampleProvider(_sliderSlideVolume)
                                     {
-                                        _sliderAdditionVolume = new VolumeSampleProvider(loop.ToSampleProvider())
-                                        {
-                                            Volume = soundElement.Volume
-                                        };
-                                        _sliderAdditionBalance = new BalanceSampleProvider(_sliderAdditionVolume)
-                                        {
-                                            Balance = soundElement.Balance * BalanceFactor
-                                        };
-                                        Submixer.AddMixerInput(_sliderAdditionBalance);
-                                    }
+                                        Balance = soundElement.Balance * BalanceFactor
+                                    };
+                                    Submixer.AddMixerInput(_sliderSlideBalance);
+                                }
+                                else if (soundElement.SlideType.HasFlag(HitsoundType.SlideWhistle))
+                                {
+                                    _sliderAdditionVolume = new VolumeSampleProvider(loop.ToSampleProvider())
+                                    {
+                                        Volume = soundElement.Volume
+                                    };
+                                    _sliderAdditionBalance = new BalanceSampleProvider(_sliderAdditionVolume)
+                                    {
+                                        Balance = soundElement.Balance * BalanceFactor
+                                    };
+                                    Submixer.AddMixerInput(_sliderAdditionBalance);
                                 }
 
                                 break;

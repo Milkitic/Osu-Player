@@ -39,19 +39,25 @@ namespace PlayerTest.Wave
             _length = SourceToDest(_readerStream.Length);
         }
 
-        /// <summary>
-        /// Initializes a new instance of AudioFileReader
-        /// </summary>
-        /// <param name="sourceStream">The stream to open</param>
-        /// <param name="streamType">The type of source stream</param>
-        public MyAudioFileReader(Stream sourceStream, StreamType streamType)
+        public MyAudioFileReader(Stream stream, StreamType streamType)
         {
             _lockObject = new object();
-            CreateReaderStream(sourceStream, streamType);
+            CreateReaderStream(stream, streamType);
+
             _sourceBytesPerSample = _readerStream.WaveFormat.BitsPerSample / 8 * _readerStream.WaveFormat.Channels;
             _sampleChannel = new SampleChannel(_readerStream, false);
             _destBytesPerSample = 4 * _sampleChannel.WaveFormat.Channels;
             _length = SourceToDest(_readerStream.Length);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of AudioFileReader
+        /// </summary>
+        /// <param name="buffer">The stream to open</param>
+        /// <param name="streamType">The type of source stream</param>
+        public MyAudioFileReader(byte[] buffer, StreamType streamType)
+            : this(new MemoryStream(buffer), streamType)
+        {
         }
 
         private void CreateReaderStream(Stream sourceStream, StreamType streamType)
@@ -59,15 +65,15 @@ namespace PlayerTest.Wave
             switch (streamType)
             {
                 case StreamType.Wav:
-                {
-                    _readerStream = new WaveFileReader(sourceStream);
-                    if (_readerStream.WaveFormat.Encoding == WaveFormatEncoding.Pcm ||
-                        _readerStream.WaveFormat.Encoding == WaveFormatEncoding.IeeeFloat)
-                        return;
-                    _readerStream = WaveFormatConversionStream.CreatePcmStream(_readerStream);
-                    _readerStream = new BlockAlignReductionStream(_readerStream);
-                    break;
-                }
+                    {
+                        _readerStream = new WaveFileReader(sourceStream);
+                        if (_readerStream.WaveFormat.Encoding == WaveFormatEncoding.Pcm ||
+                            _readerStream.WaveFormat.Encoding == WaveFormatEncoding.IeeeFloat)
+                            return;
+                        _readerStream = WaveFormatConversionStream.CreatePcmStream(_readerStream);
+                        _readerStream = new BlockAlignReductionStream(_readerStream);
+                        break;
+                    }
                 case StreamType.Mp3:
                     _readerStream = new Mp3FileReader(sourceStream);
                     break;
