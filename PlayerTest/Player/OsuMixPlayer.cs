@@ -31,27 +31,30 @@ namespace PlayerTest.Player
         {
             var mp3Path = Path.Combine(_sourceFolder, _osuFile.General.AudioFilename);
             _musicChannel = new SingleMediaChannel(Engine, mp3Path,
-                AppSettings.Default.Play.PlaybackRate,
-                AppSettings.Default.Play.PlayUseTempo)
+               AppSettings.Default.Play.PlaybackRate,
+               AppSettings.Default.Play.PlayUseTempo)
             {
-                Description = "Music"
+               Description = "Music"
             };
+            AddSubchannel(_musicChannel);
+            await _musicChannel.Initialize();
 
             var hitsoundList = await GetHitsoundsAsync();
             _hitsoundChannel = new MultiElementsChannel(Engine, hitsoundList, _musicChannel)
             {
                 Description = "Hitsound"
             };
+            AddSubchannel(_hitsoundChannel);
+            await _hitsoundChannel.Initialize();
 
             var sampleList = await GetSamplesAsync();
             _sampleChannel = new MultiElementsChannel(Engine, sampleList, _musicChannel)
             {
-                Description = "Sample"
+               Description = "Sample"
             };
 
-            AddSubchannel(_musicChannel);
-            AddSubchannel(_hitsoundChannel);
             AddSubchannel(_sampleChannel);
+            await _sampleChannel.Initialize();
         }
 
         private async Task<List<SoundElement>> GetSamplesAsync()
@@ -60,14 +63,29 @@ namespace PlayerTest.Player
             var samples = _osuFile.Events.SampleInfo;
             if (samples == null)
                 return elements;
-            foreach (var sample in samples)
+
+            await Task.Run(() =>
             {
-                var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
-                    GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(sample.Filename))
-                );
-                await element.GetCachedSoundAsync();
-                elements.Add(element);
-            }
+                foreach (var sample in samples)
+                {
+                    var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
+                        GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(sample.Filename))
+                    );
+                    element.GetCachedSoundAsync().Wait();
+                    elements.Add(element);
+                }
+
+                //samples.AsParallel()
+                //    .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
+                //    .ForAll(sample =>
+                //    {
+                //        var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
+                //            GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(sample.Filename))
+                //        );
+                //        element.GetCachedSoundAsync().Wait();
+                //        elements.Add(element);
+                //    });
+            });
 
             return elements;
         }
@@ -76,6 +94,7 @@ namespace PlayerTest.Player
         {
             List<RawHitObject> hitObjects = _osuFile.HitObjects.HitObjectList;
             var elements = new ConcurrentBag<SoundElement>();
+
             var dirInfo = new DirectoryInfo(_sourceFolder);
             var waves = new HashSet<string>(dirInfo.EnumerateFiles()
                 .Where(k => AudioPlaybackEngine.SupportExtensions.Contains(
@@ -86,9 +105,13 @@ namespace PlayerTest.Player
 
             await Task.Run(() =>
             {
-                hitObjects.AsParallel()
-                    .WithDegreeOfParallelism(Environment.ProcessorCount - 1)
-                    .ForAll(async obj => { await AddSingleHitObject(obj, waves, elements); });
+                foreach (var obj in hitObjects)
+                {
+                    AddSingleHitObject(obj, waves, elements).Wait();
+                }
+                //hitObjects.AsParallel()
+                //    .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
+                //    .ForAll(obj => { AddSingleHitObject(obj, waves, elements).Wait(); });
             });
 
             return new List<SoundElement>(elements);
@@ -96,7 +119,6 @@ namespace PlayerTest.Player
 
         private async Task AddSingleHitObject(RawHitObject obj, HashSet<string> waves, ConcurrentBag<SoundElement> elements)
         {
-            Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
             if (obj.ObjectType != HitObjectType.Slider)
             {
                 var itemOffset = obj.ObjectType == HitObjectType.Spinner
@@ -300,7 +322,8 @@ namespace PlayerTest.Player
 
             for (var i = 0; i < tuples.Count; i++)
             {
-                var fileNameWithoutIndex = tuples[i];
+                var fileNameWithoutIndex = tuples[i].Item1;
+                var hitsoundType = tuples[i].Item2;
 
                 int baseIndex = hitObject.CustomIndex > 0 ? hitObject.CustomIndex : timingPoint.Track;
                 string indexStr = baseIndex > 1 ? baseIndex.ToString() : "";
@@ -315,16 +338,17 @@ namespace PlayerTest.Player
                 else
                     filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutExt + AudioPlaybackEngine.WavExtension);
 
-                tuples[i] = (filePath, fileNameWithoutIndex.Item2);
+                tuples[i] = (filePath, hitsoundType);
             }
 
             return tuples;
         }
 
-        private readonly Dictionary<string, string> _pathCache = new Dictionary<string, string>();
+        private readonly ConcurrentDictionary<string, string> _pathCache = new ConcurrentDictionary<string, string>();
 
         private string GetFileUntilFind(string sourceFolder, string fileNameWithoutExtension)
         {
+            // todo: thread safe
             var combine = Path.Combine(sourceFolder, fileNameWithoutExtension);
             if (_pathCache.ContainsKey(combine))
             {
@@ -338,12 +362,12 @@ namespace PlayerTest.Player
 
                 if (File.Exists(path))
                 {
-                    _pathCache.Add(combine, path);
+                    _pathCache.TryAdd(combine, path);
                     return path;
                 }
             }
 
-            _pathCache.Add(combine, path);
+            _pathCache.TryAdd(combine, path);
             return path;
         }
 
@@ -389,41 +413,6 @@ namespace PlayerTest.Player
             if (type.HasFlag(HitsoundType.Normal) ||
                 (type & HitsoundType.Normal) == 0)
                 yield return ($"{sampleStr}-hitnormal", type);
-        }
-    }
-
-    public static class ToStringExtension
-    {
-        public static string ToHitsoundString(this TimingSamplesetType type)
-        {
-            switch (type)
-            {
-                case TimingSamplesetType.Soft:
-                    return "soft";
-                case TimingSamplesetType.Drum:
-                    return "drum";
-                default:
-                case TimingSamplesetType.None:
-                case TimingSamplesetType.Normal:
-                    return "normal";
-            }
-        }
-
-        public static string ToHitsoundString(this ObjectSamplesetType type, string sample)
-        {
-            switch (type)
-            {
-                case ObjectSamplesetType.Soft:
-                    return "soft";
-                case ObjectSamplesetType.Drum:
-                    return "drum";
-                case ObjectSamplesetType.Normal:
-                    return "normal";
-                case ObjectSamplesetType.Auto:
-                    return sample;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
         }
     }
 }

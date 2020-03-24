@@ -7,8 +7,8 @@ namespace PlayerTest.Player
         internal Action<float> VolumeChanged { get; set; }
         internal Action<float> BalanceChanged { get; set; }
 
-        private float _volume;
-        private float _balance;
+        private float _volume = 1;
+        private float _balance = 0;
 
         public float Volume
         {

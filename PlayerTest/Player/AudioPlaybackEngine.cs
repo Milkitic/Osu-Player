@@ -32,7 +32,10 @@ namespace PlayerTest.Player
 
         public AudioPlaybackEngine(IWavePlayer outputDevice)
         {
-            RootMixer = new MixingSampleProvider(WaveFormatFactory.IeeeWaveFormat);
+            RootMixer = new MixingSampleProvider(WaveFormatFactory.IeeeWaveFormat)
+            {
+                ReadFully = true
+            };
             _volumeProvider = new VolumeSampleProvider(RootMixer);
 
             _outputDevice = outputDevice;

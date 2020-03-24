@@ -30,7 +30,10 @@ namespace PlayerTest
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var path = "E:\\milkitic\\others\\Aeventyr\\Grand Thaw - Aeventyr (bms2osu) [lv.12 MX].osu";
+            //var path = "E:\\milkitic\\others\\Aeventyr\\Grand Thaw - Aeventyr (bms2osu) [lv.12 MX].osu";
+            var path = @"D:\Games\osu!\Songs\727251 ClariS - Hitorigoto -TV MIX-\ClariS - Hitorigoto -TV MIX- (DJPop) [Insane].osu";
+            //var path = @"D:\Games\osu!\Songs\1002455 supercell - Giniro Hikousen  (Ttm bootleg Edit)\supercell - Giniro Hikousen  (Ttm bootleg Edit) (yf_bmp) [7K Another].osu";
+            //var path = @"D:\Games\osu!\Songs\BmsToOsu\発狂難易度 (SP)\★02\Aeventyr\Grand Thaw - Aeventyr (bms2osu) [lv.12 MX].osu";
             var sw = Stopwatch.StartNew();
             var osuFile = await OsuFile.ReadFromFileAsync(path);
             Console.WriteLine(sw.ElapsedMilliseconds);
@@ -38,6 +41,10 @@ namespace PlayerTest
             var g = new OsuMixPlayer(osuFile, System.IO.Path.GetDirectoryName(path));
 
             await g.Initialize();
+            Console.WriteLine(sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            await g.Play();
             Console.WriteLine(sw.ElapsedMilliseconds);
             sw.Reset();
         }

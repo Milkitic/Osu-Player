@@ -69,9 +69,12 @@ namespace PlayerTest.Player.Channel
         {
             _soundElements.Sort(new SoundElementTimingComparer());
 
-            Duration = TimeSpan.FromMilliseconds(_soundElements.Max(k => k.Offset));
+            Duration = TimeSpan.FromMilliseconds(_soundElements.Count == 0 ? 0 : _soundElements.Max(k => k.Offset));
 
-            Submixer = new MixingSampleProvider(WaveFormatFactory.IeeeWaveFormat);
+            Submixer = new MixingSampleProvider(WaveFormatFactory.IeeeWaveFormat)
+            {
+                ReadFully = true
+            };
             _volumeProvider = new VolumeSampleProvider(Submixer);
             Engine.AddRootSample(_volumeProvider);
 
@@ -81,7 +84,9 @@ namespace PlayerTest.Player.Channel
 
             await RequeueAsync(TimeSpan.Zero);
 
-            await CachedSound.CreateCacheSounds(_soundElements.Select(k => k.FilePath));
+            await CachedSound.CreateCacheSounds(_soundElements
+                .Where(k => k.FilePath != null)
+                .Select(k => k.FilePath));
 
             await SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, AppSettings.Default.Play.PlayUseTempo);
             PlayStatus = ChannelStatus.Ready;
@@ -130,12 +135,12 @@ namespace PlayerTest.Player.Channel
                         {
                             case SlideControlType.None:
                                 var cachedSound = await soundElement.GetCachedSoundAsync();
-                                Submixer.RemoveMixerInput(_sliderSlideBalance);
-                                Submixer.RemoveMixerInput(_sliderAdditionBalance);
                                 Submixer.PlaySound(cachedSound, soundElement.Volume,
                                     soundElement.Balance * BalanceFactor);
                                 break;
                             case SlideControlType.StartNew:
+                                Submixer.RemoveMixerInput(_sliderSlideBalance);
+                                Submixer.RemoveMixerInput(_sliderAdditionBalance);
                                 cachedSound = await soundElement.GetCachedSoundAsync();
                                 _mem?.Dispose();
                                 _mem = new MemoryStream(cachedSound.AudioData);

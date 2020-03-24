@@ -35,6 +35,9 @@ namespace PlayerTest.Player.Channel
 
         public override async Task Initialize()
         {
+            var type = StreamType.Wav;
+            _fileReader = new MyAudioFileReader(await WaveFormatFactory.Resample(_path, type), type);
+
             _speedProvider = new VarispeedSampleProvider(_fileReader,
                 10,
                 new SoundTouchProfile(_useTempo, false)
@@ -42,9 +45,6 @@ namespace PlayerTest.Player.Channel
             {
                 PlaybackRate = _playbackRate
             };
-
-            var type = StreamType.Wav;
-            _fileReader = new MyAudioFileReader(await WaveFormatFactory.Resample(_path, type), type);
 
             Duration = _fileReader.TotalTime;
 

@@ -13,18 +13,23 @@ namespace PlayerTest.Wave
     internal class CachedSound
     {
         //public byte[] RawFileData { get; private set; }
+        public string SourcePath { get; }
         public byte[] AudioData { get; private set; }
         public WaveFormat WaveFormat { get; private set; }
+
+        private CachedSound(string filePath)
+        {
+            SourcePath = filePath;
+        }
 
         //public TimeSpan Duration { get; private set; }
         //public long Length { get; private set; }
 
-        public static async Task<CachedSound> CreateFromFile(string audioFileName)
+        private static async Task<CachedSound> CreateFromFile(string filePath)
         {
             var type = StreamType.Wav;
-            var stream = await WaveFormatFactory.Resample(audioFileName, type);
-            var arr = stream.ToArray();
-            using (var audioFileReader = new MyAudioFileReader(arr, type))
+            var stream = await WaveFormatFactory.Resample(filePath, type);
+            using (var audioFileReader = new WaveFileReader(stream))
             {
                 var wholeData = new List<byte>((int)(audioFileReader.Length / 4));
 
@@ -36,7 +41,7 @@ namespace PlayerTest.Wave
                     wholeData.AddRange(readBuffer.Take(samplesRead));
                 }
 
-                var cachedSound = new CachedSound
+                var cachedSound = new CachedSound(filePath)
                 {
                     //RawFileData = stream.ToArray(),
                     AudioData = wholeData.ToArray(),
@@ -48,13 +53,28 @@ namespace PlayerTest.Wave
             }
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is CachedSound other)
+                return Equals(other);
+            return ReferenceEquals(this, obj);
+        }
+
+        protected bool Equals(CachedSound other)
+        {
+            return SourcePath == other.SourcePath;
+        }
+
+        public override int GetHashCode()
+        {
+            return (SourcePath != null ? SourcePath.GetHashCode() : 0);
+        }
+
+
         private static readonly ConcurrentDictionary<string, CachedSound> CachedDictionary =
             new ConcurrentDictionary<string, CachedSound>();
         private static readonly ConcurrentDictionary<string, CachedSound> InternalDictionary =
             new ConcurrentDictionary<string, CachedSound>();
-
-        private static int _total;
-        private static object _totalLock = new object();
 
         public static async Task CreateCacheSounds(IEnumerable<string> paths)
         {
@@ -101,12 +121,6 @@ namespace PlayerTest.Wave
                 newPath = TryGetPath(Path.Combine(Path.GetDirectoryName(newPath), Path.GetFileNameWithoutExtension(newPath)));
             }
 
-            if (!isDefault && CachedDictionary.ContainsKey(path) ||
-                isDefault && InternalDictionary.ContainsKey(path))
-            {
-                return isDefault ? InternalDictionary[path] : CachedDictionary[path];
-            }
-
             if (!File.Exists(newPath))
             {
                 if (!isDefault) CachedDictionary.TryAdd(path, null);
@@ -114,18 +128,16 @@ namespace PlayerTest.Wave
                 return null;
             }
 
+            if (!isDefault && CachedDictionary.TryGetValue(path, out var value) ||
+                isDefault && InternalDictionary.TryGetValue(path, out value))
+            {
+                return value;
+            }
+
+            CachedSound cachedSound;
             try
             {
-                var cachedSound = await CreateFromFile(newPath);
-                if (!isDefault) CachedDictionary.TryAdd(path, cachedSound); // Cache each file once before play.
-                else InternalDictionary.TryAdd(path, cachedSound);
-                lock (_totalLock)
-                {
-                    _total += cachedSound.AudioData.Length;
-                    Console.WriteLine(CountSize(_total));
-                }
-
-                return cachedSound;
+                cachedSound = await CreateFromFile(newPath);
             }
             catch
             {
@@ -133,6 +145,15 @@ namespace PlayerTest.Wave
                 else InternalDictionary.TryAdd(path, null);
                 return null;
             }
+
+            // Cache each file once before play.
+            var sound = isDefault
+                ? InternalDictionary.GetOrAdd(path, cachedSound)
+                : CachedDictionary.GetOrAdd(path, cachedSound);
+
+            //Console.WriteLine(CountSize(CachedDictionary.Values.Sum(k => k.AudioData.Length)));
+
+            return sound;
         }
 
         private static string TryGetPath(string path)
@@ -153,10 +174,6 @@ namespace PlayerTest.Wave
         public static void ClearCacheSounds()
         {
             CachedDictionary.Clear();
-            lock (_totalLock)
-            {
-                _total = 0;
-            }
         }
 
         public static string CountSize(long size)
