@@ -108,17 +108,13 @@ namespace PlayerTest.TrackProvider
                         if (exit) break;
                         if (j == 0)
                         {
-                            var (updatedCurrent, soundElement) =
-                                 GetHitsoundAndSkip(currentTime, 0, NC_FINISH);
+                            var soundElement = GetHitsoundAndSkip(ref currentTime, 0, NC_FINISH);
                             hitsoundList.Add(soundElement);
-                            currentTime = updatedCurrent;
                         }
 
                         foreach (var (fileName, skipRhythm) in ncRhythm.RelativeNodes)
                         {
-                            var (updatedCurrent, soundElement) =
-                                 GetHitsoundAndSkip(currentTime, interval * skipRhythm, fileName);
-                            currentTime = updatedCurrent;
+                            var soundElement = GetHitsoundAndSkip(ref currentTime, interval * skipRhythm, fileName);
                             if (!(soundElement.Offset >= endTime))
                             {
                                 hitsoundList.Add(soundElement);
@@ -137,12 +133,12 @@ namespace PlayerTest.TrackProvider
             return hitsoundList;
         }
 
-        private static (double, SoundElement) GetHitsoundAndSkip(double currentTime, double skipTime,
+        private static SoundElement GetHitsoundAndSkip(ref double currentTime, double skipTime,
             string fileName)
         {
             var ele = SoundElement.Create(currentTime, 1, 0, fileName);
             currentTime += skipTime;
-            return (currentTime, ele);
+            return ele;
         }
     }
 
