@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using OSharp.Beatmap.Sections.HitObject;
 using PlayerTest.Wave;
 
 namespace PlayerTest.Player.Channel
@@ -139,30 +140,29 @@ namespace PlayerTest.Player.Channel
                                 {
                                     var myf = new WaveFileReader(mem);
                                     var loop = new LoopStream(myf);
-                                    switch (soundElement.SlideType)
+                                    if (soundElement.SlideType.HasFlag(HitsoundType.Slide))
                                     {
-                                        case SlideType.Slide:
-                                            _sliderSlideVolume = new VolumeSampleProvider(loop.ToSampleProvider())
-                                            {
-                                                Volume = soundElement.Volume
-                                            };
-                                            _sliderSlideBalance = new BalanceSampleProvider(_sliderSlideVolume)
-                                            {
-                                                Balance = soundElement.Balance * BalanceFactor
-                                            };
-                                            Submixer.AddMixerInput(_sliderSlideBalance);
-                                            break;
-                                        case SlideType.Addition:
-                                            _sliderAdditionVolume = new VolumeSampleProvider(loop.ToSampleProvider())
-                                            {
-                                                Volume = soundElement.Volume
-                                            };
-                                            _sliderAdditionBalance = new BalanceSampleProvider(_sliderAdditionVolume)
-                                            {
-                                                Balance = soundElement.Balance * BalanceFactor
-                                            };
-                                            Submixer.AddMixerInput(_sliderAdditionBalance);
-                                            break;
+                                        _sliderSlideVolume = new VolumeSampleProvider(loop.ToSampleProvider())
+                                        {
+                                            Volume = soundElement.Volume
+                                        };
+                                        _sliderSlideBalance = new BalanceSampleProvider(_sliderSlideVolume)
+                                        {
+                                            Balance = soundElement.Balance * BalanceFactor
+                                        };
+                                        Submixer.AddMixerInput(_sliderSlideBalance);
+                                    }
+                                    else if (soundElement.SlideType.HasFlag(HitsoundType.SlideWhistle))
+                                    {
+                                        _sliderAdditionVolume = new VolumeSampleProvider(loop.ToSampleProvider())
+                                        {
+                                            Volume = soundElement.Volume
+                                        };
+                                        _sliderAdditionBalance = new BalanceSampleProvider(_sliderAdditionVolume)
+                                        {
+                                            Balance = soundElement.Balance * BalanceFactor
+                                        };
+                                        Submixer.AddMixerInput(_sliderAdditionBalance);
                                     }
                                 }
 

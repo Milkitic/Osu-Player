@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using OSharp.Beatmap.Sections.HitObject;
 using PlayerTest.Wave;
 
 namespace PlayerTest.Player.Channel
@@ -14,7 +15,7 @@ namespace PlayerTest.Player.Channel
         public float Volume { get; private set; }
         public float Balance { get; private set; }
         public string FilePath { get; private set; }
-        public SlideType SlideType { get; private set; }
+        public HitsoundType SlideType { get; private set; }
         public SlideControlType ControlType { get; private set; } = SlideControlType.None;
 
         internal async Task<CachedSound> GetCachedSoundAsync()
@@ -41,7 +42,7 @@ namespace PlayerTest.Player.Channel
         }
 
         public static SoundElement CreateSlideSignal(double offset, float volume, float balance,
-            string filePath, SlideType slideType)
+            string filePath, HitsoundType slideType)
         {
             return new SoundElement
             {
@@ -82,10 +83,5 @@ namespace PlayerTest.Player.Channel
                 ControlType = SlideControlType.ChangeBalance
             };
         }
-    }
-
-    public enum SlideType
-    {
-        None, Slide, Addition
     }
 }

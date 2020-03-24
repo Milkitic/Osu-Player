@@ -41,7 +41,7 @@ namespace PlayerTest.Player
                 Description = "Hitsound"
             };
 
-            var sampleList = GetSamplesAsync();
+            var sampleList = await GetSamplesAsync();
             _sampleChannel = new MultiElementsChannel(Engine, sampleList, _musicChannel)
             {
                 Description = "Sample"
@@ -50,6 +50,24 @@ namespace PlayerTest.Player
             AddSubchannel(_musicChannel);
             AddSubchannel(_hitsoundChannel);
             AddSubchannel(_sampleChannel);
+        }
+
+        private async Task<List<SoundElement>> GetSamplesAsync()
+        {
+            var elements = new List<SoundElement>();
+            var samples = _osuFile.Events.SampleInfo;
+            if (samples == null)
+                return elements;
+            foreach (var sample in samples)
+            {
+                var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
+                    GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(sample.Filename))
+                );
+                await element.GetCachedSoundAsync();
+                elements.Add(element);
+            }
+
+            return elements;
         }
 
         private async Task<List<SoundElement>> GetHitsoundsAsync()
@@ -68,51 +86,188 @@ namespace PlayerTest.Player
             {
                 if (obj.ObjectType != HitObjectType.Slider)
                 {
-                    var hitOffset = obj.ObjectType == HitObjectType.Spinner
+                    var itemOffset = obj.ObjectType == HitObjectType.Spinner
                         ? obj.HoldEnd // spinner
                         : obj.Offset; // hold & circle
-                    var timingPoint = _osuFile.TimingPoints.GetLine(hitOffset);
+                    var timingPoint = _osuFile.TimingPoints.GetLine(itemOffset);
 
                     float balance = GetObjectBalance(obj.X);
-                    float volume = (obj.SampleVolume != 0 ? obj.SampleVolume : timingPoint.Volume) / 100f;
+                    float volume = GetObjectVolume(obj, timingPoint);
 
-                    var files = AnalyzeHitsoundFile(obj.Hitsound, obj.SampleSet, obj.AdditionSet,
+                    var files = AnalyzeHitsoundFiles(obj.Hitsound, obj.SampleSet, obj.AdditionSet,
                         timingPoint, obj, waves);
-                    foreach (var file in files)
+                    foreach (var (filePath, _) in files)
                     {
-                        var element = SoundElement.Create(hitOffset, volume, balance, file);
+                        var element = SoundElement.Create(itemOffset, volume, balance, filePath);
                         await element.GetCachedSoundAsync();
                         elements.Add(element);
                     }
                 }
-                else
+                else // sliders
                 {
-                    throw new NotImplementedException();
+                    // edges
+                    foreach (var item in obj.SliderInfo.Edges)
+                    {
+                        var itemOffset = item.Offset;
+                        var timingPoint = _osuFile.TimingPoints.GetLine(itemOffset);
+
+                        float balance = GetObjectBalance(item.Point.X);
+                        float volume = GetObjectVolume(obj, timingPoint);
+
+                        var files = AnalyzeHitsoundFiles(item.EdgeHitsound, item.EdgeSample, item.EdgeAddition,
+                            timingPoint, obj, waves);
+                        foreach (var (filePath, _) in files)
+                        {
+                            var element = SoundElement.Create(itemOffset, volume, balance, filePath);
+                            await element.GetCachedSoundAsync();
+                            elements.Add(element);
+                        }
+                    }
+
+                    // ticks
+                    var ticks = obj.SliderInfo.Ticks;
+                    foreach (var sliderTick in ticks)
+                    {
+                        var itemOffset = sliderTick.Offset;
+                        var timingPoint = _osuFile.TimingPoints.GetLine(itemOffset);
+
+                        float balance = GetObjectBalance(sliderTick.Point.X);
+                        float volume = GetObjectVolume(obj, timingPoint) * 1.25f; // ticks x1.25
+
+                        var (filePath, _) = AnalyzeHitsoundFiles(HitsoundType.Tick, obj.SampleSet, obj.AdditionSet,
+                            timingPoint, obj, waves).First();
+
+                        var element = SoundElement.Create(itemOffset, volume, balance, filePath);
+                        await element.GetCachedSoundAsync();
+                        elements.Add(element);
+                    }
+
+                    // sliding
+                    {
+                        var slideElements = new List<SoundElement>();
+
+                        var startOffset = obj.Offset;
+                        var endOffset = obj.SliderInfo.Edges[obj.SliderInfo.Edges.Length - 1].Offset;
+                        var timingPoint = _osuFile.TimingPoints.GetLine(startOffset);
+
+                        float balance = GetObjectBalance(obj.X);
+                        float volume = GetObjectVolume(obj, timingPoint);
+
+                        // start sliding
+                        var tuples = AnalyzeHitsoundFiles(
+                            obj.Hitsound & HitsoundType.SlideWhistle | HitsoundType.Slide,
+                            obj.SampleSet, obj.AdditionSet,
+                            timingPoint, obj, waves);
+                        foreach (var (filePath, hitsoundType) in tuples)
+                        {
+                            var element = SoundElement.CreateSlideSignal(startOffset, volume, balance, filePath,
+                                hitsoundType);
+                            await element.GetCachedSoundAsync();
+                            slideElements.Add(element);
+                        }
+
+                        // change sample (will optimize if only adjust volume) by inherit timing point
+                        var timingsOnSlider = _osuFile.TimingPoints.TimingList
+                            .Where(k => k.Offset > startOffset && k.Offset < endOffset)
+                            .ToList();
+
+                        for (var i = 0; i < timingsOnSlider.Count; i++)
+                        {
+                            var timing = timingsOnSlider[i];
+                            var prevTiming = i == 0 ? timingPoint : timingsOnSlider[i - 1];
+                            if (timing.Track != prevTiming.Track ||
+                                timing.TimingSampleset != prevTiming.TimingSampleset)
+                            {
+                                volume = GetObjectVolume(obj, timing);
+                                tuples = AnalyzeHitsoundFiles(
+                                    obj.Hitsound & HitsoundType.SlideWhistle | HitsoundType.Slide,
+                                    obj.SampleSet, obj.AdditionSet,
+                                    timing, obj, waves);
+                                foreach (var (filePath, hitsoundType) in tuples)
+                                {
+                                    SoundElement element;
+                                    if (hitsoundType.HasFlag(HitsoundType.Slide) &&
+                                        slideElements
+                                            .Last(k => k.SlideType.HasFlag(HitsoundType.Slide))
+                                            .FilePath == filePath)
+                                    {
+                                        // optimize by only change volume
+                                        element = SoundElement.CreateVolumeSignal(timing.Offset, volume);
+                                    }
+                                    else if (hitsoundType.HasFlag(HitsoundType.Slide) &&
+                                             slideElements
+                                                 .Last(k => k.SlideType.HasFlag(HitsoundType.Slide))
+                                                 .FilePath == filePath)
+                                    {
+                                        // optimize by only change volume
+                                        element = SoundElement.CreateVolumeSignal(timing.Offset, volume);
+                                    }
+                                    else
+                                    {
+                                        // new sample
+                                        element = SoundElement.CreateSlideSignal(timing.Offset, volume, balance,
+                                            filePath, hitsoundType);
+                                    }
+
+                                    await element.GetCachedSoundAsync();
+                                    slideElements.Add(element);
+                                }
+
+                                continue;
+                            }
+
+                            // optimize useless timing point
+                            timingsOnSlider.RemoveAt(i);
+                            i--;
+                        }
+
+                        // end slide
+                        var stopElement = SoundElement.CreateStopSignal(endOffset);
+                        slideElements.Add(stopElement);
+                        elements.AddRange(slideElements);
+                    }
+
+                    // change balance while sliding (not supported in original game)
+                    var trails = obj.SliderInfo.BallTrail;
+                    elements.AddRange(trails
+                        .Select(k => new
+                        {
+                            offset = k.Offset,
+                            balance = GetObjectBalance(k.Point.X)
+                        })
+                        .Select(k => SoundElement.CreateBalanceSignal(k.offset, k.balance))
+                    );
                 }
             }
 
             return elements;
         }
 
-        private IEnumerable<string> AnalyzeHitsoundFile(
+        private IEnumerable<(string, HitsoundType)> AnalyzeHitsoundFiles(
             HitsoundType itemHitsound, ObjectSamplesetType itemSample, ObjectSamplesetType itemAddition,
             TimingPoint timingPoint, RawHitObject hitObject,
             HashSet<string> waves)
         {
             if (!string.IsNullOrEmpty(hitObject.FileName))
             {
-                return new[] { GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(hitObject.FileName)) };
+                return new[]
+                {
+                    ValueTuple.Create(
+                        GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(hitObject.FileName)),
+                        itemHitsound
+                    )
+                };
             }
 
-            var files = new List<string>();
+            var files = new List<(string, HitsoundType)>();
 
-            // hitnormal
+            // hitnormal, sliderslide
             var sampleStr = itemSample != ObjectSamplesetType.Auto
-                ? itemSample.ToHitsoundString()
+                ? itemSample.ToHitsoundString(null)
                 : timingPoint.TimingSampleset.ToHitsoundString();
 
-            // hitclap, hitfinish, hitwhistle
-            string additionStr = itemAddition.ToHitsoundString();
+            // hitclap, hitfinish, hitwhistle, slidertick, sliderwhistle
+            string additionStr = itemAddition.ToHitsoundString(sampleStr);
 
             if (hitObject.ObjectType == HitObjectType.Slider && hitObject.SliderInfo.EdgeHitsounds == null)
             {
@@ -144,7 +299,7 @@ namespace PlayerTest.Player
                 else
                     filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutExt + AudioPlaybackEngine.WavExtension);
 
-                files[i] = filePath;
+                files[i] = (filePath, fileNameWithoutIndex.Item2);
             }
 
             return files;
@@ -187,25 +342,37 @@ namespace PlayerTest.Player
             return balance;
         }
 
-        private static IEnumerable<string> GetHitsounds(HitsoundType type,
-            string sampleStr, string additionStr)
+        private static float GetObjectVolume(RawHitObject obj, TimingPoint timingPoint)
         {
-            if (type.HasFlag(HitsoundType.Whistle))
-                yield return $"{additionStr}-hitwhistle";
-            if (type.HasFlag(HitsoundType.Clap))
-                yield return $"{additionStr}-hitclap";
-            if (type.HasFlag(HitsoundType.Finish))
-                yield return $"{additionStr}-hitfinish";
-            if (type.HasFlag(HitsoundType.Normal) ||
-                (type & HitsoundType.Normal) == 0)
-            {
-                yield return $"{sampleStr}-hitnormal";
-            }
+            return (obj.SampleVolume != 0 ? obj.SampleVolume : timingPoint.Volume) / 100f;
         }
 
-        private List<SoundElement> GetSamplesAsync()
+        private static IEnumerable<(string, HitsoundType)> GetHitsounds(HitsoundType type,
+            string sampleStr, string additionStr)
         {
-            throw new NotImplementedException();
+            if (type == HitsoundType.Tick)
+            {
+                yield return ($"{additionStr}-slidertick", type);
+                yield break;
+            }
+
+            if (type.HasFlag(HitsoundType.Slide))
+                yield return ($"{sampleStr}-sliderslide", type);
+            if (type.HasFlag(HitsoundType.SlideWhistle))
+                yield return ($"{additionStr}-sliderwhistle", type);
+
+            if (type.HasFlag(HitsoundType.Slide) || type.HasFlag(HitsoundType.SlideWhistle))
+                yield break;
+
+            if (type.HasFlag(HitsoundType.Whistle))
+                yield return ($"{additionStr}-hitwhistle", type);
+            if (type.HasFlag(HitsoundType.Clap))
+                yield return ($"{additionStr}-hitclap", type);
+            if (type.HasFlag(HitsoundType.Finish))
+                yield return ($"{additionStr}-hitfinish", type);
+            if (type.HasFlag(HitsoundType.Normal) ||
+                (type & HitsoundType.Normal) == 0)
+                yield return ($"{sampleStr}-hitnormal", type);
         }
     }
 
@@ -226,7 +393,7 @@ namespace PlayerTest.Player
             }
         }
 
-        public static string ToHitsoundString(this ObjectSamplesetType type)
+        public static string ToHitsoundString(this ObjectSamplesetType type, string sample)
         {
             switch (type)
             {
@@ -234,9 +401,12 @@ namespace PlayerTest.Player
                     return "soft";
                 case ObjectSamplesetType.Drum:
                     return "drum";
-                default:
                 case ObjectSamplesetType.Normal:
                     return "normal";
+                case ObjectSamplesetType.Auto:
+                    return sample;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
     }
