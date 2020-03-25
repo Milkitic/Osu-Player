@@ -34,7 +34,7 @@ namespace PlayerTest.Player
                AppSettings.Default.Play.PlaybackRate,
                AppSettings.Default.Play.PlayUseTempo)
             {
-               Description = "Music"
+                Description = "Music"
             };
             AddSubchannel(_musicChannel);
             await _musicChannel.Initialize();
@@ -50,7 +50,7 @@ namespace PlayerTest.Player
             var sampleList = await GetSamplesAsync();
             _sampleChannel = new MultiElementsChannel(Engine, sampleList, _musicChannel)
             {
-               Description = "Sample"
+                Description = "Sample"
             };
 
             AddSubchannel(_sampleChannel);
@@ -66,25 +66,25 @@ namespace PlayerTest.Player
 
             await Task.Run(() =>
             {
-                foreach (var sample in samples)
-                {
-                    var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
-                        GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(sample.Filename))
-                    );
-                    element.GetCachedSoundAsync().Wait();
-                    elements.Add(element);
-                }
+                //foreach (var sample in samples)
+                //{
+                //    var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
+                //        GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(sample.Filename))
+                //    );
+                //    element.GetCachedSoundAsync().Wait();
+                //    elements.Add(element);
+                //}
 
-                //samples.AsParallel()
-                //    .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
-                //    .ForAll(sample =>
-                //    {
-                //        var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
-                //            GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(sample.Filename))
-                //        );
-                //        element.GetCachedSoundAsync().Wait();
-                //        elements.Add(element);
-                //    });
+                samples.AsParallel()
+                    .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
+                    .ForAll(sample =>
+                    {
+                        var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
+                            GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(sample.Filename))
+                        );
+                        element.GetCachedSoundAsync().Wait();
+                        elements.Add(element);
+                    });
             });
 
             return elements;
@@ -105,13 +105,13 @@ namespace PlayerTest.Player
 
             await Task.Run(() =>
             {
-                foreach (var obj in hitObjects)
-                {
-                    AddSingleHitObject(obj, waves, elements).Wait();
-                }
-                //hitObjects.AsParallel()
-                //    .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
-                //    .ForAll(obj => { AddSingleHitObject(obj, waves, elements).Wait(); });
+                //foreach (var obj in hitObjects)
+                //{
+                //    AddSingleHitObject(obj, waves, elements).Wait();
+                //}
+                hitObjects.AsParallel()
+                    .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
+                    .ForAll(obj => { AddSingleHitObject(obj, waves, elements).Wait(); });
             });
 
             return new List<SoundElement>(elements);
@@ -348,11 +348,10 @@ namespace PlayerTest.Player
 
         private string GetFileUntilFind(string sourceFolder, string fileNameWithoutExtension)
         {
-            // todo: thread safe
             var combine = Path.Combine(sourceFolder, fileNameWithoutExtension);
-            if (_pathCache.ContainsKey(combine))
+            if (_pathCache.TryGetValue(combine, out var value))
             {
-                return _pathCache[combine];
+                return value;
             }
 
             string path = "";
