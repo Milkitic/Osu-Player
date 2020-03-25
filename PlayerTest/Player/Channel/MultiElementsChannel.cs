@@ -32,7 +32,7 @@ namespace PlayerTest.Player.Channel
         private VolumeSampleProvider _sliderSlideVolume;
         private BalanceSampleProvider _sliderAdditionBalance;
         private VolumeSampleProvider _sliderAdditionVolume;
-        private MemoryStream _mem;
+        private MemoryStream _lastSliderStream;
 
         public bool IsPlayRunning => _playingTask != null &&
                                      !_playingTask.IsCanceled &&
@@ -142,10 +142,13 @@ namespace PlayerTest.Player.Channel
                                 Submixer.RemoveMixerInput(_sliderSlideBalance);
                                 Submixer.RemoveMixerInput(_sliderAdditionBalance);
                                 cachedSound = await soundElement.GetCachedSoundAsync();
-                                _mem?.Dispose();
-                                _mem = new MemoryStream(cachedSound.AudioData);
-                                //var myf = new WaveFileReader(mem);
-                                var myf = new RawSourceWaveStream(_mem, cachedSound.WaveFormat);
+                                _lastSliderStream?.Dispose();
+
+                                var byteArray = new byte[cachedSound.AudioData.Length * sizeof(float)];
+                                Buffer.BlockCopy(cachedSound.AudioData, 0, byteArray, 0, byteArray.Length);
+
+                                _lastSliderStream = new MemoryStream(byteArray);
+                                var myf = new RawSourceWaveStream(_lastSliderStream, cachedSound.WaveFormat);
                                 var loop = new LoopStream(myf);
                                 if (soundElement.SlideType.HasFlag(HitsoundType.Slide))
                                 {

@@ -5,6 +5,26 @@ namespace PlayerTest
 {
     internal class Domain
     {
+        static Domain()
+        {
+            Type t = typeof(Domain);
+            var infos = t.GetProperties();
+            foreach (var item in infos)
+            {
+                if (!item.Name.EndsWith("Path")) continue;
+                try
+                {
+                    string path = (string)item.GetValue(null, null);
+                    if (!Directory.Exists(path))
+                        Directory.CreateDirectory(path);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine(@"未创建：" + item.Name);
+                }
+            }
+        }
+
         public static string CurrentPath => AppDomain.CurrentDomain.BaseDirectory;
         public static string ConfigFile => Path.Combine(CurrentPath, "config.json");
 

@@ -309,7 +309,7 @@ namespace PlayerTest.Player
 
             if (hitObject.ObjectType == HitObjectType.Slider && hitObject.SliderInfo.EdgeHitsounds == null)
             {
-                var hitsounds = GetHitsounds(hitObject.Hitsound, sampleStr, additionStr);
+                var hitsounds = GetHitsounds(itemHitsound, sampleStr, additionStr);
                 tuples.AddRange(hitsounds);
             }
             else

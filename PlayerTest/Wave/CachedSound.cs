@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,9 +11,8 @@ namespace PlayerTest.Wave
 {
     internal class CachedSound
     {
-        //public byte[] RawFileData { get; private set; }
         public string SourcePath { get; }
-        public byte[] AudioData { get; private set; }
+        public float[] AudioData { get; private set; }
         public WaveFormat WaveFormat { get; private set; }
 
         private CachedSound(string filePath)
@@ -22,19 +20,18 @@ namespace PlayerTest.Wave
             SourcePath = filePath;
         }
 
-        //public TimeSpan Duration { get; private set; }
-        //public long Length { get; private set; }
+        public TimeSpan Duration { get; private set; }
 
         private static async Task<CachedSound> CreateFromFile(string filePath)
         {
             var type = StreamType.Wav;
             var stream = await WaveFormatFactory.Resample(filePath, type);
-            using (var audioFileReader = new WaveFileReader(stream))
+            using (var audioFileReader = new MyAudioFileReader(stream, type))
             {
-                var wholeData = new List<byte>((int)(audioFileReader.Length / 4));
+                var wholeData = new List<float>((int)(audioFileReader.Length / 4));
 
                 var readBuffer =
-                    new byte[audioFileReader.WaveFormat.SampleRate * audioFileReader.WaveFormat.Channels];
+                    new float[audioFileReader.WaveFormat.SampleRate * audioFileReader.WaveFormat.Channels];
                 int samplesRead;
                 while ((samplesRead = audioFileReader.Read(readBuffer, 0, readBuffer.Length)) > 0)
                 {
@@ -43,10 +40,8 @@ namespace PlayerTest.Wave
 
                 var cachedSound = new CachedSound(filePath)
                 {
-                    //RawFileData = stream.ToArray(),
                     AudioData = wholeData.ToArray(),
-                    //Duration = audioFileReader.TotalTime,
-                    //Length = audioFileReader.Length,
+                    Duration = audioFileReader.TotalTime,
                     WaveFormat = audioFileReader.WaveFormat
                 };
                 return cachedSound;
