@@ -46,6 +46,8 @@ namespace PlayerTest.Player.Channel
                 PlaybackRate = _playbackRate
             };
 
+            await CachedSound.CreateCacheSounds(new[] { _path });
+
             Duration = _fileReader.TotalTime;
 
             SampleControl.Volume = 1;

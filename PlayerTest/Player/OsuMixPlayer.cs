@@ -59,22 +59,13 @@ namespace PlayerTest.Player
 
         private async Task<List<SoundElement>> GetSamplesAsync()
         {
-            var elements = new List<SoundElement>();
+            var elements = new ConcurrentBag<SoundElement>();
             var samples = _osuFile.Events.SampleInfo;
             if (samples == null)
-                return elements;
+                return new List<SoundElement>(elements);
 
             await Task.Run(() =>
             {
-                //foreach (var sample in samples)
-                //{
-                //    var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
-                //        GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(sample.Filename))
-                //    );
-                //    element.GetCachedSoundAsync().Wait();
-                //    elements.Add(element);
-                //}
-
                 samples.AsParallel()
                     .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
                     .ForAll(sample =>
@@ -82,12 +73,11 @@ namespace PlayerTest.Player
                         var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
                             GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(sample.Filename))
                         );
-                        element.GetCachedSoundAsync().Wait();
                         elements.Add(element);
                     });
             });
 
-            return elements;
+            return new List<SoundElement>(elements);
         }
 
         private async Task<List<SoundElement>> GetHitsoundsAsync()
@@ -105,10 +95,6 @@ namespace PlayerTest.Player
 
             await Task.Run(() =>
             {
-                //foreach (var obj in hitObjects)
-                //{
-                //    AddSingleHitObject(obj, waves, elements).Wait();
-                //}
                 hitObjects.AsParallel()
                     .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
                     .ForAll(obj => { AddSingleHitObject(obj, waves, elements).Wait(); });
@@ -134,7 +120,6 @@ namespace PlayerTest.Player
                 foreach (var (filePath, _) in tuples)
                 {
                     var element = SoundElement.Create(itemOffset, volume, balance, filePath);
-                    await element.GetCachedSoundAsync();
                     elements.Add(element);
                 }
             }
@@ -154,7 +139,6 @@ namespace PlayerTest.Player
                     foreach (var (filePath, _) in tuples)
                     {
                         var element = SoundElement.Create(itemOffset, volume, balance, filePath);
-                        await element.GetCachedSoundAsync();
                         elements.Add(element);
                     }
                 }
@@ -173,7 +157,6 @@ namespace PlayerTest.Player
                         timingPoint, obj, waves).First();
 
                     var element = SoundElement.Create(itemOffset, volume, balance, filePath);
-                    await element.GetCachedSoundAsync();
                     elements.Add(element);
                 }
 
@@ -197,7 +180,6 @@ namespace PlayerTest.Player
                     {
                         var element = SoundElement.CreateSlideSignal(startOffset, volume, balance, filePath,
                             hitsoundType);
-                        await element.GetCachedSoundAsync();
                         slideElements.Add(element);
                     }
 
@@ -244,7 +226,6 @@ namespace PlayerTest.Player
                                         filePath, hitsoundType);
                                 }
 
-                                await element.GetCachedSoundAsync();
                                 slideElements.Add(element);
                             }
 
