@@ -14,13 +14,12 @@ namespace PlayerTest.Wave
         public string SourcePath { get; }
         public float[] AudioData { get; private set; }
         public WaveFormat WaveFormat { get; private set; }
+        public TimeSpan Duration { get; private set; }
 
         private CachedSound(string filePath)
         {
             SourcePath = filePath;
         }
-
-        public TimeSpan Duration { get; private set; }
 
         private static async Task<CachedSound> CreateFromFile(string filePath)
         {

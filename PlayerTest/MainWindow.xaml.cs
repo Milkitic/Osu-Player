@@ -32,9 +32,9 @@ namespace PlayerTest
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //var path = "E:\\milkitic\\others\\Aeventyr\\Grand Thaw - Aeventyr (bms2osu) [lv.12 MX].osu";
-            var path = @"D:\Games\osu!\Songs\beatmap-637113154671884689-Grand Thaw - Aventyr\Grand Thaw - Aventyr (yf_bmp) [1].osu";
+            //var path = @"D:\Games\osu!\Songs\beatmap-637113154671884689-Grand Thaw - Aventyr\Grand Thaw - Aventyr (yf_bmp) [1].osu";
             //var path = @"D:\Games\osu!\Songs\1002455 supercell - Giniro Hikousen  (Ttm bootleg Edit)\supercell - Giniro Hikousen  (Ttm bootleg Edit) (yf_bmp) [7K Another].osu";
-            //var path = @"D:\Games\osu!\Songs\BmsToOsu\発狂難易度 (SP)\★02\Aeventyr\Grand Thaw - Aeventyr (bms2osu) [lv.12 MX].osu";
+            var path = @"D:\Games\osu!\Songs\BmsToOsu\発狂難易度 (SP)\★02\Aeventyr\Grand Thaw - Aeventyr (bms2osu) [lv.12 MX].osu";
             var sw = Stopwatch.StartNew();
             var osuFile = await OsuFile.ReadFromFileAsync(path);
             Console.WriteLine(sw.ElapsedMilliseconds);

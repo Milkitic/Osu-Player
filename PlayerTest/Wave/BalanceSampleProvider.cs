@@ -1,20 +1,24 @@
-﻿using NAudio.Wave;
+﻿using System;
+using NAudio.Wave;
 
 namespace PlayerTest.Wave
 {
     public class BalanceSampleProvider : ISampleProvider
     {
         private readonly ISampleProvider _sourceProvider;
+        private int Channels => _sourceProvider.WaveFormat.Channels;
         public BalanceSampleProvider(ISampleProvider sourceProvider)
         {
             _sourceProvider = sourceProvider;
+            if (Channels > 2)
+                throw new NotSupportedException("channels: " + Channels);
             Balance = 0f;
         }
 
         public int Read(float[] buffer, int offset, int count)
         {
             int samplesRead = _sourceProvider.Read(buffer, offset, count);
-            if (!Balance.Equals(0) )
+            if (Channels != 1 && !Balance.Equals(0))
             {
                 for (int n = 0; n < count; n += 2)
                 {
