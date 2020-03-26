@@ -24,7 +24,7 @@ namespace PlayerTest.Wave
         private static async Task<CachedSound> CreateFromFile(string filePath)
         {
             var type = StreamType.Wav;
-            using (var audioFileReader = await WaveFormatFactory.GetResampledAudioFileReader(filePath, type))
+            using (var audioFileReader = await WaveFormatFactory.GetResampledAudioFileReader(filePath, type).ConfigureAwait(false))
             {
                 var wholeData = new List<float>((int)(audioFileReader.Length / 4));
 
@@ -63,7 +63,6 @@ namespace PlayerTest.Wave
             return (SourcePath != null ? SourcePath.GetHashCode() : 0);
         }
 
-
         private static readonly ConcurrentDictionary<string, CachedSound> CachedDictionary =
             new ConcurrentDictionary<string, CachedSound>();
         private static readonly ConcurrentDictionary<string, CachedSound> InternalDictionary =
@@ -73,7 +72,7 @@ namespace PlayerTest.Wave
         {
             foreach (var path in paths)
             {
-                await CreateCacheSound(path, false); // Cache each file once before play.
+                await CreateCacheSound(path, false).ConfigureAwait(false); // Cache each file once before play.
             }
         }
 
@@ -86,7 +85,7 @@ namespace PlayerTest.Wave
         {
             foreach (var path in paths)
             {
-                await CreateCacheSound(path, true);
+                await CreateCacheSound(path, true).ConfigureAwait(false);
             }
         }
 
@@ -96,7 +95,7 @@ namespace PlayerTest.Wave
                 return InternalDictionary[path];
 
             //if (!CachedDictionary.ContainsKey(path))
-            return await CreateCacheSound(path, false);
+            return await CreateCacheSound(path, false).ConfigureAwait(false);
 
             //return CachedDictionary[path];
         }
@@ -130,7 +129,7 @@ namespace PlayerTest.Wave
             CachedSound cachedSound;
             try
             {
-                cachedSound = await CreateFromFile(newPath);
+                cachedSound = await CreateFromFile(newPath).ConfigureAwait(false);
             }
             catch
             {

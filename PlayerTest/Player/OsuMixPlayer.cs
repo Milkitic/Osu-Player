@@ -10,11 +10,18 @@ using OSharp.Beatmap.Sections.GamePlay;
 using OSharp.Beatmap.Sections.HitObject;
 using OSharp.Beatmap.Sections.Timing;
 using PlayerTest.Player.Channel;
+using PlayerTest.Wave;
 
 namespace PlayerTest.Player
 {
     public class OsuMixPlayer : MultichannelPlayer
     {
+        static OsuMixPlayer()
+        {
+            var files = new DirectoryInfo(Domain.DefaultPath).GetFiles("*.wav");
+            CachedSound.CreateCacheSounds(files.Select(k => k.FullName));
+        }
+
         private readonly OsuFile _osuFile;
         private readonly string _sourceFolder;
         private SingleMediaChannel _musicChannel;

@@ -17,7 +17,7 @@ namespace PlayerTest.Wave
 
         public static async Task<MyAudioFileReader> GetResampledAudioFileReader(string path, StreamType type)
         {
-            var stream = await Resample(path, type);
+            var stream = await Resample(path, type).ConfigureAwait(false);
             return stream is MyAudioFileReader afr ? afr : new MyAudioFileReader(stream, type);
         }
 
