@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using PlayerTest.SoundTouch;
@@ -13,6 +15,8 @@ namespace PlayerTest.Player.Channel
 {
     public class SingleMediaChannel : Subchannel
     {
+        public event Action<Duration> TimeUpdated;
+
         private readonly string _path;
         private readonly float _playbackRate;
         private readonly bool _useTempo;
@@ -53,6 +57,23 @@ namespace PlayerTest.Player.Channel
             SampleControl.Volume = 1;
             SampleControl.Balance = 0;
             PlayStatus = ChannelStatus.Ready;
+            new Task(() =>
+            {
+                var oldTime = TimeSpan.Zero;
+                while (true)
+                {
+                    var newTime = _fileReader.CurrentTime;
+                    if (oldTime != newTime)
+                    {
+                        Console.WriteLine(newTime);
+                        TimeUpdated?.Invoke(newTime);
+                        oldTime = newTime;
+                    }
+
+                    Thread.Sleep(5);
+                }
+            }, TaskCreationOptions.LongRunning).Start();
+
             await Task.CompletedTask;
         }
 

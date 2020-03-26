@@ -83,10 +83,17 @@ namespace PlayerTest.Player.Channel
             SampleControl.VolumeChanged = f => _volumeProvider.Volume = f;
 
             await RequeueAsync(TimeSpan.Zero);
+            await Task.Run(() =>
+            {
+                _soundElements.AsParallel()
+                    .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
+                    .ForAll(k => CachedSound.CreateCacheSounds(new[] {k.FilePath}).Wait());
+            });
 
-            await CachedSound.CreateCacheSounds(_soundElements
-                .Where(k => k.FilePath != null)
-                .Select(k => k.FilePath));
+
+            //await CachedSound.CreateCacheSounds(_soundElements
+            //    .Where(k => k.FilePath != null)
+            //    .Select(k => k.FilePath));
 
             await SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, AppSettings.Default.Play.PlayUseTempo);
             PlayStatus = ChannelStatus.Ready;
