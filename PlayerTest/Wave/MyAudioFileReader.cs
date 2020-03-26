@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using NAudio.Vorbis;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -206,6 +207,7 @@ namespace PlayerTest.Wave
             {
                 _readerStream.Dispose();
                 _readerStream = null;
+                if (FileName?.EndsWith(".sound") == true) Task.Run(() => File.Delete(FileName));
             }
             base.Dispose(disposing);
         }

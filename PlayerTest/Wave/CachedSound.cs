@@ -24,8 +24,7 @@ namespace PlayerTest.Wave
         private static async Task<CachedSound> CreateFromFile(string filePath)
         {
             var type = StreamType.Wav;
-            var stream = await WaveFormatFactory.Resample(filePath, type);
-            using (var audioFileReader = new MyAudioFileReader(stream, type))
+            using (var audioFileReader = await WaveFormatFactory.GetResampledAudioFileReader(filePath, type))
             {
                 var wholeData = new List<float>((int)(audioFileReader.Length / 4));
 

@@ -15,18 +15,39 @@ namespace PlayerTest.Wave
         public static WaveFormat IeeeWaveFormat => WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, Channels);
         public static WaveFormat PcmWaveFormat => new WaveFormat(SampleRate, Channels);
 
-        public static async Task Resample(string path, string targetPath)
+        public static async Task<MyAudioFileReader> GetResampledAudioFileReader(string path, StreamType type)
         {
-            await Task.Run(() =>
+            var stream = await Resample(path, type);
+            return stream is MyAudioFileReader afr ? afr : new MyAudioFileReader(stream, type);
+        }
+
+        public static async Task<MyAudioFileReader> GetResampledAudioFileReader(string path)
+        {
+            var cache = Path.Combine(Domain.CachePath,
+                $"{Guid.NewGuid().ToString().Replace("-", "")}.sound");
+            var stream = await Resample(path, cache);
+            return stream is MyAudioFileReader afr ? afr : new MyAudioFileReader(cache);
+        }
+
+        private static async Task<Stream> Resample(string path, string targetPath)
+        {
+            return await Task.Run(() =>
             {
                 try
                 {
-                    using (var audioFileReader = new MyAudioFileReader(path))
+                    var audioFileReader = new MyAudioFileReader(path);
+                    if (CompareWaveFormat(audioFileReader.WaveFormat))
+                    {
+                        return audioFileReader;
+                    }
+
+                    using (audioFileReader)
                     using (var resampler = new MediaFoundationResampler(audioFileReader, PcmWaveFormat))
                     using (var stream = new FileStream(targetPath, FileMode.Create))
                     {
                         resampler.ResamplerQuality = ResamplerQuality.Highest;
                         WaveFileWriter.WriteWavFileToStream(stream, resampler);
+                        return null;
                     }
                 }
                 catch (Exception ex)
@@ -37,13 +58,25 @@ namespace PlayerTest.Wave
             }).ConfigureAwait(false);
         }
 
-        public static async Task<MemoryStream> Resample(string path, StreamType type)
+        private static async Task<Stream> Resample(string path, StreamType type)
         {
+            if (!File.Exists(path))
+            {
+                path = Path.Combine(Domain.DefaultPath, "blank.wav");
+            }
+
             return await Task.Run(() =>
             {
+                MyAudioFileReader audioFileReader = null;
                 try
                 {
-                    using (var audioFileReader = new MyAudioFileReader(path))
+                    audioFileReader = new MyAudioFileReader(path);
+                    if (CompareWaveFormat(audioFileReader.WaveFormat))
+                    {
+                        return (Stream)audioFileReader;
+                    }
+
+                    using (audioFileReader)
                     {
                         if (type == StreamType.Wav)
                         {
@@ -54,7 +87,6 @@ namespace PlayerTest.Wave
                                 WaveFileWriter.WriteWavFileToStream(stream, resampler);
                                 stream.Position = 0;
                                 return stream;
-                                //return stream.ToArray();
                             }
                         }
                         else
@@ -65,6 +97,7 @@ namespace PlayerTest.Wave
                 }
                 catch (Exception ex)
                 {
+                    audioFileReader?.Dispose();
                     Console.WriteLine(ex.Message);
                     throw;
                 }
@@ -92,6 +125,14 @@ namespace PlayerTest.Wave
 
             public static int Highest => 60;
             public static int Lowest => 1;
+        }
+
+        public static bool CompareWaveFormat(WaveFormat waveFormat)
+        {
+            var pcmWaveFormat = PcmWaveFormat;
+            if (pcmWaveFormat.Channels != waveFormat.Channels) return false;
+            if (pcmWaveFormat.SampleRate != waveFormat.SampleRate) return false;
+            return true;
         }
     }
 }
