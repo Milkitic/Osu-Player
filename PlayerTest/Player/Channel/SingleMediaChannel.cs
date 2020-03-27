@@ -5,14 +5,11 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace PlayerTest.Player.Channel
 {
     public class SingleMediaChannel : Subchannel
     {
-        public event Action<Duration> TimeUpdated;
-
         private readonly string _path;
         private readonly float _playbackRate;
         private readonly bool _useTempo;
@@ -69,7 +66,7 @@ namespace PlayerTest.Player.Channel
                     if (oldTime != newTime)
                     {
                         Console.WriteLine(newTime);
-                        TimeUpdated?.Invoke(newTime);
+                        Position = newTime;
                         oldTime = newTime;
                     }
 
