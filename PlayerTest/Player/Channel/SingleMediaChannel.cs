@@ -1,10 +1,11 @@
 using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
 using PlayerTest.SoundTouch;
 using PlayerTest.Wave;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace PlayerTest.Player.Channel
 {
@@ -24,7 +25,7 @@ namespace PlayerTest.Player.Channel
 
         public TimeSpan ReferenceDuration =>
             Duration.Add(TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset));
-        
+
         public TimeSpan ReferencePosition =>
             Position.Add(TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset));
 
