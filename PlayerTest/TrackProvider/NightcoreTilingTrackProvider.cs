@@ -1,14 +1,12 @@
-﻿using System;
+﻿using OSharp.Beatmap;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using OSharp.Beatmap;
-using PlayerTest.Player.Channel;
 
 namespace PlayerTest.TrackProvider
 {
-    class NightcoreTilingTrackProvider : ITrackProvider
+    internal class NightcoreTilingTrackProvider : ITrackProvider
     {
         private readonly OsuFile _osuFile;
         private readonly TimeSpan _maxDuration;

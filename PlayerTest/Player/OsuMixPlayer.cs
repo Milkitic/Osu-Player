@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using OSharp.Beatmap;
+﻿using OSharp.Beatmap;
 using OSharp.Beatmap.Sections.GamePlay;
 using OSharp.Beatmap.Sections.HitObject;
 using OSharp.Beatmap.Sections.Timing;
 using PlayerTest.Player.Channel;
+using PlayerTest.TrackProvider;
 using PlayerTest.Wave;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PlayerTest.Player
 {
@@ -38,8 +38,8 @@ namespace PlayerTest.Player
         {
             var mp3Path = Path.Combine(_sourceFolder, _osuFile.General.AudioFilename);
             _musicChannel = new SingleMediaChannel(Engine, mp3Path,
-               AppSettings.Default.Play.PlaybackRate,
-               AppSettings.Default.Play.PlayUseTempo)
+                AppSettings.Default.Play.PlaybackRate,
+                AppSettings.Default.Play.PlayUseTempo)
             {
                 Description = "Music"
             };
@@ -110,7 +110,8 @@ namespace PlayerTest.Player
             return new List<SoundElement>(elements);
         }
 
-        private async Task AddSingleHitObject(RawHitObject obj, HashSet<string> waves, ConcurrentBag<SoundElement> elements)
+        private async Task AddSingleHitObject(RawHitObject obj, HashSet<string> waves,
+            ConcurrentBag<SoundElement> elements)
         {
             if (obj.ObjectType != HitObjectType.Slider)
             {
@@ -267,6 +268,8 @@ namespace PlayerTest.Player
                     elements.Add(balanceElement);
                 }
             }
+
+            await Task.CompletedTask;
         }
 
         private IEnumerable<(string, HitsoundType)> AnalyzeHitsoundFiles(

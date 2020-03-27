@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
+﻿using NAudio.Wave;
 using PlayerTest.SoundTouch;
 using PlayerTest.Wave;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PlayerTest.Player.Channel
 {
@@ -22,11 +18,18 @@ namespace PlayerTest.Player.Channel
         private ISampleProvider _actualRoot;
 
         public override TimeSpan Duration { get; protected set; }
-        public override TimeSpan Position { get; protected set; }
+
+        public TimeSpan ReferenceDuration =>
+            Duration.Add(TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset));
+        
+        public TimeSpan ReferencePosition =>
+            Position.Add(TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset));
+
         public override float PlaybackRate { get; protected set; }
         public override bool UseTempo { get; protected set; }
 
-        public SingleMediaChannel(AudioPlaybackEngine engine, string path, float playbackRate, bool useTempo) : base(engine)
+        public SingleMediaChannel(AudioPlaybackEngine engine, string path, float playbackRate, bool useTempo) :
+            base(engine)
         {
             _path = path;
             _playbackRate = playbackRate;
@@ -52,7 +55,7 @@ namespace PlayerTest.Player.Channel
 
             SampleControl.Volume = 1;
             SampleControl.Balance = 0;
-            PlayStatus = ChannelStatus.Ready;
+            PlayStatus = PlayStatus.Ready;
             await Task.CompletedTask;
         }
 
@@ -60,38 +63,43 @@ namespace PlayerTest.Player.Channel
         {
             if (!Engine.RootMixer.MixerInputs.Contains(_speedProvider))
                 Engine.RootMixer.AddMixerInput(_speedProvider, SampleControl, out _actualRoot);
-            PlayStatus = ChannelStatus.Playing;
+            PlayStatus = PlayStatus.Playing;
             await Task.CompletedTask;
         }
 
         public override async Task Pause()
         {
             Engine.RootMixer.RemoveMixerInput(_actualRoot);
-            PlayStatus = ChannelStatus.Paused;
+            PlayStatus = PlayStatus.Paused;
             await Task.CompletedTask;
         }
 
         public override async Task Stop()
         {
             Engine.RootMixer.RemoveMixerInput(_actualRoot);
-            await SetTime(TimeSpan.Zero);
-            PlayStatus = ChannelStatus.Paused;
+            await SkipTo(TimeSpan.Zero);
+            PlayStatus = PlayStatus.Paused;
             await Task.CompletedTask;
         }
 
         public override async Task Restart()
         {
-            await SetTime(TimeSpan.Zero);
+            await SkipTo(TimeSpan.Zero);
             await Play();
             await Task.CompletedTask;
         }
 
-        public override async Task SetTime(TimeSpan time)
+        public override async Task SkipTo(TimeSpan time)
         {
+            var status = PlayStatus;
+            PlayStatus = PlayStatus.Reposition;
+
             _fileReader.CurrentTime = time >= _fileReader.TotalTime
                 ? _fileReader.TotalTime - TimeSpan.FromMilliseconds(1)
                 : time;
             _speedProvider.Reposition();
+
+            PlayStatus = status;
             await Task.CompletedTask;
         }
 

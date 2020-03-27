@@ -1,6 +1,6 @@
 ﻿namespace PlayerTest.Player
 {
-    public enum ChannelStatus
+    public enum PlayStatus
     {
         Unknown, Ready, Playing, Paused, Reposition, Finished
     }

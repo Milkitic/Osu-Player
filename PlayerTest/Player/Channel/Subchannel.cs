@@ -1,17 +1,15 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using NAudio.Wave;
-using PlayerTest.Annotations;
 
-namespace PlayerTest.Player
+namespace PlayerTest.Player.Channel
 {
-    public abstract class Subchannel : IChannel, INotifyPropertyChanged
+    public abstract class Subchannel : IChannel
     {
-        public event Action<ChannelStatus> PlayStatusChanged;
+        public event Action<PlayStatus> PlayStatusChanged;
+        public event Action<TimeSpan> PositionUpdated;
 
-        private ChannelStatus _playStatus;
+        private PlayStatus _playStatus;
+        private TimeSpan _position;
         protected AudioPlaybackEngine Engine { get; }
 
         public SampleControl SampleControl { get; } = new SampleControl();
@@ -24,18 +22,29 @@ namespace PlayerTest.Player
         public string Description { get; set; }
 
         public abstract TimeSpan Duration { get; protected set; }
-        public abstract TimeSpan Position { get; protected set; }
+
+        public virtual TimeSpan Position
+        {
+            get => _position;
+            protected set
+            {
+                if (value == _position) return;
+                _position = value;
+                InvokeMethodHelper.OnMainThread(() => PositionUpdated?.Invoke(value));
+            }
+        }
+
         public abstract float PlaybackRate { get; protected set; }
         public abstract bool UseTempo { get; protected set; }
 
-        public ChannelStatus PlayStatus
+        public PlayStatus PlayStatus
         {
             get => _playStatus;
             protected set
             {
                 if (value == _playStatus) return;
                 _playStatus = value;
-                PlayStatusChanged?.Invoke(value);
+                InvokeMethodHelper.OnMainThread(() => PlayStatusChanged?.Invoke(value));
             }
         }
 
@@ -49,15 +58,8 @@ namespace PlayerTest.Player
 
         public abstract Task Restart();
 
-        public abstract Task SetTime(TimeSpan time);
+        public abstract Task SkipTo(TimeSpan time);
 
         public abstract Task SetPlaybackRate(float rate, bool useTempo);
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 }

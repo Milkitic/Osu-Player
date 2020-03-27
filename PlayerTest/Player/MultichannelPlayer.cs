@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 using PlayerTest.Device;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using PlayerTest.Player.Channel;
 
 namespace PlayerTest.Player
 {
     public abstract class MultichannelPlayer : IChannel
     {
+        public event Action<PlayStatus> PlayStatusChanged;
+        public event Action<TimeSpan> PositionUpdated;
+
         public string Description { get; } = nameof(MultichannelPlayer);
 
         public TimeSpan Duration { get; private set; }
@@ -17,10 +20,14 @@ namespace PlayerTest.Player
         public float PlaybackRate { get; private set; }
         public bool UseTempo { get; private set; }
 
-        public ChannelStatus PlayStatus { get; private set; }
+        public PlayStatus PlayStatus { get; private set; }
         public StopMode StopMode { get; set; }
 
-        public float Volume { get => Engine.RootVolume; set => Engine.RootVolume = value; }
+        public float Volume
+        {
+            get => Engine.RootVolume;
+            set => Engine.RootVolume = value;
+        }
 
         private readonly List<IChannel> _subchannels = new List<IChannel>();
 
@@ -85,11 +92,11 @@ namespace PlayerTest.Player
             }
         }
 
-        public async Task SetTime(TimeSpan time)
+        public async Task SkipTo(TimeSpan time)
         {
             foreach (var channel in _subchannels)
             {
-                await channel.SetTime(time);
+                await channel.SkipTo(time);
             }
         }
 

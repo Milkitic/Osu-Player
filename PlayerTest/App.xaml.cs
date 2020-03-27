@@ -16,6 +16,7 @@ namespace PlayerTest
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             var appsettings = new AppSettings();
+            InvokeMethodHelper.SetMainThreadContext();
         }
     }
 }

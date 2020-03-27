@@ -92,6 +92,7 @@
     <Compile Include="Device\OutputMethod.cs" />
     <Compile Include="Device\WasapiInfo.cs" />
     <Compile Include="Device\WaveOutInfo.cs" />
+    <Compile Include="InvokeMethodHelper.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -100,11 +101,14 @@
   <ItemGroup>
     <Compile Include="Player\Channel\MultiElementsChannel.cs" />
     <Compile Include="Player\Channel\SingleMediaChannel.cs" />
-    <Compile Include="Player\Channel\SoundElement.cs" />
+    <Compile Include="TaskEx.cs" />
+    <Compile Include="TrackProvider\SlideControlType.cs" />
+    <Compile Include="TrackProvider\SoundElement.cs" />
+    <Compile Include="TrackProvider\SoundElementTimingComparer.cs" />
     <Compile Include="Player\MixingSampleProviderExtension.cs" />
     <Compile Include="Player\OsuMixPlayer.cs" />
     <Compile Include="Player\SampleControl.cs" />
-    <Compile Include="Player\Subchannel.cs" />
+    <Compile Include="Player\Channel\Subchannel.cs" />
     <Compile Include="ToStringExtension.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="SoundTouch\SoundTouch.cs" />
@@ -119,13 +123,13 @@
     <Compile Include="Wave\LoopStream.cs" />
     <Compile Include="Wave\VarispeedSampleProvider.cs" />
     <Compile Include="Wave\BalanceSampleProvider.cs" />
-    <Compile Include="Player\IChannel.cs" />
+    <Compile Include="Player\Channel\IChannel.cs" />
     <Compile Include="Player\StopMode.cs" />
     <Compile Include="PlaySection.cs" />
     <Compile Include="Player\AudioPlaybackEngine.cs" />
     <Compile Include="Wave\CachedSound.cs" />
     <Compile Include="Wave\CachedSoundSampleProvider.cs" />
-    <Compile Include="Player\ChannelStatus.cs" />
+    <Compile Include="Player\PlayStatus.cs" />
     <Compile Include="Player\MultichannelPlayer.cs" />
     <Compile Include="Wave\MyAudioFileReader.cs" />
     <Compile Include="Wave\WaveFormatFactory.cs" />

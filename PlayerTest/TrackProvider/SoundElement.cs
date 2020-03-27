@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using OSharp.Beatmap.Sections.HitObject;
+﻿using OSharp.Beatmap.Sections.HitObject;
 using PlayerTest.Wave;
+using System.Threading.Tasks;
 
-namespace PlayerTest.Player.Channel
+namespace PlayerTest.TrackProvider
 {
     public sealed class SoundElement
     {

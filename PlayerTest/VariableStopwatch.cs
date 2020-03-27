@@ -5,6 +5,10 @@ namespace PlayerTest
 {
     public class VariableStopwatch : Stopwatch
     {
+        public TimeSpan ManualOffset { get; set; }
+        public TimeSpan VariableOffset { get; set; }
+        public TimeSpan CalibrationOffset { get; set; }
+
         public float Rate
         {
             get => _rate;
@@ -38,12 +42,24 @@ namespace PlayerTest
         }
 
         public new long ElapsedMilliseconds =>
-            (long)(base.Elapsed.TotalMilliseconds * Rate + _skipOffset.TotalMilliseconds);
+            (long)(base.Elapsed.TotalMilliseconds * Rate +
+                   _skipOffset.TotalMilliseconds +
+                   ManualOffset.TotalMilliseconds +
+                   VariableOffset.TotalMilliseconds +
+                   CalibrationOffset.TotalMilliseconds);
 
         public new long ElapsedTicks =>
-            (long)(base.ElapsedTicks * Rate + _skipOffset.Ticks);
+            (long)(base.ElapsedTicks * Rate +
+                   _skipOffset.Ticks +
+                   ManualOffset.Ticks +
+                   VariableOffset.Ticks +
+                   CalibrationOffset.Ticks);
 
         public new TimeSpan Elapsed =>
-            TimeSpan.FromMilliseconds(base.Elapsed.TotalMilliseconds * Rate).Add(_skipOffset);
+            TimeSpan.FromMilliseconds(base.Elapsed.TotalMilliseconds * Rate)
+                .Add(_skipOffset)
+                .Add(ManualOffset)
+                .Add(VariableOffset)
+                .Add(CalibrationOffset);
     }
 }

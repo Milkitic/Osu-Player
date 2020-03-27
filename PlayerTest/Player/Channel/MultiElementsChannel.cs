@@ -1,14 +1,15 @@
-﻿using System;
+﻿using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
+using OSharp.Beatmap.Sections.HitObject;
+using PlayerTest.TrackProvider;
+using PlayerTest.Wave;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
-using OSharp.Beatmap.Sections.HitObject;
-using PlayerTest.Wave;
 
 namespace PlayerTest.Player.Channel
 {
@@ -25,8 +26,7 @@ namespace PlayerTest.Player.Channel
         private Task _playingTask;
         private Task _calibrationTask;
         private CancellationTokenSource _cts;
-        private readonly object _timeLock = new object();
-        private int _variableSpeedCompensationOffset;
+        private readonly object _skipLock = new object();
 
         private BalanceSampleProvider _sliderSlideBalance;
         private VolumeSampleProvider _sliderSlideVolume;
@@ -40,15 +40,26 @@ namespace PlayerTest.Player.Channel
                                      !_playingTask.IsFaulted;
 
         public bool IsCalibrationRunning => _calibrationTask != null &&
-                                              !_calibrationTask.IsCanceled &&
-                                              !_calibrationTask.IsCompleted &&
-                                              !_calibrationTask.IsFaulted;
+                                            !_calibrationTask.IsCanceled &&
+                                            !_calibrationTask.IsCompleted &&
+                                            !_calibrationTask.IsFaulted;
 
         public override TimeSpan Duration { get; protected set; }
+
         public override TimeSpan Position
         {
             get => _sw.Elapsed;
-            protected set => _sw.SkipTo(value);
+            protected set
+            {
+                _sw.SkipTo(value);
+                base.Position = value;
+            }
+        }
+
+        public int ManualOffset
+        {
+            get => (int)_sw.ManualOffset.TotalMilliseconds;
+            protected set => _sw.ManualOffset = TimeSpan.FromMilliseconds(value);
         }
 
         public override float PlaybackRate { get; protected set; }
@@ -89,16 +100,73 @@ namespace PlayerTest.Player.Channel
                 .Select(k => k.FilePath));
 
             await SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, AppSettings.Default.Play.PlayUseTempo);
-            PlayStatus = ChannelStatus.Ready;
+            PlayStatus = PlayStatus.Ready;
         }
 
         public override async Task Play()
         {
-            await InnerPlayAsync();
+            await ReadyLoopAsync();
 
             StartPlayTask();
             StartCalibrationTask();
-            PlayStatus = ChannelStatus.Playing;
+            PlayStatus = PlayStatus.Playing;
+        }
+
+        public override async Task Pause()
+        {
+            await CancelLoopAsync();
+            PlayStatus = PlayStatus.Paused;
+        }
+
+        public override async Task Stop()
+        {
+            await CancelLoopAsync();
+            await SkipTo(TimeSpan.Zero);
+            PlayStatus = PlayStatus.Paused;
+        }
+
+        public override async Task Restart()
+        {
+            await SkipTo(TimeSpan.Zero);
+            await Play();
+        }
+
+        public override async Task SkipTo(TimeSpan time)
+        {
+            await Task.Run(() =>
+            {
+                lock (_skipLock)
+                {
+                    var status = PlayStatus;
+                    PlayStatus = PlayStatus.Reposition;
+
+                    Submixer.RemoveMixerInput(_sliderSlideBalance);
+                    Submixer.RemoveMixerInput(_sliderAdditionBalance);
+
+                    Position = time;
+                    RequeueAsync(time).Wait();
+
+                    PlayStatus = status;
+                }
+            }).ConfigureAwait(false);
+        }
+
+        public override async Task SetPlaybackRate(float rate, bool useTempo)
+        {
+            PlaybackRate = rate;
+            UseTempo = useTempo;
+            AdjustModOffset();
+            await Task.CompletedTask;
+        }
+
+        private void AdjustModOffset()
+        {
+            if (Math.Abs(_sw.Rate - 0.75) < 0.001 && !UseTempo)
+                _sw.VariableOffset = TimeSpan.FromMilliseconds(-25);
+            else if (Math.Abs(_sw.Rate - 1.5) < 0.001 && UseTempo)
+                _sw.VariableOffset = TimeSpan.FromMilliseconds(15);
+            else
+                _sw.VariableOffset = TimeSpan.Zero;
         }
 
         private void StartCalibrationTask()
@@ -108,7 +176,36 @@ namespace PlayerTest.Player.Channel
 
             _calibrationTask = new Task(() =>
             {
+                double? refOldTime = null;
+                DateTime? lastSyncTime = null;
+                const int loopCheckInterval = 100;
+                const int forceSyncDelay = 200;
 
+                while (!_cts.IsCancellationRequested)
+                {
+                    var refNewTime = _referenceChannel.ReferencePosition.TotalMilliseconds;
+                    var now = DateTime.Now;
+                    if (Equals(refNewTime, refOldTime) && // 若时间相同且没有超过强制同步时间
+                        now - lastSyncTime <= TimeSpan.FromMilliseconds(forceSyncDelay) ||
+                        _referenceChannel.PlayStatus != PlayStatus.Playing) // 或者参照的播放停止
+                    {
+                        if (!TaskEx.TaskSleep(loopCheckInterval, _cts)) return;
+                        continue;
+                    }
+
+                    refOldTime = refNewTime;
+                    lastSyncTime = now;
+                    var thisTime = Position.TotalMilliseconds;
+
+                    var difference = refNewTime - thisTime;
+                    if (Math.Abs(difference) > 5)
+                    {
+                        //Console.WriteLine($@"music: {App.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
+                        _sw.CalibrationOffset = TimeSpan.FromMilliseconds(difference); // 计算音效偏移量
+                    }
+
+                    if (!TaskEx.TaskSleep(loopCheckInterval, _cts)) return;
+                }
             }, TaskCreationOptions.LongRunning);
             _calibrationTask.Start();
         }
@@ -127,6 +224,7 @@ namespace PlayerTest.Player.Channel
                         break;
                     }
 
+                    base.Position = this.Position;
                     if (_soundElementsQueue.TryPeek(out var soundElement) &&
                         soundElement.Offset <= _sw.ElapsedMilliseconds &&
                         _soundElementsQueue.TryDequeue(out soundElement))
@@ -193,70 +291,16 @@ namespace PlayerTest.Player.Channel
                         }
                     }
 
-                    Thread.Sleep(1);
+                    if (!TaskEx.TaskSleep(1, _cts)) break;
                 }
 
                 if (!_cts.Token.IsCancellationRequested)
                 {
-                    await SetTime(TimeSpan.Zero);
+                    await SkipTo(TimeSpan.Zero);
+                    PlayStatus = PlayStatus.Finished;
                 }
-
             }, TaskCreationOptions.LongRunning);
             _playingTask.Start();
-        }
-
-        public override async Task Pause()
-        {
-            await InnerPauseAsync();
-            throw new NotImplementedException();
-        }
-
-        public override async Task Stop()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task Restart()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task SetTime(TimeSpan time)
-        {
-            Submixer.RemoveMixerInput(_sliderSlideBalance);
-            Submixer.RemoveMixerInput(_sliderAdditionBalance);
-
-            await Task.Run(() =>
-            {
-                lock (_timeLock)
-                {
-                    Position = time;
-                    RequeueAsync(time).Wait();
-                }
-            }).ConfigureAwait(false);
-        }
-
-        public override async Task SetPlaybackRate(float rate, bool useTempo)
-        {
-            PlaybackRate = rate;
-            UseTempo = useTempo;
-            AdjustModOffset();
-        }
-
-        private void AdjustModOffset()
-        {
-            if (Math.Abs(_sw.Rate - 0.75) < 0.001 && !UseTempo)
-            {
-                _variableSpeedCompensationOffset = -25;
-            }
-            else if (Math.Abs(_sw.Rate - 1.5) < 0.001 && UseTempo)
-            {
-                _variableSpeedCompensationOffset = 15;
-            }
-            else
-            {
-                _variableSpeedCompensationOffset = 0;
-            }
         }
 
         private async Task RequeueAsync(TimeSpan startTime)
@@ -278,41 +322,19 @@ namespace PlayerTest.Player.Channel
             _soundElementsQueue = queue;
         }
 
-        private async Task InnerPlayAsync()
+        private async Task ReadyLoopAsync()
         {
             _cts = new CancellationTokenSource();
             _sw.Start();
             await Task.CompletedTask;
         }
 
-        private async Task InnerPauseAsync()
+        private async Task CancelLoopAsync()
         {
             _sw.Stop();
             _cts?.Cancel();
-            if (_playingTask != null)
-                await Task.WhenAll(_playingTask);
-            if (_calibrationTask != null)
-                await Task.WhenAll(_calibrationTask);
+            await TaskEx.WhenAllSkipNull(_playingTask, _calibrationTask);
             Console.WriteLine(@"Task canceled.");
         }
-    }
-
-    public class SoundElementTimingComparer : IComparer<SoundElement>
-    {
-        public int Compare(SoundElement x, SoundElement y)
-        {
-            if (x is null || y is null)
-            {
-                if (x is null) return -1;
-                else
-                    return 1;
-            }
-            return x.Offset.CompareTo(y.Offset);
-        }
-    }
-
-    public enum SlideControlType
-    {
-        None, StartNew, StopRunning, ChangeBalance, ChangeVolume
     }
 }
