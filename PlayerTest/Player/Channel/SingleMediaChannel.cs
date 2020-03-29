@@ -20,6 +20,10 @@ namespace PlayerTest.Player.Channel
 
         public override TimeSpan Duration { get; protected set; }
 
+        public override TimeSpan ChannelStartTime => TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset < 0
+            ? -AppSettings.Default.Play.GeneralActualOffset
+            : 0);
+
         public TimeSpan ReferenceDuration =>
             Duration.Add(TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset));
 
@@ -65,7 +69,6 @@ namespace PlayerTest.Player.Channel
                     var newTime = _fileReader.CurrentTime;
                     if (oldTime != newTime)
                     {
-                        Console.WriteLine(newTime);
                         Position = newTime;
                         oldTime = newTime;
                     }
@@ -78,7 +81,7 @@ namespace PlayerTest.Player.Channel
 
         public override async Task Play()
         {
-            if (!Engine.RootMixer.MixerInputs.Contains(_speedProvider))
+            if (!Engine.RootMixer.MixerInputs.Contains(_actualRoot))
                 Engine.RootMixer.AddMixerInput(_speedProvider, SampleControl, out _actualRoot);
             PlayStatus = PlayStatus.Playing;
             await Task.CompletedTask;
@@ -115,6 +118,8 @@ namespace PlayerTest.Player.Channel
                 ? _fileReader.TotalTime - TimeSpan.FromMilliseconds(1)
                 : time;
             _speedProvider.Reposition();
+            Position = _fileReader.CurrentTime;
+            Console.WriteLine($"{Description} skip: {Position}");
 
             PlayStatus = status;
             await Task.CompletedTask;

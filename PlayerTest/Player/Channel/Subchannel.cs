@@ -19,6 +19,9 @@ namespace PlayerTest.Player.Channel
             Engine = engine;
         }
 
+        public abstract TimeSpan ChannelStartTime { get; }
+        public TimeSpan ChannelEndTime => ChannelStartTime + Duration;
+
         public string Description { get; set; }
 
         public abstract TimeSpan Duration { get; protected set; }

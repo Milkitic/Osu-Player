@@ -10,5 +10,30 @@
     Height="450"
     Loaded="Window_Loaded"
     mc:Ignorable="d">
-    <Grid />
+    <Grid>
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label x:Name="lblPosition" />
+                <Slider
+                    x:Name="sliderProgress"
+                    Width="200"
+                    Thumb.DragCompleted="sliderProgress_DragCompleted"
+                    Thumb.DragDelta="sliderProgress_DragDelta"
+                    Thumb.DragStarted="sliderProgress_DragStarted" />
+                <Label x:Name="lblDuration" />
+            </StackPanel>
+            <Slider
+                x:Name="sliderVolume"
+                Maximum="100"
+                ValueChanged="sliderVolume_ValueChanged" />
+            <StackPanel Orientation="Horizontal">
+                <Button
+                    x:Name="btnPlay"
+                    Click="btnPlay_Click"
+                    Content="play" />
+                <Button Click="btnPause_Click" Content="pause" />
+                <Button Click="btnStop_Click" Content="stop" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
 </Window>

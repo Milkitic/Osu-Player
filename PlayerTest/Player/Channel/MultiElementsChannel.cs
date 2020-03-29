@@ -51,10 +51,14 @@ namespace PlayerTest.Player.Channel
             get => _sw.Elapsed;
             protected set
             {
-                _sw.SkipTo(value);
+                //_sw.SkipTo(value);
                 base.Position = value;
             }
         }
+
+        public override TimeSpan ChannelStartTime => TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset < 0
+            ? 0
+            : AppSettings.Default.Play.GeneralActualOffset);
 
         public int ManualOffset
         {
@@ -96,9 +100,12 @@ namespace PlayerTest.Player.Channel
             await RequeueAsync(TimeSpan.Zero);
             await Task.Run(() =>
             {
-                _soundElements.AsParallel()
+                _soundElements
+                    .Where(k => k.FilePath == null &&
+                                (k.ControlType == SlideControlType.None || k.ControlType == SlideControlType.StartNew))
+                    .AsParallel()
                     .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
-                    .ForAll(k => CachedSound.CreateCacheSounds(new[] {k.FilePath}).Wait());
+                    .ForAll(k => CachedSound.CreateCacheSounds(new[] { k.FilePath }).Wait());
             });
 
 
@@ -112,7 +119,7 @@ namespace PlayerTest.Player.Channel
 
         public override async Task Play()
         {
-            await ReadyLoopAsync();
+            await ReadyLoopAsync().ConfigureAwait(false);
 
             StartPlayTask();
             StartCalibrationTask();
@@ -151,6 +158,7 @@ namespace PlayerTest.Player.Channel
                     Submixer.RemoveMixerInput(_sliderAdditionBalance);
 
                     Position = time;
+                    Console.WriteLine($"{Description} skip: {Position}");
                     RequeueAsync(time).Wait();
 
                     PlayStatus = status;
@@ -178,15 +186,16 @@ namespace PlayerTest.Player.Channel
 
         private void StartCalibrationTask()
         {
+            return;
             if (IsCalibrationRunning) return;
             if (_referenceChannel == null) return;
 
             _calibrationTask = new Task(() =>
             {
                 double? refOldTime = null;
-                DateTime? lastSyncTime = null;
-                const int loopCheckInterval = 100;
-                const int forceSyncDelay = 200;
+                DateTime lastSyncTime = DateTime.Now;
+                int loopCheckInterval = 1;
+                int forceSyncDelay = 200;
 
                 while (!_cts.IsCancellationRequested)
                 {
@@ -200,15 +209,26 @@ namespace PlayerTest.Player.Channel
                         continue;
                     }
 
+                    if (Math.Abs((refNewTime - refOldTime ?? 0) - (now - lastSyncTime).TotalMilliseconds) > 5)
+                    {
+                        refOldTime = refNewTime;
+                        lastSyncTime = now;
+                        continue;
+                    }
+
+                    Console.WriteLine($@"{refNewTime - refOldTime} vs {(now - lastSyncTime).TotalMilliseconds}");
                     refOldTime = refNewTime;
                     lastSyncTime = now;
-                    var thisTime = Position.TotalMilliseconds;
+                    var thisTime = (Position - _sw.CalibrationOffset).TotalMilliseconds;
 
                     var difference = refNewTime - thisTime;
+                    //Console.WriteLine($"old: refNewTime: {refNewTime}; thisTime: {Position.TotalMilliseconds}");
+                    //Console.WriteLine($"old: difference: {difference}");
                     if (Math.Abs(difference) > 5)
                     {
                         //Console.WriteLine($@"music: {App.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
                         _sw.CalibrationOffset = TimeSpan.FromMilliseconds(difference); // 计算音效偏移量
+                        //Console.WriteLine($"fix：refNewTime: {refNewTime}; thisTime: {Position.TotalMilliseconds}");
                     }
 
                     if (!TaskEx.TaskSleep(loopCheckInterval, _cts)) return;
@@ -232,7 +252,7 @@ namespace PlayerTest.Player.Channel
                     }
 
                     base.Position = this.Position;
-                    if (_soundElementsQueue.TryPeek(out var soundElement) &&
+                    while (_soundElementsQueue.TryPeek(out var soundElement) &&
                         soundElement.Offset <= _sw.ElapsedMilliseconds &&
                         _soundElementsQueue.TryDequeue(out soundElement))
                     {
@@ -303,8 +323,8 @@ namespace PlayerTest.Player.Channel
 
                 if (!_cts.Token.IsCancellationRequested)
                 {
-                    await SkipTo(TimeSpan.Zero);
                     PlayStatus = PlayStatus.Finished;
+                    await SkipTo(TimeSpan.Zero);
                 }
             }, TaskCreationOptions.LongRunning);
             _playingTask.Start();

@@ -62,6 +62,17 @@ namespace PlayerTest.Player
 
             AddSubchannel(_sampleChannel);
             await _sampleChannel.Initialize();
+
+            Duration = MathEx.Max(_musicChannel.ChannelEndTime, _hitsoundChannel.ChannelEndTime,
+                _sampleChannel.ChannelEndTime);
+
+            //_hitsoundChannel.PositionUpdated+= (time) => Console.WriteLine($"{_hitsoundChannel.Description}: {time}");
+            foreach (var channel in Subchannels)
+            {
+                channel.PlayStatusChanged += (status) => Console.WriteLine($"{channel.Description}: {status}");
+            }
+
+            PlayStatus = PlayStatus.Ready;
         }
 
         private async Task<List<SoundElement>> GetSamplesAsync()

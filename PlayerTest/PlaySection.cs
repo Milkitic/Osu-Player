@@ -7,7 +7,7 @@ namespace PlayerTest
     {
         public int GeneralOffset { get; set; }
         [JsonIgnore]
-        public int GeneralActualOffset => GeneralOffset + 141;
+        public int GeneralActualOffset => GeneralOffset /*+ 141*/;
         
         public float PlaybackRate { get; set; } = 1;
         public bool PlayUseTempo { get; set; }
