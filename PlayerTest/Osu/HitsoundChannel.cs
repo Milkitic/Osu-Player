@@ -2,9 +2,8 @@
 using OSharp.Beatmap.Sections.GamePlay;
 using OSharp.Beatmap.Sections.HitObject;
 using OSharp.Beatmap.Sections.Timing;
-using PlayerTest.Player.Channel;
-using PlayerTest.TrackProvider;
-using PlayerTest.Wave;
+using PlayerTest.Player;
+using PlayerTest.Player.Subchannels;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,93 +11,24 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PlayerTest.Player
+namespace PlayerTest.Osu
 {
-    public class OsuMixPlayer : MultichannelPlayer
+    public class HitsoundChannel : MultiElementsChannel
     {
-        static OsuMixPlayer()
-        {
-            var files = new DirectoryInfo(Domain.DefaultPath).GetFiles("*.wav");
-            CachedSound.CreateCacheSounds(files.Select(k => k.FullName));
-        }
-
         private readonly OsuFile _osuFile;
         private readonly string _sourceFolder;
-        private SingleMediaChannel _musicChannel;
-        private MultiElementsChannel _hitsoundChannel;
-        private MultiElementsChannel _sampleChannel;
 
-        public OsuMixPlayer(OsuFile osuFile, string sourceFolder)
+        public HitsoundChannel(OsuFile osuFile, string sourceFolder,
+            AudioPlaybackEngine engine)
+            : base(engine)
         {
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
+
+            Description = nameof(HitsoundChannel);
         }
 
-        public override async Task Initialize()
-        {
-            var mp3Path = Path.Combine(_sourceFolder, _osuFile.General.AudioFilename);
-            _musicChannel = new SingleMediaChannel(Engine, mp3Path,
-                AppSettings.Default.Play.PlaybackRate,
-                AppSettings.Default.Play.PlayUseTempo)
-            {
-                Description = "Music"
-            };
-            AddSubchannel(_musicChannel);
-            await _musicChannel.Initialize();
-
-            var hitsoundList = await GetHitsoundsAsync();
-            _hitsoundChannel = new MultiElementsChannel(Engine, hitsoundList, _musicChannel)
-            {
-                Description = "Hitsound"
-            };
-            AddSubchannel(_hitsoundChannel);
-            await _hitsoundChannel.Initialize();
-
-            var sampleList = await GetSamplesAsync();
-            _sampleChannel = new MultiElementsChannel(Engine, sampleList, _musicChannel)
-            {
-                Description = "Sample"
-            };
-
-            AddSubchannel(_sampleChannel);
-            await _sampleChannel.Initialize();
-
-            Duration = MathEx.Max(_musicChannel.ChannelEndTime, _hitsoundChannel.ChannelEndTime,
-                _sampleChannel.ChannelEndTime);
-
-            //_hitsoundChannel.PositionUpdated+= (time) => Console.WriteLine($"{_hitsoundChannel.Description}: {time}");
-            foreach (var channel in Subchannels)
-            {
-                channel.PlayStatusChanged += (status) => Console.WriteLine($"{channel.Description}: {status}");
-            }
-
-            PlayStatus = PlayStatus.Ready;
-        }
-
-        private async Task<List<SoundElement>> GetSamplesAsync()
-        {
-            var elements = new ConcurrentBag<SoundElement>();
-            var samples = _osuFile.Events.SampleInfo;
-            if (samples == null)
-                return new List<SoundElement>(elements);
-
-            await Task.Run(() =>
-            {
-                samples.AsParallel()
-                    .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
-                    .ForAll(sample =>
-                    {
-                        var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
-                            GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(sample.Filename))
-                        );
-                        elements.Add(element);
-                    });
-            });
-
-            return new List<SoundElement>(elements);
-        }
-
-        private async Task<List<SoundElement>> GetHitsoundsAsync()
+        public override async Task<IEnumerable<SoundElement>> GetSoundElements()
         {
             List<RawHitObject> hitObjects = _osuFile.HitObjects.HitObjectList;
             var elements = new ConcurrentBag<SoundElement>();
@@ -293,7 +223,8 @@ namespace PlayerTest.Player
                 return new[]
                 {
                     ValueTuple.Create(
-                        GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(hitObject.FileName)),
+                        OsuMixPlayer.GetFileUntilFind(_sourceFolder,
+                            Path.GetFileNameWithoutExtension(hitObject.FileName)),
                         itemHitsound
                     )
                 };
@@ -336,7 +267,7 @@ namespace PlayerTest.Player
                 if (timingPoint.Track == 0)
                     filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutExt + AudioPlaybackEngine.WavExtension);
                 else if (waves.Contains(fileNameWithoutExt))
-                    filePath = GetFileUntilFind(_sourceFolder, fileNameWithoutExt);
+                    filePath = OsuMixPlayer.GetFileUntilFind(_sourceFolder, fileNameWithoutExt);
                 else
                     filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutExt + AudioPlaybackEngine.WavExtension);
 
@@ -344,32 +275,6 @@ namespace PlayerTest.Player
             }
 
             return tuples;
-        }
-
-        private readonly ConcurrentDictionary<string, string> _pathCache = new ConcurrentDictionary<string, string>();
-
-        private string GetFileUntilFind(string sourceFolder, string fileNameWithoutExtension)
-        {
-            var combine = Path.Combine(sourceFolder, fileNameWithoutExtension);
-            if (_pathCache.TryGetValue(combine, out var value))
-            {
-                return value;
-            }
-
-            string path = "";
-            foreach (var extension in AudioPlaybackEngine.SupportExtensions)
-            {
-                path = Path.Combine(sourceFolder, fileNameWithoutExtension + extension);
-
-                if (File.Exists(path))
-                {
-                    _pathCache.TryAdd(combine, path);
-                    return path;
-                }
-            }
-
-            _pathCache.TryAdd(combine, path);
-            return path;
         }
 
         private float GetObjectBalance(float x)

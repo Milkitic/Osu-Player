@@ -1,7 +1,6 @@
 ﻿using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using OSharp.Beatmap.Sections.HitObject;
-using PlayerTest.TrackProvider;
 using PlayerTest.Wave;
 using System;
 using System.Collections.Concurrent;
@@ -11,14 +10,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PlayerTest.Player.Channel
+namespace PlayerTest.Player.Subchannels
 {
-    public class MultiElementsChannel : Subchannel
+    public abstract class MultiElementsChannel : Subchannel, ISoundElementsProvider
     {
         private readonly VariableStopwatch _sw = new VariableStopwatch();
 
-        private readonly List<SoundElement> _soundElements;
-        private readonly SingleMediaChannel _referenceChannel;
+        protected List<SoundElement> SoundElements;
+        protected readonly SingleMediaChannel ReferenceChannel;
         private ConcurrentQueue<SoundElement> _soundElementsQueue;
 
         private VolumeSampleProvider _volumeProvider;
@@ -73,18 +72,17 @@ namespace PlayerTest.Player.Channel
 
         public MixingSampleProvider Submixer { get; protected set; }
 
-        public MultiElementsChannel(AudioPlaybackEngine engine, List<SoundElement> soundElements,
+        public MultiElementsChannel(AudioPlaybackEngine engine,
             SingleMediaChannel referenceChannel = null) : base(engine)
         {
-            _soundElements = soundElements;
-            _referenceChannel = referenceChannel;
+            ReferenceChannel = referenceChannel;
         }
 
         public override async Task Initialize()
         {
-            _soundElements.Sort(new SoundElementTimingComparer());
+            SoundElements.Sort(new SoundElementTimingComparer());
 
-            Duration = TimeSpan.FromMilliseconds(_soundElements.Count == 0 ? 0 : _soundElements.Max(k => k.Offset));
+            Duration = TimeSpan.FromMilliseconds(SoundElements.Count == 0 ? 0 : SoundElements.Max(k => k.Offset));
 
             Submixer = new MixingSampleProvider(WaveFormatFactory.IeeeWaveFormat)
             {
@@ -100,7 +98,7 @@ namespace PlayerTest.Player.Channel
             await RequeueAsync(TimeSpan.Zero);
             await Task.Run(() =>
             {
-                _soundElements
+                SoundElements
                     .Where(k => k.FilePath == null &&
                                 (k.ControlType == SlideControlType.None || k.ControlType == SlideControlType.StartNew))
                     .AsParallel()
@@ -188,7 +186,7 @@ namespace PlayerTest.Player.Channel
         {
             return;
             if (IsCalibrationRunning) return;
-            if (_referenceChannel == null) return;
+            if (ReferenceChannel == null) return;
 
             _calibrationTask = new Task(() =>
             {
@@ -199,11 +197,11 @@ namespace PlayerTest.Player.Channel
 
                 while (!_cts.IsCancellationRequested)
                 {
-                    var refNewTime = _referenceChannel.ReferencePosition.TotalMilliseconds;
+                    var refNewTime = ReferenceChannel.ReferencePosition.TotalMilliseconds;
                     var now = DateTime.Now;
                     if (Equals(refNewTime, refOldTime) && // 若时间相同且没有超过强制同步时间
                         now - lastSyncTime <= TimeSpan.FromMilliseconds(forceSyncDelay) ||
-                        _referenceChannel.PlayStatus != PlayStatus.Playing) // 或者参照的播放停止
+                        ReferenceChannel.PlayStatus != PlayStatus.Playing) // 或者参照的播放停止
                     {
                         if (!TaskEx.TaskSleep(loopCheckInterval, _cts)) return;
                         continue;
@@ -330,21 +328,20 @@ namespace PlayerTest.Player.Channel
             _playingTask.Start();
         }
 
-        private async Task RequeueAsync(TimeSpan startTime)
+        protected async Task RequeueAsync(TimeSpan startTime)
         {
             var queue = new ConcurrentQueue<SoundElement>();
-            if (_soundElements != null)
+            if (SoundElements == null) SoundElements = new List<SoundElement>(await GetSoundElements());
+
+            await Task.Run(() =>
             {
-                await Task.Run(() =>
+                foreach (var i in SoundElements)
                 {
-                    foreach (var i in _soundElements)
-                    {
-                        if (i.Offset < startTime.TotalMilliseconds)
-                            continue;
-                        queue.Enqueue(i);
-                    }
-                }).ConfigureAwait(false);
-            }
+                    if (i.Offset < startTime.TotalMilliseconds)
+                        continue;
+                    queue.Enqueue(i);
+                }
+            }).ConfigureAwait(false);
 
             _soundElementsQueue = queue;
         }
@@ -363,5 +360,7 @@ namespace PlayerTest.Player.Channel
             await TaskEx.WhenAllSkipNull(_playingTask, _calibrationTask);
             Console.WriteLine(@"Task canceled.");
         }
+
+        public abstract Task<IEnumerable<SoundElement>> GetSoundElements();
     }
 }

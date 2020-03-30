@@ -1,17 +1,20 @@
 ﻿using OSharp.Beatmap;
+using PlayerTest.Player;
+using PlayerTest.Player.Subchannels;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace PlayerTest.TrackProvider
+namespace PlayerTest.Osu
 {
-    internal class NightcoreTilingTrackProvider : ITrackProvider
+    internal class NightcoreTilingProvider : ISoundElementsProvider
     {
         private readonly OsuFile _osuFile;
         private readonly TimeSpan _maxDuration;
 
-        public NightcoreTilingTrackProvider(OsuFile osuFile, TimeSpan maxDuration)
+        public NightcoreTilingProvider(OsuFile osuFile, TimeSpan maxDuration)
         {
             _osuFile = osuFile;
             _maxDuration = maxDuration;
@@ -62,7 +65,7 @@ namespace PlayerTest.TrackProvider
                 })
             };
 
-        public IEnumerable<SoundElement> GetSoundElements()
+        public async Task<IEnumerable<SoundElement>> GetSoundElements()
         {
             var timingSection = _osuFile.TimingPoints;
             var redLines = timingSection.TimingList.Where(k => !k.Inherit);

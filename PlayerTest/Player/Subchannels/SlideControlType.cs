@@ -1,4 +1,4 @@
-﻿namespace PlayerTest.TrackProvider
+﻿namespace PlayerTest.Player.Subchannels
 {
     public enum SlideControlType
     {

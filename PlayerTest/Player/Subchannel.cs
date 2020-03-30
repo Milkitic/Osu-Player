@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace PlayerTest.Player.Channel
+namespace PlayerTest.Player
 {
     public abstract class Subchannel : IChannel
     {

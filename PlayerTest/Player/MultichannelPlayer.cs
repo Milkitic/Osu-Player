@@ -7,7 +7,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PlayerTest.Player.Channel;
 
 namespace PlayerTest.Player
 {

@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using NAudio.Wave;
 using OSharp.Beatmap;
+using PlayerTest.Osu;
 using PlayerTest.Player;
 using PlayerTest.Wave;
 

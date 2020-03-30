@@ -21,6 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
 using System;
+
 // ReSharper disable InheritdocConsiderUsage
 
 #pragma warning disable 1591
@@ -31,6 +32,7 @@ using System;
 // ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable InconsistentNaming
 
+// ReSharper disable once CheckNamespace
 namespace PlayerTest.Annotations
 {
   /// <summary>

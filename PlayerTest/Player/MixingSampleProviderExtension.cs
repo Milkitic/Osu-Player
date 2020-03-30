@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using PlayerTest.Wave;
+using System.Threading.Tasks;
 
 namespace PlayerTest.Player
 {

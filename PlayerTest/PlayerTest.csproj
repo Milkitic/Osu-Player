@@ -99,16 +99,18 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Player\Channel\MultiElementsChannel.cs" />
-    <Compile Include="Player\Channel\SingleMediaChannel.cs" />
+    <Compile Include="Osu\HitsoundChannel.cs" />
+    <Compile Include="Osu\SampleChannel.cs" />
+    <Compile Include="Player\Subchannels\MultiElementsChannel.cs" />
+    <Compile Include="Player\Subchannels\SingleMediaChannel.cs" />
     <Compile Include="TaskEx.cs" />
-    <Compile Include="TrackProvider\SlideControlType.cs" />
-    <Compile Include="TrackProvider\SoundElement.cs" />
-    <Compile Include="TrackProvider\SoundElementTimingComparer.cs" />
+    <Compile Include="Player\Subchannels\SlideControlType.cs" />
+    <Compile Include="Player\Subchannels\SoundElement.cs" />
+    <Compile Include="Player\Subchannels\SoundElementTimingComparer.cs" />
     <Compile Include="Player\MixingSampleProviderExtension.cs" />
-    <Compile Include="Player\OsuMixPlayer.cs" />
+    <Compile Include="Osu\OsuMixPlayer.cs" />
     <Compile Include="Player\SampleControl.cs" />
-    <Compile Include="Player\Channel\Subchannel.cs" />
+    <Compile Include="Player\Subchannel.cs" />
     <Compile Include="ToStringExtension.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="SoundTouch\SoundTouch.cs" />
@@ -117,13 +119,13 @@
     <Compile Include="SoundTouch\SoundTouchProfile.cs" />
     <Compile Include="SoundTouch\SoundTouchSettings.cs" />
     <Compile Include="Domain.cs" />
-    <Compile Include="TrackProvider\NightcoreTilingTrackProvider.cs" />
-    <Compile Include="TrackProvider\ITrackProvider.cs" />
+    <Compile Include="Osu\NightcoreTilingProvider.cs" />
+    <Compile Include="Player\ISoundElementsProvider.cs" />
     <Compile Include="VariableStopwatch.cs" />
     <Compile Include="Wave\LoopStream.cs" />
     <Compile Include="Wave\VarispeedSampleProvider.cs" />
     <Compile Include="Wave\BalanceSampleProvider.cs" />
-    <Compile Include="Player\Channel\IChannel.cs" />
+    <Compile Include="Player\IChannel.cs" />
     <Compile Include="Player\StopMode.cs" />
     <Compile Include="PlaySection.cs" />
     <Compile Include="Player\AudioPlaybackEngine.cs" />
@@ -259,5 +261,6 @@
       <Name>OSharp.Beatmap</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

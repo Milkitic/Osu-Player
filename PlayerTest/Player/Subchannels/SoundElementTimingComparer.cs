@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PlayerTest.TrackProvider
+namespace PlayerTest.Player.Subchannels
 {
     public class SoundElementTimingComparer : IComparer<SoundElement>
     {

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PlayerTest.Properties
+namespace PlayerTest.Annotations
 {
 
 

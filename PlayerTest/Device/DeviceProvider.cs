@@ -1,10 +1,10 @@
-﻿using System;
+﻿using NAudio.CoreAudioApi;
+using NAudio.CoreAudioApi.Interfaces;
+using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using NAudio.CoreAudioApi;
-using NAudio.CoreAudioApi.Interfaces;
-using NAudio.Wave;
 
 namespace PlayerTest.Device
 {
