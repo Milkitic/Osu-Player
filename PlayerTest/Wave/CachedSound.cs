@@ -15,6 +15,8 @@ namespace PlayerTest.Wave
         public float[] AudioData { get; private set; }
         public WaveFormat WaveFormat { get; private set; }
         public TimeSpan Duration { get; private set; }
+        public static MyAudioFileReader.WaveStreamType WaveStreamType { get; set; } = 
+            MyAudioFileReader.WaveStreamType.Wav;
 
         private CachedSound(string filePath)
         {
@@ -23,8 +25,8 @@ namespace PlayerTest.Wave
 
         private static async Task<CachedSound> CreateFromFile(string filePath)
         {
-            var type = StreamType.Wav;
-            using (var audioFileReader = await WaveFormatFactory.GetResampledAudioFileReader(filePath, type).ConfigureAwait(false))
+            using (var audioFileReader = await WaveFormatFactory.GetResampledAudioFileReader(filePath,
+                WaveStreamType).ConfigureAwait(false))
             {
                 var wholeData = new List<float>((int)(audioFileReader.Length / 4));
 

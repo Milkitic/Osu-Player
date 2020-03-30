@@ -43,8 +43,7 @@ namespace PlayerTest.Player.Channel
 
         public override async Task Initialize()
         {
-            var type = StreamType.Wav;
-            _fileReader = await WaveFormatFactory.GetResampledAudioFileReader(_path, type);
+            _fileReader = await WaveFormatFactory.GetResampledAudioFileReader(_path, CachedSound.WaveStreamType);
 
             _speedProvider = new VarispeedSampleProvider(_fileReader,
                 10,

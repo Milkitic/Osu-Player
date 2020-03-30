@@ -15,7 +15,7 @@ namespace PlayerTest.Wave
         public static WaveFormat IeeeWaveFormat => WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, Channels);
         public static WaveFormat PcmWaveFormat => new WaveFormat(SampleRate, Channels);
 
-        public static async Task<MyAudioFileReader> GetResampledAudioFileReader(string path, StreamType type)
+        public static async Task<MyAudioFileReader> GetResampledAudioFileReader(string path, MyAudioFileReader.WaveStreamType type)
         {
             var stream = await Resample(path, type).ConfigureAwait(false);
             return stream is MyAudioFileReader afr ? afr : new MyAudioFileReader(stream, type);
@@ -58,7 +58,7 @@ namespace PlayerTest.Wave
             }).ConfigureAwait(false);
         }
 
-        private static async Task<Stream> Resample(string path, StreamType type)
+        private static async Task<Stream> Resample(string path, MyAudioFileReader.WaveStreamType type)
         {
             if (!File.Exists(path))
             {
@@ -78,7 +78,7 @@ namespace PlayerTest.Wave
 
                     using (audioFileReader)
                     {
-                        if (type == StreamType.Wav)
+                        if (type == MyAudioFileReader.WaveStreamType.Wav)
                         {
                             using (var resampler = new MediaFoundationResampler(audioFileReader, PcmWaveFormat))
                             {

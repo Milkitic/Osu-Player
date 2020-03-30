@@ -16,7 +16,7 @@ namespace PlayerTest.Wave
     /// ISampleProvider, making it possibly the only stage in your audio
     /// pipeline necessary for simple playback scenarios
     /// </summary>
-    internal class MyAudioFileReader : WaveStream, ISampleProvider
+    public class MyAudioFileReader : WaveStream, ISampleProvider
     {
         private WaveStream _readerStream;
         private readonly SampleChannel _sampleChannel;
@@ -40,10 +40,10 @@ namespace PlayerTest.Wave
             _length = SourceToDest(_readerStream.Length);
         }
 
-        public MyAudioFileReader(Stream stream, StreamType streamType)
+        public MyAudioFileReader(Stream stream, WaveStreamType waveStreamType)
         {
             _lockObject = new object();
-            CreateReaderStream(stream, streamType);
+            CreateReaderStream(stream, waveStreamType);
 
             _sourceBytesPerSample = _readerStream.WaveFormat.BitsPerSample / 8 * _readerStream.WaveFormat.Channels;
             _sampleChannel = new SampleChannel(_readerStream, false);
@@ -55,17 +55,17 @@ namespace PlayerTest.Wave
         /// Initializes a new instance of AudioFileReader
         /// </summary>
         /// <param name="buffer">The stream to open</param>
-        /// <param name="streamType">The type of source stream</param>
-        public MyAudioFileReader(byte[] buffer, StreamType streamType)
-            : this(new MemoryStream(buffer), streamType)
+        /// <param name="waveStreamType">The type of source stream</param>
+        public MyAudioFileReader(byte[] buffer, WaveStreamType waveStreamType)
+            : this(new MemoryStream(buffer), waveStreamType)
         {
         }
 
-        private void CreateReaderStream(Stream sourceStream, StreamType streamType)
+        private void CreateReaderStream(Stream sourceStream, WaveStreamType waveStreamType)
         {
-            switch (streamType)
+            switch (waveStreamType)
             {
-                case StreamType.Wav:
+                case WaveStreamType.Wav:
                     {
                         _readerStream = new WaveFileReader(sourceStream);
                         if (_readerStream.WaveFormat.Encoding == WaveFormatEncoding.Pcm ||
@@ -75,13 +75,13 @@ namespace PlayerTest.Wave
                         _readerStream = new BlockAlignReductionStream(_readerStream);
                         break;
                     }
-                case StreamType.Mp3:
+                case WaveStreamType.Mp3:
                     _readerStream = new Mp3FileReader(sourceStream);
                     break;
-                case StreamType.Ogg:
+                case WaveStreamType.Ogg:
                     _readerStream = new VorbisWaveReader(sourceStream);
                     break;
-                case StreamType.Aiff:
+                case WaveStreamType.Aiff:
                     _readerStream = new AiffFileReader(sourceStream);
                     break;
                 default:
@@ -211,10 +211,10 @@ namespace PlayerTest.Wave
             }
             base.Dispose(disposing);
         }
-    }
 
-    public enum StreamType
-    {
-        Wav, Mp3, Ogg, Aiff, Others
+        public enum WaveStreamType
+        {
+            Wav, Mp3, Ogg, Aiff, Others
+        }
     }
 }
