@@ -26,7 +26,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
         {
             var cache = Path.Combine(Domain.CachePath,
                 $"{Guid.NewGuid().ToString().Replace("-", "")}.sound");
-            var stream = await Resample(path, cache);
+            var stream = await Resample(path, cache).ConfigureAwait(false);
             return stream is MyAudioFileReader afr ? afr : new MyAudioFileReader(cache);
         }
 

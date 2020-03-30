@@ -47,7 +47,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 hitObjects.AsParallel()
                     .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
                     .ForAll(obj => { AddSingleHitObject(obj, waves, elements).Wait(); });
-            });
+            }).ConfigureAwait(false);
 
             return new List<SoundElement>(elements);
         }

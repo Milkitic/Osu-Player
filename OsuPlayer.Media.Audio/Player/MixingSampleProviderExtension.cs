@@ -24,7 +24,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         public static async Task<ISampleProvider> PlaySound(this MixingSampleProvider mixer, string path,
             SampleControl sampleControl)
         {
-            var sound = await CachedSound.GetOrCreateCacheSound(path);
+            var sound = await CachedSound.GetOrCreateCacheSound(path).ConfigureAwait(false);
             PlaySound(mixer, sound, sampleControl, out var rootSample);
             return rootSample;
         }
@@ -32,7 +32,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         public static async Task<ISampleProvider> PlaySound(this MixingSampleProvider mixer, string path,
             float volume, float balance)
         {
-            var sound = await CachedSound.GetOrCreateCacheSound(path);
+            var sound = await CachedSound.GetOrCreateCacheSound(path).ConfigureAwait(false);
             PlaySound(mixer, sound, volume, balance, out var rootSample);
             return rootSample;
         }

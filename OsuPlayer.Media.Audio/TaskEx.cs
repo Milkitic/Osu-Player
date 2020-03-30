@@ -32,7 +32,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public static async Task WhenAllSkipNull(params Task[] playingTask)
         {
-            await Task.WhenAll(playingTask.Where(k => !(k is null)));
+            await Task.WhenAll(playingTask.Where(k => !(k is null))).ConfigureAwait(false);
         }
 
         public static void WaitAllSkipNull(params Task[] playingTask)

@@ -16,6 +16,7 @@ using System.Windows;
 using System.Xaml;
 using Milky.OsuPlayer.Control.Notification;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Shared;
 
 #if !DEBUG
 using Sentry;
@@ -89,6 +90,7 @@ namespace Milky.OsuPlayer
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            InvokeMethodHelper.SetMainThreadContext();
             I18nUtil.LoadI18N();
         }
     }

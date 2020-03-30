@@ -249,7 +249,7 @@ namespace Milky.OsuPlayer.Windows
             // 加至播放列表
             var entries = _appDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList);
 
-            await _controller.PlayList.SetSongListAsync(entries, true);
+            await _controller.PlayList.SetSongListAsync(entries, true, false, false);
 
             bool play = AppSettings.Default.Play.AutoPlay;
             var current = _appDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);

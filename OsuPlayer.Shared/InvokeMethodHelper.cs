@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 
-namespace Milky.OsuPlayer.Media.Audio
+namespace Milky.OsuPlayer.Shared
 {
     public static class InvokeMethodHelper
     {
@@ -37,7 +37,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public static void OnMainThread(Action action, bool raiseEventInUiThread = true)
         {
-            if (_uiContext == null) throw new ArgumentNullException();
+            if (_uiContext == null) throw new ArgumentNullException("UiContext不能为空。");
 
             if (raiseEventInUiThread)
                 _uiContext.Send(obj => { action?.Invoke(); }, null);

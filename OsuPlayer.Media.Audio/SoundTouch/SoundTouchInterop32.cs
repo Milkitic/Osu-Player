@@ -6,7 +6,7 @@ namespace Milky.OsuPlayer.Media.Audio.SoundTouch
 {
     class SoundTouchInterop32
     {
-        private const string SoundTouchDllName = @".\plugins\SoundTouch\SoundTouch.dll";
+        private const string SoundTouchDllName = @".\extensions\plugins\SoundTouch\SoundTouch.dll";
 
         /// <summary>
         /// Create a new instance of SoundTouch processor.

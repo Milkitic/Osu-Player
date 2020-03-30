@@ -14,7 +14,7 @@ namespace Milky.OsuPlayer.Common.Configuration
 
         public int GeneralOffset { get; set; }
         [JsonIgnore]
-        public int GeneralActualOffset => GeneralOffset + 141;
+        public int GeneralActualOffset => GeneralOffset + 0;
         public bool ReplacePlayList { get; set; } = true;
         public bool UsePlayerV2 { get; set; } = false;
 

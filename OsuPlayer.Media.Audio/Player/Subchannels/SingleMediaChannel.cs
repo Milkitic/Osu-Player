@@ -46,7 +46,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override async Task Initialize()
         {
-            _fileReader = await WaveFormatFactory.GetResampledAudioFileReader(_path, CachedSound.WaveStreamType);
+            _fileReader = await WaveFormatFactory.GetResampledAudioFileReader(_path, CachedSound.WaveStreamType)
+                .ConfigureAwait(false);
 
             _speedProvider = new VarispeedSampleProvider(_fileReader,
                 10,
@@ -56,7 +57,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                 PlaybackRate = _playbackRate
             };
 
-            await CachedSound.CreateCacheSounds(new[] { _path });
+            await CachedSound.CreateCacheSounds(new[] { _path }).ConfigureAwait(false);
 
             Duration = _fileReader.TotalTime;
 
@@ -99,15 +100,15 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         public override async Task Stop()
         {
             Engine.RootMixer.RemoveMixerInput(_actualRoot);
-            await SkipTo(TimeSpan.Zero);
+            await SkipTo(TimeSpan.Zero).ConfigureAwait(false);
             PlayStatus = PlayStatus.Paused;
             await Task.CompletedTask;
         }
 
         public override async Task Restart()
         {
-            await SkipTo(TimeSpan.Zero);
-            await Play();
+            await SkipTo(TimeSpan.Zero).ConfigureAwait(false);
+            await Play().ConfigureAwait(false);
             await Task.CompletedTask;
         }
 

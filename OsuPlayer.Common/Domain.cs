@@ -34,12 +34,12 @@ namespace Milky.OsuPlayer.Common
         public static string ThumbCachePath => Path.Combine(CachePath, "_thumbs");
 
         public static string DefaultPath => Path.Combine(CurrentPath, "default");
-        public static string ExternalPath => Path.Combine(CurrentPath, "external");
+        public static string ExtensionPath => Path.Combine(CurrentPath, "extensions");
         public static string MusicPath => Path.Combine(CurrentPath, "music");
         public static string BackgroundPath => Path.Combine(CurrentPath, "background");
         public static string LangPath => Path.Combine(CurrentPath, "lang");
         public static string ResourcePath => Path.Combine(CurrentPath, "Resources");
-        public static string PluginPath => Path.Combine(ExternalPath, "plugins");
+        public static string PluginPath => Path.Combine(ExtensionPath, "plugins");
 
         public static string CustomSongPath => AppSettings.Default == null ? null : new FileInfo(AppSettings.Default.General.CustomSongsPath).FullName;
         public static string OsuPath =>

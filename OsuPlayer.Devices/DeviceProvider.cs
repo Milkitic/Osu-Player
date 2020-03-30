@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Milky.OsuPlayer.Shared;
 using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
 using NAudio.Wave;
@@ -77,12 +78,6 @@ namespace OsuPlayer.Devices
             //    return _currentDevice;
             //}
 
-            var apartmentState = Thread.CurrentThread.GetApartmentState();
-            if (apartmentState != ApartmentState.STA)
-            {
-                throw new Exception($"Need {ApartmentState.STA}, but actual {apartmentState}.");
-            }
-
             bool useDefault = false;
             if (deviceInfo is null)
             {
@@ -122,48 +117,52 @@ namespace OsuPlayer.Devices
                     deviceInfo = GetDefaultDeviceInfo();
                 }
             }
-
-            switch (deviceInfo.OutputMethod)
+            InvokeMethodHelper.OnMainThread(() =>
             {
-                case OutputMethod.WaveOut:
-                    var waveOut = (WaveOutInfo)deviceInfo;
-                    device = new WaveOutEvent
-                    {
-                        DeviceNumber = waveOut.DeviceNumber,
-                        DesiredLatency = latency
-                    };
-                    break;
-                case OutputMethod.DirectSound:
-                    var dsOut = (DirectSoundOutInfo)deviceInfo;
-                    if (dsOut.Equals(DirectSoundOutInfo.Default))
-                    {
-                        device = new DirectSoundOut(40);
-                    }
-                    else
-                    {
-                        device = new DirectSoundOut(dsOut.DeviceGuid, latency);
-                    }
-                    break;
-                case OutputMethod.Wasapi:
-                    var wasapi = (WasapiInfo)deviceInfo;
-                    if (wasapi.Equals(WasapiInfo.Default))
-                    {
-                        device = new WasapiOut(AudioClientShareMode.Shared, 1);
-                    }
-                    else
-                    {
-                        device = new WasapiOut(wasapi.Device,
-                              isExclusive ? AudioClientShareMode.Exclusive : AudioClientShareMode.Shared, true,
-                              latency);
-                    }
-                    break;
-                case OutputMethod.Asio:
-                    var asio = (AsioOutInfo)deviceInfo;
-                    device = new AsioOut(asio.FriendlyName);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+                switch (deviceInfo.OutputMethod)
+                {
+                    case OutputMethod.WaveOut:
+                        var waveOut = (WaveOutInfo)deviceInfo;
+
+                        device = new WaveOutEvent
+                        {
+                            DeviceNumber = waveOut.DeviceNumber,
+                            DesiredLatency = latency
+                        };
+
+                        break;
+                    case OutputMethod.DirectSound:
+                        var dsOut = (DirectSoundOutInfo)deviceInfo;
+                        if (dsOut.Equals(DirectSoundOutInfo.Default))
+                        {
+                            device = new DirectSoundOut(40);
+                        }
+                        else
+                        {
+                            device = new DirectSoundOut(dsOut.DeviceGuid, latency);
+                        }
+                        break;
+                    case OutputMethod.Wasapi:
+                        var wasapi = (WasapiInfo)deviceInfo;
+                        if (wasapi.Equals(WasapiInfo.Default))
+                        {
+                            device = new WasapiOut(AudioClientShareMode.Shared, 1);
+                        }
+                        else
+                        {
+                            device = new WasapiOut(wasapi.Device,
+                                  isExclusive ? AudioClientShareMode.Exclusive : AudioClientShareMode.Shared, true,
+                                  latency);
+                        }
+                        break;
+                    case OutputMethod.Asio:
+                        var asio = (AsioOutInfo)deviceInfo;
+                        device = new AsioOut(asio.FriendlyName);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            });
 
             _currentDevice = device;
             return device;

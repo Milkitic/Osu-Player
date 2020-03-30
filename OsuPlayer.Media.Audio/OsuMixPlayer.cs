@@ -60,15 +60,15 @@ namespace Milky.OsuPlayer.Media.Audio
                 Description = "Music"
             };
             AddSubchannel(MusicChannel);
-            await MusicChannel.Initialize();
+            await MusicChannel.Initialize().ConfigureAwait(false);
 
             HitsoundChannel = new HitsoundChannel(_osuFile, _sourceFolder, Engine);
             AddSubchannel(HitsoundChannel);
-            await HitsoundChannel.Initialize();
+            await HitsoundChannel.Initialize().ConfigureAwait(false);
 
             SampleChannel = new SampleChannel(this, _osuFile, _sourceFolder, Engine);
             AddSubchannel(SampleChannel);
-            await SampleChannel.Initialize();
+            await SampleChannel.Initialize().ConfigureAwait(false);
 
             Duration = MathEx.Max(MusicChannel.ChannelEndTime, HitsoundChannel.ChannelEndTime,
                 SampleChannel.ChannelEndTime);

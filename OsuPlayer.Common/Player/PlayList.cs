@@ -120,17 +120,20 @@ namespace Milky.OsuPlayer.Common.Player
         /// <param name="startAnew">若为false，则播放列表中若有相同曲，保持指针继续播放</param>
         /// <param name="playInstantly">立即播放</param>
         /// <returns></returns>
-        public async Task<PlayControlResult> SetSongListAsync(IEnumerable<Beatmap> value, bool startAnew, bool playInstantly = true)
+        public async Task<PlayControlResult> SetSongListAsync(IEnumerable<Beatmap> value, bool startAnew,
+            bool playInstantly = true, bool autoSetSong = true)
         {
             if (SongList != null) SongList.CollectionChanged -= SongList_CollectionChanged;
             SongList = new ObservableCollection<Beatmap>(value);
             SongList.CollectionChanged += SongList_CollectionChanged;
 
             var changed = RearrangeIndexesAndReposition(startAnew ? (int?)0 : null);
-            var result = changed
-                ? await AutoSwitchAfterCollectionChanged(playInstantly)
-                : new PlayControlResult(PlayControlResult.PlayControlStatus.Keep,
-                    PlayControlResult.PointerControlStatus.Keep); // 这里可能混入空/不空的情况
+            PlayControlResult result; // 这里可能混入空/不空的情况
+            if (autoSetSong && changed)
+                result = await AutoSwitchAfterCollectionChanged(playInstantly);
+            else
+                result = new PlayControlResult(PlayControlResult.PlayControlStatus.Keep,
+                    PlayControlResult.PointerControlStatus.Keep);
 
             //OnPropertyChanged(nameof(SongList));
             return result;

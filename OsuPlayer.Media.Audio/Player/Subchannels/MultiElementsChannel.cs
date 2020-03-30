@@ -81,10 +81,6 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override async Task Initialize()
         {
-            SoundElements.Sort(new SoundElementTimingComparer());
-
-            Duration = TimeSpan.FromMilliseconds(SoundElements.Count == 0 ? 0 : SoundElements.Max(k => k.Offset));
-
             Submixer = new MixingSampleProvider(WaveFormatFactory.IeeeWaveFormat)
             {
                 ReadFully = true
@@ -96,7 +92,9 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             SampleControl.Balance = 0;
             SampleControl.VolumeChanged = f => _volumeProvider.Volume = f;
 
-            await RequeueAsync(TimeSpan.Zero);
+            await RequeueAsync(TimeSpan.Zero).ConfigureAwait(false);
+
+            Duration = TimeSpan.FromMilliseconds(SoundElements.Count == 0 ? 0 : SoundElements.Max(k => k.Offset));
             await Task.Run(() =>
             {
                 SoundElements
@@ -105,14 +103,15 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                     .AsParallel()
                     .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
                     .ForAll(k => CachedSound.CreateCacheSounds(new[] { k.FilePath }).Wait());
-            });
+            }).ConfigureAwait(false);
 
 
             //await CachedSound.CreateCacheSounds(_soundElements
             //    .Where(k => k.FilePath != null)
             //    .Select(k => k.FilePath));
 
-            await SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, AppSettings.Default.Play.PlayUseTempo);
+            await SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, AppSettings.Default.Play.PlayUseTempo)
+                .ConfigureAwait(false);
             PlayStatus = PlayStatus.Ready;
         }
 
@@ -127,21 +126,21 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override async Task Pause()
         {
-            await CancelLoopAsync();
+            await CancelLoopAsync().ConfigureAwait(false);
             PlayStatus = PlayStatus.Paused;
         }
 
         public override async Task Stop()
         {
-            await CancelLoopAsync();
-            await SkipTo(TimeSpan.Zero);
+            await CancelLoopAsync().ConfigureAwait(false);
+            await SkipTo(TimeSpan.Zero).ConfigureAwait(false);
             PlayStatus = PlayStatus.Paused;
         }
 
         public override async Task Restart()
         {
-            await SkipTo(TimeSpan.Zero);
-            await Play();
+            await SkipTo(TimeSpan.Zero).ConfigureAwait(false);
+            await Play().ConfigureAwait(false);
         }
 
         public override async Task SkipTo(TimeSpan time)
@@ -258,14 +257,14 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                         switch (soundElement.ControlType)
                         {
                             case SlideControlType.None:
-                                var cachedSound = await soundElement.GetCachedSoundAsync();
+                                var cachedSound = await soundElement.GetCachedSoundAsync().ConfigureAwait(false);
                                 Submixer.PlaySound(cachedSound, soundElement.Volume,
                                     soundElement.Balance * BalanceFactor);
                                 break;
                             case SlideControlType.StartNew:
                                 Submixer.RemoveMixerInput(_sliderSlideBalance);
                                 Submixer.RemoveMixerInput(_sliderAdditionBalance);
-                                cachedSound = await soundElement.GetCachedSoundAsync();
+                                cachedSound = await soundElement.GetCachedSoundAsync().ConfigureAwait(false);
                                 _lastSliderStream?.Dispose();
 
                                 var byteArray = new byte[cachedSound.AudioData.Length * sizeof(float)];
@@ -323,7 +322,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                 if (!_cts.Token.IsCancellationRequested)
                 {
                     PlayStatus = PlayStatus.Finished;
-                    await SkipTo(TimeSpan.Zero);
+                    await SkipTo(TimeSpan.Zero).ConfigureAwait(false);
                 }
             }, TaskCreationOptions.LongRunning);
             _playingTask.Start();
@@ -332,7 +331,11 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         protected async Task RequeueAsync(TimeSpan startTime)
         {
             var queue = new ConcurrentQueue<SoundElement>();
-            if (SoundElements == null) SoundElements = new List<SoundElement>(await GetSoundElements());
+            if (SoundElements == null)
+            {
+                SoundElements = new List<SoundElement>(await GetSoundElements().ConfigureAwait(false));
+                SoundElements.Sort(new SoundElementTimingComparer());
+            }
 
             await Task.Run(() =>
             {
@@ -358,7 +361,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         {
             _sw.Stop();
             _cts?.Cancel();
-            await TaskEx.WhenAllSkipNull(_playingTask, _calibrationTask);
+            await TaskEx.WhenAllSkipNull(_playingTask, _calibrationTask).ConfigureAwait(false);
             Console.WriteLine(@"Task canceled.");
         }
 

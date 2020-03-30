@@ -46,7 +46,7 @@ namespace Milky.OsuPlayer.Media.Audio
                         );
                         elements.Add(element);
                     });
-            });
+            }).ConfigureAwait(false);
 
             var elementList = new List<SoundElement>(elements);
 
@@ -57,7 +57,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     TimeSpan.FromMilliseconds(samples.Max(k => k.Offset))
                 );
                 _nightcore = new NightcoreTilingProvider(_osuFile, duration);
-                elementList.AddRange(await _nightcore.GetSoundElements());
+                elementList.AddRange(await _nightcore.GetSoundElements().ConfigureAwait(false));
             }
 
             return elementList;
@@ -67,11 +67,11 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             var oldRate = PlaybackRate;
             var oldTempo = UseTempo;
-            await base.SetPlaybackRate(rate, useTempo);
+            await base.SetPlaybackRate(rate, useTempo).ConfigureAwait(false);
             if (!oldRate.Equals(PlaybackRate) && oldTempo != UseTempo)
             {
                 SoundElements = null;
-                await RequeueAsync(Position);
+                await RequeueAsync(Position).ConfigureAwait(false);
             }
         }
     }

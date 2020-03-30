@@ -22,7 +22,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             if (_cachedSound != null)
                 return _cachedSound;
 
-            var result = await CachedSound.GetOrCreateCacheSound(FilePath);
+            var result = await CachedSound.GetOrCreateCacheSound(FilePath).ConfigureAwait(false);
             _cachedSound = result;
             return result;
         }
