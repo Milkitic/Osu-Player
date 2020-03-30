@@ -114,7 +114,6 @@
     <Compile Include="Metadata\NamingStyle.cs" />
     <Compile Include="Instances\OsuDbInst.cs" />
     <Compile Include="Player\BeatmapDetail.cs" />
-    <Compile Include="Player\PlayStatus.cs" />
     <Compile Include="Player\PlayMode.cs" />
     <Compile Include="Metadata\SortMode.cs" />
     <Compile Include="MapIndentity.cs" />

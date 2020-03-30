@@ -114,7 +114,7 @@ namespace Milky.OsuPlayer.Windows
                 while (!_cts.Token.IsCancellationRequested)
                 {
                     Thread.Sleep(50);
-                    var currentTime = _controller.Player?.PlayTime ?? TimeSpan.Zero;
+                    var currentTime = _controller.Player?.Position ?? TimeSpan.Zero;
                     var validLyrics = _lyricList.Where(t => t.StartTime <= currentTime.TotalMilliseconds).ToArray();
                     if (validLyrics.Length < 1)
                         continue;

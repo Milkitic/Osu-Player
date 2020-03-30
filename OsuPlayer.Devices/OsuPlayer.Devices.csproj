@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsioOutInfo.cs" />
+    <Compile Include="DeviceProvider.cs" />
     <Compile Include="DirectSoundOutInfo.cs" />
     <Compile Include="IDeviceInfo.cs" />
     <Compile Include="OutputMethod.cs" />

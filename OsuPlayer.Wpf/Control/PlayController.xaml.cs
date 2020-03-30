@@ -29,6 +29,7 @@ using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Control.Notification;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Audio.Player;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
@@ -91,14 +92,14 @@ namespace Milky.OsuPlayer.Control
             _controller.MusicLoaded += Controller_MusicLoaded;
             _controller.LoadFinished += Controller_LoadFinished;
 
-            _controller.ProgressUpdated += Controller_ProgressUpdated;
+            _controller.PositionUpdated += Controller_PositionUpdated;
         }
 
-        private void Controller_ProgressUpdated(TimeSpan playTime, TimeSpan duration)
+        private void Controller_PositionUpdated(TimeSpan time)
         {
             if (_scrollLock) return;
-            PlayProgress.Value = playTime.TotalMilliseconds;
-            LblNow.Content = playTime.ToString(@"mm\:ss");
+            PlayProgress.Value = time.TotalMilliseconds;
+            LblNow.Content = time.ToString(@"mm\:ss");
         }
 
         private void Controller_PreLoadStarted(string path, CancellationToken ct)

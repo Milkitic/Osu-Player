@@ -1,10 +1,8 @@
-﻿using System.Linq;
-using Milky.OsuPlayer.Common.Configuration;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using OsuPlayer.Devices;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Core;
-using OsuPlayer.Devices;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {

@@ -1,27 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Milky.OsuPlayer.Common;
+﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Core;
-using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
 using Milky.WpfApi.Commands;
+using System;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Milky.OsuPlayer.Control
 {
@@ -83,7 +70,7 @@ namespace Milky.OsuPlayer.Control
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             PlayModeControl.CloseRequested += (obj, args) => PopMode.IsOpen = false;
-            _controller.Player.PositionChanged += AudioPlayer_PositionChanged;
+            _controller.Player.PositionUpdated += AudioPlayer_PositionChanged;
         }
 
         private void UserControl_Initialized(object sender, EventArgs e)
@@ -93,13 +80,12 @@ namespace Milky.OsuPlayer.Control
 
         private void Controller_LoadFinished(BeatmapContext arg1, System.Threading.CancellationToken arg2)
         {
-            _controller.Player.PositionChanged += AudioPlayer_PositionChanged;
-            _controller.Player.PositionSet += AudioPlayer_PositionChanged;
+            _controller.Player.PositionUpdated += AudioPlayer_PositionChanged;
         }
 
-        private void AudioPlayer_PositionChanged(object sender, ProgressEventArgs e)
+        private void AudioPlayer_PositionChanged(TimeSpan time)
         {
-            _viewModel.PositionPercent = e.Position.TotalMilliseconds / e.Duration.TotalMilliseconds;
+            _viewModel.PositionPercent = time.TotalMilliseconds / _controller.Player.Duration.TotalMilliseconds;
         }
 
         private void MaxButton_Click(object sender, RoutedEventArgs e)
