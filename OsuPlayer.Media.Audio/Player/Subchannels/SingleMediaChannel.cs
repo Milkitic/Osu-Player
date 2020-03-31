@@ -129,7 +129,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                 : time;
             _speedProvider.Reposition();
             Position = _fileReader.CurrentTime;
-            Console.WriteLine($"{Description} skip: {Position}");
+            Console.WriteLine($"{Description} skip: want: {time}; actual: {Position}");
             _sw.SkipTo(time);
 
             PlayStatus = status;
