@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Shared;
 using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Common.Player
@@ -124,7 +125,7 @@ namespace Milky.OsuPlayer.Common.Player
             bool playInstantly = true, bool autoSetSong = true)
         {
             if (SongList != null) SongList.CollectionChanged -= SongList_CollectionChanged;
-            SongList = new ObservableCollection<Beatmap>(value);
+            InvokeMethodHelper.OnMainThread(() => SongList = new ObservableCollection<Beatmap>(value));
             SongList.CollectionChanged += SongList_CollectionChanged;
 
             var changed = RearrangeIndexesAndReposition(startAnew ? (int?)0 : null);
@@ -146,7 +147,8 @@ namespace Milky.OsuPlayer.Common.Player
         /// <returns></returns>
         public void AddOrSwitchTo(Beatmap beatmap)
         {
-            if (!SongList.Contains(beatmap)) SongList.Add(beatmap);
+            if (!SongList.Contains(beatmap))
+                InvokeMethodHelper.OnMainThread(() => SongList.Add(beatmap));
             IndexPointer = _songIndexList.IndexOf(SongList.IndexOf(beatmap));
         }
 

@@ -381,7 +381,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public async Task DisposeAsync()
         {
-            await _player?.DisposeAsync();
+            if (_player != null) await _player?.DisposeAsync();
             _readLock?.Dispose();
             _cts?.Dispose();
         }

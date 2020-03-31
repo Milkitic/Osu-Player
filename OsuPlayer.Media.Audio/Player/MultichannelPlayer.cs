@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
 
 namespace Milky.OsuPlayer.Media.Audio.Player
 {
@@ -81,14 +82,16 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         {
             if (_playTask?.Status == TaskStatus.Running)
                 return;
+            _cts?.Dispose();
             _cts = new CancellationTokenSource();
             _innerTimelineSw.Start();
 
             if (_channelsQueue == null)
                 await RequeueChannel().ConfigureAwait(false);
 
-            _playTask = Task.Run(() =>
+            _playTask = Task.Run(async () =>
             {
+                var date = DateTime.Now;
                 while (!_cts.IsCancellationRequested)
                 {
                     Position = _innerTimelineSw.Elapsed;
@@ -102,7 +105,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                         _channelsQueue.TryDequeue(out channel))
                     {
                         _runningChannels.Add(channel);
-                        channel.Play();
+                        await channel.Play();
                         Console.WriteLine($"[{_innerTimelineSw.Elapsed}] Play: {channel.Description}");
 
                         if (_channelsQueue.Count == 0)
@@ -115,6 +118,12 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                         _runningChannels.Remove(_runningChannels.First());
                     }
 
+                    if (DateTime.Now - date > TimeSpan.FromSeconds(10))
+                    {
+                        await InnerSync();
+                        date = DateTime.Now;
+                    }
+                    
                     Thread.Sleep(1);
                 }
             });
@@ -152,9 +161,12 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         private async Task CancelTask()
         {
-            if (_playTask?.Status == TaskStatus.Running)
-                _cts?.Cancel();
-            _cts?.Dispose();
+            if (_playTask is null ||
+                _playTask.Status == TaskStatus.Canceled ||
+                _playTask.Status == TaskStatus.Faulted)
+                return;
+
+            _cts?.Cancel();
             await TaskEx.WhenAllSkipNull(_playTask).ConfigureAwait(false);
         }
 
@@ -179,6 +191,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public async Task SkipTo(TimeSpan time)
         {
+            _innerTimelineSw.SkipTo(time);
             Position = time;
             await RequeueChannel().ConfigureAwait(false);
             foreach (var channel in _runningChannels)
@@ -189,8 +202,15 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                     await channel.Play();
                 }
             }
+        }
 
-            _innerTimelineSw.SkipTo(time);
+        public async Task InnerSync()
+        {
+            foreach (var channel in _runningChannels)
+            {
+                if (channel is SingleMediaChannel) continue;
+                await channel.Sync(Position - channel.ChannelStartTime).ConfigureAwait(false);
+            }
         }
 
         private async Task RequeueChannel()
@@ -227,7 +247,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         {
             await Stop();
 
-            foreach (var subchannel in _subchannels) subchannel.DisposeAsync();
+            foreach (var subchannel in _subchannels) await subchannel.DisposeAsync();
 
             _outputDevice?.Dispose();
             Engine?.Dispose();
@@ -247,7 +267,9 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             if (x is null)
                 return -1;
 
-            return (x.ChannelEndTime).CompareTo(y.ChannelEndTime);
+            var o = (x.ChannelEndTime).CompareTo(y.ChannelEndTime);
+            if (o == 0) return 1;
+            return o;
         }
     }
 }

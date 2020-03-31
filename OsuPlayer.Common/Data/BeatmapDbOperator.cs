@@ -87,6 +87,7 @@ namespace Milky.OsuPlayer.Common.Data
             var sb = new StringBuilder();
             foreach (var id in reqList)
             {
+                if (id is MapIdentity mi && mi.Equals(MapIdentity.Default)) continue;
                 var valueSql = string.Format("('{0}', '{1}', {2}),",
                     id.FolderName.Replace(@"'", @"''"),
                     id.Version.Replace(@"'", @"''"),

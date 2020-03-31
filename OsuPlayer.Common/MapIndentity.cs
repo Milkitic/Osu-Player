@@ -14,6 +14,7 @@ namespace Milky.OsuPlayer.Common
         public string FolderName { get; }
         public string Version { get; }
         public bool InOwnDb { get; }
+        public static MapIdentity Default { get; } = new MapIdentity();
 
         public override bool Equals(object obj)
         {

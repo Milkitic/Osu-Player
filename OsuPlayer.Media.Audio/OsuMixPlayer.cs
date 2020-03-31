@@ -8,6 +8,7 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Common.Player;
 
@@ -33,8 +34,8 @@ namespace Milky.OsuPlayer.Media.Audio
             get => _manualOffset;
             set
             {
-                HitsoundChannel.ManualOffset = value;
-                SampleChannel.ManualOffset = value;
+                if (HitsoundChannel != null) HitsoundChannel.ManualOffset = value;
+                if (SampleChannel != null) SampleChannel.ManualOffset = value;
                 _manualOffset = value;
             }
         }
@@ -70,8 +71,9 @@ namespace Milky.OsuPlayer.Media.Audio
             AddSubchannel(SampleChannel);
             await SampleChannel.Initialize().ConfigureAwait(false);
 
-            Duration = MathEx.Max(MusicChannel.ChannelEndTime, HitsoundChannel.ChannelEndTime,
-                SampleChannel.ChannelEndTime);
+            Duration = MathEx.Max(MusicChannel?.ChannelEndTime ?? TimeSpan.Zero,
+                HitsoundChannel?.ChannelEndTime ?? TimeSpan.Zero,
+                SampleChannel?.ChannelEndTime ?? TimeSpan.Zero);
 
             //_hitsoundChannel.PositionUpdated+= (time) => Console.WriteLine($"{_hitsoundChannel.Description}: {time}");
             foreach (var channel in Subchannels)

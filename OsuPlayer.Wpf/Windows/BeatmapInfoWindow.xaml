@@ -74,42 +74,42 @@
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="艺术家：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.ArtistUnicode}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.ArtistUnicode, Mode=OneWay}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="（原始）艺术家：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.ArtistAscii}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.ArtistAscii, Mode=OneWay}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="标题：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.TitleUnicode}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.TitleUnicode, Mode=OneWay}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="（原始）标题：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.TitleAscii}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.TitleAscii, Mode=OneWay}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="地图作者：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.Creator}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.Creator, Mode=OneWay}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="来源：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.Source}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Metadata.Source, Mode=OneWay}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
@@ -120,7 +120,7 @@
                         MaxWidth="270"
                         Padding="0,5,0,0"
                         Style="{StaticResource ReadOnlyTextBox}"
-                        Text="{Binding BeatmapDetail.Metadata.TagString}"
+                        Text="{Binding BeatmapDetail.Metadata.TagString, Mode=OneWay}"
                         TextWrapping="Wrap" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
@@ -133,7 +133,7 @@
                         Click="SLink_Click"
                         Style="{StaticResource LinkButton}">
                         <TextBlock>
-                            <Run Text="s/" /><Run Text="{Binding BeatmapDetail.Metadata.BeatmapsetId}" />
+                            <Run Text="s/" /><Run Text="{Binding BeatmapDetail.Metadata.BeatmapsetId, Mode=OneWay}" />
                         </TextBlock>
                     </control:CommonButton>
                     <control:CommonButton
@@ -142,7 +142,7 @@
                         Click="BLink_Click"
                         Style="{StaticResource LinkButton}">
                         <TextBlock>
-                            <Run Text="b/" /><Run Text="{Binding BeatmapDetail.Metadata.BeatmapId}" />
+                            <Run Text="b/" /><Run Text="{Binding BeatmapDetail.Metadata.BeatmapId, Mode=OneWay}" />
                         </TextBlock>
                     </control:CommonButton>
                 </StackPanel>
@@ -151,7 +151,7 @@
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="星级：" />
-                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Stars}" />
+                    <TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding BeatmapDetail.Stars, Mode=OneWay}" />
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label
@@ -161,13 +161,13 @@
 
                     <TextBlock VerticalAlignment="Center">
                         <Run Text="HP:" />
-                        <Run Text="{Binding BeatmapDetail.Metadata.HP}" />
+                        <Run Text="{Binding BeatmapDetail.Metadata.HP, Mode=OneWay}" />
                         <Run Text="CS:" />
-                        <Run Text="{Binding BeatmapDetail.Metadata.CS}" />
+                        <Run Text="{Binding BeatmapDetail.Metadata.CS, Mode=OneWay}" />
                         <Run Text="AR:" />
-                        <Run Text="{Binding BeatmapDetail.Metadata.AR}" />
+                        <Run Text="{Binding BeatmapDetail.Metadata.AR, Mode=OneWay}" />
                         <Run Text="OD:" />
-                        <Run Text="{Binding BeatmapDetail.Metadata.OD}" />
+                        <Run Text="{Binding BeatmapDetail.Metadata.OD, Mode=OneWay}" />
                     </TextBlock>
 
                 </StackPanel>

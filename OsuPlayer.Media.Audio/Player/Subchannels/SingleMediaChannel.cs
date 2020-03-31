@@ -36,6 +36,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         public override float PlaybackRate { get; protected set; }
         public override bool UseTempo { get; protected set; }
 
+        private VariableStopwatch _sw = new VariableStopwatch();
+
         public SingleMediaChannel(AudioPlaybackEngine engine, string path, float playbackRate, bool useTempo) :
             base(engine)
         {
@@ -74,6 +76,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                     {
                         Position = newTime;
                         oldTime = newTime;
+                        Console.WriteLine(_sw.Elapsed - _fileReader.CurrentTime);
                     }
 
                     Thread.Sleep(5);
@@ -87,6 +90,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             if (!Engine.RootMixer.MixerInputs.Contains(_actualRoot))
                 Engine.RootMixer.AddMixerInput(_speedProvider, SampleControl, out _actualRoot);
             PlayStatus = PlayStatus.Playing;
+            _sw.Start();
             await Task.CompletedTask;
         }
 
@@ -94,6 +98,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         {
             Engine.RootMixer.RemoveMixerInput(_actualRoot);
             PlayStatus = PlayStatus.Paused;
+            _sw.Stop();
             await Task.CompletedTask;
         }
 
@@ -102,6 +107,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             Engine.RootMixer.RemoveMixerInput(_actualRoot);
             await SkipTo(TimeSpan.Zero).ConfigureAwait(false);
             PlayStatus = PlayStatus.Paused;
+            _sw.Reset();
             await Task.CompletedTask;
         }
 
@@ -109,6 +115,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         {
             await SkipTo(TimeSpan.Zero).ConfigureAwait(false);
             await Play().ConfigureAwait(false);
+            _sw.Restart();
             await Task.CompletedTask;
         }
 
@@ -123,8 +130,20 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             _speedProvider.Reposition();
             Position = _fileReader.CurrentTime;
             Console.WriteLine($"{Description} skip: {Position}");
+            _sw.SkipTo(time);
 
             PlayStatus = status;
+            await Task.CompletedTask;
+        }
+
+        public override async Task Sync(TimeSpan time)
+        {
+            _fileReader.CurrentTime = time >= _fileReader.TotalTime
+                ? _fileReader.TotalTime - TimeSpan.FromMilliseconds(1)
+                : time;
+            _speedProvider.Reposition();
+            Position = _fileReader.CurrentTime;
+            _sw.SkipTo(time);
             await Task.CompletedTask;
         }
 
@@ -134,6 +153,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             {
                 PlaybackRate = rate;
                 _speedProvider.PlaybackRate = rate;
+                _sw.Rate = rate;
             }
 
             if (UseTempo != useTempo)
@@ -147,7 +167,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         public override async Task DisposeAsync()
         {
             await base.DisposeAsync();
-
+            await Stop();
             _speedProvider?.Dispose();
             _fileReader?.Dispose();
             _cts?.Cancel();

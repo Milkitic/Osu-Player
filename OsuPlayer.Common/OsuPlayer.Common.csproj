@@ -149,6 +149,10 @@
       <Project>{E290C0D7-06B7-47DC-81E7-98F08654FB0D}</Project>
       <Name>OsuPlayer.Devices</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj">
+      <Project>{C842FAB3-EC80-4E95-B402-BF0572F1806D}</Project>
+      <Name>OsuPlayer.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -38,7 +38,13 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             _skipOffset = startOffset;
             if (IsRunning)
+            {
                 base.Restart();
+            }
+            else
+            {
+                base.Reset();
+            }
         }
 
         public new long ElapsedMilliseconds =>
