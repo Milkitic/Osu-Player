@@ -119,48 +119,57 @@ namespace OsuPlayer.Devices
             }
             InvokeMethodHelper.OnMainThread(() =>
             {
-                switch (deviceInfo.OutputMethod)
+                try
                 {
-                    case OutputMethod.WaveOut:
-                        var waveOut = (WaveOutInfo)deviceInfo;
+                    switch (deviceInfo.OutputMethod)
+                    {
+                        case OutputMethod.WaveOut:
+                            var waveOut = (WaveOutInfo)deviceInfo;
 
-                        device = new WaveOutEvent
-                        {
-                            DeviceNumber = waveOut.DeviceNumber,
-                            DesiredLatency = latency
-                        };
+                            device = new WaveOutEvent
+                            {
+                                DeviceNumber = waveOut.DeviceNumber,
+                                DesiredLatency = latency
+                            };
 
-                        break;
-                    case OutputMethod.DirectSound:
-                        var dsOut = (DirectSoundOutInfo)deviceInfo;
-                        if (dsOut.Equals(DirectSoundOutInfo.Default))
-                        {
-                            device = new DirectSoundOut(40);
-                        }
-                        else
-                        {
-                            device = new DirectSoundOut(dsOut.DeviceGuid, latency);
-                        }
-                        break;
-                    case OutputMethod.Wasapi:
-                        var wasapi = (WasapiInfo)deviceInfo;
-                        if (wasapi.Equals(WasapiInfo.Default))
-                        {
-                            device = new WasapiOut(AudioClientShareMode.Shared, 1);
-                        }
-                        else
-                        {
-                            device = new WasapiOut(wasapi.Device,
-                                  isExclusive ? AudioClientShareMode.Exclusive : AudioClientShareMode.Shared, true,
-                                  latency);
-                        }
-                        break;
-                    case OutputMethod.Asio:
-                        var asio = (AsioOutInfo)deviceInfo;
-                        device = new AsioOut(asio.FriendlyName);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                            break;
+                        case OutputMethod.DirectSound:
+                            var dsOut = (DirectSoundOutInfo)deviceInfo;
+                            if (dsOut.Equals(DirectSoundOutInfo.Default))
+                            {
+                                device = new DirectSoundOut(40);
+                            }
+                            else
+                            {
+                                device = new DirectSoundOut(dsOut.DeviceGuid, latency);
+                            }
+                            break;
+                        case OutputMethod.Wasapi:
+                            var wasapi = (WasapiInfo)deviceInfo;
+                            if (wasapi.Equals(WasapiInfo.Default))
+                            {
+                                device = new WasapiOut(AudioClientShareMode.Shared, 1);
+                            }
+                            else
+                            {
+                                device = new WasapiOut(wasapi.Device,
+                                    isExclusive ? AudioClientShareMode.Exclusive : AudioClientShareMode.Shared, true,
+                                    latency);
+                            }
+                            break;
+                        case OutputMethod.Asio:
+                            var asio = (AsioOutInfo)deviceInfo;
+                            device = new AsioOut(asio.FriendlyName);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    device?.Dispose();
+                    device = new DirectSoundOut(40);
                 }
             });
 

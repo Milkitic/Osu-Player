@@ -367,12 +367,12 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public abstract Task<IEnumerable<SoundElement>> GetSoundElements();
 
-        public override void Dispose()
+        public override async Task DisposeAsync()
         {
-            Stop().Wait();
+            await Stop();
             _cts?.Dispose();
 
-            base.Dispose();
+            await base.DisposeAsync();
         }
     }
 }

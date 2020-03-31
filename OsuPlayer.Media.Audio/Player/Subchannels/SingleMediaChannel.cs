@@ -144,14 +144,14 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             await Task.CompletedTask;
         }
 
-        public override void Dispose()
+        public override async Task DisposeAsync()
         {
-            _fileReader?.Dispose();
+            await base.DisposeAsync();
+
             _speedProvider?.Dispose();
+            _fileReader?.Dispose();
             _cts?.Cancel();
             _cts?.Dispose();
-
-            base.Dispose();
         }
     }
 }

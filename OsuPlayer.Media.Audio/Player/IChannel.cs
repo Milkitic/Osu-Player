@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Common;
 
 namespace Milky.OsuPlayer.Media.Audio.Player
 {
-    public interface IChannel : IDisposable
+    public interface IChannel : IAsyncDisposable
     {
         event Action<PlayStatus> PlayStatusChanged;
         event Action<TimeSpan> PositionUpdated;

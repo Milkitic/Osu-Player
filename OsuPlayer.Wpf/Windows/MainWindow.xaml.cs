@@ -189,7 +189,7 @@ namespace Milky.OsuPlayer.Windows
         /// <summary>
         /// Clear things.
         /// </summary>
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (AppSettings.Default.General.ExitWhenClosed == null && !ForceExit)
             {
@@ -225,7 +225,7 @@ namespace Milky.OsuPlayer.Windows
             }
 
             GetCurrentFirst<MiniWindow>()?.Close();
-            _controller?.Dispose();
+            await _controller?.DisposeAsync();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
             if (ConfigWindow != null && !ConfigWindow.IsClosed && ConfigWindow.IsInitialized)

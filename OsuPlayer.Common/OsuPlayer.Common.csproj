@@ -95,6 +95,7 @@
     <Compile Include="Data\EF\Model\V1\BeatmapSettings.cs" />
     <Compile Include="Data\IdentifiableExtension.cs" />
     <Compile Include="DictionaryExtension.cs" />
+    <Compile Include="IAsyncDisposable.cs" />
     <Compile Include="ListExtension.cs" />
     <Compile Include="MyCancellationTokenSource.cs" />
     <Compile Include="Notification.cs" />

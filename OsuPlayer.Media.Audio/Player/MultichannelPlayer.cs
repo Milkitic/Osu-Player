@@ -223,14 +223,14 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             UseTempo = useTempo;
         }
 
-        public virtual void Dispose()
+        public virtual async Task DisposeAsync()
         {
-            foreach (var subchannel in _subchannels) subchannel.Dispose();
+            await Stop();
+
+            foreach (var subchannel in _subchannels) subchannel.DisposeAsync();
 
             _outputDevice?.Dispose();
             Engine?.Dispose();
-            _cts?.Cancel();
-            TaskEx.WaitAllSkipNull(_playTask);
             _cts?.Dispose();
             _playTask?.Dispose();
         }

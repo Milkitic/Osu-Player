@@ -18,7 +18,7 @@ using OSharp.Beatmap;
 namespace Milky.OsuPlayer.Media.Audio
 {
 
-    public sealed class ObservablePlayController : ViewModelBase, IDisposable
+    public sealed class ObservablePlayController : ViewModelBase, IAsyncDisposable
     {
         public event Action<PlayStatus> PlayStatusChanged;
         public event Action<TimeSpan> PositionUpdated;
@@ -80,7 +80,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 if (!File.Exists(path))
                     throw new FileNotFoundException("cannot locate file", path);
-                ClearPlayer();
+                await ClearPlayer();
                 InvokeMethodHelper.OnMainThread(() => PreLoadStarted?.Invoke(path, _cts.Token));
                 var osuFile =
                     await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
@@ -128,7 +128,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 if (!isReading)
                 {
                     await _readLock.WaitAsync(_cts.Token).ConfigureAwait(false);
-                    ClearPlayer();
+                    await ClearPlayer();
                 }
 
                 var beatmap = context.Beatmap;
@@ -255,13 +255,13 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
-        private void ClearPlayer()
+        private async Task ClearPlayer()
         {
             if (Player == null) return;
             PlayList.CurrentInfo.StopHandle();
             Player.PlayStatusChanged -= Player_PlayStatusChanged;
             Player.PositionUpdated -= Player_PositionUpdated;
-            Player.Dispose();
+            await Player.DisposeAsync();
         }
 
         private async void Player_PlayStatusChanged(PlayStatus obj)
@@ -328,7 +328,7 @@ namespace Milky.OsuPlayer.Media.Audio
             {
                 if (PlayList.CurrentInfo == null)
                 {
-                    ClearPlayer();
+                    await ClearPlayer();
                     InvokeMethodHelper.OnMainThread(() => InterfaceClearRequest?.Invoke());
                     return;
                 }
@@ -346,7 +346,7 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
             {
-                ClearPlayer();
+                await ClearPlayer();
                 InvokeMethodHelper.OnMainThread(() => InterfaceClearRequest?.Invoke());
                 return;
             }
@@ -379,9 +379,9 @@ namespace Milky.OsuPlayer.Media.Audio
             _cts = new CancellationTokenSource();
         }
 
-        public void Dispose()
+        public async Task DisposeAsync()
         {
-            _player?.Dispose();
+            await _player?.DisposeAsync();
             _readLock?.Dispose();
             _cts?.Dispose();
         }
