@@ -1,4 +1,5 @@
 ﻿using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
+using Milky.OsuPlayer.Media.Audio.Wave;
 using Milky.OsuPlayer.Shared;
 using NAudio.Wave;
 using System;
@@ -61,6 +62,24 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         public MultichannelPlayer()
         {
             _outputDevice = DeviceProviderExtension.CreateOrGetDefaultDevice();
+
+            try
+            {
+                using (var defWasapi = new WasapiOut())
+                {
+                    WaveFormatFactory.Bits = defWasapi.OutputWaveFormat.BitsPerSample;
+                    WaveFormatFactory.Channels = defWasapi.OutputWaveFormat.Channels;
+                    WaveFormatFactory.SampleRate = defWasapi.OutputWaveFormat.SampleRate;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                WaveFormatFactory.Bits = 16;
+                WaveFormatFactory.Channels = 2;
+                WaveFormatFactory.SampleRate = 44100;
+            }
+
             Engine = new AudioPlaybackEngine(_outputDevice);
         }
 
