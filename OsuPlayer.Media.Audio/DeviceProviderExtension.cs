@@ -6,10 +6,10 @@ namespace Milky.OsuPlayer.Media.Audio
 {
     public static class DeviceProviderExtension
     {
-        public static IWavePlayer CreateOrGetDefaultDevice()
+        public static IWavePlayer CreateOrGetDefaultDevice(out IDeviceInfo actualDeviceInfo)
         {
             var play = AppSettings.Default.Play;
-            return DeviceProvider.CreateDevice(play.DeviceInfo, play.DesiredLatency, play.IsExclusive);
+            return DeviceProvider.CreateDevice(out actualDeviceInfo, play.DeviceInfo, play.DesiredLatency, play.IsExclusive);
         }
     }
 }

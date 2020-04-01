@@ -34,6 +34,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         private BalanceSampleProvider _sliderAdditionBalance;
         private VolumeSampleProvider _sliderAdditionVolume;
         private MemoryStream _lastSliderStream;
+        private float _playbackRate;
 
         public bool IsPlayRunning => _playingTask != null &&
                                      !_playingTask.IsCanceled &&
@@ -64,8 +65,13 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             internal set => _sw.ManualOffset = -TimeSpan.FromMilliseconds(value);
         }
 
-        public override float PlaybackRate { get; protected set; }
-        public override bool UseTempo { get; protected set; }
+        public sealed override float PlaybackRate
+        {
+            get => _sw.Rate;
+            protected set => _sw.Rate = value;
+        }
+
+        public sealed override bool UseTempo { get; protected set; }
 
         public float BalanceFactor { get; set; } = 0.35f;
 

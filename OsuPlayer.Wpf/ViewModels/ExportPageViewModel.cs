@@ -1,13 +1,13 @@
-﻿using System;
-using Milky.OsuPlayer.Common;
+﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.Shared;
 using Milky.WpfApi;
 using Milky.WpfApi.Collections;
 using Milky.WpfApi.Commands;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -157,7 +157,7 @@ namespace Milky.OsuPlayer.ViewModels
                     var fi = new FileInfo(map.ExportFile);
                     list.Add(!fi.Exists
                         ? (map.GetIdentity(), map.ExportFile, "已从目录移除", "已从目录移除")
-                        : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), Util.CountSize(fi.Length)));
+                        : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), SharedUtils.CountSize(fi.Length)));
 
                 }
                 catch (Exception e)

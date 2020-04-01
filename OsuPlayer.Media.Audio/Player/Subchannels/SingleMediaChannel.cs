@@ -12,8 +12,6 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
     public class SingleMediaChannel : Subchannel
     {
         private readonly string _path;
-        private readonly float _playbackRate;
-        private readonly bool _useTempo;
 
         private MyAudioFileReader _fileReader;
         private VariableSpeedSampleProvider _speedProvider;
@@ -39,8 +37,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         public TimeSpan ReferencePosition =>
             Position.Add(TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset));
 
-        public override float PlaybackRate { get; protected set; }
-        public override bool UseTempo { get; protected set; }
+        public sealed override float PlaybackRate { get; protected set; }
+        public sealed override bool UseTempo { get; protected set; }
 
         private VariableStopwatch _sw = new VariableStopwatch();
 
@@ -48,8 +46,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             base(engine)
         {
             _path = path;
-            _playbackRate = playbackRate;
-            _useTempo = useTempo;
+            PlaybackRate = playbackRate;
+            UseTempo = useTempo;
         }
 
         public override async Task Initialize()
@@ -59,10 +57,10 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
             _speedProvider = new VariableSpeedSampleProvider(_fileReader,
                 10,
-                new SoundTouchProfile(_useTempo, false)
+                new SoundTouchProfile(UseTempo, false)
             )
             {
-                PlaybackRate = _playbackRate
+                PlaybackRate = PlaybackRate
             };
 
             await CachedSound.CreateCacheSounds(new[] { _path }).ConfigureAwait(false);
@@ -129,10 +127,10 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         {
             var status = PlayStatus;
             PlayStatus = PlayStatus.Reposition;
-
-            _fileReader.CurrentTime = time >= _fileReader.TotalTime
-                ? _fileReader.TotalTime - TimeSpan.FromMilliseconds(1)
-                : time;
+            if (_fileReader.TotalTime > TimeSpan.Zero)
+                _fileReader.CurrentTime = time >= _fileReader.TotalTime
+                    ? _fileReader.TotalTime - TimeSpan.FromMilliseconds(1)
+                    : time;
             _speedProvider.Reposition();
             Position = _fileReader.CurrentTime;
             Console.WriteLine($"{Description} skip: want: {time}; actual: {Position}");
@@ -164,7 +162,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
             if (UseTempo != useTempo)
             {
-                _speedProvider.SetSoundTouchProfile(new SoundTouchProfile(_useTempo, false));
+                _speedProvider.SetSoundTouchProfile(new SoundTouchProfile(UseTempo, false));
+                UseTempo = useTempo;
             }
 
             await Task.CompletedTask;

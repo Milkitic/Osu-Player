@@ -1,4 +1,5 @@
 ﻿using Milky.OsuPlayer.Media.Audio.Player;
+using Milky.OsuPlayer.Shared;
 using NAudio.Wave;
 using System;
 using System.Collections.Concurrent;
@@ -88,6 +89,11 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
             CachedDictionary.Clear();
         }
 
+        internal static void ClearDefaultCacheSounds()
+        {
+            DefaultDictionary.Clear();
+        }
+
         private static async Task<CachedSound> CreateFromFile(string filePath)
         {
             using (var audioFileReader = await WaveFormatFactory.GetResampledAudioFileReader(filePath,
@@ -156,7 +162,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
                 ? DefaultDictionary.GetOrAdd(path, cachedSound)
                 : CachedDictionary.GetOrAdd(path, cachedSound);
 
-            //Console.WriteLine(CountSize(CachedDictionary.Values.Sum(k => k.AudioData.Length)));
+            Console.WriteLine(SharedUtils.CountSize(CachedDictionary.Values.Sum(k => k?.AudioData?.Length * sizeof(float) ?? 0)));
 
             return sound;
         }

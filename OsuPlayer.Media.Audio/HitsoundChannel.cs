@@ -46,7 +46,7 @@ namespace Milky.OsuPlayer.Media.Audio
             await Task.Run(() =>
             {
                 hitObjects.AsParallel()
-                    .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
+                    .WithDegreeOfParallelism(/*Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 :*/ 1)
                     .ForAll(obj => { AddSingleHitObject(obj, waves, elements).Wait(); });
             }).ConfigureAwait(false);
 
@@ -85,7 +85,10 @@ namespace Milky.OsuPlayer.Media.Audio
                     float balance = GetObjectBalance(item.Point.X);
                     float volume = GetObjectVolume(obj, timingPoint);
 
-                    var tuples = AnalyzeHitsoundFiles(item.EdgeHitsound, item.EdgeSample, item.EdgeAddition,
+                    var hs = obj.Hitsound == HitsoundType.Normal ? item.EdgeHitsound : obj.Hitsound | item.EdgeHitsound;
+                    var addition = item.EdgeAddition == ObjectSamplesetType.Auto ? obj.AdditionSet : item.EdgeAddition;
+                    var sample = item.EdgeSample == ObjectSamplesetType.Auto ? obj.SampleSet : item.EdgeSample;
+                    var tuples = AnalyzeHitsoundFiles(hs, sample, addition,
                         timingPoint, obj, waves);
                     foreach (var (filePath, _) in tuples)
                     {

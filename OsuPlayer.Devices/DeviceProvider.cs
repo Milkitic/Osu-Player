@@ -71,7 +71,7 @@ namespace OsuPlayer.Devices
             return _currentDevice;
         }
 
-        public static IWavePlayer CreateDevice(IDeviceInfo deviceInfo = null, int latency = 1, bool isExclusive = true)
+        public static IWavePlayer CreateDevice(out IDeviceInfo actualDeviceInfo, IDeviceInfo deviceInfo = null, int latency = 1, bool isExclusive = true)
         {
             //if (_currentDevice != null)
             //{
@@ -129,7 +129,7 @@ namespace OsuPlayer.Devices
                             device = new WaveOutEvent
                             {
                                 DeviceNumber = waveOut.DeviceNumber,
-                                DesiredLatency = latency
+                                DesiredLatency = Math.Max(latency, 100)
                             };
 
                             break;
@@ -141,7 +141,7 @@ namespace OsuPlayer.Devices
                             }
                             else
                             {
-                                device = new DirectSoundOut(dsOut.DeviceGuid, latency);
+                                device = new DirectSoundOut(dsOut.DeviceGuid, Math.Max(latency, 40));
                             }
                             break;
                         case OutputMethod.Wasapi:
@@ -169,11 +169,13 @@ namespace OsuPlayer.Devices
                 {
                     Console.WriteLine(ex.Message);
                     device?.Dispose();
+                    deviceInfo = DirectSoundOutInfo.Default;
                     device = new DirectSoundOut(40);
                 }
             });
 
             _currentDevice = device;
+            actualDeviceInfo = deviceInfo;
             return device;
         }
 

@@ -9,6 +9,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Common.Configuration;
+using NAudio.CoreAudioApi;
+using OsuPlayer.Devices;
 
 namespace Milky.OsuPlayer.Media.Audio.Player
 {
@@ -23,7 +26,11 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public TimeSpan Position => _innerTimelineSw.Elapsed;
 
-        public float PlaybackRate { get; private set; }
+        public float PlaybackRate
+        {
+            get => _innerTimelineSw.Rate;
+            private set => _innerTimelineSw.Rate = value;
+        }
         public bool UseTempo { get; private set; }
 
         public PlayStatus PlayStatus
@@ -61,20 +68,33 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public MultichannelPlayer()
         {
-            _outputDevice = DeviceProviderExtension.CreateOrGetDefaultDevice();
+            _outputDevice = DeviceProviderExtension.CreateOrGetDefaultDevice(out var actualDeviceInfo);
 
             try
             {
-                using (var defWasapi = new WasapiOut())
+                if (_outputDevice is WasapiOut wasapi)
                 {
-                    WaveFormatFactory.Bits = defWasapi.OutputWaveFormat.BitsPerSample;
-                    WaveFormatFactory.Channels = defWasapi.OutputWaveFormat.Channels;
-                    WaveFormatFactory.SampleRate = defWasapi.OutputWaveFormat.SampleRate;
+                    WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample;
+                    WaveFormatFactory.Channels = wasapi.OutputWaveFormat.Channels;
+                    WaveFormatFactory.SampleRate = wasapi.OutputWaveFormat.SampleRate;
                 }
+                else
+                {
+                    var wasInfo = (WasapiInfo)DeviceProvider.EnumerateAvailableDevices().First(k =>
+                        k.FriendlyName?.Contains(actualDeviceInfo.FriendlyName) == true && k is WasapiInfo);
+                    wasapi = new WasapiOut(wasInfo.Device, AudioClientShareMode.Shared, true,
+                        AppSettings.Default.Play.DesiredLatency);
+                    WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample;
+                    WaveFormatFactory.Channels = wasapi.OutputWaveFormat.Channels;
+                    WaveFormatFactory.SampleRate = wasapi.OutputWaveFormat.SampleRate;
+                }
+
+                Console.WriteLine("BitsPerSample: {0}, Channels: {1}, SampleRate: {2}", WaveFormatFactory.Bits,
+                    WaveFormatFactory.Channels, WaveFormatFactory.SampleRate);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine(ex.Message);
                 WaveFormatFactory.Bits = 16;
                 WaveFormatFactory.Channels = 2;
                 WaveFormatFactory.SampleRate = 44100;

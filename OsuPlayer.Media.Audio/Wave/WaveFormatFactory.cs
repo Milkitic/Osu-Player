@@ -11,6 +11,10 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
     /// </summary>
     internal static class WaveFormatFactory
     {
+        private static int _sampleRate = 44100;
+        private static int _bits = 16;
+        private static int _channels = 2;
+
         public struct ResamplerQuality
         {
             public int Quality { get; }
@@ -34,10 +38,41 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
             public static int Lowest => 1;
         }
 
-        public static int SampleRate { get; set; } = 44100;
+        public static int SampleRate
+        {
+            get => _sampleRate;
+            set
+            {
+                if (Equals(_sampleRate, value)) return;
+                _sampleRate = value;
+                CachedSound.ClearCacheSounds();
+                CachedSound.ClearDefaultCacheSounds();
+            }
+        }
 
-        public static int Bits { get; set; } = 16;
-        public static int Channels { get; set; } = 2;
+        public static int Bits
+        {
+            get => _bits;
+            set
+            {
+                if (Equals(_bits, value)) return;
+                _bits = value;
+                CachedSound.ClearCacheSounds();
+                CachedSound.ClearDefaultCacheSounds();
+            }
+        }
+
+        public static int Channels
+        {
+            get => _channels;
+            set
+            {
+                if (Equals(_channels, value)) return;
+                _channels = value;
+                CachedSound.ClearCacheSounds();
+                CachedSound.ClearDefaultCacheSounds();
+            }
+        }
 
         public static WaveFormat IeeeWaveFormat => WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, Channels);
 
