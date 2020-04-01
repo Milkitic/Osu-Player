@@ -15,8 +15,12 @@ namespace Milky.OsuPlayer.Media.Audio
 {
     public class OsuMixPlayer : MultichannelPlayer
     {
+        private readonly ConcurrentDictionary<string, string> _pathCache =
+            new ConcurrentDictionary<string, string>();
+
         private readonly OsuFile _osuFile;
         private readonly string _sourceFolder;
+        private int _manualOffset;
 
         public override string Description { get; } = "OsuPlayer";
 
@@ -34,11 +38,6 @@ namespace Milky.OsuPlayer.Media.Audio
                 _manualOffset = value;
             }
         }
-
-        private static readonly ConcurrentDictionary<string, string> PathCache =
-            new ConcurrentDictionary<string, string>();
-
-        private int _manualOffset;
 
         public OsuMixPlayer(OsuFile osuFile, string sourceFolder)
         {
@@ -61,10 +60,11 @@ namespace Milky.OsuPlayer.Media.Audio
             {
                 Description = "Music"
             };
+
             AddSubchannel(MusicChannel);
             await MusicChannel.Initialize().ConfigureAwait(false);
 
-            HitsoundChannel = new HitsoundChannel(_osuFile, _sourceFolder, Engine);
+            HitsoundChannel = new HitsoundChannel(this, _osuFile, _sourceFolder, Engine);
             AddSubchannel(HitsoundChannel);
             await HitsoundChannel.Initialize().ConfigureAwait(false);
 
@@ -72,16 +72,12 @@ namespace Milky.OsuPlayer.Media.Audio
             AddSubchannel(SampleChannel);
             await SampleChannel.Initialize().ConfigureAwait(false);
 
-            Duration = MathEx.Max(MusicChannel?.ChannelEndTime ?? TimeSpan.Zero,
-                HitsoundChannel?.ChannelEndTime ?? TimeSpan.Zero,
-                SampleChannel?.ChannelEndTime ?? TimeSpan.Zero);
-
             foreach (var channel in Subchannels)
             {
                 channel.PlayStatusChanged += status => Console.WriteLine($"{channel.Description}: {status}");
             }
 
-            PlayStatus = PlayStatus.Ready;
+            await base.Initialize();
         }
 
         public async Task SetPlayMod(PlayModifier modifier)
@@ -110,10 +106,10 @@ namespace Milky.OsuPlayer.Media.Audio
             AppSettings.SaveDefault();
         }
 
-        public static string GetFileUntilFind(string sourceFolder, string fileNameWithoutExtension)
+        public string GetFileUntilFind(string sourceFolder, string fileNameWithoutExtension)
         {
             var combine = Path.Combine(sourceFolder, fileNameWithoutExtension);
-            if (PathCache.TryGetValue(combine, out var value))
+            if (_pathCache.TryGetValue(combine, out var value))
             {
                 return value;
             }
@@ -125,12 +121,12 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 if (File.Exists(path))
                 {
-                    PathCache.TryAdd(combine, path);
+                    _pathCache.TryAdd(combine, path);
                     return path;
                 }
             }
 
-            PathCache.TryAdd(combine, path);
+            _pathCache.TryAdd(combine, path);
             return path;
         }
     }

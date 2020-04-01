@@ -64,7 +64,12 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             Engine = new AudioPlaybackEngine(_outputDevice);
         }
 
-        public abstract Task Initialize();
+        public virtual async Task Initialize()
+        {
+            Duration = MathEx.Max(Subchannels.Select(k => k?.ChannelEndTime ?? TimeSpan.Zero));
+            PlayStatus = PlayStatus.Ready;
+            await Task.CompletedTask;
+        }
 
         public async Task Play()
         {
