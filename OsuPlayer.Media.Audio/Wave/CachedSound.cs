@@ -41,6 +41,11 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
             return (SourcePath != null ? SourcePath.GetHashCode() : 0);
         }
 
+        private static readonly ConcurrentDictionary<string, CachedSound> CachedDictionary =
+            new ConcurrentDictionary<string, CachedSound>();
+        private static readonly ConcurrentDictionary<string, CachedSound> DefaultDictionary =
+            new ConcurrentDictionary<string, CachedSound>();
+
         public static IReadOnlyDictionary<string, CachedSound> CachedSounds { get; } =
             new ReadOnlyDictionary<string, CachedSound>(CachedDictionary);
         public static IReadOnlyDictionary<string, CachedSound> DefaultSounds { get; } =
@@ -82,11 +87,6 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
         {
             CachedDictionary.Clear();
         }
-
-        private static readonly ConcurrentDictionary<string, CachedSound> CachedDictionary =
-            new ConcurrentDictionary<string, CachedSound>();
-        private static readonly ConcurrentDictionary<string, CachedSound> DefaultDictionary =
-            new ConcurrentDictionary<string, CachedSound>();
 
         private static async Task<CachedSound> CreateFromFile(string filePath)
         {

@@ -167,7 +167,7 @@ namespace OsuPlayer.Devices
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    Console.WriteLine(ex.Message);
                     device?.Dispose();
                     device = new DirectSoundOut(40);
                 }
