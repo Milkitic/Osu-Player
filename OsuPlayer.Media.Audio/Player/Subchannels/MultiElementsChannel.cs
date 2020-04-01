@@ -25,7 +25,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         private VolumeSampleProvider _volumeProvider;
 
         private Task _playingTask;
-        private Task _calibrationTask;
+        //private Task _calibrationTask;
         private CancellationTokenSource _cts;
         private readonly object _skipLock = new object();
 
@@ -40,10 +40,10 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                                      !_playingTask.IsCompleted &&
                                      !_playingTask.IsFaulted;
 
-        public bool IsCalibrationRunning => _calibrationTask != null &&
-                                            !_calibrationTask.IsCanceled &&
-                                            !_calibrationTask.IsCompleted &&
-                                            !_calibrationTask.IsFaulted;
+        //public bool IsCalibrationRunning => _calibrationTask != null &&
+        //                                    !_calibrationTask.IsCanceled &&
+        //                                    !_calibrationTask.IsCompleted &&
+        //                                    !_calibrationTask.IsFaulted;
 
         public override TimeSpan Duration { get; protected set; }
 
@@ -60,8 +60,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public int ManualOffset
         {
-            get => (int)_sw.ManualOffset.TotalMilliseconds;
-            internal set => _sw.ManualOffset = TimeSpan.FromMilliseconds(value);
+            get => -(int)_sw.ManualOffset.TotalMilliseconds;
+            internal set => _sw.ManualOffset = -TimeSpan.FromMilliseconds(value);
         }
 
         public override float PlaybackRate { get; protected set; }
@@ -88,7 +88,10 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
             SampleControl.Volume = 1;
             SampleControl.Balance = 0;
-            SampleControl.VolumeChanged = f => _volumeProvider.Volume = f;
+            SampleControl.VolumeChanged = f =>
+            {
+                if (_volumeProvider != null) _volumeProvider.Volume = f;
+            };
 
             await RequeueAsync(TimeSpan.Zero).ConfigureAwait(false);
 
@@ -118,7 +121,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             await ReadyLoopAsync().ConfigureAwait(false);
 
             StartPlayTask();
-            StartCalibrationTask();
+            //StartCalibrationTask();
             PlayStatus = PlayStatus.Playing;
         }
 
@@ -143,15 +146,15 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override async Task SkipTo(TimeSpan time)
         {
+            Submixer.RemoveMixerInput(_sliderSlideBalance);
+            Submixer.RemoveMixerInput(_sliderAdditionBalance);
+
             await Task.Run(() =>
             {
                 lock (_skipLock)
                 {
                     var status = PlayStatus;
                     PlayStatus = PlayStatus.Reposition;
-
-                    Submixer.RemoveMixerInput(_sliderSlideBalance);
-                    Submixer.RemoveMixerInput(_sliderAdditionBalance);
 
                     _sw.SkipTo(time);
                     Console.WriteLine($"{Description} want skip: {time}; actual: {Position}");
@@ -186,58 +189,57 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                 _sw.VariableOffset = TimeSpan.Zero;
         }
 
-        private void StartCalibrationTask()
-        {
-            return;
-            if (IsCalibrationRunning) return;
-            if (ReferenceChannel == null) return;
+        //private void StartCalibrationTask()
+        //{
+        //    if (IsCalibrationRunning) return;
+        //    if (ReferenceChannel == null) return;
 
-            _calibrationTask = new Task(() =>
-            {
-                double? refOldTime = null;
-                DateTime lastSyncTime = DateTime.Now;
-                int loopCheckInterval = 1;
-                int forceSyncDelay = 200;
+        //    _calibrationTask = new Task(() =>
+        //    {
+        //        double? refOldTime = null;
+        //        DateTime lastSyncTime = DateTime.Now;
+        //        int loopCheckInterval = 1;
+        //        int forceSyncDelay = 200;
 
-                while (!_cts.IsCancellationRequested)
-                {
-                    var refNewTime = ReferenceChannel.ReferencePosition.TotalMilliseconds;
-                    var now = DateTime.Now;
-                    if (Equals(refNewTime, refOldTime) && // 若时间相同且没有超过强制同步时间
-                        now - lastSyncTime <= TimeSpan.FromMilliseconds(forceSyncDelay) ||
-                        ReferenceChannel.PlayStatus != PlayStatus.Playing) // 或者参照的播放停止
-                    {
-                        if (!TaskEx.TaskSleep(loopCheckInterval, _cts)) return;
-                        continue;
-                    }
+        //        while (!_cts.IsCancellationRequested)
+        //        {
+        //            var refNewTime = ReferenceChannel.ReferencePosition.TotalMilliseconds;
+        //            var now = DateTime.Now;
+        //            if (Equals(refNewTime, refOldTime) && // 若时间相同且没有超过强制同步时间
+        //                now - lastSyncTime <= TimeSpan.FromMilliseconds(forceSyncDelay) ||
+        //                ReferenceChannel.PlayStatus != PlayStatus.Playing) // 或者参照的播放停止
+        //            {
+        //                if (!TaskEx.TaskSleep(loopCheckInterval, _cts)) return;
+        //                continue;
+        //            }
 
-                    if (Math.Abs((refNewTime - refOldTime ?? 0) - (now - lastSyncTime).TotalMilliseconds) > 5)
-                    {
-                        refOldTime = refNewTime;
-                        lastSyncTime = now;
-                        continue;
-                    }
+        //            if (Math.Abs((refNewTime - refOldTime ?? 0) - (now - lastSyncTime).TotalMilliseconds) > 5)
+        //            {
+        //                refOldTime = refNewTime;
+        //                lastSyncTime = now;
+        //                continue;
+        //            }
 
-                    Console.WriteLine($@"{refNewTime - refOldTime} vs {(now - lastSyncTime).TotalMilliseconds}");
-                    refOldTime = refNewTime;
-                    lastSyncTime = now;
-                    var thisTime = (Position - _sw.CalibrationOffset).TotalMilliseconds;
+        //            Console.WriteLine($@"{refNewTime - refOldTime} vs {(now - lastSyncTime).TotalMilliseconds}");
+        //            refOldTime = refNewTime;
+        //            lastSyncTime = now;
+        //            var thisTime = (Position - _sw.CalibrationOffset).TotalMilliseconds;
 
-                    var difference = refNewTime - thisTime;
-                    //Console.WriteLine($"old: refNewTime: {refNewTime}; thisTime: {Position.TotalMilliseconds}");
-                    //Console.WriteLine($"old: difference: {difference}");
-                    if (Math.Abs(difference) > 5)
-                    {
-                        //Console.WriteLine($@"music: {App.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
-                        _sw.CalibrationOffset = TimeSpan.FromMilliseconds(difference); // 计算音效偏移量
-                        //Console.WriteLine($"fix：refNewTime: {refNewTime}; thisTime: {Position.TotalMilliseconds}");
-                    }
+        //            var difference = refNewTime - thisTime;
+        //            //Console.WriteLine($"old: refNewTime: {refNewTime}; thisTime: {Position.TotalMilliseconds}");
+        //            //Console.WriteLine($"old: difference: {difference}");
+        //            if (Math.Abs(difference) > 5)
+        //            {
+        //                //Console.WriteLine($@"music: {App.MusicPlayer.PlayTime}, hs: {PlayTime}, {d}({r})");
+        //                _sw.CalibrationOffset = TimeSpan.FromMilliseconds(difference); // 计算音效偏移量
+        //                //Console.WriteLine($"fix：refNewTime: {refNewTime}; thisTime: {Position.TotalMilliseconds}");
+        //            }
 
-                    if (!TaskEx.TaskSleep(loopCheckInterval, _cts)) return;
-                }
-            }, TaskCreationOptions.LongRunning);
-            _calibrationTask.Start();
-        }
+        //            if (!TaskEx.TaskSleep(loopCheckInterval, _cts)) return;
+        //        }
+        //    }, TaskCreationOptions.LongRunning);
+        //    _calibrationTask.Start();
+        //}
 
         private void StartPlayTask()
         {
@@ -374,7 +376,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         {
             _sw.Stop();
             _cts?.Cancel();
-            await TaskEx.WhenAllSkipNull(_playingTask, _calibrationTask).ConfigureAwait(false);
+            await TaskEx.WhenAllSkipNull(_playingTask/*, _calibrationTask*/).ConfigureAwait(false);
             Console.WriteLine($@"{Description} task canceled.");
         }
 

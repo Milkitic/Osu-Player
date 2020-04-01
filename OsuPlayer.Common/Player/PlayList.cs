@@ -213,6 +213,7 @@ namespace Milky.OsuPlayer.Common.Player
                     if (IndexPointer == 0 && !isNext ||
                         IndexPointer == _songIndexList.Count - 1 && isNext)
                     {
+                        IndexPointer = 0;
                         var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                             PlayControlResult.PointerControlStatus.Reset);
                         await AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap, true);

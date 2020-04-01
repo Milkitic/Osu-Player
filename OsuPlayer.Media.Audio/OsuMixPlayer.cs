@@ -77,7 +77,37 @@ namespace Milky.OsuPlayer.Media.Audio
                 channel.PlayStatusChanged += status => Console.WriteLine($"{channel.Description}: {status}");
             }
 
+            InitVolume();
+
             await base.Initialize();
+        }
+
+        private void InitVolume()
+        {
+            MusicChannel.Volume = AppSettings.Default.Volume.Music;
+            HitsoundChannel.Volume = AppSettings.Default.Volume.Hitsound;
+            SampleChannel.Volume = AppSettings.Default.Volume.Sample;
+            Volume = AppSettings.Default.Volume.Main;
+            AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
+        }
+
+        private void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(AppSettings.Default.Volume.Music):
+                    MusicChannel.Volume = AppSettings.Default.Volume.Music;
+                    break;
+                case nameof(AppSettings.Default.Volume.Hitsound):
+                    HitsoundChannel.Volume = AppSettings.Default.Volume.Hitsound;
+                    break;
+                case nameof(AppSettings.Default.Volume.Sample):
+                    SampleChannel.Volume = AppSettings.Default.Volume.Sample;
+                    break;
+                case nameof(AppSettings.Default.Volume.Main):
+                    Volume = AppSettings.Default.Volume.Main;
+                    break;
+            }
         }
 
         public async Task SetPlayMod(PlayModifier modifier)
@@ -128,6 +158,12 @@ namespace Milky.OsuPlayer.Media.Audio
 
             _pathCache.TryAdd(combine, path);
             return path;
+        }
+
+        public override Task DisposeAsync()
+        {
+            AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
+            return base.DisposeAsync();
         }
     }
 }

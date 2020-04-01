@@ -285,7 +285,8 @@ namespace Milky.OsuPlayer.Media.Audio
             {
                 context.SetTimeHandle(0, playInstantly || controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play);
             }
-            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default)
+            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default ||
+                     controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Reset)
             {
                 InitializeContextHandle(context);
                 await LoadAsync(false, true).ConfigureAwait(false);
@@ -345,6 +346,18 @@ namespace Milky.OsuPlayer.Media.Audio
                 await LoadAsync(false, true).ConfigureAwait(false);
                 PlayList.CurrentInfo.PlayHandle.Invoke();
             }
+            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
+            {
+                switch (controlResult.PlayStatus)
+                {
+                    case PlayControlResult.PlayControlStatus.Play:
+                        PlayList.CurrentInfo.RestartHandle.Invoke();
+                        break;
+                    case PlayControlResult.PlayControlStatus.Stop:
+                        PlayList.CurrentInfo.StopHandle.Invoke();
+                        break;
+                }
+            }
             else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
             {
                 await ClearPlayer();
@@ -358,6 +371,11 @@ namespace Milky.OsuPlayer.Media.Audio
             context.PlayHandle = async () => await Player.Play().ConfigureAwait(false);
             context.PauseHandle = async () => await Player.Pause().ConfigureAwait(false);
             context.StopHandle = async () => await Player.Stop().ConfigureAwait(false);
+            context.RestartHandle = () =>
+            {
+                context.StopHandle();
+                context.PlayHandle();
+            };
             context.TogglePlayHandle = () =>
             {
                 if (Player.PlayStatus == PlayStatus.Ready ||

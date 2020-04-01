@@ -21,6 +21,12 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
+        public override float Volume
+        {
+            get => _fileReader?.Volume ?? 0;
+            set { if (_fileReader != null) _fileReader.Volume = value; }
+        }
+
         public override TimeSpan Duration { get; protected set; }
 
         public override TimeSpan ChannelStartTime => TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset < 0

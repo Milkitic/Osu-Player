@@ -9,6 +9,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         event Action<PlayStatus> PlayStatusChanged;
         event Action<TimeSpan> PositionUpdated;
 
+        float Volume { get; set; }
+
         string Description { get; }
         TimeSpan Duration { get; }
         TimeSpan Position { get; }

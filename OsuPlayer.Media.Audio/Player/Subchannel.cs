@@ -8,6 +8,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
     {
         public event Action<PlayStatus> PlayStatusChanged;
         public event Action<TimeSpan> PositionUpdated;
+        public virtual float Volume { get => SampleControl.Volume; set => SampleControl.Volume = value; }
 
         private PlayStatus _playStatus;
         private TimeSpan _position;
