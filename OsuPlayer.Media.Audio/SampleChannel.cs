@@ -50,11 +50,11 @@ namespace Milky.OsuPlayer.Media.Audio
 
             var elementList = new List<SoundElement>(elements);
 
-            if (PlaybackRate.Equals(1.5f) && !UseTempo)
+            if (PlaybackRate.Equals(1.5f) && UseTempo)
             {
                 var duration = MathEx.Max(_player.MusicChannel.ChannelEndTime,
                     _player.HitsoundChannel.ChannelEndTime,
-                    TimeSpan.FromMilliseconds(samples.Max(k => k.Offset))
+                    TimeSpan.FromMilliseconds(samples.Count == 0 ? 0 : samples.Max(k => k.Offset))
                 );
                 _nightcore = new NightcoreTilingProvider(_osuFile, duration);
                 elementList.AddRange(await _nightcore.GetSoundElements().ConfigureAwait(false));
@@ -68,7 +68,7 @@ namespace Milky.OsuPlayer.Media.Audio
             var oldRate = PlaybackRate;
             var oldTempo = UseTempo;
             await base.SetPlaybackRate(rate, useTempo).ConfigureAwait(false);
-            if (!oldRate.Equals(PlaybackRate) && oldTempo != UseTempo)
+            if (oldTempo != UseTempo)
             {
                 SoundElements = null;
                 await RequeueAsync(Position).ConfigureAwait(false);
