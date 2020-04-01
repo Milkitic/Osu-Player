@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using Milky.OsuPlayer.Media.Audio.Wave;
+﻿using Milky.OsuPlayer.Media.Audio.Wave;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using System.Threading.Tasks;
 
 namespace Milky.OsuPlayer.Media.Audio.Player
 {

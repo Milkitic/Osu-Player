@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Milky.OsuPlayer.Media.Audio
+namespace Milky.OsuPlayer.Shared
 {
-    internal class TaskEx
+    public class TaskEx
     {
         public static bool TaskSleep(int milliseconds, CancellationTokenSource cts)
         {

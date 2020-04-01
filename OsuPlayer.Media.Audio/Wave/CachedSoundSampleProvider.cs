@@ -1,5 +1,5 @@
-﻿using System;
-using NAudio.Wave;
+﻿using NAudio.Wave;
+using System;
 
 namespace Milky.OsuPlayer.Media.Audio.Wave
 {

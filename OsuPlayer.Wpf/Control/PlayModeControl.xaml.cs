@@ -48,37 +48,37 @@ namespace Milky.OsuPlayer.Control
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             _controller.PlayList.PropertyChanged += Player_PropertyChanged;
-            SwitchOption(_controller.PlayList.PlayMode);
+            SwitchOption(_controller.PlayList.Mode);
         }
 
         private void Player_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(_controller.PlayList.PlayMode))
+            if (e.PropertyName == nameof(_controller.PlayList.Mode))
             {
-                SwitchOption(_controller.PlayList.PlayMode);
+                SwitchOption(_controller.PlayList.Mode);
             }
         }
 
-        private void SwitchOption(PlayMode playMode)
+        private void SwitchOption(PlayListMode playMode)
         {
             switch (playMode)
             {
-                case PlayMode.Normal:
+                case PlayListMode.Normal:
                     ModeNormal.IsChecked = true;
                     break;
-                case PlayMode.Random:
+                case PlayListMode.Random:
                     ModeRandom.IsChecked = true;
                     break;
-                case PlayMode.Loop:
+                case PlayListMode.Loop:
                     ModeLoop.IsChecked = true;
                     break;
-                case PlayMode.LoopRandom:
+                case PlayListMode.LoopRandom:
                     ModeLoopRandom.IsChecked = true;
                     break;
-                case PlayMode.Single:
+                case PlayListMode.Single:
                     ModeSingle.IsChecked = true;
                     break;
-                case PlayMode.SingleLoop:
+                case PlayListMode.SingleLoop:
                     ModeSingleLoop.IsChecked = true;
                     break;
                 default:
@@ -90,7 +90,7 @@ namespace Milky.OsuPlayer.Control
         {
             if (e.OriginalSource is RadioButton radio)
             {
-                _controller.PlayList.PlayMode = (PlayMode)radio.Tag;
+                _controller.PlayList.Mode = (PlayListMode)radio.Tag;
                 RaiseEvent(new RoutedEventArgs(CloseRequestedEvent, this));
             }
         }

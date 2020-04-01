@@ -1,6 +1,6 @@
 ﻿namespace Milky.OsuPlayer.Common.Player
 {
-    public enum PlayMode
+    public enum PlayListMode
     {
         Normal, Random, Loop, LoopRandom, Single, SingleLoop,
     }

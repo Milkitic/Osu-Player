@@ -16,6 +16,7 @@ namespace Milky.OsuPlayer.Control
     {
         public SharedVm Shared { get; } = SharedVm.Default;
     }
+
     /// <summary>
     /// VolumeControl.xaml 的交互逻辑
     /// </summary>
@@ -98,9 +99,9 @@ namespace Milky.OsuPlayer.Control
             }
         }
 
-        private void BtnPlayMod_OnClick(object sender, RoutedEventArgs e)
+        private async void BtnPlayMod_OnClick(object sender, RoutedEventArgs e)
         {
-            _controller.Player.SetPlayMod((PlayMod)((Button)sender).Tag);
+            await _controller.Player.SetPlayMod((PlayModifier)((Button)sender).Tag);
         }
     }
 }

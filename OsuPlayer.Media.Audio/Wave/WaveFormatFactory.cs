@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common;
+using NAudio.Wave;
+using System;
 using System.IO;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common;
-using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Media.Audio.Wave
 {
@@ -11,9 +11,35 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
     /// </summary>
     internal static class WaveFormatFactory
     {
+        public struct ResamplerQuality
+        {
+            public int Quality { get; }
+
+            public ResamplerQuality(int quality)
+            {
+                Quality = quality;
+            }
+
+            public static implicit operator int(ResamplerQuality quality)
+            {
+                return quality.Quality;
+            }
+
+            public static implicit operator ResamplerQuality(int quality)
+            {
+                return new ResamplerQuality(quality);
+            }
+
+            public static int Highest => 60;
+            public static int Lowest => 1;
+        }
+
         public static int SampleRate { get; set; } = 44100;
+
         public static int Channels { get; set; } = 2;
+
         public static WaveFormat IeeeWaveFormat => WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, Channels);
+
         public static WaveFormat PcmWaveFormat => new WaveFormat(SampleRate, Channels);
 
         public static async Task<MyAudioFileReader> GetResampledAudioFileReader(string path, MyAudioFileReader.WaveStreamType type)
@@ -105,30 +131,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
             }).ConfigureAwait(false);
         }
 
-        public struct ResamplerQuality
-        {
-            public int Quality { get; }
-
-            public ResamplerQuality(int quality)
-            {
-                Quality = quality;
-            }
-
-            public static implicit operator int(ResamplerQuality quality)
-            {
-                return quality.Quality;
-            }
-
-            public static implicit operator ResamplerQuality(int quality)
-            {
-                return new ResamplerQuality(quality);
-            }
-
-            public static int Highest => 60;
-            public static int Lowest => 1;
-        }
-
-        public static bool CompareWaveFormat(WaveFormat waveFormat)
+        private static bool CompareWaveFormat(WaveFormat waveFormat)
         {
             var pcmWaveFormat = PcmWaveFormat;
             if (pcmWaveFormat.Channels != waveFormat.Channels) return false;

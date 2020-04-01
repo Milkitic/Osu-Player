@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Shared;
+﻿using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
+using Milky.OsuPlayer.Shared;
 using NAudio.Wave;
 using System;
 using System.Collections.Concurrent;
@@ -7,7 +8,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
 
 namespace Milky.OsuPlayer.Media.Audio.Player
 {
@@ -16,20 +16,26 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         public event Action<PlayStatus> PlayStatusChanged;
         public event Action<TimeSpan> PositionUpdated;
 
-        public string Description { get; } = nameof(MultichannelPlayer);
+        public virtual string Description { get; } = "Player";
 
         public TimeSpan Duration { get; protected set; }
 
-        public TimeSpan Position
-        {
-            get => _innerTimelineSw.Elapsed;
-            protected set => InvokeMethodHelper.OnMainThread(() => PositionUpdated?.Invoke(value));
-        }
+        public TimeSpan Position => _innerTimelineSw.Elapsed;
 
         public float PlaybackRate { get; private set; }
         public bool UseTempo { get; private set; }
 
-        public PlayStatus PlayStatus { get; protected set; }
+        public PlayStatus PlayStatus
+        {
+            get => _playStatus;
+            protected set
+            {
+                if (value == _playStatus) return;
+                _playStatus = value;
+                InvokeMethodHelper.OnMainThread(() => PlayStatusChanged?.Invoke(value));
+            }
+        }
+
         public StopMode StopMode { get; set; }
 
         public float Volume
@@ -38,45 +44,27 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             set => Engine.RootVolume = value;
         }
 
-        private readonly List<Subchannel> _subchannels = new List<Subchannel>();
         protected ReadOnlyCollection<Subchannel> Subchannels => new ReadOnlyCollection<Subchannel>(_subchannels);
-
-        private readonly IWavePlayer _outputDevice;
         protected readonly AudioPlaybackEngine Engine;
 
-        private VariableStopwatch _innerTimelineSw = new VariableStopwatch();
+        private readonly List<Subchannel> _subchannels = new List<Subchannel>();
+        private readonly IWavePlayer _outputDevice;
+
+        private readonly VariableStopwatch _innerTimelineSw = new VariableStopwatch();
         private CancellationTokenSource _cts;
         private Task _playTask;
 
         private ConcurrentQueue<Subchannel> _channelsQueue;
         private SortedSet<Subchannel> _runningChannels = new SortedSet<Subchannel>(new ChannelEndTimeComparer());
+        private PlayStatus _playStatus;
 
         public MultichannelPlayer()
         {
             _outputDevice = DeviceProviderExtension.CreateOrGetDefaultDevice();
-            //_outputDevice = new AsioOut(0);
             Engine = new AudioPlaybackEngine(_outputDevice);
         }
 
         public abstract Task Initialize();
-
-        protected void AddSubchannel(Subchannel channel)
-        {
-            _subchannels.Add(channel);
-        }
-
-        protected void RemoveSubchannel(Subchannel channel)
-        {
-            _subchannels.Remove(channel);
-        }
-
-        protected IEnumerable<IChannel> EnumerateSubchannels()
-        {
-            foreach (var subchannel in _subchannels)
-            {
-                yield return subchannel;
-            }
-        }
 
         public async Task Play()
         {
@@ -94,11 +82,10 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                 var date = DateTime.Now;
                 while (!_cts.IsCancellationRequested)
                 {
-                    Position = _innerTimelineSw.Elapsed;
+                    RaisePositionUpdated(_innerTimelineSw.Elapsed);
                     //if (_runningChannels.Count > 0)
                     //    Console.WriteLine(string.Join("; ",
                     //        _runningChannels.Select(k => $"{k.Description}: {k.Position.TotalMilliseconds}")));
-
                     if (_channelsQueue.Count > 0 &&
                         _channelsQueue.TryPeek(out var channel) &&
                         channel.ChannelStartTime <= _innerTimelineSw.Elapsed &&
@@ -112,6 +99,14 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                             Console.WriteLine($"[{_innerTimelineSw.Elapsed}] All channels are playing.");
                     }
 
+                    if (Position > Duration)
+                    {
+                        _innerTimelineSw.Stop();
+                        SetTime(Duration);
+                        PlayStatus = PlayStatus.Finished;
+                        break;
+                    }
+
                     if (_runningChannels.Count > 0 &&
                         _runningChannels.First().ChannelEndTime < _innerTimelineSw.Elapsed)
                     {
@@ -123,7 +118,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                         await InnerSync();
                         date = DateTime.Now;
                     }
-                    
+
                     Thread.Sleep(1);
                 }
             });
@@ -159,17 +154,6 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             else if (PlayStatus == PlayStatus.Playing) await Pause().ConfigureAwait(false);
         }
 
-        private async Task CancelTask()
-        {
-            if (_playTask is null ||
-                _playTask.Status == TaskStatus.Canceled ||
-                _playTask.Status == TaskStatus.Faulted)
-                return;
-
-            _cts?.Cancel();
-            await TaskEx.WhenAllSkipNull(_playTask).ConfigureAwait(false);
-        }
-
         public async Task Stop()
         {
             await CancelTask().ConfigureAwait(false);
@@ -179,7 +163,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                 await channel.Stop().ConfigureAwait(false);
             }
 
-            Position = TimeSpan.Zero;
+            SetTime(TimeSpan.Zero);
             PlayStatus = PlayStatus.Paused;
         }
 
@@ -191,8 +175,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public async Task SkipTo(TimeSpan time)
         {
-            _innerTimelineSw.SkipTo(time);
-            Position = time;
+            SetTime(time);
             await RequeueChannel().ConfigureAwait(false);
             foreach (var channel in _runningChannels)
             {
@@ -204,7 +187,65 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             }
         }
 
-        public async Task InnerSync()
+        public async Task SetPlaybackRate(float rate, bool useTempo)
+        {
+            foreach (var channel in _subchannels)
+            {
+                await channel.SetPlaybackRate(rate, useTempo).ConfigureAwait(false);
+            }
+
+            PlaybackRate = rate;
+            UseTempo = useTempo;
+        }
+
+        public virtual async Task DisposeAsync()
+        {
+            await Stop();
+
+            foreach (var subchannel in _subchannels) await subchannel.DisposeAsync();
+
+            _outputDevice?.Dispose();
+            Engine?.Dispose();
+            _cts?.Dispose();
+            _playTask?.Dispose();
+        }
+
+        protected void AddSubchannel(Subchannel channel)
+        {
+            _subchannels.Add(channel);
+        }
+
+        protected void RemoveSubchannel(Subchannel channel)
+        {
+            _subchannels.Remove(channel);
+        }
+
+        protected IEnumerable<IChannel> EnumerateSubchannels()
+        {
+            foreach (var subchannel in _subchannels)
+            {
+                yield return subchannel;
+            }
+        }
+
+        private async Task CancelTask()
+        {
+            if (_playTask is null ||
+                _playTask.Status == TaskStatus.Canceled ||
+                _playTask.Status == TaskStatus.Faulted)
+                return;
+
+            _cts?.Cancel();
+            await TaskEx.WhenAllSkipNull(_playTask).ConfigureAwait(false);
+        }
+
+        private void SetTime(TimeSpan value)
+        {
+            _innerTimelineSw.SkipTo(value);
+            RaisePositionUpdated(value);
+        }
+
+        private async Task InnerSync()
         {
             foreach (var channel in _runningChannels)
             {
@@ -232,44 +273,9 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             }
         }
 
-        public async Task SetPlaybackRate(float rate, bool useTempo)
+        private void RaisePositionUpdated(TimeSpan value)
         {
-            foreach (var channel in _subchannels)
-            {
-                await channel.SetPlaybackRate(rate, useTempo).ConfigureAwait(false);
-            }
-
-            PlaybackRate = rate;
-            UseTempo = useTempo;
-        }
-
-        public virtual async Task DisposeAsync()
-        {
-            await Stop();
-
-            foreach (var subchannel in _subchannels) await subchannel.DisposeAsync();
-
-            _outputDevice?.Dispose();
-            Engine?.Dispose();
-            _cts?.Dispose();
-            _playTask?.Dispose();
-        }
-    }
-
-    internal class ChannelEndTimeComparer : IComparer<Subchannel>
-    {
-        public int Compare(Subchannel x, Subchannel y)
-        {
-            if (x is null && y is null)
-                return 0;
-            if (y is null)
-                return 1;
-            if (x is null)
-                return -1;
-
-            var o = (x.ChannelEndTime).CompareTo(y.ChannelEndTime);
-            if (o == 0) return 1;
-            return o;
+            InvokeMethodHelper.OnMainThread(() => PositionUpdated?.Invoke(value));
         }
     }
 }

@@ -138,7 +138,7 @@
                 Foreground="#FF646C77"
                 IconMargin="0"
                 IconSize="13"
-                IconTemplate="{Binding Controller.PlayList.PlayMode, Converter={StaticResource PlayModeConverter}, ConverterParameter=S}"
+                IconTemplate="{Binding Controller.PlayList.Mode, Converter={StaticResource PlayModeConverter}, ConverterParameter=S}"
                 MouseDownBackground="#80D0D0D0"
                 MouseOverBackground="#80E0E0E0"
                 WindowChrome.IsHitTestVisibleInChrome="True" />

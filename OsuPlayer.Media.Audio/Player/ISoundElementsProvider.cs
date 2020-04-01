@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
 
 namespace Milky.OsuPlayer.Media.Audio.Player
 {

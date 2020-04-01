@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Milky.OsuPlayer.Common;
+﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
@@ -14,6 +8,12 @@ using Milky.OsuPlayer.Media.Audio.Wave;
 using Milky.OsuPlayer.Shared;
 using Milky.WpfApi;
 using OSharp.Beatmap;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
@@ -268,7 +268,8 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             InvokeMethodHelper.OnMainThread(() => PlayStatusChanged?.Invoke(obj));
             SharedVm.Default.IsPlaying = obj == PlayStatus.Playing;
-            if (obj == PlayStatus.Finished) await PlayByControl(PlayControlType.Next, true).ConfigureAwait(false);
+            if (obj == PlayStatus.Finished)
+                await PlayByControl(PlayControlType.Next, true).ConfigureAwait(false);
         }
 
         private void Player_PositionUpdated(TimeSpan position)

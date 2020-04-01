@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio.Wave;
+using Milky.OsuPlayer.Shared;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using OSharp.Beatmap.Sections.HitObject;

@@ -49,13 +49,13 @@
         <converter:SwitchRadioChangeConverter x:Key="SwitchRadioChangeConverter" />
     </wpfApi:WindowBase.Resources>
     <Grid Margin="{Binding WindowState, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource WindowMarginConverter}}">
-        <Grid.Background>
+        <!--<Grid.Background>
             <ImageBrush
                 ImageSource="{StaticResource TextureSource1}"
                 TileMode="Tile"
                 Viewport="0,0,500,500"
                 ViewportUnits="Absolute" />
-        </Grid.Background>
+        </Grid.Background>-->
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition />
@@ -262,7 +262,8 @@
                     <control:AnimationControl
                         x:Name="Animation"
                         ClipToBounds="True"
-                        IsBlur="{Binding Content, ElementName=MainFrame, Converter={StaticResource NullToBoolFalseConverter}}" />
+                        IsBlur="{Binding Content, ElementName=MainFrame, Converter={StaticResource NullToBoolFalseConverter}}"
+                        Visibility="Collapsed" />
                     <Frame
                         Name="MainFrame"
                         Background="#B0FFFFFF"

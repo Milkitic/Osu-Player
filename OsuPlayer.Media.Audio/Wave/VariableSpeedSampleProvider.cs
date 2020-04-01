@@ -1,10 +1,10 @@
-﻿using System;
-using Milky.OsuPlayer.Media.Audio.SoundTouch;
+﻿using Milky.OsuPlayer.Media.Audio.SoundTouch;
 using NAudio.Wave;
+using System;
 
 namespace Milky.OsuPlayer.Media.Audio.Wave
 {
-    class VarispeedSampleProvider : ISampleProvider, IDisposable
+    internal class VariableSpeedSampleProvider : ISampleProvider, IDisposable
     {
         private readonly ISampleProvider _sourceProvider;
         private readonly SoundTouch.SoundTouch _soundTouch;
@@ -15,7 +15,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
         private SoundTouchProfile _currentSoundTouchProfile;
         private bool _repositionRequested;
 
-        public VarispeedSampleProvider(ISampleProvider sourceProvider, int readDurationMilliseconds,
+        public VariableSpeedSampleProvider(ISampleProvider sourceProvider, int readDurationMilliseconds,
             SoundTouchProfile soundTouchProfile)
         {
             _soundTouch = new SoundTouch.SoundTouch();

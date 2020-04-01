@@ -1,8 +1,8 @@
-﻿using System;
+﻿using NAudio.Vorbis;
+using NAudio.Wave;
+using System;
 using System.IO;
 using System.Threading.Tasks;
-using NAudio.Vorbis;
-using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Media.Audio.Wave
 {

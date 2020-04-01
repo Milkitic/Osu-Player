@@ -63,6 +63,7 @@
     <Compile Include="ObservablePlayController.cs" />
     <Compile Include="OsuMixPlayer.cs" />
     <Compile Include="Player\AudioPlaybackEngine.cs" />
+    <Compile Include="Player\ChannelEndTimeComparer.cs" />
     <Compile Include="Player\IChannel.cs" />
     <Compile Include="Player\ISoundElementsProvider.cs" />
     <Compile Include="Player\MixingSampleProviderExtension.cs" />
@@ -83,7 +84,6 @@
     <Compile Include="SoundTouch\SoundTouchInterop64.cs" />
     <Compile Include="SoundTouch\SoundTouchProfile.cs" />
     <Compile Include="SoundTouch\SoundTouchSettings.cs" />
-    <Compile Include="TaskEx.cs" />
     <Compile Include="ToStringExtension.cs" />
     <Compile Include="VariableStopwatch.cs" />
     <Compile Include="Wave\BalanceSampleProvider.cs" />
@@ -91,7 +91,7 @@
     <Compile Include="Wave\CachedSoundSampleProvider.cs" />
     <Compile Include="Wave\LoopStream.cs" />
     <Compile Include="Wave\MyAudioFileReader.cs" />
-    <Compile Include="Wave\VarispeedSampleProvider.cs" />
+    <Compile Include="Wave\VariableSpeedSampleProvider.cs" />
     <Compile Include="Wave\WaveFormatFactory.cs" />
   </ItemGroup>
   <ItemGroup>

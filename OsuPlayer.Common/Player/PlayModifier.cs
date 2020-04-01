@@ -1,6 +1,6 @@
 ﻿namespace Milky.OsuPlayer.Common.Player
 {
-    public enum PlayMod
+    public enum PlayModifier
     {
         None, DoubleTime, NightCore, HalfTime, DayCore
     }

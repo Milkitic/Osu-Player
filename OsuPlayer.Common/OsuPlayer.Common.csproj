@@ -115,10 +115,10 @@
     <Compile Include="Metadata\NamingStyle.cs" />
     <Compile Include="Instances\OsuDbInst.cs" />
     <Compile Include="Player\BeatmapDetail.cs" />
-    <Compile Include="Player\PlayMode.cs" />
+    <Compile Include="Player\PlayListMode.cs" />
     <Compile Include="Metadata\SortMode.cs" />
     <Compile Include="MapIndentity.cs" />
-    <Compile Include="Player\PlayMod.cs" />
+    <Compile Include="Player\PlayModifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Metadata\SortStyle.cs" />
     <Compile Include="Scanning\FileScannerViewModel.cs" />

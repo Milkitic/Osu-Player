@@ -16,7 +16,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         private readonly bool _useTempo;
 
         private MyAudioFileReader _fileReader;
-        private VarispeedSampleProvider _speedProvider;
+        private VariableSpeedSampleProvider _speedProvider;
         private ISampleProvider _actualRoot;
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
@@ -51,7 +51,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             _fileReader = await WaveFormatFactory.GetResampledAudioFileReader(_path, CachedSound.WaveStreamType)
                 .ConfigureAwait(false);
 
-            _speedProvider = new VarispeedSampleProvider(_fileReader,
+            _speedProvider = new VariableSpeedSampleProvider(_fileReader,
                 10,
                 new SoundTouchProfile(_useTempo, false)
             )

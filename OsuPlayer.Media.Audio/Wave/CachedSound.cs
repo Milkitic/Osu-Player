@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Media.Audio.Player;
+using NAudio.Wave;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Media.Audio.Player;
-using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Media.Audio.Wave
 {
@@ -15,13 +16,77 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
         public float[] AudioData { get; private set; }
         public WaveFormat WaveFormat { get; private set; }
         public TimeSpan Duration { get; private set; }
-        public static MyAudioFileReader.WaveStreamType WaveStreamType { get; set; } = 
+        public static MyAudioFileReader.WaveStreamType WaveStreamType { get; set; } =
             MyAudioFileReader.WaveStreamType.Wav;
 
         private CachedSound(string filePath)
         {
             SourcePath = filePath;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is CachedSound other)
+                return Equals(other);
+            return ReferenceEquals(this, obj);
+        }
+
+        protected bool Equals(CachedSound other)
+        {
+            return SourcePath == other.SourcePath;
+        }
+
+        public override int GetHashCode()
+        {
+            return (SourcePath != null ? SourcePath.GetHashCode() : 0);
+        }
+
+        public static IReadOnlyDictionary<string, CachedSound> CachedSounds { get; } =
+            new ReadOnlyDictionary<string, CachedSound>(CachedDictionary);
+        public static IReadOnlyDictionary<string, CachedSound> DefaultSounds { get; } =
+            new ReadOnlyDictionary<string, CachedSound>(DefaultDictionary);
+
+        public static async Task CreateCacheSounds(IEnumerable<string> paths)
+        {
+            foreach (var path in paths)
+            {
+                await CreateCacheSound(path, false).ConfigureAwait(false); // Cache each file once before play.
+            }
+        }
+
+        /// <summary>
+        /// Default skin hitsounds
+        /// </summary>
+        /// <param name="paths"></param>
+        /// <returns></returns>
+        public static async Task CreateDefaultCacheSounds(IEnumerable<string> paths)
+        {
+            foreach (var path in paths)
+            {
+                await CreateCacheSound(path, true).ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<CachedSound> GetOrCreateCacheSound(string path)
+        {
+            if (DefaultDictionary.ContainsKey(path))
+                return DefaultDictionary[path];
+
+            //if (!CachedDictionary.ContainsKey(path))
+            return await CreateCacheSound(path, false).ConfigureAwait(false);
+
+            //return CachedDictionary[path];
+        }
+
+        public static void ClearCacheSounds()
+        {
+            CachedDictionary.Clear();
+        }
+
+        private static readonly ConcurrentDictionary<string, CachedSound> CachedDictionary =
+            new ConcurrentDictionary<string, CachedSound>();
+        private static readonly ConcurrentDictionary<string, CachedSound> DefaultDictionary =
+            new ConcurrentDictionary<string, CachedSound>();
 
         private static async Task<CachedSound> CreateFromFile(string filePath)
         {
@@ -48,60 +113,6 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
             }
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is CachedSound other)
-                return Equals(other);
-            return ReferenceEquals(this, obj);
-        }
-
-        protected bool Equals(CachedSound other)
-        {
-            return SourcePath == other.SourcePath;
-        }
-
-        public override int GetHashCode()
-        {
-            return (SourcePath != null ? SourcePath.GetHashCode() : 0);
-        }
-
-        private static readonly ConcurrentDictionary<string, CachedSound> CachedDictionary =
-            new ConcurrentDictionary<string, CachedSound>();
-        private static readonly ConcurrentDictionary<string, CachedSound> InternalDictionary =
-            new ConcurrentDictionary<string, CachedSound>();
-
-        public static async Task CreateCacheSounds(IEnumerable<string> paths)
-        {
-            foreach (var path in paths)
-            {
-                await CreateCacheSound(path, false).ConfigureAwait(false); // Cache each file once before play.
-            }
-        }
-
-        /// <summary>
-        /// Default skin hitsounds
-        /// </summary>
-        /// <param name="paths"></param>
-        /// <returns></returns>
-        public static async Task CreateDefaultCacheSounds(IEnumerable<string> paths)
-        {
-            foreach (var path in paths)
-            {
-                await CreateCacheSound(path, true).ConfigureAwait(false);
-            }
-        }
-
-        public static async Task<CachedSound> GetOrCreateCacheSound(string path)
-        {
-            if (InternalDictionary.ContainsKey(path))
-                return InternalDictionary[path];
-
-            //if (!CachedDictionary.ContainsKey(path))
-            return await CreateCacheSound(path, false).ConfigureAwait(false);
-
-            //return CachedDictionary[path];
-        }
-
         private static async Task<CachedSound> CreateCacheSound(string path, bool isDefault)
         {
             string newPath = path;
@@ -118,12 +129,12 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
             if (!File.Exists(newPath))
             {
                 if (!isDefault) CachedDictionary.TryAdd(path, null);
-                else InternalDictionary.TryAdd(path, null);
+                else DefaultDictionary.TryAdd(path, null);
                 return null;
             }
 
             if (!isDefault && CachedDictionary.TryGetValue(path, out var value) ||
-                isDefault && InternalDictionary.TryGetValue(path, out value))
+                isDefault && DefaultDictionary.TryGetValue(path, out value))
             {
                 return value;
             }
@@ -136,13 +147,13 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
             catch
             {
                 if (!isDefault) CachedDictionary.TryAdd(path, null);
-                else InternalDictionary.TryAdd(path, null);
+                else DefaultDictionary.TryAdd(path, null);
                 return null;
             }
 
             // Cache each file once before play.
             var sound = isDefault
-                ? InternalDictionary.GetOrAdd(path, cachedSound)
+                ? DefaultDictionary.GetOrAdd(path, cachedSound)
                 : CachedDictionary.GetOrAdd(path, cachedSound);
 
             //Console.WriteLine(CountSize(CachedDictionary.Values.Sum(k => k.AudioData.Length)));
@@ -163,26 +174,6 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
             }
 
             return path;
-        }
-
-        public static void ClearCacheSounds()
-        {
-            CachedDictionary.Clear();
-        }
-
-        public static string CountSize(long size)
-        {
-            string strSize = "";
-            long factSize = size;
-            if (factSize < 1024)
-                strSize = $"{factSize:F2} B";
-            else if (factSize >= 1024 && factSize < 1048576)
-                strSize = (factSize / 1024f).ToString("F2") + " KB";
-            else if (factSize >= 1048576 && factSize < 1073741824)
-                strSize = (factSize / 1024f / 1024f).ToString("F2") + " MB";
-            else if (factSize >= 1073741824)
-                strSize = (factSize / 1024f / 1024f / 1024f).ToString("F2") + " GB";
-            return strSize;
         }
     }
 }

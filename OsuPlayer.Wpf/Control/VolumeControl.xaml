@@ -167,31 +167,31 @@
                         Click="BtnPlayMod_OnClick"
                         Content="NM"
                         Style="{StaticResource CollectionButtonStyle}"
-                        Tag="{x:Static player:PlayMod.None}" />
+                        Tag="{x:Static player:PlayModifier.None}" />
                     <Button
                         Grid.Column="1"
                         Click="BtnPlayMod_OnClick"
                         Content="DT"
                         Style="{StaticResource CollectionButtonStyle}"
-                        Tag="{x:Static player:PlayMod.DoubleTime}" />
+                        Tag="{x:Static player:PlayModifier.DoubleTime}" />
                     <Button
                         Grid.Column="2"
                         Click="BtnPlayMod_OnClick"
                         Content="NC"
                         Style="{StaticResource CollectionButtonStyle}"
-                        Tag="{x:Static player:PlayMod.NightCore}" />
+                        Tag="{x:Static player:PlayModifier.NightCore}" />
                     <Button
                         Grid.Column="3"
                         Click="BtnPlayMod_OnClick"
                         Content="HT"
                         Style="{StaticResource CollectionButtonStyle}"
-                        Tag="{x:Static player:PlayMod.HalfTime}" />
+                        Tag="{x:Static player:PlayModifier.HalfTime}" />
                     <Button
                         Grid.Column="4"
                         Click="BtnPlayMod_OnClick"
                         Content="DC"
                         Style="{StaticResource CollectionButtonStyle}"
-                        Tag="{x:Static player:PlayMod.DayCore}" />
+                        Tag="{x:Static player:PlayModifier.DayCore}" />
                 </Grid>
                 <Button
                     x:Name="BtnAsio"

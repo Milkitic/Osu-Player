@@ -56,21 +56,21 @@ namespace Milky.OsuPlayer.Common.Player
             }
         }
 
-        public PlayMode PlayMode
+        public PlayListMode Mode
         {
-            get => _playMode;
+            get => _mode;
             set
             {
-                if (Equals(value, _playMode)) return;
+                if (Equals(value, _mode)) return;
                 var preIsRandom = IsRandom;
-                _playMode = value;
+                _mode = value;
                 if (preIsRandom != IsRandom)
                 {
                     var b = RearrangeIndexesAndReposition();
                     if (b) throw new Exception("PlayMode changes cause current info changed");
                 }
 
-                AppSettings.Default.Play.PlayMode = _playMode;
+                AppSettings.Default.Play.PlayListMode = _mode;
                 AppSettings.SaveDefault();
                 OnPropertyChanged();
             }
@@ -103,11 +103,11 @@ namespace Milky.OsuPlayer.Common.Player
 
         public bool HasCurrent => CurrentInfo != null;
 
-        private bool IsRandom => _playMode == PlayMode.Random || _playMode == PlayMode.LoopRandom;
-        private bool IsLoop => _playMode == PlayMode.Loop || _playMode == PlayMode.LoopRandom;
+        private bool IsRandom => _mode == PlayListMode.Random || _mode == PlayListMode.LoopRandom;
+        private bool IsLoop => _mode == PlayListMode.Loop || _mode == PlayListMode.LoopRandom;
 
         private Func<int, int> _temporaryPointerChanged;
-        private PlayMode _playMode;
+        private PlayListMode _mode;
         private int _indexPointer = -1;
         private List<int> _songIndexList = new List<int>();
         private BeatmapContext _currentInfo;
@@ -184,7 +184,7 @@ namespace Milky.OsuPlayer.Common.Player
         {
             if (!isManual) // auto
             {
-                if (PlayMode == PlayMode.Single)
+                if (Mode == PlayListMode.Single)
                 {
                     var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                         PlayControlResult.PointerControlStatus.Keep);
@@ -192,7 +192,7 @@ namespace Milky.OsuPlayer.Common.Player
                     return playControlResult;
                 }
 
-                if (PlayMode == PlayMode.SingleLoop)
+                if (Mode == PlayListMode.SingleLoop)
                 {
                     var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
                         PlayControlResult.PointerControlStatus.Keep);

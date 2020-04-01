@@ -1,5 +1,6 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Media.Audio.Player;
 using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
 using Milky.OsuPlayer.Media.Audio.Wave;
@@ -8,22 +9,16 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Player;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
     public class OsuMixPlayer : MultichannelPlayer
     {
-        static OsuMixPlayer()
-        {
-            var files = new DirectoryInfo(Domain.DefaultPath).GetFiles("*.wav");
-            CachedSound.CreateCacheSounds(files.Select(k => k.FullName));
-        }
-
         private readonly OsuFile _osuFile;
         private readonly string _sourceFolder;
+
+        public override string Description { get; } = "OsuPlayer";
 
         public SingleMediaChannel MusicChannel { get; private set; }
         public HitsoundChannel HitsoundChannel { get; private set; }
@@ -53,6 +48,12 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public override async Task Initialize()
         {
+            if (CachedSound.DefaultSounds.Count == 0)
+            {
+                var files = new DirectoryInfo(Domain.DefaultPath).GetFiles("*.wav");
+                await CachedSound.CreateDefaultCacheSounds(files.Select(k => k.FullName));
+            }
+
             var mp3Path = Path.Combine(_sourceFolder, _osuFile.General.AudioFilename);
             MusicChannel = new SingleMediaChannel(Engine, mp3Path,
                 AppSettings.Default.Play.PlaybackRate,
@@ -75,7 +76,6 @@ namespace Milky.OsuPlayer.Media.Audio
                 HitsoundChannel?.ChannelEndTime ?? TimeSpan.Zero,
                 SampleChannel?.ChannelEndTime ?? TimeSpan.Zero);
 
-            //_hitsoundChannel.PositionUpdated+= (time) => Console.WriteLine($"{_hitsoundChannel.Description}: {time}");
             foreach (var channel in Subchannels)
             {
                 channel.PlayStatusChanged += status => Console.WriteLine($"{channel.Description}: {status}");
@@ -84,30 +84,27 @@ namespace Milky.OsuPlayer.Media.Audio
             PlayStatus = PlayStatus.Ready;
         }
 
-        public void SetPlayMod(PlayMod mod)
+        public async Task SetPlayMod(PlayModifier modifier)
         {
-            foreach (var subchannel in Subchannels)
+            switch (modifier)
             {
-                switch (mod)
-                {
-                    case PlayMod.None:
-                        subchannel.SetPlaybackRate(1, false);
-                        break;
-                    case PlayMod.DoubleTime:
-                        subchannel.SetPlaybackRate(1.5f, true);
-                        break;
-                    case PlayMod.NightCore:
-                        subchannel.SetPlaybackRate(1.5f, false);
-                        break;
-                    case PlayMod.HalfTime:
-                        subchannel.SetPlaybackRate(0.75f, true);
-                        break;
-                    case PlayMod.DayCore:
-                        subchannel.SetPlaybackRate(0.75f, false);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(mod), mod, null);
-                }
+                case PlayModifier.None:
+                    await SetPlaybackRate(1, false);
+                    break;
+                case PlayModifier.DoubleTime:
+                    await SetPlaybackRate(1.5f, true);
+                    break;
+                case PlayModifier.NightCore:
+                    await SetPlaybackRate(1.5f, false);
+                    break;
+                case PlayModifier.HalfTime:
+                    await SetPlaybackRate(0.75f, true);
+                    break;
+                case PlayModifier.DayCore:
+                    await SetPlaybackRate(0.75f, false);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(modifier), modifier, null);
             }
 
             AppSettings.SaveDefault();
