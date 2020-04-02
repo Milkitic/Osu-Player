@@ -162,7 +162,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
             if (UseTempo != useTempo)
             {
-                _speedProvider.SetSoundTouchProfile(new SoundTouchProfile(UseTempo, false));
+                _speedProvider.SetSoundTouchProfile(new SoundTouchProfile(useTempo, false));
                 UseTempo = useTempo;
             }
 

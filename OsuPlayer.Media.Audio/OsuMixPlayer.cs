@@ -118,16 +118,16 @@ namespace Milky.OsuPlayer.Media.Audio
                     await SetPlaybackRate(1, false);
                     break;
                 case PlayModifier.DoubleTime:
-                    await SetPlaybackRate(1.5f, false);
-                    break;
-                case PlayModifier.NightCore:
                     await SetPlaybackRate(1.5f, true);
                     break;
+                case PlayModifier.NightCore:
+                    await SetPlaybackRate(1.5f, false);
+                    break;
                 case PlayModifier.HalfTime:
-                    await SetPlaybackRate(0.75f, false);
+                    await SetPlaybackRate(0.75f, true);
                     break;
                 case PlayModifier.DayCore:
-                    await SetPlaybackRate(0.75f, true);
+                    await SetPlaybackRate(0.75f, false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(modifier), modifier, null);
