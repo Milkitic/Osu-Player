@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +20,9 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         private ISampleProvider _actualRoot;
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly VariableStopwatch _sw = new VariableStopwatch();
+        private ConcurrentQueue<double> _offsetQueue = new ConcurrentQueue<double>();
+        private int? _referenceOffset;
 
         public override float Volume
         {
@@ -31,16 +36,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             ? -AppSettings.Default.Play.GeneralActualOffset
             : 0);
 
-        public TimeSpan ReferenceDuration =>
-            Duration.Add(TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset));
-
-        public TimeSpan ReferencePosition =>
-            Position.Add(TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset));
-
         public sealed override float PlaybackRate { get; protected set; }
         public sealed override bool UseTempo { get; protected set; }
-
-        private VariableStopwatch _sw = new VariableStopwatch();
 
         public SingleMediaChannel(AudioPlaybackEngine engine, string path, float playbackRate, bool useTempo) :
             base(engine)
@@ -72,15 +69,41 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             PlayStatus = PlayStatus.Ready;
             new Task(() =>
             {
+                const int avgCount = 30;
+
                 var oldTime = TimeSpan.Zero;
+                var stdOffset = 0;
                 while (!_cts.IsCancellationRequested)
                 {
                     var newTime = _fileReader.CurrentTime;
                     if (oldTime != newTime)
                     {
-                        Position = newTime;
+                        Position = _sw.Elapsed /*newTime*/ - TimeSpan.FromMilliseconds(_referenceOffset ?? 0);
                         oldTime = newTime;
-                        Console.WriteLine(_sw.Elapsed - _fileReader.CurrentTime);
+                        var offset = _sw.Elapsed - _fileReader.CurrentTime;
+                        if (_offsetQueue.Count < avgCount)
+                        {
+                            _offsetQueue.Enqueue(offset.TotalMilliseconds);
+                            if (_offsetQueue.Count == avgCount)
+                            {
+                                var avg = (int)_offsetQueue.Average();
+                                stdOffset = avg;
+                                Console.WriteLine($"{Description}: avg offset: {avg}");
+                            }
+                        }
+                        else
+                        {
+                            if (_offsetQueue.TryDequeue(out _))
+                            {
+                                _offsetQueue.Enqueue(offset.TotalMilliseconds);
+                                var refOffset = (int)_offsetQueue.Average() - stdOffset;
+                                if (refOffset != _referenceOffset)
+                                {
+                                    _referenceOffset = refOffset;
+                                    Console.WriteLine($"{Description}: {nameof(_referenceOffset)}: {_referenceOffset}");
+                                }
+                            }
+                        }
                     }
 
                     Thread.Sleep(5);
@@ -132,10 +155,12 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                     ? _fileReader.TotalTime - TimeSpan.FromMilliseconds(1)
                     : time;
             _speedProvider.Reposition();
-            Position = _fileReader.CurrentTime;
+            Position = time/*_fileReader.CurrentTime*/;
             Console.WriteLine($"{Description} skip: want: {time}; actual: {Position}");
             _sw.SkipTo(time);
 
+            _referenceOffset = null;
+            _offsetQueue = new ConcurrentQueue<double>();
             PlayStatus = status;
             await Task.CompletedTask;
         }
@@ -146,13 +171,14 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                 ? _fileReader.TotalTime - TimeSpan.FromMilliseconds(1)
                 : time;
             _speedProvider.Reposition();
-            Position = _fileReader.CurrentTime;
+            Position = time/*_fileReader.CurrentTime*/;
             _sw.SkipTo(time);
             await Task.CompletedTask;
         }
 
         public override async Task SetPlaybackRate(float rate, bool useTempo)
         {
+            bool changed = !rate.Equals(PlaybackRate) || useTempo != UseTempo;
             if (!PlaybackRate.Equals(rate))
             {
                 PlaybackRate = rate;
@@ -166,6 +192,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                 UseTempo = useTempo;
             }
 
+            if (changed) await SkipTo(_sw.Elapsed);
             await Task.CompletedTask;
         }
 

@@ -47,6 +47,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         public abstract float PlaybackRate { get; protected set; }
         public abstract bool UseTempo { get; protected set; }
 
+        public bool IsReferenced { get; set; }
+
         public PlayStatus PlayStatus
         {
             get => _playStatus;

@@ -157,7 +157,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                         _runningChannels.Remove(_runningChannels.First());
                     }
 
-                    if (DateTime.Now - date > TimeSpan.FromSeconds(10))
+                    if (DateTime.Now - date > TimeSpan.FromMilliseconds(50))
                     {
                         await InnerSync();
                         date = DateTime.Now;
@@ -291,10 +291,20 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         private async Task InnerSync()
         {
-            foreach (var channel in _runningChannels)
+            var refer = _runningChannels.FirstOrDefault(k => k.IsReferenced);
+            if (refer is null)
             {
-                if (channel is SingleMediaChannel) continue;
-                await channel.Sync(Position - channel.ChannelStartTime).ConfigureAwait(false);
+                foreach (var channel in _runningChannels)
+                {
+                    await channel.Sync(Position - channel.ChannelStartTime).ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                foreach (var channel in _runningChannels.Where(k => !k.IsReferenced))
+                {
+                    await channel.Sync(refer.ChannelStartTime + refer.Position - channel.ChannelStartTime).ConfigureAwait(false);
+                }
             }
         }
 

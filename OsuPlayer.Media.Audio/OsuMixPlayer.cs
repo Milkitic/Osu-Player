@@ -58,7 +58,8 @@ namespace Milky.OsuPlayer.Media.Audio
                 AppSettings.Default.Play.PlaybackRate,
                 AppSettings.Default.Play.PlayUseTempo)
             {
-                Description = "Music"
+                Description = "Music",
+                IsReferenced = true
             };
 
             AddSubchannel(MusicChannel);
