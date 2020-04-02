@@ -23,6 +23,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         private readonly VariableStopwatch _sw = new VariableStopwatch();
         private ConcurrentQueue<double> _offsetQueue = new ConcurrentQueue<double>();
         private int? _referenceOffset;
+        private Task _backoffTask;
 
         public override float Volume
         {
@@ -67,7 +68,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             SampleControl.Volume = 1;
             SampleControl.Balance = 0;
             PlayStatus = PlayStatus.Ready;
-            new Task(() =>
+            _backoffTask = new Task(() =>
             {
                 const int avgCount = 30;
 
@@ -75,10 +76,11 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                 var stdOffset = 0;
                 while (!_cts.IsCancellationRequested)
                 {
+                    Position = _sw.Elapsed /*newTime*/ - TimeSpan.FromMilliseconds(_referenceOffset ?? 0);
+
                     var newTime = _fileReader.CurrentTime;
                     if (oldTime != newTime)
                     {
-                        Position = _sw.Elapsed /*newTime*/ - TimeSpan.FromMilliseconds(_referenceOffset ?? 0);
                         oldTime = newTime;
                         var offset = _sw.Elapsed - _fileReader.CurrentTime;
                         if (_offsetQueue.Count < avgCount)
@@ -106,9 +108,10 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                         }
                     }
 
-                    Thread.Sleep(5);
+                    Thread.Sleep(1);
                 }
-            }, TaskCreationOptions.LongRunning).Start();
+            }, TaskCreationOptions.LongRunning);
+            _backoffTask.Start();
             await Task.CompletedTask;
         }
 
@@ -198,12 +201,13 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override async Task DisposeAsync()
         {
+            _cts?.Cancel();
+            await Task.WhenAll(_backoffTask);
+            _cts?.Dispose();
             await base.DisposeAsync();
             await Stop();
             _speedProvider?.Dispose();
             _fileReader?.Dispose();
-            _cts?.Cancel();
-            _cts?.Dispose();
         }
     }
 }

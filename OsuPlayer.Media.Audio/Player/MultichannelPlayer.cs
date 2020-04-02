@@ -167,7 +167,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                 }
             });
 
-            foreach (var channel in _runningChannels)
+            foreach (var channel in _runningChannels.ToList())
             {
                 await channel.Play().ConfigureAwait(false);
             }
@@ -179,7 +179,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         public async Task Pause()
         {
             await CancelTask().ConfigureAwait(false);
-            foreach (var channel in _runningChannels)
+            foreach (var channel in _runningChannels.ToList())
             {
                 await channel.Pause().ConfigureAwait(false);
             }
@@ -202,7 +202,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         {
             await CancelTask().ConfigureAwait(false);
 
-            foreach (var channel in _runningChannels)
+            foreach (var channel in _runningChannels.ToList())
             {
                 await channel.Stop().ConfigureAwait(false);
             }
@@ -221,7 +221,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         {
             SetTime(time);
             await RequeueChannel().ConfigureAwait(false);
-            foreach (var channel in _runningChannels)
+            foreach (var channel in _runningChannels.ToList())
             {
                 await channel.SkipTo(time - channel.ChannelStartTime).ConfigureAwait(false);
                 if (PlayStatus == PlayStatus.Playing)
@@ -233,7 +233,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public async Task SetPlaybackRate(float rate, bool useTempo)
         {
-            foreach (var channel in _subchannels)
+            foreach (var channel in _subchannels.ToList())
             {
                 await channel.SetPlaybackRate(rate, useTempo).ConfigureAwait(false);
             }
@@ -246,7 +246,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         {
             await Stop();
 
-            foreach (var subchannel in _subchannels) await subchannel.DisposeAsync();
+            foreach (var subchannel in _subchannels.ToList()) await subchannel.DisposeAsync();
 
             _outputDevice?.Dispose();
             Engine?.Dispose();
@@ -294,17 +294,21 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             var refer = _runningChannels.FirstOrDefault(k => k.IsReferenced);
             if (refer is null)
             {
-                foreach (var channel in _runningChannels)
+                foreach (var channel in _runningChannels.ToList())
                 {
                     await channel.Sync(Position - channel.ChannelStartTime).ConfigureAwait(false);
                 }
             }
             else
             {
-                foreach (var channel in _runningChannels.Where(k => !k.IsReferenced))
+                var referChannelStartTime = refer.ChannelStartTime + refer.Position;
+                //Console.WriteLine(referChannelStartTime);
+                foreach (var channel in _runningChannels.Where(k => !k.IsReferenced).ToList())
                 {
-                    await channel.Sync(refer.ChannelStartTime + refer.Position - channel.ChannelStartTime).ConfigureAwait(false);
+                    await channel.Sync(referChannelStartTime - channel.ChannelStartTime).ConfigureAwait(false);
                 }
+
+                _innerTimelineSw.SkipTo(referChannelStartTime);
             }
         }
 
