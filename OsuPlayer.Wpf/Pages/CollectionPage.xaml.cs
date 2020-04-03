@@ -270,7 +270,11 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {
+            var beatmaps = _entries.ToList();
+            if (beatmaps.Count <= 0) return;
 
+            Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.Collection, beatmaps);
+            PlayController.Default.PlayNewFile(beatmaps[0]);
         }
 
         private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
