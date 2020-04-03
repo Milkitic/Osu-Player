@@ -265,6 +265,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
                     lock (_skipLock)
                     {
+                        // wow nothing here
                     }
 
                     while (_soundElementsQueue.TryPeek(out var soundElement) &&
@@ -273,6 +274,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                     {
                         lock (_skipLock)
                         {
+                            // wow nothing here
                         }
 
                         switch (soundElement.ControlType)

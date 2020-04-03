@@ -42,5 +42,5 @@
         /// See "STTypes.h" or README for more information.
         /// </summary>
         OverlapMs = 5
-    };
+    }
 }
