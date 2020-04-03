@@ -1,6 +1,4 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Web;
-using Milky.OsuPlayer.Models.Github;
+﻿using Milky.OsuPlayer.Models.Github;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Windows;
 using System;
@@ -8,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using Milky.OsuPlayer.Common;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer

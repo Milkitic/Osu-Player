@@ -1,4 +1,4 @@
-﻿using Milky.OsuPlayer.Common.Data.EF.Model.V1;
+﻿using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Interaction;
 using System.Collections.ObjectModel;
 using System.Windows.Input;

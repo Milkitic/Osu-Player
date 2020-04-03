@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Animation;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Utils;
 

@@ -1,5 +1,4 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Presentation.Dependency;
+﻿using Milky.OsuPlayer.Presentation.Dependency;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Control
 {
@@ -402,7 +403,7 @@ namespace Milky.OsuPlayer.Control
                 To = 1,
                 EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,
-                Duration = Utils.Util.GetDuration(TimeSpan.FromMilliseconds(300))
+                Duration = Util.GetDuration(TimeSpan.FromMilliseconds(300))
             };
             Storyboard.SetTargetProperty(Da1, new PropertyPath(OpacityProperty));
 
@@ -412,7 +413,7 @@ namespace Milky.OsuPlayer.Control
                 To = 1,
                 EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,
-                Duration = Utils.Util.GetDuration(TimeSpan.FromMilliseconds(300))
+                Duration = Util.GetDuration(TimeSpan.FromMilliseconds(300))
             };
             Ta1Clone = Ta1.Clone();
             Storyboard.SetTargetProperty(Ta1, new PropertyPath("RenderTransform.ScaleX"));
@@ -429,7 +430,7 @@ namespace Milky.OsuPlayer.Control
                 To = 0,
                 EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,
-                Duration = Utils.Util.GetDuration(TimeSpan.FromMilliseconds(100))
+                Duration = Util.GetDuration(TimeSpan.FromMilliseconds(100))
             };
             FadeoutSb.Children.Add(Da2);
             Storyboard.SetTargetProperty(Da2, new PropertyPath(OpacityProperty));

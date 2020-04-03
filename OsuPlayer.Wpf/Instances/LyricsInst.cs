@@ -1,12 +1,11 @@
-﻿using System;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Metadata;
-using Milky.OsuPlayer.Media.Lyric;
+﻿using Milky.OsuPlayer.Media.Lyric;
 using Milky.OsuPlayer.Media.Lyric.SourceProvider;
 using Milky.OsuPlayer.Media.Lyric.SourceProvider.Auto;
 using Milky.OsuPlayer.Media.Lyric.SourceProvider.Kugou;
 using Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease;
 using Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic;
+using System;
+using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Instances
 {

@@ -1,8 +1,10 @@
 ﻿using Microsoft.Win32;
 using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Player;
+using Milky.OsuPlayer.Media.Audio.Playlist;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Threading;
@@ -10,14 +12,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Dependency;
 
 namespace Milky.OsuPlayer.Control
 {
     public class PlayControllerVm : VmBase
     {
-        public ObservablePlayController Controller { get; } = Services.Get<ObservablePlayController>();
+        public ObservablePlayController Controller { get; } = Service.Get<ObservablePlayController>();
         public SharedVm Shared { get; } = SharedVm.Default;
     }
 
@@ -55,7 +56,7 @@ namespace Milky.OsuPlayer.Control
         #endregion
 
         private bool _scrollLock;
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         public PlayController()
         {

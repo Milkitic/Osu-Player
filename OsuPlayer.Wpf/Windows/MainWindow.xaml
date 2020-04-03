@@ -5,15 +5,15 @@
     xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:frontdialog="clr-namespace:Milky.OsuPlayer.Control.FrontDialog"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:notification="clr-namespace:Milky.OsuPlayer.Control.Notification"
     xmlns:pages="clr-namespace:Milky.OsuPlayer.Pages"
     xmlns:tb="http://www.hardcodet.net/taskbar"
-    xmlns:v1="clr-namespace:Milky.OsuPlayer.Common.Data.EF.Model.V1;assembly=OsuPlayer.Common"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
+    xmlns:models="clr-namespace:Milky.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
+    xmlns:frontDialogComponent="clr-namespace:Milky.OsuPlayer.UiComponent.FrontDialogComponent"
+    xmlns:notificationComponent="clr-namespace:Milky.OsuPlayer.UiComponent.NotificationComponent"
     Title="Osu Player"
     Width="998"
     Height="759"
@@ -226,7 +226,7 @@
                             <ListView.Resources>
                                 <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
                                     <d:Object.DataContext>
-                                        <v1:Collection />
+                                        <models:Collection />
                                     </d:Object.DataContext>
                                     <control:SwitchRadio
                                         x:Name="BtnCollection"
@@ -283,7 +283,7 @@
             Grid.Column="0"
             Background="{StaticResource WhiteBrush80}"
             Visibility="Hidden" />
-        <frontdialog:FrontDialogOverlay
+        <frontDialogComponent:FrontDialogOverlay
             x:Name="FrontDialogOverlay"
             Grid.Row="0"
             Grid.RowSpan="2" />
@@ -335,7 +335,7 @@
             </StackPanel>
         </DockPanel>
         <!--<control:WelcomeControl x:Name="WelcomeControl" Grid.Row="1" />-->
-        <notification:NotifyOverlay
+        <notificationComponent:NotifyOverlay
             x:Name="NotificationOverlay"
             Grid.Row="1"
             Grid.Column="0"

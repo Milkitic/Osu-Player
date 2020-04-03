@@ -6,8 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:player="clr-namespace:Milky.OsuPlayer.Common.Player;assembly=OsuPlayer.Common"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:playlist="clr-namespace:Milky.OsuPlayer.Media.Audio.Playlist;assembly=OsuPlayer.Media.Audio"
     Title="当前歌曲信息"
     Width="400"
     Height="340"
@@ -29,7 +29,7 @@
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
     <d:Object.DataContext>
-        <player:BeatmapContext />
+        <playlist:BeatmapContext />
     </d:Object.DataContext>
     <Window.Resources>
         <system:Double x:Key="LabelWidth">110</system:Double>

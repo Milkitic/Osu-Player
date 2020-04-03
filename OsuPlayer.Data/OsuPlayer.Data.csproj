@@ -1,17 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>094fac4a-6277-46e8-97b4-c992f1674638</ProjectGuid>
+    <ProjectGuid>{094FAC4A-6277-46E8-97B4-C992F1674638}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OsuPlayer.Data</RootNamespace>
+    <RootNamespace>Milky.OsuPlayer.Data</RootNamespace>
     <AssemblyName>OsuPlayer.Data</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,24 +33,75 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System"/>
-    
-    <Reference Include="System.Core"/>
-    <Reference Include="System.Xml.Linq"/>
-    <Reference Include="System.Data.DataSetExtensions"/>
-    
-    
-    <Reference Include="Microsoft.CSharp"/>
-    
-    <Reference Include="System.Data"/>
-    
-    <Reference Include="System.Net.Http"/>
-    
-    <Reference Include="System.Xml"/>
+    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.2.0.30\lib\net461\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper.FluentMap, Version=1.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.FluentMap.1.8.0\lib\net451\Dapper.FluentMap.dll</HintPath>
+    </Reference>
+    <Reference Include="osu-database-reader, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HoLLy.osu.DatabaseReader.2.1.1\lib\net40\osu-database-reader.dll</HintPath>
+    </Reference>
+    <Reference Include="osu.Shared, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\osu.Shared.1.0.2\lib\net20\osu.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.112.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.112.0\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="AppDbOperator.cs" />
+    <Compile Include="BeatmapDbOperator.cs" />
+    <Compile Include="Dapper\DataBaseType.cs" />
+    <Compile Include="Dapper\DbPoolConfiguration.cs" />
+    <Compile Include="Dapper\Provider\DbProviderBase.cs" />
+    <Compile Include="Dapper\Provider\SQLiteProvider.cs" />
+    <Compile Include="Dapper\Where.cs" />
+    <Compile Include="Dapper\WhereType.cs" />
+    <Compile Include="Models\Beatmap.cs" />
+    <Compile Include="Models\BeatmapExtension.cs" />
+    <Compile Include="Models\StoryboardInfo.cs" />
+    <Compile Include="Models\BeatmapSettings.cs" />
+    <Compile Include="Models\Collection.cs" />
+    <Compile Include="Models\CollectionRelation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
+      <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
+      <Name>OSharp.Beatmap</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Libraries\OSharp.Common\OSharp.Common.csproj">
+      <Project>{4C8D4EEA-E81B-4FD3-B6A4-9857ABC152A5}</Project>
+      <Name>OSharp.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj">
+      <Project>{93E3612C-D388-438F-A04A-047265820998}</Project>
+      <Name>OsuPlayer.Presentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj">
+      <Project>{C842FAB3-EC80-4E95-B402-BF0572F1806D}</Project>
+      <Name>OsuPlayer.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
- </Project>
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.112.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.112.0\build\net46\System.Data.SQLite.Core.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.112.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.112.0\build\net46\System.Data.SQLite.Core.targets'))" />
+  </Target>
+</Project>

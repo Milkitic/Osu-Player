@@ -5,7 +5,6 @@
     xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:metadata="clr-namespace:Milky.OsuPlayer.Common.Metadata;assembly=OsuPlayer.Common"
     xmlns:pages="clr-namespace:Milky.OsuPlayer.Pages"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     Title="RecentPlayPage"

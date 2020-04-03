@@ -1,14 +1,13 @@
 using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.Shared.Models;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap.MetaData;
 using System;
@@ -22,6 +21,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xaml;
+using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponent.NotificationComponent;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -340,7 +341,7 @@ namespace Milky.OsuPlayer.ViewModels
                     var beatmap = (BeatmapDataModel)param;
                     var map = GetHighestSrBeatmap(beatmap);
                     if (map == null) return;
-                    var controller = Services.Get<ObservablePlayController>();
+                    var controller = Service.Get<ObservablePlayController>();
                     await controller.PlayNewAsync(map);
                 });
             }
@@ -359,7 +360,7 @@ namespace Milky.OsuPlayer.ViewModels
                         async (selected, arg) =>
                         {
                             var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
-                            var controller = Services.Get<ObservablePlayController>();
+                            var controller = Service.Get<ObservablePlayController>();
                             await controller.PlayNewAsync(map, true);
                         });
                     FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);

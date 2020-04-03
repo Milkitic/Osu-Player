@@ -3,6 +3,7 @@ using NAudio.Wave;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Media.Audio.Wave
 {

@@ -1,7 +1,7 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Models.Github;
+﻿using Milky.OsuPlayer.Models.Github;
 using Milky.OsuPlayer.Presentation;
 using System.Diagnostics;
+using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Windows
 {

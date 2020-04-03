@@ -1,11 +1,13 @@
-﻿using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Windows;
+﻿using Milky.OsuPlayer.Windows;
 using System;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Milky.OsuPlayer.Media.Audio.Playlist;
+using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Converter
 {
@@ -54,20 +56,20 @@ namespace Milky.OsuPlayer.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is PlayListMode playerMode)) return value;
+            if (!(value is PlaylistMode playerMode)) return value;
             switch (playerMode)
             {
-                case PlayListMode.Normal:
+                case PlaylistMode.Normal:
                     return Application.Current.FindResource($"ModeNormal{parameter}Templ");
-                case PlayListMode.Random:
+                case PlaylistMode.Random:
                     return Application.Current.FindResource($"ModeRandom{parameter}Templ");
-                case PlayListMode.Loop:
+                case PlaylistMode.Loop:
                     return Application.Current.FindResource($"ModeLoop{parameter}Templ");
-                case PlayListMode.LoopRandom:
+                case PlaylistMode.LoopRandom:
                     return Application.Current.FindResource($"ModeLoopRandom{parameter}Templ");
-                case PlayListMode.Single:
+                case PlaylistMode.Single:
                     return Application.Current.FindResource($"ModeSingle{parameter}Templ");
-                case PlayListMode.SingleLoop:
+                case PlaylistMode.SingleLoop:
                     return Application.Current.FindResource($"ModeSingleLoop{parameter}Templ");
                 default:
                     throw new ArgumentOutOfRangeException();

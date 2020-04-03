@@ -1,11 +1,11 @@
-﻿using Milky.OsuPlayer.Common.Data;
+﻿using Milky.OsuPlayer.Data;
 using OSharp.Beatmap;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Data.Models;
 
 namespace Milky.OsuPlayer.Common.Scanning
 {
@@ -101,7 +101,7 @@ namespace Milky.OsuPlayer.Common.Scanning
 
         private Beatmap GetBeatmapObj(OsuFile osuFile, FileInfo fileInfo)
         {
-            var beatmap = Beatmap.ParseFromOSharp(osuFile);
+            var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
             beatmap.BeatmapFileName = fileInfo.Name;
             beatmap.LastModifiedTime = fileInfo.LastWriteTime;
             beatmap.FolderName = fileInfo.Directory.Name;

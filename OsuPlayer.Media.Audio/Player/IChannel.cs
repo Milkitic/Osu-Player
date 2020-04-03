@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Shared;
+using System;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common;
 
 namespace Milky.OsuPlayer.Media.Audio.Player
 {

@@ -1,9 +1,7 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared;
@@ -18,6 +16,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Shared.Dependency;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -27,7 +27,7 @@ namespace Milky.OsuPlayer.Pages
     public partial class SearchPage : Page
     {
         private readonly AppDbOperator _dbOperator = new AppDbOperator();
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         private MainWindow _mainWindow;
 

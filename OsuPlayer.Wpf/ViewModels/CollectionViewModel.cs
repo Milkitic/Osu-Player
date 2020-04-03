@@ -1,12 +1,11 @@
-﻿using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Control;
+﻿using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Interaction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.ViewModels
 {

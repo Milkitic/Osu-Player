@@ -1,17 +1,17 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Common.Scanning;
 using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using OSharp.Beatmap;
@@ -20,6 +20,8 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponent.NotificationComponent;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -41,7 +43,7 @@ namespace Milky.OsuPlayer.Windows
 
         private Task _searchLyricTask;
 
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         public MainWindow()
         {
@@ -125,7 +127,7 @@ namespace Milky.OsuPlayer.Windows
                 {
                     if (!_controller.IsPlayerReady) return;
 
-                    var lyricInst = Services.Get<LyricsInst>();
+                    var lyricInst = Service.Get<LyricsInst>();
                     var meta = _controller.PlayList.CurrentInfo.OsuFile.Metadata;
                     MetaString metaArtist = meta.ArtistMeta;
                     MetaString metaTitle = meta.TitleMeta;
@@ -168,14 +170,14 @@ namespace Milky.OsuPlayer.Windows
                     ShowTitleBar = false
                 });
                 //WelcomeControl.Show();
-                await Services.Get<OsuDbInst>().LoadLocalDbAsync();
-                await Services.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Default.General.CustomSongsPath);
+                await Service.Get<OsuDbInst>().LoadLocalDbAsync();
+                await Service.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Default.General.CustomSongsPath);
             }
             else
             {
                 if (DateTime.Now - AppSettings.Default.LastTimeScanOsuDb > TimeSpan.FromDays(1))
                 {
-                    await Services.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, true);
+                    await Service.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, true);
                     AppSettings.Default.LastTimeScanOsuDb = DateTime.Now;
                     AppSettings.SaveDefault();
                 }
@@ -185,7 +187,7 @@ namespace Milky.OsuPlayer.Windows
 
             _controller.LoadFinished += Controller_LoadFinished;
 
-            var updater = Services.Get<Updater>();
+            var updater = Service.Get<Updater>();
             bool? hasUpdate = await updater.CheckUpdateAsync();
             if (hasUpdate == true && updater.NewRelease.NewVerString != AppSettings.Default.IgnoredVer)
             {

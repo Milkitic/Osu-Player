@@ -1,5 +1,6 @@
-﻿using Milky.OsuPlayer.Presentation.Interaction;
-using System.IO;
+﻿using System.IO;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {

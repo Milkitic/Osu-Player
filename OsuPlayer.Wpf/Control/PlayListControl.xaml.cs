@@ -1,8 +1,7 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
@@ -15,6 +14,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer.Control
@@ -24,7 +25,7 @@ namespace Milky.OsuPlayer.Control
         private Beatmap _selectedMap;
         private List<Beatmap> _selectedMaps;
 
-        public ObservablePlayController Controller { get; } = Services.Get<ObservablePlayController>();
+        public ObservablePlayController Controller { get; } = Service.Get<ObservablePlayController>();
 
         public Beatmap SelectedMap
         {
@@ -189,7 +190,7 @@ namespace Milky.OsuPlayer.Control
         }
 
         private bool _signed;
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
         private PlayListControlVm _viewModel;
 
         public PlayListControl()

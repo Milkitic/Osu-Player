@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
 using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer

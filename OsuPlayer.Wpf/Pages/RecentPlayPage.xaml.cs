@@ -1,14 +1,12 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
-using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Windows;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,13 +16,15 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponent.NotificationComponent;
 
 namespace Milky.OsuPlayer.Pages
 {
     public class RecentPlayPageVm : VmBase
     {
         private readonly AppDbOperator _dbOperator = new AppDbOperator();
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         private NumberableObservableCollection<BeatmapDataModel> _beatmaps;
 
@@ -166,7 +166,7 @@ namespace Milky.OsuPlayer.Pages
         private ObservableCollection<Beatmap> _recentBeatmaps;
         private readonly MainWindow _mainWindow;
         private readonly AppDbOperator _appDbOperator = new AppDbOperator();
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
         private RecentPlayPageVm _viewModel;
 
         public RecentPlayPage()

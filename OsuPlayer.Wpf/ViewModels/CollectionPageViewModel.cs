@@ -1,25 +1,25 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
-using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
-using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Windows;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
+using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponent.NotificationComponent;
 
 namespace Milky.OsuPlayer.ViewModels
 {
     public class CollectionPageViewModel : VmBase
     {
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
         private AppDbOperator _appDbOperator = new AppDbOperator();
 
         private NumberableObservableCollection<BeatmapDataModel> _beatmaps;

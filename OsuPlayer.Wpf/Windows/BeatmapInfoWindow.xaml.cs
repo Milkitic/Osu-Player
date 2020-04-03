@@ -12,7 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Media.Audio.Playlist;
 
 namespace Milky.OsuPlayer.Windows
 {

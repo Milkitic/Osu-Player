@@ -5,13 +5,13 @@ using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Scanning;
 using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.UiComponent.NotificationComponent;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -29,7 +29,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             _mainWindow = WindowEx.GetCurrentFirst<MainWindow>();
             _configWindow = WindowEx.GetCurrentFirst<ConfigWindow>();
             InitializeComponent();
-            ScannerViewModel = Services.Get<OsuFileScanner>().ViewModel;
+            ScannerViewModel = Service.Get<OsuFileScanner>().ViewModel;
         }
 
         private void RunOnStartup_CheckChanged(object sender, RoutedEventArgs e)
@@ -91,7 +91,7 @@ namespace Milky.OsuPlayer.Pages.Settings
                 return;
             try
             {
-                await Services.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
+                await Service.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
                 TbDbPath.Text = path;
                 AppSettings.Default.General.DbPath = path;
                 AppSettings.SaveDefault();
@@ -126,8 +126,8 @@ namespace Milky.OsuPlayer.Pages.Settings
                 try
                 {
                     TbCustomPath.Text = path;
-                    await Services.Get<OsuFileScanner>().CancelTaskAsync();
-                    await Services.Get<OsuFileScanner>().NewScanAndAddAsync(path);
+                    await Service.Get<OsuFileScanner>().CancelTaskAsync();
+                    await Service.Get<OsuFileScanner>().NewScanAndAddAsync(path);
                     AppSettings.Default.General.CustomSongsPath = path;
                     AppSettings.SaveDefault();
                 }
@@ -140,14 +140,14 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private async void CancelScan_Click(object sender, RoutedEventArgs e)
         {
-            await Services.Get<OsuFileScanner>().CancelTaskAsync();
+            await Service.Get<OsuFileScanner>().CancelTaskAsync();
         }
 
         private async void SyncNow_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                await Services.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, false);
+                await Service.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, false);
                 AppSettings.Default.LastTimeScanOsuDb = DateTime.Now;
                 AppSettings.SaveDefault();
             }

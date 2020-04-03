@@ -1,0 +1,277 @@
+﻿<UserControl
+    x:Class="Milky.OsuPlayer.UiComponent.NotificationComponent.NotifyControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:shared="clr-namespace:Milky.OsuPlayer.Shared;assembly=OsuPlayer.Shared"
+    xmlns:converters="clr-namespace:Milky.OsuPlayer.UiComponent.NotificationComponent.Converters"
+    xmlns:notificationComponent="clr-namespace:Milky.OsuPlayer.UiComponent.NotificationComponent"
+    Height="auto"
+    Loaded="UserControl_Loaded"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <Color
+            x:Key="BackColor"
+            A="255"
+            B="153"
+            G="107"
+            R="93" />
+        <SolidColorBrush x:Key="BackBrush" Color="#F0F0F0" />
+        <SineEase x:Key="SineOutEase" EasingMode="EaseOut" />
+        <Duration x:Key="AnimationTime">0:0:0.1</Duration>
+
+        <converters:EmptyToVisibleConverter x:Key="EmptyToVisibleConverter" />
+        <converters:NotificationTypeConverter x:Key="NotificationTypeConverter" />
+        <converters:NotificationTypeToCursorConverter x:Key="NotificationTypeToCursorConverter" />
+        <converters:MixColorConverter x:Key="MixColorConverter" />
+        <converters:FontColorConverter x:Key="FontColorConverter" />
+        <Style x:Key="BtnStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Cursor="Hand">
+                            <Border
+                                x:Name="BtnBorder"
+                                Background="{Binding ElementName=MainBorder, Path=Background, Converter={StaticResource MixColorConverter}}"
+                                TextBlock.Foreground="{Binding ElementName=MainBorder, Path=Background, Converter={StaticResource FontColorConverter}}">
+                                <ContentPresenter
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Content="{TemplateBinding Content}" />
+                            </Border>
+                            <Rectangle
+                                x:Name="CoverRec"
+                                Fill="White"
+                                Opacity="0" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CoverRec" Property="Opacity" Value="0.2" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="NotifyStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="NotifyGrid" Tag="{Binding NotificationTypeString}">
+                            <Border
+                                x:Name="NotifyBorder"
+                                Margin="2"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                                <ContentPresenter x:Name="Presenter" Content="{TemplateBinding Content}" />
+                            </Border>
+                            <Border x:Name="BackBorder">
+                                <Border.Background>
+                                    <SolidColorBrush x:Name="Scb" Color="Transparent" />
+                                </Border.Background>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True" />
+                                    <Condition SourceName="NotifyGrid" Property="Tag" Value="Alert" />
+                                </MultiTrigger.Conditions>
+                                <MultiTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimation
+                                                EasingFunction="{StaticResource SineOutEase}"
+                                                FillBehavior="HoldEnd"
+                                                Storyboard.TargetName="NotifyBorder"
+                                                Storyboard.TargetProperty="Margin"
+                                                From="2"
+                                                To="1"
+                                                Duration="{StaticResource AnimationTime}" />
+                                            <ThicknessAnimation
+                                                EasingFunction="{StaticResource SineOutEase}"
+                                                FillBehavior="HoldEnd"
+                                                Storyboard.TargetName="Presenter"
+                                                Storyboard.TargetProperty="Margin"
+                                                From="0"
+                                                To="1"
+                                                Duration="{StaticResource AnimationTime}" />
+                                            <ColorAnimation
+                                                EasingFunction="{StaticResource SineOutEase}"
+                                                Storyboard.TargetName="Scb"
+                                                Storyboard.TargetProperty="Color"
+                                                From="Transparent"
+                                                To="#20f0f0f0"
+                                                Duration="{StaticResource AnimationTime}" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiTrigger.EnterActions>
+                                <MultiTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimation
+                                                EasingFunction="{StaticResource SineOutEase}"
+                                                FillBehavior="HoldEnd"
+                                                Storyboard.TargetName="NotifyBorder"
+                                                Storyboard.TargetProperty="Margin"
+                                                From="1"
+                                                To="2"
+                                                Duration="{StaticResource AnimationTime}" />
+                                            <ThicknessAnimation
+                                                EasingFunction="{StaticResource SineOutEase}"
+                                                FillBehavior="HoldEnd"
+                                                Storyboard.TargetName="Presenter"
+                                                Storyboard.TargetProperty="Margin"
+                                                From="1"
+                                                To="0"
+                                                Duration="{StaticResource AnimationTime}" />
+                                            <ColorAnimation
+                                                EasingFunction="{StaticResource SineOutEase}"
+                                                Storyboard.TargetName="Scb"
+                                                Storyboard.TargetProperty="Color"
+                                                From="#20f0f0f0"
+                                                To="Transparent"
+                                                Duration="{StaticResource AnimationTime}" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiTrigger.ExitActions>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <notificationComponent:NotificationOption />
+    </UserControl.DataContext>
+    <Grid x:Name="NotifyBorder">
+        <Rectangle Margin="5" Fill="{DynamicResource BackBrush}">
+            <Rectangle.Effect>
+                <DropShadowEffect
+                    BlurRadius="5"
+                    Opacity="0.2"
+                    ShadowDepth="0" />
+            </Rectangle.Effect>
+        </Rectangle>
+        <Button
+            x:Name="MainBorder"
+            Margin="3"
+            Background="{StaticResource BackBrush}"
+            BorderBrush="Transparent"
+            BorderThickness="0"
+            Click="NotifyControl_Click"
+            Cursor="{Binding Level, Converter={StaticResource NotificationTypeToCursorConverter}}"
+            Style="{StaticResource NotifyStyle}">
+            <Grid
+                x:Name="VirtualInfoArea"
+                Margin="10,5"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                TextBlock.Foreground="{Binding ElementName=MainBorder, Path=Background, Converter={StaticResource FontColorConverter}}"
+                Visibility="Visible">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Viewbox
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Width="30"
+                    Height="30"
+                    Margin="10"
+                    VerticalAlignment="Top"
+                    Visibility="{Binding IconTemplate, Converter={StaticResource EmptyToVisibleConverter}}">
+
+                    <ContentControl Template="{Binding IconTemplate}" />
+                </Viewbox>
+                <StackPanel
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    VerticalAlignment="Center">
+                    <Label
+                        Content="{Binding Title}"
+                        FontWeight="Bold"
+                        Foreground="{Binding ElementName=MainBorder, Path=Background, Converter={StaticResource FontColorConverter}}"
+                        Visibility="{Binding Title, Converter={StaticResource EmptyToVisibleConverter}}" />
+                    <Label
+                        Margin="0,0,5,0"
+                        Foreground="{Binding ElementName=MainBorder, Path=Background, Converter={StaticResource FontColorConverter}}"
+                        Visibility="{Binding Content, Converter={StaticResource EmptyToVisibleConverter}}">
+                        <TextBlock Text="{Binding Content}" TextWrapping="Wrap" />
+                    </Label>
+                </StackPanel>
+            </Grid>
+        </Button>
+        <Border
+            x:Name="MainGrid"
+            Margin="5"
+            Padding="10,5">
+            <StackPanel x:Name="FunctionArea">
+                <Grid
+                    x:Name="InfoArea"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    TextBlock.Foreground="{Binding ElementName=MainBorder, Path=Background, Converter={StaticResource FontColorConverter}}"
+                    Visibility="Hidden">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Viewbox
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Width="30"
+                        Height="30"
+                        Margin="10"
+                        VerticalAlignment="Top"
+                        Visibility="{Binding IconTemplate, Converter={StaticResource EmptyToVisibleConverter}}">
+                        <Grid>
+                            <ContentControl Template="{Binding IconTemplate}" />
+                        </Grid>
+                    </Viewbox>
+                    <StackPanel
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        VerticalAlignment="Center">
+                        <Label
+                            Content="{Binding Title}"
+                            FontWeight="Bold"
+                            Foreground="{Binding ElementName=MainBorder, Path=Background, Converter={StaticResource FontColorConverter}}"
+                            Visibility="{Binding Title, Converter={StaticResource EmptyToVisibleConverter}}" />
+                        <Label
+                            Margin="0,0,5,0"
+                            Foreground="{Binding ElementName=MainBorder, Path=Background, Converter={StaticResource FontColorConverter}}"
+                            Visibility="{Binding Content, Converter={StaticResource EmptyToVisibleConverter}}">
+                            <TextBlock Text="{Binding Content}" TextWrapping="Wrap" />
+                        </Label>
+                    </StackPanel>
+                </Grid>
+                <Grid
+                    x:Name="YesNoPanel"
+                    Height="34"
+                    Visibility="{Binding Level, Converter={StaticResource NotificationTypeConverter}, ConverterParameter=Confirm}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button
+                        Grid.Column="0"
+                        Margin="0,4,4,4"
+                        Click="YesButton_Click"
+                        Content="是"
+                        Style="{StaticResource BtnStyle}" />
+                    <Button
+                        Grid.Column="1"
+                        Margin="4,4,0,4"
+                        Click="NoButton_Click"
+                        Content="否"
+                        Style="{StaticResource BtnStyle}" />
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

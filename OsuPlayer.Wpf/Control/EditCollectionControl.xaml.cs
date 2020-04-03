@@ -1,22 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Win32;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.Win32;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
-using Milky.OsuPlayer.Control.FrontDialog;
-using Milky.OsuPlayer.ViewModels;
+using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
 
 namespace Milky.OsuPlayer.Control
 {
@@ -38,7 +26,7 @@ namespace Milky.OsuPlayer.Control
             _viewModel.Description = _collection.Description;
             _viewModel.CoverPath = _collection.ImagePath;
         }
-        
+
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             _collection.Name = _viewModel.Name;

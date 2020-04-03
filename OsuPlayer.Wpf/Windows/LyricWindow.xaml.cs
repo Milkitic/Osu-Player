@@ -1,5 +1,4 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Lyric.Models;
 using Milky.OsuPlayer.Presentation;
@@ -23,6 +22,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Shared.Dependency;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
@@ -48,7 +49,7 @@ namespace Milky.OsuPlayer.Windows
         private FontFamily _fontFamily;
         private bool _pressed;
 
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         public LyricWindow(MainWindow mainWindow) : this()
         {

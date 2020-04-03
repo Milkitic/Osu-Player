@@ -1,12 +1,15 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Control.FrontDialog;
+﻿using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Utils;
 using System;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponent.NotificationComponent;
 
 namespace Milky.OsuPlayer.Control
 {
@@ -54,7 +57,7 @@ namespace Milky.OsuPlayer.Control
                     try
                     {
                         GuideSyncing = true;
-                        await Services.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
+                        await Service.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
                         AppSettings.Default.General.DbPath = path;
                         AppSettings.SaveDefault();
                         GuideSyncing = false;
@@ -62,7 +65,7 @@ namespace Milky.OsuPlayer.Control
                     }
                     catch (Exception ex)
                     {
-                        Common.Notification.Push(ex.Message);
+                        Notification.Push(ex.Message);
                         GuideSelectedDb = false;
                     }
 

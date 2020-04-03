@@ -1,5 +1,4 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Instances;
+﻿using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Scanning;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
@@ -9,6 +8,8 @@ using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Windows;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Shared.Dependency;
 
 #if !DEBUG
 using Sentry;
@@ -33,14 +34,14 @@ namespace Milky.OsuPlayer
             var controller = new ObservablePlayController();
             controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
 
-            Services.TryAddInstance(controller);
-            Services.TryAddInstance(new OsuDbInst());
+            Service.TryAddInstance(controller);
+            Service.TryAddInstance(new OsuDbInst());
             //Services.TryAddInstance(new PlayersInst());
-            Services.TryAddInstance(new LyricsInst());
-            Services.TryAddInstance(new Updater());
-            Services.TryAddInstance(new OsuFileScanner());
+            Service.TryAddInstance(new LyricsInst());
+            Service.TryAddInstance(new Updater());
+            Service.TryAddInstance(new OsuFileScanner());
 
-            Services.Get<LyricsInst>().ReloadLyricProvider();
+            Service.Get<LyricsInst>().ReloadLyricProvider();
 
             var app = new App();
             app.InitializeComponent();

@@ -1,5 +1,4 @@
-﻿using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Control.FrontDialog;
+﻿using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Interaction;
 using System;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
 
 namespace Milky.OsuPlayer.Control
 {

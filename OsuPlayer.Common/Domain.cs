@@ -1,6 +1,6 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using System;
+﻿using System;
 using System.IO;
+using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Common
 {
@@ -41,9 +41,10 @@ namespace Milky.OsuPlayer.Common
         public static string ResourcePath => Path.Combine(CurrentPath, "Resources");
         public static string PluginPath => Path.Combine(ExtensionPath, "plugins");
 
-        public static string CustomSongPath => AppSettings.Default == null ? null : new FileInfo(AppSettings.Default.General.CustomSongsPath).FullName;
-        public static string OsuPath =>
-            AppSettings.Default == null
+        public static string CustomSongPath
+        => AppSettings.Default == null ? null : new FileInfo(AppSettings.Default.General.CustomSongsPath).FullName;
+        public static string OsuPath
+            => AppSettings.Default == null
                 ? null
                 : (AppSettings.Default.General.DbPath == null
                     ? null

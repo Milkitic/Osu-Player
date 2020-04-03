@@ -1,12 +1,14 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio.Player;
+using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Media.Audio.Wave;
 using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 using OSharp.Beatmap;
+using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -36,7 +38,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public event Action<BeatmapContext, CancellationToken> LoadFinished;
 
-
+        public event Action<BeatmapContext, Exception> LoadError;
 
         public OsuMixPlayer Player
         {
@@ -84,7 +86,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 var osuFile =
                     await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
                         .ConfigureAwait(false); //50 ms
-                var beatmap = Beatmap.ParseFromOSharp(osuFile);
+                var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
                 beatmap.IsTemporary = true;
                 Beatmap trueBeatmap = _appDbOperator.GetBeatmapByIdentifiable(beatmap) ?? beatmap;
 
@@ -240,7 +242,8 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             catch (Exception ex)
             {
-                Notification.Push(@"发生未处理的错误：" + (ex.InnerException?.Message ?? ex?.Message));
+                LoadError?.Invoke(PlayList.CurrentInfo, ex);
+                //Notification.Push(@"发生未处理的错误：" + (ex.InnerException?.Message ?? ex?.Message));
 
                 if (!isReading) _readLock.Release();
                 if (Player?.PlayStatus != PlayStatus.Playing)

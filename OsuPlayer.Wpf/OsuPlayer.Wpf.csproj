@@ -181,9 +181,6 @@
     <Compile Include="Control\EditCollectionControl.xaml.cs">
       <DependentUpon>EditCollectionControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\FrontDialog\FrontDialogOverlay.xaml.cs">
-      <DependentUpon>FrontDialogOverlay.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Control\MiniPlayController.xaml.cs">
       <DependentUpon>MiniPlayController.xaml</DependentUpon>
     </Compile>
@@ -207,18 +204,6 @@
     </Compile>
     <Compile Include="Control\MaxButton.cs" />
     <Compile Include="Control\MinButton.cs" />
-    <Compile Include="Control\Notification\Converters\EmptyToVisibleConverter.cs" />
-    <Compile Include="Control\Notification\Converters\FontColorConverter.cs" />
-    <Compile Include="Control\Notification\Converters\MixColorConverter.cs" />
-    <Compile Include="Control\Notification\Converters\NotificationTypeConverter.cs" />
-    <Compile Include="Control\Notification\Converters\NotificationTypeToCursorConverter.cs" />
-    <Compile Include="Control\Notification\NotificationOption.cs" />
-    <Compile Include="Control\Notification\NotifyControl.xaml.cs">
-      <DependentUpon>NotifyControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Control\Notification\NotifyOverlay.xaml.cs">
-      <DependentUpon>NotifyOverlay.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Control\PlayController.xaml.cs">
       <DependentUpon>PlayController.xaml</DependentUpon>
     </Compile>
@@ -231,6 +216,22 @@
     </Compile>
     <Compile Include="Converter\NullToHiddenConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="UiComponent\FrontDialogComponent\FrontDialogOverlay.xaml.cs">
+      <DependentUpon>FrontDialogOverlay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UiComponent\NotificationComponent\Converters\EmptyToVisibleConverter.cs" />
+    <Compile Include="UiComponent\NotificationComponent\Converters\FontColorConverter.cs" />
+    <Compile Include="UiComponent\NotificationComponent\Converters\MixColorConverter.cs" />
+    <Compile Include="UiComponent\NotificationComponent\Converters\NotificationTypeConverter.cs" />
+    <Compile Include="UiComponent\NotificationComponent\Converters\NotificationTypeToCursorConverter.cs" />
+    <Compile Include="UiComponent\NotificationComponent\Notification.cs" />
+    <Compile Include="UiComponent\NotificationComponent\NotificationOption.cs" />
+    <Compile Include="UiComponent\NotificationComponent\NotifyControl.xaml.cs">
+      <DependentUpon>NotifyControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UiComponent\NotificationComponent\NotifyOverlay.xaml.cs">
+      <DependentUpon>NotifyOverlay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils\I18nUtil.cs" />
     <Compile Include="Utils\NativeUser32.cs" />
     <Compile Include="ViewModels\ListPageViewModel.cs" />
@@ -333,7 +334,6 @@
     </Compile>
     <Compile Include="Utils\OptionContainer.cs" />
     <Compile Include="Utils\EventRedirectHandle.cs" />
-    <Compile Include="Utils\Util.cs" />
     <Compile Include="UpdateWindow.xaml.cs">
       <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
@@ -356,21 +356,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Control\FrontDialog\FrontDialogOverlay.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Control\MiniPlayController.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Control\Notification\NotifyControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Control\Notification\NotifyOverlay.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Control\PlayController.xaml">
       <SubType>Designer</SubType>
@@ -443,6 +431,18 @@
     <Page Include="Themes\i18n.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UiComponent\FrontDialogComponent\FrontDialogOverlay.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UiComponent\NotificationComponent\NotifyControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UiComponent\NotificationComponent\NotifyOverlay.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\BeatmapInfoWindow.xaml">
       <SubType>Designer</SubType>
@@ -638,13 +638,13 @@
       <Project>{30dfc628-f9a6-42b1-9bbd-73489e3ab204}</Project>
       <Name>OsuPlayer.ControlLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj">
+      <Project>{094FAC4A-6277-46E8-97B4-C992F1674638}</Project>
+      <Name>OsuPlayer.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Devices\OsuPlayer.Devices.csproj">
       <Project>{E290C0D7-06B7-47DC-81E7-98F08654FB0D}</Project>
       <Name>OsuPlayer.Devices</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Interaction\OsuPlayer.Presentation.csproj">
-      <Project>{93E3612C-D388-438F-A04A-047265820998}</Project>
-      <Name>OsuPlayer.Presentation</Name>
     </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj">
       <Project>{3cd240f8-da65-44f0-ab58-d78f58109786}</Project>
@@ -653,6 +653,10 @@
     <ProjectReference Include="..\OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj">
       <Project>{33580e59-aa08-45ef-b79f-2f8fe2f539cc}</Project>
       <Name>OsuPlayer.Media.Lyric</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj">
+      <Project>{93E3612C-D388-438F-A04A-047265820998}</Project>
+      <Name>OsuPlayer.Presentation</Name>
     </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj">
       <Project>{C842FAB3-EC80-4E95-B402-BF0572F1806D}</Project>

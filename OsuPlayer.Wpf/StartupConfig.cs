@@ -1,15 +1,15 @@
 ﻿using Dapper.FluentMap;
 using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Shared;
 using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer
 {
@@ -69,7 +69,9 @@ namespace Milky.OsuPlayer
             {
                 config.AddMap(new StoryboardInfoMap());
                 config.AddMap(new BeatmapMap());
-                config.AddMap(new MapInfoMap());
+                config.AddMap(new BeatmapSettingsMap());
+                config.AddMap(new CollectionMap());
+                config.AddMap(new CollectionRelationMap());
             });
 
             AppDbOperator.ValidateDb();

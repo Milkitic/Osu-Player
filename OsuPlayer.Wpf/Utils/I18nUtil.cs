@@ -1,5 +1,4 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Shared;
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Xaml;
+using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Utils
 {

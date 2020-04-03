@@ -1,5 +1,4 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Presentation;
+﻿using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
@@ -7,6 +6,8 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Shared.Dependency;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -39,8 +40,8 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            CurrentVer.Content = Services.Get<Updater>().CurrentVersion;
-            if (Services.Get<Updater>().NewRelease != null)
+            CurrentVer.Content = Service.Get<Updater>().CurrentVersion;
+            if (Service.Get<Updater>().NewRelease != null)
                 NewVersion.Visibility = Visibility.Visible;
             GetLastUpdate();
         }
@@ -56,7 +57,7 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             //todo: action
             CheckUpdate.IsEnabled = false;
-            var hasNew = await Services.Get<Updater>().CheckUpdateAsync();
+            var hasNew = await Service.Get<Updater>().CheckUpdateAsync();
             CheckUpdate.IsEnabled = true;
             if (hasNew == null)
             {
@@ -83,7 +84,7 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             if (_newVersionWindow != null && !_newVersionWindow.IsClosed)
                 _newVersionWindow.Close();
-            _newVersionWindow = new NewVersionWindow(Services.Get<Updater>().NewRelease, _mainWindow);
+            _newVersionWindow = new NewVersionWindow(Service.Get<Updater>().NewRelease, _mainWindow);
             _newVersionWindow.ShowDialog();
         }
 

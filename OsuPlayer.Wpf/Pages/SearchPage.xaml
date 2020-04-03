@@ -6,10 +6,11 @@
     xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:metadata="clr-namespace:Milky.OsuPlayer.Common.Metadata;assembly=OsuPlayer.Common"
     xmlns:models="clr-namespace:Milky.OsuPlayer"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+    xmlns:models1="clr-namespace:Milky.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
+    xmlns:common="clr-namespace:Milky.OsuPlayer.Common;assembly=OsuPlayer.Common"
     x:Name="CurrentPage"
     Title="SearchPage"
     d:DesignHeight="450"
@@ -28,7 +29,7 @@
         <QuinticEase x:Key="QuinticEaseOut" EasingMode="EaseOut" />
         <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
             <d:Object.DataContext>
-                <metadata:BeatmapDataModel />
+                <common:BeatmapDataModel />
             </d:Object.DataContext>
             <MenuItem
                 Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"

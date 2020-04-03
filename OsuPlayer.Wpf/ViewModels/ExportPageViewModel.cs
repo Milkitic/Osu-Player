@@ -1,7 +1,5 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Metadata;
+﻿using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
@@ -14,6 +12,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Shared.Models;
+using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.ViewModels
 {

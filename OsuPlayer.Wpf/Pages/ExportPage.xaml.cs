@@ -1,7 +1,8 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Metadata;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Shared.Models;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.UiComponent.NotificationComponent;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer.Pages
@@ -50,7 +51,7 @@ namespace Milky.OsuPlayer.Pages
         public ExportPage()
         {
             InitializeComponent();
-            _mainWindow = (MainWindow)Application.Current.MainWindow; 
+            _mainWindow = (MainWindow)Application.Current.MainWindow;
             ViewModel = (ExportPageViewModel)DataContext;
             ViewModel.ExportPath = AppSettings.Default.Export.MusicPath;
         }
@@ -250,14 +251,15 @@ namespace Milky.OsuPlayer.Pages
                 .Replace("\"", "").Replace(@"<", "").Replace(@">", "").Replace(@"|", "");
         }
 
-        void OpenCmdExecuted(object target, ExecutedRoutedEventArgs e)
+        private void OpenCmdExecuted(object target, ExecutedRoutedEventArgs e)
         {
             string command, targetobj;
             command = ((RoutedCommand)e.Command).Name;
             targetobj = ((FrameworkElement)target).Name;
             MessageBox.Show("The " + command + " command has been invoked on target object " + targetobj);
         }
-        void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
+
+        private void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }

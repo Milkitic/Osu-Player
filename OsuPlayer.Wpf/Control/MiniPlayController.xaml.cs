@@ -1,7 +1,7 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared;
 using System;
@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Shared.Dependency;
 
 namespace Milky.OsuPlayer.Control
 {
@@ -54,7 +55,7 @@ namespace Milky.OsuPlayer.Control
         private MiniPlayListControlVm _viewModel;
         private AppDbOperator _appDbOperator = new AppDbOperator();
 
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         public static event Action MaxButtonClicked;
         public static event Action CloseButtonClicked;
@@ -63,7 +64,7 @@ namespace Milky.OsuPlayer.Control
         {
             InitializeComponent();
             _viewModel = (MiniPlayListControlVm)DataContext;
-            _viewModel.Controller = Services.Get<ObservablePlayController>();
+            _viewModel.Controller = Service.Get<ObservablePlayController>();
             Default = this;
         }
 

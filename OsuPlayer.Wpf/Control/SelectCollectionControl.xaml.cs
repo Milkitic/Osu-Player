@@ -1,8 +1,6 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
-using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Shared;
@@ -16,6 +14,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
 
 namespace Milky.OsuPlayer.Control
 {
@@ -66,7 +66,7 @@ namespace Milky.OsuPlayer.Control
 
         public static async Task AddToCollectionAsync(Collection col, IList<Beatmap> entries)
         {
-            var controller = Services.Get<ObservablePlayController>();
+            var controller = Service.Get<ObservablePlayController>();
             var appDbOperator = new AppDbOperator();
             if (entries == null || entries.Count <= 0) return;
             if (string.IsNullOrEmpty(col.ImagePath))

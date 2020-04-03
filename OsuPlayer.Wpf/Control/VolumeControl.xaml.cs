@@ -1,8 +1,7 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared;
 using NAudio.Wave;
@@ -10,6 +9,8 @@ using OsuPlayer.Devices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Shared.Dependency;
 
 namespace Milky.OsuPlayer.Control
 {
@@ -23,7 +24,7 @@ namespace Milky.OsuPlayer.Control
     /// </summary>
     public partial class VolumeControl : UserControl
     {
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         private readonly AppDbOperator _dbOperator = new AppDbOperator();
         private IWavePlayer _device;

@@ -1,9 +1,11 @@
-﻿using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Media.Audio;
+﻿using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Shared;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Media.Audio.Playlist;
+using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Control
 {
@@ -24,7 +26,7 @@ namespace Milky.OsuPlayer.Control
             remove => RemoveHandler(CloseRequestedEvent, value);
         }
 
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         public PlayModeControl()
         {
@@ -45,26 +47,26 @@ namespace Milky.OsuPlayer.Control
             }
         }
 
-        private void SwitchOption(PlayListMode playMode)
+        private void SwitchOption(PlaylistMode playMode)
         {
             switch (playMode)
             {
-                case PlayListMode.Normal:
+                case PlaylistMode.Normal:
                     ModeNormal.IsChecked = true;
                     break;
-                case PlayListMode.Random:
+                case PlaylistMode.Random:
                     ModeRandom.IsChecked = true;
                     break;
-                case PlayListMode.Loop:
+                case PlaylistMode.Loop:
                     ModeLoop.IsChecked = true;
                     break;
-                case PlayListMode.LoopRandom:
+                case PlaylistMode.LoopRandom:
                     ModeLoopRandom.IsChecked = true;
                     break;
-                case PlayListMode.Single:
+                case PlaylistMode.Single:
                     ModeSingle.IsChecked = true;
                     break;
-                case PlayListMode.SingleLoop:
+                case PlaylistMode.SingleLoop:
                     ModeSingleLoop.IsChecked = true;
                     break;
                 default:
@@ -76,7 +78,7 @@ namespace Milky.OsuPlayer.Control
         {
             if (e.OriginalSource is RadioButton radio)
             {
-                _controller.PlayList.Mode = (PlayListMode)radio.Tag;
+                _controller.PlayList.Mode = (PlaylistMode)radio.Tag;
                 RaiseEvent(new RoutedEventArgs(CloseRequestedEvent, this));
             }
         }

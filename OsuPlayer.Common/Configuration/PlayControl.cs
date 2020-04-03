@@ -1,9 +1,10 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Milky.OsuPlayer.Common.Annotations;
-using Milky.OsuPlayer.Common.Player;
+﻿//using Milky.OsuPlayer.Common.Annotations;
+using Milky.OsuPlayer.Presentation.Annotations;
+using Milky.OsuPlayer.Shared.Models;
 using Newtonsoft.Json;
 using OsuPlayer.Devices;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
@@ -45,7 +46,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         public IDeviceInfo DeviceInfo { get; set; } = null;
         public int DesiredLatency { get; set; } = 5;
         public bool IsExclusive { get; set; } = false;
-        public PlayListMode PlayListMode { get; set; } = PlayListMode.Normal;
+        public PlaylistMode PlayListMode { get; set; } = PlaylistMode.Normal;
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]

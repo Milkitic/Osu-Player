@@ -2,7 +2,6 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Windows
 {

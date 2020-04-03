@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Common.Metadata;
+﻿using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Models;
 using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Common.Configuration

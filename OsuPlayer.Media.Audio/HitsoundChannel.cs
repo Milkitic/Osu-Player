@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Media.Audio
 {

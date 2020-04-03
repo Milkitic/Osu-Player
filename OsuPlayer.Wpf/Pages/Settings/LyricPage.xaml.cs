@@ -1,11 +1,12 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Instances;
+﻿using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Lyric;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Windows;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Shared.Dependency;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -109,7 +110,7 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void ReloadLyric()
         {
-            Services.Get<LyricsInst>().ReloadLyricProvider();
+            Service.Get<LyricsInst>().ReloadLyricProvider();
             _mainWindow.SetLyricSynchronously();
         }
     }
