@@ -45,6 +45,7 @@
     <sys:String x:Key="ui-currentMapOffset">单曲偏移</sys:String>
     <sys:String x:Key="ui-openDesktopLyric">打开桌面歌词</sys:String>
     <sys:String x:Key="ui-closeDesktopLyric">关闭桌面歌词</sys:String>
+    <sys:String x:Key="ui-startScan">开始扫描 !</sys:String>
 
     <sys:String x:Key="ui-sets">设置</sys:String>
     <sys:String x:Key="ui-exit">退出</sys:String>
@@ -99,6 +100,7 @@
     <sys:String x:Key="ui-sets-title-globalHitsoundDelay">全局音效延迟</sys:String>
     <sys:String x:Key="ui-sets-title-autoPlay">自动播放</sys:String>
     <sys:String x:Key="ui-sets-title-playProgress">播放进度</sys:String>
+    <sys:String x:Key="ui-sets-title-audioPlayDevice">音频播放设备</sys:String>
     <sys:String x:Key="ui-sets-title-audioDelayExperimental">音频延迟（实验性）</sys:String>
     <sys:String x:Key="ui-sets-title-language">语言</sys:String>
     <sys:String x:Key="ui-sets-title-minimalEffectMode">低配模式</sys:String>
@@ -119,6 +121,7 @@
     <sys:String x:Key="ui-sets-content-setAsDefaultOptions">设置默认选项</sys:String>
     <sys:String x:Key="ui-sets-content-autoPlayOnProgramStartup">程序启动时自动播放</sys:String>
     <sys:String x:Key="ui-sets-content-resumePlaylistOnProgramStartup">程序启动时恢复上次播放</sys:String>
+    <sys:String x:Key="ui-sets-content-systemDefault">系统默认</sys:String>
     <sys:String x:Key="ui-sets-content-addToFavorite">添加到最喜爱的</sys:String>
     <sys:String x:Key="ui-sets-content-enableDesktopLyric">启用桌面歌词</sys:String>
     <sys:String x:Key="ui-sets-content-displayAllLyrics">显示全部歌词</sys:String>
@@ -138,11 +141,11 @@
     <sys:String x:Key="ui-sets-content-licenseInfo">许可证信息</sys:String>
     <sys:String x:Key="ui-sets-content-privacyPolicy">隐私政策</sys:String>
 
-
     <sys:String x:Key="ui-nav-library">库</sys:String>
     <sys:String x:Key="ui-nav-mine">我的</sys:String>
     <sys:String x:Key="ui-nav-collection">收藏夹</sys:String>
     <sys:String x:Key="ui-nav-search">搜索</sys:String>
+    <sys:String x:Key="ui-nav-storyboard">故事版</sys:String>
     <sys:String x:Key="ui-nav-recent">最近播放</sys:String>
     <sys:String x:Key="ui-nav-export">导出管理</sys:String>
     <sys:String x:Key="ui-nav-music">音乐</sys:String>

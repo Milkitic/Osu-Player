@@ -4,24 +4,26 @@ namespace Milky.OsuPlayer.Common
 {
     public struct MapIdentity : IMapIdentifiable
     {
-        public MapIdentity(string folderName, string version) : this()
+        public MapIdentity(string folderName, string version, bool inOwnDb) : this()
         {
             FolderName = folderName;
             Version = version;
+            InOwnDb = inOwnDb;
         }
 
-        public string FolderName { get; set; }
-        public string Version { get; set; }
+        public string FolderName { get; }
+        public string Version { get; }
+        public bool InOwnDb { get; }
+        public static MapIdentity Default { get; } = new MapIdentity();
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
+            if (obj == null || !(obj is MapIdentity mi))
             {
                 return false;
             }
 
-            var trueObj = (MapIdentity)obj;
-            return trueObj.FolderName == FolderName && trueObj.Version == Version;
+            return mi.FolderName == FolderName && mi.Version == Version;
         }
 
         public override int GetHashCode() => base.GetHashCode();

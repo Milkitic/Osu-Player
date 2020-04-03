@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
@@ -21,11 +20,12 @@ namespace Milky.OsuPlayer.Common.Configuration
         public GeneralControl General { get; set; } = new GeneralControl();
         public InterfaceControl Interface { get; set; } = new InterfaceControl();
         public PlayControl Play { get; set; } = new PlayControl();
+        [JsonProperty("hot_keys")]
         public List<HotKey> HotKeys { get; set; } = new List<HotKey>();
         public LyricControl Lyric { get; set; } = new LyricControl();
         public ExportControl Export { get; set; } = new ExportControl();
-        public List<MapIdentity> CurrentList { get; set; } = new List<MapIdentity>();
-        public string CurrentPath { get; set; }
+        public HashSet<MapIdentity> CurrentList { get; set; } = new HashSet<MapIdentity>();
+        public MapIdentity? CurrentMap { get; set; }
         public DateTime? LastUpdateCheck { get; set; } = null;
         public string IgnoredVer { get; set; } = null;
 
@@ -35,7 +35,14 @@ namespace Milky.OsuPlayer.Common.Configuration
 
         public static void SaveDefault()
         {
-            ConcurrentFile.WriteAllText(Domain.ConfigFile, JsonConvert.SerializeObject(Default, Formatting.Indented));
+            ConcurrentFile.WriteAllText(Domain.ConfigFile,
+                JsonConvert.SerializeObject(Default, Formatting.Indented,
+                    new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.Auto
+                    }
+                )
+            );
         }
 
         public static void Load(AppSettings config)

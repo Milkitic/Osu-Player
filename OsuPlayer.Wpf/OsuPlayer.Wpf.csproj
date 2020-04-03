@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{02773E4B-21FC-47DB-A7C1-BD096F325136}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>Milky.OsuPlayer</RootNamespace>
     <AssemblyName>OsuPlayer</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -68,11 +68,11 @@
     <Reference Include="Dapper.FluentMap, Version=1.8.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.FluentMap.1.8.0\lib\net451\Dapper.FluentMap.dll</HintPath>
     </Reference>
-    <Reference Include="ffme.win, Version=4.1.310.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FFME.Windows.4.1.310\lib\net461\ffme.win.dll</HintPath>
+    <Reference Include="ffme.win, Version=4.2.320.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FFME.Windows.4.2.320\lib\net472\ffme.win.dll</HintPath>
     </Reference>
-    <Reference Include="FFmpeg.AutoGen, Version=4.1.0.5, Culture=neutral, PublicKeyToken=9b7632533a381715, processorArchitecture=MSIL">
-      <HintPath>..\packages\FFmpeg.AutoGen.4.1.0.5\lib\net45\FFmpeg.AutoGen.dll</HintPath>
+    <Reference Include="FFmpeg.AutoGen, Version=4.2.0.0, Culture=neutral, PublicKeyToken=9b7632533a381715, processorArchitecture=MSIL">
+      <HintPath>..\packages\FFmpeg.AutoGen.4.2.0\lib\net45\FFmpeg.AutoGen.dll</HintPath>
     </Reference>
     <Reference Include="Gma.System.MouseKeyHook, Version=5.6.130.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MouseKeyHook.5.6.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
@@ -95,8 +95,17 @@
     <Reference Include="Microsoft.WindowsAPICodePack.Shell">
       <HintPath>..\Libraries\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
     </Reference>
+    <Reference Include="NAudio, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.9.0\lib\net35\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio.Vorbis, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.Vorbis.1.0.0.0\lib\net35\NAudio.Vorbis.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NVorbis.0.8.4.0\lib\NVorbis.dll</HintPath>
     </Reference>
     <Reference Include="osu-database-reader, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\HoLLy.osu.DatabaseReader.2.1.1\lib\net40\osu-database-reader.dll</HintPath>
@@ -189,6 +198,7 @@
     <Compile Include="Control\VolumeControl.xaml.cs">
       <DependentUpon>VolumeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converter\DeviceInfoToStringConverter.cs" />
     <Compile Include="Converter\IconColorConverter.cs" />
     <Compile Include="DialogOptionFactory.cs" />
     <Compile Include="Pages\Settings\InterfacePage.xaml.cs">
@@ -202,7 +212,6 @@
     <Compile Include="Control\Notification\Converters\NotificationTypeConverter.cs" />
     <Compile Include="Control\Notification\Converters\NotificationTypeToCursorConverter.cs" />
     <Compile Include="Control\Notification\NotificationOption.cs" />
-    <Compile Include="Control\Notification\NotificationType.cs" />
     <Compile Include="Control\Notification\NotifyControl.xaml.cs">
       <DependentUpon>NotifyControl.xaml</DependentUpon>
     </Compile>
@@ -220,17 +229,17 @@
       <DependentUpon>WelcomeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converter\NullToHiddenConverter.cs" />
-    <Compile Include="Notification.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Utils\I18nUtil.cs" />
     <Compile Include="Utils\NativeUser32.cs" />
     <Compile Include="ViewModels\ListPageViewModel.cs" />
+    <Compile Include="ViewModels\StoryboardVm.cs" />
     <Compile Include="Windows\BeatmapInfoWindow.xaml.cs">
       <DependentUpon>BeatmapInfoWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MiniWindow.xaml.cs">
       <DependentUpon>MiniWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MyCancellationTokenSource.cs" />
     <Compile Include="Windows\PageParts.cs" />
     <Page Include="Control\AddCollectionControl.xaml">
       <SubType>Designer</SubType>
@@ -256,7 +265,6 @@
     <Compile Include="Converter\TrueToVisibleConverter.cs" />
     <Compile Include="Converter\VersionToStringConverter.cs" />
     <Compile Include="Instances\LyricsInst.cs" />
-    <Compile Include="Instances\PlayersInst.cs" />
     <Compile Include="Converter\MiniWindowConverter.cs" />
     <Compile Include="RandomSeed.cs" />
     <Compile Include="StartupConfig.cs" />
@@ -409,6 +417,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\ConverterDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\EasingFunction.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -575,6 +587,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="Resources\asio.png" />
+    <Resource Include="Resources\osu_texture_black.png" />
+    <None Include="Resources\default.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Resource Include="Resources\Fonts\SourceSansPro-Black.ttf" />
     <Resource Include="Resources\Fonts\SourceSansPro-Bold.ttf" />
     <Resource Include="Resources\Fonts\SourceSansPro-ExtraLight.ttf" />
@@ -597,7 +614,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Content Include="External\font\default.ttc">
+    <Content Include="extensions\font\default.ttc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -625,6 +642,10 @@
       <Project>{30dfc628-f9a6-42b1-9bbd-73489e3ab204}</Project>
       <Name>OsuPlayer.ControlLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Devices\OsuPlayer.Devices.csproj">
+      <Project>{E290C0D7-06B7-47DC-81E7-98F08654FB0D}</Project>
+      <Name>OsuPlayer.Devices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj">
       <Project>{3cd240f8-da65-44f0-ab58-d78f58109786}</Project>
       <Name>OsuPlayer.Media.Audio</Name>
@@ -632,6 +653,10 @@
     <ProjectReference Include="..\OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj">
       <Project>{33580e59-aa08-45ef-b79f-2f8fe2f539cc}</Project>
       <Name>OsuPlayer.Media.Lyric</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj">
+      <Project>{C842FAB3-EC80-4E95-B402-BF0572F1806D}</Project>
+      <Name>OsuPlayer.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -684,114 +709,48 @@
     <Resource Include="Resources\search.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Default\blank.wav">
+    <Content Include="extensions\plugins\ffmpeg\avcodec-58.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Default\default.wav">
+    <Content Include="extensions\plugins\ffmpeg\avdevice-58.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Default\drum-hitclap.wav">
+    <Content Include="extensions\plugins\ffmpeg\avfilter-7.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Default\drum-hitfinish.wav">
+    <Content Include="extensions\plugins\ffmpeg\avformat-58.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Default\drum-hitnormal.wav">
+    <Content Include="extensions\plugins\ffmpeg\avutil-56.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Default\drum-hitwhistle.wav">
+    <Content Include="extensions\plugins\ffmpeg\ffmpeg.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Default\drum-sliderslide.wav">
+    <Content Include="extensions\plugins\ffmpeg\ffplay.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Default\drum-slidertick.wav">
+    <Content Include="extensions\plugins\ffmpeg\ffprobe.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Default\drum-sliderwhistle.wav">
+    <Content Include="extensions\plugins\ffmpeg\postproc-55.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Default\normal-hitclap.wav">
+    <Content Include="extensions\plugins\ffmpeg\swresample-3.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Default\normal-hitfinish.wav">
+    <Content Include="extensions\plugins\ffmpeg\swscale-5.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Default\normal-hitnormal.wav">
+    <Content Include="extensions\plugins\oppai-ng\oppai.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Default\normal-hitwhistle.wav">
+    <Content Include="extensions\plugins\oppai-ng\oppai.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Default\normal-sliderslide.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="extensions\plugins\ShaderEffects.dll">
     </Content>
-    <Content Include="Default\normal-slidertick.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Default\normal-sliderwhistle.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Default\soft-hitclap.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Default\soft-hitfinish.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Default\soft-hitnormal.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Default\soft-hitwhistle.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Default\soft-sliderslide.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Default\soft-slidertick.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Default\soft-sliderwhistle.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External\plugins\ffmpeg\avcodec-58.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External\plugins\ffmpeg\avdevice-58.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External\plugins\ffmpeg\avfilter-7.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External\plugins\ffmpeg\avformat-58.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External\plugins\ffmpeg\avutil-56.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External\plugins\ffmpeg\ffmpeg.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External\plugins\ffmpeg\ffplay.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External\plugins\ffmpeg\ffprobe.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External\plugins\ffmpeg\postproc-55.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External\plugins\ffmpeg\swresample-3.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External\plugins\ffmpeg\swscale-5.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External\plugins\SoundTouch.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External\plugins\ShaderEffects.dll">
-    </Content>
-    <Content Include="External\texture\osu.png">
+    <Content Include="extensions\texture\osu.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

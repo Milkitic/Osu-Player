@@ -3,11 +3,8 @@ using OSharp.Beatmap;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Data.EF;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 
 namespace Milky.OsuPlayer.Common.Scanning
@@ -16,7 +13,7 @@ namespace Milky.OsuPlayer.Common.Scanning
     {
         public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();
         private CancellationTokenSource _scanCts;
-        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
 
         private static readonly object ScanObject = new object();
         private static readonly object CancelObject = new object();
@@ -108,7 +105,7 @@ namespace Milky.OsuPlayer.Common.Scanning
             beatmap.BeatmapFileName = fileInfo.Name;
             beatmap.LastModifiedTime = fileInfo.LastWriteTime;
             beatmap.FolderName = fileInfo.Directory.Name;
-            beatmap.InOwnFolder = true;
+            beatmap.InOwnDb = true;
             return beatmap;
         }
     }

@@ -82,6 +82,22 @@
                     Unchecked="ChkMemory_CheckChanged" />
                 <Label
                     HorizontalAlignment="Left"
+                    Content="{DynamicResource ui-sets-title-audioPlayDevice}"
+                    Style="{StaticResource ConfigTitleStyle}" />
+                <ComboBox
+                    x:Name="DeviceInfoCombo"
+                    Width="320"
+                    Margin="8,0"
+                    HorizontalAlignment="Left"
+                    SelectionChanged="DeviceInfoCombo_OnSelectionChanged" >
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource DeviceInfoToStringConverter}}"/> 
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Label
+                    HorizontalAlignment="Left"
                     Content="{DynamicResource ui-sets-title-audioDelayExperimental}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">

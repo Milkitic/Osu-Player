@@ -153,7 +153,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             }
             catch (Exception ex)
             {
-                Notification.Show(ex.Message);
+                Notification.Push(ex.Message);
             }
         }
     }

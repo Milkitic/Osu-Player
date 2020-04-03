@@ -8,20 +8,20 @@ using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer
 {
-    public class OverallKeyHook : IDisposable
+    public sealed class OverallKeyHook : IDisposable
     {
         private readonly MainWindow _mainWindow;
         private readonly IKeyboardMouseEvents _globalHook;
         private bool _holdingCtrl, _holdingAlt, _holdingShift;
-        private string _configString;
+        private HotKeyType? _configType;
 
-        public string ConfigString
+        public HotKeyType? ConfigType
         {
             private get => _mainWindow.ConfigWindow != null && !_mainWindow.ConfigWindow.IsClosed &&
                    _mainWindow.ConfigWindow.MainFrame.Content is HotKeyPage
-                ? _configString
+                ? _configType
                 : null;
-            set => _configString = value;
+            set => _configType = value;
         }
 
         public OverallKeyHook(MainWindow mainWindow)
@@ -32,20 +32,23 @@ namespace Milky.OsuPlayer
             _globalHook.KeyUp += GlobalHookKeyUp;
         }
 
-        public static void AddKeyHook(string name, Action callback)
+        public static void AddKeyHook(HotKeyType type, Action callback)
         {
-            if (AppSettings.Default.HotKeys.FirstOrDefault(k => k.Name == name) == null)
-                AppSettings.Default.HotKeys.Add(new HotKey { Name = name, Callback = callback });
+            var setHotKey = AppSettings.Default.HotKeys.FirstOrDefault(k => k.Type == type);
+            if (setHotKey == null)
+            {
+                setHotKey = new HotKey { Type = type, Callback = callback };
+                AppSettings.Default.HotKeys.Add(setHotKey);
+            }
             else
             {
-                var hotKey = AppSettings.Default.HotKeys.First(k => k.Name == name);
-                hotKey.Callback = callback;
+                setHotKey.Callback = callback;
             }
         }
 
-        public static void BindHotKey(string name, bool useCtrl, bool useAlt, bool useShift, Keys key)
+        public static void BindHotKey(HotKeyType type, bool useCtrl, bool useAlt, bool useShift, Keys key)
         {
-            var hotKey = AppSettings.Default.HotKeys.FirstOrDefault(k => k.Name == name);
+            var hotKey = AppSettings.Default.HotKeys.FirstOrDefault(k => k.Type == type);
             if (hotKey == null) throw new ArgumentException();
             hotKey.Key = key;
             hotKey.UseControlKey = useCtrl;
@@ -63,9 +66,9 @@ namespace Milky.OsuPlayer
                 _holdingAlt = true;
             else
             {
-                if (ConfigString != null)
+                if (ConfigType != null)
                 {
-                    BindHotKey(ConfigString, _holdingCtrl, _holdingAlt, _holdingShift, e.KeyCode);
+                    BindHotKey(ConfigType.Value, _holdingCtrl, _holdingAlt, _holdingShift, e.KeyCode);
                 }
                 else
                     AppSettings.Default.HotKeys.FirstOrDefault(key =>

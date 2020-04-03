@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Diagnostics;
-using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -164,9 +162,8 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
                 GetAllTables();
                 return true;
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-                //Logger.LogException($"测试{DbType}连接出错：数据库连接字符串：{ConnectionString}", exc);
                 return false;
             }
         }
@@ -272,10 +269,10 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
 
                 return dt;
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
                 throw new Exception($"从{DbType}数据库中获取数据出错：\r\n" +
-                                    $"数据库执行语句：{cmdText}", exc);
+                                    $"数据库执行语句：{cmdText}", ex);
             }
         }
 
@@ -386,10 +383,10 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
                 //Console.WriteLine($"query: {sw.ElapsedMilliseconds}");
                 return result;
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
                 throw new Exception($"从{DbType}数据库中获取数据出错：\r\n" +
-                                    $"数据库执行语句：{sql}", exc);
+                                    $"数据库执行语句：{sql}", ex);
             }
             finally
             {
@@ -488,10 +485,10 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
 
                 return result;
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
                 throw new Exception($"从{DbType}数据库中获取数据出错：\r\n" +
-                                    $"数据库执行语句：{sql}", exc);
+                                    $"数据库执行语句：{sql}", ex);
             }
         }
 
@@ -509,10 +506,10 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
                 var result = InnerExecute(@params, sql);
                 return result;
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
                 throw new Exception($"从{DbType}数据库中获取数据出错：\r\n" +
-                                    $"数据库执行语句：{sql}", exc);
+                                    $"数据库执行语句：{sql}", ex);
             }
         }
 
@@ -540,10 +537,10 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
                             ? SingletonConnection.Execute(sql)
                             : SingletonConnection.Execute(sql, @params);
                     }
-                    catch (Exception exc)
+                    catch (Exception ex)
                     {
                         throw new Exception($"从{DbType}数据库中获取数据出错：\r\n" +
-                                            $"数据库执行语句：{sql}", exc);
+                                            $"数据库执行语句：{sql}", ex);
                     }
 
                     count += result;
@@ -575,10 +572,10 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
                 var result = InnerExecute(@params, sql);
                 return result;
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
                 throw new Exception($"从{DbType}数据库中获取数据出错：\r\n" +
-                                    $"数据库执行语句：{sql}", exc);
+                                    $"数据库执行语句：{sql}", ex);
             }
         }
 

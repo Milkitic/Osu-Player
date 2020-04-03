@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Utils;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using Milky.OsuPlayer.Common;
 
 namespace Milky.OsuPlayer.Control.Notification
 {
@@ -75,7 +77,7 @@ namespace Milky.OsuPlayer.Control.Notification
                 From = 0,
                 To = height,
                 EasingFunction = easing,
-                Duration = new Duration(timing)
+                Duration = Util.GetDuration(timing)
             };
 
             Storyboard.SetTargetName(vector, NotifyBorder.Name);
@@ -87,7 +89,7 @@ namespace Milky.OsuPlayer.Control.Notification
                 From = 0,
                 To = 0,
                 EasingFunction = easing,
-                Duration = new Duration(timing)
+                Duration = Util.GetDuration(timing)
             };
             Storyboard.SetTargetName(fade, NotifyBorder.Name);
             Storyboard.SetTargetProperty(fade,
@@ -113,7 +115,7 @@ namespace Milky.OsuPlayer.Control.Notification
                 From = 0,
                 To = 1,
                 EasingFunction = easing,
-                Duration = new Duration(timing)
+                Duration = Util.GetDuration(timing)
             };
             Storyboard.SetTargetName(fade, NotifyBorder.Name);
             Storyboard.SetTargetProperty(fade,
@@ -124,7 +126,7 @@ namespace Milky.OsuPlayer.Control.Notification
                 From = new Thickness(width, 0, -width, 0),
                 To = new Thickness(0),
                 EasingFunction = easing,
-                Duration = new Duration(timing)
+                Duration = Util.GetDuration(timing)
             };
             Storyboard.SetTargetName(vector, NotifyBorder.Name);
             Storyboard.SetTargetProperty(vector,
@@ -152,7 +154,7 @@ namespace Milky.OsuPlayer.Control.Notification
                 From = 1,
                 To = 0,
                 EasingFunction = easing,
-                Duration = new Duration(timing)
+                Duration = Util.GetDuration(timing)
             };
             Storyboard.SetTargetName(fade, NotifyBorder.Name);
             Storyboard.SetTargetProperty(fade,
@@ -163,7 +165,7 @@ namespace Milky.OsuPlayer.Control.Notification
                 From = new Thickness(0),
                 To = new Thickness(width, 0, -width, 0),
                 EasingFunction = easing,
-                Duration = new Duration(timing)
+                Duration = Util.GetDuration(timing)
             };
             Storyboard.SetTargetName(vector, NotifyBorder.Name);
             Storyboard.SetTargetProperty(vector,
@@ -191,7 +193,7 @@ namespace Milky.OsuPlayer.Control.Notification
                 From = height,
                 To = 0,
                 EasingFunction = easing,
-                Duration = new Duration(timing)
+                Duration = Util.GetDuration(timing)
             };
 
             Storyboard.SetTargetName(vector, NotifyBorder.Name);
@@ -202,7 +204,7 @@ namespace Milky.OsuPlayer.Control.Notification
                 From = 0,
                 To = 0,
                 EasingFunction = easing,
-                Duration = new Duration(timing)
+                Duration = Util.GetDuration(timing)
             };
             Storyboard.SetTargetName(fade, NotifyBorder.Name);
             Storyboard.SetTargetProperty(fade,

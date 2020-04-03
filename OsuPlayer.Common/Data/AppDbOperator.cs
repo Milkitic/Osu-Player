@@ -3,7 +3,6 @@ using Milky.OsuPlayer.Common.Data.Dapper;
 using Milky.OsuPlayer.Common.Data.Dapper.Provider;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
-using Milky.OsuPlayer.Common.Player;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,9 +15,11 @@ namespace Milky.OsuPlayer.Common.Data
 {
     public class AppDbOperator
     {
+        public const string TABLE_BEATMAP = "beatmap";
         private const string TABLE_RELATION = "collection_relation";
         private const string TABLE_MAP = "map_info";
         private const string TABLE_THUMB = "map_thumb";
+        private const string TABLE_SB = "sb_info";
         private const string TABLE_COLLECTION = "collection";
 
         static AppDbOperator()
@@ -30,8 +31,8 @@ namespace Milky.OsuPlayer.Common.Data
             new ReadOnlyDictionary<string, string>(
                 new Dictionary<string, string>()
                 {
-                    ["collection"] = @"
-CREATE TABLE collection (
+                    [TABLE_COLLECTION] = $@"
+CREATE TABLE {TABLE_COLLECTION} (
     [id]          NVARCHAR (40)        NOT NULL,
     [name]        NVARCHAR (100) NOT NULL,
     [locked]      INT                   NOT NULL,
@@ -43,8 +44,8 @@ CREATE TABLE collection (
         id
     )
 );",
-                    ["collection_relation"] = @"
-CREATE TABLE collection_relation (
+                    [TABLE_RELATION] = $@"
+CREATE TABLE {TABLE_RELATION} (
     [id]           NVARCHAR (40)        NOT NULL,
     [collectionId] NVARCHAR (40) NOT NULL,
     [mapId]        NVARCHAR (40) NOT NULL,
@@ -53,11 +54,12 @@ CREATE TABLE collection_relation (
         id
     )
 );",
-                    ["map_info"] = @"
-CREATE TABLE map_info (
+                    [TABLE_MAP] = $@"
+CREATE TABLE {TABLE_MAP} (
     [id]           NVARCHAR (40)        NOT NULL,
     [version]      NVARCHAR (255) NOT NULL,
     [folder]       NVARCHAR (255) NOT NULL,
+    [ownDb]          BIT NOT NULL,
     [offset]       INT                   NOT NULL,
     [lastPlayTime] DATETIME,
     [exportFile]   NVARCHAR (700),
@@ -66,29 +68,72 @@ CREATE TABLE map_info (
     )
 );
 PRAGMA case_sensitive_like=false;",
-                    ["map_thumb"] = @"
-CREATE TABLE map_thumb (
+                    [TABLE_THUMB] = $@"
+CREATE TABLE {TABLE_THUMB} (
     [id]           NVARCHAR (40) PRIMARY KEY
                                          NOT NULL,
     [mapId]        NVARCHAR (40) NOT NULL,
     [thumbPath]    NVARCHAR (40) NOT NULL
 );
-"
+",
+                    [TABLE_SB] = $@"
+CREATE TABLE {TABLE_SB} (
+    [id]               NVARCHAR (40) PRIMARY KEY
+                                         NOT NULL,
+    [mapId]            NVARCHAR (40) NOT NULL,
+    [thumbPath]        NVARCHAR (40) NOT NULL,
+    [thumbVideoPath]   NVARCHAR (40) NOT NULL,
+    [version]          NVARCHAR (255) NOT NULL,
+    [folder]           NVARCHAR (255) NOT NULL,
+    [own]              BIT NOT NULL
+);
+",
+                    [TABLE_BEATMAP] = $@"
+CREATE TABLE {TABLE_BEATMAP} (
+    id            UNIQUEIDENTIFIER      NOT NULL,
+    artist        NVARCHAR (2147483647),
+    artistU       NVARCHAR (2147483647),
+    title         NVARCHAR (2147483647),
+    titleU        NVARCHAR (2147483647),
+    creator       NVARCHAR (2147483647),
+    version       NVARCHAR (2147483647),
+    fileName      NVARCHAR (2147483647),
+    lastModified  DATETIME              NOT NULL,
+    diffSrStd     FLOAT                 NOT NULL,
+    diffSrTaiko   FLOAT                 NOT NULL,
+    diffSrCtb     FLOAT                 NOT NULL,
+    diffSrMania   FLOAT                 NOT NULL,
+    drainTime     INT                   NOT NULL,
+    totalTime     INT                   NOT NULL,
+    audioPreview  INT                   NOT NULL,
+    beatmapId     INT                   NOT NULL,
+    beatmapSetId  INT                   NOT NULL,
+    gameMode      INT                   NOT NULL,
+    source        NVARCHAR (2147483647),
+    tags          NVARCHAR (2147483647),
+    folderName    NVARCHAR (2147483647),
+    audioName     NVARCHAR (2147483647),
+    own           BIT                   NOT NULL,
+    PRIMARY KEY (
+        id
+    )
+);
+PRAGMA case_sensitive_like=false;"
                 });
 
         private static ThreadLocal<SQLiteProvider> _provider = new ThreadLocal<SQLiteProvider>(() =>
             (SQLiteProvider)new SQLiteProvider().ConfigureConnectionString("data source=player.db"));
 
-        private static SQLiteProvider ThreadedProvider => _provider.Value;
+        public SQLiteProvider ThreadedProvider => _provider.Value;
 
         private List<CollectionRelation> GetCollectionsRelations()
         {
             return ThreadedProvider.Query<CollectionRelation>(TABLE_RELATION).ToList();
         }
 
-        private List<MapInfo> GetMaps()
+        private List<BeatmapSettings> GetMaps()
         {
-            return ThreadedProvider.Query<MapInfo>(TABLE_MAP).ToList();
+            return ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP).ToList();
         }
 
         public static void ValidateDb()
@@ -99,14 +144,16 @@ CREATE TABLE map_thumb (
                 File.WriteAllText(dbFile, "");
             }
 
-            var tables = ThreadedProvider.GetAllTables();
+            var prov= _provider.Value;
+            
+            var tables = prov.GetAllTables();
 
             foreach (var pair in _creationMapping)
             {
                 if (tables.Contains(pair.Key)) continue;
                 try
                 {
-                    ThreadedProvider.GetDbConnection().Execute(pair.Value);
+                    prov.GetDbConnection().Execute(pair.Value);
                 }
                 catch (Exception exc)
                 {
@@ -115,13 +162,14 @@ CREATE TABLE map_thumb (
             }
         }
 
-        public MapInfo GetMapFromDb(MapIdentity id)
+        public BeatmapSettings GetMapFromDb(MapIdentity id)
         {
-            var map = ThreadedProvider.Query<MapInfo>(TABLE_MAP,
+            var map = ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
                     new Where[]
                     {
                         ("version", id.Version),
-                        ("folder", id.FolderName)
+                        ("folder", id.FolderName),
+                        ("ownDb", id.InOwnDb)
                     },
                     count: 1)
                 .FirstOrDefault();
@@ -134,14 +182,16 @@ CREATE TABLE map_thumb (
                     ["id"] = guid,
                     ["version"] = id.Version,
                     ["folder"] = id.FolderName,
+                    ["ownDb"] = id.InOwnDb,
                     ["offset"] = 0
                 });
 
-                return new MapInfo
+                return new BeatmapSettings
                 {
                     Id = guid,
                     Version = id.Version,
                     FolderName = id.FolderName,
+                    InOwnDb = id.InOwnDb,
                     Offset = 0
                 };
             }
@@ -149,27 +199,28 @@ CREATE TABLE map_thumb (
             return map;
         }
 
-        public List<MapInfo> GetRecentList()
+        public List<BeatmapSettings> GetRecentList()
         {
-            return ThreadedProvider.Query<MapInfo>(TABLE_MAP,
+            return ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
                     ("lastPlayTime", null, "!="),
                     orderColumn: "lastPlayTime")
                 .ToList();
         }
 
-        public List<MapInfo> GetExportedMaps()
+        public List<BeatmapSettings> GetExportedMaps()
         {
             return ThreadedProvider.GetDbConnection()
-                .Query<MapInfo>(@"SELECT * FROM map_info WHERE exportFile IS NOT NULL AND TRIM(exportFile) <> ''").ToList();
+                .Query<BeatmapSettings>(@"SELECT * FROM map_info WHERE exportFile IS NOT NULL AND TRIM(exportFile) <> ''").ToList();
         }
 
-        public List<MapInfo> GetMapsFromCollection(Collection collection)
+        public List<BeatmapSettings> GetMapsFromCollection(Collection collection)
         {
             var result = ThreadedProvider.GetDbConnection()
-                .Query<MapInfo>(@"
+                .Query<BeatmapSettings>(@"
 SELECT map.id,
        map.version,
        map.folder,
+       map.ownDb,
        map.[offset],
        map.lastPlayTime,
        map.exportFile,
@@ -191,7 +242,7 @@ SELECT map.id,
             return ThreadedProvider.Query<Collection>(TABLE_COLLECTION).ToList();
         }
 
-        public List<Collection> GetCollectionsByMap(MapInfo map)
+        public List<Collection> GetCollectionsByMap(BeatmapSettings beatmapSettings)
         {
             return ThreadedProvider.GetDbConnection()
                 .Query<Collection>(@"
@@ -210,7 +261,7 @@ SELECT collection.id,
        AS relation
        INNER JOIN
        collection ON relation.collectionId = collection.id;
-", new { mapId = map.Id }).ToList();
+", new { mapId = beatmapSettings.Id }).ToList();
         }
 
         public void AddCollection(string name, bool locked = false)
@@ -245,7 +296,6 @@ SELECT collection.id,
         //todo: 添加时有误
         public void AddMapsToCollection(IList<Beatmap> beatmaps, Collection collection)
         {
-            var currentInfo = Services.Get<PlayerList>().CurrentInfo;
             if (beatmaps.Count < 1) return;
 
             var sb = new StringBuilder($"INSERT INTO {TABLE_RELATION} (id, collectionId, mapId, addTime) VALUES ");
@@ -253,13 +303,6 @@ SELECT collection.id,
             {
                 var map = GetMapFromDb(beatmap.GetIdentity());
                 sb.Append($"('{Guid.NewGuid().ToString()}', '{collection.Id}', '{map.Id}', '{DateTime.Now}'),"); // maybe no injection here
-
-                // todo: not suitable position
-                if (currentInfo == null) continue;
-                if (collection.LockedBool && currentInfo.Identity.Equals(beatmap.GetIdentity()))
-                {
-                    currentInfo.IsFavorite = true;
-                }
             }
 
             sb.Remove(sb.Length - 1, 1).Append(";");
@@ -352,14 +395,6 @@ SELECT collection.id,
         {
             var map = GetMapFromDb(id);
             ThreadedProvider.Delete(TABLE_RELATION, new Where[] { ("collectionId", collection.Id), ("mapId", map.Id) });
-
-            // todo: not suitable position
-            var currentInfo = Services.Get<PlayerList>().CurrentInfo;
-            if (currentInfo == null) return;
-            if (collection.LockedBool && currentInfo.Identity.Equals(id))
-            {
-                currentInfo.IsFavorite = false;
-            }
         }
 
         public bool GetMapThumb(Guid beatmapDbId, out string thumbPath)
@@ -407,6 +442,45 @@ SELECT collection.id,
             SetMapThumb(beatmap.Id, thumbPath);
         }
 
+        public void SetMapSbInfo(Guid beatmapDbId, StoryboardInfo sbInfo)
+        {
+            var hasResult = GetMapThumb(beatmapDbId, out _);
+
+            if (hasResult)
+            {
+                ThreadedProvider.Update(TABLE_SB,
+                    new Dictionary<string, object>
+                    {
+                        ["thumbPath"] = sbInfo.SbThumbPath,
+                        ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
+                        ["version"] = sbInfo.Version,
+                        ["folder"] = sbInfo.FolderName,
+                        ["ownDb"] = sbInfo.InOwnDb
+                    },
+                    ("mapId", beatmapDbId, "=="));
+            }
+            else
+            {
+                ThreadedProvider.Insert(TABLE_SB,
+                    new Dictionary<string, object>
+                    {
+                        ["id"] = Guid.NewGuid().ToString(),
+                        ["mapId"] = beatmapDbId,
+                        ["thumbPath"] = sbInfo.SbThumbPath,
+                        ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
+                        ["version"] = sbInfo.Version,
+                        ["folder"] = sbInfo.FolderName,
+                        ["ownDb"] = sbInfo.InOwnDb
+                    }
+                );
+            }
+        }
+
+        public void SetMapSbInfo(Beatmap beatmap, StoryboardInfo sbInfo)
+        {
+            SetMapSbInfo(beatmap.Id, sbInfo);
+        }
+
         private void InnerUpdateMap(MapIdentity id, Dictionary<string, object> updateColumns)
         {
             GetMapFromDb(id);
@@ -417,7 +491,8 @@ SELECT collection.id,
                 new Where[]
                 {
                     ("version", id.Version),
-                    ("folder", id.FolderName)
+                    ("folder", id.FolderName),
+                    ("ownDb", id.InOwnDb)
                 },
                 count: 1);
         }

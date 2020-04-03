@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Common;
 
 namespace Milky.OsuPlayer.Control.Notification
 {

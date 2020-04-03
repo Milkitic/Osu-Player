@@ -22,6 +22,7 @@ using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Instances;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
@@ -34,19 +35,10 @@ namespace Milky.OsuPlayer.Control
 {
     public class PlayListControlVm : ViewModelBase
     {
-        private PlayerList _playList;
         private Beatmap _selectedMap;
         private List<Beatmap> _selectedMaps;
 
-        public PlayerList PlayList
-        {
-            get => _playList;
-            set
-            {
-                _playList = value;
-                OnPropertyChanged();
-            }
-        }
+        public ObservablePlayController Controller { get; } = Services.Get<ObservablePlayController>();
 
         public Beatmap SelectedMap
         {
@@ -73,8 +65,7 @@ namespace Milky.OsuPlayer.Control
             {
                 return new DelegateCommand(async param =>
                 {
-                    PlayList.Entries.Clear();
-                    await PlayList.RefreshPlayListAsync(PlayerList.FreshType.IndexOnly);
+                    await Controller.PlayList.SetSongListAsync(Array.Empty<Beatmap>(), false);
                 });
             }
         }
@@ -85,8 +76,7 @@ namespace Milky.OsuPlayer.Control
             {
                 return new DelegateCommand(async param =>
                 {
-                    await PlayController.Default.PlayNewFile(SelectedMap);
-                    PlayList.Pointer = PlayList.Indexes.FirstOrDefault(k => PlayList.Entries[k] == SelectedMap);
+                    await Controller.PlayNewAsync(SelectedMap);
                 });
             }
         }
@@ -124,7 +114,7 @@ namespace Milky.OsuPlayer.Control
             {
                 return new DelegateCommand(param =>
                 {
-                    Process.Start(SelectedMap.InOwnFolder
+                    Process.Start(SelectedMap.InOwnDb
                         ? Path.Combine(Domain.CustomSongPath, SelectedMap.FolderName)
                         : Path.Combine(Domain.OsuSongPath, SelectedMap.FolderName));
                 });
@@ -163,7 +153,7 @@ namespace Milky.OsuPlayer.Control
                 return new DelegateCommand(param =>
                 {
                     var mw = WindowBase.GetCurrentFirst<MainWindow>();
-                    FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(PlayList.Entries),
+                    FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(Controller.PlayList.SongList),
                         DialogOptionFactory.SelectCollectionOptions);
                 });
             }
@@ -188,9 +178,8 @@ namespace Milky.OsuPlayer.Control
                 {
                     foreach (var beatmap in SelectedMaps)
                     {
-                        PlayList.Entries.Remove(beatmap);
+                        Controller.PlayList.SongList.Remove(beatmap);
                     }
-                    await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.IndexOnly);
                 });
             }
         }
@@ -214,32 +203,23 @@ namespace Milky.OsuPlayer.Control
         }
 
         private bool _signed;
+        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private PlayListControlVm _viewModel;
 
         public PlayListControl()
         {
             InitializeComponent();
         }
 
-        public PlayListControlVm ViewModel { get; set; }
-
         private void UserControl_Initialized(object sender, EventArgs e)
         {
-            ViewModel = (PlayListControlVm)this.DataContext;
-            ViewModel.PlayList = Services.Get<PlayerList>();
+            _viewModel = (PlayListControlVm)DataContext;
             _signed = false;
         }
 
         private void PlayListItem_MouseDoubleClick(object sender, RoutedEventArgs e)
         {
-            ViewModel.PlayCommand?.Execute(null);
-        }
-
-        private void Controller_OnNewFileLoaded(object sender, HandledEventArgs e)
-        {
-            var info = Services.Get<PlayerList>().CurrentInfo;
-            if (info == null)
-                return;
-            var identity = info.MapInfo.GetIdentity();
+            _viewModel.PlayCommand?.Execute(null);
         }
 
         private void PlayList_MouseMove(object sender, MouseEventArgs e)
@@ -261,9 +241,9 @@ namespace Milky.OsuPlayer.Control
         {
             if (e.AddedItems.Count == 0)
                 return;
-            ViewModel.SelectedMap = (Beatmap)e.AddedItems[e.AddedItems.Count - 1];
+            _viewModel.SelectedMap = (Beatmap)e.AddedItems[e.AddedItems.Count - 1];
             var selected = e.AddedItems;
-            ViewModel.SelectedMaps = selected.Cast<Beatmap>().ToList();
+            _viewModel.SelectedMaps = selected.Cast<Beatmap>().ToList();
         }
 
         private void PlayList_ContextMenuOpening(object sender, ContextMenuEventArgs e)
@@ -271,22 +251,32 @@ namespace Milky.OsuPlayer.Control
             if (PlayList.SelectedItems.Count == 0)
                 e.Handled = true;
 
-            ViewModel.SelectedMap = (Beatmap)PlayList.SelectedItems[PlayList.SelectedItems.Count - 1];
-            ViewModel.SelectedMaps = PlayList.SelectedItems.Cast<Beatmap>().ToList();
+            _viewModel.SelectedMap = (Beatmap)PlayList.SelectedItems[PlayList.SelectedItems.Count - 1];
+            _viewModel.SelectedMaps = PlayList.SelectedItems.Cast<Beatmap>().ToList();
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!_signed && PlayController.Default != null)
+            if (!_signed)
             {
-                PlayController.Default.OnNewFileLoaded += Controller_OnNewFileLoaded;
+                _controller.LoadStarted += Controller_LoadStarted;
                 _signed = true;
             }
 
-            PlayList.SelectedItem = ViewModel.PlayList.CurrentInfo?.Beatmap;
-            PlayList.ScrollIntoView(PlayList.SelectedItem);
-            ListViewItem item = PlayList.ItemContainerGenerator.ContainerFromItem(PlayList.SelectedItem) as ListViewItem;
-            item?.Focus();
+            PlayList.SelectedItem = _controller.PlayList.CurrentInfo?.Beatmap;
+            if (PlayList.SelectedItem != null)
+            {
+                PlayList.ScrollIntoView(PlayList.SelectedItem);
+                ListViewItem item =
+                    PlayList.ItemContainerGenerator.ContainerFromItem(PlayList.SelectedItem) as ListViewItem;
+                item?.Focus();
+            }
+        }
+
+        private void Controller_LoadStarted(BeatmapContext beatmapCtx, System.Threading.CancellationToken ct)
+        {
+            var info = _controller.PlayList.CurrentInfo?.Beatmap;
+            if (info != null) PlayList.ScrollIntoView(info);
         }
     }
 }

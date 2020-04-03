@@ -1,20 +1,19 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Shared;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Xaml;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Utils
 {
     public static class I18nUtil
     {
-        private static ResourceDictionary _i18nDic;
+        private static ResourceDictionary I18NDic => App.Current.Resources.MergedDictionaries[0];
         public static KeyValuePair<string, string> CurrentLocale { get; private set; }
 
         private static string GetXamlTemplate(string resDicStr)
@@ -33,11 +32,10 @@ namespace Milky.OsuPlayer.Utils
         {
             var locale = AppSettings.Default.Interface.Locale;
 
-            _i18nDic = App.Current.Resources.MergedDictionaries[0];
-            var defLocale = _i18nDic.MergedDictionaries[0];
+            var defLocale = I18NDic.MergedDictionaries[0];
             var defUiStrings = defLocale.Keys.Cast<object>().ToDictionary(defKey => (string)defKey, defKey => (string)defLocale[defKey]);
 
-            foreach (var enumerateFile in Util.EnumerateFiles(Domain.LangPath, ".xaml"))
+            foreach (var enumerateFile in SharedUtils.EnumerateFiles(Domain.LangPath, ".xaml"))
             {
                 try
                 {
@@ -178,13 +176,25 @@ namespace Milky.OsuPlayer.Utils
             }
 
             if (langRd == null) return;
-            if (_i18nDic.MergedDictionaries.Count > 0)
+
+            var current = I18NDic.MergedDictionaries[0];
+            foreach (object key in langRd.Keys)
             {
-                // 如果已使用其他语言,先清空
-                _i18nDic.MergedDictionaries.Clear();
+                if (current.Contains(key))
+                {
+                    current[key] = langRd[key];
+                }
             }
 
-            _i18nDic.MergedDictionaries.Add(langRd);
+            return;
+
+            if (I18NDic.MergedDictionaries.Count > 0)
+            {
+                // 如果已使用其他语言,先清空
+                I18NDic.MergedDictionaries.Clear();
+            }
+
+            I18NDic.MergedDictionaries.Add(langRd);
             CurrentLocale = AvailableLangDic.First(k => k.Value == locale);
         }
 

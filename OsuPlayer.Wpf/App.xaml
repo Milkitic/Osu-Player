@@ -12,6 +12,7 @@
                 <ResourceDictionary x:Name="i18nXaml" Source="Themes/i18n.xaml" />
                 <ResourceDictionary Source="Styles/FontDictionary.xaml" />
                 <ResourceDictionary Source="Styles/ConverterDictionary.xaml" />
+                <ResourceDictionary Source="Styles/EasingFunction.xaml" />
                 <ResourceDictionary Source="Styles/GeneralStyle.xaml" />
                 <ResourceDictionary Source="Styles/BrushDictionary.xaml" />
                 <ResourceDictionary Source="Styles/SvgDictionary.xaml" />

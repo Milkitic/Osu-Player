@@ -10,7 +10,7 @@
     xmlns:shaderEffects="clr-namespace:MDS.ShaderEffects;assembly=ShaderEffects"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Loaded="AnimationControl_Loaded"
+    Initialized="UserControl_Initialized"
     mc:Ignorable="d">
     <UserControl.DataContext>
         <control:AnimationControlVm />

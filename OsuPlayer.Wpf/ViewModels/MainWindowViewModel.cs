@@ -22,7 +22,6 @@ namespace Milky.OsuPlayer.ViewModels
         private bool _isNavigationCollapsed;
         private ObservableCollection<Collection> _collection;
         private bool _isLyricWindowLocked;
-        private PlayerViewModel _player;
         private LyricWindowViewModel _lyricWindowViewModel;
 
         public LyricWindowViewModel LyricWindowViewModel
@@ -76,16 +75,6 @@ namespace Milky.OsuPlayer.ViewModels
                         IsNavigationCollapsed = !IsNavigationCollapsed;
                     });
                 });
-            }
-        }
-
-        public PlayerViewModel Player
-        {
-            get => _player;
-            set
-            {
-                _player = value;
-                OnPropertyChanged();
             }
         }
     }

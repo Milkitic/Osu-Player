@@ -2,6 +2,6 @@
 {
     public enum PlayListMode
     {
-        RecentList, Collection
+        Normal, Random, Loop, LoopRandom, Single, SingleLoop,
     }
 }

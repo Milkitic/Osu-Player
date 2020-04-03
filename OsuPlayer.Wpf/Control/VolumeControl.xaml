@@ -5,9 +5,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="220"
-    FontFamily="{StaticResource SspRegular}"
+    xmlns:player="clr-namespace:Milky.OsuPlayer.Common.Player;assembly=OsuPlayer.Common"
+    d:DesignHeight="270"
     d:DesignWidth="170"
+    FontFamily="{StaticResource SspRegular}"
+    Loaded="VolumeControl_OnLoaded"
     mc:Ignorable="d">
     <UserControl.DataContext>
         <local:VolumeControlVm />
@@ -34,6 +36,8 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
@@ -52,7 +56,7 @@
                             Orientation="Vertical"
                             Style="{StaticResource VerticalSliderWhiteStyle}"
                             Thumb.DragCompleted="MasterVolume_DragComplete"
-                            Value="{Binding Player.CurrentVolume.Main, Mode=TwoWay}" />
+                            Value="{Binding Shared.AppSettings.Volume.Main, Mode=TwoWay}" />
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
@@ -69,7 +73,7 @@
                             Orientation="Vertical"
                             Style="{StaticResource VerticalSliderWhiteStyle}"
                             Thumb.DragCompleted="MusicVolume_DragComplete"
-                            Value="{Binding Player.CurrentVolume.Music, Mode=TwoWay}" />
+                            Value="{Binding Shared.AppSettings.Volume.Music, Mode=TwoWay}" />
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
@@ -86,7 +90,7 @@
                             Orientation="Vertical"
                             Style="{StaticResource VerticalSliderWhiteStyle}"
                             Thumb.DragCompleted="HitsoundVolume_DragComplete"
-                            Value="{Binding Player.CurrentVolume.Hitsound, Mode=TwoWay}" />
+                            Value="{Binding Shared.AppSettings.Volume.Hitsound, Mode=TwoWay}" />
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
@@ -103,7 +107,7 @@
                             Orientation="Vertical"
                             Style="{StaticResource VerticalSliderWhiteStyle}"
                             Thumb.DragCompleted="SampleVolume_DragComplete"
-                            Value="{Binding Player.CurrentVolume.Sample, Mode=TwoWay}" />
+                            Value="{Binding Shared.AppSettings.Volume.Sample, Mode=TwoWay}" />
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
@@ -124,7 +128,7 @@
                             Style="{StaticResource HorizontalSliderWhiteStyle}"
                             Thumb.DragCompleted="Balance_DragComplete"
                             TickFrequency="1"
-                            Value="{Binding Player.CurrentVolume.BalanceFactor, Mode=TwoWay}" />
+                            Value="{Binding Shared.AppSettings.Volume.BalanceFactor, Mode=TwoWay}" />
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
@@ -150,6 +154,53 @@
                             Foreground="#303030" />
                     </StackPanel>
                 </Grid>
+                <Grid Grid.Row="2" Margin="0,0,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button
+                        Grid.Column="0"
+                        Click="BtnPlayMod_OnClick"
+                        Content="NM"
+                        Style="{StaticResource CollectionButtonStyle}"
+                        Tag="{x:Static player:PlayModifier.None}" />
+                    <Button
+                        Grid.Column="1"
+                        Click="BtnPlayMod_OnClick"
+                        Content="DT"
+                        Style="{StaticResource CollectionButtonStyle}"
+                        Tag="{x:Static player:PlayModifier.DoubleTime}" />
+                    <Button
+                        Grid.Column="2"
+                        Click="BtnPlayMod_OnClick"
+                        Content="NC"
+                        Style="{StaticResource CollectionButtonStyle}"
+                        Tag="{x:Static player:PlayModifier.NightCore}" />
+                    <Button
+                        Grid.Column="3"
+                        Click="BtnPlayMod_OnClick"
+                        Content="HT"
+                        Style="{StaticResource CollectionButtonStyle}"
+                        Tag="{x:Static player:PlayModifier.HalfTime}" />
+                    <Button
+                        Grid.Column="4"
+                        Click="BtnPlayMod_OnClick"
+                        Content="DC"
+                        Style="{StaticResource CollectionButtonStyle}"
+                        Tag="{x:Static player:PlayModifier.DayCore}" />
+                </Grid>
+                <Button
+                    x:Name="BtnAsio"
+                    Grid.Row="3"
+                    Height="28"
+                    Click="BtnAsio_OnClick"
+                    Style="{StaticResource CollectionButtonStyle}">
+                    ASIO 音频设置
+                </Button>
             </Grid>
         </Border>
     </Grid>

@@ -7,7 +7,6 @@ using Milky.WpfApi;
 using OSharp.Beatmap;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
@@ -21,13 +20,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using Milky.OsuPlayer.Control;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
 using Image = System.Drawing.Image;
 using Pen = System.Drawing.Pen;
 using Size = System.Windows.Size;
+using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -47,16 +46,17 @@ namespace Milky.OsuPlayer.Windows
         private FontFamily _fontFamily;
         private bool _pressed;
 
+        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+
         public LyricWindow(MainWindow mainWindow) : this()
         {
             _mainWindow = mainWindow;
             InitializeComponent();
 
             ViewModel = (LyricWindowViewModel)DataContext;
-            ViewModel.Player = PlayerViewModel.Current;
             MainWindowViewModel.Current.LyricWindowViewModel = ViewModel;
 
-            var fi = new FileInfo(Path.Combine(Domain.ExternalPath, "font", "default.ttc"));
+            var fi = new FileInfo(Path.Combine(Domain.ExtensionPath, "font", "default.ttc"));
             if (!fi.Exists)
                 _fontFamily = new FontFamily("等线");
             else
@@ -76,7 +76,6 @@ namespace Milky.OsuPlayer.Windows
 
         private void LyricWindow_Loaded(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void LyricWindow_MouseMove(object sender, MouseEventArgs e)
@@ -87,10 +86,8 @@ namespace Milky.OsuPlayer.Windows
 
         private void LyricWindow_MouseLeave(object sender, MouseEventArgs e)
         {
-            _frameTimer = new Timer(state =>
-            {
-                Execute.OnUiThread(() => ViewModel.ShowFrame = false);
-            }, null, 1500, Timeout.Infinite);
+            _frameTimer = new Timer(state => { Execute.OnUiThread(() => ViewModel.ShowFrame = false); }, null, 1500,
+                Timeout.Infinite);
         }
 
         private void OnRendering(object sender, EventArgs e)
@@ -99,13 +96,13 @@ namespace Milky.OsuPlayer.Windows
                 Left = 0;
         }
 
-        public void SetNewLyric(Lyrics lyric, OsuFile osuFile)
+        public void SetNewLyric(Lyrics lyric, MetaString metaArtist, MetaString metaTitle)
         {
             StopWork();
 
             _lyricList = lyric?.LyricSentencs ?? new List<Sentence>();
             _lyricList.Insert(0,
-                new Sentence(osuFile.Metadata.ArtistMeta.ToUnicodeString() + " - " + osuFile.Metadata.TitleMeta.ToUnicodeString(), 0));
+                new Sentence($"{metaArtist.ToUnicodeString()} - {metaTitle.ToUnicodeString()}", 0));
         }
 
         public void StartWork()
@@ -117,7 +114,8 @@ namespace Milky.OsuPlayer.Windows
                 while (!_cts.Token.IsCancellationRequested)
                 {
                     Thread.Sleep(50);
-                    var validLyrics = _lyricList.Where(t => t.StartTime <= ComponentPlayer.Current?.PlayTime).ToArray();
+                    var currentTime = _controller.Player?.Position ?? TimeSpan.Zero;
+                    var validLyrics = _lyricList.Where(t => t.StartTime <= currentTime.TotalMilliseconds).ToArray();
                     if (validLyrics.Length < 1)
                         continue;
                     int maxTime = validLyrics.Max(t => t.StartTime);
@@ -131,10 +129,7 @@ namespace Milky.OsuPlayer.Windows
                     Console.WriteLine(current.Content);
 
                     var size = DrawLyric(_lyricList.IndexOf(current));
-                    Execute.ToUiThread(() =>
-                    {
-                        BeginTranslate(size, maxTime, next?.StartTime ?? -1);
-                    });
+                    Execute.ToUiThread(() => { BeginTranslate(size, maxTime, next?.StartTime ?? -1); });
                     _pressed = false;
                     oldTime = maxTime;
                 }
@@ -188,14 +183,14 @@ namespace Milky.OsuPlayer.Windows
                 From = new Thickness(0),
                 To = new Thickness(0),
                 BeginTime = TimeSpan.FromMilliseconds(0),
-                Duration = new Duration(TimeSpan.FromMilliseconds(startTime))
+                Duration = Util.GetDuration(TimeSpan.FromMilliseconds(startTime))
             };
             var translateAnimation = new ThicknessAnimation
             {
                 From = new Thickness(0),
                 To = new Thickness(viewWidth - width, 0, 0, 0),
                 BeginTime = TimeSpan.FromMilliseconds(startTime),
-                Duration = new Duration(TimeSpan.FromMilliseconds(duration))
+                Duration = Util.GetDuration(TimeSpan.FromMilliseconds(duration))
             };
 
             Storyboard.SetTarget(defaultAnimation, LyricBar);
@@ -232,7 +227,7 @@ namespace Milky.OsuPlayer.Windows
             //using (Brush bBg = new SolidBrush(Color.FromArgb(48, 0, 176, 255)))
             //using (Pen pBg = new Pen(Color.FromArgb(192, 0, 176, 255), 3))
             using (Brush b = new TextureBrush(
-                    Image.FromFile(Path.Combine(Domain.ExternalPath, "texture", "osu.png"))))
+                    Image.FromFile(Path.Combine(Domain.ExtensionPath, "texture", "osu.png"))))
             //using (Pen p = new Pen(Color.Red))
             using (var p2 = new Pen(Color.FromArgb(255, 255, 255), 6))
             using (var f = new Font(_fontFamily, 32))
@@ -260,7 +255,6 @@ namespace Milky.OsuPlayer.Windows
                     wpfImage.EndInit();
 
                     ImgLyric.Source = wpfImage;
-
                 }
             });
 
@@ -342,17 +336,17 @@ namespace Milky.OsuPlayer.Windows
 
         private async void BtnPrev_Click(object sender, RoutedEventArgs e)
         {
-            await PlayController.Default.PlayPrev();
+            await _controller.PlayPrevAsync();
         }
 
         private void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
-            PlayController.Default.TogglePlay();
+            _controller.Player.TogglePlay();
         }
 
         private async void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            await PlayController.Default.PlayNext();
+            await _controller.PlayNextAsync();
         }
     }
 }

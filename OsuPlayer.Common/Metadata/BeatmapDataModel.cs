@@ -56,6 +56,8 @@ namespace Milky.OsuPlayer.Common.Metadata
                 OnPropertyChanged();
             }
         }
+        public string SbThumbPath { get; set; }
+        public string SbThumbVideoPath { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

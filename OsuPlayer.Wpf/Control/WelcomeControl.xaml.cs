@@ -75,7 +75,7 @@ namespace Milky.OsuPlayer.Control
                     }
                     catch (Exception ex)
                     {
-                        OsuPlayer.Notification.Show(ex.Message);
+                        Common.Notification.Push(ex.Message);
                         GuideSelectedDb = false;
                     }
 

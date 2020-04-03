@@ -15,6 +15,8 @@ using System.Linq;
 using System.Windows;
 using System.Xaml;
 using Milky.OsuPlayer.Control.Notification;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Shared;
 
 #if !DEBUG
 using Sentry;
@@ -36,10 +38,12 @@ namespace Milky.OsuPlayer
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
             StartupConfig.Startup();
 
-            var playerList = new PlayerList { PlayerMode = AppSettings.Default.Play.PlayerMode };
-            Services.TryAddInstance(playerList);
+            var controller = new ObservablePlayController();
+            controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
+
+            Services.TryAddInstance(controller);
             Services.TryAddInstance(new OsuDbInst());
-            Services.TryAddInstance(new PlayersInst());
+            //Services.TryAddInstance(new PlayersInst());
             Services.TryAddInstance(new LyricsInst());
             Services.TryAddInstance(new Updater());
             Services.TryAddInstance(new OsuFileScanner());
@@ -84,10 +88,9 @@ namespace Milky.OsuPlayer
             }
         }
 
-        public static ObservableCollection<NotificationOption> NotificationList { get; set; }
-
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            InvokeMethodHelper.SetMainThreadContext();
             I18nUtil.LoadI18N();
         }
     }

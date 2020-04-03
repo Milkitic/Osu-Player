@@ -1,14 +1,13 @@
-﻿using Milky.OsuPlayer.Control;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Web;
 using Milky.OsuPlayer.Models.Github;
-using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Web;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer
@@ -34,8 +33,7 @@ namespace Milky.OsuPlayer
         {
             var asset = _release?.Assets.FirstOrDefault(k => k.Name == "Osu-Player.zip");
             if (asset == null) return;
-            _mainWindow.ForceExit = true;
-            _mainWindow.Close();
+            _mainWindow.ForceClose();
             _downloader = new Downloader(asset.BrowserDownloadUrl);
             _downloader.OnStartDownloading += Downloader_OnStartDownloading;
             _downloader.OnDownloading += Downloader_OnDownloading;
@@ -60,7 +58,7 @@ namespace Milky.OsuPlayer
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 DlProgress.Value = downloadedSize;
-                LblSpeed.Content = Util.CountSize(speed) + "/s";
+                LblSpeed.Content = SharedUtils.CountSize(speed) + "/s";
                 LblProgress.Content = $"{Math.Round(downloadedSize / (float)size * 100)} %";
             }));
         }
@@ -71,7 +69,7 @@ namespace Milky.OsuPlayer
             Process.Start(_savePath);
             Dispatcher.BeginInvoke(new Action(Close));
         }
-        
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             _downloader.Interrupt();

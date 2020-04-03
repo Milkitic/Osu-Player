@@ -1,8 +1,6 @@
-﻿using Milky.OsuPlayer.Common.Data.EF;
-using Milky.OsuPlayer.Common.Data.EF.Model;
+﻿using Milky.OsuPlayer.Common.Data.EF.Model;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;
-using osu_database_reader.Components.Beatmaps;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -14,7 +12,7 @@ namespace Milky.OsuPlayer.Common.Instances
     public class OsuDbInst
     {
         private readonly object _scanningObject = new object();
-        private BeatmapDbOperator _beatmapDbOperator = new BeatmapDbOperator();
+        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
 
         public class ViewModelClass : ViewModelBase
         {
