@@ -1,6 +1,6 @@
 ﻿namespace Milky.OsuPlayer.Common.Metadata
 {
-    public enum SortMode
+    public enum BeatmapSortMode
     {
         Artist, Title
     }

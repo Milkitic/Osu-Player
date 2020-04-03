@@ -1,5 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using Milky.WpfApi;
+﻿using Milky.OsuPlayer.Presentation.Interaction;
+using System.Collections.ObjectModel;
 
 namespace Milky.OsuPlayer.Common
 {

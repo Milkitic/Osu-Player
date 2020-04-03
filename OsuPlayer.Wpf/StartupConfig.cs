@@ -1,15 +1,15 @@
-﻿using Milky.OsuPlayer.Common;
+﻿using Dapper.FluentMap;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
-using Milky.WpfApi;
+using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Data.EF.Model.V1;
+using Milky.OsuPlayer.Presentation;
 using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using Dapper.FluentMap;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 
 namespace Milky.OsuPlayer
 {

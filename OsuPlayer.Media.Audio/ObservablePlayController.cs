@@ -5,8 +5,7 @@ using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Media.Audio.Player;
 using Milky.OsuPlayer.Media.Audio.Wave;
-using Milky.OsuPlayer.Shared;
-using Milky.WpfApi;
+using Milky.OsuPlayer.Presentation.Interaction;
 using OSharp.Beatmap;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,7 @@ using System.Threading.Tasks;
 namespace Milky.OsuPlayer.Media.Audio
 {
 
-    public sealed class ObservablePlayController : ViewModelBase, IAsyncDisposable
+    public sealed class ObservablePlayController : VmBase, IAsyncDisposable
     {
         public event Action<PlayStatus> PlayStatusChanged;
         public event Action<TimeSpan> PositionUpdated;
@@ -81,7 +80,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 if (!File.Exists(path))
                     throw new FileNotFoundException("cannot locate file", path);
                 await ClearPlayer();
-                InvokeMethodHelper.OnMainThread(() => PreLoadStarted?.Invoke(path, _cts.Token));
+                Execute.OnUiThread(() => PreLoadStarted?.Invoke(path, _cts.Token));
                 var osuFile =
                     await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
                         .ConfigureAwait(false); //50 ms
@@ -132,7 +131,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
 
                 var beatmap = context.Beatmap;
-                InvokeMethodHelper.OnMainThread(() => LoadStarted?.Invoke(context, _cts.Token));
+                Execute.OnUiThread(() => LoadStarted?.Invoke(context, _cts.Token));
 
                 // meta
                 var osuFile = context.OsuFile;
@@ -169,7 +168,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 metadata.AR = osuFile.Difficulty.ApproachRate;
                 metadata.OD = osuFile.Difficulty.OverallDifficulty;
 
-                InvokeMethodHelper.OnMainThread(() => MetaLoaded?.Invoke(context, _cts.Token));
+                Execute.OnUiThread(() => MetaLoaded?.Invoke(context, _cts.Token));
 
                 // background
                 var defaultPath = Path.Combine(Domain.ResourcePath, "default.jpg");
@@ -189,7 +188,7 @@ namespace Milky.OsuPlayer.Media.Audio
                         : null;
                 }
 
-                InvokeMethodHelper.OnMainThread(() => BackgroundInfoLoaded?.Invoke(context, _cts.Token));
+                Execute.OnUiThread(() => BackgroundInfoLoaded?.Invoke(context, _cts.Token));
 
                 // music
                 beatmapDetail.MusicPath = Path.Combine(beatmapDetail.BaseFolder,
@@ -206,7 +205,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 await Player.Initialize().ConfigureAwait(false); //700 ms
                 Player.ManualOffset = context.BeatmapSettings.Offset;
 
-                InvokeMethodHelper.OnMainThread(() => MusicLoaded?.Invoke(context, _cts.Token));
+                Execute.OnUiThread(() => MusicLoaded?.Invoke(context, _cts.Token));
 
                 // video
                 var videoName = osuFile.Events.VideoInfo?.Filename;
@@ -217,24 +216,24 @@ namespace Milky.OsuPlayer.Media.Audio
                     if (File.Exists(videoPath))
                     {
                         beatmapDetail.VideoPath = videoPath;
-                        InvokeMethodHelper.OnMainThread(() => VideoLoadRequested?.Invoke(context, _cts.Token));
+                        Execute.OnUiThread(() => VideoLoadRequested?.Invoke(context, _cts.Token));
                     }
                 }
 
                 // storyboard
                 var analyzer = new OsuFileAnalyzer(osuFile);
                 if (osuFile.Events.ElementGroup.ElementList.Count > 0)
-                    InvokeMethodHelper.OnMainThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
+                    Execute.OnUiThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
                 else
                 {
                     var osbFile = Path.Combine(beatmapDetail.BaseFolder, analyzer.OsbFileName);
                     if (File.Exists(osbFile) && await OsuFile.OsbFileHasStoryboard(osbFile).ConfigureAwait(false))
-                        InvokeMethodHelper.OnMainThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
+                        Execute.OnUiThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
                 }
 
                 context.FullLoaded = true;
                 // load finished
-                InvokeMethodHelper.OnMainThread(() => LoadFinished?.Invoke(context, _cts.Token));
+                Execute.OnUiThread(() => LoadFinished?.Invoke(context, _cts.Token));
                 AppSettings.Default.CurrentMap = beatmap.GetIdentity();
                 AppSettings.SaveDefault();
                 if (!isReading) _readLock.Release();
@@ -266,7 +265,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private async void Player_PlayStatusChanged(PlayStatus obj)
         {
-            InvokeMethodHelper.OnMainThread(() => PlayStatusChanged?.Invoke(obj));
+            Execute.OnUiThread(() => PlayStatusChanged?.Invoke(obj));
             SharedVm.Default.IsPlaying = obj == PlayStatus.Playing;
             if (obj == PlayStatus.Finished)
                 await PlayByControl(PlayControlType.Next, true).ConfigureAwait(false);
@@ -274,7 +273,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private void Player_PositionUpdated(TimeSpan position)
         {
-            InvokeMethodHelper.OnMainThread(() => PositionUpdated?.Invoke(position));
+            Execute.OnUiThread(() => PositionUpdated?.Invoke(position));
         }
 
         private async Task PlayList_AutoSwitched(PlayControlResult controlResult, Beatmap beatmap, bool playInstantly)
@@ -302,7 +301,7 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
             {
-                InvokeMethodHelper.OnMainThread(() => InterfaceClearRequest?.Invoke());
+                Execute.OnUiThread(() => InterfaceClearRequest?.Invoke());
             }
 
             await Task.CompletedTask;
@@ -331,7 +330,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 if (PlayList.CurrentInfo == null)
                 {
                     await ClearPlayer();
-                    InvokeMethodHelper.OnMainThread(() => InterfaceClearRequest?.Invoke());
+                    Execute.OnUiThread(() => InterfaceClearRequest?.Invoke());
                     return;
                 }
 
@@ -361,7 +360,7 @@ namespace Milky.OsuPlayer.Media.Audio
             else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
             {
                 await ClearPlayer();
-                InvokeMethodHelper.OnMainThread(() => InterfaceClearRequest?.Invoke());
+                Execute.OnUiThread(() => InterfaceClearRequest?.Invoke());
                 return;
             }
         }

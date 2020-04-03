@@ -1,7 +1,10 @@
-﻿using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
+﻿using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio.Wave;
+using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared;
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using OsuPlayer.Devices;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,9 +12,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Configuration;
-using NAudio.CoreAudioApi;
-using OsuPlayer.Devices;
 
 namespace Milky.OsuPlayer.Media.Audio.Player
 {
@@ -40,7 +40,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             {
                 if (value == _playStatus) return;
                 _playStatus = value;
-                InvokeMethodHelper.OnMainThread(() => PlayStatusChanged?.Invoke(value));
+                Execute.OnUiThread(() => PlayStatusChanged?.Invoke(value));
             }
         }
 
@@ -333,7 +333,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         private void RaisePositionUpdated(TimeSpan value)
         {
-            InvokeMethodHelper.OnMainThread(() => PositionUpdated?.Invoke(value));
+            Execute.OnUiThread(() => PositionUpdated?.Invoke(value));
         }
     }
 }

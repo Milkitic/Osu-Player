@@ -1,39 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data;
+﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Control.FrontDialog;
-using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Windows;
-using Milky.WpfApi;
-using Milky.WpfApi.Commands;
-using OSharp.Beatmap;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer.Control
 {
-    public class PlayListControlVm : ViewModelBase
+    public class PlayListControlVm : VmBase
     {
         private Beatmap _selectedMap;
         private List<Beatmap> _selectedMaps;
@@ -87,7 +73,7 @@ namespace Milky.OsuPlayer.Control
             {
                 return new DelegateCommand(param =>
                 {
-                    var mw = WindowBase.GetCurrentFirst<MainWindow>();
+                    var mw = WindowEx.GetCurrentFirst<MainWindow>();
                     var s = (string)param;
                     switch (s)
                     {
@@ -140,7 +126,7 @@ namespace Milky.OsuPlayer.Control
                 {
                     FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(SelectedMap),
                         DialogOptionFactory.SelectCollectionOptions);
-                    //var mw = WindowBase.GetCurrentFirst<MainWindow>();
+                    //var mw = WindowEx.GetCurrentFirst<MainWindow>();
                     //mw.FramePop.Navigate(new SelectCollectionPage(SelectedMap));
                 });
             }
@@ -152,7 +138,7 @@ namespace Milky.OsuPlayer.Control
             {
                 return new DelegateCommand(param =>
                 {
-                    var mw = WindowBase.GetCurrentFirst<MainWindow>();
+                    var mw = WindowEx.GetCurrentFirst<MainWindow>();
                     FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(Controller.PlayList.SongList),
                         DialogOptionFactory.SelectCollectionOptions);
                 });

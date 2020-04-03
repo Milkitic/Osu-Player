@@ -1,26 +1,23 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Windows.Input;
-using Milky.OsuPlayer.Common;
+﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Metadata;
-using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Media.Audio;
-using Milky.WpfApi;
-using Milky.WpfApi.Collections;
-using Milky.OsuPlayer.Models;
 using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Presentation.ObjectModel;
+using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Windows;
-using Milky.WpfApi.Commands;
+using System.Diagnostics;
+using System.IO;
+using System.Windows.Input;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    public class CollectionPageViewModel : ViewModelBase
+    public class CollectionPageViewModel : VmBase
     {
         private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
         private AppDbOperator _appDbOperator = new AppDbOperator();
@@ -65,7 +62,7 @@ namespace Milky.OsuPlayer.ViewModels
             {
                 return new DelegateCommand(param =>
                 {
-                    WindowBase.GetCurrentFirst<MainWindow>()
+                    WindowEx.GetCurrentFirst<MainWindow>()
                         .SwitchSearch
                         .CheckAndAction(page => ((SearchPage)page).Search((string)param));
                 });

@@ -3,7 +3,8 @@ using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Media.Audio;
-using Milky.WpfApi;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 using NAudio.Wave;
 using OsuPlayer.Devices;
 using System.Windows;
@@ -12,7 +13,7 @@ using System.Windows.Controls.Primitives;
 
 namespace Milky.OsuPlayer.Control
 {
-    public class VolumeControlVm : ViewModelBase
+    public class VolumeControlVm : VmBase
     {
         public SharedVm Shared { get; } = SharedVm.Default;
     }

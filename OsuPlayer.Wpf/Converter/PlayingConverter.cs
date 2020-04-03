@@ -1,13 +1,11 @@
-﻿using Milky.OsuPlayer.ControlLibrary.Custom;
+﻿using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Windows;
-using Milky.WpfApi;
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Milky.OsuPlayer.Common.Player;
-using System.Linq;
 
 namespace Milky.OsuPlayer.Converter
 {

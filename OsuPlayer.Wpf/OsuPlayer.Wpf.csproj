@@ -200,6 +200,7 @@
     </Compile>
     <Compile Include="Converter\DeviceInfoToStringConverter.cs" />
     <Compile Include="Converter\IconColorConverter.cs" />
+    <Compile Include="Converter\NegativeBooleanConverter.cs" />
     <Compile Include="DialogOptionFactory.cs" />
     <Compile Include="Pages\Settings\InterfacePage.xaml.cs">
       <DependentUpon>InterfacePage.xaml</DependentUpon>
@@ -275,7 +276,6 @@
     <Compile Include="ViewModels\PlayerViewModel.cs" />
     <Compile Include="ViewModels\SearchPageViewModel.cs" />
     <Compile Include="ViewModels\SelectCollectionPageViewModel.cs" />
-    <Compile Include="ViewModels\DiffSelectPageViewModel.cs" />
     <Compile Include="Windows\ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
     </Compile>
@@ -630,10 +630,6 @@
       <Project>{4c8d4eea-e81b-4fd3-b6a4-9857abc152a5}</Project>
       <Name>OSharp.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Libraries\WpfApi\WpfApi.csproj">
-      <Project>{028e6f4e-d538-4b83-904c-c94c2f1e3c83}</Project>
-      <Name>WpfApi</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
       <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>
       <Name>OsuPlayer.Common</Name>
@@ -645,6 +641,10 @@
     <ProjectReference Include="..\OsuPlayer.Devices\OsuPlayer.Devices.csproj">
       <Project>{E290C0D7-06B7-47DC-81E7-98F08654FB0D}</Project>
       <Name>OsuPlayer.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Interaction\OsuPlayer.Presentation.csproj">
+      <Project>{93E3612C-D388-438F-A04A-047265820998}</Project>
+      <Name>OsuPlayer.Presentation</Name>
     </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj">
       <Project>{3cd240f8-da65-44f0-ab58-d78f58109786}</Project>

@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace Milky.OsuPlayer.Common
+namespace Milky.OsuPlayer.Shared
 {
     public static class StringExtension
     {

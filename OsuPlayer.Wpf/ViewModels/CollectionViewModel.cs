@@ -1,18 +1,16 @@
 ﻿using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Pages;
-using Milky.WpfApi;
-using Milky.WpfApi.Commands;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Presentation.Interaction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-using Milky.OsuPlayer.Control;
 using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    public class CollectionViewModel : ViewModelBase
+    public class CollectionViewModel : VmBase
     {
         private AppDbOperator _appDbOperator = new AppDbOperator();
 

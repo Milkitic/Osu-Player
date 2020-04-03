@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Presentation.Dependency;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Utils;
-using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Control
 {
@@ -27,7 +26,7 @@ namespace Milky.OsuPlayer.Control
                 }
 
                 //HostWindow = Window.GetWindow(this);
-                HostWindow = this.GetParentObject(typeof(Page), typeof(Window));
+                HostWindow = this.FindParentObjects(typeof(Page), typeof(Window));
             };
 
             Checked += (sender, e) =>

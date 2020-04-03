@@ -1,28 +1,16 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Presentation.Interaction;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Metadata;
-using Milky.OsuPlayer.Control.FrontDialog;
-using Milky.WpfApi;
-using Milky.WpfApi.Collections;
-using Milky.WpfApi.Commands;
 
 namespace Milky.OsuPlayer.Control
 {
-    public class DiffSelectPageViewModel : ViewModelBase
+    public class DiffSelectPageViewModel : VmBase
     {
         private ObservableCollection<Beatmap> _entries;
 

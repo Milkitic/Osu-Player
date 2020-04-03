@@ -3,10 +3,9 @@ using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Metadata;
 using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Shared;
-using Milky.WpfApi;
-using Milky.WpfApi.Collections;
-using Milky.WpfApi.Commands;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,7 +17,7 @@ using System.Windows.Input;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    public class ExportPageViewModel : ViewModelBase
+    public class ExportPageViewModel : VmBase
     {
         private string _exportPath;
         private NumberableObservableCollection<BeatmapDataModel> _dataModelList;

@@ -1,29 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
+﻿using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Control.FrontDialog;
-using Milky.OsuPlayer.Control.Notification;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Utils;
-using Milky.WpfApi;
-using Milky.WpfApi.Commands;
+using System;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Milky.OsuPlayer.Control
 {
-    public class WelcomeControlVm : ViewModelBase
+    public class WelcomeControlVm : VmBase
     {
         private bool _guideSyncing;
         private bool _guideSelectedDb;

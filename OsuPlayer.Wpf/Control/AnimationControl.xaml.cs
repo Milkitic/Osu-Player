@@ -4,7 +4,8 @@ using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Player;
-using Milky.WpfApi;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -15,11 +16,10 @@ using System.Windows.Controls;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using Unosquare.FFME.Common;
-using ViewModelBase = Milky.WpfApi.ViewModelBase;
 
 namespace Milky.OsuPlayer.Control
 {
-    public class AnimationControlVm : ViewModelBase
+    public class AnimationControlVm : VmBase
     {
         public SharedVm Player { get; } = SharedVm.Default;
     }

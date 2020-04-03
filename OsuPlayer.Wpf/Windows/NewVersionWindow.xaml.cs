@@ -1,15 +1,14 @@
-﻿using Milky.OsuPlayer.Models.Github;
-using Milky.WpfApi;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Models.Github;
+using Milky.OsuPlayer.Presentation;
 using System.Diagnostics;
-using System.Windows;
-using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Windows
 {
     /// <summary>
     /// NewVersionWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class NewVersionWindow : WindowBase
+    public partial class NewVersionWindow : WindowEx
     {
         private readonly Release _release;
         private readonly MainWindow _mainWindow;

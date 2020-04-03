@@ -107,10 +107,6 @@
       <Project>{D18BDC44-577C-49BA-BB91-1311422D362A}</Project>
       <Name>OSharp.Storyboard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Libraries\WpfApi\WpfApi.csproj">
-      <Project>{028E6F4E-D538-4B83-904C-C94C2F1E3C83}</Project>
-      <Name>WpfApi</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
       <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>
       <Name>OsuPlayer.Common</Name>
@@ -118,6 +114,10 @@
     <ProjectReference Include="..\OsuPlayer.Devices\OsuPlayer.Devices.csproj">
       <Project>{E290C0D7-06B7-47DC-81E7-98F08654FB0D}</Project>
       <Name>OsuPlayer.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Interaction\OsuPlayer.Presentation.csproj">
+      <Project>{93E3612C-D388-438F-A04A-047265820998}</Project>
+      <Name>OsuPlayer.Presentation</Name>
     </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj">
       <Project>{C842FAB3-EC80-4E95-B402-BF0572F1806D}</Project>

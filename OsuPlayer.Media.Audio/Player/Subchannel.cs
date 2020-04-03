@@ -1,6 +1,7 @@
 ﻿using Milky.OsuPlayer.Shared;
 using System;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Presentation.Interaction;
 
 namespace Milky.OsuPlayer.Media.Audio.Player
 {
@@ -41,7 +42,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         protected void RaisePositionUpdated(TimeSpan value)
         {
-            InvokeMethodHelper.OnMainThread(() => PositionUpdated?.Invoke(value));
+            Execute.OnUiThread(() => PositionUpdated?.Invoke(value));
         }
 
         public abstract float PlaybackRate { get; protected set; }
@@ -56,7 +57,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             {
                 if (value == _playStatus) return;
                 _playStatus = value;
-                InvokeMethodHelper.OnMainThread(() => PlayStatusChanged?.Invoke(value));
+                Execute.OnUiThread(() => PlayStatusChanged?.Invoke(value));
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿namespace Milky.OsuPlayer.Common.Metadata
 {
-    public enum SortStyle
+    public enum ExportGroupStyle
     {
         None, Artist, Mapper, Source
     }

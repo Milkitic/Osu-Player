@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Presentation.Interaction;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Shared;
-using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Common.Player
 {
-    public class PlayList : ViewModelBase
+    public class PlayList : VmBase
     {
         public event Action SongListChanged;
         public event Func<PlayControlResult, Beatmap, bool, Task> AutoSwitched;
@@ -126,7 +125,7 @@ namespace Milky.OsuPlayer.Common.Player
             bool playInstantly = true, bool autoSetSong = true)
         {
             if (SongList != null) SongList.CollectionChanged -= SongList_CollectionChanged;
-            InvokeMethodHelper.OnMainThread(() => SongList = new ObservableCollection<Beatmap>(value));
+            Execute.OnUiThread(() => SongList = new ObservableCollection<Beatmap>(value));
             SongList.CollectionChanged += SongList_CollectionChanged;
 
             var changed = RearrangeIndexesAndReposition(startAnew ? (int?)0 : null);
@@ -149,7 +148,7 @@ namespace Milky.OsuPlayer.Common.Player
         public void AddOrSwitchTo(Beatmap beatmap)
         {
             if (!SongList.Contains(beatmap))
-                InvokeMethodHelper.OnMainThread(() => SongList.Add(beatmap));
+                Execute.OnUiThread(() => SongList.Add(beatmap));
             IndexPointer = _songIndexList.IndexOf(SongList.IndexOf(beatmap));
         }
 
@@ -222,7 +221,7 @@ namespace Milky.OsuPlayer.Common.Player
                     }
                 }
             }
-            
+
             if (SongList.Count == 0)
             {
                 return new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,

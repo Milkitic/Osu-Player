@@ -1,10 +1,11 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Media.Audio;
-using Milky.WpfApi;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    public class LyricWindowViewModel : ViewModelBase
+    public class LyricWindowViewModel : VmBase
     {
         private bool _showFrame;
         private bool _isLyricEnabled;

@@ -1,14 +1,14 @@
-﻿using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.WpfApi;
-using System.Collections.Generic;
-using Milky.OsuPlayer.Common.Data;
+﻿using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Presentation.Interaction;
 using OSharp.Beatmap;
+using System.Collections.Generic;
 
 namespace Milky.OsuPlayer.Common.Player
 {
-    public class BeatmapDetail : ViewModelBase
+    public class BeatmapDetail : VmBase
     {
-        public class MetaDetail : ViewModelBase
+        public class MetaDetail : VmBase
         {
             private List<string> _tags;
             private MetaString _artist;

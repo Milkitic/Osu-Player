@@ -1,16 +1,11 @@
-﻿using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Player;
-using Milky.WpfApi;
-using Milky.WpfApi.Commands;
-using System.Collections.Generic;
+﻿using Milky.OsuPlayer.Common.Data.EF.Model.V1;
+using Milky.OsuPlayer.Presentation.Interaction;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
-using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : VmBase
     {
         public static MainWindowViewModel Current { get; private set; }
 

@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Common.Metadata
+﻿namespace Milky.OsuPlayer.Media.Lyric
 {
     public enum LyricSource
     {

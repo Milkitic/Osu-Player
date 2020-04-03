@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared;
 using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
@@ -117,7 +118,7 @@ namespace OsuPlayer.Devices
                     deviceInfo = GetDefaultDeviceInfo();
                 }
             }
-            InvokeMethodHelper.OnMainThread(() =>
+            Execute.OnUiThread(() =>
             {
                 try
                 {

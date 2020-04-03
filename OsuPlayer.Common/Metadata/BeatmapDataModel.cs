@@ -1,10 +1,10 @@
-﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Milky.WpfApi.Collections;
-using osu.Shared;
+﻿using Milky.OsuPlayer.Presentation.ObjectModel;
 using OSharp.Beatmap;
 using OSharp.Beatmap.MetaData;
+using osu.Shared;
+using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Milky.OsuPlayer.Common.Metadata
 {

@@ -1,13 +1,12 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Control;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -23,8 +22,8 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         public AboutPage()
         {
-            _mainWindow = WindowBase.GetCurrentFirst<MainWindow>();
-            _configWindow = WindowBase.GetCurrentFirst<ConfigWindow>();
+            _mainWindow = WindowEx.GetCurrentFirst<MainWindow>();
+            _configWindow = WindowEx.GetCurrentFirst<ConfigWindow>();
             InitializeComponent();
         }
 

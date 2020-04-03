@@ -1,20 +1,17 @@
-﻿using Milky.OsuPlayer.Common.Data.EF.Model;
+﻿using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Presentation.Interaction;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Data;
-using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Common.Instances
 {
     public class OsuDbInst
     {
-        private readonly object _scanningObject = new object();
-        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
-
-        public class ViewModelClass : ViewModelBase
+        public class ViewModelClass : VmBase
         {
             private bool _isScanning;
 
@@ -28,6 +25,9 @@ namespace Milky.OsuPlayer.Common.Instances
                 }
             }
         }
+
+        private readonly object _scanningObject = new object();
+        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
 
         public ViewModelClass ViewModel { get; set; } = new ViewModelClass();
 
@@ -43,6 +43,7 @@ namespace Milky.OsuPlayer.Common.Instances
                 return false;
             }
         }
+
         public async Task LoadLocalDbAsync()
         {
             await Task.Run(() => Beatmaps = new HashSet<Beatmap>(_beatmapDbOperator.GetAllBeatmaps()));

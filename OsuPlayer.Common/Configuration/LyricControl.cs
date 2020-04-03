@@ -1,4 +1,5 @@
 ﻿using Milky.OsuPlayer.Common.Metadata;
+using Milky.OsuPlayer.Media.Lyric;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {

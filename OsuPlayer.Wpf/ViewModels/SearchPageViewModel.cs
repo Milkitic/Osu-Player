@@ -2,13 +2,14 @@ using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Metadata;
-using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Windows;
-using Milky.WpfApi;
-using Milky.WpfApi.Commands;
 using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.Generic;
@@ -21,11 +22,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xaml;
-using Milky.OsuPlayer.Media.Audio;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    public class SearchPageViewModel : ViewModelBase
+    public class SearchPageViewModel : VmBase
     {
         private AppDbOperator _beatmapDbOperator = new AppDbOperator();
 
@@ -129,7 +129,7 @@ namespace Milky.OsuPlayer.ViewModels
             //    return;
 
             //SortEnum sortEnum = (SortEnum)cbSortType.SelectedItem;
-            var sortMode = SortMode.Artist;
+            var sortMode = BeatmapSortMode.Artist;
             _querySw.Restart();
 
             lock (QueryLock)
@@ -146,7 +146,7 @@ namespace Milky.OsuPlayer.ViewModels
                 _querySw.Stop();
 
                 SearchedDbMaps = _beatmapDbOperator
-                    .SearchBeatmapByOptions(SearchText, SortMode.Artist, startIndex, int.MaxValue);
+                    .SearchBeatmapByOptions(SearchText, BeatmapSortMode.Artist, startIndex, int.MaxValue);
                 List<BeatmapDataModel> sorted = SearchedDbMaps
                     .ToDataModelList(true);
 
@@ -251,7 +251,7 @@ namespace Milky.OsuPlayer.ViewModels
             {
                 return new DelegateCommand(param =>
                 {
-                    WindowBase.GetCurrentFirst<MainWindow>()
+                    WindowEx.GetCurrentFirst<MainWindow>()
                         .SwitchSearch
                         .CheckAndAction(page => ((SearchPage)page).Search((string)param));
                 });
@@ -360,7 +360,7 @@ namespace Milky.OsuPlayer.ViewModels
                         {
                             var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
                             var controller = Services.Get<ObservablePlayController>();
-                                await controller.PlayNewAsync(map, true);
+                            await controller.PlayNewAsync(map, true);
                         });
                     FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
                 });

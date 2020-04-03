@@ -3,10 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Windows;
+using System.Windows.Threading;
 
-namespace Milky.OsuPlayer.Shared
+namespace Milky.OsuPlayer.Presentation.Interaction
 {
-    public static class InvokeMethodHelper
+    public static class Execute
     {
         private static SynchronizationContext _uiContext;
 
@@ -35,14 +37,50 @@ namespace Milky.OsuPlayer.Shared
             if (_uiContext == null) _uiContext = SynchronizationContext.Current;
         }
 
-        public static void OnMainThread(Action action, bool raiseEventInUiThread = true)
+        public static void OnUiThread(this Action action)
         {
-            if (_uiContext == null) throw new ArgumentNullException("UiContext不能为空。");
-
-            if (raiseEventInUiThread)
-                _uiContext.Send(obj => { action?.Invoke(); }, null);
+            if (_uiContext == null)
+            {
+                Application.Current?.Dispatcher?.Invoke(() =>
+                {
+                    try
+                    {
+                        action?.Invoke();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                });
+            }
             else
-                action?.Invoke();
+            {
+                _uiContext.Send(obj => { action?.Invoke(); }, null);
+            }
         }
+
+        public static void ToUiThread(this Action action)
+        {
+            if (_uiContext == null)
+            {
+                Application.Current?.Dispatcher?.BeginInvoke(new Action(() =>
+                {
+                    try
+                    {
+                        action?.Invoke();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }), DispatcherPriority.Normal);
+            }
+            else
+            {
+                _uiContext.Post(obj => { action?.Invoke(); }, null);
+            }
+        }
+
+        public static bool CheckDispatcherAccess() => Thread.CurrentThread.ManagedThreadId == 1;
     }
 }

@@ -1,22 +1,14 @@
-﻿using Microsoft.Win32;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
+﻿using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Common.Scanning;
 using Milky.OsuPlayer.Instances;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using System.Windows;
-using System.Xaml;
-using Milky.OsuPlayer.Control.Notification;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Shared;
 
 #if !DEBUG
 using Sentry;
@@ -90,7 +82,7 @@ namespace Milky.OsuPlayer
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            InvokeMethodHelper.SetMainThreadContext();
+            Execute.SetMainThreadContext();
             I18nUtil.LoadI18N();
         }
     }

@@ -10,10 +10,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Control
 {
-    public class PlayControllerVm : WpfApi.ViewModelBase
+    public class PlayControllerVm : VmBase
     {
         public ObservablePlayController Controller { get; } = Services.Get<ObservablePlayController>();
         public SharedVm Shared { get; } = SharedVm.Default;

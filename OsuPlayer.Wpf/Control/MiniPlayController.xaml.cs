@@ -2,8 +2,8 @@
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Media.Audio;
-using Milky.WpfApi;
-using Milky.WpfApi.Commands;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 using System;
 using System.Linq;
 using System.Windows;
@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace Milky.OsuPlayer.Control
 {
-    public class MiniPlayListControlVm : ViewModelBase
+    public class MiniPlayListControlVm : VmBase
     {
         private ObservablePlayController _controller;
         private double _positionPercent;

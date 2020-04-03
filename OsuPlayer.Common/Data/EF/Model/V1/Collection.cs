@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Presentation.Interaction;
+using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Milky.WpfApi;
-using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Common.Data.EF.Model.V1
 {
     [Table("collection")]
-    public class Collection : ViewModelBase
+    public class Collection : VmBase
     {
         private string _imagePath;
         private string _description;

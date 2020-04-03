@@ -1,28 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using Milky.OsuPlayer.Common;
+﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
 using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
-using Milky.WpfApi;
 using OSharp.Beatmap;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Milky.OsuPlayer.Control
 {
@@ -55,7 +48,7 @@ namespace Milky.OsuPlayer.Control
             {
                 _appDbOperator.AddCollection(addCollectionControl.CollectionName.Text);
 
-                WindowBase.GetCurrentFirst<MainWindow>().UpdateCollections();
+                WindowEx.GetCurrentFirst<MainWindow>().UpdateCollections();
                 RefreshList();
             });
         }

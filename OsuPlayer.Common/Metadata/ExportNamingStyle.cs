@@ -1,6 +1,6 @@
 ﻿namespace Milky.OsuPlayer.Common.Metadata
 {
-    public enum NamingStyle
+    public enum ExportNamingStyle
     {
         Title, ArtistTitle, TitleArtist
     }

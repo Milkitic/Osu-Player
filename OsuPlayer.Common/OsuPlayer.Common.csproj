@@ -87,14 +87,12 @@
     <Compile Include="Data\AppDbOperatorExt.cs" />
     <Compile Include="Data\EF\MapIdentifiableComparer.cs" />
     <Compile Include="Data\EF\Model\Beatmap.cs" />
-    <Compile Include="Data\DbJsonObject.cs" />
     <Compile Include="Data\EF\Model\BeatmapExtension.cs" />
     <Compile Include="Data\EF\Model\StoryboardInfo.cs" />
     <Compile Include="Data\EF\Model\V1\Collection.cs" />
     <Compile Include="Data\EF\Model\V1\CollectionRelation.cs" />
     <Compile Include="Data\EF\Model\V1\BeatmapSettings.cs" />
     <Compile Include="Data\IdentifiableExtension.cs" />
-    <Compile Include="DictionaryExtension.cs" />
     <Compile Include="IAsyncDisposable.cs" />
     <Compile Include="ListExtension.cs" />
     <Compile Include="MyCancellationTokenSource.cs" />
@@ -106,27 +104,22 @@
     <Compile Include="Player\PlayControlResult.cs" />
     <Compile Include="Player\PlayList.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Services.cs" />
     <Compile Include="Metadata\BeatmapDataModel.cs" />
     <Compile Include="Metadata\DataModelComparer.cs" />
-    <Compile Include="Metadata\LyricSource.cs" />
-    <Compile Include="Metadata\LyricProvideType.cs" />
     <Compile Include="Domain.cs" />
-    <Compile Include="Metadata\NamingStyle.cs" />
+    <Compile Include="Metadata\ExportNamingStyle.cs" />
     <Compile Include="Instances\OsuDbInst.cs" />
     <Compile Include="Player\BeatmapDetail.cs" />
     <Compile Include="Player\PlayListMode.cs" />
-    <Compile Include="Metadata\SortMode.cs" />
+    <Compile Include="Metadata\BeatmapSortMode.cs" />
     <Compile Include="MapIndentity.cs" />
     <Compile Include="Player\PlayModifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Metadata\SortStyle.cs" />
+    <Compile Include="Metadata\ExportGroupStyle.cs" />
     <Compile Include="Scanning\FileScannerViewModel.cs" />
     <Compile Include="Scanning\OsuFileScanner.cs" />
     <Compile Include="SharedVm.cs" />
-    <Compile Include="StringExtension.cs" />
     <Compile Include="Web\Downloader.cs" />
-    <Compile Include="VariableStopwatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -141,13 +134,17 @@
       <Project>{4c8d4eea-e81b-4fd3-b6a4-9857abc152a5}</Project>
       <Name>OSharp.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Libraries\WpfApi\WpfApi.csproj">
-      <Project>{028e6f4e-d538-4b83-904c-c94c2f1e3c83}</Project>
-      <Name>WpfApi</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Devices\OsuPlayer.Devices.csproj">
       <Project>{E290C0D7-06B7-47DC-81E7-98F08654FB0D}</Project>
       <Name>OsuPlayer.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Interaction\OsuPlayer.Presentation.csproj">
+      <Project>{93E3612C-D388-438F-A04A-047265820998}</Project>
+      <Name>OsuPlayer.Presentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj">
+      <Project>{33580E59-AA08-45EF-B79F-2F8FE2F539CC}</Project>
+      <Name>OsuPlayer.Media.Lyric</Name>
     </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj">
       <Project>{C842FAB3-EC80-4E95-B402-BF0572F1806D}</Project>

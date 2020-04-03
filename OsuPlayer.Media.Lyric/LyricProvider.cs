@@ -1,5 +1,4 @@
-﻿using Milky.OsuPlayer.Common.Metadata;
-using Milky.OsuPlayer.Media.Lyric.Models;
+﻿using Milky.OsuPlayer.Media.Lyric.Models;
 using Milky.OsuPlayer.Media.Lyric.SourceProvider;
 using System;
 using System.Threading.Tasks;

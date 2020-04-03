@@ -133,13 +133,13 @@ namespace Milky.OsuPlayer.Pages
         private static void GetExportFolder(out string exportMp3Folder, out string exportBgFolder,
             MetaString artist, string creator, string source)
         {
-            switch (AppSettings.Default.Export.SortStyle)
+            switch (AppSettings.Default.Export.ExportGroupStyle)
             {
-                case SortStyle.None:
+                case ExportGroupStyle.None:
                     exportMp3Folder = Domain.MusicPath;
                     exportBgFolder = Domain.BackgroundPath;
                     break;
-                case SortStyle.Artist:
+                case ExportGroupStyle.Artist:
                     {
                         var escArtistAsc = Escape(artist.Origin);
                         var escArtistUtf = Escape(artist.Unicode);
@@ -158,7 +158,7 @@ namespace Milky.OsuPlayer.Pages
                         exportBgFolder = Path.Combine(Domain.BackgroundPath, escArtistUtf);
                         break;
                     }
-                case SortStyle.Mapper:
+                case ExportGroupStyle.Mapper:
                     {
                         var escCreator = Escape(creator);
                         if (string.IsNullOrEmpty(escCreator))
@@ -168,7 +168,7 @@ namespace Milky.OsuPlayer.Pages
                         exportBgFolder = Path.Combine(Domain.BackgroundPath, escCreator);
                         break;
                     }
-                case SortStyle.Source:
+                case ExportGroupStyle.Source:
                     {
                         var escSource = Escape(source);
                         if (string.IsNullOrEmpty(escSource))
@@ -186,17 +186,17 @@ namespace Milky.OsuPlayer.Pages
         private static void ConstructNameWithEscaping(out string originAudio, out string originBack,
             string title, string artist, string creator, string version)
         {
-            switch (AppSettings.Default.Export.NamingStyle)
+            switch (AppSettings.Default.Export.ExportNamingStyle)
             {
-                case NamingStyle.Title:
+                case ExportNamingStyle.Title:
                     originAudio = Escape($"{title}");
                     originBack = Escape($"{title}({creator})[{version}]");
                     break;
-                case NamingStyle.ArtistTitle:
+                case ExportNamingStyle.ArtistTitle:
                     originAudio = Escape($"{artist} - {title}");
                     originBack = Escape($"{artist} - {title}({creator})[{version}]");
                     break;
-                case NamingStyle.TitleArtist:
+                case ExportNamingStyle.TitleArtist:
                     originAudio = Escape($"{title} - {artist}");
                     originBack = Escape($"{title} - {artist}({creator})[{version}]");
                     break;

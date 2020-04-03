@@ -1,4 +1,4 @@
-﻿<wpfApi:WindowBase
+﻿<presentation:WindowEx
     x:Class="Milky.OsuPlayer.Windows.MiniWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
+    xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
     Title="Mini Window"
     Width="320"
     Height="80"
@@ -39,4 +39,4 @@
         </Border>
         <control:MiniPlayController x:Name="Control" />
     </Grid>
-</wpfApi:WindowBase>
+</presentation:WindowEx>

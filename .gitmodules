@@ -7,6 +7,3 @@
 [submodule "Libraries/OSharp.Beatmap"]
 	path = Libraries/OSharp.Beatmap
 	url = https://github.com/Milkitic/OSharp.Beatmap
-[submodule "Libraries/WpfApi"]
-	path = Libraries/WpfApi
-	url = https://github.com/Milkitic/WpfApi

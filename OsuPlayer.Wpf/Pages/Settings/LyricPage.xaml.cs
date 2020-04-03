@@ -1,11 +1,11 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Metadata;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Instances;
+using Milky.OsuPlayer.Media.Lyric;
+using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Windows;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Instances;
-using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -18,7 +18,7 @@ namespace Milky.OsuPlayer.Pages.Settings
         private bool _loaded;
         public LyricPage()
         {
-            _mainWindow = WindowBase.GetCurrentFirst<MainWindow>();
+            _mainWindow = WindowEx.GetCurrentFirst<MainWindow>();
             InitializeComponent();
         }
 

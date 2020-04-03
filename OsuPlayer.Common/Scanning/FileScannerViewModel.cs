@@ -1,8 +1,8 @@
-﻿using Milky.WpfApi;
+﻿using Milky.OsuPlayer.Presentation.Interaction;
 
 namespace Milky.OsuPlayer.Common.Scanning
 {
-    public class FileScannerViewModel : ViewModelBase
+    public class FileScannerViewModel : VmBase
     {
         private bool _isScanning;
         private bool _isCanceling;

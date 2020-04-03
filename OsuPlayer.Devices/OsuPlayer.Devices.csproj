@@ -62,10 +62,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OsuPlayer.Interaction\OsuPlayer.Presentation.csproj">
+      <Project>{93E3612C-D388-438F-A04A-047265820998}</Project>
+      <Name>OsuPlayer.Presentation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj">
       <Project>{C842FAB3-EC80-4E95-B402-BF0572F1806D}</Project>
       <Name>OsuPlayer.Shared</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

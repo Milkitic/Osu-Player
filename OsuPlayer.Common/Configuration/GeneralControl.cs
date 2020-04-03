@@ -1,5 +1,5 @@
-﻿using System.IO;
-using Milky.WpfApi;
+﻿using Milky.OsuPlayer.Presentation.Interaction;
+using System.IO;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
@@ -13,7 +13,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         public double[] MiniPosition { get; set; }
     }
 
-    public class InterfaceControl : ViewModelBase
+    public class InterfaceControl : VmBase
     {
         private bool _minimalMode;
 

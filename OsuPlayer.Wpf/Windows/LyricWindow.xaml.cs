@@ -2,8 +2,11 @@
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Lyric.Models;
+using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
-using Milky.WpfApi;
 using OSharp.Beatmap;
 using System;
 using System.Collections.Generic;
@@ -26,14 +29,13 @@ using FontFamily = System.Drawing.FontFamily;
 using Image = System.Drawing.Image;
 using Pen = System.Drawing.Pen;
 using Size = System.Windows.Size;
-using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Windows
 {
     /// <summary>
     /// LyricWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class LyricWindow : WindowBase
+    public partial class LyricWindow : WindowEx
     {
         private readonly MainWindow _mainWindow;
 

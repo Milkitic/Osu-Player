@@ -1,15 +1,13 @@
-﻿<wpfApi:WindowBase
+﻿<presentation:WindowEx
     x:Class="Milky.OsuPlayer.Windows.LyricWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
-    xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:debugging="clr-namespace:Milky.OsuPlayer.Presentation.Debugging;assembly=OsuPlayer.Presentation"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:osuPlayer="clr-namespace:Milky.OsuPlayer"
+    xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
-    xmlns:windows="clr-namespace:Milky.OsuPlayer.Windows"
-    xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
     Title="Lyric Window"
     Height="90"
     AllowsTransparency="True"
@@ -22,7 +20,7 @@
     Topmost="True"
     WindowStyle="None"
     mc:Ignorable="d">
-    <wpfApi:WindowBase.Resources>
+    <presentation:WindowEx.Resources>
         <ControlTemplate x:Key="PlayButtonTempl">
             <Canvas Width="1000" Height="1000">
                 <Path Fill="{TemplateBinding Foreground}">
@@ -84,10 +82,10 @@
                 <Path Data="{StaticResource No}" Fill="{TemplateBinding Foreground}" />
             </Canvas>
         </ControlTemplate>
-    </wpfApi:WindowBase.Resources>
-    <wpfApi:WindowBase.DataContext>
+    </presentation:WindowEx.Resources>
+    <presentation:WindowEx.DataContext>
         <viewModels:LyricWindowViewModel />
-    </wpfApi:WindowBase.DataContext>
+    </presentation:WindowEx.DataContext>
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -104,8 +102,8 @@
                 <Style TargetType="FrameworkElement">
                     <Style.Triggers>
                         <DataTrigger
-                            wpfApi:TriggerTracing.TraceEnabled="True"
-                            wpfApi:TriggerTracing.TriggerName="LyricWindow -&gt; ShowFrame"
+                            debugging:TriggerTracing.TraceEnabled="True"
+                            debugging:TriggerTracing.TriggerName="LyricWindow -&gt; ShowFrame"
                             Binding="{Binding ShowFrame}"
                             Value="True">
                             <Setter Property="Visibility" Value="Visible" />
@@ -177,8 +175,8 @@
                     <Style TargetType="FrameworkElement">
                         <Style.Triggers>
                             <DataTrigger
-                                wpfApi:TriggerTracing.TraceEnabled="True"
-                                wpfApi:TriggerTracing.TriggerName="LyricWindow -&gt; ShowFrame"
+                                debugging:TriggerTracing.TraceEnabled="True"
+                                debugging:TriggerTracing.TriggerName="LyricWindow -&gt; ShowFrame"
                                 Binding="{Binding ShowFrame}"
                                 Value="True">
                                 <Setter Property="Visibility" Value="Visible" />
@@ -222,8 +220,8 @@
                     <Style TargetType="FrameworkElement">
                         <Style.Triggers>
                             <DataTrigger
-                                wpfApi:TriggerTracing.TraceEnabled="True"
-                                wpfApi:TriggerTracing.TriggerName="LyricWindow -&gt; ShowFrame"
+                                debugging:TriggerTracing.TraceEnabled="True"
+                                debugging:TriggerTracing.TriggerName="LyricWindow -&gt; ShowFrame"
                                 Binding="{Binding ShowFrame}"
                                 Value="True">
                                 <Setter Property="Visibility" Value="Visible" />
@@ -237,5 +235,5 @@
             </Border>
         </Grid>
     </Grid>
-</wpfApi:WindowBase>
+</presentation:WindowEx>
 

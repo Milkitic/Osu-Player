@@ -21,19 +21,19 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             LblMp3Path.Text = AppSettings.Default.Export.MusicPath;
             LblBgPath.Text = AppSettings.Default.Export.BgPath;
-            if (AppSettings.Default.Export.NamingStyle == NamingStyle.Title)
+            if (AppSettings.Default.Export.ExportNamingStyle == ExportNamingStyle.Title)
                 RadioT.IsChecked = true;
-            else if (AppSettings.Default.Export.NamingStyle == NamingStyle.ArtistTitle)
+            else if (AppSettings.Default.Export.ExportNamingStyle == ExportNamingStyle.ArtistTitle)
                 RadioAt.IsChecked = true;
-            else if (AppSettings.Default.Export.NamingStyle == NamingStyle.TitleArtist)
+            else if (AppSettings.Default.Export.ExportNamingStyle == ExportNamingStyle.TitleArtist)
                 RadioTa.IsChecked = true;
-            if (AppSettings.Default.Export.SortStyle == SortStyle.None)
+            if (AppSettings.Default.Export.ExportGroupStyle == ExportGroupStyle.None)
                 SortNone.IsChecked = true;
-            else if (AppSettings.Default.Export.SortStyle == SortStyle.Artist)
+            else if (AppSettings.Default.Export.ExportGroupStyle == ExportGroupStyle.Artist)
                 SortArtist.IsChecked = true;
-            else if (AppSettings.Default.Export.SortStyle == SortStyle.Mapper)
+            else if (AppSettings.Default.Export.ExportGroupStyle == ExportGroupStyle.Mapper)
                 SortMapper.IsChecked = true;
-            else if (AppSettings.Default.Export.SortStyle == SortStyle.Source)
+            else if (AppSettings.Default.Export.ExportGroupStyle == ExportGroupStyle.Source)
                 SortSource.IsChecked = true;
         }
 
@@ -73,11 +73,11 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             var exportSection = AppSettings.Default.Export;
             if (RadioT.IsChecked.HasValue && RadioT.IsChecked.Value)
-                exportSection.NamingStyle = NamingStyle.Title;
+                exportSection.ExportNamingStyle = ExportNamingStyle.Title;
             else if (RadioAt.IsChecked.HasValue && RadioAt.IsChecked.Value)
-                exportSection.NamingStyle = NamingStyle.ArtistTitle;
+                exportSection.ExportNamingStyle = ExportNamingStyle.ArtistTitle;
             else if (RadioTa.IsChecked.HasValue && RadioTa.IsChecked.Value)
-                exportSection.NamingStyle = NamingStyle.TitleArtist;
+                exportSection.ExportNamingStyle = ExportNamingStyle.TitleArtist;
             AppSettings.SaveDefault();
         }
 
@@ -85,13 +85,13 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             var exportSection = AppSettings.Default.Export;
             if (SortNone.IsChecked.HasValue && SortNone.IsChecked.Value)
-                exportSection.SortStyle = SortStyle.None;
+                exportSection.ExportGroupStyle = ExportGroupStyle.None;
             else if (SortArtist.IsChecked.HasValue && SortArtist.IsChecked.Value)
-                exportSection.SortStyle = SortStyle.Artist;
+                exportSection.ExportGroupStyle = ExportGroupStyle.Artist;
             else if (SortMapper.IsChecked.HasValue && SortMapper.IsChecked.Value)
-                exportSection.SortStyle = SortStyle.Mapper;
+                exportSection.ExportGroupStyle = ExportGroupStyle.Mapper;
             else if (SortSource.IsChecked.HasValue && SortSource.IsChecked.Value)
-                exportSection.SortStyle = SortStyle.Source;
+                exportSection.ExportGroupStyle = ExportGroupStyle.Source;
             AppSettings.SaveDefault();
         }
     }

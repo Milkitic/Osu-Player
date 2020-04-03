@@ -9,9 +9,11 @@ using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Control.FrontDialog;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
-using Milky.WpfApi;
 using OSharp.Beatmap;
 using System;
 using System.Collections.ObjectModel;
@@ -24,7 +26,7 @@ namespace Milky.OsuPlayer.Windows
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : WindowBase
+    public partial class MainWindow : WindowEx
     {
         internal MainWindowViewModel ViewModel { get; }
 

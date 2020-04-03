@@ -18,12 +18,12 @@ namespace Milky.OsuPlayer.Common.Data
     {
         private const string TABLE_BEATMAP = AppDbOperator.TABLE_BEATMAP;
 
-        public static List<Beatmap> SearchBeatmapByOptions(this AppDbOperator op, string searchText, SortMode sortMode, int startIndex, int count)
+        public static List<Beatmap> SearchBeatmapByOptions(this AppDbOperator op, string searchText, BeatmapSortMode beatmapSortMode, int startIndex, int count)
         {
             var expando = new DynamicParameters();
             var command = " SELECT * FROM beatmap WHERE ";
             var keywordSql = GetKeywordQueryAndArgs(searchText, ref expando);
-            var sort = GetOrderAndTakeQueryAndArgs(sortMode, startIndex, count);
+            var sort = GetOrderAndTakeQueryAndArgs(beatmapSortMode, startIndex, count);
             var sw = Stopwatch.StartNew();
             try
             {
@@ -227,16 +227,16 @@ SELECT *
             return sb.ToString();
         }
 
-        private static string GetOrderAndTakeQueryAndArgs(SortMode sortMode, int startIndex, int count)
+        private static string GetOrderAndTakeQueryAndArgs(BeatmapSortMode beatmapSortMode, int startIndex, int count)
         {
             var sb = new StringBuilder();
-            switch (sortMode)
+            switch (beatmapSortMode)
             {
-                case SortMode.Title:
+                case BeatmapSortMode.Title:
                     sb.AppendLine(" ORDER BY titleU, title ");
                     break;
                 default:
-                case SortMode.Artist:
+                case BeatmapSortMode.Artist:
                     sb.AppendLine(" ORDER BY artistU, artist ");
                     break;
             }

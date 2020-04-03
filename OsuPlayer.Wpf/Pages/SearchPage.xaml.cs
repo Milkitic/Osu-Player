@@ -1,28 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using Milky.OsuPlayer.Common;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Metadata;
-using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Control;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
-using OSharp.Beatmap;
-using System.Diagnostics;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data.EF;
-using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Control.FrontDialog;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Utils;
-using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Pages
 {
