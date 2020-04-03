@@ -1,6 +1,7 @@
 # Osu-Player
 ![](https://img.shields.io/badge/.NET-4.7.2-blue.svg)
 ![](https://img.shields.io/badge/license-GPL-blue.svg)
+[![CodeFactor](https://www.codefactor.io/repository/github/milkitic/osu-player/badge)](https://www.codefactor.io/repository/github/milkitic/osu-player)
 
 **A multifunctional player for playing music, hitsound, video and storyboard for osuers!.**
 
