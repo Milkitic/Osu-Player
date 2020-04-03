@@ -222,8 +222,7 @@ namespace Milky.OsuPlayer.Common.Player
                     }
                 }
             }
-
-
+            
             if (SongList.Count == 0)
             {
                 return new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,

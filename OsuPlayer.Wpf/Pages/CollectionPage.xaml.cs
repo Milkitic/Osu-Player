@@ -294,7 +294,6 @@ namespace Milky.OsuPlayer.Pages
 
         private void Panel_Loaded(object sender, RoutedEventArgs e)
         {
-
         }
     }
 }

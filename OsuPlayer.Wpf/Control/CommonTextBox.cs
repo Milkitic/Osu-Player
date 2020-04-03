@@ -73,10 +73,5 @@ namespace Milky.OsuPlayer.Control
                 typeof(CommonTextBox),
                 null
             );
-
-        static CommonTextBox()
-        {
-            //DefaultStyleKeyProperty.OverrideMetadata(typeof(CommonTextBox), new FrameworkPropertyMetadata(typeof(CommonTextBox)));
-        }
     }
 }

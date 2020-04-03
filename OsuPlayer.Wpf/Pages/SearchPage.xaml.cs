@@ -106,93 +106,6 @@ namespace Milky.OsuPlayer.Pages
             PlaySelectedDefault();
         }
 
-        //private void ItemPlay_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (ResultList.SelectedItem == null)
-        //        return;
-        //    var ok = (BeatmapDataModel)ResultList.SelectedItem;
-        //    var control = new DiffSelectControl(
-        //        _beatmapDbOperator.GetBeatmapsFromFolder(ok.GetIdentity().FolderName),
-        //    async selected =>
-        //    {
-        //        var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
-        //        await PlayController.Default.PlayNewFile(map);
-        //        await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
-        //    });
-        //    FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
-        //}
-
-        //private void ItemSearchMapper_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var map = GetSelectedDefault();
-        //    if (map == null)
-        //        return;
-        //    _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.Creator));
-        //}
-
-        //private void ItemSearchSource_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var map = GetSelectedDefault();
-        //    if (map == null)
-        //        return;
-        //    _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.SongSource));
-        //}
-
-        //private void ItemSearchArtist_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var map = GetSelectedDefault();
-        //    if (map == null)
-        //        return;
-        //    _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoArtist));
-        //}
-
-        //private void ItemSearchTitle_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var map = GetSelectedDefault();
-        //    if (map == null)
-        //        return;
-        //    _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoTitle));
-        //}
-
-        //private void ItemExport_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var map = GetSelectedDefault();
-        //    if (map == null)
-        //        return;
-        //    ExportPage.QueueEntry(map);
-        //}
-
-        //private void ItemCollect_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (ResultList.SelectedItem == null)
-        //        return;
-        //    var ok = (BeatmapDataModel)ResultList.SelectedItem;
-        //    var control = new DiffSelectControl(
-        //        _beatmapDbOperator.GetBeatmapsFromFolder(ok.GetIdentity().FolderName),
-        //        selected =>
-        //        {
-        //            var entry = _beatmapDbOperator.GetBeatmapsFromFolder(selected.FolderName)
-        //                .FirstOrDefault(k => k.Version == selected.Version);
-        //            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
-        //                DialogOptionFactory.SelectCollectionOptions);
-        //        });
-        //    FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
-        //}
-
-        //private void ItemSet_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var map = GetSelectedDefault();
-        //    if (map == null) return;
-        //    Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
-        //}
-
-        //private void ItemFolder_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var map = GetSelectedDefault();
-        //    if (map == null) return;
-        //    Process.Start(Path.Combine(Domain.OsuSongPath, map.FolderName));
-        //}
-
         private async void PlaySelectedDefault()
         {
             var map = GetSelectedDefault();
@@ -230,7 +143,6 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnQueueAll_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)

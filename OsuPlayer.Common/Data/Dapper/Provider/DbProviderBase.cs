@@ -356,26 +356,15 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
             int count = 0,
             bool asc = true)
         {
-            //var sw = Stopwatch.StartNew();
             if (!VerifyTableAndColumn(table, columns, orderColumn, whereConditions, out var keyword))
             {
                 throw new Exception($"不存在表或者相关列名：{keyword}");
             }
 
-            //Console.WriteLine($"check table: {sw.ElapsedMilliseconds}");
-            //sw.Restart();
-
             GetWhereStrAndParameters(whereConditions, out var whereStr, out var @params);
-            //Console.WriteLine($"get where && params: {sw.ElapsedMilliseconds}");
-            //sw.Restart();
-
             FixCount(ref count);
-            //Console.WriteLine($"fix count: {sw.ElapsedMilliseconds}");
-            //sw.Restart();
 
             var sql = GetSelectCommandTemplate(table, columns, orderColumn, whereStr, count, asc);
-            //Console.WriteLine($"select template: {sw.ElapsedMilliseconds}");
-            //sw.Restart();
 
             try
             {
@@ -387,10 +376,6 @@ namespace Milky.OsuPlayer.Common.Data.Dapper.Provider
             {
                 throw new Exception($"从{DbType}数据库中获取数据出错：\r\n" +
                                     $"数据库执行语句：{sql}", ex);
-            }
-            finally
-            {
-                //sw.Stop();
             }
         }
 

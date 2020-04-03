@@ -145,7 +145,7 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider
                 {
                     //XXXX和XXXXX(Full version)这种情况可以跳过
                     if (r.Title.Trim().StartsWith(checkStr))
-                        return false;//不用删除，通过
+                        return false; //不用删除，通过
 
                     var distance = GetEditDistance(r);
                     return distance > threholdLength;

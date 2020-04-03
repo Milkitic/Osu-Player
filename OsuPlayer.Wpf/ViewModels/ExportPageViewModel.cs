@@ -129,8 +129,6 @@ namespace Milky.OsuPlayer.ViewModels
 
                     Execute.OnUiThread(InnerUpdate);
                 });
-
-
             }
         }
 
@@ -158,7 +156,6 @@ namespace Milky.OsuPlayer.ViewModels
                     list.Add(!fi.Exists
                         ? (map.GetIdentity(), map.ExportFile, "已从目录移除", "已从目录移除")
                         : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), SharedUtils.CountSize(fi.Length)));
-
                 }
                 catch (Exception e)
                 {
