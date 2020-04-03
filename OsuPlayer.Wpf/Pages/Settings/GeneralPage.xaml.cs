@@ -11,7 +11,7 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.UiComponent.NotificationComponent;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {

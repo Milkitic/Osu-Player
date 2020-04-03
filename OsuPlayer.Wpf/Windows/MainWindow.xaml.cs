@@ -2,7 +2,6 @@
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Scanning;
-using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Instances;
@@ -12,7 +11,6 @@ using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using OSharp.Beatmap;
 using System;
@@ -20,9 +18,8 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using Milky.OsuPlayer.UiComponent;
-using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponent.NotificationComponent;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UserControls;
 
 namespace Milky.OsuPlayer.Windows
@@ -189,7 +186,7 @@ namespace Milky.OsuPlayer.Windows
 
             _controller.LoadFinished += Controller_LoadFinished;
 
-            var updater = Service.Get<Updater>();
+            var updater = Service.Get<UpdateInst>();
             bool? hasUpdate = await updater.CheckUpdateAsync();
             if (hasUpdate == true && updater.NewRelease.NewVerString != AppSettings.Default.IgnoredVer)
             {
@@ -364,7 +361,7 @@ namespace Milky.OsuPlayer.Windows
                 return;
             }
 
-            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
+            UiComponents.FrontDialogComponent.FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
                 DialogOptionFactory.SelectCollectionOptions);
         }
 

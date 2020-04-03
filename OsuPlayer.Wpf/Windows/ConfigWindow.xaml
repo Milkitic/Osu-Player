@@ -2,12 +2,12 @@
     x:Class="Milky.OsuPlayer.Windows.ConfigWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
     xmlns:settings="clr-namespace:Milky.OsuPlayer.Pages.Settings"
-    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
+    xmlns:radioButtonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.RadioButtonComponent"
     Title="{DynamicResource ui-win-sets}"
     Width="640"
     Height="440"
@@ -61,38 +61,38 @@
                         Style="{StaticResource NavigationLabelStyle}">
                         <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-sets}" />
                     </Label>
-                    <control:SwitchRadio
+                    <radioButtonComponent:SwitchRadio
                         x:Name="SwitchGeneral"
                         Content="{DynamicResource ui-sets-nav-common}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:GeneralPage}" />
-                    <control:SwitchRadio
+                    <radioButtonComponent:SwitchRadio
                         Content="{DynamicResource ui-sets-nav-playing}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:PlayPage}" />
-                    <control:SwitchRadio
+                    <radioButtonComponent:SwitchRadio
                         Content="{DynamicResource ui-sets-nav-interface}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:InterfacePage}" />
-                    <control:SwitchRadio
+                    <radioButtonComponent:SwitchRadio
                         Content="{DynamicResource ui-sets-nav-hotKey}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:HotKeyPage}" />
-                    <control:SwitchRadio
+                    <radioButtonComponent:SwitchRadio
                         Content="{DynamicResource ui-sets-nav-lyric}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:LyricPage}" />
-                    <control:SwitchRadio
+                    <radioButtonComponent:SwitchRadio
                         Content="{DynamicResource ui-sets-nav-export}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"
                         TargetPageType="{x:Type settings:ExportPage}" />
-                    <control:SwitchRadio
+                    <radioButtonComponent:SwitchRadio
                         Content="{DynamicResource ui-sets-nav-about}"
                         Style="{StaticResource ConfigSwitchRadio}"
                         TargetFrameControl="MainFrame"

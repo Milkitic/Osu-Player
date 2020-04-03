@@ -1,5 +1,4 @@
-﻿using Milky.OsuPlayer.Models.Github;
-using Milky.OsuPlayer.Shared;
+﻿using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Diagnostics;
@@ -16,12 +15,12 @@ namespace Milky.OsuPlayer
     /// </summary>
     public partial class UpdateWindow : Window
     {
-        private readonly Release _release;
+        private readonly GithubRelease _release;
         private readonly MainWindow _mainWindow;
         private Downloader _downloader;
         private readonly string _savePath = Path.Combine(Domain.CurrentPath, "update.zip");
 
-        public UpdateWindow(Release release, MainWindow mainWindow)
+        public UpdateWindow(GithubRelease release, MainWindow mainWindow)
         {
             _release = release;
             _mainWindow = mainWindow;

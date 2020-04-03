@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using Microsoft.Win32;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.ViewModels;
 
 namespace Milky.OsuPlayer.UserControls

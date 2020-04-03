@@ -2,7 +2,6 @@
     x:Class="Milky.OsuPlayer.UserControls.AnimationControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
     xmlns:local="clr-namespace:Milky.OsuPlayer"

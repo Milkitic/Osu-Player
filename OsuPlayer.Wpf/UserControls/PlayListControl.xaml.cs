@@ -13,7 +13,7 @@ using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.Windows;
 using Path = System.IO.Path;
 

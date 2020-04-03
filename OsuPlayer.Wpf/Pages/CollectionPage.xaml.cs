@@ -1,12 +1,9 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using System;
@@ -18,9 +15,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponent;
-using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponent.PanelComponent;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponents.PanelComponent;
 using Milky.OsuPlayer.UserControls;
 
 namespace Milky.OsuPlayer.Pages

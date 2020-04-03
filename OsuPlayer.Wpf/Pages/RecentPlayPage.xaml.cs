@@ -1,5 +1,4 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
@@ -16,9 +15,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.UiComponent;
-using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponent.NotificationComponent;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UserControls;
 
 namespace Milky.OsuPlayer.Pages

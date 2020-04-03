@@ -11,7 +11,7 @@ using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap;

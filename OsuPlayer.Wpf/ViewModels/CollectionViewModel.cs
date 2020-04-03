@@ -1,5 +1,4 @@
-﻿using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Data;
+﻿using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Interaction;
 using System;

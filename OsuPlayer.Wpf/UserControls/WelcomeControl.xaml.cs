@@ -6,8 +6,8 @@ using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponent.NotificationComponent;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
 
 namespace Milky.OsuPlayer.UserControls
 {

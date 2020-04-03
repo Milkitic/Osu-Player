@@ -1,5 +1,4 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
@@ -18,7 +17,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponent.PanelComponent;
+using Milky.OsuPlayer.UiComponents.PanelComponent;
 
 namespace Milky.OsuPlayer.Pages
 {

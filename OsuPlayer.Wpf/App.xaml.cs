@@ -38,7 +38,7 @@ namespace Milky.OsuPlayer
             Service.TryAddInstance(new OsuDbInst());
             //Services.TryAddInstance(new PlayersInst());
             Service.TryAddInstance(new LyricsInst());
-            Service.TryAddInstance(new Updater());
+            Service.TryAddInstance(new UpdateInst());
             Service.TryAddInstance(new OsuFileScanner());
 
             Service.Get<LyricsInst>().ReloadLyricProvider();

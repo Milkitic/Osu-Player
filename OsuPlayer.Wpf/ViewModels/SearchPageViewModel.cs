@@ -1,5 +1,4 @@
 using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Control;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
@@ -21,10 +20,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xaml;
-using Milky.OsuPlayer.UiComponent;
-using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponent.NotificationComponent;
-using Milky.OsuPlayer.UiComponent.PanelComponent;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using Milky.OsuPlayer.UiComponents.PanelComponent;
 using Milky.OsuPlayer.UserControls;
 
 namespace Milky.OsuPlayer.ViewModels
@@ -72,6 +70,7 @@ namespace Milky.OsuPlayer.ViewModels
                 OnPropertyChanged();
             }
         }
+
         public List<BeatmapDataModel> DisplayedMaps
         {
             get => _displayedMaps;
@@ -91,6 +90,7 @@ namespace Milky.OsuPlayer.ViewModels
                 OnPropertyChanged();
             }
         }
+
         public ListPageViewModel LastPage
         {
             get => _lastPage;
@@ -110,6 +110,7 @@ namespace Milky.OsuPlayer.ViewModels
                 OnPropertyChanged();
             }
         }
+
         public ListPageViewModel CurrentPage
         {
             get => _currentPage;

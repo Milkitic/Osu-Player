@@ -1,7 +1,7 @@
-﻿using Milky.OsuPlayer.Models.Github;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Presentation;
 using System.Diagnostics;
-using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -10,10 +10,10 @@ namespace Milky.OsuPlayer.Windows
     /// </summary>
     public partial class NewVersionWindow : WindowEx
     {
-        private readonly Release _release;
+        private readonly GithubRelease _release;
         private readonly MainWindow _mainWindow;
 
-        public NewVersionWindow(Release release, MainWindow mainWindow)
+        public NewVersionWindow(GithubRelease release, MainWindow mainWindow)
         {
             _release = release;
             _mainWindow = mainWindow;

@@ -173,9 +173,9 @@
     <Compile Include="UserControls\ClosingControl.xaml.cs">
       <DependentUpon>ClosingControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UiComponent\ButtonComponent\CloseButton.cs" />
-    <Compile Include="UiComponent\ButtonComponent\CommonButton.cs" />
-    <Compile Include="UiComponent\TextBoxComponent\CommonTextBox.cs" />
+    <Compile Include="UiComponents\ButtonComponent\CloseButton.cs" />
+    <Compile Include="UiComponents\ButtonComponent\CommonButton.cs" />
+    <Compile Include="UiComponents\TextBoxComponent\CommonTextBox.cs" />
     <Compile Include="UserControls\DiffSelectControl.xaml.cs">
       <DependentUpon>DiffSelectControl.xaml</DependentUpon>
     </Compile>
@@ -191,49 +191,49 @@
     <Compile Include="UserControls\SelectCollectionControl.xaml.cs">
       <DependentUpon>SelectCollectionControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UiComponent\RadioButtonComponent\SwitchRadio.cs" />
-    <Compile Include="UiComponent\PanelComponent\VirtualizingGalleryWrapPanel.cs" />
+    <Compile Include="UiComponents\RadioButtonComponent\SwitchRadio.cs" />
+    <Compile Include="UiComponents\PanelComponent\VirtualizingGalleryWrapPanel.cs" />
     <Compile Include="UserControls\VolumeControl.xaml.cs">
       <DependentUpon>VolumeControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Converter\DeviceInfoToStringConverter.cs" />
-    <Compile Include="Converter\IconColorConverter.cs" />
-    <Compile Include="Converter\NegativeBooleanConverter.cs" />
-    <Compile Include="UiComponent\ButtonComponent\PlayerControlButton.cs" />
-    <Compile Include="UiComponent\FrontDialogComponent\DialogClosingEventArgs.cs" />
-    <Compile Include="UiComponent\FrontDialogComponent\DialogOptionFactory.cs" />
+    <Compile Include="Converters\DeviceInfoToStringConverter.cs" />
+    <Compile Include="Converters\IconColorConverter.cs" />
+    <Compile Include="Converters\NegativeBooleanConverter.cs" />
+    <Compile Include="UiComponents\ButtonComponent\PlayerControlButton.cs" />
+    <Compile Include="UiComponents\FrontDialogComponent\DialogClosingEventArgs.cs" />
+    <Compile Include="UiComponents\FrontDialogComponent\DialogOptionFactory.cs" />
     <Compile Include="Pages\Settings\InterfacePage.xaml.cs">
       <DependentUpon>InterfacePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UiComponent\ButtonComponent\MaxButton.cs" />
-    <Compile Include="UiComponent\ButtonComponent\MinButton.cs" />
+    <Compile Include="UiComponents\ButtonComponent\MaxButton.cs" />
+    <Compile Include="UiComponents\ButtonComponent\MinButton.cs" />
     <Compile Include="UserControls\PlayController.xaml.cs">
       <DependentUpon>PlayController.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\PlayListControl.xaml.cs">
       <DependentUpon>PlayListControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UiComponent\ButtonComponent\SystemButton.cs" />
+    <Compile Include="UiComponents\ButtonComponent\SystemButton.cs" />
     <Compile Include="UserControls\WelcomeControl.xaml.cs">
       <DependentUpon>WelcomeControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Converter\NullToHiddenConverter.cs" />
+    <Compile Include="Converters\NullToHiddenConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="UiComponent\FrontDialogComponent\FrontDialogOverlay.xaml.cs">
+    <Compile Include="UiComponents\FrontDialogComponent\FrontDialogOverlay.xaml.cs">
       <DependentUpon>FrontDialogOverlay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UiComponent\LoaderComponent\Loader.cs" />
-    <Compile Include="UiComponent\NotificationComponent\Converters\EmptyToVisibleConverter.cs" />
-    <Compile Include="UiComponent\NotificationComponent\Converters\FontColorConverter.cs" />
-    <Compile Include="UiComponent\NotificationComponent\Converters\MixColorConverter.cs" />
-    <Compile Include="UiComponent\NotificationComponent\Converters\NotificationTypeConverter.cs" />
-    <Compile Include="UiComponent\NotificationComponent\Converters\NotificationTypeToCursorConverter.cs" />
-    <Compile Include="UiComponent\NotificationComponent\Notification.cs" />
-    <Compile Include="UiComponent\NotificationComponent\NotificationOption.cs" />
-    <Compile Include="UiComponent\NotificationComponent\NotifyControl.xaml.cs">
+    <Compile Include="UiComponents\LoaderComponent\Loader.cs" />
+    <Compile Include="UiComponents\NotificationComponent\Converters\EmptyToVisibleConverter.cs" />
+    <Compile Include="UiComponents\NotificationComponent\Converters\FontColorConverter.cs" />
+    <Compile Include="UiComponents\NotificationComponent\Converters\MixColorConverter.cs" />
+    <Compile Include="UiComponents\NotificationComponent\Converters\NotificationTypeConverter.cs" />
+    <Compile Include="UiComponents\NotificationComponent\Converters\NotificationTypeToCursorConverter.cs" />
+    <Compile Include="UiComponents\NotificationComponent\Notification.cs" />
+    <Compile Include="UiComponents\NotificationComponent\NotificationOption.cs" />
+    <Compile Include="UiComponents\NotificationComponent\NotifyControl.xaml.cs">
       <DependentUpon>NotifyControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UiComponent\NotificationComponent\NotifyOverlay.xaml.cs">
+    <Compile Include="UiComponents\NotificationComponent\NotifyOverlay.xaml.cs">
       <DependentUpon>NotifyOverlay.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\I18NUtil.cs" />
@@ -259,19 +259,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Converter\BooleanToCursorConverter.cs" />
-    <Compile Include="Converter\ButtonColorConverter.cs" />
-    <Compile Include="Converter\ExceptionToStringConverter.cs" />
-    <Compile Include="Converter\IndexToStringConverter.cs" />
-    <Compile Include="Converter\MarkdownConverter.cs" />
-    <Compile Include="Converter\MsToStringConverter.cs" />
-    <Compile Include="Converter\PlayingConverter.cs" />
-    <Compile Include="Converter\SingleParameterConverter.cs" />
-    <Compile Include="Converter\TabConverter.cs" />
-    <Compile Include="Converter\TrueToVisibleConverter.cs" />
-    <Compile Include="Converter\VersionToStringConverter.cs" />
+    <Compile Include="Converters\BooleanToCursorConverter.cs" />
+    <Compile Include="Converters\ButtonColorConverter.cs" />
+    <Compile Include="Converters\ExceptionToStringConverter.cs" />
+    <Compile Include="Converters\IndexToStringConverter.cs" />
+    <Compile Include="Converters\MarkdownConverter.cs" />
+    <Compile Include="Converters\MsToStringConverter.cs" />
+    <Compile Include="Converters\PlayingConverter.cs" />
+    <Compile Include="Converters\SingleParameterConverter.cs" />
+    <Compile Include="Converters\TabConverter.cs" />
+    <Compile Include="Converters\TrueToVisibleConverter.cs" />
+    <Compile Include="Converters\VersionToStringConverter.cs" />
     <Compile Include="Instances\LyricsInst.cs" />
-    <Compile Include="Converter\MiniWindowConverter.cs" />
+    <Compile Include="Converters\MiniWindowConverter.cs" />
     <Compile Include="StartupConfig.cs" />
     <Compile Include="ViewModels\CollectionPageViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModel.cs" />
@@ -283,9 +283,9 @@
     <Compile Include="Windows\ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Converter\DateTimeConverter.cs" />
-    <Compile Include="Converter\NavigationColorConverter.cs" />
-    <Compile Include="Converter\MainWindowConverters.cs" />
+    <Compile Include="Converters\DateTimeConverter.cs" />
+    <Compile Include="Converters\NavigationColorConverter.cs" />
+    <Compile Include="Converters\MainWindowConverters.cs" />
     <Compile Include="Windows\ExceptionWindow.xaml.cs">
       <DependentUpon>ExceptionWindow.xaml</DependentUpon>
     </Compile>
@@ -294,7 +294,6 @@
     <Compile Include="Windows\LyricWindow.xaml.cs">
       <DependentUpon>LyricWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\Github\Release.cs" />
     <Compile Include="Windows\NewVersionWindow.xaml.cs">
       <DependentUpon>NewVersionWindow.xaml</DependentUpon>
     </Compile>
@@ -339,7 +338,6 @@
       <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\KeyConverter.cs" />
-    <Compile Include="Instances\Updater.cs" />
     <Compile Include="ViewModels\ExportPageViewModel.cs" />
     <Page Include="UserControls\ClosingControl.xaml">
       <SubType>Designer</SubType>
@@ -425,39 +423,39 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\i18n.xaml">
+    <Page Include="Styles\i18n.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UiComponent\ButtonComponent\CommonButton.xaml">
+    <Page Include="UiComponents\ButtonComponent\CommonButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UiComponent\ButtonComponent\PlayerControlButton.xaml">
+    <Page Include="UiComponents\ButtonComponent\PlayerControlButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UiComponent\FrontDialogComponent\FrontDialogOverlay.xaml">
+    <Page Include="UiComponents\FrontDialogComponent\FrontDialogOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UiComponent\LoaderComponent\Loader.xaml">
+    <Page Include="UiComponents\LoaderComponent\Loader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UiComponent\NotificationComponent\NotifyControl.xaml">
+    <Page Include="UiComponents\NotificationComponent\NotifyControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UiComponent\NotificationComponent\NotifyOverlay.xaml">
+    <Page Include="UiComponents\NotificationComponent\NotifyOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UiComponent\RadioButtonComponent\SwitchRadio.xaml">
+    <Page Include="UiComponents\RadioButtonComponent\SwitchRadio.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UiComponent\TextBoxComponent\CommonTextBox.xaml">
+    <Page Include="UiComponents\TextBoxComponent\CommonTextBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

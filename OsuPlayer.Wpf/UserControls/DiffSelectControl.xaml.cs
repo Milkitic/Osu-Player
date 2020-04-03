@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 
 namespace Milky.OsuPlayer.UserControls
 {
