@@ -15,6 +15,7 @@
     xmlns:frontDialogComponent="clr-namespace:Milky.OsuPlayer.UiComponent.FrontDialogComponent"
     xmlns:notificationComponent="clr-namespace:Milky.OsuPlayer.UiComponent.NotificationComponent"
     xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
+    xmlns:userControls="clr-namespace:Milky.OsuPlayer.UserControls"
     Title="Osu Player"
     Width="998"
     Height="759"
@@ -260,7 +261,7 @@
                     </StackPanel>
                 </ScrollViewer>
                 <Grid>
-                    <control:AnimationControl
+                    <userControls:AnimationControl
                         x:Name="Animation"
                         ClipToBounds="True"
                         IsBlur="{Binding Content, ElementName=MainFrame, Converter={StaticResource NullToBoolFalseConverter}}" />
@@ -271,7 +272,7 @@
                         Visibility="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource NullToHiddenConverter}}" />
                 </Grid>
             </DockPanel>
-            <control:PlayController
+            <userControls:PlayController
                 x:Name="PlayController"
                 Grid.Row="1"
                 OnLikeClick="Controller_OnLikeClick"

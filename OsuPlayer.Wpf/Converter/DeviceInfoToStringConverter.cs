@@ -14,7 +14,7 @@ namespace Milky.OsuPlayer.Converter
             if (!(value is IDeviceInfo b)) return value;
             if (b.Equals(WasapiInfo.Default))
             {
-                return I18nUtil.GetString("ui-sets-content-systemDefault");
+                return I18NUtil.GetString("ui-sets-content-systemDefault");
             }
 
             return $"({b.OutputMethod}) {b.FriendlyName}";

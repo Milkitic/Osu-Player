@@ -26,10 +26,14 @@
                 <ResourceDictionary Source="Styles/SliderStyle.xaml" />
                 <ResourceDictionary Source="Styles/StatusIconStyle.xaml" />
                 <ResourceDictionary Source="Styles/TabStyle.xaml" />
-                <ResourceDictionary Source="Control/Buttons.xaml" />
                 <ResourceDictionary Source="Styles/ScrollBarStyle.xaml" />
-                <ResourceDictionary Source="Themes/Generic.xaml" />
                 <ResourceDictionary Source="Styles/Components.xaml" />
+
+                <ResourceDictionary Source="UiComponent/ButtonComponent/CommonButton.xaml" />
+                <ResourceDictionary Source="UiComponent/ButtonComponent/PlayerControlButton.xaml" />
+                <ResourceDictionary Source="UiComponent/LoaderComponent/Loader.xaml" />
+                <ResourceDictionary Source="UiComponent/RadioButtonComponent/SwitchRadio.xaml" />
+                <ResourceDictionary Source="UiComponent/TextBoxComponent/CommonTextBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

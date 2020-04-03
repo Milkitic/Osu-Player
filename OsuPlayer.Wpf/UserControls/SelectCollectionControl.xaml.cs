@@ -1,24 +1,22 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
-using OSharp.Beatmap;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponent;
 using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
+using Milky.OsuPlayer.ViewModels;
+using Milky.OsuPlayer.Windows;
+using OSharp.Beatmap;
 
-namespace Milky.OsuPlayer.Control
+namespace Milky.OsuPlayer.UserControls
 {
     /// <summary>
     /// SelectCollectionControl.xaml 的交互逻辑

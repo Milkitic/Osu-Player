@@ -18,6 +18,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.UiComponent.PanelComponent;
 
 namespace Milky.OsuPlayer.Pages
 {

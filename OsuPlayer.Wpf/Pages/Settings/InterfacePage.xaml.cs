@@ -38,15 +38,15 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void InterfacePage_OnLoaded(object sender, RoutedEventArgs e)
         {
-            var l = I18nUtil.AvailableLangDic.Keys.ToList();
+            var l = I18NUtil.AvailableLangDic.Keys.ToList();
             Language.ItemsSource = l;
-            Language.SelectedItem = I18nUtil.CurrentLocale.Key;
+            Language.SelectedItem = I18NUtil.CurrentLocale.Key;
         }
 
         private void Language_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var locale = I18nUtil.AvailableLangDic[(string)e.AddedItems[0]];
-            I18nUtil.SwitchToLang(locale);
+            var locale = I18NUtil.AvailableLangDic[(string)e.AddedItems[0]];
+            I18NUtil.SwitchToLang(locale);
             AppSettings.Default.Interface.Locale = locale;
             AppSettings.SaveDefault();
         }

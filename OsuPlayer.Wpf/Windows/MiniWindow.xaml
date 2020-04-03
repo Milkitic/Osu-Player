@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:Milky.OsuPlayer.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
+    xmlns:userControls="clr-namespace:Milky.OsuPlayer.UserControls"
     Title="Mini Window"
     Width="320"
     Height="80"
@@ -37,6 +38,6 @@
                     ShadowDepth="0" />
             </Border.Effect>
         </Border>
-        <control:MiniPlayController x:Name="Control" />
+        <userControls:MiniPlayController x:Name="Control" />
     </Grid>
 </presentation:WindowEx>

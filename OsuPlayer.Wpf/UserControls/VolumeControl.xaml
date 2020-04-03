@@ -1,18 +1,19 @@
 ﻿<UserControl
-    x:Class="Milky.OsuPlayer.Control.VolumeControl"
+    x:Class="Milky.OsuPlayer.UserControls.VolumeControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:player="clr-namespace:Milky.OsuPlayer.Media.Audio.Playlist;assembly=OsuPlayer.Media.Audio"
+    xmlns:userControls="clr-namespace:Milky.OsuPlayer.UserControls"
     d:DesignHeight="270"
     d:DesignWidth="170"
     FontFamily="{StaticResource SspRegular}"
     Loaded="VolumeControl_OnLoaded"
     mc:Ignorable="d">
     <UserControl.DataContext>
-        <local:VolumeControlVm />
+        <userControls:VolumeControlVm />
     </UserControl.DataContext>
     <Grid>
         <Border Margin="10" RenderOptions.BitmapScalingMode="LowQuality">

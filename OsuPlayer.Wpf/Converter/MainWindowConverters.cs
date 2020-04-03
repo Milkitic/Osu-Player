@@ -222,7 +222,7 @@ namespace Milky.OsuPlayer.Converter
             var shown = (bool)value;
             if (System.Convert.ToString(parameter) == "string")
             {
-                return shown ? I18nUtil.GetString("ui-closeDesktopLyric") : I18nUtil.GetString("ui-openDesktopLyric");
+                return shown ? I18NUtil.GetString("ui-closeDesktopLyric") : I18NUtil.GetString("ui-openDesktopLyric");
             }
             else if (System.Convert.ToString(parameter) == "bool")
             {
@@ -242,7 +242,7 @@ namespace Milky.OsuPlayer.Converter
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var locked = (bool)value;
-            return locked ? I18nUtil.GetString("ui-unlockLyric") : I18nUtil.GetString("ui-lockLyric");
+            return locked ? I18NUtil.GetString("ui-unlockLyric") : I18NUtil.GetString("ui-lockLyric");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

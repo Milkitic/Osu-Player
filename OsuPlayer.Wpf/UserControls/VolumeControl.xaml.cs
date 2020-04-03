@@ -1,18 +1,17 @@
-﻿using Milky.OsuPlayer.Common;
+﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Dependency;
 using NAudio.Wave;
 using OsuPlayer.Devices;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Shared.Dependency;
 
-namespace Milky.OsuPlayer.Control
+namespace Milky.OsuPlayer.UserControls
 {
     public class VolumeControlVm : VmBase
     {

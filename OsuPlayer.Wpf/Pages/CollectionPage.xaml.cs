@@ -20,6 +20,8 @@ using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponent;
 using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponent.PanelComponent;
+using Milky.OsuPlayer.UserControls;
 
 namespace Milky.OsuPlayer.Pages
 {

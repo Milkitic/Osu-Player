@@ -1,17 +1,16 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
-using System;
+﻿using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Audio.Playlist;
+using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
 
-namespace Milky.OsuPlayer.Control
+namespace Milky.OsuPlayer.UserControls
 {
     public class MiniPlayListControlVm : VmBase
     {

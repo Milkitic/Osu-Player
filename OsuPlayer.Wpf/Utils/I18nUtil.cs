@@ -1,4 +1,5 @@
 ﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Shared;
 using System;
 using System.Collections.Generic;
@@ -7,13 +8,12 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Xaml;
-using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Utils
 {
-    public static class I18nUtil
+    public static class I18NUtil
     {
-        private static ResourceDictionary I18NDic => App.Current.Resources.MergedDictionaries[0];
+        private static ResourceDictionary I18NDic => Application.Current.Resources.MergedDictionaries[0];
         public static KeyValuePair<string, string> CurrentLocale { get; private set; }
 
         private static string GetXamlTemplate(string resDicStr)
@@ -33,7 +33,8 @@ namespace Milky.OsuPlayer.Utils
             var locale = AppSettings.Default.Interface.Locale;
 
             var defLocale = I18NDic.MergedDictionaries[0];
-            var defUiStrings = defLocale.Keys.Cast<object>().ToDictionary(defKey => (string)defKey, defKey => (string)defLocale[defKey]);
+            var defUiStrings = defLocale.Keys.Cast<object>()
+                .ToDictionary(defKey => (string)defKey, defKey => (string)defLocale[defKey]);
 
             foreach (var enumerateFile in SharedUtils.EnumerateFiles(Domain.LangPath, ".xaml"))
             {
@@ -67,7 +68,8 @@ namespace Milky.OsuPlayer.Utils
                                 if (!result) continue;
                                 if (xamlReader.NodeType == XamlNodeType.StartObject)
                                 {
-                                    currentObj = (xamlReader.LineNumber, xamlReader.LinePosition, xamlReader.Type.UnderlyingType);
+                                    currentObj = (xamlReader.LineNumber, xamlReader.LinePosition,
+                                        xamlReader.Type.UnderlyingType);
                                 }
                                 else if (xamlReader.NodeType == XamlNodeType.EndObject)
                                 {
@@ -94,13 +96,16 @@ namespace Milky.OsuPlayer.Utils
                                 {
                                     if (xamlReader.NodeType == XamlNodeType.StartMember)
                                     {
-                                        currentMember = (xamlReader.LineNumber, xamlReader.LinePosition, xamlReader.Member.Name);
+                                        currentMember = (xamlReader.LineNumber, xamlReader.LinePosition,
+                                            xamlReader.Member.Name);
                                     }
-                                    else if (xamlReader.NodeType == XamlNodeType.Value && currentMember?.member == "Key")
+                                    else if (xamlReader.NodeType == XamlNodeType.Value &&
+                                             currentMember?.member == "Key")
                                     {
                                         keyName = (string)xamlReader.Value;
                                     }
-                                    else if (xamlReader.NodeType == XamlNodeType.Value && currentMember?.member == "_Initialization")
+                                    else if (xamlReader.NodeType == XamlNodeType.Value &&
+                                             currentMember?.member == "_Initialization")
                                     {
                                         if (kvs.Count == 0)
                                         {
@@ -110,14 +115,14 @@ namespace Milky.OsuPlayer.Utils
                                         kvs.Add(keyName, (string)xamlReader.Value);
                                     }
                                 }
-
                             }
 
                             var unspecifiedKvs = defUiStrings.Where(k => !kvs.ContainsKey(k.Key)).ToList(); // 是否缺少字段
                             if (unspecifiedKvs.Count > 0)
                             {
                                 var kvStr = string.Join("\r\n",
-                                    unspecifiedKvs.Select(k => $@"    <sys:String x:Key=""{k.Key}"">{k.Value}</sys:String>"));
+                                    unspecifiedKvs.Select(k =>
+                                        $@"    <sys:String x:Key=""{k.Key}"">{k.Value}</sys:String>"));
 
                                 using (var sr = new StringReader(fullText))
                                 using (var sw = new StreamWriter(enumerateFile.FullName))
@@ -137,7 +142,6 @@ namespace Milky.OsuPlayer.Utils
                                     }
                                 }
                             }
-
                         }
                     }
 
@@ -186,15 +190,6 @@ namespace Milky.OsuPlayer.Utils
                 }
             }
 
-            return;
-
-            if (I18NDic.MergedDictionaries.Count > 0)
-            {
-                // 如果已使用其他语言,先清空
-                I18NDic.MergedDictionaries.Clear();
-            }
-
-            I18NDic.MergedDictionaries.Add(langRd);
             CurrentLocale = AvailableLangDic.First(k => k.Value == locale);
         }
 
@@ -203,6 +198,6 @@ namespace Milky.OsuPlayer.Utils
             return (string)Application.Current.FindResource(key);
         }
 
-        public static Dictionary<string, string> AvailableLangDic { get; set; } = new Dictionary<string, string>();
+        public static Dictionary<string, string> AvailableLangDic { get; } = new Dictionary<string, string>();
     }
 }

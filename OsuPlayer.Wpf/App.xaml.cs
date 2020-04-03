@@ -84,7 +84,7 @@ namespace Milky.OsuPlayer
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             Execute.SetMainThreadContext();
-            I18nUtil.LoadI18N();
+            I18NUtil.LoadI18N();
         }
     }
 }

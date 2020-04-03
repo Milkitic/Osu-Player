@@ -11,6 +11,7 @@
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     xmlns:textboxComponent="clr-namespace:Milky.OsuPlayer.UiComponent.TextBoxComponent"
     xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
+    xmlns:panelComponent="clr-namespace:Milky.OsuPlayer.UiComponent.PanelComponent"
     Title="CollectionPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -389,7 +390,7 @@
                                     ItemsSource="{Binding DisplayedBeatmaps, Mode=OneWay}">
                                     <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <control:VirtualizingGalleryWrapPanel
+                                            <panelComponent:VirtualizingGalleryWrapPanel
                                                 ChildHeight="{StaticResource GalleryHeight}"
                                                 ChildWidth="{StaticResource GalleryWidth}"
                                                 ItemLoaded="VirtualizingGalleryWrapPanel_OnItemLoaded"

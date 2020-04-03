@@ -1,11 +1,4 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Player;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -14,11 +7,18 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Audio.Player;
+using Milky.OsuPlayer.Media.Audio.Playlist;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Shared.Dependency;
 using Unosquare.FFME.Common;
 
-namespace Milky.OsuPlayer.Control
+namespace Milky.OsuPlayer.UserControls
 {
     public class AnimationControlVm : VmBase
     {

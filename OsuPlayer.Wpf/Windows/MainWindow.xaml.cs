@@ -23,6 +23,7 @@ using System.Windows;
 using Milky.OsuPlayer.UiComponent;
 using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponent.NotificationComponent;
+using Milky.OsuPlayer.UserControls;
 
 namespace Milky.OsuPlayer.Windows
 {

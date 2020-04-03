@@ -24,6 +24,8 @@ using System.Xaml;
 using Milky.OsuPlayer.UiComponent;
 using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponent.NotificationComponent;
+using Milky.OsuPlayer.UiComponent.PanelComponent;
+using Milky.OsuPlayer.UserControls;
 
 namespace Milky.OsuPlayer.ViewModels
 {

@@ -164,36 +164,36 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Control\AddCollectionControl.xaml.cs">
+    <Compile Include="UserControls\AddCollectionControl.xaml.cs">
       <DependentUpon>AddCollectionControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\AnimationControl.xaml.cs">
+    <Compile Include="UserControls\AnimationControl.xaml.cs">
       <DependentUpon>AnimationControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\ClosingControl.xaml.cs">
+    <Compile Include="UserControls\ClosingControl.xaml.cs">
       <DependentUpon>ClosingControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UiComponent\ButtonComponent\CloseButton.cs" />
     <Compile Include="UiComponent\ButtonComponent\CommonButton.cs" />
     <Compile Include="UiComponent\TextBoxComponent\CommonTextBox.cs" />
-    <Compile Include="Control\DiffSelectControl.xaml.cs">
+    <Compile Include="UserControls\DiffSelectControl.xaml.cs">
       <DependentUpon>DiffSelectControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\EditCollectionControl.xaml.cs">
+    <Compile Include="UserControls\EditCollectionControl.xaml.cs">
       <DependentUpon>EditCollectionControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\MiniPlayController.xaml.cs">
+    <Compile Include="UserControls\MiniPlayController.xaml.cs">
       <DependentUpon>MiniPlayController.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\PlayModeControl.xaml.cs">
+    <Compile Include="UserControls\PlayModeControl.xaml.cs">
       <DependentUpon>PlayModeControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\SelectCollectionControl.xaml.cs">
+    <Compile Include="UserControls\SelectCollectionControl.xaml.cs">
       <DependentUpon>SelectCollectionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UiComponent\RadioButtonComponent\SwitchRadio.cs" />
-    <Compile Include="Control\VirtualizingGalleryWrapPanel.cs" />
-    <Compile Include="Control\VolumeControl.xaml.cs">
+    <Compile Include="UiComponent\PanelComponent\VirtualizingGalleryWrapPanel.cs" />
+    <Compile Include="UserControls\VolumeControl.xaml.cs">
       <DependentUpon>VolumeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converter\DeviceInfoToStringConverter.cs" />
@@ -207,14 +207,14 @@
     </Compile>
     <Compile Include="UiComponent\ButtonComponent\MaxButton.cs" />
     <Compile Include="UiComponent\ButtonComponent\MinButton.cs" />
-    <Compile Include="Control\PlayController.xaml.cs">
+    <Compile Include="UserControls\PlayController.xaml.cs">
       <DependentUpon>PlayController.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\PlayListControl.xaml.cs">
+    <Compile Include="UserControls\PlayListControl.xaml.cs">
       <DependentUpon>PlayListControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UiComponent\ButtonComponent\SystemButton.cs" />
-    <Compile Include="Control\WelcomeControl.xaml.cs">
+    <Compile Include="UserControls\WelcomeControl.xaml.cs">
       <DependentUpon>WelcomeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converter\NullToHiddenConverter.cs" />
@@ -236,7 +236,7 @@
     <Compile Include="UiComponent\NotificationComponent\NotifyOverlay.xaml.cs">
       <DependentUpon>NotifyOverlay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utils\I18nUtil.cs" />
+    <Compile Include="Utils\I18NUtil.cs" />
     <Compile Include="Utils\NativeUser32.cs" />
     <Compile Include="ViewModels\ListPageViewModel.cs" />
     <Compile Include="ViewModels\StoryboardVm.cs" />
@@ -247,11 +247,11 @@
       <DependentUpon>MiniWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\PageParts.cs" />
-    <Page Include="Control\AddCollectionControl.xaml">
+    <Page Include="UserControls\AddCollectionControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Control\AnimationControl.xaml">
+    <Page Include="UserControls\AnimationControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -335,51 +335,49 @@
     <Compile Include="Pages\StoryboardPage.xaml.cs">
       <DependentUpon>StoryboardPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utils\OptionContainer.cs" />
-    <Compile Include="Utils\EventRedirectHandle.cs" />
     <Compile Include="UpdateWindow.xaml.cs">
       <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\KeyConverter.cs" />
     <Compile Include="Instances\Updater.cs" />
     <Compile Include="ViewModels\ExportPageViewModel.cs" />
-    <Page Include="Control\ClosingControl.xaml">
+    <Page Include="UserControls\ClosingControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Control\DiffSelectControl.xaml">
+    <Page Include="UserControls\DiffSelectControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Control\EditCollectionControl.xaml">
+    <Page Include="UserControls\EditCollectionControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Control\MiniPlayController.xaml">
+    <Page Include="UserControls\MiniPlayController.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Control\PlayController.xaml">
+    <Page Include="UserControls\PlayController.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Control\PlayListControl.xaml">
+    <Page Include="UserControls\PlayListControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Control\PlayModeControl.xaml">
+    <Page Include="UserControls\PlayModeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Control\SelectCollectionControl.xaml">
+    <Page Include="UserControls\SelectCollectionControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Control\VolumeControl.xaml">
+    <Page Include="UserControls\VolumeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Control\WelcomeControl.xaml">
+    <Page Include="UserControls\WelcomeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

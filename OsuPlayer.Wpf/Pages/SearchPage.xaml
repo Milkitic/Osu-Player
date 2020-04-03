@@ -12,6 +12,7 @@
     xmlns:models1="clr-namespace:Milky.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
     xmlns:common="clr-namespace:Milky.OsuPlayer.Common;assembly=OsuPlayer.Common"
     xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
+    xmlns:panelComponent="clr-namespace:Milky.OsuPlayer.UiComponent.PanelComponent"
     x:Name="CurrentPage"
     Title="SearchPage"
     d:DesignHeight="450"
@@ -247,7 +248,7 @@
             ItemsSource="{Binding DisplayedMaps, Mode=OneWay}">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <control:VirtualizingGalleryWrapPanel
+                    <panelComponent:VirtualizingGalleryWrapPanel
                         ChildHeight="{StaticResource GalleryHeight}"
                         ChildWidth="{StaticResource GalleryWidth}"
                         ItemLoaded="VirtualizingGalleryWrapPanel_OnItemLoaded"
