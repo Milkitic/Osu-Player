@@ -173,8 +173,9 @@
     <Compile Include="Control\ClosingControl.xaml.cs">
       <DependentUpon>ClosingControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\CommonButton.cs" />
-    <Compile Include="Control\CommonTextBox.cs" />
+    <Compile Include="UiComponent\ButtonComponent\CloseButton.cs" />
+    <Compile Include="UiComponent\ButtonComponent\CommonButton.cs" />
+    <Compile Include="UiComponent\TextBoxComponent\CommonTextBox.cs" />
     <Compile Include="Control\DiffSelectControl.xaml.cs">
       <DependentUpon>DiffSelectControl.xaml</DependentUpon>
     </Compile>
@@ -190,7 +191,7 @@
     <Compile Include="Control\SelectCollectionControl.xaml.cs">
       <DependentUpon>SelectCollectionControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\SwitchRadio.cs" />
+    <Compile Include="UiComponent\RadioButtonComponent\SwitchRadio.cs" />
     <Compile Include="Control\VirtualizingGalleryWrapPanel.cs" />
     <Compile Include="Control\VolumeControl.xaml.cs">
       <DependentUpon>VolumeControl.xaml</DependentUpon>
@@ -198,19 +199,21 @@
     <Compile Include="Converter\DeviceInfoToStringConverter.cs" />
     <Compile Include="Converter\IconColorConverter.cs" />
     <Compile Include="Converter\NegativeBooleanConverter.cs" />
-    <Compile Include="DialogOptionFactory.cs" />
+    <Compile Include="UiComponent\ButtonComponent\PlayerControlButton.cs" />
+    <Compile Include="UiComponent\FrontDialogComponent\DialogClosingEventArgs.cs" />
+    <Compile Include="UiComponent\FrontDialogComponent\DialogOptionFactory.cs" />
     <Compile Include="Pages\Settings\InterfacePage.xaml.cs">
       <DependentUpon>InterfacePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\MaxButton.cs" />
-    <Compile Include="Control\MinButton.cs" />
+    <Compile Include="UiComponent\ButtonComponent\MaxButton.cs" />
+    <Compile Include="UiComponent\ButtonComponent\MinButton.cs" />
     <Compile Include="Control\PlayController.xaml.cs">
       <DependentUpon>PlayController.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\PlayListControl.xaml.cs">
       <DependentUpon>PlayListControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\SystemButton.cs" />
+    <Compile Include="UiComponent\ButtonComponent\SystemButton.cs" />
     <Compile Include="Control\WelcomeControl.xaml.cs">
       <DependentUpon>WelcomeControl.xaml</DependentUpon>
     </Compile>
@@ -219,6 +222,7 @@
     <Compile Include="UiComponent\FrontDialogComponent\FrontDialogOverlay.xaml.cs">
       <DependentUpon>FrontDialogOverlay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UiComponent\LoaderComponent\Loader.cs" />
     <Compile Include="UiComponent\NotificationComponent\Converters\EmptyToVisibleConverter.cs" />
     <Compile Include="UiComponent\NotificationComponent\Converters\FontColorConverter.cs" />
     <Compile Include="UiComponent\NotificationComponent\Converters\MixColorConverter.cs" />
@@ -268,7 +272,6 @@
     <Compile Include="Converter\VersionToStringConverter.cs" />
     <Compile Include="Instances\LyricsInst.cs" />
     <Compile Include="Converter\MiniWindowConverter.cs" />
-    <Compile Include="RandomSeed.cs" />
     <Compile Include="StartupConfig.cs" />
     <Compile Include="ViewModels\CollectionPageViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModel.cs" />
@@ -340,10 +343,6 @@
     <Compile Include="Utils\KeyConverter.cs" />
     <Compile Include="Instances\Updater.cs" />
     <Compile Include="ViewModels\ExportPageViewModel.cs" />
-    <Page Include="Control\Buttons.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Control\ClosingControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -432,9 +431,21 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UiComponent\ButtonComponent\CommonButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UiComponent\ButtonComponent\PlayerControlButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UiComponent\FrontDialogComponent\FrontDialogOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UiComponent\LoaderComponent\Loader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UiComponent\NotificationComponent\NotifyControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -443,6 +454,14 @@
     <Page Include="UiComponent\NotificationComponent\NotifyOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UiComponent\RadioButtonComponent\SwitchRadio.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UiComponent\TextBoxComponent\CommonTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\BeatmapInfoWindow.xaml">
       <SubType>Designer</SubType>
@@ -564,10 +583,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="UpdateWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -633,10 +648,6 @@
     <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
       <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>
       <Name>OsuPlayer.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.ControlLibrary\OsuPlayer.ControlLibrary.csproj">
-      <Project>{30dfc628-f9a6-42b1-9bbd-73489e3ab204}</Project>
-      <Name>OsuPlayer.ControlLibrary</Name>
     </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj">
       <Project>{094FAC4A-6277-46E8-97B4-C992F1674638}</Project>

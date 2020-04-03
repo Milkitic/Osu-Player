@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Control"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
     d:DesignHeight="450"
     d:DesignWidth="800"
     FontFamily="{StaticResource SspRegular}"
@@ -106,12 +107,12 @@
                             <Label.Content>
                                 <TextBlock>
                                     <Run Text="{DynamicResource ui-total}" />
-                                    <Run Text="{Binding Controller.Entries.Count, Mode=OneWay}" />
+                                    <Run Text="{Binding Controller.PlayList.SongList.Count, Mode=OneWay}" />
                                     <Run Text="{DynamicResource ui-songsClassifier}" />
                                 </TextBlock>
                             </Label.Content>
                         </Label>
-                        <local:CommonButton
+                        <buttonComponent:CommonButton
                             Height="24"
                             Padding="5,0"
                             VerticalAlignment="Center"
@@ -134,7 +135,7 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Orientation="Horizontal">
-                    <local:CommonButton
+                    <buttonComponent:CommonButton
                         Height="24"
                         Padding="5,0"
                         VerticalAlignment="Center"
@@ -149,7 +150,7 @@
                         MouseDownForeground="#646464"
                         MouseOverBackground="Transparent"
                         MouseOverForeground="#808080" />
-                    <local:CommonButton
+                    <buttonComponent:CommonButton
                         Width="24"
                         Height="24"
                         Background="Transparent"
@@ -185,7 +186,7 @@
                             <Border.Visibility>
                                 <MultiBinding Converter="{StaticResource Multi_EqualityToVisibilityConverter}">
                                     <Binding />
-                                    <Binding Path="DataContext.Controller.CurrentInfo.Beatmap" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:PlayListControl}}" />
+                                    <Binding Path="DataContext.Controller.PlayList.CurrentInfo.Beatmap" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:PlayListControl}}" />
                                 </MultiBinding>
                             </Border.Visibility>
                             <Viewbox Width="22" Height="22">

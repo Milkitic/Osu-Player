@@ -12,6 +12,7 @@ using Milky.OsuPlayer.Windows;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
+using Milky.OsuPlayer.UiComponent;
 using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponent.NotificationComponent;
 

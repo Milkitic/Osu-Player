@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.ControlLibrary.Custom
+namespace Milky.OsuPlayer.UiComponent.ButtonComponent
 {
     public class PlayerControlButton : Button, INotifyPropertyChanged
     {

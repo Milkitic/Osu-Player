@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
     xmlns:settings="clr-namespace:Milky.OsuPlayer.Pages.Settings"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
     Title="{DynamicResource ui-win-sets}"
     Width="640"
     Height="440"
@@ -45,7 +46,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Orientation="Horizontal">
-                <control:CloseButton MouseDownBackground="#80F72F2F" WindowChrome.IsHitTestVisibleInChrome="True" />
+                <buttonComponent:CloseButton MouseDownBackground="#80F72F2F" WindowChrome.IsHitTestVisibleInChrome="True" />
             </StackPanel>
         </Grid>
         <DockPanel

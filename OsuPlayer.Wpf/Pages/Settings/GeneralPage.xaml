@@ -3,11 +3,13 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
-    xmlns:custom="clr-namespace:Milky.OsuPlayer.ControlLibrary.Custom;assembly=OsuPlayer.ControlLibrary"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Pages.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:scanning="clr-namespace:Milky.OsuPlayer.Common.Scanning;assembly=OsuPlayer.Common"
+    xmlns:loaderComponent="clr-namespace:Milky.OsuPlayer.UiComponent.LoaderComponent"
+    xmlns:textboxComponent="clr-namespace:Milky.OsuPlayer.UiComponent.TextBoxComponent"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
     Title="GeneralPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -37,7 +39,7 @@
                     Content="{DynamicResource ui-sets-title-osuDbLocation}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
-                    <control:CommonTextBox
+                    <textboxComponent:CommonTextBox
                         x:Name="TbDbPath"
                         Width="250"
                         Height="27"
@@ -47,7 +49,7 @@
                         CornerRadius="5"
                         IsReadOnly="True"
                         Text="D:\asdf\asdf" />
-                    <control:CommonButton
+                    <buttonComponent:CommonButton
                         x:Name="BrowseDb"
                         Width="27"
                         Height="27"
@@ -61,7 +63,7 @@
                         IconTemplate="{StaticResource FolderTempl}"
                         IsEnabled="{Binding IsScanning, Converter={StaticResource NegativeBooleanConverter}}"
                         Style="{StaticResource SettingsButton}" />
-                    <control:CommonButton
+                    <buttonComponent:CommonButton
                         x:Name="SyncNow"
                         Height="25"
                         Margin="6,0,0,0"
@@ -78,7 +80,7 @@
                     Content="{DynamicResource ui-sets-title-customSongPath}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
-                    <control:CommonTextBox
+                    <textboxComponent:CommonTextBox
                         x:Name="TbCustomPath"
                         Width="250"
                         Height="27"
@@ -88,7 +90,7 @@
                         CornerRadius="5"
                         IsReadOnly="True"
                         Text="D:\asdf\asdf" />
-                    <control:CommonButton
+                    <buttonComponent:CommonButton
                         x:Name="BrowseCustom"
                         Width="27"
                         Height="27"
@@ -101,7 +103,7 @@
                         IconMargin="0"
                         IconTemplate="{StaticResource FolderTempl}"
                         Style="{StaticResource SettingsButton}" />
-                    <custom:Loader
+                    <loaderComponent:Loader
                         Width="25"
                         Height="25"
                         FillColor="#303030"
@@ -110,7 +112,7 @@
                         Content="{DynamicResource ui-sets-content-scanning3Dot}"
                         Foreground="#303030"
                         Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
-                    <control:CommonButton
+                    <buttonComponent:CommonButton
                         x:Name="CancelScan"
                         Padding="2,0"
                         VerticalAlignment="Center"

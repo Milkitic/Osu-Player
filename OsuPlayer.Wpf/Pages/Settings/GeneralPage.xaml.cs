@@ -86,7 +86,7 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private async void BrowseDb_Click(object sender, RoutedEventArgs e)
         {
-            var result = Util.BrowseDb(out var path);
+            var result = CommonUtils.BrowseDb(out var path);
             if (!result.HasValue || !result.Value)
                 return;
             try

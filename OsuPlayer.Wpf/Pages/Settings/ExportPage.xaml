@@ -6,6 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Pages.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:textboxComponent="clr-namespace:Milky.OsuPlayer.UiComponent.TextBoxComponent"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
     Title="ExportPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -25,7 +27,7 @@
                         VerticalContentAlignment="Center"
                         Content="{DynamicResource ui-sets-content-musicDirectory}"
                         Style="{StaticResource ConfigLabelStyle}" />
-                    <control:CommonTextBox
+                    <textboxComponent:CommonTextBox
                         x:Name="LblMp3Path"
                         Width="250"
                         Height="27"
@@ -35,7 +37,7 @@
                         CornerRadius="5"
                         IsReadOnly="True"
                         Text="D:\asdf\asdf" />
-                    <control:CommonButton
+                    <buttonComponent:CommonButton
                         x:Name="BtnMp3Path"
                         Width="27"
                         Height="27"
@@ -54,7 +56,7 @@
                         VerticalContentAlignment="Center"
                         Content="{DynamicResource ui-sets-content-bgDirectory}"
                         Style="{StaticResource ConfigLabelStyle}" />
-                    <control:CommonTextBox
+                    <textboxComponent:CommonTextBox
                         x:Name="LblBgPath"
                         Width="250"
                         Height="27"
@@ -64,7 +66,7 @@
                         CornerRadius="5"
                         IsReadOnly="True"
                         Text="D:\asdf\asdf" />
-                    <control:CommonButton
+                    <buttonComponent:CommonButton
                         x:Name="BtnBgPath"
                         Width="27"
                         Height="27"

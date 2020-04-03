@@ -18,6 +18,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.UiComponent;
 using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
 
 namespace Milky.OsuPlayer.Pages
@@ -273,7 +274,7 @@ namespace Milky.OsuPlayer.Pages
             var dataModel = ViewModel.DisplayedBeatmaps[e.Index];
             try
             {
-                var fileName = await Util.GetThumbByBeatmapDbId(dataModel).ConfigureAwait(false);
+                var fileName = await CommonUtils.GetThumbByBeatmapDbId(dataModel).ConfigureAwait(false);
                 Execute.OnUiThread(() => dataModel.ThumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg"));
             }
             catch (Exception ex)

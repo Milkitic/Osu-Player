@@ -396,7 +396,7 @@ namespace Milky.OsuPlayer.Control
                 To = -offset,
                 EasingFunction = new CircleEase() { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,
-                Duration = Util.GetDuration(TimeSpan.FromMilliseconds(150))
+                Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(150))
             };
 
             Storyboard.SetTarget(da, this);

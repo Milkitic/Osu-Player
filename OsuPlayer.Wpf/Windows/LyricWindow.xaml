@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
     Title="Lyric Window"
     Height="90"
     AllowsTransparency="True"
@@ -115,37 +116,37 @@
                 </Style>
             </Border.Style>
             <StackPanel Orientation="Horizontal">
-                <control:CommonButton
+                <buttonComponent:CommonButton
                     x:Name="BtnPrev"
                     Margin="10,5,5,5"
                     Click="BtnPrev_Click"
                     IconTemplate="{StaticResource PrevButtonTempl}"
                     Style="{StaticResource LyricButton}" />
-                <control:CommonButton
+                <buttonComponent:CommonButton
                     x:Name="BtnPlay"
                     Margin="5"
                     Click="BtnPlay_Click"
                     Style="{StaticResource LyricButton}">
-                    <control:CommonButton.IconTemplate>
+                    <buttonComponent:CommonButton.IconTemplate>
                         <MultiBinding Converter="{StaticResource PlayingConverter}">
                             <Binding Path="Shared.IsPlaying" />
                             <Binding RelativeSource="{RelativeSource AncestorType=Window}" />
                         </MultiBinding>
-                    </control:CommonButton.IconTemplate>
-                </control:CommonButton>
-                <control:CommonButton
+                    </buttonComponent:CommonButton.IconTemplate>
+                </buttonComponent:CommonButton>
+                <buttonComponent:CommonButton
                     x:Name="BtnNext"
                     Margin="5"
                     Click="BtnNext_Click"
                     IconTemplate="{StaticResource NextButtonTempl}"
                     Style="{StaticResource LyricButton}" />
-                <control:CommonButton
+                <buttonComponent:CommonButton
                     x:Name="BtnLock"
                     Margin="5"
                     Click="BtnLock_Click"
                     IconTemplate="{StaticResource LockButtonTempl}"
                     Style="{StaticResource LyricButton}" />
-                <control:CommonButton
+                <buttonComponent:CommonButton
                     x:Name="BtnHide"
                     Margin="5,5,10,5"
                     Click="BtnHide_Click"

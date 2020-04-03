@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Milky.OsuPlayer.Control
+namespace Milky.OsuPlayer.UiComponent.ButtonComponent
 {
     public class MaxButton : SystemButton
     {

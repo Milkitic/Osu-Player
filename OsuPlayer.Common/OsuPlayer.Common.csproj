@@ -86,7 +86,7 @@
     <Compile Include="Scanning\FileScannerViewModel.cs" />
     <Compile Include="Scanning\OsuFileScanner.cs" />
     <Compile Include="SharedVm.cs" />
-    <Compile Include="Util.cs" />
+    <Compile Include="CommonUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

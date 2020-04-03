@@ -7,6 +7,8 @@
     FontFamily="{StaticResource SspRegular}"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+    xmlns:textboxComponent="clr-namespace:Milky.OsuPlayer.UiComponent.TextBoxComponent"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -38,14 +40,14 @@
                 Grid.Column="0"
                 Margin="0,5,5,0"
                 Content="{DynamicResource ui-briefIntroduction}" />
-            <local:CommonTextBox
+            <textboxComponent:CommonTextBox
                 Grid.Row="0"
                 Grid.Column="1"
                 Width="Auto"
                 Height="28"
                 Margin="0,5"
                 Text="{Binding Name, Mode=TwoWay}" />
-            <local:CommonTextBox
+            <textboxComponent:CommonTextBox
                 Grid.Row="1"
                 Grid.Column="1"
                 Width="Auto"
@@ -62,7 +64,7 @@
                 Grid.Row="2"
                 Grid.Column="1"
                 Orientation="Horizontal">
-                <local:CommonButton
+                <buttonComponent:CommonButton
                     Width="75"
                     Margin="0"
                     BorderBrush="Transparent"
@@ -87,7 +89,7 @@
                         Source="{Binding Path=CoverPath, Mode=TwoWay}"
                         Stretch="UniformToFill" />
                 </Grid>
-                <local:CommonButton
+                <buttonComponent:CommonButton
                     Width="auto"
                     Margin="10,0"
                     Click="BtnChooseImg_Click"

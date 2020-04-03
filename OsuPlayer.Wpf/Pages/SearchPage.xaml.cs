@@ -145,7 +145,7 @@ namespace Milky.OsuPlayer.Pages
             var dataModel = ViewModel.DisplayedMaps[e.Index];
             try
             {
-                var fileName = await Util.GetThumbByBeatmapDbId(dataModel).ConfigureAwait(false);
+                var fileName = await CommonUtils.GetThumbByBeatmapDbId(dataModel).ConfigureAwait(false);
                 Execute.OnUiThread(() => dataModel.ThumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg"));
             }
             catch (Exception ex)

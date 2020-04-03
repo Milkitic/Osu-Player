@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     FontFamily="{StaticResource SspRegular}"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -18,7 +19,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <local:CommonButton
+        <buttonComponent:CommonButton
             Grid.Row="0"
             Height="auto"
             Margin="3"
@@ -30,7 +31,7 @@
             Content="{DynamicResource ui-addNewCollection}"
             IconMargin="5"
             IconSize="18">
-            <local:CommonButton.IconTemplate>
+            <buttonComponent:CommonButton.IconTemplate>
                 <ControlTemplate>
                     <Viewbox Height="20" Stretch="Uniform">
                         <Canvas Width="1000" Height="1000">
@@ -53,8 +54,8 @@
                         </Canvas>
                     </Viewbox>
                 </ControlTemplate>
-            </local:CommonButton.IconTemplate>
-        </local:CommonButton>
+            </buttonComponent:CommonButton.IconTemplate>
+        </buttonComponent:CommonButton>
         <ListView
             x:Name="CollectionList"
             Grid.Row="1"
@@ -65,7 +66,7 @@
             <ListView.Resources>
                 <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListViewItem}">
                     <StackPanel Orientation="Vertical">
-                        <local:CommonButton
+                        <buttonComponent:CommonButton
                             Height="58"
                             MinHeight="26"
                             Margin="0,0,0,2"
@@ -102,7 +103,7 @@
                                     <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
                                 </Label>
                             </Grid>
-                        </local:CommonButton>
+                        </buttonComponent:CommonButton>
                     </StackPanel>
                 </ControlTemplate>
                 <Style TargetType="{x:Type ListViewItem}">

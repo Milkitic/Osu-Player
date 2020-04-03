@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Milky.OsuPlayer.Control">
+    xmlns:local="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent">
+
     <ControlTemplate x:Key="CloseTempl">
         <Canvas Width="1024" Height="1024">
             <Path Fill="{TemplateBinding Foreground}">
@@ -43,13 +44,13 @@
             </Path>
         </Canvas>
     </ControlTemplate>
-    <Style TargetType="{x:Type controls:SystemButton}">
+    <Style TargetType="{x:Type local:SystemButton}">
         <Setter Property="Width" Value="35" />
         <Setter Property="Height" Value="30" />
         <Setter Property="Foreground" Value="White" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type controls:SystemButton}">
+                <ControlTemplate TargetType="{x:Type local:SystemButton}">
                     <Border x:Name="MainBorder">
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Viewbox
@@ -97,10 +98,10 @@
         </Setter>
     </Style>
 
-    <Style BasedOn="{StaticResource {x:Type controls:SystemButton}}" TargetType="{x:Type controls:MaxButton}">
+    <Style BasedOn="{StaticResource {x:Type local:SystemButton}}" TargetType="{x:Type local:MaxButton}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type controls:MaxButton}">
+                <ControlTemplate TargetType="{x:Type local:MaxButton}">
                     <Border x:Name="MainBorder" Tag="{Binding IsWindowMax, RelativeSource={RelativeSource TemplatedParent}}">
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Viewbox
@@ -159,18 +160,18 @@
         </Setter>
     </Style>
 
-    <Style BasedOn="{StaticResource {x:Type controls:SystemButton}}" TargetType="{x:Type controls:MinButton}">
+    <Style BasedOn="{StaticResource {x:Type local:SystemButton}}" TargetType="{x:Type local:MinButton}">
         <Setter Property="IconMargin" Value="0,8,0,0" />
         <Setter Property="IconTemplate" Value="{DynamicResource MinimizeTempl}" />
     </Style>
 
-    <Style BasedOn="{StaticResource {x:Type controls:SystemButton}}" TargetType="{x:Type controls:CloseButton}">
+    <Style BasedOn="{StaticResource {x:Type local:SystemButton}}" TargetType="{x:Type local:CloseButton}">
         <Setter Property="IconSize" Value="16" />
         <Setter Property="IconTemplate" Value="{DynamicResource CloseTempl}" />
         <Setter Property="MouseOverBackground" Value="#F0F72F2F" />
     </Style>
 
-    <Style TargetType="{x:Type controls:CommonButton}">
+    <Style TargetType="{x:Type local:CommonButton}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -188,7 +189,7 @@
         <Setter Property="CornerRadius" Value="2" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type controls:CommonButton}">
+                <ControlTemplate TargetType="{x:Type local:CommonButton}">
                     <Border
                         x:Name="BorderMain"
                         Width="{TemplateBinding Width}"
@@ -237,8 +238,8 @@
     </Style>
     <Style
         x:Key="NavButton"
-        BasedOn="{StaticResource {x:Type controls:CommonButton}}"
-        TargetType="{x:Type controls:CommonButton}">
+        BasedOn="{StaticResource {x:Type local:CommonButton}}"
+        TargetType="{x:Type local:CommonButton}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="IconMargin" Value="0" />
@@ -247,8 +248,8 @@
     </Style>
     <Style
         x:Key="SettingsButton"
-        BasedOn="{StaticResource {x:Type controls:CommonButton}}"
-        TargetType="{x:Type controls:CommonButton}">
+        BasedOn="{StaticResource {x:Type local:CommonButton}}"
+        TargetType="{x:Type local:CommonButton}">
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="#DADADB" />
         <Setter Property="Padding" Value="10,0" />
@@ -264,11 +265,11 @@
     <Style
         x:Key="DeleteButton"
         BasedOn="{StaticResource SettingsButton}"
-        TargetType="{x:Type controls:CommonButton}" />
+        TargetType="{x:Type local:CommonButton}" />
     <Style
         x:Key="PlayButton"
         BasedOn="{StaticResource SettingsButton}"
-        TargetType="{x:Type controls:CommonButton}">
+        TargetType="{x:Type local:CommonButton}">
         <!--<Setter Property="BorderBrush" Value="#4d8cdc" />-->
         <Setter Property="BorderBrush" Value="#5d9cec" />
         <Setter Property="BorderThickness" Value="0" />
@@ -283,8 +284,8 @@
     </Style>
     <Style
         x:Key="LinkButton"
-        BasedOn="{StaticResource {x:Type controls:CommonButton}}"
-        TargetType="{x:Type controls:CommonButton}">
+        BasedOn="{StaticResource {x:Type local:CommonButton}}"
+        TargetType="{x:Type local:CommonButton}">
         <Setter Property="Height" Value="Auto" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="BorderThickness" Value="0" />
@@ -298,8 +299,8 @@
     </Style>
     <Style
         x:Key="LyricButton"
-        BasedOn="{StaticResource {x:Type controls:CommonButton}}"
-        TargetType="{x:Type controls:CommonButton}">
+        BasedOn="{StaticResource {x:Type local:CommonButton}}"
+        TargetType="{x:Type local:CommonButton}">
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Background" Value="Transparent" />

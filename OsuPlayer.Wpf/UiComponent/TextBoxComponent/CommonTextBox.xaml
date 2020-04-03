@@ -1,10 +1,7 @@
-<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:Milky.OsuPlayer.Control">
-
-    <!--  todo  -->
-    <Style TargetType="{x:Type local:CommonTextBox}">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:textBoxComponent="clr-namespace:Milky.OsuPlayer.UiComponent.TextBoxComponent">
+    <Style TargetType="{x:Type textBoxComponent:CommonTextBox}">
         <Setter Property="ContextMenu" Value="{DynamicResource TextBoxContextMenu}" />
         <Setter Property="CaretBrush" Value="#303030" />
         <Setter Property="SelectionBrush" Value="#646464" />
@@ -20,7 +17,7 @@
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:CommonTextBox}">
+                <ControlTemplate TargetType="{x:Type textBoxComponent:CommonTextBox}">
                     <Grid x:Name="PART_Root">
                         <Border
                             x:Name="Bg"

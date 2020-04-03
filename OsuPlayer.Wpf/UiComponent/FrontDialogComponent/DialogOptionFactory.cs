@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Milky.OsuPlayer.UiComponent.FrontDialogComponent;
-using Milky.OsuPlayer.Utils;
+﻿using Milky.OsuPlayer.Utils;
 
-namespace Milky.OsuPlayer
+namespace Milky.OsuPlayer.UiComponent.FrontDialogComponent
 {
     class DialogOptionFactory
     {

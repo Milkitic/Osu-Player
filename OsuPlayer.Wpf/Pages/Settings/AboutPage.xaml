@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Pages.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
     Title="AboutPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -45,7 +46,7 @@
                         Style="{StaticResource ConfigLabel2Style}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
-                    <control:CommonButton
+                    <buttonComponent:CommonButton
                         x:Name="CheckUpdate"
                         Height="25"
                         Margin="8"
@@ -58,7 +59,7 @@
                         x:Name="NewVersion"
                         VerticalAlignment="Center"
                         Visibility="Collapsed">
-                        <control:CommonButton
+                        <buttonComponent:CommonButton
                             Click="NewVersion_Click"
                             Content="有新版本"
                             Foreground="#FE5472"
@@ -78,13 +79,13 @@
                         </Canvas>
                     </Viewbox>
                     <Label>
-                        <control:CommonButton
+                        <buttonComponent:CommonButton
                             Click="LinkGithub_Click"
                             Content="{DynamicResource ui-sets-content-projectUrl}"
                             Style="{StaticResource LinkButton}" />
                     </Label>
                     <Label>
-                        <control:CommonButton
+                        <buttonComponent:CommonButton
                             Click="LinkFeedback_Click"
                             Content="{DynamicResource ui-sets-content-feedback}"
                             Style="{StaticResource LinkButton}" />
@@ -98,13 +99,13 @@
                 </Label>-->
                 <StackPanel Orientation="Horizontal" Style="{StaticResource ConfigStackHoriStyle}">
                     <Label>
-                        <control:CommonButton
+                        <buttonComponent:CommonButton
                             Click="LinkLicense_Click"
                             Content="{DynamicResource ui-sets-content-licenseInfo}"
                             Style="{StaticResource LinkButton}" />
                     </Label>
                     <Label>
-                        <control:CommonButton
+                        <buttonComponent:CommonButton
                             Click="LinkPrivacy_Click"
                             Content="{DynamicResource ui-sets-content-privacyPolicy}"
                             Style="{StaticResource LinkButton}" />

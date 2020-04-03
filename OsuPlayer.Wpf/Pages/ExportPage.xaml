@@ -11,6 +11,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:Milky.OsuPlayer"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
     Title="ExportPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -45,7 +46,7 @@
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <control:CommonButton
+                        <buttonComponent:CommonButton
                             x:Name="BtnExportAll"
                             Grid.Column="0"
                             Command="{Binding ItemFolderCommand}"
@@ -66,7 +67,7 @@
                                 </Viewbox>
                                 <Label Content="{DynamicResource ui-btn-openDirectory}" />
                             </StackPanel>
-                        </control:CommonButton>
+                        </buttonComponent:CommonButton>
                         <StackPanel
                             Grid.Column="1"
                             VerticalAlignment="Center"

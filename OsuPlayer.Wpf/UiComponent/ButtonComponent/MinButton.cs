@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Milky.OsuPlayer.Control
+namespace Milky.OsuPlayer.UiComponent.ButtonComponent
 {
     public class MinButton : SystemButton
     {
@@ -15,18 +15,6 @@ namespace Milky.OsuPlayer.Control
             {
                 HostWindow.WindowState = WindowState.Minimized;
             }
-        }
-    }
-    public class CloseButton : SystemButton
-    {
-        public CloseButton()
-        {
-            this.Click += OnClick;
-        }
-
-        private void OnClick(object sender, RoutedEventArgs args)
-        {
-            HostWindow?.Close();
         }
     }
 }

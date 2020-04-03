@@ -248,7 +248,7 @@ namespace Milky.OsuPlayer.UiComponent.FrontDialogComponent
             var circ = new CircleEase { EasingMode = EasingMode.EaseIn };
 
             var dialogTs = TimeSpan.FromMilliseconds(300);
-            var dialogDuration = Util.GetDuration(dialogTs);
+            var dialogDuration = CommonUtils.GetDuration(dialogTs);
             var da2 = new DoubleAnimation()
             {
                 From = 1,
@@ -278,7 +278,7 @@ namespace Milky.OsuPlayer.UiComponent.FrontDialogComponent
                 From = 1,
                 To = 0,
                 BeginTime = TimeSpan.FromMilliseconds(dialogTs.TotalMilliseconds / 2f),
-                Duration = Util.GetDuration(TimeSpan.FromMilliseconds(150)),
+                Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(150)),
                 EasingFunction = sine
             };
             Storyboard.SetTarget(da, MainCanvas);
@@ -313,7 +313,7 @@ namespace Milky.OsuPlayer.UiComponent.FrontDialogComponent
             {
                 From = 0,
                 To = 1,
-                Duration = Util.GetDuration(canvasTs),
+                Duration = CommonUtils.GetDuration(canvasTs),
                 EasingFunction = sine
             };
             Storyboard.SetTarget(da, MainCanvas);
@@ -322,7 +322,7 @@ namespace Milky.OsuPlayer.UiComponent.FrontDialogComponent
             var back = new BackEase { EasingMode = EasingMode.EaseOut, Amplitude = 0.3 };
             var circ = new CircleEase { EasingMode = EasingMode.EaseOut };
 
-            var dialogDuration = Util.GetDuration(TimeSpan.FromMilliseconds(300));
+            var dialogDuration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300));
             var da2 = new DoubleAnimation
             {
                 From = 0.7,
@@ -372,11 +372,5 @@ namespace Milky.OsuPlayer.UiComponent.FrontDialogComponent
             public bool ShowTitleBar { get; set; } = true;
             public bool ShowDialogButtons { get; set; } = true;
         }
-    }
-
-
-    public class DialogClosingEventArgs : EventArgs
-    {
-        public bool Cancel { get; set; }
     }
 }

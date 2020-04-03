@@ -11,9 +11,10 @@ using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Common
 {
-    public static class Util
+    public static class CommonUtils
     {
         private static AppDbOperator _appDbOperator = new AppDbOperator();
+        private static readonly SemaphoreSlim Lock = new SemaphoreSlim(5);
         ///// <summary>
         ///// Copy resource to folder
         ///// </summary>
@@ -43,8 +44,6 @@ namespace Milky.OsuPlayer.Common
             path = fbd.FileName;
             return result;
         }
-
-        private static readonly SemaphoreSlim Lock = new SemaphoreSlim(5);
 
         public static async Task<string> GetThumbByBeatmapDbId(BeatmapDataModel dataModel)
         {
@@ -101,6 +100,13 @@ namespace Milky.OsuPlayer.Common
                     Lock.Release();
                 }
             });
+        }
+
+        public static Duration GetDuration(TimeSpan ts)
+        {
+            if (AppSettings.Default.Interface.MinimalMode)
+                return new Duration(TimeSpan.Zero);
+            return new Duration(ts);
         }
 
         private static void ResizeImageAndSave(string sourcePath, string targetName, int width = 0, int height = 0)
@@ -198,13 +204,6 @@ namespace Milky.OsuPlayer.Common
             }
 
             return result;
-        }
-
-        public static Duration GetDuration(TimeSpan ts)
-        {
-            if (AppSettings.Default.Interface.MinimalMode)
-                return new Duration(TimeSpan.Zero);
-            return new Duration(ts);
         }
     }
 }

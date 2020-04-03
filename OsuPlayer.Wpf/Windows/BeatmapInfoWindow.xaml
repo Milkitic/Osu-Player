@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:playlist="clr-namespace:Milky.OsuPlayer.Media.Audio.Playlist;assembly=OsuPlayer.Media.Audio"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
     Title="当前歌曲信息"
     Width="400"
     Height="340"
@@ -60,7 +61,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Orientation="Horizontal">
-                <control:CloseButton MouseDownBackground="#80F72F2F" WindowChrome.IsHitTestVisibleInChrome="True" />
+                <buttonComponent:CloseButton MouseDownBackground="#80F72F2F" WindowChrome.IsHitTestVisibleInChrome="True" />
             </StackPanel>
         </Grid>
         <ScrollViewer
@@ -128,15 +129,15 @@
                         Width="{StaticResource LabelWidth}"
                         HorizontalContentAlignment="Right"
                         Content="地图链接：" />
-                    <control:CommonButton
+                    <buttonComponent:CommonButton
                         VerticalAlignment="Center"
                         Click="SLink_Click"
                         Style="{StaticResource LinkButton}">
                         <TextBlock>
                             <Run Text="s/" /><Run Text="{Binding BeatmapDetail.Metadata.BeatmapsetId, Mode=OneWay}" />
                         </TextBlock>
-                    </control:CommonButton>
-                    <control:CommonButton
+                    </buttonComponent:CommonButton>
+                    <buttonComponent:CommonButton
                         Margin="10,0"
                         VerticalAlignment="Center"
                         Click="BLink_Click"
@@ -144,7 +145,7 @@
                         <TextBlock>
                             <Run Text="b/" /><Run Text="{Binding BeatmapDetail.Metadata.BeatmapId, Mode=OneWay}" />
                         </TextBlock>
-                    </control:CommonButton>
+                    </buttonComponent:CommonButton>
                 </StackPanel>
                 <StackPanel Margin="0,2,10,2" Orientation="Horizontal">
                     <Label

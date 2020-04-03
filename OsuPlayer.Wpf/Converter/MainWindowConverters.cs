@@ -78,7 +78,7 @@ namespace Milky.OsuPlayer.Converter
                     var num = parameter == null ? 30 : 40;
                     DoubleAnimation da = new DoubleAnimation(isNavigationCollapsed
                         ? 0
-                        : num, Util.GetDuration(TimeSpan.FromMilliseconds(300)))
+                        : num, CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300)))
                     {
                         From = sp.ActualHeight,
                         EasingFunction = new QuarticEase() { EasingMode = EasingMode.EaseInOut }
@@ -88,7 +88,7 @@ namespace Milky.OsuPlayer.Converter
 
                     ThicknessAnimation ta = new ThicknessAnimation(isNavigationCollapsed
                         ? new Thickness(0)
-                        : new Thickness(0, num, 0, 0), Util.GetDuration(TimeSpan.FromMilliseconds(300)))
+                        : new Thickness(0, num, 0, 0), CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300)))
                     {
                         From = sp.Margin,
                         EasingFunction = new QuarticEase() { EasingMode = EasingMode.EaseInOut }
@@ -127,7 +127,7 @@ namespace Milky.OsuPlayer.Converter
                     Storyboard sb = new Storyboard();
                     DoubleAnimation da = new DoubleAnimation(isNavigationCollapsed
                         ? 48
-                        : 170, Util.GetDuration(TimeSpan.FromMilliseconds(300)))
+                        : 170, CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300)))
                     {
                         From = sp.ActualWidth,
                         EasingFunction = new QuarticEase() { EasingMode = EasingMode.EaseInOut }
@@ -161,7 +161,7 @@ namespace Milky.OsuPlayer.Converter
                     Storyboard sb = new Storyboard();
                     ThicknessAnimation da = new ThicknessAnimation(isNavigationCollapsed
                         ? new Thickness(0, 0, 150, 0)
-                        : new Thickness(0, 0, 8, 0), Util.GetDuration(TimeSpan.FromMilliseconds(300)))
+                        : new Thickness(0, 0, 8, 0), CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300)))
                     {
                         From = sr.IconMargin,
                         EasingFunction = new QuarticEase() { EasingMode = isNavigationCollapsed ? EasingMode.EaseInOut : EasingMode.EaseOut }
@@ -176,7 +176,7 @@ namespace Milky.OsuPlayer.Converter
                     {
                         ThicknessAnimation ta = new ThicknessAnimation(isNavigationCollapsed
                             ? new Thickness(13, 0, 0, 0)
-                            : new Thickness(20, 0, 0, 0), Util.GetDuration(TimeSpan.FromMilliseconds(300)))
+                            : new Thickness(20, 0, 0, 0), CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300)))
                         {
                             From = sr.Padding,
                             EasingFunction = new QuarticEase() { EasingMode = EasingMode.EaseInOut }

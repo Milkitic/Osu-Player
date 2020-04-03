@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.Control
+namespace Milky.OsuPlayer.UiComponent.ButtonComponent
 {
     public class CommonButton : Button
     {

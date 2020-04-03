@@ -186,14 +186,14 @@ namespace Milky.OsuPlayer.Windows
                 From = new Thickness(0),
                 To = new Thickness(0),
                 BeginTime = TimeSpan.FromMilliseconds(0),
-                Duration = Util.GetDuration(TimeSpan.FromMilliseconds(startTime))
+                Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(startTime))
             };
             var translateAnimation = new ThicknessAnimation
             {
                 From = new Thickness(0),
                 To = new Thickness(viewWidth - width, 0, 0, 0),
                 BeginTime = TimeSpan.FromMilliseconds(startTime),
-                Duration = Util.GetDuration(TimeSpan.FromMilliseconds(duration))
+                Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(duration))
             };
 
             Storyboard.SetTarget(defaultAnimation, LyricBar);

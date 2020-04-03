@@ -11,6 +11,7 @@
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     xmlns:models1="clr-namespace:Milky.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
     xmlns:common="clr-namespace:Milky.OsuPlayer.Common;assembly=OsuPlayer.Common"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
     x:Name="CurrentPage"
     Title="SearchPage"
     d:DesignHeight="450"
@@ -157,11 +158,11 @@
             Margin="10,0"
             HorizontalAlignment="Right"
             Orientation="Horizontal">
-            <control:CommonButton
+            <buttonComponent:CommonButton
                 x:Name="BtnPlayAll"
                 Click="BtnPlayAll_Click"
                 Style="{StaticResource PlayButton}" />
-            <control:CommonButton
+            <buttonComponent:CommonButton
                 x:Name="BtnQueueAll"
                 Click="BtnQueueAll_Click"
                 Command="{Binding ItemFolderCommand}"

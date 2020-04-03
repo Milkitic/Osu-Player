@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponent.ButtonComponent"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -129,7 +130,7 @@
                         VerticalAlignment="Center"
                         Content=""
                         TextBlock.FontSize="14" />
-                    <control:CommonButton
+                    <buttonComponent:CommonButton
                         Width="34"
                         Height="34"
                         Margin="0"
@@ -162,7 +163,7 @@
                     Margin="10"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal">
-                    <control:CommonButton
+                    <buttonComponent:CommonButton
                         x:Name="BtnOk"
                         Margin="0"
                         Background="#F4F4F4"

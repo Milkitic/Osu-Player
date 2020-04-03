@@ -47,7 +47,7 @@ namespace Milky.OsuPlayer.Control
             {
                 return new DelegateCommand(async arg =>
                 {
-                    var result = Util.BrowseDb(out var path);
+                    var result = CommonUtils.BrowseDb(out var path);
                     if (!result.HasValue || !result.Value)
                     {
                         GuideSelectedDb = false;
