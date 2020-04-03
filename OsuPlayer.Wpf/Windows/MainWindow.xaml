@@ -270,7 +270,11 @@
                         Visibility="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource NullToHiddenConverter}}" />
                 </Grid>
             </DockPanel>
-            <control:PlayController x:Name="PlayController" Grid.Row="1" />
+            <control:PlayController
+                x:Name="PlayController"
+                Grid.Row="1"
+                OnLikeClick="Controller_OnLikeClick"
+                OnThumbClick="Controller_OnThumbClick" />
         </Grid>
         <Border
             x:Name="MsgBoxCover"

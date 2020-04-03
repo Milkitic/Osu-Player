@@ -69,11 +69,19 @@ namespace Milky.OsuPlayer.Windows
 
         private void TryBindHotKeys()
         {
-            OverallKeyHook.AddKeyHook(HotKeyType.TogglePlay, () => { _controller.Player.TogglePlay(); });
-            OverallKeyHook.AddKeyHook(HotKeyType.PrevSong, async () => { await _controller.PlayPrevAsync(); });
-            OverallKeyHook.AddKeyHook(HotKeyType.NextSong, async () => { await _controller.PlayNextAsync(); });
-            OverallKeyHook.AddKeyHook(HotKeyType.VolumeUp, () => { AppSettings.Default.Volume.Main += 0.05f; });
-            OverallKeyHook.AddKeyHook(HotKeyType.VolumeDown, () => { AppSettings.Default.Volume.Main -= 0.05f; });
+            OverallKeyHook.AddKeyHook(HotKeyType.TogglePlay, () => _controller.PlayList.CurrentInfo?.TogglePlayHandle());
+            OverallKeyHook.AddKeyHook(HotKeyType.PrevSong, async () => await _controller.PlayPrevAsync());
+            OverallKeyHook.AddKeyHook(HotKeyType.NextSong, async () => await _controller.PlayNextAsync());
+            OverallKeyHook.AddKeyHook(HotKeyType.VolumeUp, () =>
+            {
+                AppSettings.Default.Volume.Main += 0.05f;
+                AppSettings.SaveDefault();
+            });
+            OverallKeyHook.AddKeyHook(HotKeyType.VolumeDown, () =>
+            {
+                AppSettings.Default.Volume.Main -= 0.05f;
+                AppSettings.SaveDefault();
+            });
             OverallKeyHook.AddKeyHook(HotKeyType.SwitchFullMiniMode, () => { TriggerMiniWindow(); });
             OverallKeyHook.AddKeyHook(HotKeyType.AddCurrentToFav, () =>
             {
@@ -174,8 +182,6 @@ namespace Milky.OsuPlayer.Windows
             UpdateCollections();
 
             _controller.LoadFinished += Controller_LoadFinished;
-            PlayController.OnLikeClick += Controller_OnLikeClick;
-            PlayController.OnThumbClick += Controller_OnThumbClick;
 
             var updater = Services.Get<Updater>();
             bool? hasUpdate = await updater.CheckUpdateAsync();
