@@ -53,11 +53,9 @@ namespace Milky.OsuPlayer.Control
 
                 if (HostWindow.FindName(TargetFrameControl) is Frame frame)
                 {
-
                     var ui = (UIElement)frame.Content;
                     if (ui != null)
                     {
-
                         Storyboard.SetTarget(Da2, ui);
                         if (AppSettings.Default.Interface.MinimalMode)
                         {
@@ -84,7 +82,6 @@ namespace Milky.OsuPlayer.Control
                     }
                     //var n = NavigationService.GetNavigationService(frame);
                     //frame.NavigationService.Navigate(new Uri($"{TargetPageType}?ExtraData={TargetPageData}", UriKind.Relative), TargetPageData);
-
                 }
             };
         }
@@ -193,7 +190,6 @@ namespace Milky.OsuPlayer.Control
                         Scopes.Remove(oldVal);
                     }
                 }
-
             }
 
             if (!string.IsNullOrWhiteSpace(newVal))
@@ -395,7 +391,6 @@ namespace Milky.OsuPlayer.Control
 
         private static Dictionary<string, List<SwitchRadio>> Scopes { get; } =
             new Dictionary<string, List<SwitchRadio>>();
-
 
         static SwitchRadio()
         {
