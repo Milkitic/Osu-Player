@@ -1,7 +1,11 @@
 # Osu-Player
-![](https://img.shields.io/badge/.NET-4.7.2-blue.svg)
-![](https://img.shields.io/badge/license-GPL-blue.svg)
+
+[![Runtime](https://img.shields.io/badge/.NET-4.7.2-blue.svg)](https://dotnet.microsoft.com/download/dotnet-framework/net472)
+[![License](https://img.shields.io/github/license/milkitic/osu-player)](https://github.com/Milkitic/Osu-Player/blob/master/LICENSE)
 [![CodeFactor](https://www.codefactor.io/repository/github/milkitic/osu-player/badge)](https://www.codefactor.io/repository/github/milkitic/osu-player)
+
+[![Releases](https://img.shields.io/github/v/release/Milkitic/Osu-Player)](https://github.com/Milkitic/Osu-Player/releases)
+[![Commits](https://img.shields.io/github/commits-since/Milkitic/Osu-Player/latest)](https://github.com/Milkitic/Osu-Player/commits/master)
 
 **A multifunctional player for playing music, hitsound, video and storyboard for osuers!.**
 
