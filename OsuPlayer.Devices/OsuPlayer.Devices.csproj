@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OsuPlayer.Devices</RootNamespace>
     <AssemblyName>OsuPlayer.Devices</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsioOutInfo.cs" />
+    <Compile Include="DeviceProvider.cs" />
     <Compile Include="DirectSoundOutInfo.cs" />
     <Compile Include="IDeviceInfo.cs" />
     <Compile Include="OutputMethod.cs" />
@@ -58,6 +60,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj">
+      <Project>{C842FAB3-EC80-4E95-B402-BF0572F1806D}</Project>
+      <Name>OsuPlayer.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

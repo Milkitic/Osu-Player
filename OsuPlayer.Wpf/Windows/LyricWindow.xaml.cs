@@ -56,7 +56,7 @@ namespace Milky.OsuPlayer.Windows
             ViewModel = (LyricWindowViewModel)DataContext;
             MainWindowViewModel.Current.LyricWindowViewModel = ViewModel;
 
-            var fi = new FileInfo(Path.Combine(Domain.ExternalPath, "font", "default.ttc"));
+            var fi = new FileInfo(Path.Combine(Domain.ExtensionPath, "font", "default.ttc"));
             if (!fi.Exists)
                 _fontFamily = new FontFamily("等线");
             else
@@ -114,7 +114,7 @@ namespace Milky.OsuPlayer.Windows
                 while (!_cts.Token.IsCancellationRequested)
                 {
                     Thread.Sleep(50);
-                    var currentTime = _controller.Player?.PlayTime ?? TimeSpan.Zero;
+                    var currentTime = _controller.Player?.Position ?? TimeSpan.Zero;
                     var validLyrics = _lyricList.Where(t => t.StartTime <= currentTime.TotalMilliseconds).ToArray();
                     if (validLyrics.Length < 1)
                         continue;
@@ -227,7 +227,7 @@ namespace Milky.OsuPlayer.Windows
             //using (Brush bBg = new SolidBrush(Color.FromArgb(48, 0, 176, 255)))
             //using (Pen pBg = new Pen(Color.FromArgb(192, 0, 176, 255), 3))
             using (Brush b = new TextureBrush(
-                    Image.FromFile(Path.Combine(Domain.ExternalPath, "texture", "osu.png"))))
+                    Image.FromFile(Path.Combine(Domain.ExtensionPath, "texture", "osu.png"))))
             //using (Pen p = new Pen(Color.Red))
             using (var p2 = new Pen(Color.FromArgb(255, 255, 255), 6))
             using (var f = new Font(_fontFamily, 32))

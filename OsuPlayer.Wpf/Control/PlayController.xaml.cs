@@ -1,41 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.Win32;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Audio.Player;
+using Milky.OsuPlayer.Windows;
+using System;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.Win32;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Control.Notification;
-using Milky.OsuPlayer.Instances;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
-using Milky.WpfApi;
-using OSharp.Beatmap;
-using Unosquare.FFME.Common;
 
 namespace Milky.OsuPlayer.Control
 {
@@ -50,11 +24,13 @@ namespace Milky.OsuPlayer.Control
     /// </summary>
     public partial class PlayController : UserControl
     {
+        #region Events
+
         public static readonly RoutedEvent OnThumbClickEvent = EventManager.RegisterRoutedEvent(
-         "OnThumbClick",
-         RoutingStrategy.Bubble,
-         typeof(RoutedPropertyChangedEventArgs<object>),
-         typeof(PlayController));
+            "OnThumbClick",
+            RoutingStrategy.Bubble,
+            typeof(RoutedPropertyChangedEventArgs<object>),
+            typeof(PlayController));
 
         public event RoutedEventHandler OnThumbClick
         {
@@ -74,6 +50,8 @@ namespace Milky.OsuPlayer.Control
             remove => RemoveHandler(OnLikeClickEvent, value);
         }
 
+        #endregion
+
         private bool _scrollLock;
         private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
 
@@ -91,14 +69,14 @@ namespace Milky.OsuPlayer.Control
             _controller.MusicLoaded += Controller_MusicLoaded;
             _controller.LoadFinished += Controller_LoadFinished;
 
-            _controller.ProgressUpdated += Controller_ProgressUpdated;
+            _controller.PositionUpdated += Controller_PositionUpdated;
         }
 
-        private void Controller_ProgressUpdated(TimeSpan playTime, TimeSpan duration)
+        private void Controller_PositionUpdated(TimeSpan time)
         {
             if (_scrollLock) return;
-            PlayProgress.Value = playTime.TotalMilliseconds;
-            LblNow.Content = playTime.ToString(@"mm\:ss");
+            PlayProgress.Value = time.TotalMilliseconds;
+            LblNow.Content = time.ToString(@"mm\:ss");
         }
 
         private void Controller_PreLoadStarted(string path, CancellationToken ct)
@@ -176,7 +154,7 @@ namespace Milky.OsuPlayer.Control
 
         /// <summary>
         /// Play progress control.
-        /// While drag ended, slider's updating should be recoverd.
+        /// While drag ended, slider's updating should be recovered.
         /// </summary>
         private void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
         {

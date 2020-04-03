@@ -16,6 +16,7 @@ using System.Windows;
 using System.Xaml;
 using Milky.OsuPlayer.Control.Notification;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Shared;
 
 #if !DEBUG
 using Sentry;
@@ -38,7 +39,7 @@ namespace Milky.OsuPlayer
             StartupConfig.Startup();
 
             var controller = new ObservablePlayController();
-            controller.PlayList.PlayMode = AppSettings.Default.Play.PlayMode;
+            controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
 
             Services.TryAddInstance(controller);
             Services.TryAddInstance(new OsuDbInst());
@@ -89,6 +90,7 @@ namespace Milky.OsuPlayer
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            InvokeMethodHelper.SetMainThreadContext();
             I18nUtil.LoadI18N();
         }
     }

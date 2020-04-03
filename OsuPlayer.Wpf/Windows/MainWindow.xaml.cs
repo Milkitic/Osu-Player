@@ -69,11 +69,19 @@ namespace Milky.OsuPlayer.Windows
 
         private void TryBindHotKeys()
         {
-            OverallKeyHook.AddKeyHook(HotKeyType.TogglePlay, () => { _controller.Player.TogglePlay(); });
-            OverallKeyHook.AddKeyHook(HotKeyType.PrevSong, async () => { await _controller.PlayPrevAsync(); });
-            OverallKeyHook.AddKeyHook(HotKeyType.NextSong, async () => { await _controller.PlayNextAsync(); });
-            OverallKeyHook.AddKeyHook(HotKeyType.VolumeUp, () => { AppSettings.Default.Volume.Main += 0.05f; });
-            OverallKeyHook.AddKeyHook(HotKeyType.VolumeDown, () => { AppSettings.Default.Volume.Main -= 0.05f; });
+            OverallKeyHook.AddKeyHook(HotKeyType.TogglePlay, () => _controller.PlayList.CurrentInfo?.TogglePlayHandle());
+            OverallKeyHook.AddKeyHook(HotKeyType.PrevSong, async () => await _controller.PlayPrevAsync());
+            OverallKeyHook.AddKeyHook(HotKeyType.NextSong, async () => await _controller.PlayNextAsync());
+            OverallKeyHook.AddKeyHook(HotKeyType.VolumeUp, () =>
+            {
+                AppSettings.Default.Volume.Main += 0.05f;
+                AppSettings.SaveDefault();
+            });
+            OverallKeyHook.AddKeyHook(HotKeyType.VolumeDown, () =>
+            {
+                AppSettings.Default.Volume.Main -= 0.05f;
+                AppSettings.SaveDefault();
+            });
             OverallKeyHook.AddKeyHook(HotKeyType.SwitchFullMiniMode, () => { TriggerMiniWindow(); });
             OverallKeyHook.AddKeyHook(HotKeyType.AddCurrentToFav, () =>
             {
@@ -174,8 +182,6 @@ namespace Milky.OsuPlayer.Windows
             UpdateCollections();
 
             _controller.LoadFinished += Controller_LoadFinished;
-            PlayController.OnLikeClick += Controller_OnLikeClick;
-            PlayController.OnThumbClick += Controller_OnThumbClick;
 
             var updater = Services.Get<Updater>();
             bool? hasUpdate = await updater.CheckUpdateAsync();
@@ -189,7 +195,7 @@ namespace Milky.OsuPlayer.Windows
         /// <summary>
         /// Clear things.
         /// </summary>
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (AppSettings.Default.General.ExitWhenClosed == null && !ForceExit)
             {
@@ -225,7 +231,7 @@ namespace Milky.OsuPlayer.Windows
             }
 
             GetCurrentFirst<MiniWindow>()?.Close();
-            _controller?.Dispose();
+            await _controller?.DisposeAsync();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
             if (ConfigWindow != null && !ConfigWindow.IsClosed && ConfigWindow.IsInitialized)
@@ -249,7 +255,7 @@ namespace Milky.OsuPlayer.Windows
             // 加至播放列表
             var entries = _appDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList);
 
-            await _controller.PlayList.SetSongListAsync(entries, true);
+            await _controller.PlayList.SetSongListAsync(entries, true, false, false);
 
             bool play = AppSettings.Default.Play.AutoPlay;
             var current = _appDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);

@@ -43,7 +43,7 @@
                     IconTemplate="{StaticResource ModeSingleTempl}"
                     MouseDownBackground="#80D8D8D8"
                     MouseOverBackground="#80E0E0E0"
-                    Tag="{x:Static player:PlayMode.Single}" />
+                    Tag="{x:Static player:PlayListMode.Single}" />
                 <local:SwitchRadio
                     x:Name="ModeSingleLoop"
                     Height="30"
@@ -57,7 +57,7 @@
                     IconTemplate="{StaticResource ModeSingleLoopTempl}"
                     MouseDownBackground="#80D8D8D8"
                     MouseOverBackground="#80E0E0E0"
-                    Tag="{x:Static player:PlayMode.SingleLoop}" />
+                    Tag="{x:Static player:PlayListMode.SingleLoop}" />
                 <local:SwitchRadio
                     x:Name="ModeNormal"
                     Height="30"
@@ -71,7 +71,7 @@
                     IconTemplate="{StaticResource ModeNormalTempl}"
                     MouseDownBackground="#80D8D8D8"
                     MouseOverBackground="#80E0E0E0"
-                    Tag="{x:Static player:PlayMode.Normal}" />
+                    Tag="{x:Static player:PlayListMode.Normal}" />
                 <local:SwitchRadio
                     x:Name="ModeRandom"
                     Height="30"
@@ -85,7 +85,7 @@
                     IconTemplate="{StaticResource ModeRandomTempl}"
                     MouseDownBackground="#80D8D8D8"
                     MouseOverBackground="#80E0E0E0"
-                    Tag="{x:Static player:PlayMode.Random}" />
+                    Tag="{x:Static player:PlayListMode.Random}" />
                 <local:SwitchRadio
                     x:Name="ModeLoop"
                     Height="30"
@@ -99,7 +99,7 @@
                     IconTemplate="{StaticResource ModeLoopTempl}"
                     MouseDownBackground="#80D8D8D8"
                     MouseOverBackground="#80E0E0E0"
-                    Tag="{x:Static player:PlayMode.Loop}" />
+                    Tag="{x:Static player:PlayListMode.Loop}" />
                 <local:SwitchRadio
                     x:Name="ModeLoopRandom"
                     Height="30"
@@ -113,7 +113,7 @@
                     IconTemplate="{StaticResource ModeLoopRandomTempl}"
                     MouseDownBackground="#80D8D8D8"
                     MouseOverBackground="#80E0E0E0"
-                    Tag="{x:Static player:PlayMode.LoopRandom}" />
+                    Tag="{x:Static player:PlayListMode.LoopRandom}" />
             </StackPanel>
         </Border>
     </Grid>

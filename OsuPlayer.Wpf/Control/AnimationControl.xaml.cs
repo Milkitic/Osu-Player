@@ -1,4 +1,11 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Audio.Player;
+using Milky.WpfApi;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -7,15 +14,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Instances;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Core;
-using Milky.OsuPlayer.ViewModels;
-using Milky.WpfApi;
 using Unosquare.FFME.Common;
 using ViewModelBase = Milky.WpfApi.ViewModelBase;
 
@@ -125,27 +123,27 @@ namespace Milky.OsuPlayer.Control
                 BlendBorder.Visibility = Visibility.Visible;
             });
 
-            beatmapCtx.PlayHandle = () =>
+            beatmapCtx.PlayHandle = async () =>
             {
-                _controller.Player.Play();
+                await _controller.Player.Play();
                 PlayVideo();
             };
 
-            beatmapCtx.PauseHandle = () =>
+            beatmapCtx.PauseHandle = async () =>
             {
-                _controller.Player.Pause();
+                await _controller.Player.Pause();
                 PauseVideo();
             };
 
-            beatmapCtx.StopHandle = () =>
+            beatmapCtx.StopHandle = async () =>
             {
-                _controller.Player.Stop();
+                await _controller.Player.Stop();
                 ResetVideo(false);
             };
 
             beatmapCtx.SetTimeHandle = async (time, play) =>
             {
-                _controller.Player.Pause();
+                await _controller.Player.Pause();
                 _playAfterSeek = play;
                 _waitActionCts = new MyCancellationTokenSource();
                 Guid? guid = _waitActionCts?.Guid;
@@ -271,19 +269,19 @@ namespace Milky.OsuPlayer.Control
         {
         }
 
-        private void OnSeekingEnded(object sender, EventArgs e)
+        private async void OnSeekingEnded(object sender, EventArgs e)
         {
             if (!SharedVm.Default.EnableVideo) return;
-            _controller.Player.SetTime(VideoElement.Position - TimeSpan.FromMilliseconds(_videoOffset), false);
+            await _controller.Player.SkipTo(VideoElement.Position - TimeSpan.FromMilliseconds(_videoOffset));
             if (_playAfterSeek)
             {
-                _controller.Player.Play();
-                VideoElement.Play();
+                await _controller.Player.Play();
+                await VideoElement.Play();
             }
             else
             {
-                _controller.Player.Pause();
-                VideoElement.Pause();
+                await _controller.Player.Pause();
+                await VideoElement.Pause();
             }
         }
 

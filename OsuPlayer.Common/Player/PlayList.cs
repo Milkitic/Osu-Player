@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Shared;
 using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Common.Player
@@ -55,21 +56,21 @@ namespace Milky.OsuPlayer.Common.Player
             }
         }
 
-        public PlayMode PlayMode
+        public PlayListMode Mode
         {
-            get => _playMode;
+            get => _mode;
             set
             {
-                if (Equals(value, _playMode)) return;
+                if (Equals(value, _mode)) return;
                 var preIsRandom = IsRandom;
-                _playMode = value;
+                _mode = value;
                 if (preIsRandom != IsRandom)
                 {
                     var b = RearrangeIndexesAndReposition();
                     if (b) throw new Exception("PlayMode changes cause current info changed");
                 }
 
-                AppSettings.Default.Play.PlayMode = _playMode;
+                AppSettings.Default.Play.PlayListMode = _mode;
                 AppSettings.SaveDefault();
                 OnPropertyChanged();
             }
@@ -102,11 +103,11 @@ namespace Milky.OsuPlayer.Common.Player
 
         public bool HasCurrent => CurrentInfo != null;
 
-        private bool IsRandom => _playMode == PlayMode.Random || _playMode == PlayMode.LoopRandom;
-        private bool IsLoop => _playMode == PlayMode.Loop || _playMode == PlayMode.LoopRandom;
+        private bool IsRandom => _mode == PlayListMode.Random || _mode == PlayListMode.LoopRandom;
+        private bool IsLoop => _mode == PlayListMode.Loop || _mode == PlayListMode.LoopRandom;
 
         private Func<int, int> _temporaryPointerChanged;
-        private PlayMode _playMode;
+        private PlayListMode _mode;
         private int _indexPointer = -1;
         private List<int> _songIndexList = new List<int>();
         private BeatmapContext _currentInfo;
@@ -120,17 +121,20 @@ namespace Milky.OsuPlayer.Common.Player
         /// <param name="startAnew">若为false，则播放列表中若有相同曲，保持指针继续播放</param>
         /// <param name="playInstantly">立即播放</param>
         /// <returns></returns>
-        public async Task<PlayControlResult> SetSongListAsync(IEnumerable<Beatmap> value, bool startAnew, bool playInstantly = true)
+        public async Task<PlayControlResult> SetSongListAsync(IEnumerable<Beatmap> value, bool startAnew,
+            bool playInstantly = true, bool autoSetSong = true)
         {
             if (SongList != null) SongList.CollectionChanged -= SongList_CollectionChanged;
-            SongList = new ObservableCollection<Beatmap>(value);
+            InvokeMethodHelper.OnMainThread(() => SongList = new ObservableCollection<Beatmap>(value));
             SongList.CollectionChanged += SongList_CollectionChanged;
 
             var changed = RearrangeIndexesAndReposition(startAnew ? (int?)0 : null);
-            var result = changed
-                ? await AutoSwitchAfterCollectionChanged(playInstantly)
-                : new PlayControlResult(PlayControlResult.PlayControlStatus.Keep,
-                    PlayControlResult.PointerControlStatus.Keep); // 这里可能混入空/不空的情况
+            PlayControlResult result; // 这里可能混入空/不空的情况
+            if (autoSetSong && changed)
+                result = await AutoSwitchAfterCollectionChanged(playInstantly);
+            else
+                result = new PlayControlResult(PlayControlResult.PlayControlStatus.Keep,
+                    PlayControlResult.PointerControlStatus.Keep);
 
             //OnPropertyChanged(nameof(SongList));
             return result;
@@ -143,7 +147,8 @@ namespace Milky.OsuPlayer.Common.Player
         /// <returns></returns>
         public void AddOrSwitchTo(Beatmap beatmap)
         {
-            if (!SongList.Contains(beatmap)) SongList.Add(beatmap);
+            if (!SongList.Contains(beatmap))
+                InvokeMethodHelper.OnMainThread(() => SongList.Add(beatmap));
             IndexPointer = _songIndexList.IndexOf(SongList.IndexOf(beatmap));
         }
 
@@ -179,7 +184,7 @@ namespace Milky.OsuPlayer.Common.Player
         {
             if (!isManual) // auto
             {
-                if (PlayMode == PlayMode.Single)
+                if (Mode == PlayListMode.Single)
                 {
                     var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                         PlayControlResult.PointerControlStatus.Keep);
@@ -187,7 +192,7 @@ namespace Milky.OsuPlayer.Common.Player
                     return playControlResult;
                 }
 
-                if (PlayMode == PlayMode.SingleLoop)
+                if (Mode == PlayListMode.SingleLoop)
                 {
                     var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
                         PlayControlResult.PointerControlStatus.Keep);
@@ -208,6 +213,7 @@ namespace Milky.OsuPlayer.Common.Player
                     if (IndexPointer == 0 && !isNext ||
                         IndexPointer == _songIndexList.Count - 1 && isNext)
                     {
+                        IndexPointer = 0;
                         var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                             PlayControlResult.PointerControlStatus.Reset);
                         await AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap, true);

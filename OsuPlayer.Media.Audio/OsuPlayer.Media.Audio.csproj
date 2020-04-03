@@ -57,35 +57,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\DeviceProvider.cs" />
-    <Compile Include="Core\SoundTouch\SoundTouch.cs" />
-    <Compile Include="Core\SoundTouch\SoundTouchInterop32.cs" />
-    <Compile Include="Core\SoundTouch\SoundTouchInterop64.cs" />
-    <Compile Include="Core\SoundTouch\SoundTouchProfile.cs" />
-    <Compile Include="Core\SoundTouch\SoundTouchSettings.cs" />
-    <Compile Include="Core\SoundTouch\VarispeedSampleProvider.cs" />
+    <Compile Include="DeviceProviderExtension.cs" />
+    <Compile Include="HitsoundChannel.cs" />
+    <Compile Include="NightcoreTilingProvider.cs" />
     <Compile Include="ObservablePlayController.cs" />
-    <Compile Include="Sounds\SoundElement.cs" />
-    <Compile Include="Core\AudioPlaybackEngine.cs" />
-    <Compile Include="ComponentPlayer.cs" />
-    <Compile Include="Sounds\HitsoundElement.cs" />
-    <Compile Include="IPlayer.cs" />
-    <Compile Include="Core\CachedSound.cs" />
-    <Compile Include="Core\HitsoundPlayer.cs" />
-    <Compile Include="Core\MusicPlayer.cs" />
-    <Compile Include="Core\ProgressEventArgs.cs" />
-    <Compile Include="Core\SampleProviders\ChannelSampleProvider.cs" />
-    <Compile Include="Core\SampleProviders\MyAudioFileReader.cs" />
-    <Compile Include="Core\WaveProviders\CachedSoundSampleProvider.cs" />
-    <Compile Include="Core\WaveProviders\LoopStream.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="OsuMixPlayer.cs" />
+    <Compile Include="Player\AudioPlaybackEngine.cs" />
+    <Compile Include="Player\ChannelEndTimeComparer.cs" />
+    <Compile Include="Player\IChannel.cs" />
+    <Compile Include="Player\ISoundElementsProvider.cs" />
+    <Compile Include="Player\MixingSampleProviderExtension.cs" />
+    <Compile Include="Player\MultichannelPlayer.cs" />
+    <Compile Include="Player\PlayStatus.cs" />
+    <Compile Include="Player\SampleControl.cs" />
+    <Compile Include="Player\StopMode.cs" />
+    <Compile Include="Player\Subchannel.cs" />
+    <Compile Include="Player\Subchannels\MultiElementsChannel.cs" />
+    <Compile Include="Player\Subchannels\SingleMediaChannel.cs" />
+    <Compile Include="Player\Subchannels\SlideControlType.cs" />
+    <Compile Include="Player\Subchannels\SoundElement.cs" />
+    <Compile Include="Player\Subchannels\SoundElementTimingComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\SampleTrackPlayer.cs" />
-    <Compile Include="Sounds\SlideControlElement.cs" />
-    <Compile Include="Core\WaveResampler.cs" />
-    <Compile Include="Sounds\SpecificFileSoundElement.cs" />
-    <Compile Include="TrackProvider\TrackProviderBase.cs" />
-    <Compile Include="TrackProvider\NightcoreTilingTrackProvider.cs" />
+    <Compile Include="SampleChannel.cs" />
+    <Compile Include="SoundTouch\SoundTouch.cs" />
+    <Compile Include="SoundTouch\SoundTouchInterop32.cs" />
+    <Compile Include="SoundTouch\SoundTouchInterop64.cs" />
+    <Compile Include="SoundTouch\SoundTouchProfile.cs" />
+    <Compile Include="SoundTouch\SoundTouchSettings.cs" />
+    <Compile Include="ToStringExtension.cs" />
+    <Compile Include="VariableStopwatch.cs" />
+    <Compile Include="Wave\BalanceSampleProvider.cs" />
+    <Compile Include="Wave\CachedSound.cs" />
+    <Compile Include="Wave\CachedSoundSampleProvider.cs" />
+    <Compile Include="Wave\LoopStream.cs" />
+    <Compile Include="Wave\MyAudioFileReader.cs" />
+    <Compile Include="Wave\VariableSpeedSampleProvider.cs" />
+    <Compile Include="Wave\WaveFormatFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -112,6 +119,104 @@
       <Project>{E290C0D7-06B7-47DC-81E7-98F08654FB0D}</Project>
       <Name>OsuPlayer.Devices</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj">
+      <Project>{C842FAB3-EC80-4E95-B402-BF0572F1806D}</Project>
+      <Name>OsuPlayer.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="extensions\plugins\SoundTouch\COPYING.TXT">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="default\blank.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\default.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\drum-hitclap.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\drum-hitfinish.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\drum-hitnormal.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\drum-hitwhistle.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\drum-sliderslide.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\drum-slidertick.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\drum-sliderwhistle.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\nightcore-clap.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\nightcore-finish.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\nightcore-hat.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\nightcore-kick.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\normal-hitclap.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\normal-hitfinish.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\normal-hitnormal.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\normal-hitwhistle.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\normal-sliderslide.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\normal-slidertick.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\normal-sliderwhistle.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\soft-hitclap.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\soft-hitfinish.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\soft-hitnormal.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\soft-hitwhistle.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\soft-sliderslide.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\soft-slidertick.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="default\soft-sliderwhistle.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="extensions\plugins\SoundTouch\SoundTouch.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="extensions\plugins\SoundTouch\SoundTouch_x64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

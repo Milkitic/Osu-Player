@@ -238,7 +238,7 @@
                         Click="ModeButton_Click"
                         IconMargin="0"
                         IconSize="25"
-                        IconTemplate="{Binding Controller.PlayList.PlayMode, Converter={StaticResource PlayModeConverter}}"
+                        IconTemplate="{Binding Controller.PlayList.Mode, Converter={StaticResource PlayModeConverter}}"
                         MouseOverBackground="Transparent"
                         WindowChrome.IsHitTestVisibleInChrome="True" />
                     <local:CommonButton

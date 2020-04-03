@@ -1,14 +1,13 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Shared;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Xaml;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Utils
 {
@@ -36,7 +35,7 @@ namespace Milky.OsuPlayer.Utils
             var defLocale = I18NDic.MergedDictionaries[0];
             var defUiStrings = defLocale.Keys.Cast<object>().ToDictionary(defKey => (string)defKey, defKey => (string)defLocale[defKey]);
 
-            foreach (var enumerateFile in Util.EnumerateFiles(Domain.LangPath, ".xaml"))
+            foreach (var enumerateFile in SharedUtils.EnumerateFiles(Domain.LangPath, ".xaml"))
             {
                 try
                 {

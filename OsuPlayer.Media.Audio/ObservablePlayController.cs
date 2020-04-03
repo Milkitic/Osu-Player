@@ -1,26 +1,27 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Common.Data.EF.Model;
+using Milky.OsuPlayer.Common.Player;
+using Milky.OsuPlayer.Media.Audio.Player;
+using Milky.OsuPlayer.Media.Audio.Wave;
+using Milky.OsuPlayer.Shared;
+using Milky.WpfApi;
+using OSharp.Beatmap;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
-using Milky.OsuPlayer.Common.Player;
-using Milky.OsuPlayer.Media.Audio.Core;
-using Milky.WpfApi;
-using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
 
-    public sealed class ObservablePlayController : ViewModelBase, IDisposable
+    public sealed class ObservablePlayController : ViewModelBase, IAsyncDisposable
     {
         public event Action<PlayStatus> PlayStatusChanged;
-        public event Action<TimeSpan, TimeSpan> ProgressUpdated;
+        public event Action<TimeSpan> PositionUpdated;
 
         public event Action InterfaceClearRequest;
 
@@ -36,7 +37,9 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public event Action<BeatmapContext, CancellationToken> LoadFinished;
 
-        public ComponentPlayer Player
+
+
+        public OsuMixPlayer Player
         {
             get => _player;
             private set
@@ -48,9 +51,9 @@ namespace Milky.OsuPlayer.Media.Audio
         }
 
         public PlayList PlayList { get; } = new PlayList();
-        public bool IsPlayerReady => Player != null && Player.PlayStatus != PlayStatus.NotInitialized;
+        public bool IsPlayerReady => Player != null && Player.PlayStatus != PlayStatus.Unknown;
 
-        private ComponentPlayer _player;
+        private OsuMixPlayer _player;
         private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly AppDbOperator _appDbOperator = new AppDbOperator();
@@ -65,7 +68,7 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             PlayList.AddOrSwitchTo(beatmap);
             InitializeContextHandle(PlayList.CurrentInfo);
-            await LoadAsync(false, playInstantly);
+            await LoadAsync(false, playInstantly).ConfigureAwait(false);
             if (playInstantly) PlayList.CurrentInfo.PlayHandle.Invoke();
         }
 
@@ -73,14 +76,15 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             try
             {
-                await _readLock.WaitAsync(_cts.Token);
+                await _readLock.WaitAsync(_cts.Token).ConfigureAwait(false);
 
                 if (!File.Exists(path))
                     throw new FileNotFoundException("cannot locate file", path);
-                ClearPlayer();
-                PreLoadStarted?.Invoke(path, _cts.Token);
+                await ClearPlayer();
+                InvokeMethodHelper.OnMainThread(() => PreLoadStarted?.Invoke(path, _cts.Token));
                 var osuFile =
-                    await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor")); //50 ms
+                    await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
+                        .ConfigureAwait(false); //50 ms
                 var beatmap = Beatmap.ParseFromOSharp(osuFile);
                 beatmap.IsTemporary = true;
                 Beatmap trueBeatmap = _appDbOperator.GetBeatmapByIdentifiable(beatmap) ?? beatmap;
@@ -92,7 +96,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 context.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path);
 
                 InitializeContextHandle(context);
-                await LoadAsync(true, playInstantly);
+                await LoadAsync(true, playInstantly).ConfigureAwait(false);
                 if (playInstantly) context.PlayHandle.Invoke();
             }
             catch (Exception ex)
@@ -107,12 +111,12 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public async Task PlayPrevAsync()
         {
-            await PlayByControl(PlayControlType.Previous, false);
+            await PlayByControl(PlayControlType.Previous, false).ConfigureAwait(false);
         }
 
         public async Task PlayNextAsync()
         {
-            await PlayByControl(PlayControlType.Next, false);
+            await PlayByControl(PlayControlType.Next, false).ConfigureAwait(false);
         }
 
         private async Task LoadAsync(bool isReading, bool playInstantly)
@@ -123,12 +127,12 @@ namespace Milky.OsuPlayer.Media.Audio
             {
                 if (!isReading)
                 {
-                    await _readLock.WaitAsync(_cts.Token);
-                    ClearPlayer();
+                    await _readLock.WaitAsync(_cts.Token).ConfigureAwait(false);
+                    await ClearPlayer();
                 }
 
                 var beatmap = context.Beatmap;
-                LoadStarted?.Invoke(context, _cts.Token);
+                InvokeMethodHelper.OnMainThread(() => LoadStarted?.Invoke(context, _cts.Token));
 
                 // meta
                 var osuFile = context.OsuFile;
@@ -139,7 +143,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     string path = beatmap.InOwnDb
                         ? Path.Combine(Domain.CustomSongPath, beatmap.FolderName, beatmap.BeatmapFileName)
                         : Path.Combine(Domain.OsuSongPath, beatmap.FolderName, beatmap.BeatmapFileName);
-                    osuFile = await OsuFile.ReadFromFileAsync(path);
+                    osuFile = await OsuFile.ReadFromFileAsync(path).ConfigureAwait(false);
                     context.OsuFile = osuFile;
                     beatmapDetail.MapPath = path;
                     beatmapDetail.BaseFolder = Path.GetDirectoryName(path);
@@ -165,7 +169,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 metadata.AR = osuFile.Difficulty.ApproachRate;
                 metadata.OD = osuFile.Difficulty.OverallDifficulty;
 
-                MetaLoaded?.Invoke(context, _cts.Token);
+                InvokeMethodHelper.OnMainThread(() => MetaLoaded?.Invoke(context, _cts.Token));
 
                 // background
                 var defaultPath = Path.Combine(Domain.ResourcePath, "default.jpg");
@@ -185,7 +189,7 @@ namespace Milky.OsuPlayer.Media.Audio
                         : null;
                 }
 
-                BackgroundInfoLoaded?.Invoke(context, _cts.Token);
+                InvokeMethodHelper.OnMainThread(() => BackgroundInfoLoaded?.Invoke(context, _cts.Token));
 
                 // music
                 beatmapDetail.MusicPath = Path.Combine(beatmapDetail.BaseFolder,
@@ -193,16 +197,16 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 if (PlayList.PreInfo?.BeatmapDetail?.BaseFolder != PlayList.CurrentInfo?.BeatmapDetail?.BaseFolder)
                 {
-                    AudioPlaybackEngine.ClearCacheSounds();
+                    CachedSound.ClearCacheSounds();
                 }
 
-                Player = new ComponentPlayer(beatmapDetail.MapPath, osuFile);
+                Player = new OsuMixPlayer(osuFile, beatmapDetail.BaseFolder);
                 Player.PlayStatusChanged += Player_PlayStatusChanged;
-                Player.PositionChanged += Player_ProgressUpdated;
-                await Player.InitializeAsync(); //700 ms
-                Player.HitsoundOffset = context.BeatmapSettings.Offset;
+                Player.PositionUpdated += Player_PositionUpdated;
+                await Player.Initialize().ConfigureAwait(false); //700 ms
+                Player.ManualOffset = context.BeatmapSettings.Offset;
 
-                MusicLoaded?.Invoke(context, _cts.Token);
+                InvokeMethodHelper.OnMainThread(() => MusicLoaded?.Invoke(context, _cts.Token));
 
                 // video
                 var videoName = osuFile.Events.VideoInfo?.Filename;
@@ -213,24 +217,24 @@ namespace Milky.OsuPlayer.Media.Audio
                     if (File.Exists(videoPath))
                     {
                         beatmapDetail.VideoPath = videoPath;
-                        VideoLoadRequested?.Invoke(context, _cts.Token);
+                        InvokeMethodHelper.OnMainThread(() => VideoLoadRequested?.Invoke(context, _cts.Token));
                     }
                 }
 
                 // storyboard
                 var analyzer = new OsuFileAnalyzer(osuFile);
                 if (osuFile.Events.ElementGroup.ElementList.Count > 0)
-                    StoryboardLoadRequested?.Invoke(context, _cts.Token);
+                    InvokeMethodHelper.OnMainThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
                 else
                 {
                     var osbFile = Path.Combine(beatmapDetail.BaseFolder, analyzer.OsbFileName);
-                    if (File.Exists(osbFile) && await OsuFile.OsbFileHasStoryboard(osbFile))
-                        StoryboardLoadRequested?.Invoke(context, _cts.Token);
+                    if (File.Exists(osbFile) && await OsuFile.OsbFileHasStoryboard(osbFile).ConfigureAwait(false))
+                        InvokeMethodHelper.OnMainThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
                 }
 
                 context.FullLoaded = true;
                 // load finished
-                LoadFinished?.Invoke(context, _cts.Token);
+                InvokeMethodHelper.OnMainThread(() => LoadFinished?.Invoke(context, _cts.Token));
                 AppSettings.Default.CurrentMap = beatmap.GetIdentity();
                 AppSettings.SaveDefault();
                 if (!isReading) _readLock.Release();
@@ -240,9 +244,9 @@ namespace Milky.OsuPlayer.Media.Audio
                 Notification.Push(@"发生未处理的错误：" + (ex.InnerException?.Message ?? ex?.Message));
 
                 if (!isReading) _readLock.Release();
-                if (Player.PlayStatus != PlayStatus.Playing)
+                if (Player?.PlayStatus != PlayStatus.Playing)
                 {
-                    await PlayByControl(PlayControlType.Next, false);
+                    await PlayByControl(PlayControlType.Next, false).ConfigureAwait(false);
                 }
             }
             finally
@@ -251,27 +255,26 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
-        private void ClearPlayer()
+        private async Task ClearPlayer()
         {
             if (Player == null) return;
             PlayList.CurrentInfo.StopHandle();
             Player.PlayStatusChanged -= Player_PlayStatusChanged;
-            Player.PositionChanged -= Player_ProgressUpdated;
-            Player.Dispose();
+            Player.PositionUpdated -= Player_PositionUpdated;
+            await Player.DisposeAsync();
         }
 
         private async void Player_PlayStatusChanged(PlayStatus obj)
         {
-            PlayStatusChanged?.Invoke(obj);
+            InvokeMethodHelper.OnMainThread(() => PlayStatusChanged?.Invoke(obj));
             SharedVm.Default.IsPlaying = obj == PlayStatus.Playing;
-            if (obj == PlayStatus.Finished) await PlayByControl(PlayControlType.Next, true);
+            if (obj == PlayStatus.Finished)
+                await PlayByControl(PlayControlType.Next, true).ConfigureAwait(false);
         }
 
-        private void Player_ProgressUpdated(object sender, ProgressEventArgs e)
+        private void Player_PositionUpdated(TimeSpan position)
         {
-            TimeSpan playTime = e.Position;
-            TimeSpan duration = e.Duration;
-            ProgressUpdated?.Invoke(playTime, duration);
+            InvokeMethodHelper.OnMainThread(() => PositionUpdated?.Invoke(position));
         }
 
         private async Task PlayList_AutoSwitched(PlayControlResult controlResult, Beatmap beatmap, bool playInstantly)
@@ -282,10 +285,11 @@ namespace Milky.OsuPlayer.Media.Audio
             {
                 context.SetTimeHandle(0, playInstantly || controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play);
             }
-            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default)
+            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default ||
+                     controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Reset)
             {
                 InitializeContextHandle(context);
-                await LoadAsync(false, true);
+                await LoadAsync(false, true).ConfigureAwait(false);
                 switch (controlResult.PlayStatus)
                 {
                     case PlayControlResult.PlayControlStatus.Play:
@@ -298,7 +302,7 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
             {
-                InterfaceClearRequest?.Invoke();
+                InvokeMethodHelper.OnMainThread(() => InterfaceClearRequest?.Invoke());
             }
 
             await Task.CompletedTask;
@@ -318,14 +322,16 @@ namespace Milky.OsuPlayer.Media.Audio
             }
 
             var preInfo = PlayList.CurrentInfo;
-            var controlResult = auto ? await PlayList.InvokeAutoNext() : await PlayList.SwitchByControl(control);
+            var controlResult = auto
+                    ? await PlayList.InvokeAutoNext().ConfigureAwait(false)
+                    : await PlayList.SwitchByControl(control).ConfigureAwait(false);
             if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default &&
                 controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play)
             {
                 if (PlayList.CurrentInfo == null)
                 {
-                    ClearPlayer();
-                    InterfaceClearRequest?.Invoke();
+                    await ClearPlayer();
+                    InvokeMethodHelper.OnMainThread(() => InterfaceClearRequest?.Invoke());
                     return;
                 }
 
@@ -337,22 +343,39 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
 
                 InitializeContextHandle(PlayList.CurrentInfo);
-                await LoadAsync(false, true);
+                await LoadAsync(false, true).ConfigureAwait(false);
                 PlayList.CurrentInfo.PlayHandle.Invoke();
+            }
+            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
+            {
+                switch (controlResult.PlayStatus)
+                {
+                    case PlayControlResult.PlayControlStatus.Play:
+                        PlayList.CurrentInfo.RestartHandle.Invoke();
+                        break;
+                    case PlayControlResult.PlayControlStatus.Stop:
+                        PlayList.CurrentInfo.StopHandle.Invoke();
+                        break;
+                }
             }
             else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
             {
-                ClearPlayer();
-                InterfaceClearRequest?.Invoke();
+                await ClearPlayer();
+                InvokeMethodHelper.OnMainThread(() => InterfaceClearRequest?.Invoke());
                 return;
             }
         }
 
         private void InitializeContextHandle(BeatmapContext context)
         {
-            context.PlayHandle = () => Player.Play();
-            context.PauseHandle = () => Player.Pause();
-            context.StopHandle = () => Player.Stop();
+            context.PlayHandle = async () => await Player.Play().ConfigureAwait(false);
+            context.PauseHandle = async () => await Player.Pause().ConfigureAwait(false);
+            context.StopHandle = async () => await Player.Stop().ConfigureAwait(false);
+            context.RestartHandle = () =>
+            {
+                context.StopHandle();
+                context.PlayHandle();
+            };
             context.TogglePlayHandle = () =>
             {
                 if (Player.PlayStatus == PlayStatus.Ready ||
@@ -364,7 +387,8 @@ namespace Milky.OsuPlayer.Media.Audio
                 else if (Player.PlayStatus == PlayStatus.Playing) context.PauseHandle();
             };
 
-            context.SetTimeHandle = (time, play) => Player.SetTime(TimeSpan.FromMilliseconds(time), play);
+            context.SetTimeHandle = async (time, play) =>
+                await Player.SkipTo(TimeSpan.FromMilliseconds(time)).ConfigureAwait(false);
         }
 
         private void InterruptPrevOperation()
@@ -374,9 +398,9 @@ namespace Milky.OsuPlayer.Media.Audio
             _cts = new CancellationTokenSource();
         }
 
-        public void Dispose()
+        public async Task DisposeAsync()
         {
-            _player?.Dispose();
+            if (_player != null) await _player?.DisposeAsync();
             _readLock?.Dispose();
             _cts?.Dispose();
         }

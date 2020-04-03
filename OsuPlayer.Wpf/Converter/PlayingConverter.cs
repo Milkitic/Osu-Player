@@ -56,20 +56,20 @@ namespace Milky.OsuPlayer.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is PlayMode playerMode)) return value;
+            if (!(value is PlayListMode playerMode)) return value;
             switch (playerMode)
             {
-                case PlayMode.Normal:
+                case PlayListMode.Normal:
                     return Application.Current.FindResource($"ModeNormal{parameter}Templ");
-                case PlayMode.Random:
+                case PlayListMode.Random:
                     return Application.Current.FindResource($"ModeRandom{parameter}Templ");
-                case PlayMode.Loop:
+                case PlayListMode.Loop:
                     return Application.Current.FindResource($"ModeLoop{parameter}Templ");
-                case PlayMode.LoopRandom:
+                case PlayListMode.LoopRandom:
                     return Application.Current.FindResource($"ModeLoopRandom{parameter}Templ");
-                case PlayMode.Single:
+                case PlayListMode.Single:
                     return Application.Current.FindResource($"ModeSingle{parameter}Templ");
-                case PlayMode.SingleLoop:
+                case PlayListMode.SingleLoop:
                     return Application.Current.FindResource($"ModeSingleLoop{parameter}Templ");
                 default:
                     throw new ArgumentOutOfRangeException();

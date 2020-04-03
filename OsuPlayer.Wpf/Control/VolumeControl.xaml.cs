@@ -1,27 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Milky.OsuPlayer.Common;
+﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Data;
 using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Core;
-using Milky.OsuPlayer.ViewModels;
 using Milky.WpfApi;
 using NAudio.Wave;
+using OsuPlayer.Devices;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace Milky.OsuPlayer.Control
 {
@@ -29,6 +16,7 @@ namespace Milky.OsuPlayer.Control
     {
         public SharedVm Shared { get; } = SharedVm.Default;
     }
+
     /// <summary>
     /// VolumeControl.xaml 的交互逻辑
     /// </summary>
@@ -95,13 +83,12 @@ namespace Milky.OsuPlayer.Control
         {
             if (_controller.Player == null)
                 return;
-            _controller.Player.HitsoundOffset = (int)Offset.Value;
+            _controller.Player.ManualOffset = (int)Offset.Value;
         }
 
         private void Offset_DragComplete(object sender, DragCompletedEventArgs e)
         {
-            _dbOperator.UpdateMap(_controller.PlayList.CurrentInfo.Beatmap,
-                _controller.Player.HitsoundOffset);
+            _dbOperator.UpdateMap(_controller.PlayList.CurrentInfo.Beatmap, _controller.Player.ManualOffset);
         }
 
         private void BtnAsio_OnClick(object sender, RoutedEventArgs e)
@@ -112,9 +99,9 @@ namespace Milky.OsuPlayer.Control
             }
         }
 
-        private void BtnPlayMod_OnClick(object sender, RoutedEventArgs e)
+        private async void BtnPlayMod_OnClick(object sender, RoutedEventArgs e)
         {
-            _controller.Player.SetPlayMod((PlayMod)((Button)sender).Tag);
+            await _controller.Player.SetPlayMod((PlayModifier)((Button)sender).Tag);
         }
     }
 }
