@@ -232,10 +232,9 @@ namespace Milky.OsuPlayer.Pages
             }
         }
 
-        private void BtnPlayAll_Click(object sender, RoutedEventArgs e)
+        private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {
-            Services.Get<PlayerList>()
-                        .RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
+            await _controller.PlayList.SetSongListAsync(_recentBeatmaps, true);
         }
 
         private void ItemCollect_Click(object sender, RoutedEventArgs e)

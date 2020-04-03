@@ -117,9 +117,10 @@ namespace Milky.OsuPlayer.Common.Player
         /// <summary>
         /// 播放列表替换
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">播放列表</param>
         /// <param name="startAnew">若为false，则播放列表中若有相同曲，保持指针继续播放</param>
-        /// <param name="playInstantly">立即播放</param>
+        /// <param name="playInstantly">播放更新列表，并切换当前曲目后，立即播放新的曲目</param>
+        /// <param name="autoSetSong">若为false，则仅更改当前列表，不自动切换当前曲目</param>
         /// <returns></returns>
         public async Task<PlayControlResult> SetSongListAsync(IEnumerable<Beatmap> value, bool startAnew,
             bool playInstantly = true, bool autoSetSong = true)

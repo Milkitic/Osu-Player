@@ -268,13 +268,12 @@ namespace Milky.OsuPlayer.Pages
             return dataModels.Select(ConvertToEntry);
         }
 
-        private void BtnPlayAll_Click(object sender, RoutedEventArgs e)
+        private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {
             var beatmaps = _entries.ToList();
             if (beatmaps.Count <= 0) return;
 
-            Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.None, PlayListMode.Collection, beatmaps);
-            PlayController.Default.PlayNewFile(beatmaps[0]);
+            await _controller.PlayList.SetSongListAsync(beatmaps, true);
         }
 
         private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
