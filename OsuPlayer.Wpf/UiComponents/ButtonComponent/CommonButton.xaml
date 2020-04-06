@@ -179,7 +179,7 @@
         <Setter Property="Background" Value="#f0f0f0" />
         <Setter Property="BorderBrush" Value="#f0f0f0" />
         <Setter Property="Foreground" Value="#484848" />
-        <Setter Property="BorderThickness" Value="1,0" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Height" Value="36" />
         <Setter Property="MouseOverBackground" Value="#f3f5f5" />
@@ -190,33 +190,56 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:CommonButton}">
-                    <Border
-                        x:Name="BorderMain"
-                        Width="{TemplateBinding Width}"
-                        Height="{TemplateBinding Height}"
-                        Padding="{TemplateBinding Padding}"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{TemplateBinding CornerRadius}">
-                        <StackPanel
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            Orientation="{TemplateBinding IconOrientation}">
-                            <Viewbox
-                                x:Name="IconViewBox"
-                                Width="{TemplateBinding IconSize}"
-                                Height="{TemplateBinding IconSize}"
-                                Margin="{TemplateBinding IconMargin}"
-                                VerticalAlignment="Center"
-                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                UseLayoutRounding="True">
-                                <ContentControl x:Name="IconContent" Template="{TemplateBinding IconTemplate}" />
-                            </Viewbox>
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Border>
+                    <Grid>
+                        <Border
+                            x:Name="BorderShadow"
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                            <Border.Effect>
+                                <DropShadowEffect
+                                    x:Name="Shadow"
+                                    BlurRadius="10"
+                                    Opacity="{Binding ShadowOpacity, RelativeSource={RelativeSource TemplatedParent}}"
+                                    ShadowDepth="1"
+                                    Color="{Binding ShadowColor, RelativeSource={RelativeSource TemplatedParent}}" />
+                            </Border.Effect>
+                        </Border>
+                        <Border
+                            x:Name="BorderMain"
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                            <StackPanel
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Orientation="{TemplateBinding IconOrientation}">
+                                <Viewbox
+                                    x:Name="IconViewBox"
+                                    Width="{TemplateBinding IconSize}"
+                                    Height="{TemplateBinding IconSize}"
+                                    Margin="{TemplateBinding IconMargin}"
+                                    VerticalAlignment="Center"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                    UseLayoutRounding="True">
+                                    <ContentControl x:Name="IconContent" Template="{TemplateBinding IconTemplate}" />
+                                </Viewbox>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
                     <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=Shadow, Path=Opacity}" Value="0">
+                            <Setter TargetName="BorderShadow" Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding ElementName=IconContent, Path=Template}" Value="{x:Null}">
                             <Setter TargetName="IconViewBox" Property="Visibility" Value="Collapsed" />
                         </DataTrigger>

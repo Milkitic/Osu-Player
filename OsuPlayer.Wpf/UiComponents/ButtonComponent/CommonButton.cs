@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -77,6 +78,27 @@ namespace Milky.OsuPlayer.UiComponents.ButtonComponent
                 new PropertyMetadata(24d)
             );
 
+        [Description("Shadow Color"), Category("Appearance"), DefaultValue(typeof(Color), "255, 205, 30, 93")]
+        public Color ShadowColor
+        {
+            get => (Color)GetValue(ShadowColorProperty);
+            set => SetValue(ShadowColorProperty, value);
+        }
+
+        public static readonly DependencyProperty ShadowColorProperty =
+            DependencyProperty.Register("ShadowColor", typeof(Color), typeof(CommonButton),
+                new PropertyMetadata(Color.FromArgb(255, 205, 30, 93), null)); //CD1E5D
+
+        [Description("Shadow Opcacity"), Category("Appearance"), DefaultValue(0d)]
+        public double ShadowOpacity
+        {
+            get => (double)GetValue(ShadowOpacityProperty);
+            set => SetValue(ShadowOpacityProperty, value);
+        }
+
+        public static readonly DependencyProperty ShadowOpacityProperty =
+            DependencyProperty.Register("ShadowOpacity", typeof(double), typeof(CommonButton),
+                new PropertyMetadata(0d, null));
         public Brush MouseOverBackground
         {
             get => (Brush)GetValue(MouseOverBackgroundProperty);

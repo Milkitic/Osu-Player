@@ -15,8 +15,10 @@ namespace Milky.OsuPlayer.UiComponents.RadioButtonComponent
     {
         //protected Window HostWindow { get; private set; }
         private static readonly Dictionary<Type, FrameworkElement> PageMapping = new Dictionary<Type, FrameworkElement>();
-        protected FrameworkElement HostWindow { get; private set; }
         private Action<FrameworkElement> _loadedAction;
+
+        protected FrameworkElement HostWindow { get; private set; }
+
         public SwitchRadio()
         {
             Loaded += (sender, e) =>

@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:player="clr-namespace:Milky.OsuPlayer.Media.Audio.Playlist;assembly=OsuPlayer.Media.Audio"
     xmlns:userControls="clr-namespace:Milky.OsuPlayer.UserControls"
-    d:DesignHeight="270"
+    d:DesignHeight="241"
     d:DesignWidth="170"
     FontFamily="{StaticResource SspRegular}"
     Loaded="VolumeControl_OnLoaded"
@@ -34,7 +34,6 @@
         <Border Margin="10" Background="#A0ffffff">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
@@ -193,14 +192,6 @@
                         Style="{StaticResource CollectionButtonStyle}"
                         Tag="{x:Static player:PlayModifier.DayCore}" />
                 </Grid>
-                <Button
-                    x:Name="BtnAsio"
-                    Grid.Row="3"
-                    Height="28"
-                    Click="BtnAsio_OnClick"
-                    Style="{StaticResource CollectionButtonStyle}">
-                    ASIO 音频设置
-                </Button>
             </Grid>
         </Border>
     </Grid>

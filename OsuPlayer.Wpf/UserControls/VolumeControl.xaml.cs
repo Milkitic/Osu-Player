@@ -26,7 +26,6 @@ namespace Milky.OsuPlayer.UserControls
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         private readonly AppDbOperator _dbOperator = new AppDbOperator();
-        private IWavePlayer _device;
 
         public VolumeControl()
         {
@@ -35,19 +34,11 @@ namespace Milky.OsuPlayer.UserControls
 
         private void VolumeControl_OnLoaded(object sender, RoutedEventArgs e)
         {
-            _device = DeviceProvider.GetCurrentDevice();
-            if (_device is AsioOut asio)
+            if (_controller != null)
             {
-                BtnAsio.Visibility = Visibility.Visible;
+                Offset.Value = _controller.PlayList.CurrentInfo?.BeatmapSettings?.Offset ?? 0;
+                _controller.LoadFinished += Controller_LoadFinished;
             }
-            else
-            {
-                BtnAsio.Visibility = Visibility.Collapsed;
-            }
-
-
-            Offset.Value = _controller.PlayList.CurrentInfo?.BeatmapSettings?.Offset ?? 0;
-            _controller.LoadFinished += Controller_LoadFinished;
         }
 
         private void Controller_LoadFinished(BeatmapContext bc, System.Threading.CancellationToken arg2)
@@ -90,14 +81,6 @@ namespace Milky.OsuPlayer.UserControls
         private void Offset_DragComplete(object sender, DragCompletedEventArgs e)
         {
             _dbOperator.UpdateMap(_controller.PlayList.CurrentInfo.Beatmap, _controller.Player.ManualOffset);
-        }
-
-        private void BtnAsio_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (_device is AsioOut asio)
-            {
-                asio.ShowControlPanel();
-            }
         }
 
         private async void BtnPlayMod_OnClick(object sender, RoutedEventArgs e)

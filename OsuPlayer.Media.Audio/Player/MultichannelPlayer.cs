@@ -178,7 +178,11 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public async Task Pause()
         {
+            var pos = Position;
             await CancelTask().ConfigureAwait(false);
+            _innerTimelineSw.Stop();
+            _innerTimelineSw.SkipTo(pos);
+
             foreach (var channel in _runningChannels.ToList())
             {
                 await channel.Pause().ConfigureAwait(false);
@@ -200,7 +204,10 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public async Task Stop()
         {
+            var pos = Position;
             await CancelTask().ConfigureAwait(false);
+            _innerTimelineSw.Stop();
+            _innerTimelineSw.SkipTo(pos);
 
             foreach (var channel in _runningChannels.ToList())
             {
@@ -305,7 +312,10 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                 //Console.WriteLine(referChannelStartTime);
                 foreach (var channel in _runningChannels.Where(k => !k.IsReferenced).ToList())
                 {
-                    await channel.Sync(referChannelStartTime - channel.ChannelStartTime).ConfigureAwait(false);
+                    var targetTime = referChannelStartTime - channel.ChannelStartTime;
+                    //targetTime = channel.Position +
+                    //             TimeSpan.FromMilliseconds((targetTime - channel.Position).TotalMilliseconds / 2);
+                    await channel.Sync(targetTime).ConfigureAwait(false);
                 }
 
                 _innerTimelineSw.SkipTo(referChannelStartTime);
@@ -319,15 +329,29 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                 .OrderBy(k => k.ChannelStartTime)
             );
 
+            foreach (var subchannel in _channelsQueue)
+            {
+                if (Position < subchannel.ChannelStartTime)
+                {
+                    await subchannel.Stop().ConfigureAwait(false);
+                }
+            }
+
             var old = _runningChannels.ToList();
             _runningChannels = new SortedSet<Subchannel>(_subchannels
-                .Where(k => k.ChannelStartTime <= Position && k.ChannelEndTime > Position), new ChannelEndTimeComparer());
+                .Where(k => k.ChannelStartTime <= Position && k.ChannelEndTime > Position),
+                new ChannelEndTimeComparer());
             foreach (var subchannel in old)
             {
-                if (!_runningChannels.Contains(subchannel))
-                {
-                    await subchannel.Pause().ConfigureAwait(false);
-                }
+                if (_runningChannels.Contains(subchannel)) continue;
+                //if (subchannel.ChannelStartTime < Position)
+                //{
+                //    await subchannel.Stop().ConfigureAwait(false);
+                //}
+                //else
+                //{
+                await subchannel.Pause().ConfigureAwait(false);
+                //}
             }
         }
 

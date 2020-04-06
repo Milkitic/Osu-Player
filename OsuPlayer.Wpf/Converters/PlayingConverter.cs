@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Milky.OsuPlayer.Shared.Models;
+using Milky.OsuPlayer.UiComponents.ButtonComponent;
 using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.Converters
@@ -35,7 +36,7 @@ namespace Milky.OsuPlayer.Converters
                     }
                 }
 
-                if (values[1] is ContentControl cc)
+                if (values[1] is CommonButton cb)
                 {
                     return Application.Current.FindResource(isPlaying ? "PauseTempl" : "PlayTempl");
                 }

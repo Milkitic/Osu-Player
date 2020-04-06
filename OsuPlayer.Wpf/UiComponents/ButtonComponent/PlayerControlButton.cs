@@ -35,7 +35,7 @@ namespace Milky.OsuPlayer.UiComponents.ButtonComponent
 
         public static readonly DependencyProperty ShadowOpacityProperty =
             DependencyProperty.Register("ShadowOpacity", typeof(double), typeof(PlayerControlButton),
-                new PropertyMetadata(0.2d, null));
+                new PropertyMetadata(0d, null));
 
         [Description("Image Width"), Category("Appearance"), DefaultValue(32d)]
         public double ImageWidth

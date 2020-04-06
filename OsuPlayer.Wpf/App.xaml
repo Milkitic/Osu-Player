@@ -28,11 +28,11 @@
                 <ResourceDictionary Source="Styles/ScrollBarStyle.xaml" />
                 <ResourceDictionary Source="Styles/Components.xaml" />
 
-                <ResourceDictionary Source="UiComponent/ButtonComponent/CommonButton.xaml" />
-                <ResourceDictionary Source="UiComponent/ButtonComponent/PlayerControlButton.xaml" />
-                <ResourceDictionary Source="UiComponent/LoaderComponent/Loader.xaml" />
-                <ResourceDictionary Source="UiComponent/RadioButtonComponent/SwitchRadio.xaml" />
-                <ResourceDictionary Source="UiComponent/TextBoxComponent/CommonTextBox.xaml" />
+                <ResourceDictionary Source="UiComponents/ButtonComponent/CommonButton.xaml" />
+                <ResourceDictionary Source="UiComponents/ButtonComponent/PlayerControlButton.xaml" />
+                <ResourceDictionary Source="UiComponents/LoaderComponent/Loader.xaml" />
+                <ResourceDictionary Source="UiComponents/RadioButtonComponent/SwitchRadio.xaml" />
+                <ResourceDictionary Source="UiComponents/TextBoxComponent/CommonTextBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

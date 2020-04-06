@@ -12,6 +12,8 @@ using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Windows;
+using NAudio.Wave;
+using OsuPlayer.Devices;
 
 namespace Milky.OsuPlayer.UserControls
 {
@@ -28,34 +30,35 @@ namespace Milky.OsuPlayer.UserControls
     {
         #region Events
 
-        public static readonly RoutedEvent OnThumbClickEvent = EventManager.RegisterRoutedEvent(
-            "OnThumbClick",
+        public static readonly RoutedEvent ThumbClickedEvent = EventManager.RegisterRoutedEvent(
+            "ThumbClicked",
             RoutingStrategy.Bubble,
             typeof(RoutedPropertyChangedEventArgs<object>),
             typeof(PlayController));
 
-        public event RoutedEventHandler OnThumbClick
+        public event RoutedEventHandler ThumbClicked
         {
-            add => AddHandler(OnThumbClickEvent, value);
-            remove => RemoveHandler(OnThumbClickEvent, value);
+            add => AddHandler(ThumbClickedEvent, value);
+            remove => RemoveHandler(ThumbClickedEvent, value);
         }
 
-        public static readonly RoutedEvent OnLikeClickEvent = EventManager.RegisterRoutedEvent(
-            "OnLikeClick",
+        public static readonly RoutedEvent LikeClickedEvent = EventManager.RegisterRoutedEvent(
+            "LikeClicked",
             RoutingStrategy.Bubble,
             typeof(RoutedPropertyChangedEventArgs<object>),
             typeof(PlayController));
 
-        public event RoutedEventHandler OnLikeClick
+        public event RoutedEventHandler LikeClicked
         {
-            add => AddHandler(OnLikeClickEvent, value);
-            remove => RemoveHandler(OnLikeClickEvent, value);
+            add => AddHandler(LikeClickedEvent, value);
+            remove => RemoveHandler(LikeClickedEvent, value);
         }
 
         #endregion
 
         private bool _scrollLock;
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+        private IWavePlayer _device;
 
         public PlayController()
         {
@@ -106,6 +109,16 @@ namespace Milky.OsuPlayer.UserControls
             PlayProgress.Value = 0;
             PlayProgress.Maximum = _controller.Player.Duration.TotalMilliseconds;
             LblTotal.Content = _controller.Player.Duration.ToString(@"mm\:ss");
+
+            _device = DeviceProvider.GetCurrentDevice();
+            if (_device is AsioOut asio)
+            {
+                BtnAsio.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                BtnAsio.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void Controller_LoadFinished(BeatmapContext beatmapCtx, CancellationToken ct)
@@ -114,7 +127,7 @@ namespace Milky.OsuPlayer.UserControls
 
         private void ThumbButton_Click(object sender, RoutedEventArgs e)
         {
-            RaiseEvent(new RoutedEventArgs(OnThumbClickEvent, this));
+            RaiseEvent(new RoutedEventArgs(ThumbClickedEvent, this));
         }
 
         private async void PrevButton_Click(object sender, RoutedEventArgs e)
@@ -173,7 +186,7 @@ namespace Milky.OsuPlayer.UserControls
 
         private void LikeButton_Click(object sender, RoutedEventArgs e)
         {
-            RaiseEvent(new RoutedEventArgs(OnLikeClickEvent, this));
+            RaiseEvent(new RoutedEventArgs(LikeClickedEvent, this));
         }
 
         private void VolumeButton_Click(object sender, RoutedEventArgs e)
@@ -195,6 +208,14 @@ namespace Milky.OsuPlayer.UserControls
         {
             var win = new BeatmapInfoWindow(_controller.PlayList.CurrentInfo);
             win.ShowDialog();
+        }
+
+        private void BtnAsio_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_device is AsioOut asio)
+            {
+                asio.ShowControlPanel();
+            }
         }
     }
 }

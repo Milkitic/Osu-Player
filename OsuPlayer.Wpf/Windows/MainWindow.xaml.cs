@@ -54,6 +54,8 @@ namespace Milky.OsuPlayer.Windows
 
             OverallKeyHook = new OverallKeyHook(this);
             Animation.Loaded += Animation_Loaded;
+            PlayController.LikeClicked += Controller_LikeClicked;
+            PlayController.ThumbClicked += Controller_ThumbClicked;
             MiniPlayController.CloseButtonClicked += () =>
             {
                 if (AppSettings.Default.General.ExitWhenClosed == null) Show();
@@ -346,12 +348,12 @@ namespace Milky.OsuPlayer.Windows
             });
         }
 
-        private void Controller_OnThumbClick(object sender, RoutedEventArgs e)
+        private void Controller_ThumbClicked(object sender, RoutedEventArgs e)
         {
             MainFrame.Content = null;
         }
 
-        private void Controller_OnLikeClick(object sender, RoutedEventArgs e)
+        private void Controller_LikeClicked(object sender, RoutedEventArgs e)
         {
             var detail = _controller.PlayList.CurrentInfo.Beatmap;
             var entry = _appDbOperator.GetBeatmapByIdentifiable(detail.GetIdentity());

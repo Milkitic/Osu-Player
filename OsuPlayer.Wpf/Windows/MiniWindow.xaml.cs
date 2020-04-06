@@ -29,11 +29,6 @@ namespace Milky.OsuPlayer.Windows
             }
         }
 
-        private void ControlMaxButtonClicked()
-        {
-
-        }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             AppSettings.Default.General.MiniPosition = new[] { Left, Top };

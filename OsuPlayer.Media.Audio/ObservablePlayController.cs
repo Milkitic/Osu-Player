@@ -373,20 +373,20 @@ namespace Milky.OsuPlayer.Media.Audio
             context.PlayHandle = async () => await Player.Play().ConfigureAwait(false);
             context.PauseHandle = async () => await Player.Pause().ConfigureAwait(false);
             context.StopHandle = async () => await Player.Stop().ConfigureAwait(false);
-            context.RestartHandle = () =>
+            context.RestartHandle = async () =>
             {
-                context.StopHandle();
-                context.PlayHandle();
+                await context.StopHandle();
+                await context.PlayHandle();
             };
-            context.TogglePlayHandle = () =>
+            context.TogglePlayHandle = async () =>
             {
                 if (Player.PlayStatus == PlayStatus.Ready ||
                     Player.PlayStatus == PlayStatus.Finished ||
                     Player.PlayStatus == PlayStatus.Paused)
                 {
-                    context.PlayHandle();
+                    await context.PlayHandle();
                 }
-                else if (Player.PlayStatus == PlayStatus.Playing) context.PauseHandle();
+                else if (Player.PlayStatus == PlayStatus.Playing) await context.PauseHandle();
             };
 
             context.SetTimeHandle = async (time, play) =>

@@ -245,11 +245,13 @@ namespace Milky.OsuPlayer.UserControls
         {
             if (!_signed)
             {
-                _controller.LoadStarted += Controller_LoadStarted;
+                if (_controller != null)
+                    _controller.LoadStarted += Controller_LoadStarted;
                 _signed = true;
             }
 
-            PlayList.SelectedItem = _controller.PlayList.CurrentInfo?.Beatmap;
+            if (_controller != null)
+                PlayList.SelectedItem = _controller.PlayList.CurrentInfo?.Beatmap;
             if (PlayList.SelectedItem != null)
             {
                 PlayList.ScrollIntoView(PlayList.SelectedItem);

@@ -30,12 +30,12 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         public BeatmapDetail BeatmapDetail { get; }
         public OsuFile OsuFile { get; set; }
         public bool PlayInstantly { get; set; }
-        public Action PlayHandle { get; set; }
-        public Action PauseHandle { get; set; }
-        public Action StopHandle { get; set; }
-        public Action TogglePlayHandle { get; set; }
-        public Action<double, bool> SetTimeHandle { get; set; }
-        public Action RestartHandle { get; set; }
+        public Func<Task> PlayHandle { get; set; }
+        public Func<Task> PauseHandle { get; set; }
+        public Func<Task> StopHandle { get; set; }
+        public Func<Task> TogglePlayHandle { get; set; }
+        public Func<double, bool, Task> SetTimeHandle { get; set; }
+        public Func<Task> RestartHandle { get; set; }
 
         public static bool operator ==(BeatmapContext bc1, BeatmapContext bc2)
         {
