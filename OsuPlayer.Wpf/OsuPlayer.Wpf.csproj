@@ -164,6 +164,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UiComponents\TextBlockComponent\OutlinedTextBlock.cs" />
     <Compile Include="UserControls\AddCollectionControl.xaml.cs">
       <DependentUpon>AddCollectionControl.xaml</DependentUpon>
     </Compile>
