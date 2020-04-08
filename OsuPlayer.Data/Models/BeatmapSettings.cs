@@ -15,7 +15,6 @@ namespace Milky.OsuPlayer.Data.Models
             Map(p => p.Offset).ToColumn("offset");
             Map(p => p.LastPlayTime).ToColumn("lastPlayTime");
             Map(p => p.ExportFile).ToColumn("exportFile");
-            Map(p => p.AddTime).ToColumn("addTime");
         }
     }
 

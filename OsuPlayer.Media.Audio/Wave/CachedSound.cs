@@ -162,7 +162,9 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
                 ? DefaultDictionary.GetOrAdd(path, cachedSound)
                 : CachedDictionary.GetOrAdd(path, cachedSound);
 
-            Console.WriteLine(SharedUtils.CountSize(CachedDictionary.Values.Sum(k => k?.AudioData?.Length * sizeof(float) ?? 0)));
+            Console.WriteLine(SharedUtils.CountSize(
+                CachedDictionary.Values.Sum(k => k?.AudioData?.Length * sizeof(float) ?? 0) +
+                DefaultDictionary.Values.Sum(k => k?.AudioData?.Length * sizeof(float) ?? 0)));
 
             return sound;
         }
