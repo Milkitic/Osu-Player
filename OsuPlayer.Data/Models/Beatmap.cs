@@ -67,8 +67,6 @@ namespace Milky.OsuPlayer.Data.Models
         public string AutoTitle => MetaString.GetUnicode(Title, TitleUnicode) ?? "未知标题";
         public string AutoArtist => MetaString.GetUnicode(Artist, ArtistUnicode) ?? "未知艺术家";
 
-        public bool IsTemporary { get; set; }
-
         #region Only used in HoLLy
         //public string BeatmapChecksum { get; set; }
         //public RankStatus RankedStatus { get; set; }

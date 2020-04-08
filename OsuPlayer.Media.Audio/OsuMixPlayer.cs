@@ -87,6 +87,7 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             MusicChannel.Volume = AppSettings.Default.Volume.Music;
             HitsoundChannel.Volume = AppSettings.Default.Volume.Hitsound;
+            HitsoundChannel.BalanceFactor = AppSettings.Default.Volume.BalanceFactor;
             SampleChannel.Volume = AppSettings.Default.Volume.Sample;
             Volume = AppSettings.Default.Volume.Main;
             AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
@@ -101,6 +102,9 @@ namespace Milky.OsuPlayer.Media.Audio
                     break;
                 case nameof(AppSettings.Default.Volume.Hitsound):
                     HitsoundChannel.Volume = AppSettings.Default.Volume.Hitsound;
+                    break;
+                case nameof(AppSettings.Default.Volume.BalanceFactor):
+                    HitsoundChannel.BalanceFactor = AppSettings.Default.Volume.BalanceFactor;
                     break;
                 case nameof(AppSettings.Default.Volume.Sample):
                     SampleChannel.Volume = AppSettings.Default.Volume.Sample;

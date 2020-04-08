@@ -50,7 +50,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
             var elementList = new List<SoundElement>(elements);
 
-            if (PlaybackRate.Equals(1.5f) && UseTempo)
+            if (PlaybackRate.Equals(1.5f) && !UseTempo)
             {
                 var duration = MathEx.Max(_player.MusicChannel.ChannelEndTime,
                     _player.HitsoundChannel.ChannelEndTime,

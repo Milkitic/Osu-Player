@@ -15,12 +15,15 @@ using Milky.OsuPlayer.ViewModels;
 using OSharp.Beatmap;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UserControls;
+using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -263,8 +266,15 @@ namespace Milky.OsuPlayer.Windows
             await _controller.PlayList.SetSongListAsync(entries, true, false, false);
 
             bool play = AppSettings.Default.Play.AutoPlay;
-            var current = _appDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
-            await _controller.PlayNewAsync(current, play);
+            if (AppSettings.Default.CurrentMap.IsMapTemporary())
+            {
+                await _controller.PlayNewAsync(AppSettings.Default.CurrentMap.Value.FolderName, play);
+            }
+            else
+            {
+                var current = _appDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
+                await _controller.PlayNewAsync(current, play);
+            }
         }
 
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)

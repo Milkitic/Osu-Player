@@ -71,10 +71,8 @@ namespace Milky.OsuPlayer.UserControls
             if (string.IsNullOrEmpty(col.ImagePath))
             {
                 var first = entries[0];
-                var dir = first.InOwnDb
-                    ? Path.Combine(Domain.CustomSongPath, first.FolderName)
-                    : Path.Combine(Domain.OsuSongPath, first.FolderName);
-                var filePath = Path.Combine(dir, first.BeatmapFileName);
+                var dir = first.GetFolder(out var isFromDb, out var freePath);
+                var filePath = isFromDb ? Path.Combine(dir, first.BeatmapFileName) : freePath;
                 var osuFile = await OsuFile.ReadFromFileAsync(filePath, options =>
                 {
                     options.IncludeSection("Events");

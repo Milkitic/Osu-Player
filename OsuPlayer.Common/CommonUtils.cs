@@ -57,9 +57,8 @@ namespace Milky.OsuPlayer.Common
                         if (File.Exists(path)) return path;
                     }
 
-                    var osuFilePath = dataModel.InOwnDb
-                        ? Path.Combine(Domain.CustomSongPath, dataModel.FolderName, dataModel.BeatmapFileName)
-                        : Path.Combine(Domain.OsuSongPath, dataModel.FolderName, dataModel.BeatmapFileName);
+                    var folder = dataModel.GetFolder(out var isFromDb, out var freePath);
+                    var osuFilePath = isFromDb ? Path.Combine(folder, dataModel.BeatmapFileName) : freePath;
 
                     if (!File.Exists(osuFilePath))
                     {
@@ -84,9 +83,8 @@ namespace Milky.OsuPlayer.Common
                         return null;
                     }
 
-                    var sourceBgPath = dataModel.InOwnDb
-                        ? Path.Combine(Domain.CustomSongPath, dataModel.FolderName, sourceBgFile)
-                        : Path.Combine(Domain.OsuSongPath, dataModel.FolderName, sourceBgFile);
+                    var sourceBgPath = Path.Combine(folder, sourceBgFile);
+
                     if (!File.Exists(sourceBgPath))
                     {
                         //_appDbOperator.SetMapThumb(dataModel.BeatmapDbId, null);

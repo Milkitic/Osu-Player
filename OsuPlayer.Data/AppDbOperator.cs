@@ -166,6 +166,11 @@ PRAGMA case_sensitive_like=false;"
 
         public BeatmapSettings GetMapFromDb(MapIdentity id)
         {
+            if (id.IsMapTemporary())
+            {
+                throw new NotImplementedException("需确认加入自定义目录后才可继续");
+            }
+
             var map = ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
                     new Where[]
                     {
@@ -246,6 +251,11 @@ SELECT map.id,
 
         public List<Collection> GetCollectionsByMap(BeatmapSettings beatmapSettings)
         {
+            if (beatmapSettings.IsMapTemporary())
+            {
+                throw new NotImplementedException("需确认加入自定义目录后才可继续");
+            }
+
             return ThreadedProvider.GetDbConnection()
                 .Query<Collection>(@"
 SELECT collection.id,
@@ -303,8 +313,13 @@ SELECT collection.id,
             var sb = new StringBuilder($"INSERT INTO {TABLE_RELATION} (id, collectionId, mapId, addTime) VALUES ");
             foreach (var beatmap in beatmaps)
             {
+                if (beatmap.IsMapTemporary())
+                {
+                    throw new NotImplementedException("需确认加入自定义目录后才可继续");
+                }
+
                 var map = GetMapFromDb(beatmap.GetIdentity());
-                sb.Append($"('{Guid.NewGuid().ToString()}', '{collection.Id}', '{map.Id}', '{DateTime.Now}'),"); // maybe no injection here
+                sb.Append($"('{Guid.NewGuid()}', '{collection.Id}', '{map.Id}', '{DateTime.Now}'),"); // maybe no injection here
             }
 
             sb.Remove(sb.Length - 1, 1).Append(";");
@@ -395,6 +410,11 @@ SELECT collection.id,
 
         public void RemoveMapFromCollection(MapIdentity id, Collection collection)
         {
+            if (id.IsMapTemporary())
+            {
+                throw new NotImplementedException("需确认加入自定义目录后才可继续");
+            }
+
             var map = GetMapFromDb(id);
             ThreadedProvider.Delete(TABLE_RELATION, new Where[] { ("collectionId", collection.Id), ("mapId", map.Id) });
         }
@@ -410,6 +430,11 @@ SELECT collection.id,
 
         public bool GetMapThumb(Beatmap beatmap, out string thumbPath)
         {
+            if (beatmap.IsMapTemporary())
+            {
+                throw new NotImplementedException("需确认加入自定义目录后才可继续");
+            }
+
             return GetMapThumb(beatmap.Id, out thumbPath);
         }
 
@@ -446,6 +471,11 @@ SELECT collection.id,
 
         public void SetMapSbInfo(Guid beatmapDbId, StoryboardInfo sbInfo)
         {
+            if (sbInfo.IsMapTemporary())
+            {
+                throw new NotImplementedException("需确认加入自定义目录后才可继续");
+            }
+
             var hasResult = GetMapThumb(beatmapDbId, out _);
 
             if (hasResult)
@@ -485,6 +515,11 @@ SELECT collection.id,
 
         private void InnerUpdateMap(MapIdentity id, Dictionary<string, object> updateColumns)
         {
+            if (id.IsMapTemporary())
+            {
+                throw new NotImplementedException("需确认加入自定义目录后才可继续");
+            }
+
             GetMapFromDb(id);
             if (updateColumns.Count == 0) return;
 

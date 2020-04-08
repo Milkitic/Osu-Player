@@ -109,9 +109,9 @@ namespace Milky.OsuPlayer.Common.Scanning
         private Beatmap GetBeatmapObj(LocalOsuFile osuFile, FileInfo fileInfo)
         {
             var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
-            beatmap.BeatmapFileName = Path.GetFileName(osuFile.OriginPath);
+            beatmap.BeatmapFileName = fileInfo.Name;
             beatmap.LastModifiedTime = fileInfo.LastWriteTime;
-            beatmap.FolderName = Path.GetDirectoryName(osuFile.OriginPath);
+            beatmap.FolderName = fileInfo.Directory?.Name;
             beatmap.InOwnDb = true;
             return beatmap;
         }

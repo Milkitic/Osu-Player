@@ -5,6 +5,7 @@ using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace Milky.OsuPlayer.Common
@@ -12,7 +13,7 @@ namespace Milky.OsuPlayer.Common
     public static class IdentifiableExtension
     {
         private static AppDbOperator _beatmapDbOperator = new AppDbOperator();
-        
+
         public static List<BeatmapDataModel> ToDataModelList(this IEnumerable<IMapIdentifiable> identifiable, bool distinctByVersion = false)
         {
             List<BeatmapDataModel> ret;
@@ -110,6 +111,23 @@ namespace Milky.OsuPlayer.Common
 
             actualValue = default;
             return false;
+        }
+
+        public static string GetFolder(this IMapIdentifiable map, out bool isFromDb, out string freePath)
+        {
+            if (map.IsMapTemporary())
+            {
+                var folder = Path.GetDirectoryName(map.FolderName);
+                isFromDb = false;
+                freePath = map.FolderName;
+                return folder;
+            }
+
+            isFromDb = true;
+            freePath = null;
+            return map.InOwnDb
+                ? Path.Combine(Domain.CustomSongPath, map.FolderName)
+                : Path.Combine(Domain.OsuSongPath, map.FolderName);
         }
     }
 }

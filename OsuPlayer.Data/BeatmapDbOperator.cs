@@ -7,6 +7,7 @@ using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,11 +82,13 @@ namespace Milky.OsuPlayer.Data
         {
             if (reqList.Count < 1) return new List<Beatmap>();
 
+            var inDbMaps = reqList.Where(k => !k.IsMapTemporary()).ToList();
+            //var absMaps = reqList.Except(inDbMaps).ToList();
             //var args = new ExpandoObject();
             //var expando = (ICollection<KeyValuePair<string, object>>)args;
 
             var sb = new StringBuilder();
-            foreach (var id in reqList)
+            foreach (var id in inDbMaps)
             {
                 if (id is MapIdentity mi && mi.Equals(MapIdentity.Default)) continue;
                 var valueSql = string.Format("('{0}', '{1}', {2}),",

@@ -97,8 +97,12 @@ namespace Milky.OsuPlayer.Media.Audio
                 if (!osuFile.ReadSuccess) throw osuFile.ReadException;
 
                 var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
-                beatmap.IsTemporary = true;
-                Beatmap trueBeatmap = _appDbOperator.GetBeatmapByIdentifiable(beatmap) ?? beatmap;
+                Beatmap trueBeatmap = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
+                if (trueBeatmap == null)
+                {
+                    trueBeatmap = beatmap;
+                    trueBeatmap.FolderName = path;
+                }
 
                 PlayList.AddOrSwitchTo(trueBeatmap);
                 var context = PlayList.CurrentInfo;
@@ -149,11 +153,10 @@ namespace Milky.OsuPlayer.Media.Audio
                 var osuFile = context.OsuFile;
                 var beatmapDetail = context.BeatmapDetail;
 
+                var folder = beatmap.GetFolder(out var isFromDb, out var freePath);
                 if (osuFile == null)
                 {
-                    string path = beatmap.InOwnDb
-                        ? Path.Combine(Domain.CustomSongPath, beatmap.FolderName, beatmap.BeatmapFileName)
-                        : Path.Combine(Domain.OsuSongPath, beatmap.FolderName, beatmap.BeatmapFileName);
+                    string path = isFromDb ? Path.Combine(folder, beatmap.BeatmapFileName) : freePath;
                     osuFile = await OsuFile.ReadFromFileAsync(path).ConfigureAwait(false);
                     context.OsuFile = osuFile;
                     beatmapDetail.MapPath = path;
