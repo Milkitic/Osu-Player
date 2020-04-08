@@ -168,7 +168,7 @@ PRAGMA case_sensitive_like=false;"
         {
             if (id.IsMapTemporary())
             {
-                throw new NotImplementedException("需确认加入自定义目录后才可继续");
+                Console.WriteLine("需确认加入自定义目录后才可继续");
             }
 
             var map = ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
@@ -253,7 +253,7 @@ SELECT map.id,
         {
             if (beatmapSettings.IsMapTemporary())
             {
-                throw new NotImplementedException("需确认加入自定义目录后才可继续");
+                Console.WriteLine("需确认加入自定义目录后才可继续");
             }
 
             return ThreadedProvider.GetDbConnection()
@@ -315,7 +315,7 @@ SELECT collection.id,
             {
                 if (beatmap.IsMapTemporary())
                 {
-                    throw new NotImplementedException("需确认加入自定义目录后才可继续");
+                    Console.WriteLine("需确认加入自定义目录后才可继续");
                 }
 
                 var map = GetMapFromDb(beatmap.GetIdentity());
@@ -412,7 +412,7 @@ SELECT collection.id,
         {
             if (id.IsMapTemporary())
             {
-                throw new NotImplementedException("需确认加入自定义目录后才可继续");
+                Console.WriteLine("需确认加入自定义目录后才可继续");
             }
 
             var map = GetMapFromDb(id);
@@ -432,7 +432,7 @@ SELECT collection.id,
         {
             if (beatmap.IsMapTemporary())
             {
-                throw new NotImplementedException("需确认加入自定义目录后才可继续");
+                Console.WriteLine("需确认加入自定义目录后才可继续");
             }
 
             return GetMapThumb(beatmap.Id, out thumbPath);
@@ -473,7 +473,7 @@ SELECT collection.id,
         {
             if (sbInfo.IsMapTemporary())
             {
-                throw new NotImplementedException("需确认加入自定义目录后才可继续");
+                Console.WriteLine("需确认加入自定义目录后才可继续");
             }
 
             var hasResult = GetMapThumb(beatmapDbId, out _);
@@ -517,7 +517,7 @@ SELECT collection.id,
         {
             if (id.IsMapTemporary())
             {
-                throw new NotImplementedException("需确认加入自定义目录后才可继续");
+                Console.WriteLine("需确认加入自定义目录后才可继续");
             }
 
             GetMapFromDb(id);

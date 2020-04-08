@@ -86,5 +86,10 @@ namespace Milky.OsuPlayer
             Execute.SetMainThreadContext();
             I18NUtil.LoadI18N();
         }
+
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            AppSettings.Default?.Dispose();
+        }
     }
 }

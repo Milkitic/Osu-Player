@@ -239,7 +239,7 @@ namespace Milky.OsuPlayer.Windows
             }
 
             GetCurrentFirst<MiniWindow>()?.Close();
-            await _controller?.DisposeAsync();
+            if (_controller != null) await _controller?.DisposeAsync();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
             if (ConfigWindow != null && !ConfigWindow.IsClosed && ConfigWindow.IsInitialized)
