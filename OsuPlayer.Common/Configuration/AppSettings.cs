@@ -12,8 +12,8 @@ namespace Milky.OsuPlayer.Common.Configuration
 {
     public class AppSettings : IDisposable
     {
-        private ThreadLocal<FileStream> FileStream { get; } = new ThreadLocal<FileStream>(() =>
-            File.Open(Domain.ConfigFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite), true);
+        //private ThreadLocal<FileStream> FileStream { get; } = new ThreadLocal<FileStream>(() =>
+        //    File.Open(Domain.ConfigFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite), true);
 
         public AppSettings()
         {
@@ -45,21 +45,22 @@ namespace Milky.OsuPlayer.Common.Configuration
         {
             lock (FileSaveLock)
             {
-                FileStream.Value.SetLength(0);
+                //FileStream.Value.SetLength(0);
                 var content = JsonConvert.SerializeObject(this, Formatting.Indented,
                     new JsonSerializerSettings
                     {
                         TypeNameHandling = TypeNameHandling.Auto
                     });
-                byte[] buffer = Encoding.GetBytes(content);
-                FileStream.Value.Write(buffer, 0, buffer.Length);
+                //byte[] buffer = Encoding.GetBytes(content);
+                //FileStream.Value.Write(buffer, 0, buffer.Length);
+                File.WriteAllText(Domain.ConfigFile, content);
             }
         }
 
         public void Dispose()
         {
-            foreach (var fs in FileStream.Values) fs?.Dispose();
-            FileStream?.Dispose();
+            //foreach (var fs in FileStream.Values) fs?.Dispose();
+            //FileStream?.Dispose();
         }
 
         private static readonly Encoding Encoding = Encoding.UTF8;
