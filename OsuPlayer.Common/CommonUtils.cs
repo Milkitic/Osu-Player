@@ -66,13 +66,15 @@ namespace Milky.OsuPlayer.Common
                         return null;
                     }
 
-                    var osuFile = await OsuFile.ReadFromFileAsync(@"\\?\" + osuFilePath, options =>
+                    var osuFile = await OsuFile.ReadFromFileAsync(osuFilePath, options =>
                         {
                             options.IncludeSection("Events");
                             options.IgnoreSample();
                             options.IgnoreStoryboard();
                         })
                         .ConfigureAwait(false);
+                    if (!osuFile.ReadSuccess) return null;
+
                     var guidStr = Guid.NewGuid().ToString();
 
                     var sourceBgFile = osuFile.Events?.BackgroundInfo?.Filename;

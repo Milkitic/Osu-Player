@@ -3,7 +3,6 @@ using Milky.OsuPlayer.Media.Audio.Player;
 using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Media.Audio.Wave;
-using Milky.OsuPlayer.Shared;
 using OSharp.Beatmap;
 using System;
 using System.Collections.Concurrent;

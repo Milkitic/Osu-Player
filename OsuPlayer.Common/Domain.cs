@@ -48,7 +48,7 @@ namespace Milky.OsuPlayer.Common
                 ? null
                 : (AppSettings.Default.General.DbPath == null
                     ? null
-                    : new FileInfo(AppSettings.Default.General.DbPath).Directory.FullName);
+                    : new FileInfo(AppSettings.Default.General.DbPath).Directory?.FullName);
         public static string OsuSongPath => OsuPath == null ? null : Path.Combine(OsuPath, "Songs");
     }
 }

@@ -74,19 +74,26 @@ namespace Milky.OsuPlayer.Common.Scanning
         private async Task ScanPrivateFolderAsync(DirectoryInfo privateFolder)
         {
             var beatmaps = new List<Beatmap>();
-            foreach (var fileInfo in privateFolder.EnumerateFiles(searchPattern: "*.osu", searchOption: SearchOption.TopDirectoryOnly))
+            foreach (var fileInfo in privateFolder.EnumerateFiles("*.osu", SearchOption.TopDirectoryOnly))
             {
                 if (_scanCts.IsCancellationRequested)
                     return;
                 try
                 {
-                    var osuFile = await OsuFile.ReadFromFileAsync(@"\\?\" + fileInfo.FullName,
+                    var osuFile = await OsuFile.ReadFromFileAsync(fileInfo.FullName,
                         options =>
                         {
-                            options.IncludeSection("General", "Metadata", "TimingPoints", "Difficulty", "HitObjects", "Events");
+                            options.IncludeSection("General", "Metadata", "TimingPoints", "Difficulty", "HitObjects",
+                                "Events");
                             options.IgnoreSample();
                             options.IgnoreStoryboard();
                         });
+                    if (!osuFile.ReadSuccess)
+                    {
+                        Console.WriteLine($"Skipped '{fileInfo.FullName}': {osuFile.ReadException.Message}");
+                        continue;
+                    }
+
                     var beatmap = GetBeatmapObj(osuFile, fileInfo);
                     beatmaps.Add(beatmap);
                 }
@@ -99,12 +106,12 @@ namespace Milky.OsuPlayer.Common.Scanning
             _beatmapDbOperator.AddNewMaps(beatmaps);
         }
 
-        private Beatmap GetBeatmapObj(OsuFile osuFile, FileInfo fileInfo)
+        private Beatmap GetBeatmapObj(LocalOsuFile osuFile, FileInfo fileInfo)
         {
             var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
-            beatmap.BeatmapFileName = fileInfo.Name;
+            beatmap.BeatmapFileName = Path.GetFileName(osuFile.OriginPath);
             beatmap.LastModifiedTime = fileInfo.LastWriteTime;
-            beatmap.FolderName = fileInfo.Directory.Name;
+            beatmap.FolderName = Path.GetDirectoryName(osuFile.OriginPath);
             beatmap.InOwnDb = true;
             return beatmap;
         }

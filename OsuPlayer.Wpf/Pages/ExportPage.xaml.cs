@@ -100,6 +100,8 @@ namespace Milky.OsuPlayer.Pages
                     options.IgnoreSample();
                     options.IgnoreStoryboard();
                 });
+                if (!osuFile.ReadSuccess) return;
+
                 var bgFileInfo = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));
 
                 var artistUtf = MetaString.GetUnicode(entry.Artist, entry.ArtistUnicode);
