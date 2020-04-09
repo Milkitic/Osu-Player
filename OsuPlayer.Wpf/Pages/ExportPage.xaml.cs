@@ -3,6 +3,7 @@ using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Shared.Models;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap;
@@ -14,7 +15,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer.Pages

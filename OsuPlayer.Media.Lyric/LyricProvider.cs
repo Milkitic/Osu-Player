@@ -50,7 +50,7 @@ namespace Milky.OsuPlayer.Media.Lyric
             }
 
             Lyrics lyric = await Task.Run(() => _sourceProvider?.ProvideLyric(artist, title, duration, useTranslated));
-           
+
             if (useCache) WriteCache(title, artist, duration, lyric);
             return lyric;
         }

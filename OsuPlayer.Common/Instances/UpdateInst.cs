@@ -1,22 +1,25 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Common.Instances
 {
     public class UpdateInst
     {
-        public string CurrentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString().TrimEnd('.', '0');
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private const int Timeout = 10000;
         private const int RetryCount = 3;
         private static readonly HttpClient HttpClient;
+
         public GithubRelease NewRelease { get; private set; }
-        public bool IsRunningChecking;
+        public bool IsRunningChecking { get; private set; }
+        public string CurrentVersion { get; } = System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString().TrimEnd('.', '0');
 
         public async Task<bool?> CheckUpdateAsync()
         {
@@ -32,7 +35,6 @@ namespace Milky.OsuPlayer.Common.Instances
                         json = HttpGet("http://api.github.com/repos/Milkitic/Osu-Player/releases");
                     }
 
-                    Console.WriteLine(@"Get");
                     List<GithubRelease> releases = JsonConvert.DeserializeObject<List<GithubRelease>>(json);
                     var latest = releases.OrderByDescending(k => k.PublishedAt)
                         .FirstOrDefault(k => !k.Draft && !k.PreRelease);
@@ -47,6 +49,9 @@ namespace Milky.OsuPlayer.Common.Instances
 
                     Version latestVerObj = new Version(latestVer);
                     Version nowVerObj = new Version(CurrentVersion);
+
+                    Logger.Info("Current version: {nowVer}", nowVerObj);
+                    Logger.Info("Got version info: {latestVer}", latestVerObj);
 
                     if (latestVerObj <= nowVerObj)
                     {

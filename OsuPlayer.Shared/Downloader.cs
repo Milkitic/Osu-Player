@@ -9,6 +9,8 @@ namespace Milky.OsuPlayer.Shared
 {
     public class Downloader
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public delegate void StartDownloadingHandler(long size);
         public delegate void DownloadingHandler(long size, long downloadedSize, long speed);
         public delegate void FinishDownloadingHandler();
@@ -89,7 +91,7 @@ namespace Milky.OsuPlayer.Shared
                             {
                                 if (_cts.IsCancellationRequested)
                                 {
-                                    Console.WriteLine(@"Download canceled.");
+                                    Logger.Info(@"Download canceled.");
                                     return;
                                 }
 
@@ -115,13 +117,13 @@ namespace Milky.OsuPlayer.Shared
                     {
                         if (e.InnerException is SocketException)
                         {
-                            Console.WriteLine(@"连接失败。");
+                            Logger.Error(@"Connection error. Target URI: {0}", Url);
                             throw;
                         }
 
                         if (e.Status == WebExceptionStatus.Timeout)
                         {
-                            Console.WriteLine(@"超时。");
+                            Logger.Error(@"Connection timed out. Target URI: {0}", Url);
                             throw;
                         }
 

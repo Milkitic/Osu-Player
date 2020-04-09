@@ -7,6 +7,10 @@ using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Shared.Models;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using Milky.OsuPlayer.UiComponents.PanelComponent;
+using Milky.OsuPlayer.UserControls;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap.MetaData;
 using System;
@@ -20,10 +24,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xaml;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.UiComponents.PanelComponent;
-using Milky.OsuPlayer.UserControls;
 
 namespace Milky.OsuPlayer.ViewModels
 {

@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace Milky.OsuPlayer.Utils
 {
-    static class KeyConverter
+    internal static class KeyConverter
     {
         public static string ConvertToString(this Key key)
         {

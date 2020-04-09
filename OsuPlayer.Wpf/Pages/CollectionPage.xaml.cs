@@ -1,9 +1,14 @@
 ﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
+using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponents.PanelComponent;
+using Milky.OsuPlayer.UserControls;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using System;
@@ -13,11 +18,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponents.PanelComponent;
-using Milky.OsuPlayer.UserControls;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -26,6 +26,7 @@ namespace Milky.OsuPlayer.Pages
     /// </summary>
     public partial class CollectionPage : Page
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly MainWindow _mainWindow;
         private IEnumerable<Beatmap> _entries;
         private readonly AppDbOperator _dbOperator = new AppDbOperator();
@@ -277,10 +278,10 @@ namespace Milky.OsuPlayer.Pages
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Logger.Error(ex, "Error while loading panel item.");
             }
 
-            Console.WriteLine(e.Index);
+            Logger.Debug("VirtualizingGalleryWrapPanel: {0}", e.Index);
         }
 
         private void Panel_Loaded(object sender, RoutedEventArgs e)

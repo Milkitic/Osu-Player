@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.UiComponents.RadioButtonComponent;
+using Milky.OsuPlayer.Utils;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Animation;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.UiComponents.RadioButtonComponent;
-using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Converters
 {
@@ -84,7 +84,7 @@ namespace Milky.OsuPlayer.Converters
                         EasingFunction = new QuarticEase() { EasingMode = EasingMode.EaseInOut }
                     };
 
-                     num = parameter == null ? 10 : System.Convert.ToInt32(parameter);
+                    num = parameter == null ? 10 : System.Convert.ToInt32(parameter);
 
                     ThicknessAnimation ta = new ThicknessAnimation(isNavigationCollapsed
                         ? new Thickness(0)

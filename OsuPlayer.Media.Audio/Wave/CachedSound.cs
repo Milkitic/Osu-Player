@@ -13,6 +13,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
 {
     internal class CachedSound
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         public string SourcePath { get; }
         public float[] AudioData { get; private set; }
         public WaveFormat WaveFormat { get; private set; }
@@ -162,7 +163,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
                 ? DefaultDictionary.GetOrAdd(path, cachedSound)
                 : CachedDictionary.GetOrAdd(path, cachedSound);
 
-            Console.WriteLine(SharedUtils.CountSize(
+            Logger.Debug("Total size of cache usage: {0}", SharedUtils.CountSize(
                 CachedDictionary.Values.Sum(k => k?.AudioData?.Length * sizeof(float) ?? 0) +
                 DefaultDictionary.Values.Sum(k => k?.AudioData?.Length * sizeof(float) ?? 0)));
 

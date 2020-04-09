@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Milky.OsuPlayer.Shared;
+﻿using Milky.OsuPlayer.Shared;
 using OSharp.Beatmap;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
-using OSharpGameMode= OSharp.Beatmap.Sections.GamePlay.GameMode;
+using System.Collections.Generic;
+using System.Linq;
+using OSharpGameMode = OSharp.Beatmap.Sections.GamePlay.GameMode;
 
 namespace Milky.OsuPlayer.Data.Models
 {
     public static class BeatmapExtension
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private static readonly ConcurrentRandom Random = new ConcurrentRandom();
 
         public static Beatmap UpdateFromHolly(this Beatmap beatmap, BeatmapEntry entry)
@@ -125,7 +125,7 @@ namespace Milky.OsuPlayer.Data.Models
                     .Aggregate((i1, i2) => i1.DiffSrNoneTaiko > i2.DiffSrNoneTaiko ? i1 : i2);
             }
 
-            Console.WriteLine(@"Get highest difficulty failed.");
+            Logger.Warn(@"Get highest difficulty failed.");
             var randKey = dictionary.Keys.ToList()[Random.Next(dictionary.Keys.Count)];
             return dictionary[randKey][dictionary[randKey].Count];
         }

@@ -1,10 +1,10 @@
 ﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Lyric.Models;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.ViewModels;
 using OSharp.Beatmap;
 using System;
@@ -22,8 +22,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Shared.Dependency;
 using Brush = System.Drawing.Brush;
 using Color = System.Drawing.Color;
 using FontFamily = System.Drawing.FontFamily;
@@ -39,6 +37,7 @@ namespace Milky.OsuPlayer.Windows
     public partial class LyricWindow : WindowEx
     {
         private readonly MainWindow _mainWindow;
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public LyricWindowViewModel ViewModel { get; }
         public bool IsShown => ViewModel.IsLyricWindowShown;
@@ -129,7 +128,7 @@ namespace Milky.OsuPlayer.Windows
                     Sentence? next = null;
                     if (predictLyrics.Any())
                         next = _lyricList.First(t => t.StartTime > maxTime);
-                    Console.WriteLine(current.Content);
+                    Logger.Debug(current.Content);
 
                     var size = DrawLyric(_lyricList.IndexOf(current));
                     Execute.ToUiThread(() => { BeginTranslate(size, maxTime, next?.StartTime ?? -1); });
@@ -152,7 +151,7 @@ namespace Milky.OsuPlayer.Windows
             if (width <= viewWidth)
                 return;
             else
-                Console.WriteLine($@"{size.Width}>{viewWidth}");
+                Logger.Debug($@"{size.Width}>{viewWidth}");
 
             //const double minInterval = 0.5;
             //if (nextTime - nowTime < minInterval) return;
@@ -180,7 +179,8 @@ namespace Milky.OsuPlayer.Windows
                 }
             }
 
-            Console.WriteLine($@"{0}->{viewWidth - width}, start: {startTime}, duration: {duration}");
+            Logger.Debug(@"{0}->{1}, start: {2}, duration: {3}",
+                0, viewWidth - width, startTime, duration);
             var defaultAnimation = new ThicknessAnimation
             {
                 From = new Thickness(0),

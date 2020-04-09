@@ -11,19 +11,17 @@ using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.ViewModels;
-using OSharp.Beatmap;
-using System;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UserControls;
+using Milky.OsuPlayer.ViewModels;
+using OSharp.Beatmap;
 using OSharp.Beatmap.MetaData;
+using System;
+using System.Collections.ObjectModel;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace Milky.OsuPlayer.Windows
 {

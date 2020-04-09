@@ -369,7 +369,6 @@ namespace Milky.OsuPlayer.Data.Dapper.Provider
             try
             {
                 var result = InnerQuery<T>(@params, sql);
-                //Console.WriteLine($"query: {sw.ElapsedMilliseconds}");
                 return result;
             }
             catch (Exception ex)

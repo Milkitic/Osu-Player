@@ -1,24 +1,42 @@
 ﻿using Dapper.FluentMap;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Shared;
 using Newtonsoft.Json;
+using NLog.Config;
 using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using Milky.OsuPlayer.Common.Configuration;
+
+#if !DEBUG
+using Sentry;
+#endif
 
 namespace Milky.OsuPlayer
 {
-    public static class StartupConfig
+    public static class EntryStartup
     {
         public static void Startup()
         {
             if (!LoadConfig())
+            {
                 Environment.Exit(0);
+                return;
+            }
+
+#if DEBUG
+            ConsoleManager.Show();
+#endif
+
+            ConfigurationItemFactory.Default.LayoutRenderers.RegisterDefinition("InvariantCulture", typeof(InvariantCultureLayoutRendererWrapper));
+
+#if !DEBUG
+            SentrySdk.Init("https://1fe13baa86284da5a0a70efa9750650e:fcbd468d43f94fb1b43af424517ec00b@sentry.io/1412154");
+#endif
 
             InitLocalDb();
 

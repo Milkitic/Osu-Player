@@ -1,9 +1,11 @@
-﻿using Milky.OsuPlayer.Data;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Shared;
+using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,14 +14,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Shared.Models;
-using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.ViewModels
 {
     public class ExportPageViewModel : VmBase
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private string _exportPath;
         private NumberableObservableCollection<BeatmapDataModel> _dataModelList;
         private IEnumerable<Beatmap> _entries;
@@ -157,10 +157,10 @@ namespace Milky.OsuPlayer.ViewModels
                         ? (map.GetIdentity(), map.ExportFile, "已从目录移除", "已从目录移除")
                         : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), SharedUtils.CountSize(fi.Length)));
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
                     list.Add((map.GetIdentity(), map.ExportFile, new DateTime().ToString("g"), "0 B"));
-                    Console.WriteLine(e);
+                    Logger.Error(ex, "Failed to update view item: {0}", map.GetIdentity());
                 }
             }
 

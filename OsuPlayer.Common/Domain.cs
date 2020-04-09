@@ -6,6 +6,8 @@ namespace Milky.OsuPlayer.Common
 {
     public static class Domain
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         static Domain()
         {
             Type t = typeof(Domain);
@@ -16,12 +18,13 @@ namespace Milky.OsuPlayer.Common
                 try
                 {
                     string path = (string)item.GetValue(null, null);
+                    if (path == null) continue;
                     if (!Directory.Exists(path))
                         Directory.CreateDirectory(path);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    Console.WriteLine(@"未创建：" + item.Name);
+                    Logger.Warn(ex, "未创建：{dirName}", item.Name);
                 }
             }
         }

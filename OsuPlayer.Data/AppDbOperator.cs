@@ -1,22 +1,22 @@
-﻿using System;
+﻿using Dapper;
+using Milky.OsuPlayer.Data.Dapper;
+using Milky.OsuPlayer.Data.Dapper.Provider;
+using Milky.OsuPlayer.Data.Models;
+using OSharp.Beatmap.MetaData;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Dapper;
-using Milky.OsuPlayer.Data.Dapper;
-using Milky.OsuPlayer.Data.Dapper.Provider;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Shared.Models;
-using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.Data
 {
     public class AppDbOperator
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public const string TABLE_BEATMAP = "beatmap";
         private const string TABLE_RELATION = "collection_relation";
         private const string TABLE_MAP = "map_info";
@@ -168,7 +168,7 @@ PRAGMA case_sensitive_like=false;"
         {
             if (id.IsMapTemporary())
             {
-                Console.WriteLine("需确认加入自定义目录后才可继续");
+                Logger.Debug("需确认加入自定义目录后才可继续");
             }
 
             var map = ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
@@ -253,7 +253,7 @@ SELECT map.id,
         {
             if (beatmapSettings.IsMapTemporary())
             {
-                Console.WriteLine("需确认加入自定义目录后才可继续");
+                Logger.Debug("需确认加入自定义目录后才可继续");
             }
 
             return ThreadedProvider.GetDbConnection()
@@ -315,7 +315,7 @@ SELECT collection.id,
             {
                 if (beatmap.IsMapTemporary())
                 {
-                    Console.WriteLine("需确认加入自定义目录后才可继续");
+                    Logger.Debug("需确认加入自定义目录后才可继续");
                 }
 
                 var map = GetMapFromDb(beatmap.GetIdentity());
@@ -412,7 +412,7 @@ SELECT collection.id,
         {
             if (id.IsMapTemporary())
             {
-                Console.WriteLine("需确认加入自定义目录后才可继续");
+                Logger.Debug("需确认加入自定义目录后才可继续");
             }
 
             var map = GetMapFromDb(id);
@@ -432,7 +432,7 @@ SELECT collection.id,
         {
             if (beatmap.IsMapTemporary())
             {
-                Console.WriteLine("需确认加入自定义目录后才可继续");
+                Logger.Debug("需确认加入自定义目录后才可继续");
             }
 
             return GetMapThumb(beatmap.Id, out thumbPath);
@@ -473,7 +473,7 @@ SELECT collection.id,
         {
             if (sbInfo.IsMapTemporary())
             {
-                Console.WriteLine("需确认加入自定义目录后才可继续");
+                Logger.Debug("需确认加入自定义目录后才可继续");
             }
 
             var hasResult = GetMapThumb(beatmapDbId, out _);
@@ -517,7 +517,7 @@ SELECT collection.id,
         {
             if (id.IsMapTemporary())
             {
-                Console.WriteLine("需确认加入自定义目录后才可继续");
+                Logger.Debug("需确认加入自定义目录后才可继续");
             }
 
             GetMapFromDb(id);

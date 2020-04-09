@@ -66,6 +66,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         private SortedSet<Subchannel> _runningChannels = new SortedSet<Subchannel>(new ChannelEndTimeComparer());
         private PlayStatus _playStatus;
 
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public MultichannelPlayer()
         {
             _outputDevice = DeviceProviderExtension.CreateOrGetDefaultDevice(out var actualDeviceInfo);
@@ -89,12 +91,12 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                     WaveFormatFactory.SampleRate = wasapi.OutputWaveFormat.SampleRate;
                 }
 
-                Console.WriteLine("BitsPerSample: {0}, Channels: {1}, SampleRate: {2}", WaveFormatFactory.Bits,
+                Logger.Debug("BitsPerSample: {0}, Channels: {1}, SampleRate: {2}", WaveFormatFactory.Bits,
                     WaveFormatFactory.Channels, WaveFormatFactory.SampleRate);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Logger.Error(ex, "Error while getting device output wave format, use default settings.");
                 WaveFormatFactory.Bits = 16;
                 WaveFormatFactory.Channels = 2;
                 WaveFormatFactory.SampleRate = 44100;
@@ -137,10 +139,10 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                     {
                         _runningChannels.Add(channel);
                         await channel.Play();
-                        Console.WriteLine($"[{_innerTimelineSw.Elapsed}] Play: {channel.Description}");
+                        Logger.Debug("[{0}] Play: {1}", _innerTimelineSw.Elapsed, channel.Description);
 
                         if (_channelsQueue.Count == 0)
-                            Console.WriteLine($"[{_innerTimelineSw.Elapsed}] All channels are playing.");
+                            Logger.Debug("[{0}] All channels are playing.", _innerTimelineSw.Elapsed);
                     }
 
                     if (Position > Duration)

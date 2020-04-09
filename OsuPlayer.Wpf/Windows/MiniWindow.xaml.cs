@@ -1,6 +1,6 @@
-﻿using Milky.OsuPlayer.Presentation;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Presentation;
 using System.Windows;
-using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Windows
 {

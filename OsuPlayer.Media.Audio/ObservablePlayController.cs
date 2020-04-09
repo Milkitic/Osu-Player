@@ -40,6 +40,17 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public event Action<BeatmapContext, Exception> LoadError;
 
+        public bool IsFileLoading
+        {
+            get => _isFileLoading;
+            private set
+            {
+                if (value == _isFileLoading) return;
+                _isFileLoading = value;
+                OnPropertyChanged();
+            }
+        }
+
         public OsuMixPlayer Player
         {
             get => _player;
@@ -58,6 +69,9 @@ namespace Milky.OsuPlayer.Media.Audio
         private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly AppDbOperator _appDbOperator = new AppDbOperator();
+        private bool _isFileLoading;
+
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public ObservablePlayController()
         {
@@ -70,7 +84,15 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private void ObservablePlayController_LoadError(BeatmapContext ctx, Exception ex)
         {
-            Console.WriteLine("Load error: " + ex);
+            if (ctx.BeatmapDetail != null)
+            {
+                Logger.Error(ex, "Load error while loading beatmap: {0}",
+                    Path.Combine(ctx.BeatmapDetail.BaseFolder, ctx.BeatmapDetail.MapPath));
+            }
+            else
+            {
+                Logger.Error(ex, "Load error while loading beatmap: {0}");
+            }
         }
 
         public async Task PlayNewAsync(Beatmap beatmap, bool playInstantly = true)
@@ -86,6 +108,7 @@ namespace Milky.OsuPlayer.Media.Audio
             try
             {
                 await _readLock.WaitAsync(_cts.Token).ConfigureAwait(false);
+                IsFileLoading = true;
 
                 if (!File.Exists(path))
                     throw new FileNotFoundException("cannot locate file", path);
@@ -120,6 +143,7 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             finally
             {
+                IsFileLoading = false;
                 _readLock.Release();
             }
         }
@@ -143,6 +167,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 if (!isReading)
                 {
                     await _readLock.WaitAsync(_cts.Token).ConfigureAwait(false);
+                    IsFileLoading = true;
                     await ClearPlayer().ConfigureAwait(false);
                 }
 
@@ -251,14 +276,23 @@ namespace Milky.OsuPlayer.Media.Audio
                 Execute.OnUiThread(() => LoadFinished?.Invoke(context, _cts.Token));
                 AppSettings.Default.CurrentMap = beatmap.GetIdentity();
                 AppSettings.SaveDefault();
-                if (!isReading) _readLock.Release();
+                if (!isReading)
+                {
+                    IsFileLoading = false;
+                    _readLock.Release();
+                }
             }
             catch (Exception ex)
             {
                 LoadError?.Invoke(PlayList.CurrentInfo, ex);
                 //Notification.Push(@"发生未处理的错误：" + (ex.InnerException?.Message ?? ex?.Message));
 
-                if (!isReading) _readLock.Release();
+                if (!isReading)
+                {
+                    IsFileLoading = false;
+                    _readLock.Release();
+                }
+
                 if (Player?.PlayStatus != PlayStatus.Playing)
                 {
                     await PlayByControl(PlayControlType.Next, false).ConfigureAwait(false);

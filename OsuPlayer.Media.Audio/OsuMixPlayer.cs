@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio.Player;
 using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
 using Milky.OsuPlayer.Media.Audio.Playlist;
@@ -9,12 +10,12 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
     public class OsuMixPlayer : MultichannelPlayer
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly ConcurrentDictionary<string, string> _pathCache =
             new ConcurrentDictionary<string, string>();
 
@@ -75,7 +76,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
             foreach (var channel in Subchannels)
             {
-                channel.PlayStatusChanged += status => Console.WriteLine($"{channel.Description}: {status}");
+                channel.PlayStatusChanged += status => Logger.Debug($"{channel.Description}: {status}");
             }
 
             InitVolume();

@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace Milky.OsuPlayer.Converters
 {
-    class ButtonColorConverter : IValueConverter
+    internal class ButtonColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

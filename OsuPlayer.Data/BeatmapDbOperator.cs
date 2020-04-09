@@ -1,22 +1,21 @@
 ﻿using Dapper;
 using Milky.OsuPlayer.Data.Dapper;
 using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Models;
 using OSharp.Beatmap.MetaData;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Data
 {
     public static class BeatmapDbOperator
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private const string TABLE_BEATMAP = AppDbOperator.TABLE_BEATMAP;
 
         public static List<Beatmap> SearchBeatmapByOptions(this AppDbOperator op, string searchText, BeatmapSortMode beatmapSortMode, int startIndex, int count)
@@ -32,7 +31,7 @@ namespace Milky.OsuPlayer.Data
             }
             finally
             {
-                Console.WriteLine($"query: {sw.ElapsedMilliseconds}");
+                Logger.Debug("查询花费: {0}", sw.ElapsedMilliseconds);
                 sw.Stop();
             }
         }

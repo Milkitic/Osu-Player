@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Data;
+using OSharp.Beatmap;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using Microsoft.Win32;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
-using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Common
 {

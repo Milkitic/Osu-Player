@@ -2,7 +2,7 @@
 
 namespace Milky.OsuPlayer.UiComponents.FrontDialogComponent
 {
-    class DialogOptionFactory
+    internal class DialogOptionFactory
     {
         public static FrontDialogOverlay.ShowContentOptions DiffSelectOptions => new FrontDialogOverlay.ShowContentOptions
         {

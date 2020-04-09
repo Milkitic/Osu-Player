@@ -1,7 +1,6 @@
 ﻿using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using OSharp.Beatmap.MetaData;
-using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

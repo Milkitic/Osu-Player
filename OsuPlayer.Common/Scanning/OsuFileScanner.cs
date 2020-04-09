@@ -1,19 +1,21 @@
 ﻿using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using OSharp.Beatmap;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Data.Models;
 
 namespace Milky.OsuPlayer.Common.Scanning
 {
     public class OsuFileScanner
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();
         private CancellationTokenSource _scanCts;
-        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
+        private readonly AppDbOperator _dbOperator = new AppDbOperator();
 
         private static readonly object ScanObject = new object();
         private static readonly object CancelObject = new object();
@@ -28,7 +30,7 @@ namespace Milky.OsuPlayer.Common.Scanning
             }
 
             _scanCts = new CancellationTokenSource();
-            _beatmapDbOperator.RemoveLocalAll();
+            _dbOperator.RemoveLocalAll();
             var dirInfo = new DirectoryInfo(path);
             if (dirInfo.Exists)
             {
@@ -90,7 +92,7 @@ namespace Milky.OsuPlayer.Common.Scanning
                         });
                     if (!osuFile.ReadSuccess)
                     {
-                        Console.WriteLine($"Skipped '{fileInfo.FullName}': {osuFile.ReadException.Message}");
+                        Logger.Warn(osuFile.ReadException, "Osu file format error, skipped {0}", fileInfo.FullName);
                         continue;
                     }
 
@@ -99,11 +101,11 @@ namespace Milky.OsuPlayer.Common.Scanning
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"{ex.Message} ignored '{fileInfo.FullName}'");
+                    Logger.Error(ex, "Error during scanning file, ignored {0}", fileInfo.FullName);
                 }
             }
 
-            _beatmapDbOperator.AddNewMaps(beatmaps);
+            _dbOperator.AddNewMaps(beatmaps);
         }
 
         private Beatmap GetBeatmapObj(LocalOsuFile osuFile, FileInfo fileInfo)

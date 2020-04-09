@@ -1,13 +1,12 @@
-using System;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio.SoundTouch;
 using Milky.OsuPlayer.Media.Audio.Wave;
 using NAudio.Wave;
+using System;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 {
@@ -24,6 +23,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         private ConcurrentQueue<double> _offsetQueue = new ConcurrentQueue<double>();
         private int? _referenceOffset;
         private Task _backoffTask;
+
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public override float Volume
         {
@@ -90,7 +91,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                             {
                                 var avg = (int)_offsetQueue.Average();
                                 stdOffset = avg;
-                                Console.WriteLine($"{Description}: avg offset: {avg}");
+                                Logger.Debug("{0}: avg offset: {1}", Description, avg);
                             }
                         }
                         else
@@ -102,7 +103,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                                 if (refOffset != _referenceOffset)
                                 {
                                     _referenceOffset = refOffset;
-                                    Console.WriteLine($"{Description}: {nameof(_referenceOffset)}: {_referenceOffset}");
+                                    Logger.Debug("{0}: {1}: {2}", Description, nameof(_referenceOffset),
+                                        _referenceOffset);
                                 }
                             }
                         }
@@ -159,7 +161,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                     : time;
             _speedProvider.Reposition();
             Position = time/*_fileReader.CurrentTime*/;
-            Console.WriteLine($"{Description} skip: want: {time}; actual: {Position}");
+            Logger.Debug("{0} skip: want: {1}; actual: {2}", Description, time, Position);
             _sw.SkipTo(time);
 
             _referenceOffset = null;

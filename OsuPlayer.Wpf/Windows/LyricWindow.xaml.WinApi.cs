@@ -5,7 +5,7 @@ using System.Windows.Interop;
 
 namespace Milky.OsuPlayer.Windows
 {
-    partial class LyricWindow
+    public partial class LyricWindow
     {
         public LyricWindow()
         {

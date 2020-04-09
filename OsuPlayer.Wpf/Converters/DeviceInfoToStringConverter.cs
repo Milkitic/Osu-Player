@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Utils;
+using OsuPlayer.Devices;
+using System;
 using System.Globalization;
 using System.Windows.Data;
-using Milky.OsuPlayer.Utils;
-using OsuPlayer.Devices;
 
 namespace Milky.OsuPlayer.Converters
 {

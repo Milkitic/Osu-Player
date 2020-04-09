@@ -1,22 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
+﻿using Milky.OsuPlayer.Presentation.Interaction;
 using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
 using NAudio.Wave;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OsuPlayer.Devices
 {
     public static class DeviceProvider
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private static readonly MMDeviceEnumerator MMDeviceEnumerator;
         private static readonly MMNotificationClient MmNotificationClient;
         private static IWavePlayer _currentDevice;
 
         private class MMNotificationClient : IMMNotificationClient
         {
+            private static readonly NLog.Logger InnerLogger = NLog.LogManager.GetCurrentClassLogger();
             public MMNotificationClient()
             {
                 //_realEnumerator.RegisterEndpointNotificationCallback();
@@ -29,31 +30,31 @@ namespace OsuPlayer.Devices
             public void OnDeviceStateChanged(string deviceId, DeviceState newState)
             {
                 CacheList = null;
-                Console.WriteLine("OnDeviceStateChanged\n Device Id -->{0} : Device State {1}", deviceId, newState);
+                InnerLogger.Debug("OnDeviceStateChanged\n Device Id -->{0} : Device State {1}", deviceId, newState);
             }
 
             public void OnDeviceAdded(string pwstrDeviceId)
             {
                 CacheList = null;
-                Console.WriteLine("OnDeviceAdded --> " + pwstrDeviceId);
+                InnerLogger.Debug("OnDeviceAdded --> " + pwstrDeviceId);
             }
 
             public void OnDeviceRemoved(string deviceId)
             {
                 CacheList = null;
-                Console.WriteLine("OnDeviceRemoved --> " + deviceId);
+                InnerLogger.Debug("OnDeviceRemoved --> " + deviceId);
             }
 
             public void OnDefaultDeviceChanged(DataFlow flow, Role role, string defaultDeviceId)
             {
                 CacheList = null;
-                Console.WriteLine("OnDefaultDeviceChanged --> {0}", flow.ToString());
+                InnerLogger.Info("OnDefaultDeviceChanged --> {0}", flow.ToString());
             }
 
             public void OnPropertyValueChanged(string pwstrDeviceId, PropertyKey key)
             {
                 //fmtid & pid are changed to formatId and propertyId in the latest version NAudio
-                Console.WriteLine("OnPropertyValueChanged: formatId --> {0}  propertyId --> {1}", key.formatId.ToString(), key.propertyId.ToString());
+                InnerLogger.Debug("OnPropertyValueChanged: formatId --> {0}  propertyId --> {1}", key.formatId.ToString(), key.propertyId.ToString());
             }
         }
 
@@ -81,7 +82,6 @@ namespace OsuPlayer.Devices
             bool useDefault = false;
             if (deviceInfo is null)
             {
-                Console.Write("The output device was not set in app's config");
                 deviceInfo = GetDefaultDeviceInfo();
                 useDefault = true;
             }
@@ -107,13 +107,11 @@ namespace OsuPlayer.Devices
                     }
                     else
                     {
-                        Console.Write("The output device in app's config was not detected in this system");
                         deviceInfo = GetDefaultDeviceInfo();
                     }
                 }
                 else
                 {
-                    Console.Write("The output device in app's config was not detected in this system");
                     deviceInfo = GetDefaultDeviceInfo();
                 }
             }
@@ -167,7 +165,7 @@ namespace OsuPlayer.Devices
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Logger.Error(ex, "Error on create device.");
                     device?.Dispose();
                     deviceInfo = DirectSoundOutInfo.Default;
                     device = new DirectSoundOut(40);
@@ -185,12 +183,13 @@ namespace OsuPlayer.Devices
             if (MMDeviceEnumerator.HasDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia))
             {
                 deviceInfo = WasapiInfo.Default;
-                Console.WriteLine(", use WASAPI default.");
+                Logger.Info("The output device in app's config was not detected in this system, use WASAPI default.");
             }
             else
             {
                 deviceInfo = DirectSoundOutInfo.Default;
-                Console.WriteLine(", use DirectSound default.");
+                Logger.Warn("The output device in app's config was not detected " +
+                            "or no output device detected in this system, use DirectSoundOut default!!!");
             }
 
             return deviceInfo;

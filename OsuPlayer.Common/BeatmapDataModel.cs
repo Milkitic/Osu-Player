@@ -1,10 +1,10 @@
-﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Milky.OsuPlayer.Presentation.ObjectModel;
+﻿using Milky.OsuPlayer.Presentation.ObjectModel;
 using OSharp.Beatmap;
 using OSharp.Beatmap.MetaData;
 using OSharp.Beatmap.Sections.GamePlay;
+using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Milky.OsuPlayer.Common
 {
@@ -57,7 +57,7 @@ namespace Milky.OsuPlayer.Common
         {
             return new MapIdentity(FolderName, Version, InOwnDb);
         }
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

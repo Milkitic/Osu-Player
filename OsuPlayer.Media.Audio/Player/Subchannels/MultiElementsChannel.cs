@@ -1,21 +1,22 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Media.Audio.Wave;
+using Milky.OsuPlayer.Shared;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
+using OSharp.Beatmap.Sections.HitObject;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Media.Audio.Wave;
-using Milky.OsuPlayer.Shared;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
-using OSharp.Beatmap.Sections.HitObject;
 
 namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 {
     public abstract class MultiElementsChannel : Subchannel, ISoundElementsProvider
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly VariableStopwatch _sw = new VariableStopwatch();
 
         protected List<SoundElement> SoundElements;
@@ -163,7 +164,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                     PlayStatus = PlayStatus.Reposition;
 
                     _sw.SkipTo(time);
-                    Console.WriteLine($"{Description} want skip: {time}; actual: {Position}");
+                    Logger.Debug("{0} want skip: {1}; actual: {2}", Description, time, Position);
                     RequeueAsync(time).Wait();
 
                     PlayStatus = status;
@@ -385,7 +386,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             _sw.Stop();
             _cts?.Cancel();
             await TaskEx.WhenAllSkipNull(_playingTask/*, _calibrationTask*/).ConfigureAwait(false);
-            Console.WriteLine($@"{Description} task canceled.");
+            Logger.Debug(@"{0} task canceled.", Description);
         }
 
         public abstract Task<IEnumerable<SoundElement>> GetSoundElements();

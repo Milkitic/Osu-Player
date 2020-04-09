@@ -1,13 +1,13 @@
 ﻿using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Media.Audio.Playlist
 {
@@ -15,6 +15,7 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
     {
         public event Action SongListChanged;
         public event Func<PlayControlResult, Beatmap, bool, Task> AutoSwitched;
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public PlayList()
         {
@@ -94,7 +95,7 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                 if (_indexPointer != -1 && _temporaryPointerChanged != null)
                 {
                     _indexPointer = _temporaryPointerChanged.Invoke(_indexPointer);
-                    Console.WriteLine(_indexPointer);
+                    Logger.Debug("Index switched to {_indexPointer}", _indexPointer);
                 }
 
                 _temporaryPointerChanged = null;
@@ -345,7 +346,7 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                         _songIndexList.RemoveAt(oldIndexPointer);
                         if (oldIndexPointer < indexPointer) indexPointer--;
                         _temporaryPointerChanged = null;
-                        Console.WriteLine(_indexPointer);
+                        Logger.Debug("Index switched to {_indexPointer}", _indexPointer);
                         return indexPointer;
                     };
                 }

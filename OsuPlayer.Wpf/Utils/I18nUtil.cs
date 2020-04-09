@@ -13,6 +13,7 @@ namespace Milky.OsuPlayer.Utils
 {
     public static class I18NUtil
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private static ResourceDictionary I18NDic => Application.Current.Resources.MergedDictionaries[0];
         public static KeyValuePair<string, string> CurrentLocale { get; private set; }
 
@@ -149,7 +150,7 @@ namespace Milky.OsuPlayer.Utils
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    Logger.Error(ex, "Error while loading i18n file: {0}", enumerateFile.FullName);
                 }
             }
 

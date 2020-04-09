@@ -11,6 +11,7 @@ namespace Milky.OsuPlayer.Presentation.Interaction
     public static class Execute
     {
         private static SynchronizationContext _uiContext;
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public static void SetMainThreadContext()
         {
@@ -49,7 +50,7 @@ namespace Milky.OsuPlayer.Presentation.Interaction
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex);
+                        Logger.Error(ex, "UiContext execute error.");
                     }
                 });
             }
@@ -71,7 +72,7 @@ namespace Milky.OsuPlayer.Presentation.Interaction
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex);
+                        Logger.Error(ex, "UiContext execute error.");
                     }
                 }), DispatcherPriority.Normal);
             }

@@ -1,14 +1,12 @@
-﻿using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Utils;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Shared.Dependency;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {

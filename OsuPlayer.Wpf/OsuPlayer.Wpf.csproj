@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{02773E4B-21FC-47DB-A7C1-BD096F325136}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>Milky.OsuPlayer</RootNamespace>
     <AssemblyName>OsuPlayer</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -296,7 +296,7 @@
     <Compile Include="Converters\VersionToStringConverter.cs" />
     <Compile Include="Instances\LyricsInst.cs" />
     <Compile Include="Converters\MiniWindowConverter.cs" />
-    <Compile Include="StartupConfig.cs" />
+    <Compile Include="EntryStartup.cs" />
     <Compile Include="ViewModels\CollectionPageViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModel.cs" />
     <Compile Include="ViewModels\EditCollectionPageViewModel.cs" />
@@ -624,8 +624,12 @@
     </Compile>
     <Resource Include="Resources\asio.png" />
     <Resource Include="Resources\osu_texture_black.png" />
-    <None Include="LICENSE" />
-    <None Include="README.md" />
+    <None Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Resources\default.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
