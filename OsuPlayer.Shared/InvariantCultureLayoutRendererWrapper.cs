@@ -1,5 +1,7 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Threading;
+using System.Threading.Tasks;
 using NLog;
 using NLog.Config;
 using NLog.LayoutRenderers;
@@ -11,7 +13,6 @@ namespace Milky.OsuPlayer.Shared
     [ThreadAgnostic]
     public sealed class InvariantCultureLayoutRendererWrapper : WrapperLayoutRendererBase
     {
-        private static readonly object CultureLockObject = new object();
         protected override string Transform(string text)
         {
             return text;
@@ -19,7 +20,7 @@ namespace Milky.OsuPlayer.Shared
 
         protected override string RenderInner(LogEventInfo logEvent)
         {
-            lock (CultureLockObject)
+            var task = Task.Run(() =>
             {
                 var currentCulture = Thread.CurrentThread.CurrentUICulture;
                 try
@@ -31,7 +32,9 @@ namespace Milky.OsuPlayer.Shared
                 {
                     Thread.CurrentThread.CurrentUICulture = currentCulture;
                 }
-            }
+            });
+
+            return task.Result;
         }
     }
 }

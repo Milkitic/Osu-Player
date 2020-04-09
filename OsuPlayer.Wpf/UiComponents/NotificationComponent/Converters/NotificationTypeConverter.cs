@@ -8,6 +8,7 @@ namespace Milky.OsuPlayer.UiComponents.NotificationComponent.Converters
 {
     internal class NotificationTypeConverter : IValueConverter
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
@@ -33,8 +34,9 @@ namespace Milky.OsuPlayer.UiComponents.NotificationComponent.Converters
                     ? Visibility.Visible
                     : hidStyle;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Error(ex);
                 return Visibility.Visible;
             }
         }

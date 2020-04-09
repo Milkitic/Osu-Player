@@ -15,6 +15,8 @@ namespace Milky.OsuPlayer
     /// </summary>
     public partial class UpdateWindow : Window
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private readonly GithubRelease _release;
         private readonly MainWindow _mainWindow;
         private Downloader _downloader;
@@ -42,7 +44,9 @@ namespace Milky.OsuPlayer
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, "更新出错，请重启软件重试：" + ex.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex, "Error while updating.");
+                MessageBox.Show(this, "更新出错，请重启软件重试：" + ex.Message, Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

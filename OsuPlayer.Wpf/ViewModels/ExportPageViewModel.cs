@@ -160,7 +160,7 @@ namespace Milky.OsuPlayer.ViewModels
                 catch (Exception ex)
                 {
                     list.Add((map.GetIdentity(), map.ExportFile, new DateTime().ToString("g"), "0 B"));
-                    Logger.Error(ex, "Failed to update view item: {0}", map.GetIdentity());
+                    Logger.Error(ex, "Error while updating view item: {0}", map.GetIdentity());
                 }
             }
 

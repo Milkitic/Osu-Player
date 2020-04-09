@@ -13,6 +13,7 @@ namespace Milky.OsuPlayer.Common
 {
     public static class CommonUtils
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private static AppDbOperator _appDbOperator = new AppDbOperator();
         private static readonly SemaphoreSlim Lock = new SemaphoreSlim(5);
         ///// <summary>
@@ -94,6 +95,11 @@ namespace Milky.OsuPlayer.Common
                     ResizeImageAndSave(sourceBgPath, guidStr, height: 200);
                     _appDbOperator.SetMapThumb(dataModel.BeatmapDbId, guidStr);
                     return guidStr;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Error while creating beatmap thumb cache: {0}", dataModel.GetIdentity());
+                    return default;
                 }
                 finally
                 {

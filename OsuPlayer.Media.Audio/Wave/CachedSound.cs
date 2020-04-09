@@ -151,8 +151,9 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
             {
                 cachedSound = await CreateFromFile(newPath).ConfigureAwait(false);
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Error(ex, "Error while creating cached sound: {0}", path);
                 if (!isDefault) CachedDictionary.TryAdd(path, null);
                 else DefaultDictionary.TryAdd(path, null);
                 return null;

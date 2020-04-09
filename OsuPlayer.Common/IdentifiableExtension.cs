@@ -13,6 +13,7 @@ namespace Milky.OsuPlayer.Common
     {
         private static AppDbOperator _beatmapDbOperator = new AppDbOperator();
 
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         public static List<BeatmapDataModel> ToDataModelList(this IEnumerable<IMapIdentifiable> identifiable, bool distinctByVersion = false)
         {
             List<BeatmapDataModel> ret;
@@ -79,9 +80,9 @@ namespace Milky.OsuPlayer.Common
                             break;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // ignored
+                    Logger.Error(ex);
                 }
 
                 return model;

@@ -76,7 +76,9 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             {
                 if (_outputDevice is WasapiOut wasapi)
                 {
-                    WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample;
+                    WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample > 24
+                        ? 24
+                        : wasapi.OutputWaveFormat.BitsPerSample;
                     WaveFormatFactory.Channels = wasapi.OutputWaveFormat.Channels;
                     WaveFormatFactory.SampleRate = wasapi.OutputWaveFormat.SampleRate;
                 }
@@ -86,7 +88,9 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                         k.FriendlyName?.Contains(actualDeviceInfo.FriendlyName) == true && k is WasapiInfo);
                     wasapi = new WasapiOut(wasInfo.Device, AudioClientShareMode.Shared, true,
                         AppSettings.Default.Play.DesiredLatency);
-                    WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample;
+                    WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample > 24
+                        ? 24
+                        : wasapi.OutputWaveFormat.BitsPerSample;
                     WaveFormatFactory.Channels = wasapi.OutputWaveFormat.Channels;
                     WaveFormatFactory.SampleRate = wasapi.OutputWaveFormat.SampleRate;
                 }

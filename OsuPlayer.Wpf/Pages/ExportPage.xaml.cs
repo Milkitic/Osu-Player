@@ -24,6 +24,8 @@ namespace Milky.OsuPlayer.Pages
     /// </summary>
     public partial class ExportPage : Page
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         //Page view model
         private static bool _hasTaskSuccess;
         private readonly MainWindow _mainWindow;
@@ -125,9 +127,10 @@ namespace Milky.OsuPlayer.Pages
                 if (mp3FileInfo.Exists || bgFileInfo.Exists)
                     _appDbOperator.AddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Notification.Push("导出时出现错误：" + e.Message);
+                Logger.Error(ex, "Error while exporting beatmap: {0}", entry.GetIdentity());
+                Notification.Push($"Error while exporting beatmap: {entry.GetIdentity()}\r\n{ex.Message}");
             }
         }
 

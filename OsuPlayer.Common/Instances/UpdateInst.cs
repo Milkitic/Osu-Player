@@ -65,8 +65,9 @@ namespace Milky.OsuPlayer.Common.Instances
                     NewRelease.NowVerString = "v" + CurrentVersion;
                     result = true;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Logger.Error(ex, "Error while checking for updates.");
                     result = null;
                 }
             });

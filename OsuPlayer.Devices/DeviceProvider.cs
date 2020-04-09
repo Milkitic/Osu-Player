@@ -165,7 +165,7 @@ namespace OsuPlayer.Devices
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex, "Error on create device.");
+                    Logger.Error(ex, "Error while creating device.");
                     device?.Dispose();
                     deviceInfo = DirectSoundOutInfo.Default;
                     device = new DirectSoundOut(40);
@@ -220,7 +220,7 @@ namespace OsuPlayer.Devices
                 }
                 catch (Exception ex)
                 {
-                    // ignored
+                    Logger.Error("Error while enumerating WaveOut device: {0}", ex.Message);
                 }
 
                 if (info != null)
@@ -239,7 +239,7 @@ namespace OsuPlayer.Devices
                 }
                 catch (Exception ex)
                 {
-                    // ignored
+                    Logger.Error("Error while enumerating DirectSoundOut device: {0}", ex.Message);
                 }
 
                 if (info != null)
@@ -262,7 +262,7 @@ namespace OsuPlayer.Devices
                 }
                 catch (Exception ex)
                 {
-                    // ignored
+                    Logger.Error("Error while enumerating WASAPI device: {0}", ex.Message);
                 }
 
                 if (info != null)
@@ -281,7 +281,7 @@ namespace OsuPlayer.Devices
                 }
                 catch (Exception ex)
                 {
-                    // ignored
+                    Logger.Error("Error while enumerating ASIO device: {0}", ex.Message);
                 }
 
                 if (info != null)

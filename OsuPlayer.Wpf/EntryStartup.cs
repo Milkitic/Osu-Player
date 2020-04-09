@@ -22,6 +22,7 @@ namespace Milky.OsuPlayer
     {
         public static void Startup()
         {
+            ConfigurationItemFactory.Default.LayoutRenderers.RegisterDefinition("InvariantCulture", typeof(InvariantCultureLayoutRendererWrapper));
             if (!LoadConfig())
             {
                 Environment.Exit(0);
@@ -31,8 +32,6 @@ namespace Milky.OsuPlayer
 #if DEBUG
             ConsoleManager.Show();
 #endif
-
-            ConfigurationItemFactory.Default.LayoutRenderers.RegisterDefinition("InvariantCulture", typeof(InvariantCultureLayoutRendererWrapper));
 
 #if !DEBUG
             SentrySdk.Init("https://1fe13baa86284da5a0a70efa9750650e:fcbd468d43f94fb1b43af424517ec00b@sentry.io/1412154");
@@ -65,9 +64,9 @@ namespace Milky.OsuPlayer
                         )
                     );
                 }
-                catch (JsonException e)
+                catch (JsonException ex)
                 {
-                    var result = MessageBox.Show("载入配置文件时失败，用默认配置覆盖继续打开吗？" + Environment.NewLine + e.Message,
+                    var result = MessageBox.Show("载入配置文件时失败，用默认配置覆盖继续打开吗？" + Environment.NewLine + ex.Message,
                         "Osu Player", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {

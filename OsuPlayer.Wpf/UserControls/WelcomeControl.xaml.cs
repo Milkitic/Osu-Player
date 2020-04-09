@@ -13,6 +13,8 @@ namespace Milky.OsuPlayer.UserControls
 {
     public class WelcomeControlVm : VmBase
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private bool _guideSyncing;
         private bool _guideSelectedDb;
         private bool _showWelcome;
@@ -63,7 +65,8 @@ namespace Milky.OsuPlayer.UserControls
                     }
                     catch (Exception ex)
                     {
-                        Notification.Push(ex.Message);
+                        Logger.Error(ex, "Error while syncing osu!db: {0}", path);
+                        Notification.Push("Error while syncing osu!db: " + path + "\r\n" + ex.Message);
                         GuideSelectedDb = false;
                     }
 

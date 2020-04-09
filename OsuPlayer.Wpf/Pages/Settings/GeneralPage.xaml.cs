@@ -23,6 +23,7 @@ namespace Milky.OsuPlayer.Pages.Settings
         private readonly MainWindow _mainWindow;
         private readonly ConfigWindow _configWindow;
         private FileScannerViewModel ScannerViewModel { get; }
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public GeneralPage()
         {
@@ -98,7 +99,9 @@ namespace Milky.OsuPlayer.Pages.Settings
             }
             catch (Exception ex)
             {
-                MessageBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex, "Error while syncing osu!db: {0}", path);
+                MessageBox.Show(_configWindow, "Error while syncing osu!db: " + path + "\r\n" + ex.Message,
+                    _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -133,7 +136,9 @@ namespace Milky.OsuPlayer.Pages.Settings
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                    Logger.Error(ex, "Error while scanning custom path: {0}", path);
+                    MessageBox.Show(_configWindow, "Error while scanning custom path: " + path + "\r\n" + ex.Message,
+                        _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -153,7 +158,10 @@ namespace Milky.OsuPlayer.Pages.Settings
             }
             catch (Exception ex)
             {
-                Notification.Push(ex.Message);
+                Logger.Error(ex, "Error while scanning custom path: {0}", AppSettings.Default.General.DbPath);
+                MessageBox.Show(_configWindow, "Error while scanning custom path: " +
+                                               AppSettings.Default.General.DbPath + "\r\n" + ex.Message,
+                    _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

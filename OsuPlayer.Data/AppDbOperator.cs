@@ -157,9 +157,9 @@ PRAGMA case_sensitive_like=false;"
                 {
                     prov.GetDbConnection().Execute(pair.Value);
                 }
-                catch (Exception exc)
+                catch (Exception ex)
                 {
-                    throw new Exception($"创建表`{pair}`失败", exc);
+                    throw new Exception($"创建表`{pair}`失败", ex);
                 }
             }
         }

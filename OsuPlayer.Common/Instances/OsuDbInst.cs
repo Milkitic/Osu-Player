@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Data;
+﻿using System;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Presentation.Interaction;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;
@@ -11,6 +12,7 @@ namespace Milky.OsuPlayer.Common.Instances
 {
     public class OsuDbInst
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         public class ViewModelClass : VmBase
         {
             private bool _isScanning;
@@ -38,8 +40,9 @@ namespace Milky.OsuPlayer.Common.Instances
                 await SyncOsuDbAsync(path, addOnly);
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Error(ex, "Error while syncing osu db."); // todo: update db file.
                 return false;
             }
         }

@@ -113,15 +113,15 @@ namespace Milky.OsuPlayer.Shared
                             OnFinishDownloading?.Invoke();
                         }
                     }
-                    catch (WebException e)
+                    catch (WebException ex)
                     {
-                        if (e.InnerException is SocketException)
+                        if (ex.InnerException is SocketException)
                         {
                             Logger.Error(@"Connection error. Target URI: {0}", Url);
                             throw;
                         }
 
-                        if (e.Status == WebExceptionStatus.Timeout)
+                        if (ex.Status == WebExceptionStatus.Timeout)
                         {
                             Logger.Error(@"Connection timed out. Target URI: {0}", Url);
                             throw;

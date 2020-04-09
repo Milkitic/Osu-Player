@@ -9,6 +9,7 @@ using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Windows;
+using NLog;
 
 namespace Milky.OsuPlayer
 {
