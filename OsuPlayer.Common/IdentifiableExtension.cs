@@ -35,7 +35,8 @@ namespace Milky.OsuPlayer.Common
                     ret = _beatmapDbOperator.GetBeatmapsByIdentifiable(infos).InnerToDataModelList();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(identifiable));
+                    throw new ArgumentOutOfRangeException(nameof(identifiable), identifiable?.GetType(),
+                        "Not support source type.");
             }
 
             return ret.Distinct(new DataModelComparer(distinctByVersion)).ToList();

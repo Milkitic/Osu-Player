@@ -160,7 +160,8 @@ namespace OsuPlayer.Devices
                             device = new AsioOut(asio.FriendlyName);
                             break;
                         default:
-                            throw new ArgumentOutOfRangeException();
+                            throw new ArgumentOutOfRangeException(nameof(deviceInfo.OutputMethod),
+                                deviceInfo.OutputMethod, null);
                     }
                 }
                 catch (Exception ex)

@@ -68,7 +68,7 @@ namespace Milky.OsuPlayer.UserControls
                     ModeSingleLoop.IsChecked = true;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(playMode), playMode, null);
             }
         }
 

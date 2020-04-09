@@ -38,7 +38,8 @@ namespace Milky.OsuPlayer.Instances
                     provider = new QQMusicSourceProvider();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(AppSettings.Default.Lyric.LyricSource),
+                        AppSettings.Default.Lyric.LyricSource, null);
             }
 
             LyricProvider = new LyricProvider(provider, LyricProvideType.Original);

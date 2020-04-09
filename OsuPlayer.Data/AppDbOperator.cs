@@ -159,7 +159,8 @@ PRAGMA case_sensitive_like=false;"
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"创建表`{pair}`失败", ex);
+                    Logger.Error(ex, "Error while creating table: {0}", pair);
+                    throw new Exception($"Error while creating table: {pair}", ex);
                 }
             }
         }

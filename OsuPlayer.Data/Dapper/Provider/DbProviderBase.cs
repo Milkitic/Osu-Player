@@ -69,7 +69,7 @@ namespace Milky.OsuPlayer.Data.Dapper.Provider
         private List<string> _cachedTables;
         private readonly Dictionary<string, List<string>> _cachedColDic = new Dictionary<string, List<string>>();
 
-        protected internal virtual DbConnection SingletonConnection // 单例DbConnection实例
+        protected virtual DbConnection SingletonConnection // 单例DbConnection实例
         {
             get
             {

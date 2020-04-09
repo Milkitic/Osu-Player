@@ -183,7 +183,8 @@ namespace Milky.OsuPlayer.Pages
                         break;
                     }
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(AppSettings.Default.Export.ExportGroupStyle),
+                        AppSettings.Default.Export.ExportGroupStyle, null);
             }
         }
 
@@ -205,7 +206,8 @@ namespace Milky.OsuPlayer.Pages
                     originBack = Escape($"{title} - {artist}({creator})[{version}]");
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(AppSettings.Default.Export.ExportNamingStyle),
+                        AppSettings.Default.Export.ExportNamingStyle, null);
             }
         }
 

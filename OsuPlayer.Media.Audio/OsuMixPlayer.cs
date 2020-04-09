@@ -48,40 +48,48 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public override async Task Initialize()
         {
-            if (CachedSound.DefaultSounds.Count == 0)
+            try
             {
-                var files = new DirectoryInfo(Domain.DefaultPath).GetFiles("*.wav");
-                await CachedSound.CreateDefaultCacheSounds(files.Select(k => k.FullName));
+                if (CachedSound.DefaultSounds.Count == 0)
+                {
+                    var files = new DirectoryInfo(Domain.DefaultPath).GetFiles("*.wav");
+                    await CachedSound.CreateDefaultCacheSounds(files.Select(k => k.FullName));
+                }
+
+                var mp3Path = Path.Combine(_sourceFolder, _osuFile.General.AudioFilename);
+                MusicChannel = new SingleMediaChannel(Engine, mp3Path,
+                    AppSettings.Default.Play.PlaybackRate,
+                    AppSettings.Default.Play.PlayUseTempo)
+                {
+                    Description = "Music",
+                    IsReferenced = true
+                };
+
+                AddSubchannel(MusicChannel);
+                await MusicChannel.Initialize().ConfigureAwait(false);
+
+                HitsoundChannel = new HitsoundChannel(this, _osuFile, _sourceFolder, Engine);
+                AddSubchannel(HitsoundChannel);
+                await HitsoundChannel.Initialize().ConfigureAwait(false);
+
+                SampleChannel = new SampleChannel(this, _osuFile, _sourceFolder, Engine);
+                AddSubchannel(SampleChannel);
+                await SampleChannel.Initialize().ConfigureAwait(false);
+
+                foreach (var channel in Subchannels)
+                {
+                    channel.PlayStatusChanged += status => Logger.Debug($"{channel.Description}: {status}");
+                }
+
+                InitVolume();
+
+                await base.Initialize();
             }
-
-            var mp3Path = Path.Combine(_sourceFolder, _osuFile.General.AudioFilename);
-            MusicChannel = new SingleMediaChannel(Engine, mp3Path,
-                AppSettings.Default.Play.PlaybackRate,
-                AppSettings.Default.Play.PlayUseTempo)
+            catch (Exception ex)
             {
-                Description = "Music",
-                IsReferenced = true
-            };
-
-            AddSubchannel(MusicChannel);
-            await MusicChannel.Initialize().ConfigureAwait(false);
-
-            HitsoundChannel = new HitsoundChannel(this, _osuFile, _sourceFolder, Engine);
-            AddSubchannel(HitsoundChannel);
-            await HitsoundChannel.Initialize().ConfigureAwait(false);
-
-            SampleChannel = new SampleChannel(this, _osuFile, _sourceFolder, Engine);
-            AddSubchannel(SampleChannel);
-            await SampleChannel.Initialize().ConfigureAwait(false);
-
-            foreach (var channel in Subchannels)
-            {
-                channel.PlayStatusChanged += status => Logger.Debug($"{channel.Description}: {status}");
+                Logger.Error(ex, "Error while Initializing players.");
+                throw;
             }
-
-            InitVolume();
-
-            await base.Initialize();
         }
 
         private void InitVolume()

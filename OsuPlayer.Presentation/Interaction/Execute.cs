@@ -15,7 +15,7 @@ namespace Milky.OsuPlayer.Presentation.Interaction
 
         public static void SetMainThreadContext()
         {
-            if (_uiContext != null) throw new NotSupportedException();
+            if (_uiContext != null) Logger.Warn("Current SynchronizationContext may be replaced.");
 
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (Assembly assembly in assemblies)

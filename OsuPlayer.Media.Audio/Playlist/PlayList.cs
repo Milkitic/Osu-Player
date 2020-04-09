@@ -69,7 +69,11 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                 if (preIsRandom != IsRandom)
                 {
                     var b = RearrangeIndexesAndReposition();
-                    if (b) throw new Exception("PlayMode changes cause current info changed");
+                    if (b)
+                    {
+                        Logger.Warn("PlayMode changing causes CurrentInfo changed.");
+                        //throw new Exception("PlayMode changes cause current info changed");
+                    }
                 }
 
                 AppSettings.Default.Play.PlayListMode = _mode;
