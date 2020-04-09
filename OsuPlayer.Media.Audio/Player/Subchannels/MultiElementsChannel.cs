@@ -278,65 +278,73 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                             // wow nothing here
                         }
 
-                        switch (soundElement.ControlType)
+                        try
                         {
-                            case SlideControlType.None:
-                                var cachedSound = await soundElement.GetCachedSoundAsync().ConfigureAwait(false);
-                                Submixer.PlaySound(cachedSound, soundElement.Volume,
-                                    soundElement.Balance * BalanceFactor);
-                                break;
-                            case SlideControlType.StartNew:
-                                Submixer.RemoveMixerInput(_sliderSlideBalance);
-                                Submixer.RemoveMixerInput(_sliderAdditionBalance);
-                                cachedSound = await soundElement.GetCachedSoundAsync().ConfigureAwait(false);
-                                _lastSliderStream?.Dispose();
-                                if (cachedSound is null) continue;
-                                var byteArray = new byte[cachedSound.AudioData.Length * sizeof(float)];
-                                Buffer.BlockCopy(cachedSound.AudioData, 0, byteArray, 0, byteArray.Length);
+                            switch (soundElement.ControlType)
+                            {
+                                case SlideControlType.None:
+                                    var cachedSound = await soundElement.GetCachedSoundAsync().ConfigureAwait(false);
+                                    Submixer.PlaySound(cachedSound, soundElement.Volume,
+                                        soundElement.Balance * BalanceFactor);
+                                    break;
+                                case SlideControlType.StartNew:
+                                    Submixer.RemoveMixerInput(_sliderSlideBalance);
+                                    Submixer.RemoveMixerInput(_sliderAdditionBalance);
+                                    cachedSound = await soundElement.GetCachedSoundAsync().ConfigureAwait(false);
+                                    _lastSliderStream?.Dispose();
+                                    if (cachedSound is null) continue;
+                                    var byteArray = new byte[cachedSound.AudioData.Length * sizeof(float)];
+                                    Buffer.BlockCopy(cachedSound.AudioData, 0, byteArray, 0, byteArray.Length);
 
-                                _lastSliderStream = new MemoryStream(byteArray);
-                                var myf = new RawSourceWaveStream(_lastSliderStream, cachedSound.WaveFormat);
-                                var loop = new LoopStream(myf);
-                                if (soundElement.SlideType.HasFlag(HitsoundType.Slide))
-                                {
-                                    _sliderSlideVolume = new VolumeSampleProvider(loop.ToSampleProvider())
+                                    _lastSliderStream = new MemoryStream(byteArray);
+                                    var myf = new RawSourceWaveStream(_lastSliderStream, cachedSound.WaveFormat);
+                                    var loop = new LoopStream(myf);
+                                    if (soundElement.SlideType.HasFlag(HitsoundType.Slide))
                                     {
-                                        Volume = soundElement.Volume
-                                    };
-                                    _sliderSlideBalance = new BalanceSampleProvider(_sliderSlideVolume)
+                                        _sliderSlideVolume = new VolumeSampleProvider(loop.ToSampleProvider())
+                                        {
+                                            Volume = soundElement.Volume
+                                        };
+                                        _sliderSlideBalance = new BalanceSampleProvider(_sliderSlideVolume)
+                                        {
+                                            Balance = soundElement.Balance * BalanceFactor
+                                        };
+                                        Submixer.AddMixerInput(_sliderSlideBalance);
+                                    }
+                                    else if (soundElement.SlideType.HasFlag(HitsoundType.SlideWhistle))
                                     {
-                                        Balance = soundElement.Balance * BalanceFactor
-                                    };
-                                    Submixer.AddMixerInput(_sliderSlideBalance);
-                                }
-                                else if (soundElement.SlideType.HasFlag(HitsoundType.SlideWhistle))
-                                {
-                                    _sliderAdditionVolume = new VolumeSampleProvider(loop.ToSampleProvider())
-                                    {
-                                        Volume = soundElement.Volume
-                                    };
-                                    _sliderAdditionBalance = new BalanceSampleProvider(_sliderAdditionVolume)
-                                    {
-                                        Balance = soundElement.Balance * BalanceFactor
-                                    };
-                                    Submixer.AddMixerInput(_sliderAdditionBalance);
-                                }
+                                        _sliderAdditionVolume = new VolumeSampleProvider(loop.ToSampleProvider())
+                                        {
+                                            Volume = soundElement.Volume
+                                        };
+                                        _sliderAdditionBalance = new BalanceSampleProvider(_sliderAdditionVolume)
+                                        {
+                                            Balance = soundElement.Balance * BalanceFactor
+                                        };
+                                        Submixer.AddMixerInput(_sliderAdditionBalance);
+                                    }
 
-                                break;
-                            case SlideControlType.StopRunning:
-                                Submixer.RemoveMixerInput(_sliderSlideBalance);
-                                Submixer.RemoveMixerInput(_sliderAdditionBalance);
-                                break;
-                            case SlideControlType.ChangeBalance:
-                                if (_sliderAdditionBalance != null)
-                                    _sliderAdditionBalance.Balance = soundElement.Balance * BalanceFactor;
-                                if (_sliderSlideBalance != null)
-                                    _sliderSlideBalance.Balance = soundElement.Balance * BalanceFactor;
-                                break;
-                            case SlideControlType.ChangeVolume:
-                                if (_sliderAdditionVolume != null) _sliderAdditionVolume.Volume = soundElement.Volume;
-                                if (_sliderSlideVolume != null) _sliderSlideVolume.Volume = soundElement.Volume;
-                                break;
+                                    break;
+                                case SlideControlType.StopRunning:
+                                    Submixer.RemoveMixerInput(_sliderSlideBalance);
+                                    Submixer.RemoveMixerInput(_sliderAdditionBalance);
+                                    break;
+                                case SlideControlType.ChangeBalance:
+                                    if (_sliderAdditionBalance != null)
+                                        _sliderAdditionBalance.Balance = soundElement.Balance * BalanceFactor;
+                                    if (_sliderSlideBalance != null)
+                                        _sliderSlideBalance.Balance = soundElement.Balance * BalanceFactor;
+                                    break;
+                                case SlideControlType.ChangeVolume:
+                                    if (_sliderAdditionVolume != null) _sliderAdditionVolume.Volume = soundElement.Volume;
+                                    if (_sliderSlideVolume != null) _sliderSlideVolume.Volume = soundElement.Volume;
+                                    break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex, "Error while play target element. Source: {0}; ControlType",
+                                soundElement.FilePath, soundElement.ControlType);
                         }
                     }
 
