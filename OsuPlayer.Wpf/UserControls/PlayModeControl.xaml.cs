@@ -33,6 +33,7 @@ namespace Milky.OsuPlayer.UserControls
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            if (_controller == null) return;
             _controller.PlayList.PropertyChanged += Player_PropertyChanged;
             SwitchOption(_controller.PlayList.Mode);
         }

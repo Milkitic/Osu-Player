@@ -110,6 +110,7 @@ namespace Milky.OsuPlayer.Common
 
         public static Duration GetDuration(TimeSpan ts)
         {
+            if (AppSettings.Default == null) return TimeSpan.Zero;
             if (AppSettings.Default.Interface.MinimalMode)
                 return new Duration(TimeSpan.Zero);
             return new Duration(ts);

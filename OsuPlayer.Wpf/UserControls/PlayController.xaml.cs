@@ -73,6 +73,7 @@ namespace Milky.OsuPlayer.UserControls
         private void UserControl_Initialized(object sender, EventArgs e)
         {
             PlayModeControl.CloseRequested += (obj, args) => { PopMode.IsOpen = false; };
+            if (_controller == null) return;
             _controller.PreLoadStarted += Controller_PreLoadStarted;
             _controller.LoadStarted += Controller_LoadStarted;
             _controller.BackgroundInfoLoaded += Controller_BackgroundInfoLoaded;
