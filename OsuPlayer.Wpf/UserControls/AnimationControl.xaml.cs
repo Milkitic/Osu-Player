@@ -58,6 +58,7 @@ namespace Milky.OsuPlayer.UserControls
                 BackImage.Opacity = 1;
             }
 
+            if (_controller == null) return;
             _controller.LoadStarted += Controller_LoadStarted;
             _controller.BackgroundInfoLoaded += Controller_BackgroundInfoLoaded;
             _controller.VideoLoadRequested += Controller_VideoLoadRequested;

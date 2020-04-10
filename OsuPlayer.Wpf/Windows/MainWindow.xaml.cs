@@ -36,7 +36,7 @@ namespace Milky.OsuPlayer.Windows
         public readonly LyricWindow LyricWindow;
         public ConfigWindow ConfigWindow;
         public readonly OverallKeyHook OverallKeyHook;
-        private bool ForceExit = false;
+        private bool _forceExit = false;
 
         private WindowState _lastState;
 
@@ -238,7 +238,7 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (AppSettings.Default.General.ExitWhenClosed == null && !ForceExit)
+            if (AppSettings.Default.General.ExitWhenClosed == null && !_forceExit)
             {
                 e.Cancel = true;
                 var closingControl = new ClosingControl();
@@ -254,7 +254,7 @@ namespace Milky.OsuPlayer.Windows
                         Hide();
                     else
                     {
-                        ForceExit = true;
+                        _forceExit = true;
                         Close();
                     }
                 });
@@ -262,7 +262,7 @@ namespace Milky.OsuPlayer.Windows
                 return;
             }
 
-            if (AppSettings.Default.General.ExitWhenClosed == false && !ForceExit)
+            if (AppSettings.Default.General.ExitWhenClosed == false && !_forceExit)
             {
                 WindowState = WindowState.Minimized;
                 GetCurrentFirst<MiniWindow>()?.Close();
@@ -356,7 +356,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void MenuExit_Click(object sender, RoutedEventArgs e)
         {
-            ForceExit = true;
+            _forceExit = true;
             this.Close();
         }
 
@@ -414,7 +414,7 @@ namespace Milky.OsuPlayer.Windows
 
         public void ForceClose()
         {
-            ForceExit = true;
+            _forceExit = true;
             Close();
         }
     }

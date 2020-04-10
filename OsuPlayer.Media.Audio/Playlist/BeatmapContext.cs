@@ -8,6 +8,10 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
 {
     public class BeatmapContext
     {
+        public BeatmapContext()
+        {
+        }
+
         private BeatmapContext(Beatmap beatmap)
         {
             Beatmap = beatmap;
