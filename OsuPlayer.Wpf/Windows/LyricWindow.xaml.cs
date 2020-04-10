@@ -144,7 +144,7 @@ namespace Milky.OsuPlayer.Windows
             _myStoryboard?.Stop();
             _myStoryboard?.Remove();
             LyricBar.ClearValue(Border.MarginProperty);
-            double viewWidth = 600, width = size.Width;
+            double viewWidth = CutView.MaxWidth, width = size.Width;
             if (width <= viewWidth)
                 return;
             else
@@ -188,7 +188,7 @@ namespace Milky.OsuPlayer.Windows
             var translateAnimation = new ThicknessAnimation
             {
                 From = new Thickness(0),
-                To = new Thickness(viewWidth - width, 0, 0, 0),
+                To = new Thickness(viewWidth - width - 16, 0, 0, 0),
                 BeginTime = TimeSpan.FromMilliseconds(startTime),
                 Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(duration))
             };
@@ -209,7 +209,22 @@ namespace Milky.OsuPlayer.Windows
         private Size DrawLyric(int index)
         {
             string content = _lyricList[index].Content;
+            Size drawLyric = Size.Empty;
+            bool o = false;
+            Execute.OnUiThread(() =>
+            {
+                TbLyric.FinalSizeChanged += (size) =>
+                {
+                    drawLyric = TbLyric.FinalSize;
+                    o = true;
+                };
+                TbLyric.Text = content;
 
+            });
+
+            while (!o && !_cts.Token.IsCancellationRequested) { Thread.Sleep(1); }
+            Console.WriteLine(drawLyric.ToString());
+            return drawLyric;
             //var bmp = new Bitmap(1, 1);
             //SizeF size;
             //using (var g = Graphics.FromImage(bmp))

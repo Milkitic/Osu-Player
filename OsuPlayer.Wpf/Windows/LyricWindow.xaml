@@ -118,13 +118,13 @@
             <StackPanel Orientation="Horizontal">
                 <buttonComponent:CommonButton
                     x:Name="BtnPrev"
-                    Margin="10,5,5,5"
+                    Margin="10,0,5,0"
                     Click="BtnPrev_Click"
                     IconTemplate="{StaticResource PrevButtonTempl}"
                     Style="{StaticResource LyricButton}" />
                 <buttonComponent:CommonButton
                     x:Name="BtnPlay"
-                    Margin="5"
+                    Margin="5,0"
                     Click="BtnPlay_Click"
                     Style="{StaticResource LyricButton}">
                     <buttonComponent:CommonButton.IconTemplate>
@@ -136,28 +136,57 @@
                 </buttonComponent:CommonButton>
                 <buttonComponent:CommonButton
                     x:Name="BtnNext"
-                    Margin="5"
+                    Margin="5,0"
                     Click="BtnNext_Click"
                     IconTemplate="{StaticResource NextButtonTempl}"
                     Style="{StaticResource LyricButton}" />
                 <buttonComponent:CommonButton
                     x:Name="BtnLock"
-                    Margin="5"
+                    Margin="5,0"
                     Click="BtnLock_Click"
                     IconTemplate="{StaticResource LockButtonTempl}"
                     Style="{StaticResource LyricButton}" />
                 <buttonComponent:CommonButton
                     x:Name="BtnHide"
-                    Margin="5,5,10,5"
+                    Margin="5,0,10,0"
                     Click="BtnHide_Click"
                     IconTemplate="{StaticResource CloseButtonTempl}"
                     Style="{StaticResource LyricButton}" />
             </StackPanel>
         </Border>
         <Grid
+            x:Name="GridLyricFake"
+            Grid.Row="1"
+            HorizontalAlignment="Left"
+            Background="Red"
+            Opacity="0">
+            <textBlockComponent:OutlinedTextBlock
+                x:Name="TbLyricFake"
+                Width="Auto"
+                Margin="3,0"
+                Fill="HotPink"
+                FontFamily="{StaticResource SspRegular}"
+                FontSize="{Binding ElementName=TbLyric, Path=FontSize}"
+                FontWeight="{Binding ElementName=TbLyric, Path=FontWeight}"
+                Opacity="2"
+                Stroke="{Binding ElementName=TbLyric, Path=Stroke}"
+                StrokeThickness="{Binding ElementName=TbLyric, Path=StrokeThickness}"
+                Text="{Binding ElementName=TbLyric, Path=Text}" />
+        </Grid>
+        <Grid
+            Grid.Row="1"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Visibility="Collapsed">
+            <TextBlock Background="Cyan">
+                <Run Text="Width:" />
+                <Run Text="{Binding ElementName=TbLyricFake, Path=ActualWidth, Mode=OneWay}" />
+            </TextBlock>
+        </Grid>
+        <Grid
             x:Name="CutView"
             Grid.Row="1"
-            Width="{Binding ElementName=TbLyric, Path=ActualWidth}"
+            Width="{Binding ElementName=GridLyricFake, Path=ActualWidth}"
             MinWidth="{Binding ElementName=ToolBar, Path=ActualWidth}"
             MaxWidth="600"
             HorizontalAlignment="Center"
@@ -190,23 +219,25 @@
                 </Border.Style>
             </Border>
             <Border>
-                <Border.OpacityMask>
+                <!--<Border.OpacityMask>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                         <LinearGradientBrush.GradientStops>
                             <GradientStop Offset="0.95" Color="Black" />
                             <GradientStop Offset="1" Color="Transparent" />
                         </LinearGradientBrush.GradientStops>
                     </LinearGradientBrush>
-                </Border.OpacityMask>
-                <Border x:Name="LyricBar" HorizontalAlignment="Center">
+                </Border.OpacityMask>-->
+                <Border x:Name="LyricBar" HorizontalAlignment="Left">
                     <textBlockComponent:OutlinedTextBlock
+                        x:Name="TbLyric"
+                        Width="{Binding ElementName=TbLyricFake, Path=ActualWidth}"
+                        Margin="3,0,0,0"
+                        VerticalAlignment="Center"
                         FontFamily="{StaticResource SspRegular}"
-                        FontSize="20pt"  x:Name="TbLyric"
-                        FontWeight="ExtraBold"
+                        FontSize="36"
+                        FontWeight="Bold"
                         Stroke="White"
-                        StrokeThickness="6"
-                        Text="测试testtest测试testtest测试testtest测试testtest测试testtest"
-                        TextWrapping="Wrap">
+                        StrokeThickness="4">
                         <textBlockComponent:OutlinedTextBlock.Fill>
                             <ImageBrush
                                 ImageSource="{StaticResource TextureSource1}"
