@@ -22,6 +22,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -44,6 +45,7 @@ namespace Milky.OsuPlayer.Windows
         private Task _searchLyricTask;
 
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public MainWindow()
         {
@@ -172,16 +174,41 @@ namespace Milky.OsuPlayer.Windows
                     ShowTitleBar = false
                 });
                 //WelcomeControl.Show();
-                await Service.Get<OsuDbInst>().LoadLocalDbAsync();
-                await Service.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Default.General.CustomSongsPath);
+                //try
+                //{
+                //    await Service.Get<OsuDbInst>().LoadLocalDbAsync();
+                //}
+                //catch (Exception ex)
+                //{
+                //    Notification.Push(I18NUtil.GetString("err-mapNotInDb"), Title);
+                //}
+
+                try
+                {
+                    await Service.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Default.General.CustomSongsPath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, "Error while scanning custom folder: {0}",
+                        AppSettings.Default.General.CustomSongsPath);
+                    Notification.Push(I18NUtil.GetString("err-custom-scan"), Title);
+                }
             }
             else
             {
                 if (DateTime.Now - AppSettings.Default.LastTimeScanOsuDb > TimeSpan.FromDays(1))
                 {
-                    await Service.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, true);
-                    AppSettings.Default.LastTimeScanOsuDb = DateTime.Now;
-                    AppSettings.SaveDefault();
+                    try
+                    {
+                        await Service.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, true);
+                        AppSettings.Default.LastTimeScanOsuDb = DateTime.Now;
+                        AppSettings.SaveDefault();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex, "Error while syncing osu!db: {0}", AppSettings.Default.General.DbPath);
+                        Notification.Push(I18NUtil.GetString("err-osudb-sync"), Title);
+                    }
                 }
             }
 
@@ -189,12 +216,20 @@ namespace Milky.OsuPlayer.Windows
 
             _controller.LoadFinished += Controller_LoadFinished;
 
-            var updater = Service.Get<UpdateInst>();
-            bool? hasUpdate = await updater.CheckUpdateAsync();
-            if (hasUpdate == true && updater.NewRelease.NewVerString != AppSettings.Default.IgnoredVer)
+            try
             {
-                var newVersionWindow = new NewVersionWindow(updater.NewRelease, this);
-                newVersionWindow.ShowDialog();
+                var updater = Service.Get<UpdateInst>();
+                bool? hasUpdate = await updater.CheckUpdateAsync();
+                if (hasUpdate == true && updater.NewRelease.NewVerString != AppSettings.Default.IgnoredVer)
+                {
+                    var newVersionWindow = new NewVersionWindow(updater.NewRelease, this);
+                    newVersionWindow.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while checking for update");
+                Notification.Push(I18NUtil.GetString("err-update-check"), Title);
             }
         }
 
@@ -367,7 +402,7 @@ namespace Milky.OsuPlayer.Windows
             var entry = _appDbOperator.GetBeatmapByIdentifiable(detail.GetIdentity());
             if (entry == null)
             {
-                Notification.Push("该图不存在于该osu!db中", Title);
+                Notification.Push(I18NUtil.GetString("err-mapNotInDb"), Title);
                 return;
             }
 

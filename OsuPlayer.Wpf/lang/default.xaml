@@ -4,6 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     x:Name="UiLangInternal">
+    <sys:String x:Key="err-beatmap-load">Error while loading beatmap</sys:String>
+    <sys:String x:Key="err-osudb-sync">Error while syncing osu!db</sys:String>
+    <sys:String x:Key="err-custom-scan">Error while scanning custom folder</sys:String>
+    <sys:String x:Key="err-update-check">Error while checking for update</sys:String>
+    <sys:String x:Key="err-mapNotInDb">The beatmap is not in database</sys:String>
+
     <sys:String x:Key="ui-win-sets">播放器设置</sys:String>
     <sys:String x:Key="ui-win-editCollection">编辑收藏</sys:String>
     <sys:String x:Key="ui-win-newCollection">新建收藏</sys:String>
@@ -136,11 +142,19 @@
     <sys:String x:Key="ui-sets-content-dirGroupByMapper">按作者（Mapper）分目录</sys:String>
     <sys:String x:Key="ui-sets-content-dirGroupBySource">按来源（Source）分目录</sys:String>
     <sys:String x:Key="ui-sets-content-currentVersion">当前版本</sys:String>
+    <sys:String x:Key="ui-sets-content-newVersion">新版本</sys:String>
     <sys:String x:Key="ui-sets-content-lastCheckTime">上次检查时间</sys:String>
     <sys:String x:Key="ui-sets-content-projectUrl">项目地址</sys:String>
     <sys:String x:Key="ui-sets-content-feedback">意见反馈</sys:String>
     <sys:String x:Key="ui-sets-content-licenseInfo">许可证信息</sys:String>
     <sys:String x:Key="ui-sets-content-privacyPolicy">隐私政策</sys:String>
+    <sys:String x:Key="ui-sets-content-never">从未</sys:String>
+    <sys:String x:Key="ui-sets-content-hasNewVersion">有新版本</sys:String>
+    <sys:String x:Key="ui-sets-content-releasePage">更新详情页</sys:String>
+    <sys:String x:Key="ui-sets-content-releaseNote">更新说明</sys:String>
+    <sys:String x:Key="ui-sets-content-clickToUpdate">立刻升级</sys:String>
+    <sys:String x:Key="ui-sets-content-remindLater">稍后提醒我</sys:String>
+    <sys:String x:Key="ui-sets-content-skipVersion">跳过此版本</sys:String>
 
     <sys:String x:Key="ui-nav-library">库</sys:String>
     <sys:String x:Key="ui-nav-mine">我的</sys:String>

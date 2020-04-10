@@ -622,6 +622,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="Resources\icon.png" />
+    <Resource Include="Resources\Fonts\SourceHanSerifCn.ttf" />
+    <Resource Include="Resources\Fonts\SourceSansPro-Black.ttf" />
     <Resource Include="Resources\asio.png" />
     <Resource Include="Resources\osu_texture_black.png" />
     <None Include="NLog.config">
@@ -633,7 +636,6 @@
     <None Include="Resources\default.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Resource Include="Resources\Fonts\SourceSansPro-Black.ttf" />
     <Resource Include="Resources\Fonts\SourceSansPro-Bold.ttf" />
     <Resource Include="Resources\Fonts\SourceSansPro-ExtraLight.ttf" />
     <Resource Include="Resources\Fonts\SourceSansPro-Light.ttf" />

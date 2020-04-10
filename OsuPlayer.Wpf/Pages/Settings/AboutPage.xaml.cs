@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -48,7 +49,7 @@ namespace Milky.OsuPlayer.Pages.Settings
         private void GetLastUpdate()
         {
             LastUpdate.Content = AppSettings.Default.LastUpdateCheck == null
-                ? "从未"
+                ? I18NUtil.GetString("ui-sets-content-never")
                 : AppSettings.Default.LastUpdateCheck.Value.ToString(_dtFormat);
         }
 

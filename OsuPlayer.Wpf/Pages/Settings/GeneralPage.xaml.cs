@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -100,7 +101,8 @@ namespace Milky.OsuPlayer.Pages.Settings
             catch (Exception ex)
             {
                 Logger.Error(ex, "Error while syncing osu!db: {0}", path);
-                MessageBox.Show(_configWindow, "Error while syncing osu!db: " + path + "\r\n" + ex.Message,
+                MessageBox.Show(_configWindow, string.Format("{0}: {1}\r\n{2}",
+                        I18NUtil.GetString("err-osudb-sync"), path, ex.Message),
                     _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -136,8 +138,9 @@ namespace Milky.OsuPlayer.Pages.Settings
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex, "Error while scanning custom path: {0}", path);
-                    MessageBox.Show(_configWindow, "Error while scanning custom path: " + path + "\r\n" + ex.Message,
+                    Logger.Error(ex, "Error while scanning custom folder: {0}", path);
+                    MessageBox.Show(_configWindow, string.Format("{0}: {1}\r\n{2}",
+                            I18NUtil.GetString("err-custom-scan"), path, ex.Message),
                         _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -158,9 +161,10 @@ namespace Milky.OsuPlayer.Pages.Settings
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Error while scanning custom path: {0}", AppSettings.Default.General.DbPath);
-                MessageBox.Show(_configWindow, "Error while scanning custom path: " +
-                                               AppSettings.Default.General.DbPath + "\r\n" + ex.Message,
+                var path = AppSettings.Default.General.DbPath;
+                Logger.Error(ex, "Error while scanning custom folder: {0}", path);
+                MessageBox.Show(_configWindow, string.Format("{0}: {1}\r\n{2}",
+                        I18NUtil.GetString("err-custom-scan"), path, ex.Message),
                     _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

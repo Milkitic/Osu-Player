@@ -15,6 +15,7 @@ namespace Milky.OsuPlayer.Utils
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private static ResourceDictionary I18NDic => Application.Current.Resources.MergedDictionaries[0];
+        public static ResourceDictionary CurrentLangDictionary => I18NDic.MergedDictionaries[0];
         public static KeyValuePair<string, string> CurrentLocale { get; private set; }
 
         private static string GetXamlTemplate(string resDicStr)
@@ -196,7 +197,9 @@ namespace Milky.OsuPlayer.Utils
 
         public static string GetString(string key)
         {
-            return (string)Application.Current.FindResource(key);
+            if (CurrentLangDictionary.Contains(key))
+                return (string)CurrentLangDictionary[key];
+            return "UNBOUND";
         }
 
         public static Dictionary<string, string> AvailableLangDic { get; } = new Dictionary<string, string>();

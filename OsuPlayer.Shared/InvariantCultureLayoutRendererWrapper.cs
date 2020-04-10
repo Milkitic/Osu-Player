@@ -25,7 +25,7 @@ namespace Milky.OsuPlayer.Shared
                 var currentCulture = Thread.CurrentThread.CurrentUICulture;
                 try
                 {
-                    Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+                    Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
                     return base.RenderInner(logEvent);
                 }
                 finally

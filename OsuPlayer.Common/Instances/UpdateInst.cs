@@ -24,55 +24,50 @@ namespace Milky.OsuPlayer.Common.Instances
         public async Task<bool?> CheckUpdateAsync()
         {
             IsRunningChecking = true;
-            bool? result = null;
-            await Task.Run(() =>
+
+            try
             {
-                try
+                string json = "";
+                while (json == "")
                 {
-                    string json = "";
-                    while (json == "")
-                    {
-                        json = HttpGet("http://api.github.com/repos/Milkitic/Osu-Player/releases");
-                    }
-
-                    List<GithubRelease> releases = JsonConvert.DeserializeObject<List<GithubRelease>>(json);
-                    var latest = releases.OrderByDescending(k => k.PublishedAt)
-                        .FirstOrDefault(k => !k.Draft && !k.PreRelease);
-                    if (latest == null)
-                    {
-                        NewRelease = null;
-                        result = false;
-                        return;
-                    }
-
-                    var latestVer = latest.TagName.TrimStart('v').TrimEnd('.', '0');
-
-                    Version latestVerObj = new Version(latestVer);
-                    Version nowVerObj = new Version(CurrentVersion);
-
-                    Logger.Info("Current version: {nowVer}", nowVerObj);
-                    Logger.Info("Got version info: {latestVer}", latestVerObj);
-
-                    if (latestVerObj <= nowVerObj)
-                    {
-                        NewRelease = null;
-                        result = false;
-                        return;
-                    }
-
-                    NewRelease = latest;
-                    NewRelease.NewVerString = "v" + latestVer;
-                    NewRelease.NowVerString = "v" + CurrentVersion;
-                    result = true;
+                    json = await HttpGetAsync("http://api.github.com/repos/Milkitic/Osu-Player/releases");
                 }
-                catch (Exception ex)
+
+                List<GithubRelease> releases = JsonConvert.DeserializeObject<List<GithubRelease>>(json);
+                var latest = releases.OrderByDescending(k => k.PublishedAt)
+                    .FirstOrDefault(k => !k.Draft && !k.PreRelease);
+                if (latest == null)
                 {
-                    Logger.Error(ex, "Error while checking for updates.");
-                    result = null;
+                    NewRelease = null;
+                    return false;
                 }
-            });
+
+                var latestVer = latest.TagName.TrimStart('v').TrimEnd('.', '0');
+
+                Version latestVerObj = new Version(latestVer);
+                Version nowVerObj = new Version(CurrentVersion);
+
+                Logger.Info("Current version: {nowVer}", nowVerObj);
+                Logger.Info("Got version info: {latestVer}", latestVerObj);
+
+                if (latestVerObj <= nowVerObj)
+                {
+                    NewRelease = null;
+                    return false;
+                }
+
+                NewRelease = latest;
+                NewRelease.NewVerString = "v" + latestVer;
+                NewRelease.NowVerString = "v" + CurrentVersion;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while checking for updates.");
+                throw;
+            }
+
             IsRunningChecking = false;
-            return result;
+            return true;
         }
 
         static UpdateInst()
@@ -87,7 +82,7 @@ namespace Milky.OsuPlayer.Common.Instances
                 "ozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
         }
 
-        private static string HttpGet(string url)
+        private static async Task<string> HttpGetAsync(string url)
         {
             for (int i = 0; i < RetryCount; i++)
             {
@@ -95,8 +90,8 @@ namespace Milky.OsuPlayer.Common.Instances
                 {
                     var message = new HttpRequestMessage(HttpMethod.Get, url);
                     CancellationTokenSource cts = new CancellationTokenSource(Timeout);
-                    HttpResponseMessage response = HttpClient.SendAsync(message, cts.Token).Result;
-                    return response.Content.ReadAsStringAsync().Result;
+                    var response = await HttpClient.SendAsync(message, cts.Token).ConfigureAwait(false);
+                    return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
                 catch (Exception)
                 {

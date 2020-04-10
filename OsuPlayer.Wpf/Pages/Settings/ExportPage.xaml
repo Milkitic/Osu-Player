@@ -13,7 +13,6 @@
     FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
-
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">

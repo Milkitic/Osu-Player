@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +12,8 @@ using Milky.OsuPlayer.Media.Audio.Player;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using NAudio.Wave;
 using OsuPlayer.Devices;
@@ -60,6 +63,8 @@ namespace Milky.OsuPlayer.UserControls
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
         private IWavePlayer _device;
 
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public PlayController()
         {
             InitializeComponent();
@@ -75,6 +80,20 @@ namespace Milky.OsuPlayer.UserControls
             _controller.LoadFinished += Controller_LoadFinished;
 
             _controller.PositionUpdated += Controller_PositionUpdated;
+            _controller.LoadError += Controller_LoadError;
+        }
+
+        private void Controller_LoadError(BeatmapContext ctx, Exception ex)
+        {
+            if (ctx.BeatmapDetail != null)
+            {
+                var path = Path.Combine(ctx.BeatmapDetail.BaseFolder, ctx.BeatmapDetail.MapPath);
+                Notification.Push($"{I18NUtil.GetString("err-beatmap-load")}: {path}");
+            }
+            else
+            {
+                Notification.Push(I18NUtil.GetString("err-beatmap-load"));
+            }
         }
 
         private void Controller_PositionUpdated(TimeSpan time)

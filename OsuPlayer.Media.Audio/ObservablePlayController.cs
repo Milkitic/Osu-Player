@@ -91,7 +91,7 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             else
             {
-                Logger.Error(ex, "Load error while loading beatmap: {0}");
+                Logger.Error(ex, "Load error while loading beatmap.");
             }
         }
 
@@ -328,35 +328,42 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private async Task PlayList_AutoSwitched(PlayControlResult controlResult, Beatmap beatmap, bool playInstantly)
         {
-            var context = PlayList.CurrentInfo;
+            try
+            {
+                var context = PlayList.CurrentInfo;
 
-            if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
-            {
-                await context.SetTimeHandle(0, playInstantly ||
-                                               controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play)
-                    .ConfigureAwait(false);
-            }
-            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default ||
-                     controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Reset)
-            {
-                InitializeContextHandle(context);
-                await LoadAsync(false, true).ConfigureAwait(false);
-                switch (controlResult.PlayStatus)
+                if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
                 {
-                    case PlayControlResult.PlayControlStatus.Play:
-                        if (playInstantly) await context.PlayHandle().ConfigureAwait(false);
-                        break;
-                    case PlayControlResult.PlayControlStatus.Stop:
-                        await context.StopHandle().ConfigureAwait(false);
-                        break;
+                    await context.SetTimeHandle(0, playInstantly ||
+                                                   controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play)
+                        .ConfigureAwait(false);
                 }
-            }
-            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
-            {
-                Execute.OnUiThread(() => InterfaceClearRequest?.Invoke());
-            }
+                else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default ||
+                         controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Reset)
+                {
+                    InitializeContextHandle(context);
+                    await LoadAsync(false, true).ConfigureAwait(false);
+                    switch (controlResult.PlayStatus)
+                    {
+                        case PlayControlResult.PlayControlStatus.Play:
+                            if (playInstantly) await context.PlayHandle().ConfigureAwait(false);
+                            break;
+                        case PlayControlResult.PlayControlStatus.Stop:
+                            await context.StopHandle().ConfigureAwait(false);
+                            break;
+                    }
+                }
+                else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
+                {
+                    Execute.OnUiThread(() => InterfaceClearRequest?.Invoke());
+                }
 
-            await Task.CompletedTask;
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while auto changing song.");
+            }
         }
 
         private void PlayList_SongListChanged()
@@ -367,53 +374,60 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private async Task PlayByControl(PlayControlType control, bool auto)
         {
-            if (!auto)
+            try
             {
-                InterruptPrevOperation();
-            }
+                if (!auto)
+                {
+                    InterruptPrevOperation();
+                }
 
-            var preInfo = PlayList.CurrentInfo;
-            var controlResult = auto
-                    ? await PlayList.InvokeAutoNext().ConfigureAwait(false)
-                    : await PlayList.SwitchByControl(control).ConfigureAwait(false);
-            if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default &&
-                controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play)
-            {
-                if (PlayList.CurrentInfo == null)
+                var preInfo = PlayList.CurrentInfo;
+                var controlResult = auto
+                        ? await PlayList.InvokeAutoNext().ConfigureAwait(false)
+                        : await PlayList.SwitchByControl(control).ConfigureAwait(false);
+                if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default &&
+                    controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play)
+                {
+                    if (PlayList.CurrentInfo == null)
+                    {
+                        await ClearPlayer().ConfigureAwait(false);
+                        Execute.OnUiThread(() => InterfaceClearRequest?.Invoke());
+                        return;
+                    }
+
+                    if (preInfo == PlayList.CurrentInfo)
+                    {
+                        await PlayList.CurrentInfo.StopHandle();
+                        await PlayList.CurrentInfo.PlayHandle();
+                        return;
+                    }
+
+                    InitializeContextHandle(PlayList.CurrentInfo);
+                    await LoadAsync(false, true).ConfigureAwait(false);
+                    await PlayList.CurrentInfo.PlayHandle.Invoke().ConfigureAwait(false);
+                }
+                else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
+                {
+                    switch (controlResult.PlayStatus)
+                    {
+                        case PlayControlResult.PlayControlStatus.Play:
+                            await PlayList.CurrentInfo.RestartHandle.Invoke().ConfigureAwait(false);
+                            break;
+                        case PlayControlResult.PlayControlStatus.Stop:
+                            await PlayList.CurrentInfo.StopHandle.Invoke().ConfigureAwait(false);
+                            break;
+                    }
+                }
+                else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
                 {
                     await ClearPlayer().ConfigureAwait(false);
                     Execute.OnUiThread(() => InterfaceClearRequest?.Invoke());
                     return;
                 }
-
-                if (preInfo == PlayList.CurrentInfo)
-                {
-                    await PlayList.CurrentInfo.StopHandle();
-                    await PlayList.CurrentInfo.PlayHandle();
-                    return;
-                }
-
-                InitializeContextHandle(PlayList.CurrentInfo);
-                await LoadAsync(false, true).ConfigureAwait(false);
-                await PlayList.CurrentInfo.PlayHandle.Invoke().ConfigureAwait(false);
             }
-            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
+            catch (Exception ex)
             {
-                switch (controlResult.PlayStatus)
-                {
-                    case PlayControlResult.PlayControlStatus.Play:
-                        await PlayList.CurrentInfo.RestartHandle.Invoke().ConfigureAwait(false);
-                        break;
-                    case PlayControlResult.PlayControlStatus.Stop:
-                        await PlayList.CurrentInfo.StopHandle.Invoke().ConfigureAwait(false);
-                        break;
-                }
-            }
-            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
-            {
-                await ClearPlayer().ConfigureAwait(false);
-                Execute.OnUiThread(() => InterfaceClearRequest?.Invoke());
-                return;
+                Logger.Error(ex, "Error while changing song.");
             }
         }
 
