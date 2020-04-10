@@ -47,10 +47,10 @@ namespace Milky.OsuPlayer.Common.Instances
             }
         }
 
-        public async Task LoadLocalDbAsync()
-        {
-            await Task.Run(() => Beatmaps = new HashSet<Beatmap>(_beatmapDbOperator.GetAllBeatmaps()));
-        }
+        //public async Task LoadLocalDbAsync()
+        //{
+        //    await Task.Run(() => Beatmaps = new HashSet<Beatmap>(_beatmapDbOperator.GetAllBeatmaps()));
+        //}
 
         public async Task SyncOsuDbAsync(string path, bool addOnly)
         {
@@ -77,15 +77,23 @@ namespace Milky.OsuPlayer.Common.Instances
             return await Task.Run(() =>
             {
                 var db = new OsuDb();
-                using (var fs = new FileStream(path, FileMode.Open))
+                try
                 {
-                    db.ReadFromStream(new SerializationReader(fs));
+                    using (var fs = new FileStream(path, FileMode.Open))
+                    {
+                        db.ReadFromStream(new SerializationReader(fs));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(
+                        $"Read osu!db failed. This file may be corrupted. osu! version: {db.OsuVersion}", ex);
                 }
 
                 return db;
             });
         }
 
-        public HashSet<Beatmap> Beatmaps { get; set; }
+        //public HashSet<Beatmap> Beatmaps { get; set; }
     }
 }

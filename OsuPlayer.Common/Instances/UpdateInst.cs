@@ -44,11 +44,10 @@ namespace Milky.OsuPlayer.Common.Instances
 
                 var latestVer = latest.TagName.TrimStart('v').TrimEnd('.', '0');
 
-                Version latestVerObj = new Version(latestVer);
-                Version nowVerObj = new Version(CurrentVersion);
+                var latestVerObj = new Version(latestVer);
+                var nowVerObj = new Version(CurrentVersion);
 
-                Logger.Info("Current version: {nowVer}", nowVerObj);
-                Logger.Info("Got version info: {latestVer}", latestVerObj);
+                Logger.Info("Current version: {nowVer}; Got version info: {latestVer}", nowVerObj, latestVerObj);
 
                 if (latestVerObj <= nowVerObj)
                 {
