@@ -36,14 +36,14 @@ namespace Milky.OsuPlayer.Windows
                 if (_isLocked)
                 {
                     SetPenetrate();
-                    textBlockLyric.Opacity = 0.9;
+                    TbLyric.Opacity = 0.9;
                     //ShowAnimation();
                     ViewModel.ShowFrame = false;
                 }
                 else
                 {
                     ReleasePenetrate();
-                    textBlockLyric.Opacity = 1;
+                    TbLyric.Opacity = 1;
                 }
             }
         }
