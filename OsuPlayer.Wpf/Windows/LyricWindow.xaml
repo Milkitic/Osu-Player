@@ -2,12 +2,13 @@
     x:Class="Milky.OsuPlayer.Windows.LyricWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:debugging="clr-namespace:Milky.OsuPlayer.Presentation.Debugging;assembly=OsuPlayer.Presentation"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
+    xmlns:textBlockComponent="clr-namespace:Milky.OsuPlayer.UiComponents.TextBlockComponent"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
-    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
     Title="Lyric Window"
     Height="90"
     AllowsTransparency="True"
@@ -156,7 +157,7 @@
         <Grid
             x:Name="CutView"
             Grid.Row="1"
-            Width="{Binding ElementName=ImgLyric, Path=ActualWidth}"
+            Width="{Binding ElementName=TbLyric, Path=ActualWidth}"
             MinWidth="{Binding ElementName=ToolBar, Path=ActualWidth}"
             MaxWidth="600"
             HorizontalAlignment="Center"
@@ -198,14 +199,29 @@
                     </LinearGradientBrush>
                 </Border.OpacityMask>
                 <Border x:Name="LyricBar" HorizontalAlignment="Center">
-                    <Image
+                    <textBlockComponent:OutlinedTextBlock
+                        FontFamily="{StaticResource SspRegular}"
+                        FontSize="20pt"  x:Name="TbLyric"
+                        FontWeight="ExtraBold"
+                        Stroke="White"
+                        StrokeThickness="6"
+                        Text="测试testtest测试testtest测试testtest测试testtest测试testtest"
+                        TextWrapping="Wrap">
+                        <textBlockComponent:OutlinedTextBlock.Fill>
+                            <ImageBrush
+                                ImageSource="{StaticResource TextureSource1}"
+                                Stretch="UniformToFill"
+                                TileMode="FlipXY" />
+                        </textBlockComponent:OutlinedTextBlock.Fill>
+                    </textBlockComponent:OutlinedTextBlock>
+                    <!--<Image
                         x:Name="ImgLyric"
                         HorizontalAlignment="Left"
                         Cursor="SizeAll"
                         MouseDown="ImgLyric_MouseDown"
                         MouseUp="ImgLyric_MouseUp"
                         RenderOptions.BitmapScalingMode="Linear"
-                        Stretch="None" />
+                        Stretch="None" />-->
                 </Border>
             </Border>
             <Border

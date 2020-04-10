@@ -8,6 +8,9 @@ using System.Windows.Media;
 
 namespace Milky.OsuPlayer.UiComponents.TextBlockComponent
 {
+    /// <summary>
+    /// https://stackoverflow.com/questions/93650/apply-stroke-to-a-textblock-in-wpf
+    /// </summary>
     [ContentProperty("Text")]
     internal class OutlinedTextBlock : FrameworkElement
     {

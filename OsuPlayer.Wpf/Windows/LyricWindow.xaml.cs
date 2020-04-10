@@ -9,10 +9,9 @@ using Milky.OsuPlayer.ViewModels;
 using OSharp.Beatmap;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
-using System.IO;
+//using System.Drawing;
+//using System.Drawing.Drawing2D;
+//using System.Drawing.Text;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,13 +20,11 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using Brush = System.Drawing.Brush;
-using Color = System.Drawing.Color;
-using FontFamily = System.Drawing.FontFamily;
-using Image = System.Drawing.Image;
-using Pen = System.Drawing.Pen;
-using Size = System.Windows.Size;
+//using Brush = System.Drawing.Brush;
+//using Color = System.Drawing.Color;
+//using FontFamily = System.Drawing.FontFamily;
+//using Image = System.Drawing.Image;
+//using Pen = System.Drawing.Pen;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -45,7 +42,7 @@ namespace Milky.OsuPlayer.Windows
         private List<Sentence> _lyricList;
         private CancellationTokenSource _cts;
         private Task _playingTask;
-        private FontFamily _fontFamily;
+        //private FontFamily _fontFamily;
         private bool _pressed;
 
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
@@ -58,15 +55,15 @@ namespace Milky.OsuPlayer.Windows
             ViewModel = (LyricWindowViewModel)DataContext;
             MainWindowViewModel.Current.LyricWindowViewModel = ViewModel;
 
-            var fi = new FileInfo(Path.Combine(Domain.ExtensionPath, "font", "default.ttc"));
-            if (!fi.Exists)
-                _fontFamily = new FontFamily("等线");
-            else
-            {
-                var pfc = new PrivateFontCollection();
-                pfc.AddFontFile(fi.FullName);
-                _fontFamily = pfc.Families[0];
-            }
+            //var fi = new FileInfo(Path.Combine(Domain.ExtensionPath, "font", "default.ttc"));
+            //if (!fi.Exists)
+            //    _fontFamily = new FontFamily("等线");
+            //else
+            //{
+            //    var pfc = new PrivateFontCollection();
+            //    pfc.AddFontFile(fi.FullName);
+            //    _fontFamily = pfc.Families[0];
+            //}
 
             CompositionTarget.Rendering += OnRendering;
             Left = 0;
@@ -212,67 +209,68 @@ namespace Milky.OsuPlayer.Windows
         private Size DrawLyric(int index)
         {
             string content = _lyricList[index].Content;
-            var bmp = new Bitmap(1, 1);
-            SizeF size;
-            using (var g = Graphics.FromImage(bmp))
-            using (var f = new Font(_fontFamily, 32))
-            {
-                size = g.MeasureString(content, f);
-            }
 
-            int width = (int)size.Width < 1 ? 1 : (int)size.Width;
-            int height = (int)size.Height < 1 ? 1 : (int)size.Height;
+            //var bmp = new Bitmap(1, 1);
+            //SizeF size;
+            //using (var g = Graphics.FromImage(bmp))
+            //using (var f = new Font(_fontFamily, 32))
+            //{
+            //    size = g.MeasureString(content, f);
+            //}
 
-            bmp.Dispose();
-            bmp = new Bitmap(width + 5, height + 5);
-            using (var format = StringFormat.GenericTypographic)
-            using (var g = Graphics.FromImage(bmp))
-            //using (Brush bBg = new SolidBrush(Color.FromArgb(48, 0, 176, 255)))
-            //using (Pen pBg = new Pen(Color.FromArgb(192, 0, 176, 255), 3))
-            using (Brush b = new TextureBrush(
-                    Image.FromFile(Path.Combine(Domain.ExtensionPath, "texture", "osu.png"))))
-            //using (Pen p = new Pen(Color.Red))
-            using (var p2 = new Pen(Color.FromArgb(255, 255, 255), 6))
-            using (var f = new Font(_fontFamily, 32))
-            {
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-                g.TextRenderingHint = TextRenderingHint.AntiAlias;
+            //int width = (int)size.Width < 1 ? 1 : (int)size.Width;
+            //int height = (int)size.Height < 1 ? 1 : (int)size.Height;
 
-                var rect = new Rectangle(16, 5, bmp.Width - 1, bmp.Height - 1);
-                float dpi = g.DpiY;
-                using (GraphicsPath gp = GetStringPath(content, dpi, rect, f, format))
-                {
-                    g.DrawPath(p2, gp);
-                    g.FillPath(b, gp);
-                }
-            }
+            //bmp.Dispose();
+            //bmp = new Bitmap(width + 5, height + 5);
+            //using (var format = StringFormat.GenericTypographic)
+            //using (var g = Graphics.FromImage(bmp))
+            ////using (Brush bBg = new SolidBrush(Color.FromArgb(48, 0, 176, 255)))
+            ////using (Pen pBg = new Pen(Color.FromArgb(192, 0, 176, 255), 3))
+            //using (Brush b = new TextureBrush(
+            //        Image.FromFile(Path.Combine(Domain.ExtensionPath, "texture", "osu.png"))))
+            ////using (Pen p = new Pen(Color.Red))
+            //using (var p2 = new Pen(Color.FromArgb(255, 255, 255), 6))
+            //using (var f = new Font(_fontFamily, 32))
+            //{
+            //    g.SmoothingMode = SmoothingMode.AntiAlias;
+            //    g.TextRenderingHint = TextRenderingHint.AntiAlias;
 
-            Execute.ToUiThread(() =>
-            {
-                using (var ms = new MemoryStream())
-                {
-                    bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                    var wpfImage = new BitmapImage();
-                    wpfImage.BeginInit();
-                    wpfImage.StreamSource = new MemoryStream(ms.ToArray());
-                    wpfImage.EndInit();
+            //    var rect = new Rectangle(16, 5, bmp.Width - 1, bmp.Height - 1);
+            //    float dpi = g.DpiY;
+            //    using (GraphicsPath gp = GetStringPath(content, dpi, rect, f, format))
+            //    {
+            //        g.DrawPath(p2, gp);
+            //        g.FillPath(b, gp);
+            //    }
+            //}
 
-                    ImgLyric.Source = wpfImage;
-                }
-            });
+            //Execute.ToUiThread(() =>
+            //{
+            //    using (var ms = new MemoryStream())
+            //    {
+            //        bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            //        var wpfImage = new BitmapImage();
+            //        wpfImage.BeginInit();
+            //        wpfImage.StreamSource = new MemoryStream(ms.ToArray());
+            //        wpfImage.EndInit();
 
-            return new Size(width + 5, height + 5);
+            //        ImgLyric.Source = wpfImage;
+            //    }
+            //});
+
+            //return new Size(width + 5, height + 5);
         }
 
-        private static GraphicsPath GetStringPath(string s, float dpi, RectangleF rect, Font font, StringFormat format)
-        {
-            var path = new GraphicsPath();
-            // Convert font size into appropriate coordinates
-            float emSize = dpi * font.SizeInPoints / 72;
-            path.AddString(s, font.FontFamily, (int)font.Style, emSize, rect, format);
+        //private static GraphicsPath GetStringPath(string s, float dpi, RectangleF rect, Font font, StringFormat format)
+        //{
+        //    var path = new GraphicsPath();
+        //    // Convert font size into appropriate coordinates
+        //    float emSize = dpi * font.SizeInPoints / 72;
+        //    path.AddString(s, font.FontFamily, (int)font.Style, emSize, rect, format);
 
-            return path;
-        }
+        //    return path;
+        //}
 
         public void StopWork()
         {
