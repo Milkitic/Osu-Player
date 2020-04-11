@@ -16,6 +16,7 @@ using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Unosquare.FFME.Common;
 
 namespace Milky.OsuPlayer.UserControls
@@ -30,13 +31,11 @@ namespace Milky.OsuPlayer.UserControls
     /// </summary>
     public partial class AnimationControl : UserControl
     {
-        private OsuDbInst _dbInst = Service.Get<OsuDbInst>();
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        private bool _playAfterSeek;
         private Task _waitTask;
         private TimeSpan _initialVideoPosition;
-        private MyCancellationTokenSource _waitActionCts;
 
         private double _videoOffset;
 
@@ -62,21 +61,6 @@ namespace Milky.OsuPlayer.UserControls
             _controller.LoadStarted += Controller_LoadStarted;
             _controller.BackgroundInfoLoaded += Controller_BackgroundInfoLoaded;
             _controller.VideoLoadRequested += Controller_VideoLoadRequested;
-
-            _controller.PlayStatusChanged += Player_PlayStatusChanged;
-        }
-
-        private void Player_PlayStatusChanged(PlayStatus obj)
-        {
-            Execute.OnUiThread(() =>
-            {
-                if (VideoElement.Source is null) return;
-
-                if (obj == PlayStatus.Playing)
-                    VideoElement.Pause();
-                else if (obj == PlayStatus.Finished || obj == PlayStatus.Paused)
-                    VideoElement.Play();
-            });
         }
 
         private async void Controller_LoadStarted(BeatmapContext arg1, CancellationToken arg2)
@@ -99,14 +83,11 @@ namespace Milky.OsuPlayer.UserControls
                 : new BitmapImage(new Uri(beatmapCtx.BeatmapDetail.BackgroundPath));
         }
 
-        private void Controller_VideoLoadRequested(BeatmapContext beatmapCtx, CancellationToken ct)
+        private async void Controller_VideoLoadRequested(BeatmapContext beatmapCtx, CancellationToken ct)
         {
             if (VideoElement == null) return;
 
             if (!SharedVm.Default.EnableVideo) return;
-
-            _playAfterSeek = true;
-            VideoElement.Source = new Uri(beatmapCtx.BeatmapDetail.VideoPath);
 
             _videoOffset = -(beatmapCtx.OsuFile.Events.VideoInfo.Offset);
             if (_videoOffset >= 0)
@@ -119,6 +100,7 @@ namespace Milky.OsuPlayer.UserControls
                 _waitTask = Task.Delay(TimeSpan.FromMilliseconds(-_videoOffset));
             }
 
+            await VideoElement.Open(new Uri(beatmapCtx.BeatmapDetail.VideoPath));
             Execute.OnUiThread(() =>
             {
                 BackImage.Opacity = 0.15;
@@ -127,62 +109,99 @@ namespace Milky.OsuPlayer.UserControls
 
             beatmapCtx.PlayHandle = async () =>
             {
+                Logger.Warn("Called PlayHandle()");
                 await _controller.Player.Play();
-                PlayVideo();
+                await PlayVideo();
             };
 
             beatmapCtx.PauseHandle = async () =>
             {
+                Logger.Warn("Called PauseHandle()");
                 await _controller.Player.Pause();
-                PauseVideo();
+                await PauseVideo();
             };
 
             beatmapCtx.StopHandle = async () =>
             {
+                Logger.Warn("Called StopHandle()");
                 await _controller.Player.Stop();
-                ResetVideo(false);
+                await StopVideo();
             };
 
             beatmapCtx.SetTimeHandle = async (time, play) =>
             {
+                Logger.Warn("Called PlayHandle()");
                 await _controller.Player.Pause();
-                _playAfterSeek = play;
-                _waitActionCts = new MyCancellationTokenSource();
-                Guid? guid = _waitActionCts?.Guid;
                 var trueOffset = time + _videoOffset;
+
+                bool waitForSeek = true;
+
+                VideoElement.SeekingEnded += OnVideoElementOnSeekingEnded;
                 if (trueOffset < 0)
                 {
-                    await VideoElement.Pause();
-                    VideoElement.Position = TimeSpan.FromMilliseconds(0);
+                    Execute.OnUiThread(async () =>
+                    {
+                        await PauseVideo();
+                        VideoElement.Position = TimeSpan.FromMilliseconds(0);
+                    });
 
                     await Task.Run(() => { Thread.Sleep(TimeSpan.FromMilliseconds(-trueOffset)); });
-                    if (_waitActionCts?.Guid != guid || _waitActionCts?.IsCancellationRequested == true)
-                        return;
+                }
+                else if (trueOffset >= 0)
+                {
+                    Execute.OnUiThread(() => VideoElement.Position = TimeSpan.FromMilliseconds(trueOffset));
                 }
 
-
-                if (trueOffset >= 0)
+                await Task.Run(() =>
                 {
-                    VideoElement.Position = TimeSpan.FromMilliseconds(trueOffset);
+                    while (waitForSeek)
+                    {
+                        Thread.Sleep(1);
+                    }
+                });
+
+                VideoElement.SeekingEnded -= OnVideoElementOnSeekingEnded;
+                await _controller.Player.SkipTo(VideoElement.Position - TimeSpan.FromMilliseconds(_videoOffset));
+
+                Logger.Warn("SetTime Done");
+                async void OnVideoElementOnSeekingEnded(object sender, EventArgs e)
+                {
+                    waitForSeek = false;
+                    if (play)
+                    {
+                        await _controller.Player.Play();
+                        await PlayVideo();
+                    }
+                    else
+                    {
+                        await _controller.Player.Pause();
+                        await PauseVideo();
+                    }
                 }
             };
 
             AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
         }
 
-        private void PlayVideo()
+        private async Task PlayVideo()
         {
-            VideoElement.Play();
+            if (VideoElement.MediaState == MediaPlaybackState.Play)
+                return;
+            await VideoElement.Play();
         }
 
-        private void PauseVideo()
+        private async Task PauseVideo()
         {
-            VideoElement.Pause();
+            if (VideoElement.MediaState != MediaPlaybackState.Play)
+                return;
+            await VideoElement.Pause();
         }
 
-        private void ResetVideo(bool play)
+        private async Task StopVideo()
         {
-            VideoElement.Position = TimeSpan.Zero;
+            if (VideoElement.MediaState != MediaPlaybackState.Play)
+                return;
+            await VideoElement.Stop();
         }
 
         private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -221,81 +240,28 @@ namespace Milky.OsuPlayer.UserControls
 
         private async Task SafelyRecreateVideoElement(bool showVideo)
         {
-            if (Execute.CheckDispatcherAccess())
+            await VideoElement.Stop();
+            await VideoElement.Close();
+
+            Execute.OnUiThread(() =>
             {
-                VideoElement.Stop();
-                BindVideoElement();
-            }
-            else
-            {
-                await VideoElement.Stop();
-                Execute.OnUiThread(BindVideoElement);
-            }
-
-            void BindVideoElement()
-            {
-                VideoElement.Position = TimeSpan.Zero;
-                VideoElement.Source = null;
-
-                VideoElement.MediaOpened -= OnMediaOpened;
-                VideoElement.MediaFailed -= OnMediaFailed;
-                VideoElement.MediaEnded -= OnMediaEnded;
-                VideoElement.SeekingStarted -= OnSeekingStarted;
-                VideoElement.SeekingEnded -= OnSeekingEnded;
-                VideoElement.Dispose();
-                VideoElement = null;
-                VideoElementBorder.Child = null;
-                //VideoElementBorder.Visibility = Visibility.Hidden;
-                VideoElement = new Unosquare.FFME.MediaElement
-                {
-                    IsMuted = true,
-                    LoadedBehavior = MediaPlaybackState.Manual,
-                    Visibility = Visibility.Visible,
-                    SpeedRatio = AppSettings.Default.Play.PlaybackRate
-                };
-                VideoElement.MediaOpened += OnMediaOpened;
-                VideoElement.MediaFailed += OnMediaFailed;
-                VideoElement.MediaEnded += OnMediaEnded;
-
-                if (showVideo)
-                {
-                    VideoElement.SeekingStarted += OnSeekingStarted;
-                    VideoElement.SeekingEnded += OnSeekingEnded;
-                }
-
-                VideoElementBorder.Child = VideoElement;
-            }
-        }
-
-        private void OnSeekingStarted(object sender, EventArgs e)
-        {
-        }
-
-        private async void OnSeekingEnded(object sender, EventArgs e)
-        {
-            if (!SharedVm.Default.EnableVideo) return;
-            await _controller.Player.SkipTo(VideoElement.Position - TimeSpan.FromMilliseconds(_videoOffset));
-            if (_playAfterSeek)
-            {
-                await _controller.Player.Play();
-                await VideoElement.Play();
-            }
-            else
-            {
-                await _controller.Player.Pause();
-                await VideoElement.Pause();
-            }
+                //VideoElement.MediaOpened -= OnMediaOpened;
+                //VideoElement.MediaFailed -= OnMediaFailed;
+                VideoElementBorder.Visibility = Visibility.Hidden;
+                VideoElement.SpeedRatio = AppSettings.Default.Play.PlaybackRate;
+                //VideoElement.MediaOpened += OnMediaOpened;
+                //VideoElement.MediaFailed += OnMediaFailed;
+            });
         }
 
         private async void OnMediaOpened(object sender, MediaOpenedEventArgs e)
         {
             VideoElementBorder.Visibility = Visibility.Visible;
             if (!SharedVm.Default.EnableVideo) return;
-            await _waitTask;
-
-            if (VideoElement == null /* || VideoElement.IsDisposed*/) return;
+            if (VideoElement == null) return;
             if (_controller.PlayList.CurrentInfo.PlayInstantly)
             {
+                await _waitTask;
                 await VideoElement.Play();
                 VideoElement.Position = _initialVideoPosition;
             }
@@ -304,16 +270,11 @@ namespace Milky.OsuPlayer.UserControls
         private async void OnMediaFailed(object sender, MediaFailedEventArgs e)
         {
             VideoElementBorder.Visibility = Visibility.Hidden;
-            //MsgBox.Show(this, e.ErrorException.ToString(), "不支持的视频格式", MessageBoxButton.OK, MessageBoxImage.Error);
+            Logger.Error(e.ErrorException, "Error while loading video");
+            Notification.Push("不支持的视频格式");
             if (!SharedVm.Default.EnableVideo) return;
             await SafelyRecreateVideoElement(false);
-            _controller.Player.TogglePlay();
-        }
-
-        private void OnMediaEnded(object sender, EventArgs e)
-        {
-            if (VideoElement == null /*|| VideoElement.IsDisposed*/) return;
-            //VideoElement.Position = TimeSpan.Zero;
+            await _controller.Player.TogglePlay();
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Milky.OsuPlayer
             }
 
 #if DEBUG
-            ConsoleManager.Show();
+            //ConsoleManager.Show();
 #endif
 
 #if !DEBUG
@@ -41,6 +41,7 @@ namespace Milky.OsuPlayer
 
             StyleUtilities.SetAlignment();
 
+            //https://ffmpeg.zeranoe.com/builds/win32/shared/ffmpeg-4.2.1-win32-shared.zip
             Unosquare.FFME.Library.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg");
         }
 

@@ -106,6 +106,8 @@ namespace Milky.OsuPlayer.UiComponents.TextBlockComponent
         private FormattedText _formattedText;
         private Geometry _textGeometry;
         private Pen _pen;
+        private Size _finalSize;
+        public event Action<Size> FinalSizeChanged;
 
         public Brush Fill
         {
@@ -220,6 +222,7 @@ namespace Milky.OsuPlayer.UiComponents.TextBlockComponent
 
         protected override Size ArrangeOverride(Size finalSize)
         {
+            FinalSize = finalSize;
             EnsureFormattedText();
 
             // update the formatted text with the final size
@@ -230,6 +233,17 @@ namespace Milky.OsuPlayer.UiComponents.TextBlockComponent
             _textGeometry = null;
 
             return finalSize;
+        }
+
+        public Size FinalSize
+        {
+            get => _finalSize;
+            private set
+            {
+                if (Equals(_finalSize, value)) return;
+                _finalSize = value;
+                FinalSizeChanged?.Invoke(value);
+            }
         }
 
         private static void OnFormattedTextInvalidated(DependencyObject dependencyObject,

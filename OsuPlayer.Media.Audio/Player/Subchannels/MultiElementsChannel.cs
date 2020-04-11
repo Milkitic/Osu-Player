@@ -7,6 +7,7 @@ using OSharp.Beatmap.Sections.HitObject;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -20,6 +21,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         private readonly VariableStopwatch _sw = new VariableStopwatch();
 
         protected List<SoundElement> SoundElements;
+        public ReadOnlyCollection<SoundElement> SoundElementCollection => new ReadOnlyCollection<SoundElement>(SoundElements);
         protected readonly SingleMediaChannel ReferenceChannel;
         private ConcurrentQueue<SoundElement> _soundElementsQueue;
 
@@ -114,9 +116,9 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             }).ConfigureAwait(false);
 
 
-            await CachedSound.CreateCacheSounds(SoundElements
-                .Where(k => k.FilePath != null)
-                .Select(k => k.FilePath));
+            //await CachedSound.CreateCacheSounds(SoundElements
+            //    .Where(k => k.FilePath != null)
+            //    .Select(k => k.FilePath));
 
             await SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, AppSettings.Default.Play.PlayUseTempo)
                 .ConfigureAwait(false);
@@ -366,6 +368,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             if (SoundElements == null)
             {
                 SoundElements = new List<SoundElement>(await GetSoundElements().ConfigureAwait(false));
+                Duration = TimeSpan.FromMilliseconds(SoundElements.Count == 0 ? 0 : SoundElements.Max(k => k.Offset));
                 SoundElements.Sort(new SoundElementTimingComparer());
             }
 

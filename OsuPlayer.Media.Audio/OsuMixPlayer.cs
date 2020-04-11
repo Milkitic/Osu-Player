@@ -75,7 +75,14 @@ namespace Milky.OsuPlayer.Media.Audio
                 SampleChannel = new SampleChannel(this, _osuFile, _sourceFolder, Engine);
                 AddSubchannel(SampleChannel);
                 await SampleChannel.Initialize().ConfigureAwait(false);
-
+                await CachedSound.CreateCacheSounds(HitsoundChannel.SoundElementCollection
+                    .Where(k => k.FilePath != null)
+                    .Select(k => k.FilePath)
+                    .Concat(SampleChannel.SoundElementCollection
+                        .Where(k => k.FilePath != null)
+                        .Select(k => k.FilePath))
+                    .Concat(new[] { mp3Path })
+                ).ConfigureAwait(false);
                 foreach (var channel in Subchannels)
                 {
                     channel.PlayStatusChanged += status => Logger.Debug($"{channel.Description}: {status}");
@@ -96,7 +103,7 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             MusicChannel.Volume = AppSettings.Default.Volume.Music;
             HitsoundChannel.Volume = AppSettings.Default.Volume.Hitsound;
-            HitsoundChannel.BalanceFactor = AppSettings.Default.Volume.BalanceFactor;
+            HitsoundChannel.BalanceFactor = AppSettings.Default.Volume.BalanceFactor / 100;
             SampleChannel.Volume = AppSettings.Default.Volume.Sample;
             Volume = AppSettings.Default.Volume.Main;
             AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
@@ -113,7 +120,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     HitsoundChannel.Volume = AppSettings.Default.Volume.Hitsound;
                     break;
                 case nameof(AppSettings.Default.Volume.BalanceFactor):
-                    HitsoundChannel.BalanceFactor = AppSettings.Default.Volume.BalanceFactor;
+                    HitsoundChannel.BalanceFactor = AppSettings.Default.Volume.BalanceFactor / 100;
                     break;
                 case nameof(AppSettings.Default.Volume.Sample):
                     SampleChannel.Volume = AppSettings.Default.Volume.Sample;

@@ -62,7 +62,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                 PlaybackRate = PlaybackRate
             };
 
-            await CachedSound.CreateCacheSounds(new[] { _path }).ConfigureAwait(false);
+            //await CachedSound.CreateCacheSounds(new[] { _path }).ConfigureAwait(false);
 
             Duration = _fileReader.TotalTime;
 
@@ -103,8 +103,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                                 if (refOffset != _referenceOffset)
                                 {
                                     _referenceOffset = refOffset;
-                                    Logger.Debug("{0}: {1}: {2}", Description, nameof(_referenceOffset),
-                                        _referenceOffset);
+                                    //Logger.Debug("{0}: {1}: {2}", Description, nameof(_referenceOffset),
+                                    //    _referenceOffset);
                                 }
                             }
                         }

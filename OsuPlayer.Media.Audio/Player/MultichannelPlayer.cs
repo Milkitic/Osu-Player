@@ -76,21 +76,31 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             {
                 if (_outputDevice is WasapiOut wasapi)
                 {
-                    WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample > 24
-                        ? 24
-                        : wasapi.OutputWaveFormat.BitsPerSample;
+                    WaveFormatFactory.Bits = 16;
+                    //WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample > 24
+                    //    ? 24
+                    //    : wasapi.OutputWaveFormat.BitsPerSample;
                     WaveFormatFactory.Channels = wasapi.OutputWaveFormat.Channels;
                     WaveFormatFactory.SampleRate = wasapi.OutputWaveFormat.SampleRate;
                 }
                 else
                 {
-                    var wasInfo = (WasapiInfo)DeviceProvider.EnumerateAvailableDevices().First(k =>
-                        k.FriendlyName?.Contains(actualDeviceInfo.FriendlyName) == true && k is WasapiInfo);
-                    wasapi = new WasapiOut(wasInfo.Device, AudioClientShareMode.Shared, true,
-                        AppSettings.Default.Play.DesiredLatency);
-                    WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample > 24
-                        ? 24
-                        : wasapi.OutputWaveFormat.BitsPerSample;
+                    if (actualDeviceInfo is DirectSoundOutInfo dsoi && dsoi.DeviceGuid == Guid.Empty)
+                    {
+                        wasapi = new WasapiOut();
+                    }
+                    else
+                    {
+                        var wasInfo = (WasapiInfo)DeviceProvider.EnumerateAvailableDevices().First(k =>
+                            k.FriendlyName?.Contains(actualDeviceInfo.FriendlyName) == true && k is WasapiInfo);
+                        wasapi = new WasapiOut(wasInfo.Device, AudioClientShareMode.Shared, true,
+                            AppSettings.Default.Play.DesiredLatency);
+                    }
+
+                    WaveFormatFactory.Bits = 16;
+                    //WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample > 24
+                    //    ? 24
+                    //    : wasapi.OutputWaveFormat.BitsPerSample;
                     WaveFormatFactory.Channels = wasapi.OutputWaveFormat.Channels;
                     WaveFormatFactory.SampleRate = wasapi.OutputWaveFormat.SampleRate;
                 }
@@ -252,7 +262,11 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             }
 
             PlaybackRate = rate;
-            UseTempo = useTempo;
+            if (useTempo != UseTempo)
+            {
+                UseTempo = useTempo;
+                await SkipTo(Position);
+            }
         }
 
         public virtual async Task DisposeAsync()

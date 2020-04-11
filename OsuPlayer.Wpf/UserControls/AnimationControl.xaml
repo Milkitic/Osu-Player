@@ -81,10 +81,12 @@
                 BorderThickness="1">
                 <ffme:MediaElement
                     x:Name="VideoElement"
+                    IsMuted="True"
                     LoadedBehavior="Manual"
+                    MediaFailed="OnMediaFailed"
+                    MediaOpened="OnMediaOpened"
                     RenderOptions.BitmapScalingMode="HighQuality"
-                    RenderTransformOrigin="0.5,0.5"
-                    Stretch="Fill" />
+                    RenderTransformOrigin="0.5,0.5" />
                 <!--<Border.Effect>
                 <shaderEffects:ChromaticAberrationEffect OffsetB="0,0" OffsetR="-0,0" />
             </Border.Effect>-->

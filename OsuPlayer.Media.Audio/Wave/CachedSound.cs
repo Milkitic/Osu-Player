@@ -55,10 +55,17 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
 
         public static async Task CreateCacheSounds(IEnumerable<string> paths)
         {
-            foreach (var path in paths)
+            await Task.Run(() =>
             {
-                await CreateCacheSound(path, false).ConfigureAwait(false); // Cache each file once before play.
-            }
+                paths.AsParallel()
+                    .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
+                    .ForAll(k => CreateCacheSound(k, false).Wait());
+            });
+            
+            //foreach (var path in paths)
+            //{
+            //    await CreateCacheSound(path, false).ConfigureAwait(false); // Cache each file once before play.
+            //}
         }
 
         /// <summary>
