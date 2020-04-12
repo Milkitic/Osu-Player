@@ -467,7 +467,9 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             if (_player != null) await _player.DisposeAsync().ConfigureAwait(false);
             _readLock?.Dispose();
+            Logger.Debug($"Disposed {nameof(_readLock)}");
             _cts?.Dispose();
+            Logger.Debug($"Disposed {nameof(_cts)}");
         }
     }
 }

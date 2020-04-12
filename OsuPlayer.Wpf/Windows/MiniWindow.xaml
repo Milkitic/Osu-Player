@@ -16,22 +16,28 @@
     FontFamily="{StaticResource SspRegular}"
     FontSize="13"
     Loaded="Window_Loaded"
+    LocationChanged="WindowEx_LocationChanged"
+    MouseLeave="Window_MouseLeave"
+    MouseLeftButtonDown="Window_MouseLeftButtonDown"
+    MouseLeftButtonUp="Window_MouseLeftButtonUp"
+    MouseMove="Window_MouseMove"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
     Topmost="True"
     WindowStyle="None"
     mc:Ignorable="d">
-    <WindowChrome.WindowChrome>
+    <!--<WindowChrome.WindowChrome>
         <WindowChrome
             CaptionHeight="80"
             GlassFrameThickness="1"
             ResizeBorderThickness="4"
             UseAeroCaptionButtons="False" />
-    </WindowChrome.WindowChrome>
+    </WindowChrome.WindowChrome>-->
     <Grid Margin="10">
         <Border Background="#80FFFFFF">
             <Border.Effect>
                 <DropShadowEffect
+                    x:Name="DropShadowEffect"
                     BlurRadius="10"
                     Opacity="0.5"
                     ShadowDepth="0" />

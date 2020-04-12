@@ -271,14 +271,24 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public virtual async Task DisposeAsync()
         {
+            Logger.Debug($"Start to dispose.");
             await Stop();
+            Logger.Debug($"Disposing: Stopped.");
 
-            foreach (var subchannel in _subchannels.ToList()) await subchannel.DisposeAsync();
+            foreach (var subchannel in _subchannels.ToList())
+            {
+                await subchannel.DisposeAsync();
+                Logger.Debug($"Disposing: Disposed {subchannel.Description}.");
+            }
 
             _outputDevice?.Dispose();
+            Logger.Debug($"Disposing: Disposed {nameof(_outputDevice)}.");
             Engine?.Dispose();
+            Logger.Debug($"Disposing: Disposed {nameof(Engine)}.");
             _cts?.Dispose();
+            Logger.Debug($"Disposing: Disposed {nameof(_cts)}.");
             _playTask?.Dispose();
+            Logger.Debug($"Disposing: Disposed {nameof(_playTask)}.");
         }
 
         protected void AddSubchannel(Subchannel channel)

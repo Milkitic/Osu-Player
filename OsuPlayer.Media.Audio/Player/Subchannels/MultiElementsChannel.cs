@@ -404,10 +404,14 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override async Task DisposeAsync()
         {
-            await Stop();
+            await Stop(); 
+            Logger.Debug($"Disposing: Stopped.");
+
             _cts?.Dispose();
+            Logger.Debug($"Disposing: Disposed {nameof(_cts)}.");
 
             await base.DisposeAsync();
+            Logger.Debug($"Disposing: Disposed base.");
         }
     }
 }

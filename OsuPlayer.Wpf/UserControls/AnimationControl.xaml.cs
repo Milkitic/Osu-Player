@@ -40,6 +40,7 @@ namespace Milky.OsuPlayer.UserControls
         private double _videoOffset;
 
         private AnimationControlVm _viewModel;
+        private BeatmapContext _beatmapCtx;
 
         public AnimationControl()
         {
@@ -61,11 +62,43 @@ namespace Milky.OsuPlayer.UserControls
             _controller.LoadStarted += Controller_LoadStarted;
             _controller.BackgroundInfoLoaded += Controller_BackgroundInfoLoaded;
             _controller.VideoLoadRequested += Controller_VideoLoadRequested;
+            _controller.InterfaceClearRequest += Controller_InterfaceClearRequest;
+            _controller.LoadError += Controller_LoadError;
+
+            SharedVm.Default.PropertyChanged += Shared_PropertyChanged;
+            AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
         }
 
-        private async void Controller_LoadStarted(BeatmapContext arg1, CancellationToken arg2)
+        private void Controller_LoadError(BeatmapContext arg1, Exception arg2)
         {
-            await SafelyRecreateVideoElement(_viewModel.Player.EnableVideo);
+            _beatmapCtx = null;
+        }
+
+        private void Controller_InterfaceClearRequest()
+        {
+            _beatmapCtx = null;
+        }
+
+        private async void Shared_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(SharedVm.EnableVideo):
+                    if (_beatmapCtx == null) return;
+
+                    if (SharedVm.Default.EnableVideo)
+                        await InitVideoAsync(_beatmapCtx);
+                    else
+                        await CloseVideoAsync();
+
+                    break;
+            }
+        }
+
+        private async void Controller_LoadStarted(BeatmapContext beatmapCtx, CancellationToken ct)
+        {
+            _beatmapCtx = beatmapCtx;
+            await CloseVideoAsync();
 
             Execute.OnUiThread(() =>
             {
@@ -89,6 +122,102 @@ namespace Milky.OsuPlayer.UserControls
 
             if (!SharedVm.Default.EnableVideo) return;
 
+            await InitVideoAsync(beatmapCtx);
+        }
+
+        private async Task PlayVideo()
+        {
+            if (VideoElement.MediaState == MediaPlaybackState.Play)
+                return;
+            await VideoElement.Play();
+        }
+
+        private async Task PauseVideo()
+        {
+            if (VideoElement.MediaState != MediaPlaybackState.Play)
+                return;
+            await VideoElement.Pause();
+        }
+
+        private async Task StopVideo()
+        {
+            if (VideoElement.MediaState != MediaPlaybackState.Play)
+                return;
+            await VideoElement.Stop();
+        }
+
+        private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(AppSettings.Play.PlaybackRate))
+                VideoElement.SpeedRatio = AppSettings.Default.Play.PlaybackRate;
+        }
+
+        public bool IsBlur
+        {
+            get => (bool)GetValue(IsBlurProperty);
+            set => SetValue(IsBlurProperty, value);
+        }
+
+        public static readonly DependencyProperty IsBlurProperty =
+            DependencyProperty.Register("IsBlur",
+                typeof(bool),
+                typeof(AnimationControl),
+                new PropertyMetadata(false, OnBlurChanged));
+
+        private static void OnBlurChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(d is AnimationControl @this && e.NewValue is bool useEffect)) return;
+            var effect = @this.Effect as BlurEffect;
+            if ((AppSettings.Default.Interface.MinimalMode || !useEffect))
+            {
+                if (effect != null) effect.Radius = 0;
+                @this.Effect = null;
+            }
+            else
+            {
+                if (effect != null) effect.Radius = 30;
+                else @this.Effect = new BlurEffect { Radius = 30 };
+            }
+        }
+
+        private async Task CloseVideoAsync()
+        {
+            await VideoElement.Stop();
+            await VideoElement.Close();
+
+            _beatmapCtx.PlayHandle = async () => await _controller.Player.Play().ConfigureAwait(false);
+            _beatmapCtx.PauseHandle = async () => await _controller.Player.Pause().ConfigureAwait(false);
+            _beatmapCtx.StopHandle = async () => await _controller.Player.Stop().ConfigureAwait(false);
+            _beatmapCtx.RestartHandle = async () =>
+            {
+                await _beatmapCtx.StopHandle().ConfigureAwait(false);
+                await _beatmapCtx.PlayHandle().ConfigureAwait(false);
+            };
+            _beatmapCtx.TogglePlayHandle = async () =>
+            {
+                if (_controller.Player.PlayStatus == PlayStatus.Ready ||
+                    _controller.Player.PlayStatus == PlayStatus.Finished ||
+                    _controller.Player.PlayStatus == PlayStatus.Paused)
+                {
+                    await _beatmapCtx.PlayHandle().ConfigureAwait(false);
+                }
+                else if (_controller.Player.PlayStatus == PlayStatus.Playing)
+                {
+                    await _beatmapCtx.PauseHandle().ConfigureAwait(false);
+                }
+            };
+
+            _beatmapCtx.SetTimeHandle = async (time, play) =>
+                await _controller.Player.SkipTo(TimeSpan.FromMilliseconds(time)).ConfigureAwait(false);
+
+            Execute.OnUiThread(() =>
+            {
+                VideoElementBorder.Visibility = Visibility.Hidden;
+                VideoElement.SpeedRatio = AppSettings.Default.Play.PlaybackRate;
+            });
+        }
+        private async Task InitVideoAsync(BeatmapContext beatmapCtx)
+        {
             _videoOffset = -(beatmapCtx.OsuFile.Events.VideoInfo.Offset);
             if (_videoOffset >= 0)
             {
@@ -164,6 +293,7 @@ namespace Milky.OsuPlayer.UserControls
                 await _controller.Player.SkipTo(VideoElement.Position - TimeSpan.FromMilliseconds(_videoOffset));
 
                 Logger.Warn("SetTime Done");
+
                 async void OnVideoElementOnSeekingEnded(object sender, EventArgs e)
                 {
                     waitForSeek = false;
@@ -179,80 +309,8 @@ namespace Milky.OsuPlayer.UserControls
                     }
                 }
             };
-
-            AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
         }
 
-        private async Task PlayVideo()
-        {
-            if (VideoElement.MediaState == MediaPlaybackState.Play)
-                return;
-            await VideoElement.Play();
-        }
-
-        private async Task PauseVideo()
-        {
-            if (VideoElement.MediaState != MediaPlaybackState.Play)
-                return;
-            await VideoElement.Pause();
-        }
-
-        private async Task StopVideo()
-        {
-            if (VideoElement.MediaState != MediaPlaybackState.Play)
-                return;
-            await VideoElement.Stop();
-        }
-
-        private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(AppSettings.Play.PlaybackRate))
-                VideoElement.SpeedRatio = AppSettings.Default.Play.PlaybackRate;
-        }
-
-        public bool IsBlur
-        {
-            get => (bool)GetValue(IsBlurProperty);
-            set => SetValue(IsBlurProperty, value);
-        }
-
-        public static readonly DependencyProperty IsBlurProperty =
-            DependencyProperty.Register("IsBlur",
-                typeof(bool),
-                typeof(AnimationControl),
-                new PropertyMetadata(false, OnBlurChanged));
-
-        private static void OnBlurChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (!(d is AnimationControl @this && e.NewValue is bool useEffect)) return;
-            var effect = @this.Effect as BlurEffect;
-            if ((AppSettings.Default.Interface.MinimalMode || !useEffect))
-            {
-                if (effect != null) effect.Radius = 0;
-                @this.Effect = null;
-            }
-            else
-            {
-                if (effect != null) effect.Radius = 30;
-                else @this.Effect = new BlurEffect { Radius = 30 };
-            }
-        }
-
-        private async Task SafelyRecreateVideoElement(bool showVideo)
-        {
-            await VideoElement.Stop();
-            await VideoElement.Close();
-
-            Execute.OnUiThread(() =>
-            {
-                //VideoElement.MediaOpened -= OnMediaOpened;
-                //VideoElement.MediaFailed -= OnMediaFailed;
-                VideoElementBorder.Visibility = Visibility.Hidden;
-                VideoElement.SpeedRatio = AppSettings.Default.Play.PlaybackRate;
-                //VideoElement.MediaOpened += OnMediaOpened;
-                //VideoElement.MediaFailed += OnMediaFailed;
-            });
-        }
 
         private async void OnMediaOpened(object sender, MediaOpenedEventArgs e)
         {
@@ -273,7 +331,7 @@ namespace Milky.OsuPlayer.UserControls
             Logger.Error(e.ErrorException, "Error while loading video");
             Notification.Push("不支持的视频格式");
             if (!SharedVm.Default.EnableVideo) return;
-            await SafelyRecreateVideoElement(false);
+            await CloseVideoAsync();
             await _controller.Player.TogglePlay();
         }
     }

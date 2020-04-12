@@ -143,12 +143,28 @@ namespace Milky.OsuPlayer.UserControls
 
         private void UserControl_MouseEnter(object sender, MouseEventArgs e)
         {
-            Bg.Visibility = Visibility.Visible;
+            OsuBg.Visibility = Visibility.Visible;
         }
 
         private void UserControl_MouseLeave(object sender, MouseEventArgs e)
         {
-            Bg.Visibility = Visibility.Hidden;
+            OsuBg.Visibility = Visibility.Hidden;
+        }
+
+        private void BgRetc_MouseMove(object sender, MouseEventArgs e)
+        {
+            //OsuBg.Opacity = 0;
+            //RectCover.Opacity = 0.8;
+            //BgBorder.Opacity = 1;
+            //BlurEffect.Radius = 0;
+        }
+
+        private void BgRetc_MouseLeave(object sender, MouseEventArgs e)
+        {
+            //OsuBg.Opacity = 1;
+            //RectCover.Opacity = 1;
+            //BgBorder.Opacity = 0;
+            //BlurEffect.Radius = 20;
         }
     }
 }

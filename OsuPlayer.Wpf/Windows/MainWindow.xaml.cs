@@ -67,10 +67,10 @@ namespace Milky.OsuPlayer.Windows
             MiniPlayController.MaxButtonClicked += () =>
             {
                 Topmost = true;
-                Topmost = false;
                 Show();
                 SharedVm.Default.EnableVideo = true;
                 GetCurrentFirst<MiniWindow>()?.Close();
+                Topmost = false;
             };
             TryBindHotKeys();
         }
