@@ -223,7 +223,7 @@
         </StackPanel>
         <TextBlock
             Grid.Row="1"
-            Margin="0,0,0,3"
+            Margin="8,0,8,3"
             HorizontalAlignment="Center"
             Foreground="#303030">
             <Run Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.TitleAuto, Mode=OneWay}" />

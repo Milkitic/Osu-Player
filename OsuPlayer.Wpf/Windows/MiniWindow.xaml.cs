@@ -2,12 +2,15 @@
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
 using System;
+using System.Drawing;
 using System.Threading;
 using System.Windows;
-using System.Windows.Interop;
+using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Milky.OsuPlayer.Common;
+using Timer = System.Threading.Timer;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -17,29 +20,47 @@ namespace Milky.OsuPlayer.Windows
     public partial class MiniWindow : WindowEx
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        
+        private event Action<bool> StickChanged;
 
         private double _screenWidth;
         private double _screenHeight;
-        private bool _stick;
 
+        private Rectangle _currentArea;
+        private bool _isStickEnabled;
         private bool _isShowing;
+        private static bool _mouseDown;
 
-        public bool Stick
+        private readonly double _stickAutoWidth = 4;
+        private readonly double _stickWidth = 5;
+        private Timer _frameTimer;
+        private Storyboard _sb;
+        
+        private double WindowMargin => MainGrid.Margin.Left;
+
+        private double Right
         {
-            get => _stick;
-            private set
+            get => Left + ActualWidth;
+            set => Left = value - ActualWidth;
+        }
+
+        private double Bottom
+        {
+            get => Top + ActualHeight;
+            set => Top = value - ActualHeight;
+        }
+
+        private bool IsStickEnabled
+        {
+            get => _isStickEnabled;
+            set
             {
-                if (Equals(_stick, value)) return;
-                _stick = value;
+                if (Equals(_isStickEnabled, value)) return;
+                _isStickEnabled = value;
                 StickChanged?.Invoke(value);
                 Logger.Debug("StickChanged Invoked: {0}", value);
             }
         }
-
-        private static bool _mouseDown;
-        private Timer _frameTimer;
-        private Storyboard _sb;
-        private event Action<bool> StickChanged;
 
         public MiniWindow()
         {
@@ -49,10 +70,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void MiniWindow_StickChanged(bool stick)
         {
-            if (stick)
-            {
-                DelayToHide();
-            }
+            if (stick) DelayToHide();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -67,7 +85,7 @@ namespace Milky.OsuPlayer.Windows
                 Top = s[1];
                 if (Left > _screenWidth - ActualWidth || Left < 0)
                 {
-                    Stick = true;
+                    IsStickEnabled = true;
                 }
             }
             else
@@ -75,53 +93,62 @@ namespace Milky.OsuPlayer.Windows
                 Left = _screenWidth - ActualWidth - 20;
                 Top = _screenHeight - ActualHeight - 100;
             }
-
-            //var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
-            //source?.AddHook(WndProc);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            AppSettings.Default.General.MiniPosition = new[] { Left, Top };
-            AppSettings.SaveDefault();
         }
 
-        private void WindowEx_LocationChanged(object sender, EventArgs e)
+        private System.Windows.Point GetMousePos()
+        {
+            return PointToScreen(Mouse.GetPosition(this));
+        }
+
+        private void Window_LocationChanged(object sender, EventArgs e)
         {
             if (!_mouseDown) return;
+            var mousePos = GetMousePos();
+            var old = _currentArea;
+            _currentArea = Screen.GetWorkingArea(new System.Drawing.Point((int)mousePos.X, (int)mousePos.Y));
+            if (old != _currentArea)
+                Console.WriteLine(_currentArea.ToString());
             _sb?.Stop();
-            if (Left >= _screenWidth - ActualWidth + 8)
+            if (Right >= _currentArea.Right + WindowMargin - _stickAutoWidth &&
+                Right <= _currentArea.Right + WindowMargin + _stickAutoWidth)
             {
-                Left = _screenWidth - ActualWidth + 10;
-                Stick = true;
+                Right = _currentArea.Right + WindowMargin;
+                IsStickEnabled = true;
                 Logger.Debug("Auto Changed Location");
             }
-            else if (Left <= -8)
+            else if (Left <= _currentArea.Left - WindowMargin + _stickAutoWidth &&
+                     Left >= _currentArea.Left - WindowMargin - _stickAutoWidth)
             {
-                Left = -10;
-                Stick = true;
+                Left = _currentArea.Left - WindowMargin;
+                IsStickEnabled = true;
                 Logger.Debug("Auto Changed Location");
             }
             else
             {
-                Stick = false;
+                IsStickEnabled = false;
             }
 
-            if (Top >= _screenHeight - ActualHeight + 10)
+            if (Bottom >= _currentArea.Bottom + WindowMargin - _stickAutoWidth &&
+                Bottom <= _currentArea.Bottom + WindowMargin + _stickAutoWidth)
             {
-                Top = _screenHeight - ActualHeight + 10;
+                Top = _currentArea.Bottom - ActualHeight + WindowMargin;
                 Logger.Debug("Auto Changed Location");
             }
-            else if (Top <= -10)
+            else if (Top <= _currentArea.Top - WindowMargin + _stickAutoWidth &&
+                     Top >= _currentArea.Top - WindowMargin - _stickAutoWidth)
             {
-                Top = -10;
+                Top = _currentArea.Top - WindowMargin;
                 Logger.Debug("Auto Changed Location");
             }
         }
 
         private void Window_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            if (!Stick) return;
+            if (!IsStickEnabled) return;
             if (_isShowing) return;
 
             Logger.Debug("Called Control_MouseMove()");
@@ -134,7 +161,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void Window_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            if (!Stick) return;
+            if (!IsStickEnabled) return;
             if (!_isShowing) return;
             _isShowing = false;
 
@@ -142,18 +169,48 @@ namespace Milky.OsuPlayer.Windows
             DelayToHide();
         }
 
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _mouseDown = true;
+            Logger.Debug("_mouseDown is TRUE");
+            DragMove();
+            e.Handled = true;
+        }
+
+        private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            AppSettings.Default.General.MiniPosition = new[] {Left, Top};
+            AppSettings.SaveDefault();
+
+            _mouseDown = false;
+            Logger.Debug("_mouseDown is FALSE");
+            e.Handled = true;
+        }
+
         private void ShowFromBound()
         {
             Logger.Debug("Called ShowFromBound()");
-            if (Left >= _screenWidth - ActualWidth)
+            if (Right >= _currentArea.Right)
             {
-                CreateStoryboard(_screenWidth - ActualWidth + 10, EasingMode.EaseOut, false);
-
+                CreateStoryboard(_currentArea.Right - ActualWidth + WindowMargin, EasingMode.EaseOut, false);
             }
-            else if (Left <= -10)
+            else if (Left <= _currentArea.Left - WindowMargin)
             {
-                CreateStoryboard(-10, EasingMode.EaseOut, false);
-                //Left = -10;
+                CreateStoryboard(_currentArea.Left - WindowMargin, EasingMode.EaseOut, false);
+            }
+        }
+
+        private void HideToBound()
+        {
+            Logger.Debug("Called HideToBound()");
+            if (Right >= _currentArea.Right)
+            {
+                CreateStoryboard(_currentArea.Right - _stickWidth - WindowMargin, EasingMode.EaseInOut, true);
+            }
+            else if (Left <= _currentArea.Left - WindowMargin)
+            {
+                CreateStoryboard(_currentArea.Left - ActualWidth + _stickWidth + WindowMargin, EasingMode.EaseInOut,
+                    true);
             }
         }
 
@@ -163,7 +220,7 @@ namespace Milky.OsuPlayer.Windows
             _sb = new Storyboard();
             var da = new DoubleAnimation(toValue, CommonUtils.GetDuration(TimeSpan.FromMilliseconds(800)))
             {
-                EasingFunction = new QuarticEase { EasingMode = easingMode }
+                EasingFunction = new QuarticEase {EasingMode = easingMode}
             };
             Storyboard.SetTargetProperty(da, new PropertyPath(LeftProperty));
             Storyboard.SetTarget(da, this);
@@ -178,19 +235,6 @@ namespace Milky.OsuPlayer.Windows
             _sb.Begin();
         }
 
-        private void HideToBound()
-        {
-            Logger.Debug("Called HideToBound()");
-            if (Left >= _screenWidth - ActualWidth)
-            {
-                CreateStoryboard(_screenWidth - 5 - 10, EasingMode.EaseInOut, true);
-            }
-            else if (Left <= -10)
-            {
-                CreateStoryboard(-ActualWidth + 5 + 10, EasingMode.EaseInOut, true);
-            }
-        }
-
         private void StopHiding()
         {
             Logger.Debug("Called StopHiding()");
@@ -203,41 +247,6 @@ namespace Milky.OsuPlayer.Windows
             StopHiding();
             _frameTimer = new Timer(state => Execute.OnUiThread(HideToBound),
                 null, 1500, Timeout.Infinite);
-        }
-
-        private const int WM_NCLBUTTONDOWN = 0x00A1;
-        private const int WM_NCLBUTTONUP = 0x00A2;
-
-        private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            switch (msg)
-            {
-                case WM_NCLBUTTONDOWN:
-                    _mouseDown = true;
-                    Logger.Debug("_mouseDown is TRUE");
-                    break;
-                case WM_NCLBUTTONUP:
-                    _mouseDown = false;
-                    Logger.Debug("_mouseDown is FALSE");
-                    break;
-            }
-
-            return IntPtr.Zero;
-        }
-
-        private void Window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            _mouseDown = true;
-            Logger.Debug("_mouseDown is TRUE");
-            this.DragMove();
-            e.Handled = true;
-        }
-
-        private void Window_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            _mouseDown = false;
-            Logger.Debug("_mouseDown is FALSE");
-            e.Handled = true;
         }
     }
 }

@@ -194,27 +194,6 @@ namespace Milky.OsuPlayer.Pages
             PlaySelected();
         }
 
-        private void ItemPlay_Click(object sender, RoutedEventArgs e)
-        {
-            PlaySelected();
-        }
-
-        private async void ItemDelete_Click(object sender, RoutedEventArgs e)
-        {
-            if (RecentList.SelectedItem == null)
-                return;
-            var selected = RecentList.SelectedItems;
-            var entries = ConvertToEntries(selected.Cast<BeatmapDataModel>());
-            //var searchInfo = (BeatmapDataModel)RecentList.SelectedItem;
-            foreach (var entry in entries)
-            {
-                _appDbOperator.RemoveFromRecent(entry.GetIdentity());
-            }
-
-            UpdateList();
-            //await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.RecentList);
-        }
-
         private void BtnDelAll_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show(_mainWindow, "真的要删除全部吗？", _mainWindow.Title, MessageBoxButton.YesNo,
@@ -229,66 +208,6 @@ namespace Milky.OsuPlayer.Pages
         private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {
             await _controller.PlayList.SetSongListAsync(_recentBeatmaps, true);
-        }
-
-        private void ItemCollect_Click(object sender, RoutedEventArgs e)
-        {
-            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(GetSelected()),
-                DialogOptionFactory.SelectCollectionOptions);
-        }
-
-        private void ItemExport_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelected();
-            if (map == null) return;
-            ExportPage.QueueEntry(map);
-        }
-
-        private void ItemSearchSource_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelected();
-            if (map == null) return;
-            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.SongSource));
-        }
-
-        private void ItemSearchMapper_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelected();
-            if (map == null) return;
-            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.Creator));
-        }
-
-        private void ItemSearchArtist_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelected();
-            if (map == null) return;
-            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoArtist));
-        }
-
-        private void ItemSearchTitle_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelected();
-            if (map == null) return;
-            _mainWindow.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(map.AutoTitle));
-        }
-
-        private void ItemSet_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelected();
-            Process.Start($"https://osu.ppy.sh/b/{map.BeatmapId}");
-        }
-
-        private void ItemFolder_Click(object sender, RoutedEventArgs e)
-        {
-            var map = GetSelected();
-            var folder = map.GetFolder(out _, out _);
-            if (!Directory.Exists(folder))
-            {
-                Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
-                return;
-            }
-
-            Process.Start(folder);
         }
 
         private async void PlaySelected()

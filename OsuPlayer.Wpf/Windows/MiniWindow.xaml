@@ -16,7 +16,7 @@
     FontFamily="{StaticResource SspRegular}"
     FontSize="13"
     Loaded="Window_Loaded"
-    LocationChanged="WindowEx_LocationChanged"
+    LocationChanged="Window_LocationChanged"
     MouseLeave="Window_MouseLeave"
     MouseLeftButtonDown="Window_MouseLeftButtonDown"
     MouseLeftButtonUp="Window_MouseLeftButtonUp"
@@ -33,7 +33,7 @@
             ResizeBorderThickness="4"
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>-->
-    <Grid Margin="10">
+    <Grid Margin="10" x:Name="MainGrid">
         <Border Background="#80FFFFFF">
             <Border.Effect>
                 <DropShadowEffect
