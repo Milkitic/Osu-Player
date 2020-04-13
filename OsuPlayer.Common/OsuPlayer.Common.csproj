@@ -80,12 +80,12 @@
     <Compile Include="BeatmapDataModel.cs" />
     <Compile Include="BeatmapDataModelExt.cs" />
     <Compile Include="Configuration\AppSettings.cs" />
-    <Compile Include="Configuration\ExportControl.cs" />
-    <Compile Include="Configuration\GeneralControl.cs" />
+    <Compile Include="Configuration\ExportSection.cs" />
+    <Compile Include="Configuration\GeneralSection.cs" />
     <Compile Include="Configuration\HotKey.cs" />
-    <Compile Include="Configuration\LyricControl.cs" />
-    <Compile Include="Configuration\PlayControl.cs" />
-    <Compile Include="Configuration\VolumeControl.cs" />
+    <Compile Include="Configuration\LyricSection.cs" />
+    <Compile Include="Configuration\PlaySection.cs" />
+    <Compile Include="Configuration\VolumeSection.cs" />
     <Compile Include="DataModelComparer.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="IdentifiableExtension.cs" />

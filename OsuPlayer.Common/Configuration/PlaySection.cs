@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
-    public class PlayControl : INotifyPropertyChanged
+    public class PlaySection : INotifyPropertyChanged
     {
         private bool _playUseTempo;
         private float _playbackRate = 1;

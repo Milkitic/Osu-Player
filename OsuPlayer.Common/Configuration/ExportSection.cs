@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
-    public class ExportControl
+    public class ExportSection
     {
         public string MusicPath { get; set; } = Domain.MusicPath;
         public string BgPath { get; set; } = Domain.BackgroundPath;

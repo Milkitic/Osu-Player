@@ -2,7 +2,7 @@
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
-    public class LyricControl
+    public class LyricSection
     {
         public bool EnableLyric { get; set; } = true;
         public LyricSource LyricSource { get; set; } = LyricSource.Auto;

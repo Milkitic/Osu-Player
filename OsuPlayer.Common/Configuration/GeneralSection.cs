@@ -4,7 +4,7 @@ using Milky.OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
-    public class GeneralControl
+    public class GeneralSection
     {
         public bool RunOnStartup { get; set; } = false;
         public string DbPath { get; set; }
@@ -14,7 +14,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         public double[] MiniPosition { get; set; }
     }
 
-    public class InterfaceControl : VmBase
+    public class InterfaceSection : VmBase
     {
         private bool _minimalMode;
 

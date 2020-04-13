@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
-    public class VolumeControl : INotifyPropertyChanged
+    public class VolumeSection : INotifyPropertyChanged
     {
         private float _main = 0.8f;
         private float _bgm = 1;
