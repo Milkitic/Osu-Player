@@ -1,0 +1,350 @@
+﻿<UserControl
+    x:Class="Milky.OsuPlayer.UserControls.PlayController"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
+    xmlns:converters="clr-namespace:Milky.OsuPlayer.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:userControls="clr-namespace:Milky.OsuPlayer.UserControls"
+    d:DesignHeight="46"
+    d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
+    Initialized="UserControl_Initialized"
+    mc:Ignorable="d">
+    <UserControl.DataContext>
+        <userControls:PlayControllerVm />
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <converters:MsToStringConverter x:Key="MsToStringConverter" />
+        <Style x:Key="FullScrButton" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid>
+                            <ContentPresenter />
+                            <Border
+                                x:Name="FullScr"
+                                Background="#40000000"
+                                Opacity="0">
+                                <Viewbox
+                                    Width="30"
+                                    Height="30"
+                                    Stretch="Uniform">
+                                    <Canvas Width="1000" Height="1000">
+                                        <Path Fill="{StaticResource ExtraLightBrushF0}">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M602.1 500l226.5 226.5l91.9-91.9c11.5-12.1 29.4-15.3 44.7-8.9c14.7 6.4 24.9 21.1 24.9 37.6v285.8c0 22.3-18.5 40.8-40.8 40.8H663.3c-16.6 0-31.3-10.2-37.6-25.5c-6.4-14.7-3.2-32.5 8.9-44l91.9-91.9L500 602.1L273.5 828.6l91.9 91.9c12.1 11.5 15.3 29.4 8.9 44c-6.4 15.3-21.1 25.5-37.6 25.5H50.8C28.5 990 10 971.5 10 949.2V663.3c0-16.6 10.2-31.3 25.5-37.6c14.7-6.4 32.5-3.2 44 8.9l91.9 91.9L397.9 500L171.4 273.5l-91.9 91.9c-7.7 7.7-17.9 12.1-28.7 12.1c-5.1 0-10.8-1.3-15.3-3.2C20.2 367.9 10 353.3 10 336.7V50.8C10 28.5 28.5 10 50.8 10h285.8c16.6 0 31.3 10.2 37.6 25.5c6.4 14.7 3.2 32.5-8.9 44l-91.9 91.9L500 397.9l226.5-226.5l-91.9-91.9c-12.1-11.5-15.3-29.3-8.9-44c6.4-15.3 21.1-25.5 37.6-25.5h285.8c22.3 0 40.8 18.5 40.8 40.8v285.8c0 16.6-10.2 31.3-24.9 37.6c-5.1 1.9-10.8 3.2-16 3.2c-10.8 0-21.1-4.5-28.7-12.1l-91.9-91.9L602.1 500z" FillRule="NonZero" />
+                                            </Path.Data>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="FullScr" Property="Opacity" Value="1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style
+            x:Key="ControlButton"
+            BasedOn="{StaticResource {x:Type buttonComponent:CommonButton}}"
+            TargetType="buttonComponent:CommonButton">
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Background" Value="{StaticResource TextureBrush}" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="CornerRadius" Value="7" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="MouseDownForeground" Value="White" />
+            <Setter Property="MouseOverForeground" Value="White" />
+            <Setter Property="ShadowOpacity" Value="0.2" />
+            <Setter Property="IconMargin" Value="0" />
+            <Setter Property="Margin" Value="8" />
+            <Setter Property="IconSize" Value="24" />
+            <Setter Property="MouseOverBackground">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Offset="0" Color="#F05090" />
+                        <GradientStop Offset="1" Color="#E05888" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="MouseDownBackground">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Offset="0" Color="#E04070" />
+                        <GradientStop Offset="1" Color="#F05090" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style
+            x:Key="InvisibleButton"
+            BasedOn="{StaticResource {x:Type buttonComponent:CommonButton}}"
+            TargetType="buttonComponent:CommonButton">
+            <Setter Property="Height" Value="Auto" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="MouseOverBackground" Value="#80F8F8F8" />
+            <Setter Property="MouseDownBackground" Value="#80E8E8E8" />
+            <Setter Property="IconMargin" Value="0" />
+        </Style>
+    </UserControl.Resources>
+    <Grid x:Name="ToolControl" Background="{StaticResource TextureBrush3}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MaxWidth="65" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Button
+            x:Name="ThumbButton"
+            MinWidth="61"
+            MinHeight="46"
+            MaxWidth="61"
+            MaxHeight="46"
+            Margin="1"
+            Click="ThumbButton_Click"
+            Style="{StaticResource FullScrButton}">
+            <Image
+                x:Name="Thumb"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                RenderOptions.BitmapScalingMode="HighQuality"
+                Stretch="UniformToFill" />
+        </Button>
+        <StackPanel
+            Grid.Column="1"
+            Margin="10,0,10,0"
+            Orientation="Horizontal">
+            <buttonComponent:CommonButton
+                Click="PrevButton_Click"
+                IconTemplate="{StaticResource PrevTempl}"
+                Style="{StaticResource ControlButton}" />
+            <buttonComponent:CommonButton
+                Width="32"
+                Height="32"
+                Click="BtnPlay_Click">
+                <buttonComponent:CommonButton.IconTemplate>
+                    <MultiBinding Converter="{StaticResource PlayingConverter}">
+                        <Binding Path="Shared.IsPlaying" />
+                        <Binding RelativeSource="{RelativeSource Self}" />
+                    </MultiBinding>
+                </buttonComponent:CommonButton.IconTemplate>
+                <Button.Style>
+                    <Style BasedOn="{StaticResource ControlButton}" TargetType="buttonComponent:CommonButton">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Shared.IsPlaying}" Value="True">
+                                <Setter Property="IconSize" Value="16" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Shared.IsPlaying}" Value="False">
+                                <Setter Property="IconSize" Value="20" />
+                                <Setter Property="IconMargin" Value="2,0,0,0" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </buttonComponent:CommonButton>
+            <buttonComponent:CommonButton
+                Click="NextButton_Click"
+                IconTemplate="{StaticResource NextTempl}"
+                Style="{StaticResource ControlButton}" />
+            <buttonComponent:CommonButton
+                Background="{StaticResource OsuTextureBlueBrush}"
+                Click="OpenButton_Click"
+                CornerRadius="14"
+                IconTemplate="{StaticResource OpenTempl}"
+                ShadowColor="#5d9cec"
+                Style="{StaticResource ControlButton}">
+                <buttonComponent:CommonButton.MouseDownBackground>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Offset="0" Color="#3d7ccc" />
+                        <GradientStop Offset="1" Color="#4d8cdc" />
+                    </LinearGradientBrush>
+                </buttonComponent:CommonButton.MouseDownBackground>
+                <buttonComponent:CommonButton.MouseOverBackground>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Offset="0" Color="#5d9cec" />
+                        <GradientStop Offset="1" Color="#4d8cdc" />
+                    </LinearGradientBrush>
+                </buttonComponent:CommonButton.MouseOverBackground>
+            </buttonComponent:CommonButton>
+        </StackPanel>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid
+                x:Name="LblMeta"
+                Grid.Row="0"
+                Margin="0,1,0,-3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <buttonComponent:CommonButton
+                    Margin="3,0"
+                    Padding="0"
+                    Click="TitleArtist_Click"
+                    Style="{StaticResource InvisibleButton}">
+                    <TextBlock>
+                        <Run Foreground="#777" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.TitleAuto, Mode=OneWay}" />
+                        <Run Text="-" />
+                        <Run Foreground="#AAA" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.ArtistAuto, Mode=OneWay}" />
+                    </TextBlock>
+                </buttonComponent:CommonButton>
+                <buttonComponent:CommonButton
+                    x:Name="BtnAsio"
+                    Grid.Column="1"
+                    Height="20"
+                    Margin="3,0"
+                    Padding="4,0"
+                    HorizontalAlignment="Right"
+                    Click="BtnAsio_OnClick"
+                    IconSize="45"
+                    IconTemplate="{StaticResource AsioTempl}"
+                    SnapsToDevicePixels="False"
+                    Style="{StaticResource InvisibleButton}"
+                    Visibility="Collapsed">
+                    <buttonComponent:CommonButton.Foreground>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <LinearGradientBrush.GradientStops>
+                                <GradientStop Offset="0" Color="#646464" />
+                                <GradientStop Offset="1" Color="#484848" />
+                            </LinearGradientBrush.GradientStops>
+                        </LinearGradientBrush>
+                    </buttonComponent:CommonButton.Foreground>
+                </buttonComponent:CommonButton>
+                <StackPanel
+                    x:Name="LblProgress"
+                    Grid.Column="2"
+                    Orientation="Horizontal">
+                    <Label x:Name="LblNow" Foreground="#777" />
+                    <Label
+                        Margin="-5,0,-5,0"
+                        Content="/"
+                        Foreground="#858585" />
+                    <Label x:Name="LblTotal" Foreground="#AAA" />
+                </StackPanel>
+            </Grid>
+            <Slider
+                x:Name="PlayProgress"
+                Grid.Row="1"
+                Margin="3"
+                Minimum="0"
+                Style="{StaticResource HorizontalSliderPinkStyle}"
+                Thumb.DragCompleted="PlayProgress_DragCompleted"
+                Thumb.DragStarted="PlayProgress_DragStarted" />
+        </Grid>
+        <Grid Grid.Column="3">
+            <StackPanel
+                x:Name="FuncPanel"
+                Margin="10,0,10,0"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal">
+                    <buttonComponent:CommonButton
+                        x:Name="ModeButton"
+                        Width="24"
+                        Height="24"
+                        Margin="8"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Click="ModeButton_Click"
+                        IconMargin="0"
+                        IconSize="25"
+                        IconTemplate="{Binding Controller.PlayList.Mode, Converter={StaticResource PlayModeConverter}}"
+                        MouseOverBackground="Transparent"
+                        WindowChrome.IsHitTestVisibleInChrome="True" />
+                    <buttonComponent:CommonButton
+                        Width="23"
+                        Height="23"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Click="LikeButton_Click"
+                        IconMargin="0"
+                        IconSize="24"
+                        IconTemplate="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}"
+                        MouseOverBackground="Transparent" />
+                    <buttonComponent:CommonButton
+                        x:Name="VolumeButton"
+                        Width="23"
+                        Height="23"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        BorderThickness="0"
+                        Click="VolumeButton_Click"
+                        IconMargin="0"
+                        IconSize="20"
+                        IconTemplate="{StaticResource VolumeTempl}" />
+                    <buttonComponent:CommonButton
+                        x:Name="PlayListButton"
+                        Width="23"
+                        Height="23"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        BorderThickness="0"
+                        Click="PlayListButton_Click"
+                        IconMargin="0"
+                        IconSize="18"
+                        IconTemplate="{StaticResource PlayListTempl}" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        <Popup
+            x:Name="PopMode"
+            Grid.Row="0"
+            Grid.Column="0"
+            Width="110"
+            AllowsTransparency="True"
+            HorizontalOffset="-44"
+            Placement="Top"
+            PlacementTarget="{Binding ElementName=ModeButton}"
+            PopupAnimation="Fade"
+            StaysOpen="False">
+            <userControls:PlayModeControl x:Name="PlayModeControl" />
+        </Popup>
+        <Popup
+            x:Name="PopPlayList"
+            Grid.Row="0"
+            Grid.Column="0"
+            Width="600"
+            Height="500"
+            AllowsTransparency="True"
+            HorizontalOffset="-570"
+            Placement="Top"
+            PlacementTarget="{Binding ElementName=PlayListButton}"
+            PopupAnimation="Fade"
+            StaysOpen="False">
+            <userControls:PlayListControl CloseRequested="PlayListControl_CloseRequested" />
+        </Popup>
+        <Popup
+            x:Name="Pop"
+            Grid.Row="0"
+            Grid.Column="0"
+            MinWidth="170"
+            AllowsTransparency="True"
+            Placement="Top"
+            PlacementTarget="{Binding ElementName=VolumeButton}"
+            PopupAnimation="Fade"
+            StaysOpen="False">
+            <userControls:VolumeControl x:Name="VolumeControl" />
+        </Popup>
+    </Grid>
+</UserControl>

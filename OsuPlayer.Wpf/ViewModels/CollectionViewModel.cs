@@ -1,20 +1,17 @@
-﻿using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Pages;
-using Milky.WpfApi;
-using Milky.WpfApi.Commands;
+﻿using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.UserControls;
+using Milky.OsuPlayer.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-using Milky.OsuPlayer.Control;
-using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    public class CollectionViewModel : ViewModelBase
+    public class CollectionViewModel : VmBase
     {
-        private AppDbOperator _appDbOperator = new AppDbOperator();
+        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
 
         public string Id { get; set; }
         public string Name { get; set; }
@@ -31,7 +28,8 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(async obj =>
                 {
                     var entries = (IList<Beatmap>)obj;
-                    var col = _appDbOperator.GetCollectionById(Id);
+                    var col = SafeDbOperator.GetCollectionById(Id);
+                    if (col == null) return;
                     await SelectCollectionControl.AddToCollectionAsync(col, entries);
                 });
             }

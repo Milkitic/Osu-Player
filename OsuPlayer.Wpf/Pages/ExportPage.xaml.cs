@@ -1,7 +1,9 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Metadata;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Shared.Models;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap;
@@ -13,7 +15,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common.Data.EF.Model;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer.Pages
@@ -23,10 +24,12 @@ namespace Milky.OsuPlayer.Pages
     /// </summary>
     public partial class ExportPage : Page
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         //Page view model
         private static bool _hasTaskSuccess;
         private readonly MainWindow _mainWindow;
-        private static AppDbOperator _appDbOperator = new AppDbOperator();
+        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
 
         public ExportPageViewModel ViewModel { get; }
         public static readonly ConcurrentQueue<Beatmap> TaskQueue = new ConcurrentQueue<Beatmap>();
@@ -50,7 +53,7 @@ namespace Milky.OsuPlayer.Pages
         public ExportPage()
         {
             InitializeComponent();
-            _mainWindow = (MainWindow)Application.Current.MainWindow; 
+            _mainWindow = (MainWindow)Application.Current.MainWindow;
             ViewModel = (ExportPageViewModel)DataContext;
             ViewModel.ExportPath = AppSettings.Default.Export.MusicPath;
         }
@@ -89,9 +92,7 @@ namespace Milky.OsuPlayer.Pages
         {
             try
             {
-                var folder = entry.InOwnDb
-                    ? Path.Combine(Domain.CustomSongPath, entry.FolderName)
-                    : Path.Combine(Domain.OsuSongPath, entry.FolderName);
+                var folder = entry.GetFolder(out _, out _);
                 var mp3FileInfo = new FileInfo(Path.Combine(folder, entry.AudioFileName));
                 var osuFile = await OsuFile.ReadFromFileAsync(Path.Combine(folder, entry.BeatmapFileName), options =>
                 {
@@ -99,6 +100,8 @@ namespace Milky.OsuPlayer.Pages
                     options.IgnoreSample();
                     options.IgnoreStoryboard();
                 });
+                if (!osuFile.ReadSuccess) return;
+
                 var bgFileInfo = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));
 
                 var artistUtf = MetaString.GetUnicode(entry.Artist, entry.ArtistUnicode);
@@ -122,24 +125,25 @@ namespace Milky.OsuPlayer.Pages
                 if (bgFileInfo.Exists)
                     Export(bgFileInfo, exportBgFolder, exportBgName);
                 if (mp3FileInfo.Exists || bgFileInfo.Exists)
-                    _appDbOperator.AddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
+                    SafeDbOperator.TryAddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Notification.Push("导出时出现错误：" + e.Message);
+                Logger.Error(ex, "Error while exporting beatmap: {0}", entry.GetIdentity());
+                Notification.Push($"Error while exporting beatmap: {entry.GetIdentity()}\r\n{ex.Message}");
             }
         }
 
         private static void GetExportFolder(out string exportMp3Folder, out string exportBgFolder,
             MetaString artist, string creator, string source)
         {
-            switch (AppSettings.Default.Export.SortStyle)
+            switch (AppSettings.Default.Export.ExportGroupStyle)
             {
-                case SortStyle.None:
+                case ExportGroupStyle.None:
                     exportMp3Folder = Domain.MusicPath;
                     exportBgFolder = Domain.BackgroundPath;
                     break;
-                case SortStyle.Artist:
+                case ExportGroupStyle.Artist:
                     {
                         var escArtistAsc = Escape(artist.Origin);
                         var escArtistUtf = Escape(artist.Unicode);
@@ -158,7 +162,7 @@ namespace Milky.OsuPlayer.Pages
                         exportBgFolder = Path.Combine(Domain.BackgroundPath, escArtistUtf);
                         break;
                     }
-                case SortStyle.Mapper:
+                case ExportGroupStyle.Mapper:
                     {
                         var escCreator = Escape(creator);
                         if (string.IsNullOrEmpty(escCreator))
@@ -168,7 +172,7 @@ namespace Milky.OsuPlayer.Pages
                         exportBgFolder = Path.Combine(Domain.BackgroundPath, escCreator);
                         break;
                     }
-                case SortStyle.Source:
+                case ExportGroupStyle.Source:
                     {
                         var escSource = Escape(source);
                         if (string.IsNullOrEmpty(escSource))
@@ -179,29 +183,31 @@ namespace Milky.OsuPlayer.Pages
                         break;
                     }
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(AppSettings.Default.Export.ExportGroupStyle),
+                        AppSettings.Default.Export.ExportGroupStyle, null);
             }
         }
 
         private static void ConstructNameWithEscaping(out string originAudio, out string originBack,
             string title, string artist, string creator, string version)
         {
-            switch (AppSettings.Default.Export.NamingStyle)
+            switch (AppSettings.Default.Export.ExportNamingStyle)
             {
-                case NamingStyle.Title:
+                case ExportNamingStyle.Title:
                     originAudio = Escape($"{title}");
                     originBack = Escape($"{title}({creator})[{version}]");
                     break;
-                case NamingStyle.ArtistTitle:
+                case ExportNamingStyle.ArtistTitle:
                     originAudio = Escape($"{artist} - {title}");
                     originBack = Escape($"{artist} - {title}({creator})[{version}]");
                     break;
-                case NamingStyle.TitleArtist:
+                case ExportNamingStyle.TitleArtist:
                     originAudio = Escape($"{title} - {artist}");
                     originBack = Escape($"{title} - {artist}({creator})[{version}]");
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(AppSettings.Default.Export.ExportNamingStyle),
+                        AppSettings.Default.Export.ExportNamingStyle, null);
             }
         }
 
@@ -250,14 +256,15 @@ namespace Milky.OsuPlayer.Pages
                 .Replace("\"", "").Replace(@"<", "").Replace(@">", "").Replace(@"|", "");
         }
 
-        void OpenCmdExecuted(object target, ExecutedRoutedEventArgs e)
+        private void OpenCmdExecuted(object target, ExecutedRoutedEventArgs e)
         {
             string command, targetobj;
             command = ((RoutedCommand)e.Command).Name;
             targetobj = ((FrameworkElement)target).Name;
             MessageBox.Show("The " + command + " command has been invoked on target object " + targetobj);
         }
-        void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
+
+        private void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }

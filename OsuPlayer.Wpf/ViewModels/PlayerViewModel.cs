@@ -1,7 +1,5 @@
 ﻿//using Milky.OsuPlayer.Common.Configuration;
 //using Milky.OsuPlayer.Common.Player;
-//using Milky.WpfApi;
-//using Milky.WpfApi.Commands;
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;
@@ -13,7 +11,7 @@
 
 //namespace Milky.OsuPlayer.ViewModels
 //{
-//    public class PlayerViewModel : ViewModelBase
+//    public class PlayerViewModel : VmBase
 //    {
 //        public static PlayerViewModel Current { get; set; }
 

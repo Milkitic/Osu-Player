@@ -1,20 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Milky.OsuPlayer.Presentation.Interaction;
+using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Windows
 {
+    internal class ExceptionWindowViewModel : VmBase
+    {
+        private Exception _exception;
+        private bool _isUiException;
+
+        public Exception Exception
+        {
+            get => _exception;
+            set
+            {
+                _exception = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsUiException
+        {
+            get => _isUiException;
+            set
+            {
+                _isUiException = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
     /// <summary>
     /// Interaction logic for ExceptionWindow.xaml
     /// </summary>
@@ -38,32 +53,6 @@ namespace Milky.OsuPlayer.Windows
         {
             DialogResult = false;
             Close();
-        }
-    }
-
-    class ExceptionWindowViewModel : ViewModelBase
-    {
-        private Exception _exception;
-        private bool _isUiException;
-
-        public Exception Exception
-        {
-            get => _exception;
-            set
-            {
-                _exception = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsUiException
-        {
-            get => _isUiException;
-            set
-            {
-                _isUiException = value;
-                OnPropertyChanged();
-            }
         }
     }
 }

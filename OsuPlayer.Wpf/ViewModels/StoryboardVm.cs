@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Milky.OsuPlayer.Data.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using Milky.OsuPlayer.Annotations;
-using Milky.OsuPlayer.Common.Metadata;
-using OSharp.Beatmap.MetaData;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Properties;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    class StoryboardVm : INotifyPropertyChanged
+    internal class StoryboardVm : INotifyPropertyChanged
     {
         private bool _isScanned;
         private ObservableCollection<BeatmapDataModel> _beatmapModels;

@@ -1,15 +1,18 @@
 ﻿using Gma.System.MouseKeyHook;
+using Milky.OsuPlayer.Pages.Settings;
+using Milky.OsuPlayer.Windows;
 using System;
 using System.Linq;
 using System.Windows.Forms;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Pages.Settings;
-using Milky.OsuPlayer.Windows;
+using NLog;
 
 namespace Milky.OsuPlayer
 {
     public sealed class OverallKeyHook : IDisposable
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private readonly MainWindow _mainWindow;
         private readonly IKeyboardMouseEvents _globalHook;
         private bool _holdingCtrl, _holdingAlt, _holdingShift;
@@ -49,7 +52,12 @@ namespace Milky.OsuPlayer
         public static void BindHotKey(HotKeyType type, bool useCtrl, bool useAlt, bool useShift, Keys key)
         {
             var hotKey = AppSettings.Default.HotKeys.FirstOrDefault(k => k.Type == type);
-            if (hotKey == null) throw new ArgumentException();
+            if (hotKey == null)
+            {
+                Logger.Warn("HotKey shouldn't be null.");
+                return;
+            }
+
             hotKey.Key = key;
             hotKey.UseControlKey = useCtrl;
             hotKey.UseAltKey = useAlt;

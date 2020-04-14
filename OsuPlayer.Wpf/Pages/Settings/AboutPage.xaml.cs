@@ -1,13 +1,13 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Utils;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Common.Instances;
+using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.WpfApi;
+using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -23,8 +23,8 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         public AboutPage()
         {
-            _mainWindow = WindowBase.GetCurrentFirst<MainWindow>();
-            _configWindow = WindowBase.GetCurrentFirst<ConfigWindow>();
+            _mainWindow = WindowEx.GetCurrentFirst<MainWindow>();
+            _configWindow = WindowEx.GetCurrentFirst<ConfigWindow>();
             InitializeComponent();
         }
 
@@ -40,8 +40,8 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            CurrentVer.Content = Services.Get<Updater>().CurrentVersion;
-            if (Services.Get<Updater>().NewRelease != null)
+            CurrentVer.Content = Service.Get<UpdateInst>().CurrentVersion;
+            if (Service.Get<UpdateInst>().NewRelease != null)
                 NewVersion.Visibility = Visibility.Visible;
             GetLastUpdate();
         }
@@ -49,7 +49,7 @@ namespace Milky.OsuPlayer.Pages.Settings
         private void GetLastUpdate()
         {
             LastUpdate.Content = AppSettings.Default.LastUpdateCheck == null
-                ? "从未"
+                ? I18NUtil.GetString("ui-sets-content-never")
                 : AppSettings.Default.LastUpdateCheck.Value.ToString(_dtFormat);
         }
 
@@ -57,7 +57,7 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             //todo: action
             CheckUpdate.IsEnabled = false;
-            var hasNew = await Services.Get<Updater>().CheckUpdateAsync();
+            var hasNew = await Service.Get<UpdateInst>().CheckUpdateAsync();
             CheckUpdate.IsEnabled = true;
             if (hasNew == null)
             {
@@ -84,7 +84,7 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             if (_newVersionWindow != null && !_newVersionWindow.IsClosed)
                 _newVersionWindow.Close();
-            _newVersionWindow = new NewVersionWindow(Services.Get<Updater>().NewRelease, _mainWindow);
+            _newVersionWindow = new NewVersionWindow(Service.Get<UpdateInst>().NewRelease, _mainWindow);
             _newVersionWindow.ShowDialog();
         }
 

@@ -2,11 +2,10 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Windows
 {
-    partial class LyricWindow
+    public partial class LyricWindow
     {
         public LyricWindow()
         {
@@ -37,14 +36,14 @@ namespace Milky.OsuPlayer.Windows
                 if (_isLocked)
                 {
                     SetPenetrate();
-                    ImgLyric.Opacity = 0.9;
+                    TbLyric.Opacity = 0.9;
                     //ShowAnimation();
                     ViewModel.ShowFrame = false;
                 }
                 else
                 {
                     ReleasePenetrate();
-                    ImgLyric.Opacity = 1;
+                    TbLyric.Opacity = 1;
                 }
             }
         }

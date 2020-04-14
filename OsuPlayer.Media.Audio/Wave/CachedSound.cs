@@ -13,6 +13,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
 {
     internal class CachedSound
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         public string SourcePath { get; }
         public float[] AudioData { get; private set; }
         public WaveFormat WaveFormat { get; private set; }
@@ -54,10 +55,17 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
 
         public static async Task CreateCacheSounds(IEnumerable<string> paths)
         {
-            foreach (var path in paths)
+            await Task.Run(() =>
             {
-                await CreateCacheSound(path, false).ConfigureAwait(false); // Cache each file once before play.
-            }
+                paths.AsParallel()
+                    .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
+                    .ForAll(k => CreateCacheSound(k, false).Wait());
+            }).ConfigureAwait(false);
+            
+            //foreach (var path in paths)
+            //{
+            //    await CreateCacheSound(path, false).ConfigureAwait(false); // Cache each file once before play.
+            //}
         }
 
         /// <summary>
@@ -150,8 +158,9 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
             {
                 cachedSound = await CreateFromFile(newPath).ConfigureAwait(false);
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Error(ex, "Error while creating cached sound: {0}", path);
                 if (!isDefault) CachedDictionary.TryAdd(path, null);
                 else DefaultDictionary.TryAdd(path, null);
                 return null;
@@ -162,7 +171,9 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
                 ? DefaultDictionary.GetOrAdd(path, cachedSound)
                 : CachedDictionary.GetOrAdd(path, cachedSound);
 
-            Console.WriteLine(SharedUtils.CountSize(CachedDictionary.Values.Sum(k => k?.AudioData?.Length * sizeof(float) ?? 0)));
+            Logger.Debug("Total size of cache usage: {0}", SharedUtils.CountSize(
+                CachedDictionary.Values.Sum(k => k?.AudioData?.Length * sizeof(float) ?? 0) +
+                DefaultDictionary.Values.Sum(k => k?.AudioData?.Length * sizeof(float) ?? 0)));
 
             return sound;
         }

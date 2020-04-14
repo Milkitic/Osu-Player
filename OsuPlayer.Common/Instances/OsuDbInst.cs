@@ -1,20 +1,19 @@
-﻿using Milky.OsuPlayer.Common.Data.EF.Model;
+﻿using System;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Presentation.Interaction;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Data;
-using Milky.WpfApi;
+using Milky.OsuPlayer.Data.Models;
 
 namespace Milky.OsuPlayer.Common.Instances
 {
     public class OsuDbInst
     {
-        private readonly object _scanningObject = new object();
-        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
-
-        public class ViewModelClass : ViewModelBase
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        public class ViewModelClass : VmBase
         {
             private bool _isScanning;
 
@@ -29,6 +28,9 @@ namespace Milky.OsuPlayer.Common.Instances
             }
         }
 
+        private readonly object _scanningObject = new object();
+        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
+
         public ViewModelClass ViewModel { get; set; } = new ViewModelClass();
 
         public async Task<bool> TrySyncOsuDbAsync(string path, bool addOnly)
@@ -38,15 +40,17 @@ namespace Milky.OsuPlayer.Common.Instances
                 await SyncOsuDbAsync(path, addOnly);
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Error(ex, "Error while syncing osu db."); // todo: update db file.
                 return false;
             }
         }
-        public async Task LoadLocalDbAsync()
-        {
-            await Task.Run(() => Beatmaps = new HashSet<Beatmap>(_beatmapDbOperator.GetAllBeatmaps()));
-        }
+
+        //public async Task LoadLocalDbAsync()
+        //{
+        //    await Task.Run(() => Beatmaps = new HashSet<Beatmap>(_beatmapDbOperator.GetAllBeatmaps()));
+        //}
 
         public async Task SyncOsuDbAsync(string path, bool addOnly)
         {
@@ -73,15 +77,23 @@ namespace Milky.OsuPlayer.Common.Instances
             return await Task.Run(() =>
             {
                 var db = new OsuDb();
-                using (var fs = new FileStream(path, FileMode.Open))
+                try
                 {
-                    db.ReadFromStream(new SerializationReader(fs));
+                    using (var fs = new FileStream(path, FileMode.Open))
+                    {
+                        db.ReadFromStream(new SerializationReader(fs));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(
+                        $"Read osu!db failed. This file may be corrupted. osu! version: {db.OsuVersion}", ex);
                 }
 
                 return db;
             });
         }
 
-        public HashSet<Beatmap> Beatmaps { get; set; }
+        //public HashSet<Beatmap> Beatmaps { get; set; }
     }
 }

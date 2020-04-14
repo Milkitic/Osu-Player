@@ -1,8 +1,8 @@
-﻿using Milky.WpfApi;
+﻿using Milky.OsuPlayer.Presentation.Interaction;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    public class EditCollectionPageViewModel : ViewModelBase
+    public class EditCollectionPageViewModel : VmBase
     {
         private string _name;
         private string _description;

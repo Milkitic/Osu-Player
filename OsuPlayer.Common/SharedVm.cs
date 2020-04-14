@@ -1,9 +1,9 @@
 ﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.WpfApi;
+using Milky.OsuPlayer.Presentation.Interaction;
 
 namespace Milky.OsuPlayer.Common
 {
-    public class SharedVm : ViewModelBase
+    public class SharedVm : VmBase
     {
         private bool _enableVideo = true;
         private bool _isPlaying = false;

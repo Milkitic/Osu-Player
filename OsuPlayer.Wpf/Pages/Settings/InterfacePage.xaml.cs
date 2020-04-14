@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Utils;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -38,15 +27,15 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void InterfacePage_OnLoaded(object sender, RoutedEventArgs e)
         {
-            var l = I18nUtil.AvailableLangDic.Keys.ToList();
+            var l = I18NUtil.AvailableLangDic.Keys.ToList();
             Language.ItemsSource = l;
-            Language.SelectedItem = I18nUtil.CurrentLocale.Key;
+            Language.SelectedItem = I18NUtil.CurrentLocale.Key;
         }
 
         private void Language_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var locale = I18nUtil.AvailableLangDic[(string)e.AddedItems[0]];
-            I18nUtil.SwitchToLang(locale);
+            var locale = I18NUtil.AvailableLangDic[(string)e.AddedItems[0]];
+            I18NUtil.SwitchToLang(locale);
             AppSettings.Default.Interface.Locale = locale;
             AppSettings.SaveDefault();
         }

@@ -1,11 +1,13 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using System;
+﻿using System;
 using System.IO;
+using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Common
 {
     public static class Domain
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         static Domain()
         {
             Type t = typeof(Domain);
@@ -16,12 +18,13 @@ namespace Milky.OsuPlayer.Common
                 try
                 {
                     string path = (string)item.GetValue(null, null);
+                    if (path == null) continue;
                     if (!Directory.Exists(path))
                         Directory.CreateDirectory(path);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    Console.WriteLine(@"未创建：" + item.Name);
+                    Logger.Warn(ex, "未创建：{dirName}", item.Name);
                 }
             }
         }
@@ -41,13 +44,14 @@ namespace Milky.OsuPlayer.Common
         public static string ResourcePath => Path.Combine(CurrentPath, "Resources");
         public static string PluginPath => Path.Combine(ExtensionPath, "plugins");
 
-        public static string CustomSongPath => AppSettings.Default == null ? null : new FileInfo(AppSettings.Default.General.CustomSongsPath).FullName;
-        public static string OsuPath =>
-            AppSettings.Default == null
+        public static string CustomSongPath
+        => AppSettings.Default == null ? null : new FileInfo(AppSettings.Default.General.CustomSongsPath).FullName;
+        public static string OsuPath
+            => AppSettings.Default == null
                 ? null
                 : (AppSettings.Default.General.DbPath == null
                     ? null
-                    : new FileInfo(AppSettings.Default.General.DbPath).Directory.FullName);
+                    : new FileInfo(AppSettings.Default.General.DbPath).Directory?.FullName);
         public static string OsuSongPath => OsuPath == null ? null : Path.Combine(OsuPath, "Songs");
     }
 }

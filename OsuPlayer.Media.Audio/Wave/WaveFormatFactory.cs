@@ -11,6 +11,8 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
     /// </summary>
     internal static class WaveFormatFactory
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private static int _sampleRate = 44100;
         private static int _bits = 16;
         private static int _channels = 2;
@@ -115,7 +117,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Logger.Error(ex, "Error while resampling audio file: {0}", path);
                     throw;
                 }
             }).ConfigureAwait(false);
@@ -161,7 +163,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
                 catch (Exception ex)
                 {
                     audioFileReader?.Dispose();
-                    Console.WriteLine(ex.Message);
+                    Logger.Error(ex, "Error while resampling audio file: {0}", path);
                     throw;
                 }
             }).ConfigureAwait(false);

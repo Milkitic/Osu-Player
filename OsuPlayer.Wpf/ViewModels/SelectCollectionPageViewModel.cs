@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.WpfApi;
+﻿using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Presentation.Interaction;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    public class SelectCollectionPageViewModel : ViewModelBase
+    public class SelectCollectionPageViewModel : VmBase
     {
         private ObservableCollection<CollectionViewModel> _collections;
         private IList<Beatmap> _entries;

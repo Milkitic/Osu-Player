@@ -4,14 +4,15 @@ using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Scanning;
-using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.WpfApi;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -23,13 +24,14 @@ namespace Milky.OsuPlayer.Pages.Settings
         private readonly MainWindow _mainWindow;
         private readonly ConfigWindow _configWindow;
         private FileScannerViewModel ScannerViewModel { get; }
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public GeneralPage()
         {
-            _mainWindow = WindowBase.GetCurrentFirst<MainWindow>();
-            _configWindow = WindowBase.GetCurrentFirst<ConfigWindow>();
+            _mainWindow = WindowEx.GetCurrentFirst<MainWindow>();
+            _configWindow = WindowEx.GetCurrentFirst<ConfigWindow>();
             InitializeComponent();
-            ScannerViewModel = Services.Get<OsuFileScanner>().ViewModel;
+            ScannerViewModel = Service.Get<OsuFileScanner>().ViewModel;
         }
 
         private void RunOnStartup_CheckChanged(object sender, RoutedEventArgs e)
@@ -86,19 +88,22 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private async void BrowseDb_Click(object sender, RoutedEventArgs e)
         {
-            var result = Util.BrowseDb(out var path);
+            var result = CommonUtils.BrowseDb(out var path);
             if (!result.HasValue || !result.Value)
                 return;
             try
             {
-                await Services.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
+                await Service.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
                 TbDbPath.Text = path;
                 AppSettings.Default.General.DbPath = path;
                 AppSettings.SaveDefault();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex, "Error while syncing osu!db: {0}", path);
+                MessageBox.Show(_configWindow, string.Format("{0}: {1}\r\n{2}",
+                        I18NUtil.GetString("err-osudb-sync"), path, ex.Message),
+                    _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -126,34 +131,41 @@ namespace Milky.OsuPlayer.Pages.Settings
                 try
                 {
                     TbCustomPath.Text = path;
-                    await Services.Get<OsuFileScanner>().CancelTaskAsync();
-                    await Services.Get<OsuFileScanner>().NewScanAndAddAsync(path);
+                    await Service.Get<OsuFileScanner>().CancelTaskAsync();
+                    await Service.Get<OsuFileScanner>().NewScanAndAddAsync(path);
                     AppSettings.Default.General.CustomSongsPath = path;
                     AppSettings.SaveDefault();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(_configWindow, ex.Message, _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                    Logger.Error(ex, "Error while scanning custom folder: {0}", path);
+                    MessageBox.Show(_configWindow, string.Format("{0}: {1}\r\n{2}",
+                            I18NUtil.GetString("err-custom-scan"), path, ex.Message),
+                        _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
 
         private async void CancelScan_Click(object sender, RoutedEventArgs e)
         {
-            await Services.Get<OsuFileScanner>().CancelTaskAsync();
+            await Service.Get<OsuFileScanner>().CancelTaskAsync();
         }
 
         private async void SyncNow_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                await Services.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, false);
+                await Service.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, false);
                 AppSettings.Default.LastTimeScanOsuDb = DateTime.Now;
                 AppSettings.SaveDefault();
             }
             catch (Exception ex)
             {
-                Notification.Push(ex.Message);
+                var path = AppSettings.Default.General.DbPath;
+                Logger.Error(ex, "Error while scanning custom folder: {0}", path);
+                MessageBox.Show(_configWindow, string.Format("{0}: {1}\r\n{2}",
+                        I18NUtil.GetString("err-custom-scan"), path, ex.Message),
+                    _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

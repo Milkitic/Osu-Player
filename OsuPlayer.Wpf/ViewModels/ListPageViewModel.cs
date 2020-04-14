@@ -1,7 +1,8 @@
-﻿using Milky.WpfApi;
+﻿using Milky.OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.ViewModels {
-    public class ListPageViewModel : ViewModelBase
+namespace Milky.OsuPlayer.ViewModels
+{
+    public class ListPageViewModel : VmBase
     {
         public ListPageViewModel(int index)
         {

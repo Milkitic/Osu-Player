@@ -1,12 +1,11 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Metadata;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Shared;
-using Milky.WpfApi;
-using Milky.WpfApi.Collections;
-using Milky.WpfApi.Commands;
+using Milky.OsuPlayer.Utils;
+using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,15 +14,17 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
 
 namespace Milky.OsuPlayer.ViewModels
 {
-    public class ExportPageViewModel : ViewModelBase
+    public class ExportPageViewModel : VmBase
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private string _exportPath;
         private NumberableObservableCollection<BeatmapDataModel> _dataModelList;
         private IEnumerable<Beatmap> _entries;
-        private AppDbOperator _appDbOperator = new AppDbOperator();
+        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
 
         public NumberableObservableCollection<BeatmapDataModel> DataModelList
         {
@@ -65,7 +66,14 @@ namespace Milky.OsuPlayer.ViewModels
                     switch (obj)
                     {
                         case string path:
-                            Process.Start(path);
+                            if (Directory.Exists(path))
+                            {
+                                Process.Start(path);
+                            }
+                            else
+                            {
+                                Notification.Push(I18NUtil.GetString("err-dirNotFound"), I18NUtil.GetString("text-error"));
+                            }
                             break;
                         case BeatmapDataModel dataModel:
                             Process.Start("Explorer", "/select," + dataModel.ExportFile);
@@ -124,7 +132,7 @@ namespace Milky.OsuPlayer.ViewModels
                                 dir.Delete();
                         }
 
-                        _appDbOperator.AddMapExport(dataModel.GetIdentity(), null);
+                        SafeDbOperator.TryAddMapExport(dataModel.GetIdentity(), null);
                     }
 
                     Execute.OnUiThread(InnerUpdate);
@@ -134,7 +142,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _appDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
+            return SafeDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 
@@ -145,7 +153,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private void InnerUpdate()
         {
-            var maps = _appDbOperator.GetExportedMaps();
+            var maps = SafeDbOperator.GetExportedMaps();
             List<(MapIdentity MapIdentity, string path, string time, string size)> list =
                 new List<(MapIdentity, string, string, string)>();
             foreach (var map in maps)
@@ -157,14 +165,14 @@ namespace Milky.OsuPlayer.ViewModels
                         ? (map.GetIdentity(), map.ExportFile, "已从目录移除", "已从目录移除")
                         : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), SharedUtils.CountSize(fi.Length)));
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
                     list.Add((map.GetIdentity(), map.ExportFile, new DateTime().ToString("g"), "0 B"));
-                    Console.WriteLine(e);
+                    Logger.Error(ex, "Error while updating view item: {0}", map.GetIdentity());
                 }
             }
 
-            _entries = _appDbOperator.GetBeatmapsByIdentifiable(maps);
+            _entries = SafeDbOperator.GetBeatmapsByIdentifiable(maps);
             var viewModels = _entries.ToDataModelList(true).ToList();
             for (var i = 0; i < viewModels.Count; i++)
             {

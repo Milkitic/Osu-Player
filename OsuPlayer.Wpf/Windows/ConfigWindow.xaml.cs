@@ -1,21 +1,17 @@
-﻿using System.Windows;
-using System.Windows.Controls.Primitives;
-using Milky.OsuPlayer.Pages.Settings;
-using Milky.OsuPlayer.Utils;
-using Milky.WpfApi;
+﻿using Milky.OsuPlayer.Presentation;
 
 namespace Milky.OsuPlayer.Windows
 {
     /// <summary>
     /// ConfigWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class ConfigWindow : WindowBase
+    public partial class ConfigWindow : WindowEx
     {
         public ConfigWindow()
         {
             InitializeComponent();
         }
-        
+
         private void Window_Shown(object sender, System.EventArgs e)
         {
             SwitchGeneral.IsChecked = true;

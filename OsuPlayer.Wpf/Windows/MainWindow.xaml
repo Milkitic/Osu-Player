@@ -1,19 +1,21 @@
-﻿<wpfApi:WindowBase
+﻿<presentation:WindowEx
     x:Class="Milky.OsuPlayer.Windows.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:control="clr-namespace:Milky.OsuPlayer.Control"
-    xmlns:converter="clr-namespace:Milky.OsuPlayer.Converter"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
+    xmlns:converters="clr-namespace:Milky.OsuPlayer.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:frontdialog="clr-namespace:Milky.OsuPlayer.Control.FrontDialog"
+    xmlns:frontDialogComponent="clr-namespace:Milky.OsuPlayer.UiComponents.FrontDialogComponent"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:notification="clr-namespace:Milky.OsuPlayer.Control.Notification"
+    xmlns:models="clr-namespace:Milky.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
+    xmlns:notificationComponent="clr-namespace:Milky.OsuPlayer.UiComponents.NotificationComponent"
     xmlns:pages="clr-namespace:Milky.OsuPlayer.Pages"
+    xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
+    xmlns:radioButtonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.RadioButtonComponent"
     xmlns:tb="http://www.hardcodet.net/taskbar"
-    xmlns:v1="clr-namespace:Milky.OsuPlayer.Common.Data.EF.Model.V1;assembly=OsuPlayer.Common"
+    xmlns:userControls="clr-namespace:Milky.OsuPlayer.UserControls"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
-    xmlns:wpfApi="clr-namespace:Milky.WpfApi;assembly=WpfApi"
     Title="Osu Player"
     Width="998"
     Height="759"
@@ -35,19 +37,19 @@
             ResizeBorderThickness="3"
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
-    <wpfApi:WindowBase.DataContext>
+    <presentation:WindowEx.DataContext>
         <viewModels:MainWindowViewModel />
-    </wpfApi:WindowBase.DataContext>
-    <wpfApi:WindowBase.Resources>
-        <converter:NavigationWidthConverter x:Key="CvtNavigationWidth" />
+    </presentation:WindowEx.DataContext>
+    <presentation:WindowEx.Resources>
+        <converters:NavigationWidthConverter x:Key="CvtNavigationWidth" />
         <!--<converter:IconMarginConverter x:Key="CvtIconMargin" />-->
-        <converter:TitleIconConverter x:Key="CvtTitleIcon" />
-        <converter:TitleVisibleConverter x:Key="CvtTitleVisible" />
-        <converter:LyricWindowShownConverter x:Key="CvtLyricWindowShown" />
-        <converter:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
-        <converter:MsToStringConverter x:Key="MsToStringConverter" />
-        <converter:SwitchRadioChangeConverter x:Key="SwitchRadioChangeConverter" />
-    </wpfApi:WindowBase.Resources>
+        <converters:TitleIconConverter x:Key="CvtTitleIcon" />
+        <converters:TitleVisibleConverter x:Key="CvtTitleVisible" />
+        <converters:LyricWindowShownConverter x:Key="CvtLyricWindowShown" />
+        <converters:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
+        <converters:MsToStringConverter x:Key="MsToStringConverter" />
+        <converters:SwitchRadioChangeConverter x:Key="SwitchRadioChangeConverter" />
+    </presentation:WindowEx.Resources>
     <Grid Margin="{Binding WindowState, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource WindowMarginConverter}}">
         <Grid.Background>
             <ImageBrush
@@ -100,7 +102,7 @@
                                 <Binding RelativeSource="{RelativeSource Self}" />
                             </MultiBinding>
                         </StackPanel.Tag>
-                        <control:CommonButton
+                        <buttonComponent:CommonButton
                             Width="28"
                             Height="28"
                             Margin="9,1,1,1"
@@ -122,7 +124,7 @@
                             </Label.Tag>
                             <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-library}" />
                         </Label>
-                        <control:SwitchRadio
+                        <radioButtonComponent:SwitchRadio
                             x:Name="SwitchSearch"
                             CheckedIconColor="#4050A0"
                             Content="{DynamicResource ui-nav-search}"
@@ -130,27 +132,27 @@
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
                             TargetPageType="{x:Type pages:SearchPage}">
-                            <control:SwitchRadio.Tag>
+                            <radioButtonComponent:SwitchRadio.Tag>
                                 <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
                                     <Binding Path="IsNavigationCollapsed" />
                                     <Binding RelativeSource="{RelativeSource Self}" />
                                 </MultiBinding>
-                            </control:SwitchRadio.Tag>
-                        </control:SwitchRadio>
-                        <control:SwitchRadio
+                            </radioButtonComponent:SwitchRadio.Tag>
+                        </radioButtonComponent:SwitchRadio>
+                        <radioButtonComponent:SwitchRadio
                             CheckedIconColor="#508030"
                             Content="{DynamicResource ui-nav-storyboard}"
                             IconTemplate="{StaticResource NavStoryboardTempl}"
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
                             TargetPageType="{x:Type pages:StoryboardPage}">
-                            <control:SwitchRadio.Tag>
+                            <radioButtonComponent:SwitchRadio.Tag>
                                 <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
                                     <Binding Path="IsNavigationCollapsed" />
                                     <Binding RelativeSource="{RelativeSource Self}" />
                                 </MultiBinding>
-                            </control:SwitchRadio.Tag>
-                        </control:SwitchRadio>
+                            </radioButtonComponent:SwitchRadio.Tag>
+                        </radioButtonComponent:SwitchRadio>
                         <Label
                             Height="30"
                             FontWeight="SemiBold"
@@ -163,7 +165,7 @@
                             </Label.Tag>
                             <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-mine}" />
                         </Label>
-                        <control:SwitchRadio
+                        <radioButtonComponent:SwitchRadio
                             x:Name="SwitchRecent"
                             CheckedIconColor="#A04090"
                             Content="{DynamicResource ui-nav-recent}"
@@ -171,27 +173,27 @@
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
                             TargetPageType="{x:Type pages:RecentPlayPage}">
-                            <control:SwitchRadio.Tag>
+                            <radioButtonComponent:SwitchRadio.Tag>
                                 <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
                                     <Binding Path="IsNavigationCollapsed" />
                                     <Binding RelativeSource="{RelativeSource Self}" />
                                 </MultiBinding>
-                            </control:SwitchRadio.Tag>
-                        </control:SwitchRadio>
-                        <control:SwitchRadio
+                            </radioButtonComponent:SwitchRadio.Tag>
+                        </radioButtonComponent:SwitchRadio>
+                        <radioButtonComponent:SwitchRadio
                             CheckedIconColor="#A09040"
                             Content="{DynamicResource ui-nav-export}"
                             IconTemplate="{StaticResource NavExportTempl}"
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
                             TargetPageType="{x:Type pages:ExportPage}">
-                            <control:SwitchRadio.Tag>
+                            <radioButtonComponent:SwitchRadio.Tag>
                                 <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
                                     <Binding Path="IsNavigationCollapsed" />
                                     <Binding RelativeSource="{RelativeSource Self}" />
                                 </MultiBinding>
-                            </control:SwitchRadio.Tag>
-                        </control:SwitchRadio>
+                            </radioButtonComponent:SwitchRadio.Tag>
+                        </radioButtonComponent:SwitchRadio>
                         <DockPanel>
                             <DockPanel.Tag>
                                 <MultiBinding Converter="{StaticResource CvtTitleVisible}" ConverterParameter="0">
@@ -205,7 +207,7 @@
                                 Style="{StaticResource NavigationLabelStyle}">
                                 <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-collection}" />
                             </Label>
-                            <control:CommonButton
+                            <buttonComponent:CommonButton
                                 Width="20"
                                 Height="20"
                                 Margin="0,10,5,0"
@@ -226,9 +228,9 @@
                             <ListView.Resources>
                                 <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
                                     <d:Object.DataContext>
-                                        <v1:Collection />
+                                        <models:Collection />
                                     </d:Object.DataContext>
-                                    <control:SwitchRadio
+                                    <radioButtonComponent:SwitchRadio
                                         x:Name="BtnCollection"
                                         Height="31"
                                         Padding="14,0,0,0"
@@ -242,13 +244,13 @@
                                         TargetPageData="{Binding Id}"
                                         TargetPageSingleton="False"
                                         TargetPageType="{x:Type pages:CollectionPage}">
-                                        <control:SwitchRadio.Tag>
+                                        <radioButtonComponent:SwitchRadio.Tag>
                                             <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}" ConverterParameter="0">
                                                 <Binding Path="DataContext.IsNavigationCollapsed" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}" />
                                                 <Binding RelativeSource="{RelativeSource Self}" />
                                             </MultiBinding>
-                                        </control:SwitchRadio.Tag>
-                                    </control:SwitchRadio>
+                                        </radioButtonComponent:SwitchRadio.Tag>
+                                    </radioButtonComponent:SwitchRadio>
                                 </ControlTemplate>
                                 <Style TargetType="{x:Type ListViewItem}">
                                     <Setter Property="BorderThickness" Value="0" />
@@ -259,7 +261,7 @@
                     </StackPanel>
                 </ScrollViewer>
                 <Grid>
-                    <control:AnimationControl
+                    <userControls:AnimationControl
                         x:Name="Animation"
                         ClipToBounds="True"
                         IsBlur="{Binding Content, ElementName=MainFrame, Converter={StaticResource NullToBoolFalseConverter}}" />
@@ -270,11 +272,7 @@
                         Visibility="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource NullToHiddenConverter}}" />
                 </Grid>
             </DockPanel>
-            <control:PlayController
-                x:Name="PlayController"
-                Grid.Row="1"
-                OnLikeClick="Controller_OnLikeClick"
-                OnThumbClick="Controller_OnThumbClick" />
+            <userControls:PlayController x:Name="PlayController" Grid.Row="1" />
         </Grid>
         <Border
             x:Name="MsgBoxCover"
@@ -283,7 +281,7 @@
             Grid.Column="0"
             Background="{StaticResource WhiteBrush80}"
             Visibility="Hidden" />
-        <frontdialog:FrontDialogOverlay
+        <frontDialogComponent:FrontDialogOverlay
             x:Name="FrontDialogOverlay"
             Grid.Row="0"
             Grid.RowSpan="2" />
@@ -311,7 +309,7 @@
                             Margin="3,0"
                             VerticalAlignment="Center"
                             WindowChrome.IsHitTestVisibleInChrome="True" />-->
-                        <control:SystemButton
+                        <buttonComponent:SystemButton
                             Width="25"
                             Height="25"
                             Margin="3,0"
@@ -319,7 +317,7 @@
                             IconSize="21"
                             IconTemplate="{StaticResource SettingsTempl}"
                             WindowChrome.IsHitTestVisibleInChrome="True" />
-                        <control:SystemButton
+                        <buttonComponent:SystemButton
                             Width="25"
                             Height="25"
                             Margin="3,0"
@@ -329,13 +327,13 @@
                             WindowChrome.IsHitTestVisibleInChrome="True" />
                     </StackPanel>
                 </Border>
-                <control:MinButton IconSize="22" WindowChrome.IsHitTestVisibleInChrome="True" />
-                <control:MaxButton WindowChrome.IsHitTestVisibleInChrome="True" />
-                <control:CloseButton MouseDownBackground="#a0c72828" WindowChrome.IsHitTestVisibleInChrome="True" />
+                <buttonComponent:MinButton IconSize="22" WindowChrome.IsHitTestVisibleInChrome="True" />
+                <buttonComponent:MaxButton WindowChrome.IsHitTestVisibleInChrome="True" />
+                <buttonComponent:CloseButton MouseDownBackground="#a0c72828" WindowChrome.IsHitTestVisibleInChrome="True" />
             </StackPanel>
         </DockPanel>
         <!--<control:WelcomeControl x:Name="WelcomeControl" Grid.Row="1" />-->
-        <notification:NotifyOverlay
+        <notificationComponent:NotifyOverlay
             x:Name="NotificationOverlay"
             Grid.Row="1"
             Grid.Column="0"
@@ -488,4 +486,4 @@
             </ContextMenu>
         </Grid.Resources>
     </Grid>
-</wpfApi:WindowBase>
+</presentation:WindowEx>

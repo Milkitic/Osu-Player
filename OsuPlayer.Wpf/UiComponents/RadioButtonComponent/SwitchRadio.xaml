@@ -1,0 +1,163 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:control="clr-namespace:Milky.OsuPlayer.UiComponents.RadioButtonComponent">
+    <Style TargetType="{x:Type control:SwitchRadio}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="Background" Value="#10303030" />
+        <Setter Property="Foreground" Value="#484848" />
+        <Setter Property="BorderThickness" Value="1,0" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="MouseOverBackground" Value="#A0F0F0F0" />
+        <Setter Property="MouseOverForeground" Value="#484848" />
+        <Setter Property="MouseOverIconColor" Value="#484848" />
+        <Setter Property="CheckedBackground" Value="#90F0F0F0" />
+        <Setter Property="CheckedForeground" Value="#282828" />
+        <Setter Property="CheckedIconColor" Value="#282828" />
+        <Setter Property="MouseDownBackground" Value="#80F0F0F0" />
+        <Setter Property="MouseDownForeground" Value="#323232" />
+        <Setter Property="MouseDownIconColor" Value="#484848" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type control:SwitchRadio}">
+                    <Border
+                        x:Name="BorderMain"
+                        Width="{TemplateBinding Width}"
+                        Height="{TemplateBinding Height}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="0">
+                        <StackPanel
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Orientation="{TemplateBinding IconOrientation}">
+                            <Viewbox
+                                x:Name="IconViewBox"
+                                Width="{TemplateBinding IconSize}"
+                                Height="{TemplateBinding IconSize}"
+                                Margin="{TemplateBinding IconMargin}"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="True"
+                                UseLayoutRounding="True">
+                                <ContentControl x:Name="IconContent" Template="{TemplateBinding IconTemplate}">
+                                    <ContentControl.Foreground>
+                                        <MultiBinding Converter="{StaticResource IconColorConverter}">
+                                            <Binding Path="Foreground" RelativeSource="{RelativeSource TemplatedParent}" />
+                                            <Binding Path="IconColor" RelativeSource="{RelativeSource TemplatedParent}" />
+                                        </MultiBinding>
+                                    </ContentControl.Foreground>
+                                </ContentControl>
+                            </Viewbox>
+                            <ContentPresenter
+                                x:Name="Presenter"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=IconContent, Path=Template}" Value="{x:Null}">
+                            <Setter TargetName="IconViewBox" Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        <!--<Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="BorderMain" Property="Background" Value="{Binding MouseOverBackground, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter TargetName="BorderMain" Property="TextBlock.Foreground" Value="{Binding MouseOverForeground, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Trigger>-->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="False" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="BorderMain" Property="Background" Value="{Binding MouseOverBackground, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter TargetName="BorderMain" Property="TextBlock.Foreground" Value="{Binding MouseOverForeground, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter TargetName="IconContent" Property="Foreground">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource IconColorConverter}">
+                                        <Binding Path="MouseOverForeground" RelativeSource="{RelativeSource TemplatedParent}" />
+                                        <Binding Path="MouseOverIconColor" RelativeSource="{RelativeSource TemplatedParent}" />
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                        </MultiTrigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="BorderMain" Property="Background" Value="{Binding MouseDownBackground, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter TargetName="BorderMain" Property="TextBlock.Foreground" Value="{Binding MouseDownForeground, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter TargetName="IconContent" Property="Foreground">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource IconColorConverter}">
+                                        <Binding Path="MouseDownForeground" RelativeSource="{RelativeSource TemplatedParent}" />
+                                        <Binding Path="MouseDownIconColor" RelativeSource="{RelativeSource TemplatedParent}" />
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="BorderMain" Property="Background" Value="{Binding CheckedBackground, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter TargetName="BorderMain" Property="TextBlock.Foreground" Value="{Binding CheckedForeground, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter TargetName="IconContent" Property="Foreground">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource IconColorConverter}">
+                                        <Binding Path="CheckedForeground" RelativeSource="{RelativeSource TemplatedParent}" />
+                                        <Binding Path="CheckedIconColor" RelativeSource="{RelativeSource TemplatedParent}" />
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="BorderMain" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style
+        x:Key="OsuSwitchRadio"
+        BasedOn="{StaticResource {x:Type control:SwitchRadio}}"
+        TargetType="{x:Type control:SwitchRadio}">
+        <Setter Property="Margin" Value="0,0,0,1" />
+        <Setter Property="Height" Value="39" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="CheckedBackground" Value="#F8F8F8" />
+        <Setter Property="CheckedForeground" Value="#303030" />
+        <Setter Property="CheckedIconColor" Value="#DC498D" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="IconSize" Value="20" />
+        <Setter Property="MouseDownBackground" Value="{StaticResource ExtraLightBrush}" />
+        <Setter Property="MouseDownForeground" Value="#303030" />
+        <Setter Property="MouseDownIconColor" Value="#DC498D" />
+        <Setter Property="MouseOverBackground" Value="White" />
+        <Setter Property="MouseOverForeground" Value="#303030" />
+        <Setter Property="MouseOverIconColor" Value="#DC498D" />
+        <Setter Property="TargetPageSingleton" Value="True" />
+        <Setter Property="Scope" Value="Nav" />
+    </Style>
+    <Style
+        x:Key="ConfigSwitchRadio"
+        BasedOn="{StaticResource {x:Type control:SwitchRadio}}"
+        TargetType="{x:Type control:SwitchRadio}">
+        <Setter Property="Margin" Value="0,0,0,1" />
+        <Setter Property="Height" Value="39" />
+        <Setter Property="Padding" Value="50,0,0,0" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="CheckedBackground" Value="#F8F8F8" />
+        <Setter Property="CheckedForeground" Value="#303030" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="MouseDownBackground" Value="{StaticResource ExtraLightBrush}" />
+        <Setter Property="MouseDownForeground" Value="#303030" />
+        <Setter Property="MouseOverBackground" Value="White" />
+        <Setter Property="MouseOverForeground" Value="#303030" />
+        <Setter Property="TargetPageSingleton" Value="True" />
+        <Setter Property="Scope" Value="Nav" />
+    </Style>
+</ResourceDictionary>

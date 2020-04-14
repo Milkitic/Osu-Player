@@ -1,7 +1,10 @@
-﻿using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
+﻿using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio.Wave;
+using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared;
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using OsuPlayer.Devices;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,9 +12,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Configuration;
-using NAudio.CoreAudioApi;
-using OsuPlayer.Devices;
 
 namespace Milky.OsuPlayer.Media.Audio.Player
 {
@@ -40,7 +40,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             {
                 if (value == _playStatus) return;
                 _playStatus = value;
-                InvokeMethodHelper.OnMainThread(() => PlayStatusChanged?.Invoke(value));
+                Execute.OnUiThread(() => PlayStatusChanged?.Invoke(value));
             }
         }
 
@@ -66,6 +66,10 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         private SortedSet<Subchannel> _runningChannels = new SortedSet<Subchannel>(new ChannelEndTimeComparer());
         private PlayStatus _playStatus;
 
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private DateTime _lastPositionUpdateTime;
+        public TimeSpan AutoRefreshInterval { get; protected set; } = TimeSpan.FromMilliseconds(500);
+
         public MultichannelPlayer()
         {
             _outputDevice = DeviceProviderExtension.CreateOrGetDefaultDevice(out var actualDeviceInfo);
@@ -74,27 +78,41 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             {
                 if (_outputDevice is WasapiOut wasapi)
                 {
-                    WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample;
+                    WaveFormatFactory.Bits = 16;
+                    //WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample > 24
+                    //    ? 24
+                    //    : wasapi.OutputWaveFormat.BitsPerSample;
                     WaveFormatFactory.Channels = wasapi.OutputWaveFormat.Channels;
                     WaveFormatFactory.SampleRate = wasapi.OutputWaveFormat.SampleRate;
                 }
                 else
                 {
-                    var wasInfo = (WasapiInfo)DeviceProvider.EnumerateAvailableDevices().First(k =>
-                        k.FriendlyName?.Contains(actualDeviceInfo.FriendlyName) == true && k is WasapiInfo);
-                    wasapi = new WasapiOut(wasInfo.Device, AudioClientShareMode.Shared, true,
-                        AppSettings.Default.Play.DesiredLatency);
-                    WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample;
+                    if (actualDeviceInfo is DirectSoundOutInfo dsoi && dsoi.DeviceGuid == Guid.Empty)
+                    {
+                        wasapi = new WasapiOut();
+                    }
+                    else
+                    {
+                        var wasInfo = (WasapiInfo)DeviceProvider.EnumerateAvailableDevices().First(k =>
+                            k.FriendlyName?.Contains(actualDeviceInfo.FriendlyName) == true && k is WasapiInfo);
+                        wasapi = new WasapiOut(wasInfo.Device, AudioClientShareMode.Shared, true,
+                            AppSettings.Default.Play.DesiredLatency);
+                    }
+
+                    WaveFormatFactory.Bits = 16;
+                    //WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample > 24
+                    //    ? 24
+                    //    : wasapi.OutputWaveFormat.BitsPerSample;
                     WaveFormatFactory.Channels = wasapi.OutputWaveFormat.Channels;
                     WaveFormatFactory.SampleRate = wasapi.OutputWaveFormat.SampleRate;
                 }
 
-                Console.WriteLine("BitsPerSample: {0}, Channels: {1}, SampleRate: {2}", WaveFormatFactory.Bits,
+                Logger.Debug("BitsPerSample: {0}, Channels: {1}, SampleRate: {2}", WaveFormatFactory.Bits,
                     WaveFormatFactory.Channels, WaveFormatFactory.SampleRate);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Logger.Error(ex, "Error while getting device output wave format, use default settings.");
                 WaveFormatFactory.Bits = 16;
                 WaveFormatFactory.Channels = 2;
                 WaveFormatFactory.SampleRate = 44100;
@@ -117,6 +135,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             _cts?.Dispose();
             _cts = new CancellationTokenSource();
             _innerTimelineSw.Start();
+            RaisePositionUpdated(_innerTimelineSw.Elapsed, true);
 
             if (_channelsQueue == null)
                 await RequeueChannel().ConfigureAwait(false);
@@ -126,7 +145,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                 var date = DateTime.Now;
                 while (!_cts.IsCancellationRequested)
                 {
-                    RaisePositionUpdated(_innerTimelineSw.Elapsed);
+                    RaisePositionUpdated(_innerTimelineSw.Elapsed, false);
                     //if (_runningChannels.Count > 0)
                     //    Console.WriteLine(string.Join("; ",
                     //        _runningChannels.Select(k => $"{k.Description}: {k.Position.TotalMilliseconds}")));
@@ -136,17 +155,18 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                         _channelsQueue.TryDequeue(out channel))
                     {
                         _runningChannels.Add(channel);
-                        await channel.Play();
-                        Console.WriteLine($"[{_innerTimelineSw.Elapsed}] Play: {channel.Description}");
+                        await channel.Play().ConfigureAwait(false);
+                        Logger.Debug("[{0}] Play: {1}", _innerTimelineSw.Elapsed, channel.Description);
 
                         if (_channelsQueue.Count == 0)
-                            Console.WriteLine($"[{_innerTimelineSw.Elapsed}] All channels are playing.");
+                            Logger.Debug("[{0}] All channels are playing.", _innerTimelineSw.Elapsed);
                     }
 
                     if (Position > Duration)
                     {
                         _innerTimelineSw.Stop();
                         SetTime(Duration);
+                        RaisePositionUpdated(_innerTimelineSw.Elapsed, true);
                         PlayStatus = PlayStatus.Finished;
                         break;
                     }
@@ -159,7 +179,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
                     if (DateTime.Now - date > TimeSpan.FromMilliseconds(50))
                     {
-                        await InnerSync();
+                        await InnerSync().ConfigureAwait(false);
                         date = DateTime.Now;
                     }
 
@@ -178,12 +198,17 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public async Task Pause()
         {
+            var pos = Position;
             await CancelTask().ConfigureAwait(false);
+            _innerTimelineSw.Stop();
+            _innerTimelineSw.SkipTo(pos);
+
             foreach (var channel in _runningChannels.ToList())
             {
                 await channel.Pause().ConfigureAwait(false);
             }
 
+            RaisePositionUpdated(_innerTimelineSw.Elapsed, true);
             PlayStatus = PlayStatus.Paused;
         }
 
@@ -200,14 +225,20 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public async Task Stop()
         {
+            var pos = Position;
             await CancelTask().ConfigureAwait(false);
+            _innerTimelineSw.Stop();
+            _innerTimelineSw.SkipTo(pos);
 
             foreach (var channel in _runningChannels.ToList())
             {
+                Logger.Debug("Will stop: {0}.", channel.Description);
                 await channel.Stop().ConfigureAwait(false);
+                Logger.Debug("{0} stopped.", channel.Description);
             }
 
             SetTime(TimeSpan.Zero);
+            RaisePositionUpdated(_innerTimelineSw.Elapsed, true);
             PlayStatus = PlayStatus.Paused;
         }
 
@@ -226,9 +257,11 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                 await channel.SkipTo(time - channel.ChannelStartTime).ConfigureAwait(false);
                 if (PlayStatus == PlayStatus.Playing)
                 {
-                    await channel.Play();
+                    await channel.Play().ConfigureAwait(false);
                 }
             }
+
+            RaisePositionUpdated(_innerTimelineSw.Elapsed, true);
         }
 
         public async Task SetPlaybackRate(float rate, bool useTempo)
@@ -239,19 +272,32 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             }
 
             PlaybackRate = rate;
-            UseTempo = useTempo;
+            if (useTempo != UseTempo)
+            {
+                UseTempo = useTempo;
+                await SkipTo(Position).ConfigureAwait(false);
+            }
         }
 
         public virtual async Task DisposeAsync()
         {
-            await Stop();
+            Logger.Debug($"Disposing: Start to dispose.");
+            await Stop().ConfigureAwait(false);
+            Logger.Debug($"Disposing: Stopped.");
 
-            foreach (var subchannel in _subchannels.ToList()) await subchannel.DisposeAsync();
+            foreach (var subchannel in _subchannels.ToList())
+            {
+                await subchannel.DisposeAsync().ConfigureAwait(false);
+                Logger.Debug("Disposing: Disposed {0}.", subchannel.Description);
+            }
 
-            _outputDevice?.Dispose();
             Engine?.Dispose();
+            Logger.Debug("Disposing: Disposed {0}.", nameof(Engine));
             _cts?.Dispose();
+            Logger.Debug("Disposing: Disposed {0}.", nameof(_cts));
+            await TaskEx.WhenAllSkipNull(_playTask).ConfigureAwait(false);
             _playTask?.Dispose();
+            Logger.Debug("Disposing: Disposed {0}.", nameof(_playTask));
         }
 
         protected void AddSubchannel(Subchannel channel)
@@ -286,7 +332,6 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         private void SetTime(TimeSpan value)
         {
             _innerTimelineSw.SkipTo(value);
-            RaisePositionUpdated(value);
         }
 
         private async Task InnerSync()
@@ -305,10 +350,14 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                 //Console.WriteLine(referChannelStartTime);
                 foreach (var channel in _runningChannels.Where(k => !k.IsReferenced).ToList())
                 {
-                    await channel.Sync(referChannelStartTime - channel.ChannelStartTime).ConfigureAwait(false);
+                    var targetTime = referChannelStartTime - channel.ChannelStartTime;
+                    //targetTime = channel.Position +
+                    //             TimeSpan.FromMilliseconds((targetTime - channel.Position).TotalMilliseconds / 2);
+                    await channel.Sync(targetTime).ConfigureAwait(false);
                 }
 
                 _innerTimelineSw.SkipTo(referChannelStartTime);
+                RaisePositionUpdated(_innerTimelineSw.Elapsed, false);
             }
         }
 
@@ -319,21 +368,37 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                 .OrderBy(k => k.ChannelStartTime)
             );
 
+            foreach (var subchannel in _channelsQueue)
+            {
+                if (Position < subchannel.ChannelStartTime)
+                {
+                    await subchannel.Stop().ConfigureAwait(false);
+                }
+            }
+
             var old = _runningChannels.ToList();
             _runningChannels = new SortedSet<Subchannel>(_subchannels
-                .Where(k => k.ChannelStartTime <= Position && k.ChannelEndTime > Position), new ChannelEndTimeComparer());
+                .Where(k => k.ChannelStartTime <= Position && k.ChannelEndTime > Position),
+                new ChannelEndTimeComparer());
             foreach (var subchannel in old)
             {
-                if (!_runningChannels.Contains(subchannel))
-                {
-                    await subchannel.Pause().ConfigureAwait(false);
-                }
+                if (_runningChannels.Contains(subchannel)) continue;
+                //if (subchannel.ChannelStartTime < Position)
+                //{
+                //    await subchannel.Stop().ConfigureAwait(false);
+                //}
+                //else
+                //{
+                await subchannel.Pause().ConfigureAwait(false);
+                //}
             }
         }
 
-        private void RaisePositionUpdated(TimeSpan value)
+        protected void RaisePositionUpdated(TimeSpan value, bool force)
         {
-            InvokeMethodHelper.OnMainThread(() => PositionUpdated?.Invoke(value));
+            if (!force && DateTime.Now - _lastPositionUpdateTime < AutoRefreshInterval) return;
+            PositionUpdated?.Invoke(value);
+            _lastPositionUpdateTime = DateTime.Now;
         }
     }
 }

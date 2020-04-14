@@ -1,0 +1,317 @@
+﻿<UserControl
+    x:Class="Milky.OsuPlayer.UserControls.MiniPlayController"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
+    xmlns:converters="clr-namespace:Milky.OsuPlayer.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:userControls="clr-namespace:Milky.OsuPlayer.UserControls"
+    d:DesignHeight="80"
+    d:DesignWidth="300"
+    FontFamily="{StaticResource SspRegular}"
+    Initialized="UserControl_Initialized"
+    Loaded="UserControl_Loaded"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:Multi_PercentAndActualWidthToWidth x:Key="Multi_PercentAndActualWidthToWidth" />
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <userControls:MiniPlayListControlVm />
+    </UserControl.DataContext>
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Border
+            x:Name="BgBorder"
+            Grid.RowSpan="3"
+            ClipToBounds="True"
+            Opacity="0.8">
+            <Border.Effect>
+                <BlurEffect x:Name="BlurEffect" Radius="20" />
+            </Border.Effect>
+            <Image
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Source="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.BackgroundPath}"
+                Stretch="UniformToFill" />
+        </Border>
+        <Rectangle
+            x:Name="RectCover"
+            Grid.Row="0"
+            Grid.RowSpan="3"
+            Fill="#C0FFFFFF" />
+        <Border
+            x:Name="OsuBg"
+            Grid.Row="0"
+            Grid.RowSpan="3"
+            Opacity="1"
+            RenderOptions.BitmapScalingMode="HighQuality">
+            <Rectangle
+                x:Name="BgRetc"
+                MouseLeave="BgRetc_MouseLeave"
+                MouseMove="BgRetc_MouseMove">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="{StaticResource TextureSource3}" Stretch="UniformToFill" />
+                </Rectangle.Fill>
+            </Rectangle>
+        </Border>
+        <StackPanel
+            Grid.Row="0"
+            Margin="2"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Orientation="Horizontal">
+            <buttonComponent:CommonButton
+                x:Name="VolumeButton"
+                Width="18"
+                Height="18"
+                Margin="2"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                BorderThickness="0"
+                Click="VolumeButton_Click"
+                IconMargin="0"
+                IconSize="17"
+                IconTemplate="{StaticResource VolumeTempl}"
+                MouseDownBackground="#80D0D0D0"
+                MouseOverBackground="#80E0E0E0"
+                WindowChrome.IsHitTestVisibleInChrome="True" />
+            <buttonComponent:CommonButton
+                Width="18"
+                Height="18"
+                Margin="2"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                BorderThickness="0"
+                Click="CommonButton_Click"
+                IconMargin="0"
+                IconSize="18"
+                IconTemplate="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}"
+                MouseDownBackground="#80D0D0D0"
+                MouseOverBackground="#80E0E0E0"
+                WindowChrome.IsHitTestVisibleInChrome="True" />
+        </StackPanel>
+        <StackPanel
+            Grid.Row="0"
+            Grid.RowSpan="3"
+            Margin="2"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Orientation="Horizontal">
+            <buttonComponent:CommonButton
+                x:Name="PlayListButton"
+                Width="14"
+                Height="14"
+                Margin="2,1"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                BorderThickness="0"
+                Click="PlayListButton_Click"
+                IconMargin="0"
+                IconSize="13"
+                IconTemplate="{StaticResource PlayListTempl}"
+                MouseDownBackground="#80D0D0D0"
+                MouseOverBackground="#80E0E0E0"
+                WindowChrome.IsHitTestVisibleInChrome="True" />
+            <buttonComponent:CommonButton
+                x:Name="ModeButton"
+                Width="14"
+                Height="14"
+                Margin="2,1"
+                Background="Transparent"
+                BorderThickness="0"
+                Click="ModeButton_Click"
+                Foreground="#FF646C77"
+                IconMargin="0"
+                IconSize="13"
+                IconTemplate="{Binding Controller.PlayList.Mode, Converter={StaticResource PlayModeConverter}, ConverterParameter=S}"
+                MouseDownBackground="#80D0D0D0"
+                MouseOverBackground="#80E0E0E0"
+                WindowChrome.IsHitTestVisibleInChrome="True" />
+            <buttonComponent:CommonButton
+                Width="14"
+                Height="14"
+                Margin="2,1"
+                Background="Transparent"
+                BorderThickness="0"
+                Click="MaxButton_Click"
+                Content="▢"
+                Foreground="#FF646C77"
+                IsTabStop="False"
+                MouseDownBackground="#A0D0D0D0"
+                MouseOverBackground="#60D0D0D0"
+                WindowChrome.IsHitTestVisibleInChrome="True" />
+            <buttonComponent:CommonButton
+                Width="14"
+                Height="14"
+                Margin="1"
+                Background="Transparent"
+                BorderThickness="0"
+                Click="CloseButton_Click"
+                Content="×"
+                Foreground="#FF646C77"
+                IsTabStop="False"
+                MouseDownBackground="#30A06349"
+                MouseOverBackground="#60D0D0D0"
+                WindowChrome.IsHitTestVisibleInChrome="True" />
+        </StackPanel>
+        <StackPanel
+            Grid.Row="0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
+            <buttonComponent:CommonButton
+                Width="28"
+                Height="28"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                BorderThickness="0"
+                Command="{Binding PlayPrevCommand}"
+                IconMargin="0"
+                IconTemplate="{StaticResource PrevTempl}"
+                MouseDownBackground="#80D0D0D0"
+                MouseOverBackground="#80E0E0E0"
+                WindowChrome.IsHitTestVisibleInChrome="True" />
+            <buttonComponent:CommonButton
+                Width="28"
+                Height="28"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                BorderThickness="0"
+                Command="{Binding PlayPauseCommand}"
+                MouseDownBackground="#80D0D0D0"
+                MouseOverBackground="#80E0E0E0"
+                Visibility="Visible"
+                WindowChrome.IsHitTestVisibleInChrome="True">
+                <buttonComponent:CommonButton.IconTemplate>
+                    <MultiBinding Converter="{StaticResource PlayingConverter}">
+                        <Binding Path="Shared.IsPlaying" />
+                        <Binding RelativeSource="{RelativeSource Self}" />
+                    </MultiBinding>
+                </buttonComponent:CommonButton.IconTemplate>
+                <buttonComponent:CommonButton.Style>
+                    <Style BasedOn="{StaticResource {x:Type buttonComponent:CommonButton}}" TargetType="buttonComponent:CommonButton">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Shared.IsPlaying}" Value="True">
+                                <Setter Property="IconSize" Value="14" />
+                                <Setter Property="IconMargin" Value="0,0,0,0" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Shared.IsPlaying}" Value="False">
+                                <Setter Property="IconSize" Value="16" />
+                                <Setter Property="IconMargin" Value="1,0,0,0" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </buttonComponent:CommonButton.Style>
+            </buttonComponent:CommonButton>
+            <buttonComponent:CommonButton
+                Width="28"
+                Height="28"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                BorderThickness="0"
+                Command="{Binding PlayNextCommand}"
+                IconMargin="0"
+                IconTemplate="{StaticResource NextTempl}"
+                MouseDownBackground="#80D0D0D0"
+                MouseOverBackground="#80E0E0E0"
+                WindowChrome.IsHitTestVisibleInChrome="True" />
+        </StackPanel>
+        <TextBlock
+            Grid.Row="1"
+            Margin="8,0,8,3"
+            HorizontalAlignment="Center"
+            Foreground="#303030">
+            <Run Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.TitleAuto, Mode=OneWay}" />
+            <Run Text="-" />
+            <Run Foreground="#484848" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.ArtistAuto, Mode=OneWay}" />
+        </TextBlock>
+        <Canvas
+            x:Name="ProgressBar"
+            Grid.Row="2"
+            Height="5"
+            WindowChrome.IsHitTestVisibleInChrome="True">
+            <Canvas.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0" Color="#00A0A0A0" />
+                    <GradientStop Offset="1" Color="#C0FFFFFF" />
+                </LinearGradientBrush>
+            </Canvas.Background>
+            <Rectangle Height="5">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Offset="0" Color="#00A0A0A0" />
+                        <GradientStop Offset="1" Color="#A0E04452" />
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+                <Rectangle.Width>
+                    <MultiBinding Converter="{StaticResource Multi_PercentAndActualWidthToWidth}">
+                        <Binding Path="PositionPercent" />
+                        <Binding ElementName="ProgressBar" Path="ActualWidth" />
+                    </MultiBinding>
+                </Rectangle.Width>
+            </Rectangle>
+            <Canvas Canvas.Left="-1" Width="{Binding ActualWidth, ElementName=ProgressBar}">
+                <Ellipse
+                    Canvas.Top="3"
+                    Width="2"
+                    Height="2"
+                    Fill="#C0E04452">
+                    <Ellipse.Effect>
+                        <DropShadowEffect
+                            BlurRadius="5"
+                            ShadowDepth="0"
+                            Color="#C0E04452" />
+                    </Ellipse.Effect>
+                    <Canvas.Left>
+                        <MultiBinding Converter="{StaticResource Multi_PercentAndActualWidthToWidth}">
+                            <Binding Path="PositionPercent" />
+                            <Binding ElementName="ProgressBar" Path="ActualWidth" />
+                        </MultiBinding>
+                    </Canvas.Left>
+                </Ellipse>
+            </Canvas>
+        </Canvas>
+        <Popup
+            x:Name="PopVolume"
+            Grid.Row="0"
+            Grid.Column="0"
+            Width="170"
+            AllowsTransparency="True"
+            Placement="Top"
+            PlacementTarget="{Binding ElementName=VolumeButton}"
+            PopupAnimation="Fade"
+            StaysOpen="False">
+            <userControls:VolumeControl x:Name="VolumeControl" />
+        </Popup>
+        <Popup
+            x:Name="PopPlayList"
+            Grid.Row="0"
+            Grid.Column="0"
+            Width="300"
+            Height="260"
+            AllowsTransparency="True"
+            Placement="Top"
+            PopupAnimation="Slide"
+            StaysOpen="False"
+            VerticalOffset="5">
+            <userControls:PlayListControl CloseRequested="PlayListControl_CloseRequested" FontSize="11" />
+        </Popup>
+        <Popup
+            x:Name="PopMode"
+            Grid.Row="0"
+            Grid.Column="0"
+            Width="110"
+            AllowsTransparency="True"
+            Placement="Top"
+            PlacementTarget="{Binding ElementName=ModeButton}"
+            PopupAnimation="Fade"
+            StaysOpen="False">
+            <userControls:PlayModeControl x:Name="PlayModeControl" />
+        </Popup>
+    </Grid>
+</UserControl>

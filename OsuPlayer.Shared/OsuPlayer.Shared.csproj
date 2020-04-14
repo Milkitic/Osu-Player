@@ -31,8 +31,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.7.0\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,10 +49,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InvokeMethodHelper.cs" />
+    <Compile Include="ConsoleManager.cs" />
+    <Compile Include="Downloader.cs" />
+    <Compile Include="InvariantCultureLayoutRendererWrapper.cs" />
+    <Compile Include="Models\BeatmapSortMode.cs" />
+    <Compile Include="ConcurrentFile.cs" />
+    <Compile Include="ConcurrentRandom.cs" />
+    <Compile Include="DictionaryExtension.cs" />
+    <Compile Include="Models\ExportGroupStyle.cs" />
+    <Compile Include="Models\ExportNamingStyle.cs" />
+    <Compile Include="IAsyncDisposable.cs" />
+    <Compile Include="ListExtension.cs" />
+    <Compile Include="MyCancellationTokenSource.cs" />
+    <Compile Include="Models\PlaylistMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Dependency\Service.cs" />
     <Compile Include="SharedUtils.cs" />
+    <Compile Include="StringExtension.cs" />
     <Compile Include="TaskEx.cs" />
+    <Compile Include="VariableStopwatch.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
+      <Project>{631A4ABE-0C76-4972-97F2-F6928F0608EE}</Project>
+      <Name>OSharp.Beatmap</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj">
+      <Project>{93E3612C-D388-438F-A04A-047265820998}</Project>
+      <Name>OsuPlayer.Presentation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -35,19 +35,43 @@
     <Reference Include="Microsoft.WindowsAPICodePack.Shell">
       <HintPath>..\Libraries\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
     </Reference>
-    <Reference Include="NAudio, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NAudio.1.9.0\lib\net35\NAudio.dll</HintPath>
+    <Reference Include="NAudio, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.10.0\lib\net35\NAudio.dll</HintPath>
     </Reference>
-    <Reference Include="NAudio.Vorbis, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NAudio.Vorbis.1.0.0.0\lib\net35\NAudio.Vorbis.dll</HintPath>
+    <Reference Include="NAudio.Vorbis, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.Vorbis.1.2.0\lib\net45\NAudio.Vorbis.dll</HintPath>
     </Reference>
-    <Reference Include="NVorbis, Version=0.8.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NVorbis.0.8.6\lib\net35\NVorbis.dll</HintPath>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.7.0\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis, Version=0.10.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NVorbis.0.10.0\lib\net45\NVorbis.dll</HintPath>
     </Reference>
     <Reference Include="osu-database-reader, Version=2.1.1.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -77,6 +101,12 @@
     <Compile Include="Player\Subchannels\SlideControlType.cs" />
     <Compile Include="Player\Subchannels\SoundElement.cs" />
     <Compile Include="Player\Subchannels\SoundElementTimingComparer.cs" />
+    <Compile Include="Playlist\BeatmapContext.cs" />
+    <Compile Include="Playlist\BeatmapDetail.cs" />
+    <Compile Include="Playlist\PlayControlResult.cs" />
+    <Compile Include="Playlist\PlayControlType.cs" />
+    <Compile Include="Playlist\PlayList.cs" />
+    <Compile Include="Playlist\PlayModifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleChannel.cs" />
     <Compile Include="SoundTouch\SoundTouch.cs" />
@@ -107,17 +137,21 @@
       <Project>{D18BDC44-577C-49BA-BB91-1311422D362A}</Project>
       <Name>OSharp.Storyboard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Libraries\WpfApi\WpfApi.csproj">
-      <Project>{028E6F4E-D538-4B83-904C-C94C2F1E3C83}</Project>
-      <Name>WpfApi</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
       <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>
       <Name>OsuPlayer.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj">
+      <Project>{094FAC4A-6277-46E8-97B4-C992F1674638}</Project>
+      <Name>OsuPlayer.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Devices\OsuPlayer.Devices.csproj">
       <Project>{E290C0D7-06B7-47DC-81E7-98F08654FB0D}</Project>
       <Name>OsuPlayer.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj">
+      <Project>{93E3612C-D388-438F-A04A-047265820998}</Project>
+      <Name>OsuPlayer.Presentation</Name>
     </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj">
       <Project>{C842FAB3-EC80-4E95-B402-BF0572F1806D}</Project>

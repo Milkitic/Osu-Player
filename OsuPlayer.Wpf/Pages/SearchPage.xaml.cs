@@ -1,28 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Metadata;
-using Milky.OsuPlayer.Common.Player;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.UiComponents.PanelComponent;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
-using OSharp.Beatmap;
-using System.Diagnostics;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data.EF;
-using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Control.FrontDialog;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Utils;
-using Milky.WpfApi;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -31,8 +24,9 @@ namespace Milky.OsuPlayer.Pages
     /// </summary>
     public partial class SearchPage : Page
     {
-        private readonly AppDbOperator _dbOperator = new AppDbOperator();
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         private MainWindow _mainWindow;
 
@@ -120,7 +114,7 @@ namespace Milky.OsuPlayer.Pages
         {
             if (ResultList.SelectedItem == null)
                 return null;
-            var map = _dbOperator
+            var map = SafeDbOperator
                 .GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
                 .GetHighestDiff();
             return map;
@@ -150,15 +144,15 @@ namespace Milky.OsuPlayer.Pages
             var dataModel = ViewModel.DisplayedMaps[e.Index];
             try
             {
-                var fileName = await Util.GetThumbByBeatmapDbId(dataModel).ConfigureAwait(false);
+                var fileName = await CommonUtils.GetThumbByBeatmapDbId(dataModel).ConfigureAwait(false);
                 Execute.OnUiThread(() => dataModel.ThumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg"));
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Logger.Error(ex, "Error while loading panel item.");
             }
 
-            Console.WriteLine(e.Index);
+            Logger.Debug("VirtualizingGalleryWrapPanel: {0}", e.Index);
         }
     }
 }

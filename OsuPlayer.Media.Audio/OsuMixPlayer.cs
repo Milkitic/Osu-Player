@@ -1,8 +1,8 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Media.Audio.Player;
 using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
+using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Media.Audio.Wave;
 using OSharp.Beatmap;
 using System;
@@ -15,6 +15,7 @@ namespace Milky.OsuPlayer.Media.Audio
 {
     public class OsuMixPlayer : MultichannelPlayer
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly ConcurrentDictionary<string, string> _pathCache =
             new ConcurrentDictionary<string, string>();
 
@@ -47,46 +48,62 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public override async Task Initialize()
         {
-            if (CachedSound.DefaultSounds.Count == 0)
+            try
             {
-                var files = new DirectoryInfo(Domain.DefaultPath).GetFiles("*.wav");
-                await CachedSound.CreateDefaultCacheSounds(files.Select(k => k.FullName));
+                if (CachedSound.DefaultSounds.Count == 0)
+                {
+                    var files = new DirectoryInfo(Domain.DefaultPath).GetFiles("*.wav");
+                    await CachedSound.CreateDefaultCacheSounds(files.Select(k => k.FullName)).ConfigureAwait(false);
+                }
+
+                var mp3Path = Path.Combine(_sourceFolder, _osuFile.General.AudioFilename);
+                MusicChannel = new SingleMediaChannel(Engine, mp3Path,
+                    AppSettings.Default.Play.PlaybackRate,
+                    AppSettings.Default.Play.PlayUseTempo)
+                {
+                    Description = "Music",
+                    IsReferenced = true
+                };
+
+                AddSubchannel(MusicChannel);
+                await MusicChannel.Initialize().ConfigureAwait(false);
+
+                HitsoundChannel = new HitsoundChannel(this, _osuFile, _sourceFolder, Engine);
+                AddSubchannel(HitsoundChannel);
+                await HitsoundChannel.Initialize().ConfigureAwait(false);
+
+                SampleChannel = new SampleChannel(this, _osuFile, _sourceFolder, Engine);
+                AddSubchannel(SampleChannel);
+                await SampleChannel.Initialize().ConfigureAwait(false);
+                await CachedSound.CreateCacheSounds(HitsoundChannel.SoundElementCollection
+                    .Where(k => k.FilePath != null)
+                    .Select(k => k.FilePath)
+                    .Concat(SampleChannel.SoundElementCollection
+                        .Where(k => k.FilePath != null)
+                        .Select(k => k.FilePath))
+                    .Concat(new[] { mp3Path })
+                ).ConfigureAwait(false);
+                foreach (var channel in Subchannels)
+                {
+                    channel.PlayStatusChanged += status => Logger.Debug($"{channel.Description}: {status}");
+                }
+
+                InitVolume();
+
+                await base.Initialize().ConfigureAwait(false);
             }
-
-            var mp3Path = Path.Combine(_sourceFolder, _osuFile.General.AudioFilename);
-            MusicChannel = new SingleMediaChannel(Engine, mp3Path,
-                AppSettings.Default.Play.PlaybackRate,
-                AppSettings.Default.Play.PlayUseTempo)
+            catch (Exception ex)
             {
-                Description = "Music",
-                IsReferenced = true
-            };
-
-            AddSubchannel(MusicChannel);
-            await MusicChannel.Initialize().ConfigureAwait(false);
-
-            HitsoundChannel = new HitsoundChannel(this, _osuFile, _sourceFolder, Engine);
-            AddSubchannel(HitsoundChannel);
-            await HitsoundChannel.Initialize().ConfigureAwait(false);
-
-            SampleChannel = new SampleChannel(this, _osuFile, _sourceFolder, Engine);
-            AddSubchannel(SampleChannel);
-            await SampleChannel.Initialize().ConfigureAwait(false);
-
-            foreach (var channel in Subchannels)
-            {
-                channel.PlayStatusChanged += status => Console.WriteLine($"{channel.Description}: {status}");
+                Logger.Error(ex, "Error while Initializing players.");
+                throw;
             }
-
-            InitVolume();
-
-            await base.Initialize();
         }
 
         private void InitVolume()
         {
             MusicChannel.Volume = AppSettings.Default.Volume.Music;
             HitsoundChannel.Volume = AppSettings.Default.Volume.Hitsound;
+            HitsoundChannel.BalanceFactor = AppSettings.Default.Volume.BalanceFactor / 100;
             SampleChannel.Volume = AppSettings.Default.Volume.Sample;
             Volume = AppSettings.Default.Volume.Main;
             AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
@@ -102,6 +119,9 @@ namespace Milky.OsuPlayer.Media.Audio
                 case nameof(AppSettings.Default.Volume.Hitsound):
                     HitsoundChannel.Volume = AppSettings.Default.Volume.Hitsound;
                     break;
+                case nameof(AppSettings.Default.Volume.BalanceFactor):
+                    HitsoundChannel.BalanceFactor = AppSettings.Default.Volume.BalanceFactor / 100;
+                    break;
                 case nameof(AppSettings.Default.Volume.Sample):
                     SampleChannel.Volume = AppSettings.Default.Volume.Sample;
                     break;
@@ -116,19 +136,19 @@ namespace Milky.OsuPlayer.Media.Audio
             switch (modifier)
             {
                 case PlayModifier.None:
-                    await SetPlaybackRate(1, false);
+                    await SetPlaybackRate(1, false).ConfigureAwait(false);
                     break;
                 case PlayModifier.DoubleTime:
-                    await SetPlaybackRate(1.5f, true);
+                    await SetPlaybackRate(1.5f, true).ConfigureAwait(false);
                     break;
                 case PlayModifier.NightCore:
-                    await SetPlaybackRate(1.5f, false);
+                    await SetPlaybackRate(1.5f, false).ConfigureAwait(false);
                     break;
                 case PlayModifier.HalfTime:
-                    await SetPlaybackRate(0.75f, true);
+                    await SetPlaybackRate(0.75f, true).ConfigureAwait(false);
                     break;
                 case PlayModifier.DayCore:
-                    await SetPlaybackRate(0.75f, false);
+                    await SetPlaybackRate(0.75f, false).ConfigureAwait(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(modifier), modifier, null);

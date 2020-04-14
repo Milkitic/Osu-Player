@@ -1,20 +1,25 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
 using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Common.Scanning;
-using Milky.OsuPlayer.Control;
-using Milky.OsuPlayer.Control.FrontDialog;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Audio.Playlist;
+using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using Milky.OsuPlayer.UserControls;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
-using Milky.WpfApi;
 using OSharp.Beatmap;
+using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,22 +29,25 @@ namespace Milky.OsuPlayer.Windows
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : WindowBase
+    public partial class MainWindow : WindowEx
     {
         internal MainWindowViewModel ViewModel { get; }
 
         public readonly LyricWindow LyricWindow;
         public ConfigWindow ConfigWindow;
         public readonly OverallKeyHook OverallKeyHook;
-        private bool ForceExit = false;
+        private bool _forceExit = false;
 
         private WindowState _lastState;
 
-        private readonly AppDbOperator _appDbOperator = new AppDbOperator();
+        private readonly SafeDbOperator _safeDbOperator = new SafeDbOperator();
 
         private Task _searchLyricTask;
 
-        private readonly ObservablePlayController _controller = Services.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
+        private bool _disposed;
 
         public MainWindow()
         {
@@ -51,6 +59,8 @@ namespace Milky.OsuPlayer.Windows
 
             OverallKeyHook = new OverallKeyHook(this);
             Animation.Loaded += Animation_Loaded;
+            PlayController.LikeClicked += Controller_LikeClicked;
+            PlayController.ThumbClicked += Controller_ThumbClicked;
             MiniPlayController.CloseButtonClicked += () =>
             {
                 if (AppSettings.Default.General.ExitWhenClosed == null) Show();
@@ -59,10 +69,10 @@ namespace Milky.OsuPlayer.Windows
             MiniPlayController.MaxButtonClicked += () =>
             {
                 Topmost = true;
-                Topmost = false;
                 Show();
                 SharedVm.Default.EnableVideo = true;
                 GetCurrentFirst<MiniWindow>()?.Close();
+                Topmost = false;
             };
             TryBindHotKeys();
         }
@@ -101,7 +111,7 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         public void UpdateCollections()
         {
-            var list = _appDbOperator.GetCollections();
+            var list = _safeDbOperator.GetCollections();
             list.Reverse();
             ViewModel.Collection = new ObservableCollection<Collection>(list);
         }
@@ -123,7 +133,7 @@ namespace Milky.OsuPlayer.Windows
                 {
                     if (!_controller.IsPlayerReady) return;
 
-                    var lyricInst = Services.Get<LyricsInst>();
+                    var lyricInst = Service.Get<LyricsInst>();
                     var meta = _controller.PlayList.CurrentInfo.OsuFile.Metadata;
                     MetaString metaArtist = meta.ArtistMeta;
                     MetaString metaTitle = meta.TitleMeta;
@@ -166,16 +176,41 @@ namespace Milky.OsuPlayer.Windows
                     ShowTitleBar = false
                 });
                 //WelcomeControl.Show();
-                await Services.Get<OsuDbInst>().LoadLocalDbAsync();
-                await Services.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Default.General.CustomSongsPath);
+                //try
+                //{
+                //    await Service.Get<OsuDbInst>().LoadLocalDbAsync();
+                //}
+                //catch (Exception ex)
+                //{
+                //    Notification.Push(I18NUtil.GetString("err-mapNotInDb"), Title);
+                //}
+
+                try
+                {
+                    await Service.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Default.General.CustomSongsPath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, "Error while scanning custom folder: {0}",
+                        AppSettings.Default.General.CustomSongsPath);
+                    Notification.Push(I18NUtil.GetString("err-custom-scan"), Title);
+                }
             }
             else
             {
                 if (DateTime.Now - AppSettings.Default.LastTimeScanOsuDb > TimeSpan.FromDays(1))
                 {
-                    await Services.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, true);
-                    AppSettings.Default.LastTimeScanOsuDb = DateTime.Now;
-                    AppSettings.SaveDefault();
+                    try
+                    {
+                        await Service.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, true);
+                        AppSettings.Default.LastTimeScanOsuDb = DateTime.Now;
+                        AppSettings.SaveDefault();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex, "Error while syncing osu!db: {0}", AppSettings.Default.General.DbPath);
+                        Notification.Push(I18NUtil.GetString("err-osudb-sync"), Title);
+                    }
                 }
             }
 
@@ -183,12 +218,20 @@ namespace Milky.OsuPlayer.Windows
 
             _controller.LoadFinished += Controller_LoadFinished;
 
-            var updater = Services.Get<Updater>();
-            bool? hasUpdate = await updater.CheckUpdateAsync();
-            if (hasUpdate == true && updater.NewRelease.NewVerString != AppSettings.Default.IgnoredVer)
+            try
             {
-                var newVersionWindow = new NewVersionWindow(updater.NewRelease, this);
-                newVersionWindow.ShowDialog();
+                var updater = Service.Get<UpdateInst>();
+                bool? hasUpdate = await updater.CheckUpdateAsync();
+                if (hasUpdate == true && updater.NewRelease.NewVerString != AppSettings.Default.IgnoredVer)
+                {
+                    var newVersionWindow = new NewVersionWindow(updater.NewRelease, this);
+                    newVersionWindow.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while checking for update");
+                Notification.Push(I18NUtil.GetString("err-update-check"), Title);
             }
         }
 
@@ -197,7 +240,7 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (AppSettings.Default.General.ExitWhenClosed == null && !ForceExit)
+            if (AppSettings.Default.General.ExitWhenClosed == null && !_forceExit)
             {
                 e.Cancel = true;
                 var closingControl = new ClosingControl();
@@ -213,7 +256,7 @@ namespace Milky.OsuPlayer.Windows
                         Hide();
                     else
                     {
-                        ForceExit = true;
+                        _forceExit = true;
                         Close();
                     }
                 });
@@ -221,7 +264,7 @@ namespace Milky.OsuPlayer.Windows
                 return;
             }
 
-            if (AppSettings.Default.General.ExitWhenClosed == false && !ForceExit)
+            if (AppSettings.Default.General.ExitWhenClosed == false && !_forceExit)
             {
                 WindowState = WindowState.Minimized;
                 GetCurrentFirst<MiniWindow>()?.Close();
@@ -230,14 +273,21 @@ namespace Milky.OsuPlayer.Windows
                 return;
             }
 
+            if (_disposed) return;
+            e.Cancel = true;
             GetCurrentFirst<MiniWindow>()?.Close();
-            await _controller?.DisposeAsync();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
+
             if (ConfigWindow != null && !ConfigWindow.IsClosed && ConfigWindow.IsInitialized)
             {
                 ConfigWindow.Close();
             }
+
+            if (_controller != null) await _controller.DisposeAsync().ConfigureAwait(false);
+            _disposed = true;
+            await Task.CompletedTask.ConfigureAwait(false);
+            Execute.ToUiThread(ForceClose);
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -253,13 +303,22 @@ namespace Milky.OsuPlayer.Windows
                 return;
 
             // 加至播放列表
-            var entries = _appDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList);
+            var entries =
+                _safeDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList.Cast<IMapIdentifiable>());
 
             await _controller.PlayList.SetSongListAsync(entries, true, false, false);
 
             bool play = AppSettings.Default.Play.AutoPlay;
-            var current = _appDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
-            await _controller.PlayNewAsync(current, play);
+            if (AppSettings.Default.CurrentMap.IsMapTemporary())
+            {
+                await _controller.PlayNewAsync(AppSettings.Default.CurrentMap.Value.FolderName, play);
+            }
+            else
+            {
+                var current = _safeDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
+                if (current == null) return;
+                await _controller.PlayNewAsync(current, play);
+            }
         }
 
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
@@ -267,7 +326,9 @@ namespace Milky.OsuPlayer.Windows
             var addCollectionControl = new AddCollectionControl();
             FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, (obj, args) =>
             {
-                _appDbOperator.AddCollection(addCollectionControl.CollectionName.Text);
+                if (!_safeDbOperator.TryAddCollection(addCollectionControl.CollectionName.Text))
+                    return;
+
                 UpdateCollections();
             });
         }
@@ -308,7 +369,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void MenuExit_Click(object sender, RoutedEventArgs e)
         {
-            ForceExit = true;
+            _forceExit = true;
             this.Close();
         }
 
@@ -343,20 +404,16 @@ namespace Milky.OsuPlayer.Windows
             });
         }
 
-        private void Controller_OnThumbClick(object sender, RoutedEventArgs e)
+        private void Controller_ThumbClicked(object sender, RoutedEventArgs e)
         {
             MainFrame.Content = null;
         }
 
-        private void Controller_OnLikeClick(object sender, RoutedEventArgs e)
+        private void Controller_LikeClicked(object sender, RoutedEventArgs e)
         {
             var detail = _controller.PlayList.CurrentInfo.Beatmap;
-            var entry = _appDbOperator.GetBeatmapByIdentifiable(detail.GetIdentity());
-            if (entry == null)
-            {
-                Notification.Push("该图不存在于该osu!db中", Title);
-                return;
-            }
+            var entry = _safeDbOperator.GetBeatmapByIdentifiable(detail.GetIdentity());
+            if (entry == null) return;
 
             FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
                 DialogOptionFactory.SelectCollectionOptions);
@@ -366,7 +423,7 @@ namespace Milky.OsuPlayer.Windows
 
         public void ForceClose()
         {
-            ForceExit = true;
+            _forceExit = true;
             Close();
         }
     }

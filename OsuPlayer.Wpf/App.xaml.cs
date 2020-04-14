@@ -1,26 +1,15 @@
-﻿using Microsoft.Win32;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
+﻿using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Player;
 using Milky.OsuPlayer.Common.Scanning;
 using Milky.OsuPlayer.Instances;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using System.Windows;
-using System.Xaml;
-using Milky.OsuPlayer.Control.Notification;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Shared;
-
-#if !DEBUG
-using Sentry;
-#endif
+using NLog;
 
 namespace Milky.OsuPlayer
 {
@@ -32,23 +21,19 @@ namespace Milky.OsuPlayer
         [STAThread]
         public static void Main()
         {
-#if !DEBUG
-            SentrySdk.Init("https://1fe13baa86284da5a0a70efa9750650e:fcbd468d43f94fb1b43af424517ec00b@sentry.io/1412154");
-#endif
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
-            StartupConfig.Startup();
+            EntryStartup.Startup();
 
             var controller = new ObservablePlayController();
             controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
 
-            Services.TryAddInstance(controller);
-            Services.TryAddInstance(new OsuDbInst());
-            //Services.TryAddInstance(new PlayersInst());
-            Services.TryAddInstance(new LyricsInst());
-            Services.TryAddInstance(new Updater());
-            Services.TryAddInstance(new OsuFileScanner());
+            Service.TryAddInstance(controller);
+            Service.TryAddInstance(new OsuDbInst());
+            Service.TryAddInstance(new LyricsInst());
+            Service.TryAddInstance(new UpdateInst());
+            Service.TryAddInstance(new OsuFileScanner());
 
-            Services.Get<LyricsInst>().ReloadLyricProvider();
+            Service.Get<LyricsInst>().ReloadLyricProvider();
 
             var app = new App();
             app.InitializeComponent();
@@ -90,8 +75,14 @@ namespace Milky.OsuPlayer
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            InvokeMethodHelper.SetMainThreadContext();
-            I18nUtil.LoadI18N();
+            Execute.SetMainThreadContext();
+            I18NUtil.LoadI18N();
+        }
+
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            AppSettings.Default?.Dispose();
+            LogManager.Shutdown();
         }
     }
 }

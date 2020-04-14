@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Media.Audio.Player;
+using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
+using OSharp.Beatmap;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Media.Audio.Player;
-using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
-using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
@@ -50,7 +50,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
             var elementList = new List<SoundElement>(elements);
 
-            if (PlaybackRate.Equals(1.5f) && UseTempo)
+            if (PlaybackRate.Equals(1.5f) && !UseTempo)
             {
                 var duration = MathEx.Max(_player.MusicChannel.ChannelEndTime,
                     _player.HitsoundChannel.ChannelEndTime,

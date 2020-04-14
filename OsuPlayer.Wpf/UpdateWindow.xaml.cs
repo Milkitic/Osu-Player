@@ -1,6 +1,4 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Web;
-using Milky.OsuPlayer.Models.Github;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Windows;
 using System;
@@ -17,12 +15,14 @@ namespace Milky.OsuPlayer
     /// </summary>
     public partial class UpdateWindow : Window
     {
-        private readonly Release _release;
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
+        private readonly GithubRelease _release;
         private readonly MainWindow _mainWindow;
         private Downloader _downloader;
         private readonly string _savePath = Path.Combine(Domain.CurrentPath, "update.zip");
 
-        public UpdateWindow(Release release, MainWindow mainWindow)
+        public UpdateWindow(GithubRelease release, MainWindow mainWindow)
         {
             _release = release;
             _mainWindow = mainWindow;
@@ -44,7 +44,9 @@ namespace Milky.OsuPlayer
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, "更新出错，请重启软件重试：" + ex.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Error(ex, "Error while updating.");
+                MessageBox.Show(this, "更新出错，请重启软件重试：" + ex.Message, Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

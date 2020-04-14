@@ -1,6 +1,7 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Media.Audio.Player;
 using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
+using Milky.OsuPlayer.Shared;
 using OSharp.Beatmap;
 using OSharp.Beatmap.Sections.GamePlay;
 using OSharp.Beatmap.Sections.HitObject;

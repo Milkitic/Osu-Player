@@ -1,8 +1,8 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using OsuPlayer.Devices;
+﻿using OsuPlayer.Devices;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
