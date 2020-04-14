@@ -33,6 +33,12 @@ namespace Milky.OsuPlayer.Common.Instances
                     json = await HttpGetAsync("http://api.github.com/repos/Milkitic/Osu-Player/releases");
                 }
 
+                if (json.Contains("API rate limit"))
+                {
+                    Logger.Error("Error while checking for updates: API rate limit");
+                    throw new Exception("Github API rate limit exceeded.");
+                }
+
                 List<GithubRelease> releases = JsonConvert.DeserializeObject<List<GithubRelease>>(json);
                 var latest = releases.OrderByDescending(k => k.PublishedAt)
                     .FirstOrDefault(k => !k.Draft && !k.PreRelease);
