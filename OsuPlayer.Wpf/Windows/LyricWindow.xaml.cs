@@ -325,9 +325,14 @@ namespace Milky.OsuPlayer.Windows
 
         public new void Show()
         {
+            var meta = _controller.PlayList.CurrentInfo?.OsuFile?.Metadata;
+            MetaString metaArtist = meta?.ArtistMeta ?? default;
+            MetaString metaTitle = meta?.TitleMeta ?? default;
+            SetNewLyric(null, metaArtist, metaTitle);
             AppSettings.Default.Lyric.EnableLyric = true;
             AppSettings.SaveDefault();
             ViewModel.IsLyricWindowShown = true;
+            _mainWindow.SetLyricSynchronously();
             base.Show();
         }
 
@@ -336,6 +341,7 @@ namespace Milky.OsuPlayer.Windows
             AppSettings.Default.Lyric.EnableLyric = false;
             AppSettings.SaveDefault();
             ViewModel.IsLyricWindowShown = false;
+            CancelTask();
             base.Hide();
         }
 
