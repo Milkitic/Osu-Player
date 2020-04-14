@@ -231,7 +231,7 @@ namespace Milky.OsuPlayer.Windows
             catch (Exception ex)
             {
                 Logger.Error(ex, "Error while checking for update");
-                Notification.Push(I18NUtil.GetString("err-update-check"), Title);
+                Notification.Push(I18NUtil.GetString("err-update-check") + $": {ex.Message}", Title);
             }
         }
 
