@@ -119,8 +119,7 @@ namespace Milky.OsuPlayer.UiComponents.PanelComponent
                             if (!child.Equals(children[childIndex]))
                                 RemoveInternalChildRange(childIndex, 1);
                         }
-
-
+                        
                         itemIndex++;
                         childIndex++;
                     }

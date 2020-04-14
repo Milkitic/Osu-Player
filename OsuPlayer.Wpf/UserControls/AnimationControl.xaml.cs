@@ -185,31 +185,34 @@ namespace Milky.OsuPlayer.UserControls
             await VideoElement.Stop();
             await VideoElement.Close();
 
-            _beatmapCtx.PlayHandle = async () => await _controller.Player.Play().ConfigureAwait(false);
-            _beatmapCtx.PauseHandle = async () => await _controller.Player.Pause().ConfigureAwait(false);
-            _beatmapCtx.StopHandle = async () => await _controller.Player.Stop().ConfigureAwait(false);
-            _beatmapCtx.RestartHandle = async () =>
+            if (_beatmapCtx != null)
             {
-                await _beatmapCtx.StopHandle().ConfigureAwait(false);
-                await _beatmapCtx.PlayHandle().ConfigureAwait(false);
-            };
-            _beatmapCtx.TogglePlayHandle = async () =>
-            {
-                if (_controller.Player.PlayStatus == PlayStatus.Ready ||
-                    _controller.Player.PlayStatus == PlayStatus.Finished ||
-                    _controller.Player.PlayStatus == PlayStatus.Paused)
+                _beatmapCtx.PlayHandle = async () => await _controller.Player.Play().ConfigureAwait(false);
+                _beatmapCtx.PauseHandle = async () => await _controller.Player.Pause().ConfigureAwait(false);
+                _beatmapCtx.StopHandle = async () => await _controller.Player.Stop().ConfigureAwait(false);
+                _beatmapCtx.RestartHandle = async () =>
                 {
+                    await _beatmapCtx.StopHandle().ConfigureAwait(false);
                     await _beatmapCtx.PlayHandle().ConfigureAwait(false);
-                }
-                else if (_controller.Player.PlayStatus == PlayStatus.Playing)
+                };
+                _beatmapCtx.TogglePlayHandle = async () =>
                 {
-                    await _beatmapCtx.PauseHandle().ConfigureAwait(false);
-                }
-            };
+                    if (_controller.Player.PlayStatus == PlayStatus.Ready ||
+                        _controller.Player.PlayStatus == PlayStatus.Finished ||
+                        _controller.Player.PlayStatus == PlayStatus.Paused)
+                    {
+                        await _beatmapCtx.PlayHandle().ConfigureAwait(false);
+                    }
+                    else if (_controller.Player.PlayStatus == PlayStatus.Playing)
+                    {
+                        await _beatmapCtx.PauseHandle().ConfigureAwait(false);
+                    }
+                };
 
-            _beatmapCtx.SetTimeHandle = async (time, play) =>
-                await _controller.Player.SkipTo(TimeSpan.FromMilliseconds(time)).ConfigureAwait(false);
-
+                _beatmapCtx.SetTimeHandle = async (time, play) =>
+                    await _controller.Player.SkipTo(TimeSpan.FromMilliseconds(time)).ConfigureAwait(false);
+            }
+           
             Execute.OnUiThread(() =>
             {
                 VideoElementBorder.Visibility = Visibility.Hidden;
@@ -310,8 +313,7 @@ namespace Milky.OsuPlayer.UserControls
                 }
             };
         }
-
-
+        
         private async void OnMediaOpened(object sender, MediaOpenedEventArgs e)
         {
             VideoElementBorder.Visibility = Visibility.Visible;

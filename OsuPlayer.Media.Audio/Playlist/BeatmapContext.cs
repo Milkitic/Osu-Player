@@ -32,7 +32,7 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         public Beatmap Beatmap { get; }
         public BeatmapSettings BeatmapSettings { get; private set; }
         public BeatmapDetail BeatmapDetail { get; }
-        public OsuFile OsuFile { get; set; }
+        public LocalOsuFile OsuFile { get; set; }
         public bool PlayInstantly { get; set; }
         public Func<Task> PlayHandle { get; set; }
         public Func<Task> PauseHandle { get; set; }

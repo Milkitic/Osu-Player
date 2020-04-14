@@ -59,7 +59,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
             {
                 paths.AsParallel()
                     .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
-                    .ForAll(k => CreateCacheSound(k, false).Wait());
+                    .ForAll(k => GetOrCreateCacheSound(k, false).Wait());
             }).ConfigureAwait(false);
             
             //foreach (var path in paths)
@@ -77,7 +77,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
         {
             foreach (var path in paths)
             {
-                await CreateCacheSound(path, true).ConfigureAwait(false);
+                await GetOrCreateCacheSound(path, true).ConfigureAwait(false);
             }
         }
 
@@ -87,7 +87,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
                 return DefaultDictionary[path];
 
             //if (!CachedDictionary.ContainsKey(path))
-            return await CreateCacheSound(path, false).ConfigureAwait(false);
+            return await GetOrCreateCacheSound(path, false).ConfigureAwait(false);
 
             //return CachedDictionary[path];
         }
@@ -127,7 +127,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
             }
         }
 
-        private static async Task<CachedSound> CreateCacheSound(string path, bool isDefault)
+        private static async Task<CachedSound> GetOrCreateCacheSound(string path, bool isDefault)
         {
             string newPath = path;
             if (!File.Exists(newPath))
