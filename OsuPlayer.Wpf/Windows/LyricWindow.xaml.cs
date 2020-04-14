@@ -220,8 +220,12 @@ namespace Milky.OsuPlayer.Windows
                 };
                 TbLyric.Text = content;
             });
+            var time = DateTime.Now;
+            while (!o && !_cts.Token.IsCancellationRequested && DateTime.Now - time < TimeSpan.FromMilliseconds(500))
+            {
+                Thread.Sleep(1);
+            }
 
-            while (!o && !_cts.Token.IsCancellationRequested) { Thread.Sleep(1); }
             Logger.Debug(drawLyric.ToString());
             return drawLyric;
             //var bmp = new Bitmap(1, 1);
@@ -360,9 +364,9 @@ namespace Milky.OsuPlayer.Windows
             await _controller.PlayPrevAsync();
         }
 
-        private void BtnPlay_Click(object sender, RoutedEventArgs e)
+        private async void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
-            _controller.Player.TogglePlay();
+            await _controller.Player.TogglePlay();
         }
 
         private async void BtnNext_Click(object sender, RoutedEventArgs e)
