@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -65,7 +66,14 @@ namespace Milky.OsuPlayer.ViewModels
                     switch (obj)
                     {
                         case string path:
-                            Process.Start(path);
+                            if (Directory.Exists(path))
+                            {
+                                Process.Start(path);
+                            }
+                            else
+                            {
+                                Notification.Push(I18NUtil.GetString("err-dirNotFound"), I18NUtil.GetString("text-error"));
+                            }
                             break;
                         case BeatmapDataModel dataModel:
                             Process.Start("Explorer", "/select," + dataModel.ExportFile);
