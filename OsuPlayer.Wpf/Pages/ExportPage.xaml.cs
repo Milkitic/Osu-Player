@@ -1,9 +1,9 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Shared.Models;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap;
@@ -29,7 +29,7 @@ namespace Milky.OsuPlayer.Pages
         //Page view model
         private static bool _hasTaskSuccess;
         private readonly MainWindow _mainWindow;
-        private static AppDbOperator _appDbOperator = new AppDbOperator();
+        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
 
         public ExportPageViewModel ViewModel { get; }
         public static readonly ConcurrentQueue<Beatmap> TaskQueue = new ConcurrentQueue<Beatmap>();
@@ -125,7 +125,7 @@ namespace Milky.OsuPlayer.Pages
                 if (bgFileInfo.Exists)
                     Export(bgFileInfo, exportBgFolder, exportBgName);
                 if (mp3FileInfo.Exists || bgFileInfo.Exists)
-                    _appDbOperator.AddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
+                    SafeDbOperator.TryAddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
             }
             catch (Exception ex)
             {

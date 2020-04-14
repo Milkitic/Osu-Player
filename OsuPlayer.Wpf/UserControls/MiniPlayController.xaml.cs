@@ -1,14 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Data;
+﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.Utils;
+using System;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Milky.OsuPlayer.UserControls
 {
@@ -52,7 +52,7 @@ namespace Milky.OsuPlayer.UserControls
     public partial class MiniPlayController : UserControl
     {
         private MiniPlayListControlVm _viewModel;
-        private AppDbOperator _appDbOperator = new AppDbOperator();
+        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
 
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
@@ -123,21 +123,21 @@ namespace Milky.OsuPlayer.UserControls
 
         private async void CommonButton_Click(object sender, RoutedEventArgs e)
         {
-            var collection = _appDbOperator.GetCollections().First(k => k.LockedBool);
+            var collection = SafeDbOperator.GetCollections().First(k => k.LockedBool);
             var metadata = _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata;
             if (metadata.IsFavorite)
             {
-                _appDbOperator.RemoveMapFromCollection(_controller.PlayList.CurrentInfo.Beatmap, collection);
-                metadata.IsFavorite = false;
+                if (SafeDbOperator.TryRemoveMapFromCollection(_controller.PlayList.CurrentInfo.Beatmap, collection))
+                    metadata.IsFavorite = false;
             }
             else
             {
-                await SelectCollectionControl.AddToCollectionAsync(collection,
+                if (await SelectCollectionControl.AddToCollectionAsync(collection,
                     new[]
                     {
                         _controller.PlayList.CurrentInfo.Beatmap
-                    });
-                metadata.IsFavorite = true;
+                    }))
+                    metadata.IsFavorite = true;
             }
         }
 

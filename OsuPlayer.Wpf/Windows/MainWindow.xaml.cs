@@ -2,7 +2,6 @@
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Scanning;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
@@ -14,15 +13,16 @@ using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UserControls;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using OSharp.Beatmap;
 using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -40,7 +40,7 @@ namespace Milky.OsuPlayer.Windows
 
         private WindowState _lastState;
 
-        private readonly AppDbOperator _appDbOperator = new AppDbOperator();
+        private readonly SafeDbOperator _safeDbOperator = new SafeDbOperator();
 
         private Task _searchLyricTask;
 
@@ -111,7 +111,7 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         public void UpdateCollections()
         {
-            var list = _appDbOperator.GetCollections();
+            var list = _safeDbOperator.GetCollections();
             list.Reverse();
             ViewModel.Collection = new ObservableCollection<Collection>(list);
         }
@@ -302,7 +302,8 @@ namespace Milky.OsuPlayer.Windows
                 return;
 
             // 加至播放列表
-            var entries = _appDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList);
+            var entries =
+                _safeDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList.Cast<IMapIdentifiable>());
 
             await _controller.PlayList.SetSongListAsync(entries, true, false, false);
 
@@ -313,7 +314,8 @@ namespace Milky.OsuPlayer.Windows
             }
             else
             {
-                var current = _appDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
+                var current = _safeDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
+                if (current == null) return;
                 await _controller.PlayNewAsync(current, play);
             }
         }
@@ -323,7 +325,9 @@ namespace Milky.OsuPlayer.Windows
             var addCollectionControl = new AddCollectionControl();
             FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, (obj, args) =>
             {
-                _appDbOperator.AddCollection(addCollectionControl.CollectionName.Text);
+                if (!_safeDbOperator.TryAddCollection(addCollectionControl.CollectionName.Text))
+                    return;
+
                 UpdateCollections();
             });
         }
@@ -407,14 +411,10 @@ namespace Milky.OsuPlayer.Windows
         private void Controller_LikeClicked(object sender, RoutedEventArgs e)
         {
             var detail = _controller.PlayList.CurrentInfo.Beatmap;
-            var entry = _appDbOperator.GetBeatmapByIdentifiable(detail.GetIdentity());
-            if (entry == null)
-            {
-                Notification.Push(I18NUtil.GetString("err-mapNotInDb"), Title);
-                return;
-            }
+            var entry = _safeDbOperator.GetBeatmapByIdentifiable(detail.GetIdentity());
+            if (entry == null) return;
 
-            UiComponents.FrontDialogComponent.FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
+            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
                 DialogOptionFactory.SelectCollectionOptions);
         }
 

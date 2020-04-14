@@ -132,7 +132,7 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
             bool playInstantly = true, bool autoSetSong = true)
         {
             if (SongList != null) SongList.CollectionChanged -= SongList_CollectionChanged;
-            Execute.OnUiThread(() => SongList = new ObservableCollection<Beatmap>(value));
+            Execute.OnUiThread(() => SongList = new ObservableCollection<Beatmap>(value.Where(k => k != null)));
             SongList.CollectionChanged += SongList_CollectionChanged;
 
             var changed = RearrangeIndexesAndReposition(startAnew ? (int?)0 : null);
@@ -154,6 +154,7 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         /// <returns></returns>
         public void AddOrSwitchTo(Beatmap beatmap)
         {
+            if (beatmap is null) return;
             if (!SongList.Contains(beatmap))
                 Execute.OnUiThread(() => SongList.Add(beatmap));
             IndexPointer = _songIndexList.IndexOf(SongList.IndexOf(beatmap));
@@ -184,7 +185,7 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
             IndexPointer = -1;
             var controlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                 PlayControlResult.PointerControlStatus.Clear);
-            if (AutoSwitched != null) 
+            if (AutoSwitched != null)
                 await AutoSwitched.Invoke(controlResult, null, playInstantly).ConfigureAwait(false);
             return controlResult;
         }
@@ -206,7 +207,7 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                 {
                     var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
                         PlayControlResult.PointerControlStatus.Keep);
-                    if (AutoSwitched != null) 
+                    if (AutoSwitched != null)
                         await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true).ConfigureAwait(false);
                     return playControlResult;
                 }

@@ -69,6 +69,11 @@ namespace Milky.OsuPlayer.UiComponents.PanelComponent
             _loadedIndex.Clear();
         }
 
+        protected override void OnItemsChanged(object sender, ItemsChangedEventArgs args)
+        {
+            InvalidateVisual();
+        }
+
         protected override Size MeasureOverride(Size availableSize)
         {
             UpdateScrollInfo(availableSize); //availableSize更新后，更新滚动条

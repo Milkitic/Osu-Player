@@ -455,8 +455,8 @@ namespace Milky.OsuPlayer.Data.Dapper.Provider
         {
             if (updateColumns == null || updateColumns.Count == 0)
                 throw new ArgumentException("请提供更新字段");
-            if (whereConditions == null || whereConditions.Count == 0)
-                throw new ArgumentException("请提供更新记录的Where依据");
+            //if (whereConditions == null || whereConditions.Count == 0)
+            //    throw new ArgumentException("请提供更新记录的Where依据");
             if (!VerifyTableAndColumn(table, updateColumns.Keys.ToList(), null, whereConditions, out var keyword))
                 throw new ArgumentException($"不存在表或者相关列名：{keyword}");
 
@@ -949,6 +949,7 @@ namespace Milky.OsuPlayer.Data.Dapper.Provider
             var source = new DynamicParameters();
             foreach (var o in @params)
             {
+                if (o is null) continue;
                 foreach (var name in o.ParameterNames)
                 {
                     var value = o.Get<object>(name);

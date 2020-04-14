@@ -27,7 +27,13 @@ namespace Milky.OsuPlayer.Data
             var sw = Stopwatch.StartNew();
             try
             {
-                return op.ThreadedProvider.GetDbConnection().Query<Beatmap>(command + keywordSql + sort, expando).ToList();
+                return op.ThreadedProvider.GetDbConnection().Query<Beatmap>(command + keywordSql + sort, expando)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while calling SearchBeatmapByOptions().");
+                throw;
             }
             finally
             {
@@ -38,18 +44,34 @@ namespace Milky.OsuPlayer.Data
 
         public static List<Beatmap> GetAllBeatmaps(this AppDbOperator op)
         {
-            return op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP).ToList();
+            try
+            {
+                return op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP).ToList();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while calling GetAllBeatmaps().");
+                throw;
+            }
         }
 
         public static Beatmap GetBeatmapByIdentifiable(this AppDbOperator op, IMapIdentifiable id)
         {
-            return op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP,
-                new Where[]
-                {
-                    ("version", id.Version),
-                    ("folderName", id.FolderName)
-                },
-                count: 1).FirstOrDefault();
+            try
+            {
+                return op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP,
+                    new Where[]
+                    {
+                        ("version", id.Version),
+                        ("folderName", id.FolderName)
+                    },
+                    count: 1).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while calling GetBeatmapByIdentifiable().");
+                throw;
+            }
         }
 
         public static List<Beatmap> GetBeatmapsByMapInfo(this AppDbOperator op, List<BeatmapSettings> reqList, TimeSortMode sortMode)
@@ -73,36 +95,46 @@ namespace Milky.OsuPlayer.Data
 
         public static List<Beatmap> GetBeatmapsFromFolder(this AppDbOperator op, string folder)
         {
-            return op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP, ("folderName", folder)).ToList();
+            try
+            {
+                return op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP, ("folderName", folder)).ToList();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while calling GetBeatmapsFromFolder().");
+                throw;
+            }
         }
 
-        public static List<Beatmap> GetBeatmapsByIdentifiable<T>(this AppDbOperator op, ICollection<T> reqList)
+        public static List<Beatmap> GetBeatmapsByIdentifiable<T>(this AppDbOperator op, IEnumerable<T> reqList)
             where T : IMapIdentifiable
         {
-            if (reqList.Count < 1) return new List<Beatmap>();
+            if (!reqList.Any()) return new List<Beatmap>();
 
-            var inDbMaps = reqList.Where(k => !k.IsMapTemporary()).ToList();
-            //var absMaps = reqList.Except(inDbMaps).ToList();
-            //var args = new ExpandoObject();
-            //var expando = (ICollection<KeyValuePair<string, object>>)args;
-
-            var sb = new StringBuilder();
-            foreach (var id in inDbMaps)
+            try
             {
-                if (id is MapIdentity mi && mi.Equals(MapIdentity.Default)) continue;
-                var valueSql = string.Format("('{0}', '{1}', {2}),",
-                    id.FolderName.Replace(@"'", @"''"),
-                    id.Version.Replace(@"'", @"''"),
-                    id.InOwnDb ? 1 : 0); // escape is still safe
-                sb.Append(valueSql);
-                // sb.Append($"(@folder{i}, @version{i}),");
-                // expando.Add(new KeyValuePair<string, object>($"folder{i}", id.FolderName));
-                // expando.Add(new KeyValuePair<string, object>($"version{i}", id.Version));
-                // SQL logic error: too many SQL variables
-            }
+                var inDbMaps = reqList.Where(k => !k.IsMapTemporary()).ToList();
+                //var absMaps = reqList.Except(inDbMaps).ToList();
+                //var args = new ExpandoObject();
+                //var expando = (ICollection<KeyValuePair<string, object>>)args;
 
-            sb.Remove(sb.Length - 1, 1);
-            var sql = $@"
+                var sb = new StringBuilder();
+                foreach (var id in inDbMaps)
+                {
+                    if (id is MapIdentity mi && mi.Equals(MapIdentity.Default)) continue;
+                    var valueSql = string.Format("('{0}', '{1}', {2}),",
+                        id.FolderName.Replace(@"'", @"''"),
+                        id.Version.Replace(@"'", @"''"),
+                        id.InOwnDb ? 1 : 0); // escape is still safe
+                    sb.Append(valueSql);
+                    // sb.Append($"(@folder{i}, @version{i}),");
+                    // expando.Add(new KeyValuePair<string, object>($"folder{i}", id.FolderName));
+                    // expando.Add(new KeyValuePair<string, object>($"version{i}", id.Version));
+                    // SQL logic error: too many SQL variables
+                }
+
+                sb.Remove(sb.Length - 1, 1);
+                var sql = $@"
 DROP TABLE IF EXISTS tmp_table;
 CREATE TEMPORARY TABLE tmp_table (
     folder  NVARCHAR (255),
@@ -119,33 +151,58 @@ SELECT *
                     beatmap.own = tmp_table.ownDb;
 ";
 
-            return op.ThreadedProvider.GetDbConnection().Query<Beatmap>(sql).ToList();
+                return op.ThreadedProvider.GetDbConnection().Query<Beatmap>(sql).ToList();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while calling GetBeatmapsByIdentifiable().");
+                throw;
+            }
         }
 
         // todo: to be optimized
         public static async Task SyncMapsFromHoLLyAsync(this AppDbOperator op, IEnumerable<BeatmapEntry> entry, bool addOnly)
         {
+            Exception exc = null;
             if (addOnly)
             {
                 await Task.Run(() =>
                 {
-                    var dbMaps = op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP, ("own", false));
-                    var newList = entry.Select(BeatmapExtension.ParseFromHolly);
-                    var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
+                    try
+                    {
+                        var dbMaps = op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP, ("own", false));
+                        var newList = entry.Select(BeatmapExtension.ParseFromHolly);
+                        var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
 
-                    AddNewMaps(op, except);
+                        AddNewMaps(op, except);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex, "Error while calling SyncMapsFromHoLLyAsync(addonly).");
+                        exc = ex;
+                    }
                 }).ConfigureAwait(false);
             }
             else
             {
                 await Task.Run(() =>
                 {
-                    RemoveSyncedAll(op);
+                    try
+                    {
+                        RemoveSyncedAll(op);
 
-                    var osuMaps = entry.Select(BeatmapExtension.ParseFromHolly);
-                    AddNewMaps(op, osuMaps);
+                        var osuMaps = entry.Select(BeatmapExtension.ParseFromHolly);
+                        AddNewMaps(op, osuMaps);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex, "Error while calling SyncMapsFromHoLLyAsync().");
+                        exc = ex;
+                    }
                 }).ConfigureAwait(false);
             }
+
+            if (exc != null) throw exc;
         }
 
         public static void AddNewMaps(this AppDbOperator op, IEnumerable<Beatmap> beatmaps)
@@ -178,6 +235,7 @@ SELECT *
                 ["own"] = k.InOwnDb,
             }).ToList());
         }
+
         public static void AddNewMaps(this AppDbOperator op, params Beatmap[] beatmaps)
         {
             AddNewMaps(op, (IEnumerable<Beatmap>)beatmaps);

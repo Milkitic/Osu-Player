@@ -9,12 +9,15 @@ using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.PanelComponent;
 using Milky.OsuPlayer.UserControls;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -29,7 +32,7 @@ namespace Milky.OsuPlayer.Pages
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly MainWindow _mainWindow;
         private IEnumerable<Beatmap> _entries;
-        private readonly AppDbOperator _dbOperator = new AppDbOperator();
+        private readonly SafeDbOperator _safeDbOperator = new SafeDbOperator();
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         private static Binding _sourceBinding = new Binding(nameof(CollectionPageViewModel.DisplayedBeatmaps))
@@ -57,15 +60,23 @@ namespace Milky.OsuPlayer.Pages
 
         public void UpdateView(string colId)
         {
-            var collectionInfo = _dbOperator.GetCollectionById(colId);
-            ViewModel.CollectionInfo = collectionInfo;
-            UpdateList();
+            Task.Run(() =>
+            {
+                Thread.Sleep(100);
+                Execute.OnUiThread(() =>
+                {
+                    var collectionInfo = _safeDbOperator.GetCollectionById(colId);
+                    if (collectionInfo == null) return;
+                    ViewModel.CollectionInfo = collectionInfo;
+                    UpdateList();
+                });
+            });
         }
 
         public void UpdateList()
         {
-            var infos = _dbOperator.GetMapsFromCollection(ViewModel.CollectionInfo);
-            _entries = _dbOperator.GetBeatmapsByMapInfo(infos, TimeSortMode.AddTime);
+            var infos = _safeDbOperator.GetMapsFromCollection(ViewModel.CollectionInfo);
+            _entries = _safeDbOperator.GetBeatmapsByMapInfo(infos, TimeSortMode.AddTime);
             ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModelList(false));
             ViewModel.DisplayedBeatmaps = ViewModel.Beatmaps;
             ListCount.Content = ViewModel.Beatmaps.Count;
@@ -136,7 +147,8 @@ namespace Milky.OsuPlayer.Pages
             var entries = ConvertToEntries(selected.Cast<BeatmapDataModel>());
             foreach (var entry in entries)
             {
-                _dbOperator.RemoveMapFromCollection(entry.GetIdentity(), ViewModel.CollectionInfo);
+                if (!_safeDbOperator.TryRemoveMapFromCollection(entry.GetIdentity(), ViewModel.CollectionInfo))
+                    continue;
                 if (!_controller.PlayList.CurrentInfo.Beatmap.GetIdentity().Equals(entry.GetIdentity()) ||
                     !ViewModel.CollectionInfo.LockedBool) continue;
                 _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite = false;
@@ -150,7 +162,7 @@ namespace Milky.OsuPlayer.Pages
                 MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
-                _dbOperator.RemoveCollection(ViewModel.CollectionInfo);
+                if (!_safeDbOperator.TryRemoveCollection(ViewModel.CollectionInfo)) return;
                 _mainWindow.SwitchRecent.IsChecked = true;
                 _mainWindow.UpdateCollections();
             }
@@ -173,7 +185,7 @@ namespace Milky.OsuPlayer.Pages
             if (MapList.SelectedItem == null)
                 return null;
             var selectedItem = (BeatmapDataModel)MapList.SelectedItem;
-            return _dbOperator.GetBeatmapsFromFolder(selectedItem.FolderName)
+            return _safeDbOperator.GetBeatmapsFromFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
 
@@ -185,7 +197,7 @@ namespace Milky.OsuPlayer.Pages
 
         private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _dbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
+            return _safeDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 

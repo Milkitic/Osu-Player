@@ -397,7 +397,6 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         protected void RaisePositionUpdated(TimeSpan value, bool force)
         {
             if (!force && DateTime.Now - _lastPositionUpdateTime < AutoRefreshInterval) return;
-            Console.WriteLine(force);
             PositionUpdated?.Invoke(value);
             _lastPositionUpdateTime = DateTime.Now;
         }

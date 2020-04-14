@@ -20,7 +20,7 @@ namespace Milky.OsuPlayer.Windows
     public partial class MiniWindow : WindowEx
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        
+
         private event Action<bool> StickChanged;
 
         private double _screenWidth;
@@ -35,7 +35,7 @@ namespace Milky.OsuPlayer.Windows
         private readonly double _stickWidth = 5;
         private Timer _frameTimer;
         private Storyboard _sb;
-        
+
         private double WindowMargin => MainGrid.Margin.Left;
 
         private double Right
@@ -106,7 +106,7 @@ namespace Milky.OsuPlayer.Windows
             var old = _currentArea;
             _currentArea = Screen.GetWorkingArea(new System.Drawing.Point((int)mousePos.X, (int)mousePos.Y));
             if (old != _currentArea)
-                Console.WriteLine(_currentArea.ToString());
+                Logger.Debug(_currentArea.ToString());
             _sb?.Stop();
             if (Right >= _currentArea.Right + WindowMargin - _stickAutoWidth &&
                 Right <= _currentArea.Right + WindowMargin + _stickAutoWidth)
@@ -174,7 +174,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            AppSettings.Default.General.MiniPosition = new[] {Left, Top};
+            AppSettings.Default.General.MiniPosition = new[] { Left, Top };
             AppSettings.SaveDefault();
 
             _mouseDown = false;
@@ -215,7 +215,7 @@ namespace Milky.OsuPlayer.Windows
             _sb = new Storyboard();
             var da = new DoubleAnimation(toValue, CommonUtils.GetDuration(TimeSpan.FromMilliseconds(800)))
             {
-                EasingFunction = new QuarticEase {EasingMode = easingMode}
+                EasingFunction = new QuarticEase { EasingMode = easingMode }
             };
             Storyboard.SetTargetProperty(da, new PropertyPath(LeftProperty));
             Storyboard.SetTarget(da, this);

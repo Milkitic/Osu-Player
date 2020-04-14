@@ -165,46 +165,54 @@ PRAGMA case_sensitive_like=false;"
             }
         }
 
-        public BeatmapSettings GetMapFromDb(MapIdentity id)
+        public BeatmapSettings GetMapFromDb(IMapIdentifiable id)
         {
-            if (id.IsMapTemporary())
+            try
             {
-                Logger.Debug("需确认加入自定义目录后才可继续");
-            }
+                if (id.IsMapTemporary())
+                {
+                    Logger.Debug("需确认加入自定义目录后才可继续");
+                }
 
-            var map = ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
-                    new Where[]
+                var map = ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
+                        new Where[]
+                        {
+                            ("version", id.Version),
+                            ("folder", id.FolderName),
+                            ("ownDb", id.InOwnDb)
+                        },
+                        count: 1)
+                    .FirstOrDefault();
+
+                if (map == null)
+                {
+                    var guid = Guid.NewGuid().ToString();
+                    ThreadedProvider.Insert(TABLE_MAP, new Dictionary<string, object>()
                     {
-                        ("version", id.Version),
-                        ("folder", id.FolderName),
-                        ("ownDb", id.InOwnDb)
-                    },
-                    count: 1)
-                .FirstOrDefault();
+                        ["id"] = guid,
+                        ["version"] = id.Version,
+                        ["folder"] = id.FolderName,
+                        ["ownDb"] = id.InOwnDb,
+                        ["offset"] = 0
+                    });
 
-            if (map == null)
-            {
-                var guid = Guid.NewGuid().ToString();
-                ThreadedProvider.Insert(TABLE_MAP, new Dictionary<string, object>()
-                {
-                    ["id"] = guid,
-                    ["version"] = id.Version,
-                    ["folder"] = id.FolderName,
-                    ["ownDb"] = id.InOwnDb,
-                    ["offset"] = 0
-                });
+                    return new BeatmapSettings
+                    {
+                        Id = guid,
+                        Version = id.Version,
+                        FolderName = id.FolderName,
+                        InOwnDb = id.InOwnDb,
+                        Offset = 0
+                    };
+                }
 
-                return new BeatmapSettings
-                {
-                    Id = guid,
-                    Version = id.Version,
-                    FolderName = id.FolderName,
-                    InOwnDb = id.InOwnDb,
-                    Offset = 0
-                };
+                return map;
             }
-
-            return map;
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while calling GetMapFromDb().");
+                throw;
+            }
         }
 
         public List<BeatmapSettings> GetRecentList()
@@ -353,7 +361,7 @@ SELECT collection.id,
             }
         }
 
-        public void UpdateMap(MapIdentity id, int? offset = null)
+        public void UpdateMap(IMapIdentifiable id, int? offset = null)
         {
             var updateColumns = new Dictionary<string, object> { ["lastPlayTime"] = DateTime.Now };
             if (offset != null)
@@ -364,34 +372,34 @@ SELECT collection.id,
             InnerUpdateMap(id, updateColumns);
         }
 
-        public void AddMapExport(MapIdentity id, string exportFilePath)
+        public void AddMapExport(IMapIdentifiable id, string exportFilePath)
         {
             InnerUpdateMap(id, new Dictionary<string, object> { ["exportFile"] = exportFilePath });
         }
 
-        public void RemoveMapExport(MapIdentity id)
+        public void RemoveMapExport(IMapIdentifiable id)
         {
             InnerUpdateMap(id, new Dictionary<string, object> { ["exportFile"] = null });
         }
 
-        public void UpdateMap(Beatmap beatmap, int? offset = null)
-        {
-            UpdateMap(beatmap.GetIdentity(), offset);
-        }
+        //public void UpdateMap(Beatmap beatmap, int? offset = null)
+        //{
+        //    UpdateMap(beatmap.GetIdentity(), offset);
+        //}
 
-        public void RemoveFromRecent(MapIdentity id)
+        public void RemoveFromRecent(IMapIdentifiable id)
         {
             InnerUpdateMap(id, new Dictionary<string, object> { ["lastPlayTime"] = null });
         }
 
-        public void RemoveFromRecent(Beatmap beatmap)
-        {
-            RemoveFromRecent(beatmap.GetIdentity());
-        }
+        //public void RemoveFromRecent(Beatmap beatmap)
+        //{
+        //    RemoveFromRecent(beatmap.GetIdentity());
+        //}
 
         public void ClearRecent()
         {
-            ThreadedProvider.Update(TABLE_COLLECTION,
+            ThreadedProvider.Update(TABLE_MAP,
                 new Dictionary<string, object>
                 {
                     ["lastPlayTime"] = null
@@ -404,12 +412,13 @@ SELECT collection.id,
             ThreadedProvider.Delete(TABLE_COLLECTION, ("id", collection.Id));
             ThreadedProvider.Delete(TABLE_RELATION, ("collectionId", collection.Id));
         }
-        public void RemoveMapFromCollection(Beatmap beatmap, Collection collection)
-        {
-            RemoveMapFromCollection(beatmap.GetIdentity(), collection);
-        }
 
-        public void RemoveMapFromCollection(MapIdentity id, Collection collection)
+        //public void RemoveMapFromCollection(Beatmap beatmap, Collection collection)
+        //{
+        //    RemoveMapFromCollection(beatmap.GetIdentity(), collection);
+        //}
+
+        public void RemoveMapFromCollection(IMapIdentifiable id, Collection collection)
         {
             if (id.IsMapTemporary())
             {
@@ -514,7 +523,7 @@ SELECT collection.id,
             SetMapSbInfo(beatmap.Id, sbInfo);
         }
 
-        private void InnerUpdateMap(MapIdentity id, Dictionary<string, object> updateColumns)
+        private void InnerUpdateMap(IMapIdentifiable id, Dictionary<string, object> updateColumns)
         {
             if (id.IsMapTemporary())
             {
@@ -524,15 +533,23 @@ SELECT collection.id,
             GetMapFromDb(id);
             if (updateColumns.Count == 0) return;
 
-            ThreadedProvider.Update(TABLE_MAP,
-                updateColumns,
-                new Where[]
-                {
-                    ("version", id.Version),
-                    ("folder", id.FolderName),
-                    ("ownDb", id.InOwnDb)
-                },
-                count: 1);
+            try
+            {
+                ThreadedProvider.Update(TABLE_MAP,
+                    updateColumns,
+                    new Where[]
+                    {
+                        ("version", id.Version),
+                        ("folder", id.FolderName),
+                        ("ownDb", id.InOwnDb)
+                    },
+                    count: 1);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while calling InnerUpdateMap().");
+                throw;
+            }
         }
     }
 }

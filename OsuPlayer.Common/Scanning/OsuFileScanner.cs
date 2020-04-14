@@ -105,7 +105,15 @@ namespace Milky.OsuPlayer.Common.Scanning
                 }
             }
 
-            _dbOperator.AddNewMaps(beatmaps);
+            try
+            {
+                _dbOperator.AddNewMaps(beatmaps);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                throw;
+            }
         }
 
         private Beatmap GetBeatmapObj(LocalOsuFile osuFile, FileInfo fileInfo)

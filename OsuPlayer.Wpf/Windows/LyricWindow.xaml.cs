@@ -223,7 +223,7 @@ namespace Milky.OsuPlayer.Windows
             });
 
             while (!o && !_cts.Token.IsCancellationRequested) { Thread.Sleep(1); }
-            Console.WriteLine(drawLyric.ToString());
+            Logger.Debug(drawLyric.ToString());
             return drawLyric;
             //var bmp = new Bitmap(1, 1);
             //SizeF size;

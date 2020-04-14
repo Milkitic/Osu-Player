@@ -1,11 +1,11 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.PanelComponent;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using System;
@@ -25,7 +25,7 @@ namespace Milky.OsuPlayer.Pages
     public partial class SearchPage : Page
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly AppDbOperator _dbOperator = new AppDbOperator();
+        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         private MainWindow _mainWindow;
@@ -114,7 +114,7 @@ namespace Milky.OsuPlayer.Pages
         {
             if (ResultList.SelectedItem == null)
                 return null;
-            var map = _dbOperator
+            var map = SafeDbOperator
                 .GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
                 .GetHighestDiff();
             return map;

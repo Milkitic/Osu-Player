@@ -4,11 +4,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     x:Name="UiLangInternal">
+    <sys:String x:Key="text-error">错误</sys:String>
+    <sys:String x:Key="text-warn">警告</sys:String>
+    <sys:String x:Key="text-info">信息</sys:String>
+
     <sys:String x:Key="err-beatmap-load">Error while loading beatmap</sys:String>
     <sys:String x:Key="err-osudb-sync">Error while syncing osu!db</sys:String>
     <sys:String x:Key="err-custom-scan">Error while scanning custom folder</sys:String>
     <sys:String x:Key="err-update-check">Error while checking for update</sys:String>
+
     <sys:String x:Key="err-mapNotInDb">The beatmap is not in database</sys:String>
+    <sys:String x:Key="err-collectionNotInDb">The collection is not in database</sys:String>
 
     <sys:String x:Key="ui-win-sets">播放器设置</sys:String>
     <sys:String x:Key="ui-win-editCollection">编辑收藏</sys:String>
@@ -146,7 +152,7 @@
     <sys:String x:Key="ui-sets-content-lastCheckTime">上次检查时间</sys:String>
     <sys:String x:Key="ui-sets-content-projectUrl">项目地址</sys:String>
     <sys:String x:Key="ui-sets-content-feedback">意见反馈</sys:String>
-    <sys:String x:Key="ui-sets-content-licenseInfo">许可证信息</sys:String>
+    <sys:String x:Key="ui-sets-content-licenseInfo">许可信息</sys:String>
     <sys:String x:Key="ui-sets-content-privacyPolicy">隐私政策</sys:String>
     <sys:String x:Key="ui-sets-content-never">从未</sys:String>
     <sys:String x:Key="ui-sets-content-hasNewVersion">有新版本</sys:String>

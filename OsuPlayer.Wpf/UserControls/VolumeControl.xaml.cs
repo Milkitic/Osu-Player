@@ -1,10 +1,10 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -23,7 +23,7 @@ namespace Milky.OsuPlayer.UserControls
     {
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
-        private readonly AppDbOperator _dbOperator = new AppDbOperator();
+        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
 
         public VolumeControl()
         {
@@ -78,7 +78,7 @@ namespace Milky.OsuPlayer.UserControls
 
         private void Offset_DragComplete(object sender, DragCompletedEventArgs e)
         {
-            _dbOperator.UpdateMap(_controller.PlayList.CurrentInfo.Beatmap, _controller.Player.ManualOffset);
+            SafeDbOperator.TryUpdateMap(_controller.PlayList.CurrentInfo.Beatmap, _controller.Player.ManualOffset);
         }
 
         private async void BtnPlayMod_OnClick(object sender, RoutedEventArgs e)

@@ -81,7 +81,7 @@ namespace Milky.OsuPlayer.Data.Dapper.Provider
         {
             kvParams = new DynamicParameters();
             //var s = ((ICollection<KeyValuePair<string, object>>) whereParams).ToDictionary(k => k.Key, k => k.Value);
-            var existColumn = whereParams.ParameterNames.ToList();
+            var existColumn = whereParams == null ? new List<string>() : whereParams.ParameterNames.ToList();
             //new HashSet<string>(((ICollection<KeyValuePair<string, object>>)whereParams).Select(k => k.Key));
             //var expando = (ICollection<KeyValuePair<string, object>>)kvParams;
             foreach (var kvp in updateColumns)

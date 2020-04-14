@@ -1,5 +1,4 @@
 using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
@@ -11,6 +10,7 @@ using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UiComponents.PanelComponent;
 using Milky.OsuPlayer.UserControls;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap.MetaData;
 using System;
@@ -29,7 +29,7 @@ namespace Milky.OsuPlayer.ViewModels
 {
     public class SearchPageViewModel : VmBase
     {
-        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
+        private readonly SafeDbOperator _safeDbOperator = new SafeDbOperator();
 
         private const int MaxListCount = 100;
         private List<BeatmapDataModel> _searchedMaps;
@@ -150,13 +150,17 @@ namespace Milky.OsuPlayer.ViewModels
                     Thread.Sleep(1);
                 _querySw.Stop();
 
-                SearchedDbMaps = _beatmapDbOperator
+                SearchedDbMaps = _safeDbOperator
                     .SearchBeatmapByOptions(SearchText, BeatmapSortMode.Artist, startIndex, int.MaxValue);
+
                 List<BeatmapDataModel> sorted = SearchedDbMaps
                     .ToDataModelList(true);
 
-                SearchedMaps = sorted;
-                SetPage(SearchedMaps.Count, 0);
+                Execute.OnUiThread(() =>
+                {
+                    SearchedMaps = sorted;
+                    SetPage(SearchedMaps.Count, 0);
+                });
             });
 
             lock (QueryLock)
@@ -226,6 +230,7 @@ namespace Milky.OsuPlayer.ViewModels
                 {
                     if (obj is bool b)
                     {
+                        if (CurrentPage == null) return;
                         var page = b ? GetPage(CurrentPage.Index + 1) : GetPage(CurrentPage.Index - 1);
                         if (page == null) return;
                         if (page.IsActivated)
@@ -233,7 +238,7 @@ namespace Milky.OsuPlayer.ViewModels
                             return;
                         }
 
-                        SetPage(SearchedMaps.Count(), page.Index - 1);
+                        SetPage(SearchedMaps.Count, page.Index - 1);
                     }
                     else
                     {
@@ -244,7 +249,7 @@ namespace Milky.OsuPlayer.ViewModels
                             return;
                         }
 
-                        SetPage(SearchedMaps.Count(), reqPage - 1);
+                        SetPage(SearchedMaps.Count, reqPage - 1);
                     }
                 });
             }
@@ -306,11 +311,11 @@ namespace Milky.OsuPlayer.ViewModels
                 {
                     var beatmap = (BeatmapDataModel)param;
                     var control = new DiffSelectControl(
-                        _beatmapDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName),
+                        _safeDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName),
                         (selected, arg) =>
                         {
                             arg.Handled = true;
-                            var entry = _beatmapDbOperator.GetBeatmapsFromFolder(selected.FolderName)
+                            var entry = _safeDbOperator.GetBeatmapsFromFolder(selected.FolderName)
                                 .FirstOrDefault(k => k.Version == selected.Version);
                             FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
                                 DialogOptionFactory.SelectCollectionOptions);
@@ -356,12 +361,13 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var beatmaps = _beatmapDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName);
+                    var beatmaps = _safeDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName);
                     var control = new DiffSelectControl(
                         beatmaps,
                         async (selected, arg) =>
                         {
-                            var map = _beatmapDbOperator.GetBeatmapByIdentifiable(selected);
+                            var map = _safeDbOperator.GetBeatmapByIdentifiable(selected);
+                            if (map == null) return;
                             var controller = Service.Get<ObservablePlayController>();
                             await controller.PlayNewAsync(map, true);
                         });
@@ -373,7 +379,7 @@ namespace Milky.OsuPlayer.ViewModels
         private Beatmap GetHighestSrBeatmap(IMapIdentifiable beatmap)
         {
             if (beatmap == null) return null;
-            var map = _beatmapDbOperator.GetBeatmapsFromFolder(beatmap.FolderName).GetHighestDiff();
+            var map = _safeDbOperator.GetBeatmapsFromFolder(beatmap.FolderName).GetHighestDiff();
             return map;
         }
     }

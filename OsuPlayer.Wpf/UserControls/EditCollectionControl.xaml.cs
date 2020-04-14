@@ -1,10 +1,10 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using Microsoft.Win32;
-using Milky.OsuPlayer.Data;
+﻿using Microsoft.Win32;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Milky.OsuPlayer.UserControls
 {
@@ -14,7 +14,7 @@ namespace Milky.OsuPlayer.UserControls
     public partial class EditCollectionControl : UserControl
     {
         private readonly Collection _collection;
-        private AppDbOperator _appDbOperator = new AppDbOperator();
+        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
         private EditCollectionPageViewModel _viewModel;
 
         public EditCollectionControl(Collection collection)
@@ -33,8 +33,10 @@ namespace Milky.OsuPlayer.UserControls
             _collection.Description = _viewModel.Description;
             _collection.ImagePath = _viewModel.CoverPath;
 
-            _appDbOperator.UpdateCollection(_collection);
-            FrontDialogOverlay.Default.RaiseOk();
+            if (SafeDbOperator.TryUpdateCollection(_collection))
+            {
+                FrontDialogOverlay.Default.RaiseOk();
+            }
         }
 
         private void BtnChooseImg_Click(object sender, RoutedEventArgs e)

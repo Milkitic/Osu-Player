@@ -193,8 +193,11 @@ namespace Milky.OsuPlayer.UserControls
         /// </summary>
         private void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
         {
-            _controller.PlayList.CurrentInfo.SetTimeHandle(PlayProgress.Value,
-                _controller.Player.PlayStatus == PlayStatus.Playing);
+            if (_controller.PlayList?.CurrentInfo != null)
+            {
+                _controller.PlayList.CurrentInfo.SetTimeHandle(PlayProgress.Value,
+                    _controller.Player.PlayStatus == PlayStatus.Playing);
+            }
 
             _scrollLock = false;
         }

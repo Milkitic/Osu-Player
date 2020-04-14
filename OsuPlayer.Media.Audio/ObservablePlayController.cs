@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Presentation.Annotations;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
@@ -95,8 +96,9 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
-        public async Task PlayNewAsync(Beatmap beatmap, bool playInstantly = true)
+        public async Task PlayNewAsync([CanBeNull]Beatmap beatmap, bool playInstantly = true)
         {
+            if (beatmap is null) return;
             PlayList.AddOrSwitchTo(beatmap);
             InitializeContextHandle(PlayList.CurrentInfo);
             await LoadAsync(false, playInstantly).ConfigureAwait(false);
@@ -139,7 +141,10 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             catch (Exception ex)
             {
-                LoadError?.Invoke(PlayList.CurrentInfo, ex);
+                var currentInfo = PlayList.CurrentInfo;
+                LoadError?.Invoke(currentInfo, ex);
+                Logger.Error(ex, "Error while loading new beatmap. BeatmapId: {0}; BeatmapSetId: {1}",
+                    currentInfo?.Beatmap?.BeatmapId, currentInfo?.Beatmap?.BeatmapSetId);
             }
             finally
             {
@@ -284,8 +289,10 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             catch (Exception ex)
             {
-                LoadError?.Invoke(PlayList.CurrentInfo, ex);
-                //Notification.Push(@"发生未处理的错误：" + (ex.InnerException?.Message ?? ex?.Message));
+                var currentInfo = PlayList.CurrentInfo;
+                LoadError?.Invoke(currentInfo, ex);
+                Logger.Error(ex, "Error while loading new beatmap. BeatmapId: {0}; BeatmapSetId: {1}",
+                    currentInfo?.Beatmap?.BeatmapId, currentInfo?.Beatmap?.BeatmapSetId);
 
                 if (!isReading)
                 {

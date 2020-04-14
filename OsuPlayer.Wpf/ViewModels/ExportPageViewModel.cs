@@ -1,10 +1,10 @@
 ﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Utils;
 using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace Milky.OsuPlayer.ViewModels
         private string _exportPath;
         private NumberableObservableCollection<BeatmapDataModel> _dataModelList;
         private IEnumerable<Beatmap> _entries;
-        private AppDbOperator _appDbOperator = new AppDbOperator();
+        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
 
         public NumberableObservableCollection<BeatmapDataModel> DataModelList
         {
@@ -124,7 +124,7 @@ namespace Milky.OsuPlayer.ViewModels
                                 dir.Delete();
                         }
 
-                        _appDbOperator.AddMapExport(dataModel.GetIdentity(), null);
+                        SafeDbOperator.TryAddMapExport(dataModel.GetIdentity(), null);
                     }
 
                     Execute.OnUiThread(InnerUpdate);
@@ -134,7 +134,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _appDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
+            return SafeDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 
@@ -145,7 +145,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private void InnerUpdate()
         {
-            var maps = _appDbOperator.GetExportedMaps();
+            var maps = SafeDbOperator.GetExportedMaps();
             List<(MapIdentity MapIdentity, string path, string time, string size)> list =
                 new List<(MapIdentity, string, string, string)>();
             foreach (var map in maps)
@@ -164,7 +164,7 @@ namespace Milky.OsuPlayer.ViewModels
                 }
             }
 
-            _entries = _appDbOperator.GetBeatmapsByIdentifiable(maps);
+            _entries = SafeDbOperator.GetBeatmapsByIdentifiable(maps);
             var viewModels = _entries.ToDataModelList(true).ToList();
             for (var i = 0; i < viewModels.Count; i++)
             {
