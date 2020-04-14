@@ -11,6 +11,10 @@ using System;
 using System.Windows;
 using NLog;
 
+#if !DEBUG
+using Sentry;
+#endif
+
 namespace Milky.OsuPlayer
 {
     /// <summary>
