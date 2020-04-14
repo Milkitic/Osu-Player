@@ -16,6 +16,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Presentation.Annotations;
+using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
@@ -101,8 +102,10 @@ namespace Milky.OsuPlayer.Media.Audio
             if (beatmap is null) return;
             PlayList.AddOrSwitchTo(beatmap);
             InitializeContextHandle(PlayList.CurrentInfo);
-            await LoadAsync(false, playInstantly).ConfigureAwait(false);
-            if (playInstantly) await PlayList.CurrentInfo.PlayHandle.Invoke();
+            if (await LoadAsync(false, playInstantly).ConfigureAwait(false))
+            {
+                if (playInstantly) await PlayList.CurrentInfo.PlayHandle.Invoke();
+            }
         }
 
         public async Task PlayNewAsync(string path, bool playInstantly = true)
@@ -136,8 +139,10 @@ namespace Milky.OsuPlayer.Media.Audio
                 context.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path);
 
                 InitializeContextHandle(context);
-                await LoadAsync(true, playInstantly).ConfigureAwait(false);
-                if (playInstantly) await context.PlayHandle.Invoke().ConfigureAwait(false);
+                if (await LoadAsync(true, playInstantly).ConfigureAwait(false))
+                {
+                    if (playInstantly) await context.PlayHandle.Invoke().ConfigureAwait(false);
+                }
             }
             catch (Exception ex)
             {
@@ -163,7 +168,7 @@ namespace Milky.OsuPlayer.Media.Audio
             await PlayByControl(PlayControlType.Next, false).ConfigureAwait(false);
         }
 
-        private async Task LoadAsync(bool isReading, bool playInstantly)
+        private async Task<bool> LoadAsync(bool isReading, bool playInstantly)
         {
             var context = PlayList.CurrentInfo;
             context.PlayInstantly = playInstantly;
@@ -187,15 +192,17 @@ namespace Milky.OsuPlayer.Media.Audio
                 if (osuFile == null)
                 {
                     string path = isFromDb ? Path.Combine(folder, beatmap.BeatmapFileName) : freePath;
-                    osuFile = await OsuFile.ReadFromFileAsync(path).ConfigureAwait(false);
-                    context.OsuFile = osuFile;
                     beatmapDetail.MapPath = path;
                     beatmapDetail.BaseFolder = Path.GetDirectoryName(path);
+
+                    osuFile = await OsuFile.ReadFromFileAsync(path).ConfigureAwait(false);
+                    if (!osuFile.ReadSuccess) throw osuFile.ReadException;
+                    context.OsuFile = osuFile;
                 }
 
                 var album = _appDbOperator.GetCollectionsByMap(context.BeatmapSettings);
-                bool isFavorite = album != null && album.Any(k => k.LockedBool);
 
+                bool isFavorite = album != null && album.Count > 0 && album.Any(k => k.LockedBool);
                 var metadata = beatmapDetail.Metadata;
                 metadata.IsFavorite = isFavorite;
 
@@ -245,6 +252,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
 
                 Player = new OsuMixPlayer(osuFile, beatmapDetail.BaseFolder);
+                Logger.Warn("NEW!!! {0}", Player);
                 Player.PlayStatusChanged += Player_PlayStatusChanged;
                 Player.PositionUpdated += Player_PositionUpdated;
                 await Player.Initialize().ConfigureAwait(false); //700 ms
@@ -286,6 +294,8 @@ namespace Milky.OsuPlayer.Media.Audio
                     IsFileLoading = false;
                     _readLock.Release();
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -304,6 +314,8 @@ namespace Milky.OsuPlayer.Media.Audio
                 {
                     await PlayByControl(PlayControlType.Next, false).ConfigureAwait(false);
                 }
+
+                return false;
             }
             finally
             {
@@ -349,15 +361,17 @@ namespace Milky.OsuPlayer.Media.Audio
                          controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Reset)
                 {
                     InitializeContextHandle(context);
-                    await LoadAsync(false, true).ConfigureAwait(false);
-                    switch (controlResult.PlayStatus)
+                    if (await LoadAsync(false, true).ConfigureAwait(false))
                     {
-                        case PlayControlResult.PlayControlStatus.Play:
-                            if (playInstantly) await context.PlayHandle().ConfigureAwait(false);
-                            break;
-                        case PlayControlResult.PlayControlStatus.Stop:
-                            await context.StopHandle().ConfigureAwait(false);
-                            break;
+                        switch (controlResult.PlayStatus)
+                        {
+                            case PlayControlResult.PlayControlStatus.Play:
+                                if (playInstantly) await context.PlayHandle().ConfigureAwait(false);
+                                break;
+                            case PlayControlResult.PlayControlStatus.Stop:
+                                await context.StopHandle().ConfigureAwait(false);
+                                break;
+                        }
                     }
                 }
                 else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
@@ -410,8 +424,10 @@ namespace Milky.OsuPlayer.Media.Audio
                     }
 
                     InitializeContextHandle(PlayList.CurrentInfo);
-                    await LoadAsync(false, true).ConfigureAwait(false);
-                    await PlayList.CurrentInfo.PlayHandle.Invoke().ConfigureAwait(false);
+                    if (await LoadAsync(false, true).ConfigureAwait(false))
+                    {
+                        await PlayList.CurrentInfo.PlayHandle.Invoke().ConfigureAwait(false);
+                    }
                 }
                 else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
                 {

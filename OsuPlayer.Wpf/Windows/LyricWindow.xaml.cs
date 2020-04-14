@@ -219,7 +219,6 @@ namespace Milky.OsuPlayer.Windows
                     o = true;
                 };
                 TbLyric.Text = content;
-
             });
 
             while (!o && !_cts.Token.IsCancellationRequested) { Thread.Sleep(1); }
