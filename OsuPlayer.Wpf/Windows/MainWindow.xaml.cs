@@ -278,6 +278,7 @@ namespace Milky.OsuPlayer.Windows
             GetCurrentFirst<MiniWindow>()?.Close();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
+
             if (ConfigWindow != null && !ConfigWindow.IsClosed && ConfigWindow.IsInitialized)
             {
                 ConfigWindow.Close();
