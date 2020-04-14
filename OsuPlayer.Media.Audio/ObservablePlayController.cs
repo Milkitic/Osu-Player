@@ -112,7 +112,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 if (!File.Exists(path))
                     throw new FileNotFoundException("cannot locate file", path);
-                await ClearPlayer();
+                await ClearPlayer().ConfigureAwait(false);
                 Execute.OnUiThread(() => PreLoadStarted?.Invoke(path, _cts.Token));
                 var osuFile =
                     await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
@@ -135,7 +135,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 InitializeContextHandle(context);
                 await LoadAsync(true, playInstantly).ConfigureAwait(false);
-                if (playInstantly) await context.PlayHandle.Invoke();
+                if (playInstantly) await context.PlayHandle.Invoke().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -397,8 +397,8 @@ namespace Milky.OsuPlayer.Media.Audio
 
                     if (preInfo == PlayList.CurrentInfo)
                     {
-                        await PlayList.CurrentInfo.StopHandle();
-                        await PlayList.CurrentInfo.PlayHandle();
+                        await PlayList.CurrentInfo.StopHandle().ConfigureAwait(false);
+                        await PlayList.CurrentInfo.PlayHandle().ConfigureAwait(false);
                         return;
                     }
 

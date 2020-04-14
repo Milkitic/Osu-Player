@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Media.Audio.Wave;
+using Milky.OsuPlayer.Presentation.Interaction;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
@@ -61,7 +62,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public void Dispose()
         {
-            _outputDevice?.Dispose();
+            Execute.OnUiThread(() => _outputDevice?.Dispose());
         }
     }
 }

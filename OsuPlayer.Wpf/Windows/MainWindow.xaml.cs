@@ -47,6 +47,8 @@ namespace Milky.OsuPlayer.Windows
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
+        private bool _disposed;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -271,14 +273,20 @@ namespace Milky.OsuPlayer.Windows
                 return;
             }
 
+            if (_disposed) return;
+            e.Cancel = true;
             GetCurrentFirst<MiniWindow>()?.Close();
-            if (_controller != null) await _controller?.DisposeAsync();
             LyricWindow.Dispose();
             NotifyIcon.Dispose();
             if (ConfigWindow != null && !ConfigWindow.IsClosed && ConfigWindow.IsInitialized)
             {
                 ConfigWindow.Close();
             }
+
+            if (_controller != null) await _controller.DisposeAsync().ConfigureAwait(false);
+            _disposed = true;
+            await Task.CompletedTask.ConfigureAwait(false);
+            Execute.ToUiThread(ForceClose);
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)

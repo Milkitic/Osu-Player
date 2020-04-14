@@ -47,7 +47,7 @@ namespace Milky.OsuPlayer.Shared
                         request.UserAgent =
                             "ozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36";
 
-                        var response = await request.GetResponseAsync() as HttpWebResponse;
+                        var response = await request.GetResponseAsync().ConfigureAwait(false) as HttpWebResponse;
                         if (response == null)
                         {
                             // todo
@@ -132,7 +132,7 @@ namespace Milky.OsuPlayer.Shared
                 }
             });
             _downloadTask.Start();
-            await Task.WhenAll(_downloadTask);
+            await Task.WhenAll(_downloadTask).ConfigureAwait(false);
         }
 
         public void Interrupt()

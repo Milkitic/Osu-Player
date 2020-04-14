@@ -99,11 +99,6 @@ namespace Milky.OsuPlayer.Windows
         {
         }
 
-        private System.Windows.Point GetMousePos()
-        {
-            return PointToScreen(Mouse.GetPosition(this));
-        }
-
         private void Window_LocationChanged(object sender, EventArgs e)
         {
             if (!_mouseDown) return;
@@ -247,6 +242,11 @@ namespace Milky.OsuPlayer.Windows
             StopHiding();
             _frameTimer = new Timer(state => Execute.OnUiThread(HideToBound),
                 null, 1500, Timeout.Infinite);
+        }
+
+        private System.Windows.Point GetMousePos()
+        {
+            return PointToScreen(Mouse.GetPosition(this));
         }
     }
 }

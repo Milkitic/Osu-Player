@@ -13,6 +13,9 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         private PlayStatus _playStatus;
         private TimeSpan _position;
+        private DateTime _lastPositionUpdateTime;
+        public TimeSpan AutoRefreshInterval { get; protected set; } = TimeSpan.FromMilliseconds(500);
+
         protected AudioPlaybackEngine Engine { get; }
 
         public SampleControl SampleControl { get; } = new SampleControl();
@@ -32,17 +35,14 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         public virtual TimeSpan Position
         {
             get => _position;
-            protected set
-            {
-                if (value == _position) return;
-                _position = value;
-                RaisePositionUpdated(value);
-            }
+            protected set => _position = value;
         }
 
-        protected void RaisePositionUpdated(TimeSpan value)
+        protected void RaisePositionUpdated(TimeSpan value, bool force)
         {
-            Execute.OnUiThread(() => PositionUpdated?.Invoke(value));
+            if (!force && DateTime.Now - _lastPositionUpdateTime < AutoRefreshInterval) return;
+            PositionUpdated?.Invoke(value);
+            _lastPositionUpdateTime = DateTime.Now;
         }
 
         public abstract float PlaybackRate { get; protected set; }
@@ -57,7 +57,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             {
                 if (value == _playStatus) return;
                 _playStatus = value;
-                Execute.OnUiThread(() => PlayStatusChanged?.Invoke(value));
+                PlayStatusChanged?.Invoke(value);
             }
         }
 

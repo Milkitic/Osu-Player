@@ -44,19 +44,9 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                                      !_playingTask.IsCompleted &&
                                      !_playingTask.IsFaulted;
 
-        //public bool IsCalibrationRunning => _calibrationTask != null &&
-        //                                    !_calibrationTask.IsCanceled &&
-        //                                    !_calibrationTask.IsCompleted &&
-        //                                    !_calibrationTask.IsFaulted;
-
         public override TimeSpan Duration { get; protected set; }
 
-        public override TimeSpan Position
-        {
-            get => _sw.Elapsed;
-            //_sw.SkipTo(value);
-            protected set => RaisePositionUpdated(value);
-        }
+        public override TimeSpan Position => _sw.Elapsed;
 
         public override TimeSpan ChannelStartTime => TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset < 0
             ? 0
@@ -127,21 +117,30 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override async Task Play()
         {
+            if (PlayStatus == PlayStatus.Playing) return;
+
             await ReadyLoopAsync().ConfigureAwait(false);
 
             StartPlayTask();
+            RaisePositionUpdated(_sw.Elapsed, true);
             //StartCalibrationTask();
             PlayStatus = PlayStatus.Playing;
         }
 
         public override async Task Pause()
         {
+            if (PlayStatus == PlayStatus.Paused) return;
+
             await CancelLoopAsync().ConfigureAwait(false);
+
+            RaisePositionUpdated(_sw.Elapsed, true);
             PlayStatus = PlayStatus.Paused;
         }
 
         public override async Task Stop()
         {
+            if (PlayStatus == PlayStatus.Paused && Position == TimeSpan.Zero) return;
+
             await CancelLoopAsync().ConfigureAwait(false);
             await SkipTo(TimeSpan.Zero).ConfigureAwait(false);
             PlayStatus = PlayStatus.Paused;
@@ -149,12 +148,16 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override async Task Restart()
         {
+            if (Position == TimeSpan.Zero) return;
+
             await SkipTo(TimeSpan.Zero).ConfigureAwait(false);
             await Play().ConfigureAwait(false);
         }
 
         public override async Task SkipTo(TimeSpan time)
         {
+            if (time == Position) return;
+
             Submixer.RemoveMixerInput(_sliderSlideBalance);
             Submixer.RemoveMixerInput(_sliderAdditionBalance);
 
@@ -172,6 +175,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                     PlayStatus = status;
                 }
             }).ConfigureAwait(false);
+            RaisePositionUpdated(_sw.Elapsed, true);
         }
 
         public override async Task Sync(TimeSpan time)
@@ -264,8 +268,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                         break;
                     }
 
-                    Position = _sw.Elapsed;
-
+                    //Position = _sw.Elapsed;
+                    RaisePositionUpdated(_sw.Elapsed, false);
                     lock (_skipLock)
                     {
                         // wow nothing here
@@ -404,14 +408,14 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override async Task DisposeAsync()
         {
-            await Stop(); 
+            await Stop().ConfigureAwait(false);
             Logger.Debug($"Disposing: Stopped.");
 
             _cts?.Dispose();
             Logger.Debug($"Disposing: Disposed {nameof(_cts)}.");
 
-            await base.DisposeAsync();
-            Logger.Debug($"Disposing: Disposed base.");
+            //await base.DisposeAsync().ConfigureAwait(false);
+            //Logger.Debug($"Disposing: Disposed base.");
         }
     }
 }

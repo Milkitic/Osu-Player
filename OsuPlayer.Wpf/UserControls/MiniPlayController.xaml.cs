@@ -70,18 +70,18 @@ namespace Milky.OsuPlayer.UserControls
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             PlayModeControl.CloseRequested += (obj, args) => PopMode.IsOpen = false;
-            if (_controller?.Player != null)
-                _controller.Player.PositionUpdated += AudioPlayer_PositionChanged;
+            if (_controller != null)
+                _controller.PositionUpdated += AudioPlayer_PositionChanged;
         }
 
         private void UserControl_Initialized(object sender, EventArgs e)
         {
-            if (_controller != null) _controller.LoadFinished += Controller_LoadFinished;
+            //if (_controller != null) _controller.LoadFinished += Controller_LoadFinished;
         }
 
         private void Controller_LoadFinished(BeatmapContext arg1, System.Threading.CancellationToken arg2)
         {
-            _controller.PositionUpdated += AudioPlayer_PositionChanged;
+            //_controller.PositionUpdated += AudioPlayer_PositionChanged;
         }
 
         private void AudioPlayer_PositionChanged(TimeSpan time)

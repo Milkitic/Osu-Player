@@ -138,7 +138,7 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
             var changed = RearrangeIndexesAndReposition(startAnew ? (int?)0 : null);
             PlayControlResult result; // 这里可能混入空/不空的情况
             if (autoSetSong && changed)
-                result = await AutoSwitchAfterCollectionChanged(playInstantly);
+                result = await AutoSwitchAfterCollectionChanged(playInstantly).ConfigureAwait(false);
             else
                 result = new PlayControlResult(PlayControlResult.PlayControlStatus.Keep,
                     PlayControlResult.PointerControlStatus.Keep);
@@ -161,12 +161,12 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
 
         public async Task<PlayControlResult> SwitchByControl(PlayControlType control)
         {
-            return await SwitchByControl(control == PlayControlType.Next, true);
+            return await SwitchByControl(control == PlayControlType.Next, true).ConfigureAwait(false);
         }
 
         public async Task<PlayControlResult> InvokeAutoNext()
         {
-            return await SwitchByControl(true, false);
+            return await SwitchByControl(true, false).ConfigureAwait(false);
         }
 
         private async Task<PlayControlResult> AutoSwitchAfterCollectionChanged(bool playInstantly)
@@ -175,7 +175,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
             {
                 var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Unknown,
                     PlayControlResult.PointerControlStatus.Default);
-                await AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap, playInstantly);
+                if (AutoSwitched != null)
+                    await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, playInstantly).ConfigureAwait(false);
                 return playControlResult;
             }
 
@@ -183,7 +184,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
             IndexPointer = -1;
             var controlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                 PlayControlResult.PointerControlStatus.Clear);
-            await AutoSwitched?.Invoke(controlResult, null, playInstantly);
+            if (AutoSwitched != null) 
+                await AutoSwitched.Invoke(controlResult, null, playInstantly).ConfigureAwait(false);
             return controlResult;
         }
 
@@ -195,7 +197,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                 {
                     var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                         PlayControlResult.PointerControlStatus.Keep);
-                    await AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap, true);
+                    if (AutoSwitched != null)
+                        await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true).ConfigureAwait(false);
                     return playControlResult;
                 }
 
@@ -203,7 +206,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                 {
                     var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
                         PlayControlResult.PointerControlStatus.Keep);
-                    await AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap, true);
+                    if (AutoSwitched != null) 
+                        await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true).ConfigureAwait(false);
                     return playControlResult;
                 }
 
@@ -213,7 +217,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                     {
                         var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                             PlayControlResult.PointerControlStatus.Clear);
-                        await AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap, true);
+                        if (AutoSwitched != null)
+                            await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true).ConfigureAwait(false);
                         return playControlResult;
                     }
 
@@ -223,7 +228,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                         IndexPointer = 0;
                         var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                             PlayControlResult.PointerControlStatus.Reset);
-                        await AutoSwitched?.Invoke(playControlResult, CurrentInfo.Beatmap, true);
+                        if (AutoSwitched != null)
+                            await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true).ConfigureAwait(false);
                         return playControlResult;
                     }
                 }

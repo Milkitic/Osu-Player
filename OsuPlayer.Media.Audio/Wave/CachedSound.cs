@@ -60,7 +60,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
                 paths.AsParallel()
                     .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
                     .ForAll(k => CreateCacheSound(k, false).Wait());
-            });
+            }).ConfigureAwait(false);
             
             //foreach (var path in paths)
             //{

@@ -53,7 +53,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 if (CachedSound.DefaultSounds.Count == 0)
                 {
                     var files = new DirectoryInfo(Domain.DefaultPath).GetFiles("*.wav");
-                    await CachedSound.CreateDefaultCacheSounds(files.Select(k => k.FullName));
+                    await CachedSound.CreateDefaultCacheSounds(files.Select(k => k.FullName)).ConfigureAwait(false);
                 }
 
                 var mp3Path = Path.Combine(_sourceFolder, _osuFile.General.AudioFilename);
@@ -90,7 +90,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 InitVolume();
 
-                await base.Initialize();
+                await base.Initialize().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -136,19 +136,19 @@ namespace Milky.OsuPlayer.Media.Audio
             switch (modifier)
             {
                 case PlayModifier.None:
-                    await SetPlaybackRate(1, false);
+                    await SetPlaybackRate(1, false).ConfigureAwait(false);
                     break;
                 case PlayModifier.DoubleTime:
-                    await SetPlaybackRate(1.5f, true);
+                    await SetPlaybackRate(1.5f, true).ConfigureAwait(false);
                     break;
                 case PlayModifier.NightCore:
-                    await SetPlaybackRate(1.5f, false);
+                    await SetPlaybackRate(1.5f, false).ConfigureAwait(false);
                     break;
                 case PlayModifier.HalfTime:
-                    await SetPlaybackRate(0.75f, true);
+                    await SetPlaybackRate(0.75f, true).ConfigureAwait(false);
                     break;
                 case PlayModifier.DayCore:
-                    await SetPlaybackRate(0.75f, false);
+                    await SetPlaybackRate(0.75f, false).ConfigureAwait(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(modifier), modifier, null);

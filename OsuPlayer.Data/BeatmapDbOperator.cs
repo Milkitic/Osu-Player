@@ -134,7 +134,7 @@ SELECT *
                     var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
 
                     AddNewMaps(op, except);
-                });
+                }).ConfigureAwait(false);
             }
             else
             {
@@ -144,7 +144,7 @@ SELECT *
 
                     var osuMaps = entry.Select(BeatmapExtension.ParseFromHolly);
                     AddNewMaps(op, osuMaps);
-                });
+                }).ConfigureAwait(false);
             }
         }
 

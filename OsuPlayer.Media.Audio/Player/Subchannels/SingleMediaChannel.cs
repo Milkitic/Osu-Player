@@ -78,7 +78,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                 while (!_cts.IsCancellationRequested)
                 {
                     Position = _sw.Elapsed /*newTime*/ - TimeSpan.FromMilliseconds(_referenceOffset ?? 0);
-
+                    RaisePositionUpdated(Position, false);
                     var newTime = _fileReader.CurrentTime;
                     if (oldTime != newTime)
                     {
@@ -119,15 +119,20 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override async Task Play()
         {
+            if (PlayStatus == PlayStatus.Playing) return;
+
             if (!Engine.RootMixer.MixerInputs.Contains(_actualRoot))
                 Engine.RootMixer.AddMixerInput(_speedProvider, SampleControl, out _actualRoot);
             PlayStatus = PlayStatus.Playing;
             _sw.Start();
+            RaisePositionUpdated(Position, true);
             await Task.CompletedTask;
         }
 
         public override async Task Pause()
         {
+            if (PlayStatus == PlayStatus.Paused) return;
+
             Engine.RootMixer.RemoveMixerInput(_actualRoot);
             PlayStatus = PlayStatus.Paused;
             _sw.Stop();
@@ -136,7 +141,10 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override async Task Stop()
         {
+            if (PlayStatus == PlayStatus.Paused && Position == TimeSpan.Zero) return;
+
             Engine.RootMixer.RemoveMixerInput(_actualRoot);
+            Logger.Debug("{0} will skip.", Description);
             await SkipTo(TimeSpan.Zero).ConfigureAwait(false);
             PlayStatus = PlayStatus.Paused;
             _sw.Reset();
@@ -145,6 +153,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override async Task Restart()
         {
+            if (Position == TimeSpan.Zero) return;
+
             await SkipTo(TimeSpan.Zero).ConfigureAwait(false);
             await Play().ConfigureAwait(false);
             _sw.Restart();
@@ -153,6 +163,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override async Task SkipTo(TimeSpan time)
         {
+            if (time == Position) return;
+
             var status = PlayStatus;
             PlayStatus = PlayStatus.Reposition;
             if (_fileReader.TotalTime > TimeSpan.Zero)
@@ -161,6 +173,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                     : time;
             _speedProvider.Reposition();
             Position = time/*_fileReader.CurrentTime*/;
+            RaisePositionUpdated(Position, true);
             Logger.Debug("{0} skip: want: {1}; actual: {2}", Description, time, Position);
             _sw.SkipTo(time);
 
@@ -177,6 +190,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                 : time;
             _speedProvider.Reposition();
             Position = time/*_fileReader.CurrentTime*/;
+            RaisePositionUpdated(Position, false);
             _sw.SkipTo(time);
             await Task.CompletedTask;
         }
@@ -197,7 +211,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                 UseTempo = useTempo;
             }
 
-            if (changed) await SkipTo(_sw.Elapsed);
+            if (changed) await SkipTo(_sw.Elapsed).ConfigureAwait(false);
             await Task.CompletedTask;
         }
 
@@ -205,14 +219,14 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         {
             _cts?.Cancel();
             Logger.Debug($"Disposing: Canceled {nameof(_cts)}.");
-            await Task.WhenAll(_backoffTask);
+            await Task.WhenAll(_backoffTask).ConfigureAwait(false);
             Logger.Debug($"Disposing: Stopped task {nameof(_backoffTask)}.");
             _cts?.Dispose();
             Logger.Debug($"Disposing: Disposed {nameof(_cts)}.");
-            await Stop();
+            await Stop().ConfigureAwait(false);
             Logger.Debug($"Disposing: Stopped.");
-            await base.DisposeAsync();
-            Logger.Debug($"Disposing: Disposed base.");
+            //await base.DisposeAsync().ConfigureAwait(false);
+            //Logger.Debug($"Disposing: Disposed base.");
             _speedProvider?.Dispose();
             Logger.Debug($"Disposing: Disposed {nameof(_speedProvider)}.");
             _fileReader?.Dispose();

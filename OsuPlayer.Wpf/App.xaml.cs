@@ -82,7 +82,7 @@ namespace Milky.OsuPlayer
         private void Application_Exit(object sender, ExitEventArgs e)
         {
             AppSettings.Default?.Dispose();
-            NLog.LogManager.Shutdown();
+            LogManager.Shutdown();
         }
     }
 }
