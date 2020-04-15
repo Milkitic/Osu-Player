@@ -34,30 +34,6 @@
         ImageSource="{StaticResource TextureSource3}"
         Stretch="UniformToFill" />
 
-    <BitmapImage
-        x:Key="GearS"
-        CacheOption="OnLoad"
-        UriSource="pack://application:,,,/OsuPlayer;component/Resources/gear_s.png" />
-    <BitmapImage
-        x:Key="ExitS"
-        CacheOption="OnLoad"
-        UriSource="pack://application:,,,/OsuPlayer;component/Resources/exit_s.png" />
-    <BitmapImage
-        x:Key="PlayS"
-        CacheOption="OnLoad"
-        UriSource="pack://application:,,,/OsuPlayer;component/Resources/ctxt_play_s.png" />
-    <BitmapImage
-        x:Key="PauseS"
-        CacheOption="OnLoad"
-        UriSource="pack://application:,,,/OsuPlayer;component/Resources/ctxt_pause_s.png" />
-    <BitmapImage
-        x:Key="PrevS"
-        CacheOption="OnLoad"
-        UriSource="pack://application:,,,/OsuPlayer;component/Resources/ctxt_prev_s.png" />
-    <BitmapImage
-        x:Key="NextS"
-        CacheOption="OnLoad"
-        UriSource="pack://application:,,,/OsuPlayer;component/Resources/ctxt_next_s.png" />
     <Geometry x:Key="Mini">
         M192,195 L182,195 182,180 205,180 205,195 195,195 195,189 200,189 193.5,183 187,189 192,189
     </Geometry>

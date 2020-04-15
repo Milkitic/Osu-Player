@@ -634,9 +634,6 @@
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Resources\default.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Resource Include="Resources\Fonts\SourceSansPro-Bold.ttf" />
     <Resource Include="Resources\Fonts\SourceSansPro-ExtraLight.ttf" />
     <Resource Include="Resources\Fonts\SourceSansPro-Light.ttf" />
@@ -705,7 +702,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\osu_texture.png" />
-    <Resource Include="Resources\font.ttc" />
+    <None Include="Resources\font.ttc" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\osuPlayer.ico" />
@@ -721,19 +718,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\gear.png" />
-    <Resource Include="Resources\gear_s.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\exit_s.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\ctxt_next_s.png" />
-    <Resource Include="Resources\ctxt_pause_s.png" />
-    <Resource Include="Resources\ctxt_play_s.png" />
-    <Resource Include="Resources\ctxt_prev_s.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\fullscreen.png" />
