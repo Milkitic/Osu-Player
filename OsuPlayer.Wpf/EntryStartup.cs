@@ -12,9 +12,9 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 
-#if !DEBUG
+//#if !DEBUG
 using Sentry;
-#endif
+//#endif
 
 namespace Milky.OsuPlayer
 {
@@ -33,9 +33,9 @@ namespace Milky.OsuPlayer
             //ConsoleManager.Show();
 #endif
 
-#if !DEBUG
+//#if !DEBUG
             SentrySdk.Init("https://1fe13baa86284da5a0a70efa9750650e:fcbd468d43f94fb1b43af424517ec00b@sentry.io/1412154");
-#endif
+//#endif
 
             InitLocalDb();
 

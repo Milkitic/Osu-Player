@@ -8,6 +8,13 @@
     <sys:String x:Key="text-warn">警告</sys:String>
     <sys:String x:Key="text-info">信息</sys:String>
 
+    <sys:String x:Key="excWin-title">Oops!</sys:String>
+    <sys:String x:Key="excWin-subtitle">Something went wrong.</sys:String>
+    <sys:String x:Key="excWin-subtitle-continuable">But you can still continue during this session.</sys:String>
+    <sys:String x:Key="excWin-excInfoHeader">Exception Information: (Will send to developer)</sys:String>
+    <sys:String x:Key="excWin-btn-exit">退出</sys:String>
+    <sys:String x:Key="excWin-btn-continue">继续</sys:String>
+
     <sys:String x:Key="err-beatmap-load">Error while loading beatmap</sys:String>
     <sys:String x:Key="err-osudb-sync">Error while syncing osu!db</sys:String>
     <sys:String x:Key="err-custom-scan">Error while scanning custom folder</sys:String>
