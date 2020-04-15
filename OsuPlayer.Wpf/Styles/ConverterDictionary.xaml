@@ -5,7 +5,6 @@
     xmlns:converters="clr-namespace:Milky.OsuPlayer.Converters">
     <converters:IndexToStringConverter x:Key="IndexToStringConverter" />
     <converters:TrueToVisibleConverter x:Key="TrueToVisibleConverter" />
-    <converters:ExceptionToStringConverter x:Key="ExceptionToStringConverter" />
     <converters:PlayingConverter x:Key="PlayingConverter" />
     <converters:MiniWindowConverter x:Key="MiniWindowConverter" />
     <converters:NegativeBooleanConverter x:Key="NegativeBooleanConverter" />

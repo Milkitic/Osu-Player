@@ -11,9 +11,9 @@ using System;
 using System.Windows;
 using NLog;
 
-#if !DEBUG
+//#if !DEBUG
 using Sentry;
-#endif
+//#endif
 
 namespace Milky.OsuPlayer
 {
@@ -48,11 +48,11 @@ namespace Milky.OsuPlayer
         {
             if (e.ExceptionObject is Exception ex)
             {
-#if !DEBUG
-                SentrySdk.CaptureException(ex);
-#endif
                 var logger = LogManager.GetCurrentClassLogger();
                 logger.Fatal(ex, "UnhandledException");
+//#if !DEBUG
+                SentrySdk.CaptureException(ex);
+//#endif
                 var exceptionWindow = new ExceptionWindow(ex, false);
                 exceptionWindow.ShowDialog();
             }
@@ -67,11 +67,12 @@ namespace Milky.OsuPlayer
 
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-#if !DEBUG
-            SentrySdk.CaptureException(e.Exception);
-#endif
             var logger = LogManager.GetCurrentClassLogger();
             logger.Error(e.Exception, "DispatcherUnhandledException");
+
+//#if !DEBUG
+            SentrySdk.CaptureException(e.Exception);
+//#endif
 
             var exceptionWindow = new ExceptionWindow(e.Exception, true);
             var val = exceptionWindow.ShowDialog();
