@@ -51,6 +51,8 @@ namespace Milky.OsuPlayer
 #if !DEBUG
                 SentrySdk.CaptureException(ex);
 #endif
+                var logger = LogManager.GetCurrentClassLogger();
+                logger.Fatal(ex, "UnhandledException");
                 var exceptionWindow = new ExceptionWindow(ex, false);
                 exceptionWindow.ShowDialog();
             }
@@ -68,6 +70,9 @@ namespace Milky.OsuPlayer
 #if !DEBUG
             SentrySdk.CaptureException(e.Exception);
 #endif
+            var logger = LogManager.GetCurrentClassLogger();
+            logger.Error(e.Exception, "DispatcherUnhandledException");
+
             var exceptionWindow = new ExceptionWindow(e.Exception, true);
             var val = exceptionWindow.ShowDialog();
             e.Handled = val != true;

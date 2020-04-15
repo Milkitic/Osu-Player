@@ -89,7 +89,7 @@ namespace Milky.OsuPlayer.Media.Audio
             if (ctx.BeatmapDetail != null)
             {
                 Logger.Error(ex, "Load error while loading beatmap: {0}",
-                    Path.Combine(ctx.BeatmapDetail.BaseFolder, ctx.BeatmapDetail.MapPath));
+                    Path.Combine(ctx.BeatmapDetail.BaseFolder ?? "", ctx.BeatmapDetail.MapPath ?? ""));
             }
             else
             {
@@ -117,12 +117,20 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 if (!File.Exists(path))
                     throw new FileNotFoundException("cannot locate file", path);
+
+                Logger.Info("Start load new song from path: {0}", path);
+                var context = PlayList.CurrentInfo;
+                context.BeatmapDetail.MapPath = path;
+                context.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path);
+
                 await ClearPlayer().ConfigureAwait(false);
                 Execute.OnUiThread(() => PreLoadStarted?.Invoke(path, _cts.Token));
                 var osuFile =
                     await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
                         .ConfigureAwait(false); //50 ms
                 if (!osuFile.ReadSuccess) throw osuFile.ReadException;
+
+                context.OsuFile = osuFile;
 
                 var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
                 Beatmap trueBeatmap = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
@@ -133,10 +141,6 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
 
                 PlayList.AddOrSwitchTo(trueBeatmap);
-                var context = PlayList.CurrentInfo;
-                context.OsuFile = osuFile;
-                context.BeatmapDetail.MapPath = path;
-                context.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path);
 
                 InitializeContextHandle(context);
                 if (await LoadAsync(true, playInstantly).ConfigureAwait(false))
@@ -191,6 +195,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 var folder = beatmap.GetFolder(out var isFromDb, out var freePath);
                 if (osuFile == null)
                 {
+                    Logger.Info("Start load new song from db: {0}", beatmap.BeatmapFileName);
                     string path = isFromDb ? Path.Combine(folder, beatmap.BeatmapFileName) : freePath;
                     beatmapDetail.MapPath = path;
                     beatmapDetail.BaseFolder = Path.GetDirectoryName(path);
@@ -252,7 +257,6 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
 
                 Player = new OsuMixPlayer(osuFile, beatmapDetail.BaseFolder);
-                Logger.Warn("NEW!!! {0}", Player);
                 Player.PlayStatusChanged += Player_PlayStatusChanged;
                 Player.PositionUpdated += Player_PositionUpdated;
                 await Player.Initialize().ConfigureAwait(false); //700 ms

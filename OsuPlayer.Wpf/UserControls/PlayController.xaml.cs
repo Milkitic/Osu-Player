@@ -88,7 +88,7 @@ namespace Milky.OsuPlayer.UserControls
         {
             if (ctx.BeatmapDetail != null)
             {
-                var path = Path.Combine(ctx.BeatmapDetail.BaseFolder, ctx.BeatmapDetail.MapPath);
+                var path = Path.Combine(ctx.BeatmapDetail.BaseFolder ?? "", ctx.BeatmapDetail.MapPath ?? "");
                 Notification.Push($"{I18NUtil.GetString("err-beatmap-load")}: {path}");
             }
             else
