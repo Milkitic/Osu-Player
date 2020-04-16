@@ -11,9 +11,7 @@ using System;
 using System.Windows;
 using NLog;
 
-//#if !DEBUG
 using Sentry;
-//#endif
 
 namespace Milky.OsuPlayer
 {
@@ -26,22 +24,40 @@ namespace Milky.OsuPlayer
         public static void Main()
         {
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
-            EntryStartup.Startup();
 
-            var controller = new ObservablePlayController();
-            controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
+            var sentry = SentrySdk.Init(config =>
+            {
+                config.Dsn = new Dsn(
+                    "https://" +
+                    "1fe13baa86284da5a0a70efa9750650e:fcbd468d43f94fb1b43af424517ec00b@" +
+                    "sentry.io/" +
+                    "1412154");
+#if DEBUG
+                //config.Debug = true;
+#endif
+            });
 
-            Service.TryAddInstance(controller);
-            Service.TryAddInstance(new OsuDbInst());
-            Service.TryAddInstance(new LyricsInst());
-            Service.TryAddInstance(new UpdateInst());
-            Service.TryAddInstance(new OsuFileScanner());
+            using (sentry)
+            {
+                var i = 0;
+                Console.WriteLine(1 / i);
+                EntryStartup.Startup();
 
-            Service.Get<LyricsInst>().ReloadLyricProvider();
+                var controller = new ObservablePlayController();
+                controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
 
-            var app = new App();
-            app.InitializeComponent();
-            app.Run();
+                Service.TryAddInstance(controller);
+                Service.TryAddInstance(new OsuDbInst());
+                Service.TryAddInstance(new LyricsInst());
+                Service.TryAddInstance(new UpdateInst());
+                Service.TryAddInstance(new OsuFileScanner());
+
+                Service.Get<LyricsInst>().ReloadLyricProvider();
+
+                var app = new App();
+                app.InitializeComponent();
+                app.Run();
+            }
         }
 
         private static void OnCurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -50,9 +66,9 @@ namespace Milky.OsuPlayer
             {
                 var logger = LogManager.GetCurrentClassLogger();
                 logger.Fatal(ex, "UnhandledException");
-//#if !DEBUG
-                SentrySdk.CaptureException(ex);
-//#endif
+
+                //SentrySdk.CaptureException(ex);
+
                 var exceptionWindow = new ExceptionWindow(ex, false);
                 exceptionWindow.ShowDialog();
             }
@@ -70,9 +86,7 @@ namespace Milky.OsuPlayer
             var logger = LogManager.GetCurrentClassLogger();
             logger.Error(e.Exception, "DispatcherUnhandledException");
 
-//#if !DEBUG
-            SentrySdk.CaptureException(e.Exception);
-//#endif
+            //SentrySdk.CaptureException(e.Exception);
 
             var exceptionWindow = new ExceptionWindow(e.Exception, true);
             var val = exceptionWindow.ShowDialog();
