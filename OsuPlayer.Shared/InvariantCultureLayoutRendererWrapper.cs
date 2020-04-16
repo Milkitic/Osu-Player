@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using NLog;
 using NLog.Config;
 using NLog.LayoutRenderers;
@@ -20,6 +21,9 @@ namespace Milky.OsuPlayer.Shared
 
         protected override string RenderInner(LogEventInfo logEvent)
         {
+            if (Application.Current?.MainWindow is null)
+                return base.RenderInner(logEvent);
+
             var task = Task.Run(() =>
             {
                 var currentCulture = Thread.CurrentThread.CurrentUICulture;
