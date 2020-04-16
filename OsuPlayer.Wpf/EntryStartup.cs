@@ -12,10 +12,6 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 
-//#if !DEBUG
-using Sentry;
-//#endif
-
 namespace Milky.OsuPlayer
 {
     public static class EntryStartup
@@ -32,10 +28,6 @@ namespace Milky.OsuPlayer
 #if DEBUG
             //ConsoleManager.Show();
 #endif
-
-//#if !DEBUG
-            SentrySdk.Init("https://1fe13baa86284da5a0a70efa9750650e:fcbd468d43f94fb1b43af424517ec00b@sentry.io/1412154");
-//#endif
 
             InitLocalDb();
 
