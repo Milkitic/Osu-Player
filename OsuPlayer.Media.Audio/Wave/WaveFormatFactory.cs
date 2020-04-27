@@ -135,12 +135,15 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
                 MyAudioFileReader audioFileReader = null;
                 try
                 {
+                    Logger.Info("Start reading {0}", path);
                     audioFileReader = new MyAudioFileReader(path);
+                    Logger.Info("Finish reading {0}", path);
                     if (CompareWaveFormat(audioFileReader.WaveFormat))
                     {
                         return (Stream)audioFileReader;
                     }
 
+                    Logger.Info("Start resampling {0}", path);
                     using (audioFileReader)
                     {
                         if (type == MyAudioFileReader.WaveStreamType.Wav)
@@ -150,6 +153,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
                                 var stream = new MemoryStream();
                                 resampler.ResamplerQuality = 60;
                                 WaveFileWriter.WriteWavFileToStream(stream, resampler);
+                                Logger.Info("Resampled {0}", path);
                                 stream.Position = 0;
                                 return stream;
                             }
