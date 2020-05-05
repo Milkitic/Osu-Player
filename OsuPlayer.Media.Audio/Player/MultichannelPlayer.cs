@@ -76,49 +76,49 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         {
             _outputDevice = DeviceProviderExtension.CreateOrGetDefaultDevice(out var actualDeviceInfo);
 
-            try
-            {
-                if (_outputDevice is WasapiOut wasapi)
-                {
-                    WaveFormatFactory.Bits = 16;
-                    //WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample > 24
-                    //    ? 24
-                    //    : wasapi.OutputWaveFormat.BitsPerSample;
-                    WaveFormatFactory.Channels = wasapi.OutputWaveFormat.Channels;
-                    WaveFormatFactory.SampleRate = wasapi.OutputWaveFormat.SampleRate;
-                }
-                else
-                {
-                    if (actualDeviceInfo is DirectSoundOutInfo dsoi && dsoi.DeviceGuid == Guid.Empty)
-                    {
-                        wasapi = new WasapiOut();
-                    }
-                    else
-                    {
-                        var wasInfo = (WasapiInfo)DeviceProvider.EnumerateAvailableDevices().First(k =>
-                            k.FriendlyName?.Contains(actualDeviceInfo.FriendlyName) == true && k is WasapiInfo);
-                        wasapi = new WasapiOut(wasInfo.Device, AudioClientShareMode.Shared, true,
-                            AppSettings.Default.Play.DesiredLatency);
-                    }
+            //try
+            //{
+            //    if (_outputDevice is WasapiOut wasapi)
+            //    {
+            //        WaveFormatFactory.Bits = 16;
+            //        //WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample > 24
+            //        //    ? 24
+            //        //    : wasapi.OutputWaveFormat.BitsPerSample;
+            //        WaveFormatFactory.Channels = wasapi.OutputWaveFormat.Channels;
+            //        WaveFormatFactory.SampleRate = wasapi.OutputWaveFormat.SampleRate;
+            //    }
+            //    else
+            //    {
+            //        if (actualDeviceInfo is DirectSoundOutInfo dsoi && dsoi.DeviceGuid == Guid.Empty)
+            //        {
+            //            wasapi = new WasapiOut();
+            //        }
+            //        else
+            //        {
+            //            var wasInfo = (WasapiInfo)DeviceProvider.EnumerateAvailableDevices().First(k =>
+            //                k.FriendlyName?.Contains(actualDeviceInfo.FriendlyName) == true && k is WasapiInfo);
+            //            wasapi = new WasapiOut(wasInfo.Device, AudioClientShareMode.Shared, true,
+            //                AppSettings.Default.Play.DesiredLatency);
+            //        }
 
-                    WaveFormatFactory.Bits = 16;
-                    //WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample > 24
-                    //    ? 24
-                    //    : wasapi.OutputWaveFormat.BitsPerSample;
-                    WaveFormatFactory.Channels = wasapi.OutputWaveFormat.Channels;
-                    WaveFormatFactory.SampleRate = wasapi.OutputWaveFormat.SampleRate;
-                }
+            //        WaveFormatFactory.Bits = 16;
+            //        //WaveFormatFactory.Bits = wasapi.OutputWaveFormat.BitsPerSample > 24
+            //        //    ? 24
+            //        //    : wasapi.OutputWaveFormat.BitsPerSample;
+            //        WaveFormatFactory.Channels = wasapi.OutputWaveFormat.Channels;
+            //        WaveFormatFactory.SampleRate = wasapi.OutputWaveFormat.SampleRate;
+            //    }
 
-                Logger.Debug("BitsPerSample: {0}, Channels: {1}, SampleRate: {2}", WaveFormatFactory.Bits,
-                    WaveFormatFactory.Channels, WaveFormatFactory.SampleRate);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error while getting device output wave format, use default settings.");
-                WaveFormatFactory.Bits = 16;
-                WaveFormatFactory.Channels = 2;
-                WaveFormatFactory.SampleRate = 44100;
-            }
+            //    Logger.Debug("BitsPerSample: {0}, Channels: {1}, SampleRate: {2}", WaveFormatFactory.Bits,
+            //        WaveFormatFactory.Channels, WaveFormatFactory.SampleRate);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.Error(ex, "Error while getting device output wave format, use default settings.");
+            //    WaveFormatFactory.Bits = 16;
+            //    WaveFormatFactory.Channels = 2;
+            //    WaveFormatFactory.SampleRate = 44100;
+            //}
 
             Engine = new AudioPlaybackEngine(_outputDevice);
         }
