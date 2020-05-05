@@ -9,9 +9,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
 
 namespace Milky.OsuPlayer.Media.Audio.Player
 {
@@ -125,6 +127,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         {
             Duration = MathEx.Max(Subchannels.Select(k => k?.ChannelEndTime ?? TimeSpan.Zero));
             PlayStatus = PlayStatus.Ready;
+
             await Task.CompletedTask;
         }
 
@@ -143,12 +146,48 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             _playTask = Task.Run(async () =>
             {
                 var date = DateTime.Now;
+                var lastEnsurePos = _innerTimelineSw.Elapsed;
+                bool firstEnsure = true;
+             
+                var lastBuffPos = _innerTimelineSw.Elapsed;
                 while (!_cts.IsCancellationRequested)
                 {
                     RaisePositionUpdated(_innerTimelineSw.Elapsed, false);
                     //if (_runningChannels.Count > 0)
                     //    Console.WriteLine(string.Join("; ",
                     //        _runningChannels.Select(k => $"{k.Description}: {k.Position.TotalMilliseconds}")));
+                    if (_innerTimelineSw.Elapsed - lastEnsurePos >= TimeSpan.FromSeconds(1.5) || firstEnsure)
+                    {
+                        if (!EnsureSoundElementsLoaded())
+                        {
+                            _innerTimelineSw.Stop();
+                            foreach (var runningChannel in _runningChannels)
+                            {
+                                await runningChannel.Pause();
+                                //RemoveSubchannel(runningChannel);
+                            }
+
+                            await BufferSoundElements();
+
+                            foreach (var runningChannel in _runningChannels)
+                            {
+                                await runningChannel.Play();
+                                //AddSubchannel(runningChannel);
+                            }
+
+                            _innerTimelineSw.Start();
+                        }
+
+                        lastEnsurePos = _innerTimelineSw.Elapsed;
+                        firstEnsure = false;
+                    }
+
+                    if (_innerTimelineSw.Elapsed - lastBuffPos >= TimeSpan.FromSeconds(1.5))
+                    {
+                        BufferSoundElements();
+                        lastBuffPos = _innerTimelineSw.Elapsed;
+                    }
+
                     if (_channelsQueue.Count > 0 &&
                         _channelsQueue.TryPeek(out var channel) &&
                         channel.ChannelStartTime <= _innerTimelineSw.Elapsed &&
@@ -318,6 +357,13 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             }
         }
 
+        protected void RaisePositionUpdated(TimeSpan value, bool force)
+        {
+            if (!force && DateTime.Now - _lastPositionUpdateTime < AutoRefreshInterval) return;
+            PositionUpdated?.Invoke(value);
+            _lastPositionUpdateTime = DateTime.Now;
+        }
+
         private async Task CancelTask()
         {
             if (_playTask is null ||
@@ -325,7 +371,14 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                 _playTask.Status == TaskStatus.Faulted)
                 return;
 
-            _cts?.Cancel();
+            try
+            {
+                _cts?.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+
             await TaskEx.WhenAllSkipNull(_playTask).ConfigureAwait(false);
         }
 
@@ -394,11 +447,40 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             }
         }
 
-        protected void RaisePositionUpdated(TimeSpan value, bool force)
+        private bool EnsureSoundElementsLoaded()
         {
-            if (!force && DateTime.Now - _lastPositionUpdateTime < AutoRefreshInterval) return;
-            PositionUpdated?.Invoke(value);
-            _lastPositionUpdateTime = DateTime.Now;
+            var position = Position;
+            foreach (var subchannel in Subchannels)
+            {
+                if (!(subchannel is MultiElementsChannel mec)) continue;
+                var hitsounds = mec.SoundElementCollection
+                    .Where(k => k.FilePath != null)
+                    .Where(k => k.Offset >= position.TotalMilliseconds &&
+                                k.Offset <= position.TotalMilliseconds + 3000);
+                if (hitsounds.Any(k => !CachedSound.ContainsHitsound(k.FilePath)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        protected async Task BufferSoundElements()
+        {
+            var position = Position;
+            foreach (var subchannel in Subchannels)
+            {
+                if (!(subchannel is MultiElementsChannel mec)) continue;
+                var hitsounds = mec.SoundElementCollection
+                    .Where(k => k.FilePath != null)
+                    .Where(k => k.Offset >= position.TotalMilliseconds &&
+                                k.Offset <= position.TotalMilliseconds + 6000);
+                foreach (var soundElement in hitsounds)
+                {
+                    await CachedSound.GetOrCreateCacheSound(soundElement.FilePath);
+                }
+            }
         }
     }
 }

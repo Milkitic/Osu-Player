@@ -52,6 +52,10 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
             new ReadOnlyDictionary<string, CachedSound>(CachedDictionary);
         public static IReadOnlyDictionary<string, CachedSound> DefaultSounds { get; } =
             new ReadOnlyDictionary<string, CachedSound>(DefaultDictionary);
+        public static bool ContainsHitsound(string path)
+        {
+            return CachedSounds.ContainsKey(path) || DefaultSounds.ContainsKey(path);
+        }
 
         public static async Task CreateCacheSounds(IEnumerable<string> paths)
         {
@@ -61,7 +65,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
                     .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
                     .ForAll(k => GetOrCreateCacheSound(k, false).Wait());
             }).ConfigureAwait(false);
-            
+
             //foreach (var path in paths)
             //{
             //    await CreateCacheSound(path, false).ConfigureAwait(false); // Cache each file once before play.

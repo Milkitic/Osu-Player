@@ -1,12 +1,10 @@
-﻿using System;
-using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using NLog;
+﻿using NLog;
 using NLog.Config;
 using NLog.LayoutRenderers;
 using NLog.LayoutRenderers.Wrappers;
+using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Milky.OsuPlayer.Shared
 {

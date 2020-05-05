@@ -75,14 +75,14 @@ namespace Milky.OsuPlayer.Media.Audio
                 SampleChannel = new SampleChannel(this, _osuFile, _sourceFolder, Engine);
                 AddSubchannel(SampleChannel);
                 await SampleChannel.Initialize().ConfigureAwait(false);
-                await CachedSound.CreateCacheSounds(HitsoundChannel.SoundElementCollection
-                    .Where(k => k.FilePath != null)
-                    .Select(k => k.FilePath)
-                    .Concat(SampleChannel.SoundElementCollection
-                        .Where(k => k.FilePath != null)
-                        .Select(k => k.FilePath))
-                    .Concat(new[] { mp3Path })
-                ).ConfigureAwait(false);
+                //await CachedSound.CreateCacheSounds(HitsoundChannel.SoundElementCollection
+                //    .Where(k => k.FilePath != null)
+                //    .Select(k => k.FilePath)
+                //    .Concat(SampleChannel.SoundElementCollection
+                //        .Where(k => k.FilePath != null)
+                //        .Select(k => k.FilePath))
+                //    .Concat(new[] { mp3Path })
+                //).ConfigureAwait(false);
                 foreach (var channel in Subchannels)
                 {
                     channel.PlayStatusChanged += status => Logger.Debug($"{channel.Description}: {status}");
@@ -91,6 +91,8 @@ namespace Milky.OsuPlayer.Media.Audio
                 InitVolume();
 
                 await base.Initialize().ConfigureAwait(false);
+                await CachedSound.GetOrCreateCacheSound(mp3Path);
+                await BufferSoundElements();
             }
             catch (Exception ex)
             {

@@ -399,7 +399,14 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         private async Task CancelLoopAsync()
         {
             _sw.Stop();
-            _cts?.Cancel();
+            try
+            {
+                _cts?.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+
             await TaskEx.WhenAllSkipNull(_playingTask/*, _calibrationTask*/).ConfigureAwait(false);
             Logger.Debug(@"{0} task canceled.", Description);
         }
