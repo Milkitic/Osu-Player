@@ -48,9 +48,9 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override TimeSpan Position => _sw.Elapsed;
 
-        public override TimeSpan ChannelStartTime => TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset < 0
+        public override TimeSpan ChannelStartTime => TimeSpan.FromMilliseconds((AppSettings.Default?.Play?.GeneralActualOffset ?? 0) < 0
             ? 0
-            : AppSettings.Default.Play.GeneralActualOffset);
+            : (AppSettings.Default?.Play?.GeneralActualOffset ?? 0));
 
         public int ManualOffset
         {
@@ -110,7 +110,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             //    .Where(k => k.FilePath != null)
             //    .Select(k => k.FilePath));
 
-            await SetPlaybackRate(AppSettings.Default.Play.PlaybackRate, AppSettings.Default.Play.PlayUseTempo)
+            await SetPlaybackRate(AppSettings.Default?.Play?.PlaybackRate ?? 1, AppSettings.Default?.Play?.PlayUseTempo ?? true)
                 .ConfigureAwait(false);
             PlayStatus = PlayStatus.Ready;
         }

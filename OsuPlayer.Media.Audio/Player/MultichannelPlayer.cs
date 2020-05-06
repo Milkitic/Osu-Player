@@ -148,7 +148,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                 var date = DateTime.Now;
                 var lastEnsurePos = _innerTimelineSw.Elapsed;
                 bool firstEnsure = true;
-             
+
                 var lastBuffPos = _innerTimelineSw.Elapsed;
                 while (!_cts.IsCancellationRequested)
                 {
@@ -318,17 +318,23 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             }
         }
 
-        public virtual async Task DisposeAsync()
+        protected async Task DisposeInnerAsync()
         {
-            Logger.Debug($"Disposing: Start to dispose.");
             await Stop().ConfigureAwait(false);
-            Logger.Debug($"Disposing: Stopped.");
 
             foreach (var subchannel in _subchannels.ToList())
             {
                 await subchannel.DisposeAsync().ConfigureAwait(false);
                 Logger.Debug("Disposing: Disposed {0}.", subchannel.Description);
             }
+
+            _subchannels.Clear();
+        }
+
+        public virtual async Task DisposeAsync()
+        {
+            Logger.Debug($"Disposing: Start to dispose.");
+            await DisposeInnerAsync();
 
             Engine?.Dispose();
             Logger.Debug("Disposing: Disposed {0}.", nameof(Engine));

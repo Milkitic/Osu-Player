@@ -19,8 +19,8 @@ namespace Milky.OsuPlayer.Media.Audio
         private readonly ConcurrentDictionary<string, string> _pathCache =
             new ConcurrentDictionary<string, string>();
 
-        private readonly OsuFile _osuFile;
-        private readonly string _sourceFolder;
+        private OsuFile _osuFile;
+        private string _sourceFolder;
         private int _manualOffset;
 
         public override string Description { get; } = "OsuPlayer";
@@ -56,43 +56,8 @@ namespace Milky.OsuPlayer.Media.Audio
                     await CachedSound.CreateDefaultCacheSounds(files.Select(k => k.FullName)).ConfigureAwait(false);
                 }
 
-                var mp3Path = Path.Combine(_sourceFolder, _osuFile.General.AudioFilename);
-                MusicChannel = new SingleMediaChannel(Engine, mp3Path,
-                    AppSettings.Default.Play.PlaybackRate,
-                    AppSettings.Default.Play.PlayUseTempo)
-                {
-                    Description = "Music",
-                    IsReferenced = true
-                };
-
-                AddSubchannel(MusicChannel);
-                await MusicChannel.Initialize().ConfigureAwait(false);
-
-                HitsoundChannel = new HitsoundChannel(this, _osuFile, _sourceFolder, Engine);
-                AddSubchannel(HitsoundChannel);
-                await HitsoundChannel.Initialize().ConfigureAwait(false);
-
-                SampleChannel = new SampleChannel(this, _osuFile, _sourceFolder, Engine);
-                AddSubchannel(SampleChannel);
-                await SampleChannel.Initialize().ConfigureAwait(false);
-                //await CachedSound.CreateCacheSounds(HitsoundChannel.SoundElementCollection
-                //    .Where(k => k.FilePath != null)
-                //    .Select(k => k.FilePath)
-                //    .Concat(SampleChannel.SoundElementCollection
-                //        .Where(k => k.FilePath != null)
-                //        .Select(k => k.FilePath))
-                //    .Concat(new[] { mp3Path })
-                //).ConfigureAwait(false);
-                foreach (var channel in Subchannels)
-                {
-                    channel.PlayStatusChanged += status => Logger.Debug($"{channel.Description}: {status}");
-                }
-
-                InitVolume();
-
+                await InnerLoad().ConfigureAwait(false);
                 await base.Initialize().ConfigureAwait(false);
-                await CachedSound.GetOrCreateCacheSound(mp3Path);
-                await BufferSoundElements();
             }
             catch (Exception ex)
             {
@@ -101,14 +66,65 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
+        public async Task Reload(OsuFile osuFile, string sourceFolder)
+        {
+            await DisposeInnerAsync();
+            _osuFile = osuFile;
+            _sourceFolder = sourceFolder;
+
+            await InnerLoad().ConfigureAwait(false);
+            await base.Initialize().ConfigureAwait(false);
+        }
+
+        private async Task InnerLoad()
+        {
+            var mp3Path = Path.Combine(_sourceFolder, _osuFile.General.AudioFilename);
+            MusicChannel = new SingleMediaChannel(Engine, mp3Path,
+                AppSettings.Default?.Play?.PlaybackRate ?? 1,
+                AppSettings.Default?.Play?.PlayUseTempo ?? true)
+            {
+                Description = "Music",
+                IsReferenced = true
+            };
+
+            AddSubchannel(MusicChannel);
+            await MusicChannel.Initialize().ConfigureAwait(false);
+
+            HitsoundChannel = new HitsoundChannel(this, _osuFile, _sourceFolder, Engine);
+            AddSubchannel(HitsoundChannel);
+            await HitsoundChannel.Initialize().ConfigureAwait(false);
+
+            SampleChannel = new SampleChannel(this, _osuFile, _sourceFolder, Engine);
+            AddSubchannel(SampleChannel);
+            await SampleChannel.Initialize().ConfigureAwait(false);
+            //await CachedSound.CreateCacheSounds(HitsoundChannel.SoundElementCollection
+            //    .Where(k => k.FilePath != null)
+            //    .Select(k => k.FilePath)
+            //    .Concat(SampleChannel.SoundElementCollection
+            //        .Where(k => k.FilePath != null)
+            //        .Select(k => k.FilePath))
+            //    .Concat(new[] { mp3Path })
+            //).ConfigureAwait(false);
+            foreach (var channel in Subchannels)
+            {
+                channel.PlayStatusChanged += status => Logger.Debug($"{channel.Description}: {status}");
+            }
+
+            InitVolume();
+
+            await CachedSound.GetOrCreateCacheSound(mp3Path);
+            await BufferSoundElements();
+        }
+
         private void InitVolume()
         {
-            MusicChannel.Volume = AppSettings.Default.Volume.Music;
-            HitsoundChannel.Volume = AppSettings.Default.Volume.Hitsound;
-            HitsoundChannel.BalanceFactor = AppSettings.Default.Volume.BalanceFactor / 100;
-            SampleChannel.Volume = AppSettings.Default.Volume.Sample;
-            Volume = AppSettings.Default.Volume.Main;
-            AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
+            MusicChannel.Volume = AppSettings.Default?.Volume?.Music ?? 1;
+            HitsoundChannel.Volume = AppSettings.Default?.Volume?.Hitsound ?? 1;
+            HitsoundChannel.BalanceFactor = AppSettings.Default?.Volume?.BalanceFactor / 100 ?? 0;
+            SampleChannel.Volume = AppSettings.Default?.Volume?.Sample ?? 100;
+            Volume = AppSettings.Default?.Volume?.Main ?? 100;
+            if (AppSettings.Default?.Volume != null)
+                AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
         }
 
         private void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -185,7 +201,8 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public override Task DisposeAsync()
         {
-            AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
+            if (AppSettings.Default?.Volume != null)
+                AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
             return base.DisposeAsync();
         }
     }
