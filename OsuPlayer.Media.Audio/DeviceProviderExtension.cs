@@ -8,8 +8,10 @@ namespace Milky.OsuPlayer.Media.Audio
     {
         public static IWavePlayer CreateOrGetDefaultDevice(out IDeviceInfo actualDeviceInfo)
         {
-            var play = AppSettings.Default.Play;
-            return DeviceProvider.CreateDevice(out actualDeviceInfo, play.DeviceInfo, play.DesiredLatency, play.IsExclusive);
+            var play = AppSettings.Default?.Play;
+            if (play != null)
+                return DeviceProvider.CreateDevice(out actualDeviceInfo, play.DeviceInfo, play.DesiredLatency, play.IsExclusive);
+            return DeviceProvider.CreateDevice(out actualDeviceInfo);
         }
     }
 }

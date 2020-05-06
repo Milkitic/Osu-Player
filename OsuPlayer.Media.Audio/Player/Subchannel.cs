@@ -79,7 +79,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public virtual async Task DisposeAsync()
         {
-            Engine?.Dispose();
+            //Engine?.Dispose();
             await Task.CompletedTask;
         }
     }

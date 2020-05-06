@@ -42,7 +42,19 @@ namespace Milky.OsuPlayer.Presentation.Interaction
         {
             if (_uiContext == null)
             {
-                Application.Current?.Dispatcher?.Invoke(() =>
+                if (Application.Current?.Dispatcher != null)
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        try
+                        {
+                            action?.Invoke();
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex, "UiContext execute error.");
+                        }
+                    });
+                else
                 {
                     try
                     {
@@ -52,7 +64,7 @@ namespace Milky.OsuPlayer.Presentation.Interaction
                     {
                         Logger.Error(ex, "UiContext execute error.");
                     }
-                });
+                }
             }
             else
             {

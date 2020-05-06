@@ -34,8 +34,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public override TimeSpan Duration { get; protected set; }
 
-        public override TimeSpan ChannelStartTime => TimeSpan.FromMilliseconds(AppSettings.Default.Play.GeneralActualOffset < 0
-            ? -AppSettings.Default.Play.GeneralActualOffset
+        public override TimeSpan ChannelStartTime => TimeSpan.FromMilliseconds((AppSettings.Default?.Play?.GeneralActualOffset ?? 0) < 0
+            ? (-AppSettings.Default?.Play?.GeneralActualOffset ?? 0)
             : 0);
 
         public sealed override float PlaybackRate { get; protected set; }
