@@ -68,7 +68,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public async Task Reload(OsuFile osuFile, string sourceFolder)
         {
-            await DisposeInnerAsync();
+            await DisposeSubChannelsAsync();
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
 
@@ -121,8 +121,8 @@ namespace Milky.OsuPlayer.Media.Audio
             MusicChannel.Volume = AppSettings.Default?.Volume?.Music ?? 1;
             HitsoundChannel.Volume = AppSettings.Default?.Volume?.Hitsound ?? 1;
             HitsoundChannel.BalanceFactor = AppSettings.Default?.Volume?.BalanceFactor / 100 ?? 0;
-            SampleChannel.Volume = AppSettings.Default?.Volume?.Sample ?? 100;
-            Volume = AppSettings.Default?.Volume?.Main ?? 100;
+            SampleChannel.Volume = AppSettings.Default?.Volume?.Sample ?? 1;
+            Volume = AppSettings.Default?.Volume?.Main ?? 1;
             if (AppSettings.Default?.Volume != null)
                 AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
         }
