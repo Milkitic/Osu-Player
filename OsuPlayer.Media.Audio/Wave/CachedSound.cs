@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Milky.OsuPlayer.Media.Audio.Wave
 {
-    internal class CachedSound
+    public class CachedSound
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         public string SourcePath { get; }
@@ -125,7 +125,7 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
                 {
                     AudioData = wholeData.ToArray(),
                     Duration = audioFileReader.TotalTime,
-                    WaveFormat = audioFileReader.WaveFormat
+                    WaveFormat = audioFileReader.WaveFormat,
                 };
                 return cachedSound;
             }

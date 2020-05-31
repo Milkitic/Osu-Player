@@ -94,7 +94,12 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
             await RequeueAsync(TimeSpan.Zero).ConfigureAwait(false);
 
-            Duration = TimeSpan.FromMilliseconds(SoundElements.Count == 0 ? 0 : SoundElements.Max(k => k.Offset));
+            var ordered = SoundElements.OrderBy(k => k.Offset).ToArray();
+            var last9Element = ordered.Skip(ordered.Length - 9).ToArray();
+            var max = TimeSpan.FromMilliseconds(last9Element.Length == 0 ? 0 : last9Element.Max(k => k.NearlyPlayEndTime));
+            Duration = MathEx.Max(
+                TimeSpan.FromMilliseconds(SoundElements.Count == 0 ? 0 : SoundElements.Max(k => k.Offset)), max);
+
             await Task.Run(() =>
             {
                 SoundElements
@@ -421,6 +426,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             _cts?.Dispose();
             Logger.Debug($"Disposing: Disposed {nameof(_cts)}.");
 
+            Engine.RemoveRootSample(_volumeProvider);
             //await base.DisposeAsync().ConfigureAwait(false);
             //Logger.Debug($"Disposing: Disposed base.");
         }

@@ -125,7 +125,14 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public virtual async Task Initialize()
         {
-            Duration = MathEx.Max(Subchannels.Select(k => k?.ChannelEndTime ?? TimeSpan.Zero));
+            bool addition = false;
+            var max = MathEx.Max(Subchannels.Select(k =>
+            {
+                if (k.Duration <= TimeSpan.FromMilliseconds(100) && k is SingleMediaChannel) addition = true;
+                return k?.ChannelEndTime ?? TimeSpan.Zero;
+            }));
+
+            Duration = addition ? max + TimeSpan.FromSeconds(1) : max;
             PlayStatus = PlayStatus.Ready;
 
             await Task.CompletedTask;
@@ -318,7 +325,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             }
         }
 
-        protected async Task DisposeInnerAsync()
+        protected async Task DisposeSubChannelsAsync()
         {
             await Stop().ConfigureAwait(false);
 
@@ -329,12 +336,13 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             }
 
             _subchannels.Clear();
+            _channelsQueue = null;
         }
 
         public virtual async Task DisposeAsync()
         {
             Logger.Debug($"Disposing: Start to dispose.");
-            await DisposeInnerAsync();
+            await DisposeSubChannelsAsync();
 
             Engine?.Dispose();
             Logger.Debug("Disposing: Disposed {0}.", nameof(Engine));
