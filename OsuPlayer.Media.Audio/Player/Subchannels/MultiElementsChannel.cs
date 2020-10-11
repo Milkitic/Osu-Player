@@ -96,7 +96,12 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
             var ordered = SoundElements.OrderBy(k => k.Offset).ToArray();
             var last9Element = ordered.Skip(ordered.Length - 9).ToArray();
-            var max = TimeSpan.FromMilliseconds(last9Element.Length == 0 ? 0 : last9Element.Max(k => k.NearlyPlayEndTime));
+            var max = TimeSpan.FromMilliseconds(last9Element.Length == 0 ? 0 : last9Element.Max(k =>
+                ((k.ControlType == SlideControlType.None) || (k.ControlType == SlideControlType.StartNew))
+                ? k.NearlyPlayEndTime
+                : 0
+            ));
+
             Duration = MathEx.Max(
                 TimeSpan.FromMilliseconds(SoundElements.Count == 0 ? 0 : SoundElements.Max(k => k.Offset)), max);
 
