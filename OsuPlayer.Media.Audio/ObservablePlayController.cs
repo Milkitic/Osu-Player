@@ -192,7 +192,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 var osuFile = context.OsuFile;
                 var beatmapDetail = context.BeatmapDetail;
 
-                var folder = beatmap.GetFolder(out var isFromDb, out var freePath);
+                var folder = beatmap.GetFolder(out var isFromDb, out var freePath).Trim();
                 if (osuFile == null)
                 {
                     Logger.Info("Start load new song from db: {0}", beatmap.BeatmapFileName);
