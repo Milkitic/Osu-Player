@@ -26,7 +26,7 @@ namespace Milky.OsuPlayer.Windows
         private double _screenWidth;
         private double _screenHeight;
 
-        private Rectangle _currentArea;
+        private static Rectangle _currentArea;
         private bool _isStickEnabled;
         private bool _isShowing;
         private static bool _mouseDown;
@@ -79,6 +79,8 @@ namespace Milky.OsuPlayer.Windows
             _screenHeight = SystemParameters.PrimaryScreenHeight;
 
             var s = AppSettings.Default.General.MiniPosition;
+            var area = AppSettings.Default.General.MiniArea;
+
             if (s != null && s.Length == 2)
             {
                 Left = s[0];
@@ -93,8 +95,16 @@ namespace Milky.OsuPlayer.Windows
                 Left = _screenWidth - ActualWidth - 20;
                 Top = _screenHeight - ActualHeight - 100;
             }
+            if (area != null && area.Length == 4)
+            {
+                _currentArea = new Rectangle(area[0], area[1], area[2], area[3]);
+            }
         }
 
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            StopHiding();
+        }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
         }
@@ -158,6 +168,7 @@ namespace Milky.OsuPlayer.Windows
         {
             if (!IsStickEnabled) return;
             if (!_isShowing) return;
+            if (!IsActive) return;
             _isShowing = false;
 
             Logger.Debug("Called Control_MouseLeave()");
@@ -175,6 +186,9 @@ namespace Milky.OsuPlayer.Windows
         private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             AppSettings.Default.General.MiniPosition = new[] { Left, Top };
+            AppSettings.Default.General.MiniArea = new[] { 
+                _currentArea.X, _currentArea.Y, _currentArea.Width, _currentArea.Height, 
+            }; 
             AppSettings.SaveDefault();
 
             _mouseDown = false;

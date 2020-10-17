@@ -12,6 +12,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         public bool? ExitWhenClosed { get; set; } = null;
         public bool FirstOpen { get; set; } = true;
         public double[] MiniPosition { get; set; }
+        public int[] MiniArea { get; set; }
     }
 
     public class InterfaceSection : VmBase
