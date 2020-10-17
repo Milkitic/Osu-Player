@@ -275,7 +275,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 else if (waves.Contains(fileNameWithoutExt))
                     filePath = _player.GetFileUntilFind(_sourceFolder, fileNameWithoutExt);
                 else
-                    filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutExt + AudioPlaybackEngine.WavExtension);
+                    filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutIndex + AudioPlaybackEngine.WavExtension);
 
                 tuples[i] = (filePath, hitsoundType);
             }
