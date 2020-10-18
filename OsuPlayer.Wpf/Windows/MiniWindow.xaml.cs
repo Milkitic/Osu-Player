@@ -172,7 +172,6 @@ namespace Milky.OsuPlayer.Windows
         {
             if (!IsStickEnabled) return;
             if (!_isShowing) return;
-            if (!IsActive) return;
             _isShowing = false;
 
             Logger.Debug("Called Control_MouseLeave()");
