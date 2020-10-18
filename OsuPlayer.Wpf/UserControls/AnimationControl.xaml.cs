@@ -221,6 +221,8 @@ namespace Milky.OsuPlayer.UserControls
         }
         private async Task InitVideoAsync(BeatmapContext beatmapCtx)
         {
+            if (beatmapCtx.OsuFile.Events.VideoInfo == null) return;
+
             _videoOffset = -(beatmapCtx.OsuFile.Events.VideoInfo.Offset);
             if (_videoOffset >= 0)
             {
