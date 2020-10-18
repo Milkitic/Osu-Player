@@ -26,7 +26,7 @@ namespace Milky.OsuPlayer.Windows
         private double _screenWidth;
         private double _screenHeight;
 
-        private static Rectangle _currentArea;
+        private Rectangle _currentArea;
         private bool _isStickEnabled;
         private bool _isShowing;
         private static bool _mouseDown;
@@ -79,8 +79,6 @@ namespace Milky.OsuPlayer.Windows
             _screenHeight = SystemParameters.PrimaryScreenHeight;
 
             var s = AppSettings.Default.General.MiniPosition;
-            var area = AppSettings.Default.General.MiniArea;
-
             if (s != null && s.Length == 2)
             {
                 Left = s[0];
@@ -95,9 +93,15 @@ namespace Milky.OsuPlayer.Windows
                 Left = _screenWidth - ActualWidth - 20;
                 Top = _screenHeight - ActualHeight - 100;
             }
+
+            var area = AppSettings.Default.General.MiniArea;
             if (area != null && area.Length == 4)
             {
                 _currentArea = new Rectangle(area[0], area[1], area[2], area[3]);
+            }
+            else
+            {
+                _currentArea = Screen.GetWorkingArea(new System.Drawing.Point((int)Left, (int)Top));
             }
         }
 
