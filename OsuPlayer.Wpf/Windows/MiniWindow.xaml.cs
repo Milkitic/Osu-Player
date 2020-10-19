@@ -81,11 +81,11 @@ namespace Milky.OsuPlayer.Windows
             _equivalentScreenWidth = SystemParameters.PrimaryScreenWidth / dpiScaling;
             _equivalentScreenHeight = SystemParameters.PrimaryScreenHeight / dpiScaling;
 
-            var s = AppSettings.Default.General.MiniPosition;
-            if (s != null && s.Length == 2)
+            var point = AppSettings.Default.General.MiniLastPosition;
+            if (point != null)
             {
-                Left = s[0];
-                Top = s[1];
+                Left = point.Value.X;
+                Top = point.Value.Y;
                 if (Left > _equivalentScreenWidth - ActualWidth || Left < 0)
                 {
                     IsStickEnabled = true;
@@ -97,10 +97,10 @@ namespace Milky.OsuPlayer.Windows
                 Top = _equivalentScreenHeight - ActualHeight - 100;
             }
 
-            var area = AppSettings.Default.General.MiniArea;
-            if (area != null && area.Length == 4)
+            var area = AppSettings.Default.General.MiniWorkingArea;
+            if (area != null)
             {
-                _currentArea = new Rectangle(area[0], area[1], area[2], area[3]);
+                _currentArea = area.Value;
             }
             else
             {
@@ -214,10 +214,10 @@ namespace Milky.OsuPlayer.Windows
 
         private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            AppSettings.Default.General.MiniPosition = new[] { Left, Top };
-            AppSettings.Default.General.MiniArea = new[] {
-                _currentArea.X, _currentArea.Y, _currentArea.Width, _currentArea.Height,
-            };
+            AppSettings.Default.General.MiniLastPosition = new System.Windows.Point(Left, Top);
+            AppSettings.Default.General.MiniWorkingArea = new Rectangle(
+                _currentArea.X, _currentArea.Y, _currentArea.Width, _currentArea.Height
+            );
             AppSettings.SaveDefault();
 
             _mouseDown = false;
