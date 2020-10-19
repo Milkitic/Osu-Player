@@ -126,6 +126,7 @@ namespace Milky.OsuPlayer.Windows
         // 1. Compatible with multiple screens
         // 2. Compatible with DPI scaling
         // 3. All coordinate properties' DPI of WPF controls are 96
+        // 4. TODO: issue when cross over different DPI areas
         private void Window_LocationChanged(object sender, EventArgs e)
         {
             if (!_mouseDown) return;
@@ -133,12 +134,10 @@ namespace Milky.OsuPlayer.Windows
 
             var dpiScaling = GetDpiScaling();
 
-            var equivalentMousePos = GetMousePos(); // actual dpi-scaled value
-            equivalentMousePos = new System.Windows.Point(equivalentMousePos.X / dpiScaling,
-                equivalentMousePos.Y / dpiScaling); // converted value
+            var mousePos = GetMousePos();
 
-            var workingArea = Screen.GetWorkingArea(new System.Drawing.Point((int)equivalentMousePos.X,
-                (int)equivalentMousePos.Y)); // actual dpi-scaled value
+            var workingArea = Screen.GetWorkingArea(new System.Drawing.Point((int)mousePos.X,
+                (int)mousePos.Y)); // actual dpi-scaled value
             _currentArea = new Rectangle((int)(workingArea.Left / dpiScaling),
                 (int)(workingArea.Top / dpiScaling),
                 (int)(workingArea.Width / dpiScaling),
@@ -241,11 +240,11 @@ namespace Milky.OsuPlayer.Windows
         private void HideToBound()
         {
             Logger.Debug("Called HideToBound()");
-            if (Right >= _currentArea.Right)
+            if (Math.Round(Right) >= _currentArea.Right)
             {
                 CreateStoryboard(_currentArea.Right - _stickWidth - WindowMargin, EasingMode.EaseInOut, true);
             }
-            else if (Left <= _currentArea.Left - WindowMargin)
+            else if (Math.Round(Left) <= _currentArea.Left - WindowMargin)
             {
                 CreateStoryboard(_currentArea.Left - ActualWidth + _stickWidth + WindowMargin, EasingMode.EaseInOut,
                     true);
@@ -287,19 +286,20 @@ namespace Milky.OsuPlayer.Windows
                 null, 1500, Timeout.Infinite);
         }
 
-        private static System.Windows.Point GetMousePos()
+        private System.Windows.Point GetMousePos()
         {
-            return NativeUser32.GetMousePosition();
+            return PointToScreen(Mouse.GetPosition(this));
         }
 
-        private static int GetDpi()
+        private int GetDpi()
         {
-            var propertyInfo =
-                typeof(SystemParameters).GetProperty("DpiX", BindingFlags.NonPublic | BindingFlags.Static);
-            return (int?)propertyInfo?.GetValue(null, null) ?? 96;
+            var source = PresentationSource.FromVisual(this);
+
+            var dpiX = 96.0 * source?.CompositionTarget?.TransformToDevice.M11 ?? 96;
+            return (int)dpiX;
         }
 
-        private static double GetDpiScaling()
+        private double GetDpiScaling()
         {
             return GetDpi() / 96f;
         }
