@@ -1,15 +1,17 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Utils;
 using System;
 using System.Drawing;
+using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Milky.OsuPlayer.Common;
 using Timer = System.Threading.Timer;
 
 namespace Milky.OsuPlayer.Windows
@@ -23,8 +25,8 @@ namespace Milky.OsuPlayer.Windows
 
         private event Action<bool> StickChanged;
 
-        private double _screenWidth;
-        private double _screenHeight;
+        private double _equivalentScreenWidth;
+        private double _equivalentScreenHeight;
 
         private Rectangle _currentArea;
         private bool _isStickEnabled;
@@ -75,23 +77,24 @@ namespace Milky.OsuPlayer.Windows
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _screenWidth = SystemParameters.PrimaryScreenWidth;
-            _screenHeight = SystemParameters.PrimaryScreenHeight;
+            var dpiScaling = GetDpiScaling();
+            _equivalentScreenWidth = SystemParameters.PrimaryScreenWidth / dpiScaling;
+            _equivalentScreenHeight = SystemParameters.PrimaryScreenHeight / dpiScaling;
 
             var s = AppSettings.Default.General.MiniPosition;
             if (s != null && s.Length == 2)
             {
                 Left = s[0];
                 Top = s[1];
-                if (Left > _screenWidth - ActualWidth || Left < 0)
+                if (Left > _equivalentScreenWidth - ActualWidth || Left < 0)
                 {
                     IsStickEnabled = true;
                 }
             }
             else
             {
-                Left = _screenWidth - ActualWidth - 20;
-                Top = _screenHeight - ActualHeight - 100;
+                Left = _equivalentScreenWidth - ActualWidth - 20;
+                Top = _equivalentScreenHeight - ActualHeight - 100;
             }
 
             var area = AppSettings.Default.General.MiniArea;
@@ -101,7 +104,12 @@ namespace Milky.OsuPlayer.Windows
             }
             else
             {
-                _currentArea = Screen.GetWorkingArea(new System.Drawing.Point((int)Left, (int)Top));
+                var workingArea =
+                    Screen.GetWorkingArea(new System.Drawing.Point((int)Left, (int)Top)); // actual dpi-scaled value
+                _currentArea = new Rectangle((int)(workingArea.Left / dpiScaling),
+                    (int)(workingArea.Top / dpiScaling),
+                    (int)(workingArea.Width / dpiScaling),
+                    (int)(workingArea.Height / dpiScaling)); // converted value
             }
         }
 
@@ -109,18 +117,36 @@ namespace Milky.OsuPlayer.Windows
         {
             StopHiding();
         }
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
         }
 
+        // while determining the location these following aspects should be considered:
+        // 1. Compatible with multiple screens
+        // 2. Compatible with DPI scaling
+        // 3. All coordinate properties' DPI of WPF controls are 96
         private void Window_LocationChanged(object sender, EventArgs e)
         {
             if (!_mouseDown) return;
-            var mousePos = GetMousePos();
-            var old = _currentArea;
-            _currentArea = Screen.GetWorkingArea(new System.Drawing.Point((int)mousePos.X, (int)mousePos.Y));
-            if (old != _currentArea)
+            var oldArea = _currentArea; // previous screen
+
+            var dpiScaling = GetDpiScaling();
+
+            var equivalentMousePos = GetMousePos(); // actual dpi-scaled value
+            equivalentMousePos = new System.Windows.Point(equivalentMousePos.X / dpiScaling,
+                equivalentMousePos.Y / dpiScaling); // converted value
+
+            var workingArea = Screen.GetWorkingArea(new System.Drawing.Point((int)equivalentMousePos.X,
+                (int)equivalentMousePos.Y)); // actual dpi-scaled value
+            _currentArea = new Rectangle((int)(workingArea.Left / dpiScaling),
+                (int)(workingArea.Top / dpiScaling),
+                (int)(workingArea.Width / dpiScaling),
+                (int)(workingArea.Height / dpiScaling)); // converted value
+
+            if (oldArea != _currentArea)
                 Logger.Debug(_currentArea.ToString());
+
             _sb?.Stop();
             if (Right >= _currentArea.Right + WindowMargin - _stickAutoWidth &&
                 Right <= _currentArea.Right + WindowMargin + _stickAutoWidth)
@@ -189,9 +215,9 @@ namespace Milky.OsuPlayer.Windows
         private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             AppSettings.Default.General.MiniPosition = new[] { Left, Top };
-            AppSettings.Default.General.MiniArea = new[] { 
-                _currentArea.X, _currentArea.Y, _currentArea.Width, _currentArea.Height, 
-            }; 
+            AppSettings.Default.General.MiniArea = new[] {
+                _currentArea.X, _currentArea.Y, _currentArea.Width, _currentArea.Height,
+            };
             AppSettings.SaveDefault();
 
             _mouseDown = false;
@@ -261,9 +287,21 @@ namespace Milky.OsuPlayer.Windows
                 null, 1500, Timeout.Infinite);
         }
 
-        private System.Windows.Point GetMousePos()
+        private static System.Windows.Point GetMousePos()
         {
-            return PointToScreen(Mouse.GetPosition(this));
+            return NativeUser32.GetMousePosition();
+        }
+
+        private static int GetDpi()
+        {
+            var propertyInfo =
+                typeof(SystemParameters).GetProperty("DpiX", BindingFlags.NonPublic | BindingFlags.Static);
+            return (int?)propertyInfo?.GetValue(null, null) ?? 96;
+        }
+
+        private static double GetDpiScaling()
+        {
+            return GetDpi() / 96f;
         }
     }
 }
