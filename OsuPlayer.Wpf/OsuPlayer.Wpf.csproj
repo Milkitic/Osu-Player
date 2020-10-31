@@ -247,7 +247,6 @@
       <DependentUpon>NotifyOverlay.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\I18NUtil.cs" />
-    <Compile Include="Utils\NativeUser32.cs" />
     <Compile Include="ViewModels\ListPageViewModel.cs" />
     <Compile Include="ViewModels\StoryboardVm.cs" />
     <Compile Include="Windows\BeatmapInfoWindow.xaml.cs">

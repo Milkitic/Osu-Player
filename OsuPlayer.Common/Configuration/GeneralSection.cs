@@ -1,6 +1,8 @@
-﻿using System.IO;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
+﻿using Milky.OsuPlayer.Presentation.Interaction;
+using System.Drawing;
+using Newtonsoft.Json;
+using Path = System.IO.Path;
+using Point = System.Windows.Point;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
@@ -11,7 +13,8 @@ namespace Milky.OsuPlayer.Common.Configuration
         public string CustomSongsPath { get; set; } = Path.Combine(Domain.CurrentPath, "Songs");
         public bool? ExitWhenClosed { get; set; } = null;
         public bool FirstOpen { get; set; } = true;
-        public double[] MiniPosition { get; set; }
+        public Point? MiniLastPosition { get; set; }
+        public Rectangle? MiniWorkingArea { get; set; }
     }
 
     public class InterfaceSection : VmBase
