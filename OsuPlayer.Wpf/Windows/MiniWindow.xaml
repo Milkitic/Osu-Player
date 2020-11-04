@@ -12,6 +12,7 @@
     Height="80"
     AllowsTransparency="True"
     Background="Transparent"
+    Activated="Window_Activated"
     Closing="Window_Closing"
     FontFamily="{StaticResource SspRegular}"
     FontSize="13"

@@ -1,15 +1,17 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Utils;
 using System;
 using System.Drawing;
+using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Milky.OsuPlayer.Common;
 using Timer = System.Threading.Timer;
 
 namespace Milky.OsuPlayer.Windows
@@ -23,8 +25,8 @@ namespace Milky.OsuPlayer.Windows
 
         private event Action<bool> StickChanged;
 
-        private double _screenWidth;
-        private double _screenHeight;
+        private double _equivalentScreenWidth;
+        private double _equivalentScreenHeight;
 
         private Rectangle _currentArea;
         private bool _isStickEnabled;
@@ -75,38 +77,75 @@ namespace Milky.OsuPlayer.Windows
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _screenWidth = SystemParameters.PrimaryScreenWidth;
-            _screenHeight = SystemParameters.PrimaryScreenHeight;
+            var dpiScaling = GetDpiScaling();
+            _equivalentScreenWidth = SystemParameters.PrimaryScreenWidth / dpiScaling;
+            _equivalentScreenHeight = SystemParameters.PrimaryScreenHeight / dpiScaling;
 
-            var s = AppSettings.Default.General.MiniPosition;
-            if (s != null && s.Length == 2)
+            var point = AppSettings.Default.General.MiniLastPosition;
+            if (point != null)
             {
-                Left = s[0];
-                Top = s[1];
-                if (Left > _screenWidth - ActualWidth || Left < 0)
+                Left = point.Value.X;
+                Top = point.Value.Y;
+                if (Left > _equivalentScreenWidth - ActualWidth || Left < 0)
                 {
                     IsStickEnabled = true;
                 }
             }
             else
             {
-                Left = _screenWidth - ActualWidth - 20;
-                Top = _screenHeight - ActualHeight - 100;
+                Left = _equivalentScreenWidth - ActualWidth - 20;
+                Top = _equivalentScreenHeight - ActualHeight - 100;
             }
+
+            var area = AppSettings.Default.General.MiniWorkingArea;
+            if (area != null)
+            {
+                _currentArea = area.Value;
+            }
+            else
+            {
+                var workingArea =
+                    Screen.GetWorkingArea(new System.Drawing.Point((int)Left, (int)Top)); // actual dpi-scaled value
+                _currentArea = new Rectangle((int)(workingArea.Left / dpiScaling),
+                    (int)(workingArea.Top / dpiScaling),
+                    (int)(workingArea.Width / dpiScaling),
+                    (int)(workingArea.Height / dpiScaling)); // converted value
+            }
+        }
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            StopHiding();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
         }
 
+        // while determining the location these following aspects should be considered:
+        // 1. Compatible with multiple screens
+        // 2. Compatible with DPI scaling
+        // 3. All coordinate properties' DPI of WPF controls are 96
+        // 4. TODO: issue when cross over different DPI areas
         private void Window_LocationChanged(object sender, EventArgs e)
         {
             if (!_mouseDown) return;
+            var oldArea = _currentArea; // previous screen
+
+            var dpiScaling = GetDpiScaling();
+
             var mousePos = GetMousePos();
-            var old = _currentArea;
-            _currentArea = Screen.GetWorkingArea(new System.Drawing.Point((int)mousePos.X, (int)mousePos.Y));
-            if (old != _currentArea)
+
+            var workingArea = Screen.GetWorkingArea(new System.Drawing.Point((int)mousePos.X,
+                (int)mousePos.Y)); // actual dpi-scaled value
+            _currentArea = new Rectangle((int)(workingArea.Left / dpiScaling),
+                (int)(workingArea.Top / dpiScaling),
+                (int)(workingArea.Width / dpiScaling),
+                (int)(workingArea.Height / dpiScaling)); // converted value
+
+            if (oldArea != _currentArea)
                 Logger.Debug(_currentArea.ToString());
+
             _sb?.Stop();
             if (Right >= _currentArea.Right + WindowMargin - _stickAutoWidth &&
                 Right <= _currentArea.Right + WindowMargin + _stickAutoWidth)
@@ -174,7 +213,10 @@ namespace Milky.OsuPlayer.Windows
 
         private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            AppSettings.Default.General.MiniPosition = new[] { Left, Top };
+            AppSettings.Default.General.MiniLastPosition = new System.Windows.Point(Left, Top);
+            AppSettings.Default.General.MiniWorkingArea = new Rectangle(
+                _currentArea.X, _currentArea.Y, _currentArea.Width, _currentArea.Height
+            );
             AppSettings.SaveDefault();
 
             _mouseDown = false;
@@ -198,11 +240,11 @@ namespace Milky.OsuPlayer.Windows
         private void HideToBound()
         {
             Logger.Debug("Called HideToBound()");
-            if (Right >= _currentArea.Right)
+            if (Math.Round(Right) >= _currentArea.Right)
             {
                 CreateStoryboard(_currentArea.Right - _stickWidth - WindowMargin, EasingMode.EaseInOut, true);
             }
-            else if (Left <= _currentArea.Left - WindowMargin)
+            else if (Math.Round(Left) <= _currentArea.Left - WindowMargin)
             {
                 CreateStoryboard(_currentArea.Left - ActualWidth + _stickWidth + WindowMargin, EasingMode.EaseInOut,
                     true);
@@ -247,6 +289,19 @@ namespace Milky.OsuPlayer.Windows
         private System.Windows.Point GetMousePos()
         {
             return PointToScreen(Mouse.GetPosition(this));
+        }
+
+        private int GetDpi()
+        {
+            var source = PresentationSource.FromVisual(this);
+
+            var dpiX = 96.0 * source?.CompositionTarget?.TransformToDevice.M11 ?? 96;
+            return (int)dpiX;
+        }
+
+        private double GetDpiScaling()
+        {
+            return GetDpi() / 96f;
         }
     }
 }
