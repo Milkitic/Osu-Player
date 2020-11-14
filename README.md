@@ -52,7 +52,7 @@ Welcome to help to translate this program! The program support localization and 
 
 See Template: [OsuPlayer.Wpf/lang/en-US.xaml](https://github.com/Milkitic/Osu-Player/tree/master/OsuPlayer.Wpf/lang/en-US.xaml)
 
-Note the file name format should be like `[language-string].xaml` which language strings can be found at: https://docs.microsoft.com/en-us/cpp/c-runtime-library/language-strings
+Note the file name format should be like `[locale-name].xaml` which can be found at: https://docs.microsoft.com/en-us/cpp/c-runtime-library/language-strings
 
 ## Develop
 * GUI: OsuPlayer.Wpf
