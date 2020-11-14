@@ -7,13 +7,16 @@
     xmlns:debugging="clr-namespace:Milky.OsuPlayer.Presentation.Debugging;assembly=OsuPlayer.Presentation"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
+    xmlns:shaderEffects="clr-namespace:MDS.ShaderEffects;assembly=ShaderEffects"
     xmlns:textBlockComponent="clr-namespace:Milky.OsuPlayer.UiComponents.TextBlockComponent"
+    xmlns:textBoxComponent="clr-namespace:Milky.OsuPlayer.UiComponents.TextBoxComponent"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
     Title="Lyric Window"
     Height="90"
     AllowsTransparency="True"
     Background="Transparent"
     BorderBrush="Black"
+    FontFamily="{StaticResource SspRegular}"
     Loaded="LyricWindow_Loaded"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
@@ -99,6 +102,14 @@
             Background="#60453035"
             BorderBrush="#c0303030"
             BorderThickness="2,2,2,0">
+            <Border.Resources>
+                <Style BasedOn="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" TargetType="Separator">
+                    <Setter Property="Margin" Value="3,10" />
+                    <Setter Property="UseLayoutRounding" Value="True" />
+                    <Setter Property="SnapsToDevicePixels" Value="True" />
+                    <Setter Property="Background" Value="#30FFFFFF" />
+                </Style>
+            </Border.Resources>
             <Border.Style>
                 <Style TargetType="FrameworkElement">
                     <Style.Triggers>
@@ -140,6 +151,20 @@
                     Click="BtnNext_Click"
                     IconTemplate="{StaticResource NextButtonTempl}"
                     Style="{StaticResource LyricButton}" />
+                <Separator />
+                <buttonComponent:CommonButton
+                    x:Name="BtnFont"
+                    Margin="5,0"
+                    Click="BtnFont_Click"
+                    IconTemplate="{StaticResource FontTempl}"
+                    Style="{StaticResource LyricButton}" />
+                <buttonComponent:CommonButton
+                    x:Name="BtnPalette"
+                    Margin="5,0"
+                    Click="BtnPalette_Click"
+                    IconTemplate="{StaticResource PaletteTempl}"
+                    Style="{StaticResource LyricButton}" />
+                <Separator />
                 <buttonComponent:CommonButton
                     x:Name="BtnLock"
                     Margin="5,0"
@@ -169,6 +194,7 @@
                 FontSize="{Binding ElementName=TbLyric, Path=FontSize}"
                 FontWeight="{Binding ElementName=TbLyric, Path=FontWeight}"
                 Opacity="2"
+                SnapsToDevicePixels="True"
                 Stroke="{Binding ElementName=TbLyric, Path=Stroke}"
                 StrokeThickness="{Binding ElementName=TbLyric, Path=StrokeThickness}"
                 Text="{Binding ElementName=TbLyric, Path=Text}" />
@@ -218,7 +244,10 @@
                     </Style>
                 </Border.Style>
             </Border>
-            <Border>
+            <Border
+                ClipToBounds="False"
+                SnapsToDevicePixels="True"
+                UseLayoutRounding="True">
                 <!--<Border.OpacityMask>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                         <LinearGradientBrush.GradientStops>
@@ -227,24 +256,45 @@
                         </LinearGradientBrush.GradientStops>
                     </LinearGradientBrush>
                 </Border.OpacityMask>-->
-                <Border x:Name="LyricBar" HorizontalAlignment="Left">
-                    <textBlockComponent:OutlinedTextBlock
-                        x:Name="TbLyric"
-                        Width="{Binding ElementName=TbLyricFake, Path=ActualWidth}"
-                        Margin="3,0,0,0"
-                        VerticalAlignment="Center"
-                        FontFamily="{StaticResource SspRegular}"
-                        FontSize="36"
-                        FontWeight="Bold"
-                        Stroke="White"
-                        StrokeThickness="4">
-                        <textBlockComponent:OutlinedTextBlock.Fill>
-                            <ImageBrush
-                                ImageSource="{StaticResource TextureSource1}"
-                                Stretch="UniformToFill"
-                                TileMode="FlipXY" />
-                        </textBlockComponent:OutlinedTextBlock.Fill>
-                    </textBlockComponent:OutlinedTextBlock>
+                <Border
+                    x:Name="LyricBar"
+                    HorizontalAlignment="Left"
+                    ClipToBounds="False"
+                    SnapsToDevicePixels="True"
+                    UseLayoutRounding="True">
+                    <Border.Effect>
+                        <shaderEffects:AdjustSaturationEffect Delta="{Binding Saturation}" />
+                    </Border.Effect>
+                    <Border
+                        ClipToBounds="False"
+                        SnapsToDevicePixels="True"
+                        UseLayoutRounding="True">
+                        <Border.Effect>
+                            <shaderEffects:AdjustLightnessEffect Delta="{Binding Lightness}" />
+                        </Border.Effect>
+                        <textBlockComponent:OutlinedTextBlock
+                            x:Name="TbLyric"
+                            Width="{Binding ElementName=TbLyricFake, Path=ActualWidth}"
+                            Margin="3,0,0,0"
+                            VerticalAlignment="Center"
+                            FontFamily="{Binding FontFamily}"
+                            FontSize="36"
+                            FontWeight="Bold"
+                            SnapsToDevicePixels="True"
+                            Stroke="White"
+                            StrokeThickness="4"
+                            UseLayoutRounding="False">
+                            <textBlockComponent:OutlinedTextBlock.Fill>
+                                <ImageBrush
+                                    ImageSource="{StaticResource TextureSource1}"
+                                    Stretch="UniformToFill"
+                                    TileMode="FlipXY" />
+                            </textBlockComponent:OutlinedTextBlock.Fill>
+                            <textBlockComponent:OutlinedTextBlock.Effect>
+                                <shaderEffects:AdjustHueEffect Delta="{Binding Hue}" />
+                            </textBlockComponent:OutlinedTextBlock.Effect>
+                        </textBlockComponent:OutlinedTextBlock>
+                    </Border>
                     <!--<Image
                         x:Name="ImgLyric"
                         HorizontalAlignment="Left"
@@ -281,6 +331,121 @@
                 </Border.Style>
             </Border>
         </Grid>
+        <Popup
+            x:Name="popHsl"
+            Width="230"
+            AllowsTransparency="True"
+            PlacementTarget="{Binding ElementName=BtnFont}"
+            StaysOpen="False">
+            <Popup.Resources>
+                <Style BasedOn="{StaticResource {x:Type textBoxComponent:CommonTextBox}}" TargetType="textBoxComponent:CommonTextBox">
+                    <Setter Property="Width" Value="46" />
+                    <Setter Property="Height" Value="auto" />
+                    <Setter Property="MinHeight" Value="0" />
+                    <Setter Property="Margin" Value="5,0" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="FontSize" Value="10" />
+                </Style>
+                <Style BasedOn="{StaticResource HorizontalSliderWhiteStyle}" TargetType="Slider">
+                    <Setter Property="IsSnapToTickEnabled" Value="False" />
+                    <Setter Property="Maximum" Value="1" />
+                    <Setter Property="Minimum" Value="-1" />
+                    <Setter Property="TickFrequency" Value="0.0125" />
+                </Style>
+                <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="Label">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="FontSize" Value="10" />
+                </Style>
+            </Popup.Resources>
+            <Grid Background="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Content="{DynamicResource ui-hue}" />
+                <Slider
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Thumb.DragCompleted="sldHue_OnDragCompleted"
+                    Value="{Binding Hue}" />
+                <textBoxComponent:CommonTextBox
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Text="{Binding Hue, Converter={StaticResource RoundedNumberConverter}}" />
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Content="{DynamicResource ui-saturation}" />
+                <Slider
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Thumb.DragCompleted="sldSaturation_OnDragCompleted"
+                    Value="{Binding Saturation}" />
+                <textBoxComponent:CommonTextBox
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Text="{Binding Saturation, Converter={StaticResource RoundedNumberConverter}}" />
+                <Label
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Content="{DynamicResource ui-lightness}" />
+                <Slider
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Maximum="0"
+                    Thumb.DragCompleted="sldLightness_OnDragCompleted"
+                    Value="{Binding Lightness}" />
+                <textBoxComponent:CommonTextBox
+                    Grid.Row="2"
+                    Grid.Column="2"
+                    Text="{Binding Lightness, Converter={StaticResource RoundedNumberConverter}}" />
+            </Grid>
+        </Popup>
+        <Popup
+            x:Name="popFontFamily"
+            Width="255"
+            Height="300"
+            PlacementTarget="{Binding ElementName=BtnFont}"
+            StaysOpen="False">
+            <ListView
+                x:Name="lvFontFamilies"
+                ItemContainerStyle="{StaticResource GridView}"
+                ItemsSource="{Binding AllFontFamilies}"
+                Loaded="FrameworkElement_OnLoaded"
+                SelectedItem="{Binding FontFamily, Mode=TwoWay}"
+                Style="{StaticResource ListView}"
+                TextBlock.FontSize="16">
+                <ListView.View>
+                    <GridView ColumnHeaderContainerStyle="{StaticResource HiddenHeaderStyle}">
+                        <GridViewColumn Width="230">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Label
+                                        Padding="2"
+                                        Content="{Binding Converter={StaticResource LocalizedFontFamilyConverter}}"
+                                        FontFamily="{Binding}"
+                                        FontSize="16" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+                <ListView.ItemTemplate>
+                    <DataTemplate DataType="FontFamily">
+                        <TextBlock FontFamily="{Binding}" Text="{Binding Converter={StaticResource LocalizedFontFamilyConverter}}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Popup>
     </Grid>
 </presentation:WindowEx>
 

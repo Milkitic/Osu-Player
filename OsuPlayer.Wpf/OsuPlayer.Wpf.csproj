@@ -172,6 +172,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\LocalizedFontFamilyConverter.cs" />
     <Compile Include="Utils\SafeDbOperator.cs" />
     <Compile Include="UiComponents\TextBlockComponent\OutlinedTextBlock.cs" />
     <Compile Include="UserControls\AddCollectionControl.xaml.cs">

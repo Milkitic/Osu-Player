@@ -192,4 +192,7 @@
     <sys:String x:Key="ui-creator">作者</sys:String>
     <sys:String x:Key="ui-mapDifficulty">难度</sys:String>
     <sys:String x:Key="ui-storyboard">故事板</sys:String>
+    <sys:String x:Key="ui-hue">色相</sys:String>
+    <sys:String x:Key="ui-saturation">饱和度</sys:String>
+    <sys:String x:Key="ui-lightness">亮度</sys:String>
 </ResourceDictionary>
