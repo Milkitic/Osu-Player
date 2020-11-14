@@ -411,6 +411,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void Controller_LikeClicked(object sender, RoutedEventArgs e)
         {
+            if (_controller.PlayList.CurrentInfo == null) return;
             var detail = _controller.PlayList.CurrentInfo.Beatmap;
             var entry = _safeDbOperator.GetBeatmapByIdentifiable(detail.GetIdentity());
             if (entry == null) return;

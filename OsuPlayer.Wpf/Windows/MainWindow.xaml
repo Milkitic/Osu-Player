@@ -145,7 +145,8 @@
                             IconTemplate="{StaticResource NavStoryboardTempl}"
                             Style="{StaticResource OsuSwitchRadio}"
                             TargetFrameControl="MainFrame"
-                            TargetPageType="{x:Type pages:StoryboardPage}">
+                            TargetPageType="{x:Type pages:StoryboardPage}"
+                            Visibility="Collapsed">
                             <radioButtonComponent:SwitchRadio.Tag>
                                 <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
                                     <Binding Path="IsNavigationCollapsed" />

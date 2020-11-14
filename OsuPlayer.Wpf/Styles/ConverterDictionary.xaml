@@ -12,6 +12,7 @@
     <converters:NullToHiddenConverter x:Key="NullToHiddenConverter" />
     <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
     <converters:BoolTrueToVisibleConverter x:Key="BoolTrueToVisibleConverter" />
+    <converters:BoolFalseToVisibleConverter x:Key="BoolFalseToVisibleConverter" />
     <converters:NullToFullOpacityConverter x:Key="NullToFullOpacityConverter" />
     <converters:NullToBoolFalseConverter x:Key="NullToBoolFalseConverter" />
     <converters:PlayModeConverter x:Key="PlayModeConverter" />

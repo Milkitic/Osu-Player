@@ -89,7 +89,7 @@ namespace Milky.OsuPlayer
             var appDbOperator = new AppDbOperator();
             var defCol = appDbOperator.GetCollections();
             var locked = defCol.Where(k => k.LockedBool);
-            if (!locked.Any()) appDbOperator.AddCollection("最喜爱的", true);
+            if (!locked.Any()) appDbOperator.AddCollection("Favorite", true);
         }
     }
 }

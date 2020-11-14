@@ -85,6 +85,7 @@
     <sys:String x:Key="ui-btn-openDirectory">打开目录</sys:String>
     <sys:String x:Key="ui-btn-checkUpdate">检查更新</sys:String>
     <sys:String x:Key="ui-btn-syncManually">手动同步</sys:String>
+    <sys:String x:Key="ui-btn-scanManually">手动扫描</sys:String>
     <sys:String x:Key="ui-btn-cancelScan">取消扫描</sys:String>
     <sys:String x:Key="ui-btn-playAll">全部播放</sys:String>
     <sys:String x:Key="ui-btn-deleteAll">全部删除</sys:String>
@@ -168,6 +169,8 @@
     <sys:String x:Key="ui-sets-content-clickToUpdate">立刻升级</sys:String>
     <sys:String x:Key="ui-sets-content-remindLater">稍后提醒我</sys:String>
     <sys:String x:Key="ui-sets-content-skipVersion">跳过此版本</sys:String>
+    <sys:String x:Key="ui-sets-content-alreadyNewest">已是最新版本。</sys:String>
+    <sys:String x:Key="ui-sets-content-errorWhileCheckingUpdate">检查更新时出错。</sys:String>
 
     <sys:String x:Key="ui-nav-library">库</sys:String>
     <sys:String x:Key="ui-nav-mine">我的</sys:String>
@@ -195,4 +198,7 @@
     <sys:String x:Key="ui-hue">色相</sys:String>
     <sys:String x:Key="ui-saturation">饱和度</sys:String>
     <sys:String x:Key="ui-lightness">亮度</sys:String>
+
+    <sys:String x:Key="ui-ensureRemoveCollection">确认删除收藏夹？</sys:String>
+    <sys:String x:Key="ui-ensureRemoveAll">真的要删除全部吗？</sys:String>
 </ResourceDictionary>

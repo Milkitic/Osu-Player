@@ -57,13 +57,20 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             //todo: action
             CheckUpdate.IsEnabled = false;
-            var hasNew = await Service.Get<UpdateInst>().CheckUpdateAsync();
-            CheckUpdate.IsEnabled = true;
-            if (hasNew == null)
+            bool? hasNew;
+            try
             {
-                MessageBox.Show(_configWindow, "检查更新时出错。", _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                hasNew = await Service.Get<UpdateInst>().CheckUpdateAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(_configWindow, I18NUtil.GetString("ui-sets-content-errorWhileCheckingUpdate") + Environment.NewLine +
+                    (ex.InnerException?.Message ?? ex.Message),
+                    _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
+            CheckUpdate.IsEnabled = true;
 
             AppSettings.Default.LastUpdateCheck = DateTime.Now;
             GetLastUpdate();
@@ -75,8 +82,8 @@ namespace Milky.OsuPlayer.Pages.Settings
             }
             else
             {
-                MessageBox.Show(_configWindow, "已是最新版本。", _configWindow.Title, MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                MessageBox.Show(_configWindow, I18NUtil.GetString("ui-sets-content-alreadyNewest"), _configWindow.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 

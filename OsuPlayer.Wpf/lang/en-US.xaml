@@ -2,6 +2,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sys:String x:Key="ui-ensureRemoveAll">Are you sure to delete ALL of the songs?</sys:String>
+    <sys:String x:Key="ui-ensureRemoveCollection">Are you sure to delete this collection?</sys:String>
+    <sys:String x:Key="ui-sets-content-alreadyNewest">Already newest.</sys:String>
+    <sys:String x:Key="ui-sets-content-errorWhileCheckingUpdate">Error while checking for updates.</sys:String>
+    <sys:String x:Key="ui-btn-scanManually">Manual Scan</sys:String>
     <sys:String x:Key="ui-hue">Hue</sys:String>
     <sys:String x:Key="ui-saturation">Saturation</sys:String>
     <sys:String x:Key="ui-lightness">Lightness</sys:String>
@@ -101,7 +106,7 @@
     <sys:String x:Key="ui-sets-content-bgDirectory">Background</sys:String>
     <sys:String x:Key="ui-sets-content-musicDirectory">Music</sys:String>
     <sys:String x:Key="ui-musicCount">Total</sys:String>
-    <sys:String x:Key="ui-btn-syncManually">Sync Manually</sys:String>
+    <sys:String x:Key="ui-btn-syncManually">Manual Sync</sys:String>
     <sys:String x:Key="ui-sets-nav-lyric">Lyric</sys:String>
     <sys:String x:Key="ui-sets-content-minToNotificationPanel">Hide in Notification Panel</sys:String>
     <sys:String x:Key="ui-sets-content-enableDesktopLyric">Desktop Lyric</sys:String>

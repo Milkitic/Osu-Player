@@ -201,9 +201,9 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnDelAll_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show(_mainWindow, "真的要删除全部吗？", _mainWindow.Title, MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
+            var result = MessageBox.Show(_mainWindow, I18NUtil.GetString("ui-ensureRemoveAll"), _mainWindow.Title, MessageBoxButton.OKCancel,
+                MessageBoxImage.Exclamation);
+            if (result == MessageBoxResult.OK)
             {
                 if (SafeDbOperator.TryClearRecent())
                     UpdateList();

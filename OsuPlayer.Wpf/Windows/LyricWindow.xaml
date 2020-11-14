@@ -339,6 +339,7 @@
             StaysOpen="False">
             <Popup.Resources>
                 <Style BasedOn="{StaticResource {x:Type textBoxComponent:CommonTextBox}}" TargetType="textBoxComponent:CommonTextBox">
+                    <Setter Property="IsReadOnly" Value="True" />
                     <Setter Property="Width" Value="46" />
                     <Setter Property="Height" Value="auto" />
                     <Setter Property="MinHeight" Value="0" />

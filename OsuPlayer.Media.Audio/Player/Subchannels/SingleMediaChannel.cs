@@ -226,7 +226,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             }
 
             Logger.Debug($"Disposing: Canceled {nameof(_cts)}.");
-            await Task.WhenAll(_backoffTask).ConfigureAwait(false);
+            if (_backoffTask != null)
+                await _backoffTask.ConfigureAwait(false);
             Logger.Debug($"Disposing: Stopped task {nameof(_backoffTask)}.");
             _cts?.Dispose();
             Logger.Debug($"Disposing: Disposed {nameof(_cts)}.");
