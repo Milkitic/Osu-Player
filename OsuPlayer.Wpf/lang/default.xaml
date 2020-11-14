@@ -85,6 +85,7 @@
     <sys:String x:Key="ui-btn-openDirectory">打开目录</sys:String>
     <sys:String x:Key="ui-btn-checkUpdate">检查更新</sys:String>
     <sys:String x:Key="ui-btn-syncManually">手动同步</sys:String>
+    <sys:String x:Key="ui-btn-scanManually">手动扫描</sys:String>
     <sys:String x:Key="ui-btn-cancelScan">取消扫描</sys:String>
     <sys:String x:Key="ui-btn-playAll">全部播放</sys:String>
     <sys:String x:Key="ui-btn-deleteAll">全部删除</sys:String>

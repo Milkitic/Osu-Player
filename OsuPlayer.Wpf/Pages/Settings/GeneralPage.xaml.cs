@@ -32,6 +32,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             _configWindow = WindowEx.GetCurrentFirst<ConfigWindow>();
             InitializeComponent();
             ScannerViewModel = Service.Get<OsuFileScanner>().ViewModel;
+            DataContext = ScannerViewModel;
         }
 
         private void RunOnStartup_CheckChanged(object sender, RoutedEventArgs e)
@@ -167,6 +168,12 @@ namespace Milky.OsuPlayer.Pages.Settings
                         I18NUtil.GetString("err-custom-scan"), path, ex.Message),
                     _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private async void ScanNow_Click(object sender, RoutedEventArgs e)
+        {
+            await Service.Get<OsuFileScanner>().CancelTaskAsync();
+            await Service.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Default.General.CustomSongsPath);
         }
     }
 }
