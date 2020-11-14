@@ -613,6 +613,10 @@
     <Resource Include="Resources\Fonts\SourceSansPro-Black.ttf" />
     <Resource Include="Resources\asio.png" />
     <Resource Include="Resources\osu_texture_black.png" />
+    <Page Include="lang\en-US.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <None Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
