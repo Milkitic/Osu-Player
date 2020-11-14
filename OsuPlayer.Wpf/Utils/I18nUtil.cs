@@ -165,14 +165,14 @@ namespace Milky.OsuPlayer.Utils
                 AvailableLangDic.Add(nativeName, "zh-CN");
             }
 
-            SwitchToLang(string.IsNullOrWhiteSpace(locale) ? CultureInfo.CurrentCulture.Name : locale);
+            SwitchToLang(string.IsNullOrWhiteSpace(locale) ? CultureInfo.CurrentUICulture.Name : locale);
         }
 
         public static void SwitchToLang(string locale)
         {
             if (!AvailableLangDic.ContainsValue(locale))
             {
-                locale = "zh-CN";
+                locale = "en-US";
             }
 
             ResourceDictionary langRd;
