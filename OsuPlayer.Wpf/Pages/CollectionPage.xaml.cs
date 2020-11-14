@@ -16,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -58,19 +57,14 @@ namespace Milky.OsuPlayer.Pages
             UpdateView(colId);
         }
 
-        public void UpdateView(string colId)
+        public async Task UpdateView(string colId)
         {
-            Task.Run(() =>
-            {
-                Thread.Sleep(100);
-                Execute.OnUiThread(() =>
-                {
-                    var collectionInfo = _safeDbOperator.GetCollectionById(colId);
-                    if (collectionInfo == null) return;
-                    ViewModel.CollectionInfo = collectionInfo;
-                    UpdateList();
-                });
-            });
+            await Task.Delay(1);
+
+            var collectionInfo = _safeDbOperator.GetCollectionById(colId);
+            if (collectionInfo == null) return;
+            ViewModel.CollectionInfo = collectionInfo;
+            UpdateList();
         }
 
         public void UpdateList()
@@ -158,9 +152,9 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnDelCol_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show(_mainWindow, "确认删除收藏夹？", _mainWindow.Title, MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
+            var result = MessageBox.Show(_mainWindow, I18NUtil.GetString("ui-ensureRemoveCollection"), _mainWindow.Title, MessageBoxButton.OKCancel,
+                MessageBoxImage.Exclamation);
+            if (result == MessageBoxResult.OK)
             {
                 if (!_safeDbOperator.TryRemoveCollection(ViewModel.CollectionInfo)) return;
                 _mainWindow.SwitchRecent.IsChecked = true;

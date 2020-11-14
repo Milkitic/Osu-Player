@@ -84,7 +84,7 @@ namespace Milky.OsuPlayer.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is bool b)) return value;
+            if (!(value is bool b)) return Application.Current.FindResource("HeartDisabledTempl");
             return b ? Application.Current.FindResource("HeartEnabledTempl") : Application.Current.FindResource("HeartDisabledTempl");
         }
 

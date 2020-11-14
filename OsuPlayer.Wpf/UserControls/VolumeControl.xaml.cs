@@ -78,12 +78,14 @@ namespace Milky.OsuPlayer.UserControls
 
         private void Offset_DragComplete(object sender, DragCompletedEventArgs e)
         {
+            if (_controller.PlayList.CurrentInfo == null) return;
             SafeDbOperator.TryUpdateMap(_controller.PlayList.CurrentInfo.Beatmap, _controller.Player.ManualOffset);
         }
 
         private async void BtnPlayMod_OnClick(object sender, RoutedEventArgs e)
         {
-            await _controller.Player.SetPlayMod((PlayModifier)((Button)sender).Tag);
+            if (_controller.Player != null)
+                await _controller.Player.SetPlayMod((PlayModifier)((Button)sender).Tag);
         }
     }
 }
