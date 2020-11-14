@@ -199,7 +199,7 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                     var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                         PlayControlResult.PointerControlStatus.Keep);
                     if (AutoSwitched != null)
-                        await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true).ConfigureAwait(false);
+                        await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, false).ConfigureAwait(false);
                     return playControlResult;
                 }
 

@@ -2,22 +2,22 @@
     x:Class="Milky.OsuPlayer.Pages.Settings.GeneralPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:loaderComponent="clr-namespace:Milky.OsuPlayer.UiComponents.LoaderComponent"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Pages.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:scanning="clr-namespace:Milky.OsuPlayer.Common.Scanning;assembly=OsuPlayer.Common"
     xmlns:textBoxComponent="clr-namespace:Milky.OsuPlayer.UiComponents.TextBoxComponent"
-    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
-    xmlns:loaderComponent="clr-namespace:Milky.OsuPlayer.UiComponents.LoaderComponent"
     Title="GeneralPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
     FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
-    <Page.DataContext>
+    <d:Page.DataContext>
         <scanning:FileScannerViewModel />
-    </Page.DataContext>
+    </d:Page.DataContext>
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
@@ -102,6 +102,17 @@
                         IconMargin="0"
                         IconTemplate="{StaticResource FolderTempl}"
                         Style="{StaticResource SettingsButton}" />
+                    <buttonComponent:CommonButton
+                        x:Name="btnStartScan"
+                        Height="25"
+                        Margin="6,0,0,0"
+                        Padding="5,0"
+                        VerticalAlignment="Center"
+                        Background="#E3E3E3"
+                        Click="ScanNow_Click"
+                        Content="{DynamicResource ui-btn-scanManually}"
+                        Style="{StaticResource SettingsButton}"
+                        Visibility="{Binding IsScanning, Converter={StaticResource BoolFalseToVisibleConverter}}" />
                     <loaderComponent:Loader
                         Width="25"
                         Height="25"

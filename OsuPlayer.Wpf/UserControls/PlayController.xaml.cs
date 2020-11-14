@@ -157,7 +157,7 @@ namespace Milky.OsuPlayer.UserControls
 
         private void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
-            _controller.PlayList.CurrentInfo.TogglePlayHandle();
+            _controller.PlayList.CurrentInfo?.TogglePlayHandle();
         }
 
         private async void NextButton_Click(object sender, RoutedEventArgs e)

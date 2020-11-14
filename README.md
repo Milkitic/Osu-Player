@@ -47,11 +47,12 @@ Restore all nuget packages.
 
 Compile the source code.
 
-## Dependencies
-* User Interface: FFME.Windows, Hardcodet.NotifyIcon.Wpf
-* Func: MouseKeyHook
-* Data: HoLLy.osu.DatabaseReader, OSharp.Beatmap, OSharp.Storyboard, System.Data.SQLite.Core, System.Data.SQLite.EF6.Migrations
-* Audio: NAudio, NAudio.Vorbis
+## I18N
+Welcome to help to translate this program! The program support localization and display in your preferred language.
+
+See Template: [OsuPlayer.Wpf/lang/en-US.xaml](https://github.com/Milkitic/Osu-Player/tree/master/OsuPlayer.Wpf/lang/en-US.xaml)
+
+Note the file name format should be like `[locale-name].xaml` which can be found at: https://docs.microsoft.com/en-us/cpp/c-runtime-library/language-strings
 
 ## Develop
 * GUI: OsuPlayer.Wpf

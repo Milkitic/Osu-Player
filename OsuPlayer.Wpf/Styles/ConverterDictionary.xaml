@@ -12,6 +12,7 @@
     <converters:NullToHiddenConverter x:Key="NullToHiddenConverter" />
     <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
     <converters:BoolTrueToVisibleConverter x:Key="BoolTrueToVisibleConverter" />
+    <converters:BoolFalseToVisibleConverter x:Key="BoolFalseToVisibleConverter" />
     <converters:NullToFullOpacityConverter x:Key="NullToFullOpacityConverter" />
     <converters:NullToBoolFalseConverter x:Key="NullToBoolFalseConverter" />
     <converters:PlayModeConverter x:Key="PlayModeConverter" />
@@ -19,4 +20,6 @@
     <converters:DeviceInfoToStringConverter x:Key="DeviceInfoToStringConverter" />
     <converters:Multi_EqualityToVisibilityConverter x:Key="Multi_EqualityToVisibilityConverter" />
     <converters:Multi_ListViewSelectAndScrollConverter x:Key="Multi_ListViewSelectAndScrollConverter" />
+    <converters:LocalizedFontFamilyConverter x:Key="LocalizedFontFamilyConverter" />
+    <converters:RoundedNumberConverter x:Key="RoundedNumberConverter" />
 </ResourceDictionary>

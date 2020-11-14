@@ -1,5 +1,4 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
+﻿using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Lyric.Models;
 using Milky.OsuPlayer.Presentation;
@@ -17,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -75,6 +75,11 @@ namespace Milky.OsuPlayer.Windows
 
         private void LyricWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            var lyricFont = AppSettings.Default.Lyric.FontFamily ??
+                            Application.Current.FindResource("SspRegular");
+            ViewModel.FontFamily = lyricFont;
+            ViewModel.Hue = AppSettings.Default.Lyric.Hue;
+            ViewModel.Saturation = AppSettings.Default.Lyric.Saturation;
         }
 
         private void LyricWindow_MouseMove(object sender, MouseEventArgs e)
@@ -372,6 +377,39 @@ namespace Milky.OsuPlayer.Windows
         private async void BtnNext_Click(object sender, RoutedEventArgs e)
         {
             await _controller.PlayNextAsync();
+        }
+
+        private async void BtnFont_Click(object sender, RoutedEventArgs e)
+        {
+            popFontFamily.IsOpen = true;
+        }
+
+        private void FrameworkElement_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            lvFontFamilies.ScrollIntoView(ViewModel.FontFamily);
+        }
+
+        private void BtnPalette_Click(object sender, RoutedEventArgs e)
+        {
+            popHsl.IsOpen = true;
+        }
+
+        private void sldHue_OnDragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            AppSettings.Default.Lyric.Hue = ViewModel.Hue;
+            AppSettings.SaveDefault();
+        }
+
+        private void sldSaturation_OnDragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            AppSettings.Default.Lyric.Saturation = ViewModel.Saturation;
+            AppSettings.SaveDefault();
+        }
+
+        private void sldLightness_OnDragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            AppSettings.Default.Lyric.Lightness = ViewModel.Lightness;
+            AppSettings.SaveDefault();
         }
     }
 }

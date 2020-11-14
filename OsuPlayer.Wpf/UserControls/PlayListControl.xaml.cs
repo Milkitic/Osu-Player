@@ -135,6 +135,7 @@ namespace Milky.OsuPlayer.UserControls
             {
                 return new DelegateCommand(param =>
                 {
+                    if (Controller.PlayList.SongList.Count == 0) return;
                     var mw = WindowEx.GetCurrentFirst<MainWindow>();
                     FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(Controller.PlayList.SongList),
                         DialogOptionFactory.SelectCollectionOptions);
@@ -232,7 +233,10 @@ namespace Milky.OsuPlayer.UserControls
         private void PlayList_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             if (PlayList.SelectedItems.Count == 0)
+            {
                 e.Handled = true;
+                return;
+            }
 
             _viewModel.SelectedMap = (Beatmap)PlayList.SelectedItems[PlayList.SelectedItems.Count - 1];
             _viewModel.SelectedMaps = PlayList.SelectedItems.Cast<Beatmap>().ToList();
