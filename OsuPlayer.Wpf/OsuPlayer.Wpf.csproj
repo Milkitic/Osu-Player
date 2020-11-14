@@ -173,6 +173,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\LocalizedFontFamilyConverter.cs" />
+    <Compile Include="Converters\RoundedNumberConverter.cs" />
+    <Compile Include="Utils\CompoundUtil.cs" />
+    <Compile Include="Utils\FontFamilyComparer.cs" />
     <Compile Include="Utils\SafeDbOperator.cs" />
     <Compile Include="UiComponents\TextBlockComponent\OutlinedTextBlock.cs" />
     <Compile Include="UserControls\AddCollectionControl.xaml.cs">
