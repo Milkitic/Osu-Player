@@ -2,6 +2,7 @@
 using Milky.OsuPlayer.Presentation.Interaction;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -34,6 +35,7 @@ namespace Milky.OsuPlayer.ViewModels
             get => _isNavigationCollapsed;
             set
             {
+                if (_isNavigationCollapsed == value) return;
                 _isNavigationCollapsed = value;
                 OnPropertyChanged();
             }
@@ -68,6 +70,8 @@ namespace Milky.OsuPlayer.ViewModels
                     Execute.OnUiThread(() =>
                     {
                         IsNavigationCollapsed = !IsNavigationCollapsed;
+                        AppSettings.Default.General.IsNavigationCollapsed = IsNavigationCollapsed;
+                        AppSettings.SaveDefault();
                     });
                 });
             }

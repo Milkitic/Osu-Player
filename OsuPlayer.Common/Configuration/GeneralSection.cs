@@ -13,6 +13,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         public string CustomSongsPath { get; set; } = Path.Combine(Domain.CurrentPath, "Songs");
         public bool? ExitWhenClosed { get; set; } = null;
         public bool FirstOpen { get; set; } = true;
+        public bool IsNavigationCollapsed { get; set; }
         public Point? MiniLastPosition { get; set; }
         public Rectangle? MiniWorkingArea { get; set; }
     }
