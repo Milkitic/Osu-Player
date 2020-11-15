@@ -140,6 +140,8 @@
         <Setter Property="MouseOverIconColor" Value="#DC498D" />
         <Setter Property="TargetPageSingleton" Value="True" />
         <Setter Property="Scope" Value="Nav" />
+        <!--<Setter Property="UseLayoutRounding" Value="True" />-->
+        <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
     <Style
         x:Key="ConfigSwitchRadio"

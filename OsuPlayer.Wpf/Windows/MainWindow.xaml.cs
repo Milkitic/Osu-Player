@@ -53,6 +53,7 @@ namespace Milky.OsuPlayer.Windows
         {
             InitializeComponent();
             ViewModel = (MainWindowViewModel)DataContext;
+            ViewModel.IsNavigationCollapsed = AppSettings.Default.General.IsNavigationCollapsed;
             LyricWindow = new LyricWindow(this);
             if (AppSettings.Default.Lyric.EnableLyric)
                 LyricWindow.Show();

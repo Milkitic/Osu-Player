@@ -238,9 +238,6 @@
                                         VerticalAlignment="Center"
                                         CheckedIconColor="#4090A0"
                                         Content="{Binding Name}"
-                                        IconSize="18"
-                                        IconTemplate="{StaticResource CollectionTempl}"
-                                        Style="{StaticResource OsuSwitchRadio}"
                                         TargetFrameControl="MainFrame"
                                         TargetPageData="{Binding Id}"
                                         TargetPageSingleton="False"
@@ -251,6 +248,43 @@
                                                 <Binding RelativeSource="{RelativeSource Self}" />
                                             </MultiBinding>
                                         </radioButtonComponent:SwitchRadio.Tag>
+                                        <radioButtonComponent:SwitchRadio.Style>
+                                            <Style BasedOn="{StaticResource OsuSwitchRadio}" TargetType="radioButtonComponent:SwitchRadio">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Path=DataContext.IsNavigationCollapsed, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" Value="False">
+                                                        <Setter Property="IconTemplate" Value="{StaticResource CollectionTempl}" />
+                                                        <Setter Property="IconSize" Value="18" />
+                                                    </DataTrigger>
+                                                    <!--<Setter Property="MouseOverBackground" Value="White" />
+                                                    <Setter Property="MouseOverForeground" Value="#303030" />
+                                                    <Setter Property="MouseOverIconColor" Value="#DC498D" />-->
+                                                    <DataTrigger Binding="{Binding Path=DataContext.IsNavigationCollapsed, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" Value="True">
+                                                        <Setter Property="IconTemplate">
+                                                            <Setter.Value>
+                                                                <ControlTemplate>
+                                                                    <Border
+                                                                        Width="40"
+                                                                        Height="40"
+                                                                        Background="{TemplateBinding Foreground}"
+                                                                        CornerRadius="20">
+                                                                        <Label
+                                                                            Margin="1,0.5,0,0"
+                                                                            HorizontalAlignment="Center"
+                                                                            VerticalAlignment="Center"
+                                                                            Content="{Binding Name, Converter={StaticResource GetOutlinedTextConverter}}"
+                                                                            FontSize="22"
+                                                                            FontWeight="Bold"
+                                                                            Foreground="#303030" />
+                                                                    </Border>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Setter Property="Margin" Value="-2,0,0,1" />
+                                                        <Setter Property="IconSize" Value="20" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </radioButtonComponent:SwitchRadio.Style>
                                     </radioButtonComponent:SwitchRadio>
                                 </ControlTemplate>
                                 <Style TargetType="{x:Type ListViewItem}">

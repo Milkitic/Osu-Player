@@ -172,6 +172,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\GetOutlinedTextConverter.cs" />
     <Compile Include="Converters\LocalizedFontFamilyConverter.cs" />
     <Compile Include="Converters\RoundedNumberConverter.cs" />
     <Compile Include="Utils\CompoundUtil.cs" />

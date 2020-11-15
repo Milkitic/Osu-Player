@@ -22,4 +22,5 @@
     <converters:Multi_ListViewSelectAndScrollConverter x:Key="Multi_ListViewSelectAndScrollConverter" />
     <converters:LocalizedFontFamilyConverter x:Key="LocalizedFontFamilyConverter" />
     <converters:RoundedNumberConverter x:Key="RoundedNumberConverter" />
+    <converters:GetOutlinedTextConverter x:Key="GetOutlinedTextConverter" />
 </ResourceDictionary>
