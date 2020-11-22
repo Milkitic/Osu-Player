@@ -9,8 +9,8 @@
 
 **A multifunctional player for playing music, hitsound, video and storyboard for osuers!.**
 
-![](http://puu.sh/EDjlF/d10eb3f90c.png)
-![](http://puu.sh/EDjot/57a76264ba.png)
+![](http://puu.sh/GQ1Yy/0feabedae9.jpg)
+![](http://puu.sh/GQ21u/5916015363.jpg)
 ![](http://puu.sh/EDjqw/dac1e29cb3.png)
 
 Now you can close osu! and open osu player after making a cup of tea, and sit down to enjoy your afternoon.
