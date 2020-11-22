@@ -612,6 +612,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Resources\official\registration.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\official\LICENCE.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Resource Include="Resources\icon.png" />
     <Resource Include="Resources\Fonts\SourceHanSerifCn.ttf" />
     <Resource Include="Resources\Fonts\SourceSansPro-Black.ttf" />
@@ -719,9 +725,7 @@
     <Resource Include="Resources\fullscreen_s.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\default.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="Resources\default.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\title.png" />
