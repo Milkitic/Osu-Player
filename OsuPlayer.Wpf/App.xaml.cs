@@ -18,8 +18,7 @@ namespace Milky.OsuPlayer
     /// </summary>
     public partial class App : Application
     {
-        [STAThread]
-        public static void Main()
+        private void Application_Startup(object sender, StartupEventArgs e)
         {
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
 
@@ -36,9 +35,8 @@ namespace Milky.OsuPlayer
 
             Service.Get<LyricsInst>().ReloadLyricProvider();
 
-            var app = new App();
-            app.InitializeComponent();
-            app.Run();
+            Execute.SetMainThreadContext();
+            I18NUtil.LoadI18N();
         }
 
         private static void OnCurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -72,12 +70,6 @@ namespace Milky.OsuPlayer
             {
                 Environment.Exit(1);
             }
-        }
-
-        private void Application_Startup(object sender, StartupEventArgs e)
-        {
-            Execute.SetMainThreadContext();
-            I18NUtil.LoadI18N();
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)

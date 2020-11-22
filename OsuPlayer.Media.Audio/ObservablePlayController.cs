@@ -490,7 +490,7 @@ namespace Milky.OsuPlayer.Media.Audio
             _cts = new CancellationTokenSource();
         }
 
-        public async Task DisposeAsync()
+        public async ValueTask DisposeAsync()
         {
             if (_player != null) await _player.DisposeAsync().ConfigureAwait(false);
             _readLock?.Dispose();

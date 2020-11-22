@@ -1,709 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{02773E4B-21FC-47DB-A7C1-BD096F325136}</ProjectGuid>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>True</UseWPF>
+    <UseWindowsForms>True</UseWindowsForms>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Milky.OsuPlayer</RootNamespace>
     <AssemblyName>OsuPlayer</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>false</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <LangVersion>7.1</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <TrimUnusedDependencies>true</TrimUnusedDependencies>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <LangVersion>7.1</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>osuPlayer.ico</ApplicationIcon>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Microsoft.WindowsAPICodePack">
-      <HintPath>..\Libraries\Microsoft.WindowsAPICodePack.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack.Shell">
-      <HintPath>..\Libraries\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
-    </Reference>
-    <Reference Include="ShaderEffects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>External\plugins\ShaderEffects.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <None Remove="Resources\Fonts\SourceHanSerifCn.ttf" />
+    <None Remove="Resources\Fonts\SourceSansPro-Black.ttf" />
+    <None Remove="Resources\Fonts\SourceSansPro-Bold.ttf" />
+    <None Remove="Resources\Fonts\SourceSansPro-ExtraLight.ttf" />
+    <None Remove="Resources\Fonts\SourceSansPro-Light.ttf" />
+    <None Remove="Resources\Fonts\SourceSansPro-Regular.ttf" />
+    <None Remove="Resources\Fonts\SourceSansPro-Semibold.ttf" />
+    <None Remove="Resources\icon.png" />
+    <None Remove="Resources\osuPlayer.ico" />
+    <None Remove="Resources\osu_texture.png" />
+    <None Remove="Resources\osu_texture2.png" />
+    <None Remove="Resources\osu_texture_blue.png" />
+    <None Remove="Resources\store.jpg" />
+    <None Remove="Resources\title.png" />
+    <None Remove="Resources\title_sm.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Converters\GetOutlinedTextConverter.cs" />
-    <Compile Include="Converters\LocalizedFontFamilyConverter.cs" />
-    <Compile Include="Converters\RoundedNumberConverter.cs" />
-    <Compile Include="Utils\CompoundUtil.cs" />
-    <Compile Include="Utils\FontFamilyComparer.cs" />
-    <Compile Include="Utils\SafeDbOperator.cs" />
-    <Compile Include="UiComponents\TextBlockComponent\OutlinedTextBlock.cs" />
-    <Compile Include="UserControls\AddCollectionControl.xaml.cs">
-      <DependentUpon>AddCollectionControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\AnimationControl.xaml.cs">
-      <DependentUpon>AnimationControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\ClosingControl.xaml.cs">
-      <DependentUpon>ClosingControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UiComponents\ButtonComponent\CloseButton.cs" />
-    <Compile Include="UiComponents\ButtonComponent\CommonButton.cs" />
-    <Compile Include="UiComponents\TextBoxComponent\CommonTextBox.cs" />
-    <Compile Include="UserControls\DiffSelectControl.xaml.cs">
-      <DependentUpon>DiffSelectControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\EditCollectionControl.xaml.cs">
-      <DependentUpon>EditCollectionControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\MiniPlayController.xaml.cs">
-      <DependentUpon>MiniPlayController.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\PlayModeControl.xaml.cs">
-      <DependentUpon>PlayModeControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\SelectCollectionControl.xaml.cs">
-      <DependentUpon>SelectCollectionControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UiComponents\RadioButtonComponent\SwitchRadio.cs" />
-    <Compile Include="UiComponents\PanelComponent\VirtualizingGalleryWrapPanel.cs" />
-    <Compile Include="UserControls\VolumeControl.xaml.cs">
-      <DependentUpon>VolumeControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Converters\DeviceInfoToStringConverter.cs" />
-    <Compile Include="Converters\IconColorConverter.cs" />
-    <Compile Include="Converters\NegativeBooleanConverter.cs" />
-    <Compile Include="UiComponents\ButtonComponent\PlayerControlButton.cs" />
-    <Compile Include="UiComponents\FrontDialogComponent\DialogClosingEventArgs.cs" />
-    <Compile Include="UiComponents\FrontDialogComponent\DialogOptionFactory.cs" />
-    <Compile Include="Pages\Settings\InterfacePage.xaml.cs">
-      <DependentUpon>InterfacePage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UiComponents\ButtonComponent\MaxButton.cs" />
-    <Compile Include="UiComponents\ButtonComponent\MinButton.cs" />
-    <Compile Include="UserControls\PlayController.xaml.cs">
-      <DependentUpon>PlayController.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\PlayListControl.xaml.cs">
-      <DependentUpon>PlayListControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UiComponents\ButtonComponent\SystemButton.cs" />
-    <Compile Include="UserControls\WelcomeControl.xaml.cs">
-      <DependentUpon>WelcomeControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Converters\NullToHiddenConverter.cs" />
-    <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="UiComponents\FrontDialogComponent\FrontDialogOverlay.xaml.cs">
-      <DependentUpon>FrontDialogOverlay.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UiComponents\LoaderComponent\Loader.cs" />
-    <Compile Include="UiComponents\NotificationComponent\Converters\EmptyToVisibleConverter.cs" />
-    <Compile Include="UiComponents\NotificationComponent\Converters\FontColorConverter.cs" />
-    <Compile Include="UiComponents\NotificationComponent\Converters\MixColorConverter.cs" />
-    <Compile Include="UiComponents\NotificationComponent\Converters\NotificationTypeConverter.cs" />
-    <Compile Include="UiComponents\NotificationComponent\Converters\NotificationTypeToCursorConverter.cs" />
-    <Compile Include="UiComponents\NotificationComponent\Notification.cs" />
-    <Compile Include="UiComponents\NotificationComponent\NotificationOption.cs" />
-    <Compile Include="UiComponents\NotificationComponent\NotifyControl.xaml.cs">
-      <DependentUpon>NotifyControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UiComponents\NotificationComponent\NotifyOverlay.xaml.cs">
-      <DependentUpon>NotifyOverlay.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Utils\I18NUtil.cs" />
-    <Compile Include="ViewModels\ListPageViewModel.cs" />
-    <Compile Include="ViewModels\StoryboardVm.cs" />
-    <Compile Include="Windows\BeatmapInfoWindow.xaml.cs">
-      <DependentUpon>BeatmapInfoWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MiniWindow.xaml.cs">
-      <DependentUpon>MiniWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\PageParts.cs" />
-    <Page Include="UserControls\AddCollectionControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\AnimationControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="Converters\BooleanToCursorConverter.cs" />
-    <Compile Include="Converters\ButtonColorConverter.cs" />
-    <Compile Include="Converters\ExceptionToStringConverter.cs" />
-    <Compile Include="Converters\IndexToStringConverter.cs" />
-    <Compile Include="Converters\MarkdownConverter.cs" />
-    <Compile Include="Converters\MsToStringConverter.cs" />
-    <Compile Include="Converters\PlayingConverter.cs" />
-    <Compile Include="Converters\SingleParameterConverter.cs" />
-    <Compile Include="Converters\TabConverter.cs" />
-    <Compile Include="Converters\TrueToVisibleConverter.cs" />
-    <Compile Include="Converters\VersionToStringConverter.cs" />
-    <Compile Include="Instances\LyricsInst.cs" />
-    <Compile Include="Converters\MiniWindowConverter.cs" />
-    <Compile Include="EntryStartup.cs" />
-    <Compile Include="ViewModels\CollectionPageViewModel.cs" />
-    <Compile Include="ViewModels\CollectionViewModel.cs" />
-    <Compile Include="ViewModels\EditCollectionPageViewModel.cs" />
-    <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="ViewModels\PlayerViewModel.cs" />
-    <Compile Include="ViewModels\SearchPageViewModel.cs" />
-    <Compile Include="ViewModels\SelectCollectionPageViewModel.cs" />
-    <Compile Include="Windows\ConfigWindow.xaml.cs">
-      <DependentUpon>ConfigWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Converters\DateTimeConverter.cs" />
-    <Compile Include="Converters\NavigationColorConverter.cs" />
-    <Compile Include="Converters\MainWindowConverters.cs" />
-    <Compile Include="Windows\ExceptionWindow.xaml.cs">
-      <DependentUpon>ExceptionWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\LyricWindow.xaml.WinApi.cs" />
-    <Compile Include="ViewModels\LyricWindowViewModel.cs" />
-    <Compile Include="Windows\LyricWindow.xaml.cs">
-      <DependentUpon>LyricWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\NewVersionWindow.xaml.cs">
-      <DependentUpon>NewVersionWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="OverallKeyHook.cs" />
-    <Compile Include="Pages\Settings\AboutPage.xaml.cs">
-      <DependentUpon>AboutPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Settings\ExportPage.xaml.cs">
-      <DependentUpon>ExportPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Settings\GeneralPage.xaml.cs">
-      <DependentUpon>GeneralPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Settings\HotKeyPage.xaml.cs">
-      <DependentUpon>HotKeyPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Settings\LyricPage.xaml.cs">
-      <DependentUpon>LyricPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Settings\PlayPage.xaml.cs">
-      <DependentUpon>PlayPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\CollectionPage.xaml.cs">
-      <DependentUpon>CollectionPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ExportPage.xaml.cs">
-      <DependentUpon>ExportPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\FindPage.xaml.cs">
-      <DependentUpon>FindPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\RecentPlayPage.xaml.cs">
-      <DependentUpon>RecentPlayPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\SearchPage.xaml.cs">
-      <DependentUpon>SearchPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\StoryboardPage.xaml.cs">
-      <DependentUpon>StoryboardPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UpdateWindow.xaml.cs">
-      <DependentUpon>UpdateWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Utils\KeyConverter.cs" />
-    <Compile Include="ViewModels\ExportPageViewModel.cs" />
-    <Page Include="UserControls\ClosingControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\DiffSelectControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\EditCollectionControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\MiniPlayController.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\PlayController.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\PlayListControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\PlayModeControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\SelectCollectionControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\VolumeControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\WelcomeControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="lang\default.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\Settings\InterfacePage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\BrushDictionary.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\ButtonDictionary.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\Components.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\ConverterDictionary.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\EasingFunction.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\FontDictionary.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\Radios.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ScrollBarStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\SvgDictionary.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\i18n.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UiComponents\ButtonComponent\CommonButton.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UiComponents\ButtonComponent\PlayerControlButton.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UiComponents\FrontDialogComponent\FrontDialogOverlay.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UiComponents\LoaderComponent\Loader.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UiComponents\NotificationComponent\NotifyControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UiComponents\NotificationComponent\NotifyOverlay.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UiComponents\RadioButtonComponent\SwitchRadio.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UiComponents\TextBoxComponent\CommonTextBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\BeatmapInfoWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\ConfigWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\ExceptionWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\LyricWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Windows\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="Windows\MiniWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\NewVersionWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\CollectionPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\ExportPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\FindPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\RecentPlayPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\SearchPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\Settings\AboutPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\Settings\ExportPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\Settings\GeneralPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\Settings\HotKeyPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\Settings\LyricPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\Settings\PlayPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\StoryboardPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\ButtonStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\ConfigStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\ContextMenuStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\GeneralStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\ListViewStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\NavigationStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\SliderStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\StatusIconStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\TabStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UpdateWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <None Include="Resources\official\registration.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\official\LICENCE.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Resource Include="Resources\icon.png" />
-    <Resource Include="Resources\Fonts\SourceHanSerifCn.ttf" />
-    <Resource Include="Resources\Fonts\SourceSansPro-Black.ttf" />
-    <Resource Include="Resources\asio.png" />
-    <Resource Include="Resources\osu_texture_black.png" />
-    <None Include="lang\en-US.xaml">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="NLog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Resource Include="Resources\Fonts\SourceSansPro-Bold.ttf" />
-    <Resource Include="Resources\Fonts\SourceSansPro-ExtraLight.ttf" />
-    <Resource Include="Resources\Fonts\SourceSansPro-Light.ttf" />
-    <Resource Include="Resources\Fonts\SourceSansPro-Regular.ttf" />
-    <Resource Include="Resources\Fonts\SourceSansPro-Semibold.ttf" />
-    <Resource Include="Resources\osu_texture_blue.png" />
-    <Resource Include="Resources\title_sm.png" />
-    <Resource Include="osuPlayer.ico" />
-    <Resource Include="Resources\osu_texture2.png" />
-    <Resource Include="Resources\store.jpg" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <None Include="app.manifest" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Content Include="extensions\font\default.ttc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
-      <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
-      <Name>OSharp.Beatmap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\OSharp.Common\OSharp.Common.csproj">
-      <Project>{4c8d4eea-e81b-4fd3-b6a4-9857abc152a5}</Project>
-      <Name>OSharp.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
-      <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>
-      <Name>OsuPlayer.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj">
-      <Project>{094FAC4A-6277-46E8-97B4-C992F1674638}</Project>
-      <Name>OsuPlayer.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Devices\OsuPlayer.Devices.csproj">
-      <Project>{E290C0D7-06B7-47DC-81E7-98F08654FB0D}</Project>
-      <Name>OsuPlayer.Devices</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj">
-      <Project>{3cd240f8-da65-44f0-ab58-d78f58109786}</Project>
-      <Name>OsuPlayer.Media.Audio</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj">
-      <Project>{33580e59-aa08-45ef-b79f-2f8fe2f539cc}</Project>
-      <Name>OsuPlayer.Media.Lyric</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj">
-      <Project>{93E3612C-D388-438F-A04A-047265820998}</Project>
-      <Name>OsuPlayer.Presentation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj">
-      <Project>{C842FAB3-EC80-4E95-B402-BF0572F1806D}</Project>
-      <Name>OsuPlayer.Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\osu_texture.png" />
-    <None Include="Resources\font.ttc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\osuPlayer.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 和 x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\fullscreen.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\fullscreen_s.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\default.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\title.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\search.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="extensions\plugins\ffmpeg\avcodec-58.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\ffmpeg\avdevice-58.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\ffmpeg\avfilter-7.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\ffmpeg\avformat-58.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\ffmpeg\avutil-56.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\ffmpeg\ffmpeg.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\ffmpeg\ffplay.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\ffmpeg\ffprobe.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\ffmpeg\postproc-55.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\ffmpeg\swresample-3.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\ffmpeg\swscale-5.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\oppai-ng\oppai.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\oppai-ng\oppai.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\ShaderEffects.dll">
-    </Content>
-    <Content Include="extensions\texture\osu.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Dapper">
       <Version>2.0.35</Version>
@@ -714,18 +37,13 @@
     <PackageReference Include="FFME.Windows">
       <Version>4.2.330</Version>
     </PackageReference>
-    <PackageReference Include="Hardcodet.NotifyIcon.Wpf">
-      <Version>1.0.8</Version>
-    </PackageReference>
-    <PackageReference Include="HoLLy.osu.DatabaseReader">
-      <Version>2.1.1</Version>
-    </PackageReference>
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.14" />
     <PackageReference Include="Markdig.Wpf">
       <Version>0.3.1</Version>
     </PackageReference>
-    <PackageReference Include="MouseKeyHook">
-      <Version>5.6.0</Version>
-    </PackageReference>
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
+    <PackageReference Include="MouseKeyHook" Version="5.6.0" />
     <PackageReference Include="NAudio">
       <Version>1.10.0</Version>
     </PackageReference>
@@ -753,9 +71,56 @@
     <PackageReference Include="System.ValueTuple">
       <Version>4.5.0</Version>
     </PackageReference>
-    <PackageReference Include="System.Windows.Interactivity.WPF">
-      <Version>2.0.20525</Version>
-    </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj" />
+    <ProjectReference Include="..\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj" />
+    <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ShaderEffects">
+      <HintPath>extensions\plugins\ShaderEffects.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Fonts\SourceHanSerifCn.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Fonts\SourceSansPro-Black.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Fonts\SourceSansPro-ExtraLight.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Fonts\SourceSansPro-Light.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Fonts\SourceSansPro-Regular.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Fonts\SourceSansPro-Semibold.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\icon.png" />
+    <Resource Include="Resources\osuPlayer.ico" />
+    <Resource Include="Resources\osu_texture.png" />
+    <Resource Include="Resources\osu_texture2.png" />
+    <Resource Include="Resources\osu_texture_blue.png" />
+    <Resource Include="Resources\store.jpg" />
+    <Resource Include="Resources\title.png" />
+    <Resource Include="Resources\title_sm.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\official\LICENCE.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\official\registration.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

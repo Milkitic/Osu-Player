@@ -31,8 +31,9 @@ using System;
 // ReSharper disable IntroduceOptionalParameters.Global
 // ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable InconsistentNaming
+// ReSharper disable once CheckNamespace
 
-namespace Milky.OsuPlayer.Properties
+namespace Milky.OsuPlayer.Presentation.Annotations
 {
   /// <summary>
   /// Indicates that the value of the marked element could be <c>null</c> sometimes,

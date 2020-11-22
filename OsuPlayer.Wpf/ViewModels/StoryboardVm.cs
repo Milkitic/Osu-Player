@@ -1,9 +1,8 @@
-﻿using Milky.OsuPlayer.Data.Models;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Presentation.Annotations;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Properties;
 
 namespace Milky.OsuPlayer.ViewModels
 {

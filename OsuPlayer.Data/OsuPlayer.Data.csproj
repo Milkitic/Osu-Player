@@ -1,87 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{094FAC4A-6277-46E8-97B4-C992F1674638}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>net5.0-windows</TargetFrameworks>
     <RootNamespace>Milky.OsuPlayer.Data</RootNamespace>
-    <AssemblyName>OsuPlayer.Data</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AppDbOperator.cs" />
-    <Compile Include="BeatmapDbOperator.cs" />
-    <Compile Include="Dapper\DataBaseType.cs" />
-    <Compile Include="Dapper\DbPoolConfiguration.cs" />
-    <Compile Include="Dapper\Provider\DbProviderBase.cs" />
-    <Compile Include="Dapper\Provider\SQLiteProvider.cs" />
-    <Compile Include="Dapper\Where.cs" />
-    <Compile Include="Dapper\WhereType.cs" />
-    <Compile Include="Models\Beatmap.cs" />
-    <Compile Include="Models\BeatmapExtension.cs" />
-    <Compile Include="Models\StoryboardInfo.cs" />
-    <Compile Include="Models\BeatmapSettings.cs" />
-    <Compile Include="Models\Collection.cs" />
-    <Compile Include="Models\CollectionRelation.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
-      <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
-      <Name>OSharp.Beatmap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\OSharp.Common\OSharp.Common.csproj">
-      <Project>{4C8D4EEA-E81B-4FD3-B6A4-9857ABC152A5}</Project>
-      <Name>OSharp.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj">
-      <Project>{93E3612C-D388-438F-A04A-047265820998}</Project>
-      <Name>OsuPlayer.Presentation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj">
-      <Project>{C842FAB3-EC80-4E95-B402-BF0572F1806D}</Project>
-      <Name>OsuPlayer.Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Dapper">
       <Version>2.0.35</Version>
@@ -102,5 +25,11 @@
       <Version>1.0.112.1</Version>
     </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj" />
+    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj" />
+    <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
