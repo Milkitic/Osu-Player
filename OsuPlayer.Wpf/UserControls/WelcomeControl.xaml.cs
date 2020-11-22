@@ -54,6 +54,7 @@ namespace Milky.OsuPlayer.UserControls
                         return;
                     }
 
+                    bool isSuccess = false;
                     try
                     {
                         GuideSyncing = true;
@@ -62,6 +63,7 @@ namespace Milky.OsuPlayer.UserControls
                         AppSettings.SaveDefault();
                         GuideSyncing = false;
                         GuideSelectedDb = true;
+                        isSuccess = true;
                     }
                     catch (Exception ex)
                     {
@@ -70,7 +72,13 @@ namespace Milky.OsuPlayer.UserControls
                         GuideSelectedDb = false;
                     }
 
-                    SkipCommand.Execute(null);
+                    if (isSuccess)
+                    {
+                        AppSettings.Default.General.FirstOpen = false;
+                        AppSettings.SaveDefault();
+                        FrontDialogOverlay.Default.RaiseOk();
+                    }
+
                     GuideSyncing = false;
                 });
             }
