@@ -51,7 +51,7 @@ namespace Milky.OsuPlayer.UserControls
         {
             _viewModel = (AnimationControlVm)DataContext;
 
-            var path = Path.Combine(Domain.ResourcePath, "default.jpg");
+            var path = Path.Combine(Domain.ResourcePath, "official", "registration.jpg");
             if (File.Exists(path))
             {
                 BackImage.Source = new BitmapImage(new Uri(path));
@@ -212,7 +212,7 @@ namespace Milky.OsuPlayer.UserControls
                 _beatmapCtx.SetTimeHandle = async (time, play) =>
                     await _controller.Player.SkipTo(TimeSpan.FromMilliseconds(time)).ConfigureAwait(false);
             }
-           
+
             Execute.OnUiThread(() =>
             {
                 VideoElementBorder.Visibility = Visibility.Hidden;
@@ -315,7 +315,7 @@ namespace Milky.OsuPlayer.UserControls
                 }
             };
         }
-        
+
         private async void OnMediaOpened(object sender, MediaOpenedEventArgs e)
         {
             VideoElementBorder.Visibility = Visibility.Visible;

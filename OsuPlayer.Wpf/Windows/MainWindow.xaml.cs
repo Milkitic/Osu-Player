@@ -175,6 +175,9 @@ namespace Milky.OsuPlayer.Windows
                     Width = 350,
                     ShowDialogButtons = false,
                     ShowTitleBar = false
+                }, (obj, args) =>
+                {
+                    SwitchSearch.IsChecked = true;
                 });
                 //WelcomeControl.Show();
                 //try

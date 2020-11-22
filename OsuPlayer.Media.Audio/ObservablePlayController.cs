@@ -228,7 +228,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 Execute.OnUiThread(() => MetaLoaded?.Invoke(context, _cts.Token));
 
                 // background
-                var defaultPath = Path.Combine(Domain.ResourcePath, "default.jpg");
+                var defaultPath = Path.Combine(Domain.ResourcePath, "official", "registration.jpg");
 
                 if (osuFile.Events.BackgroundInfo != null)
                 {
