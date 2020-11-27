@@ -108,8 +108,8 @@ namespace Milky.OsuPlayer.Pages
                     {
                         var sbFile = osb[0];
                         await Task.Delay(2000);
-                        AnimationControl.Default.MyStoryboardPlayer.SetPlayer(
-                            new TimelinePlayer(ComponentPlayer.Current.HitsoundPlayer));
+                        //AnimationControl.Default.MyStoryboardPlayer.SetPlayer(
+                        //    new TimelinePlayer(ComponentPlayer.Current.HitsoundPlayer));
                         AnimationControl.Default.SetStoryboard(sbFile.FullName);
                     }
                 }

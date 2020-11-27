@@ -74,8 +74,8 @@ namespace Milky.OsuPlayer.Control
         {
             if (File.Exists(path))
             {
-                MyStoryboardPlayer.InitializePlayer += OnMyStoryboardPlayerOnInitializePlayer;
-                await MyStoryboardPlayer.SwitchStoryboard(path, true);
+                //MyStoryboardPlayer.InitializePlayer += OnMyStoryboardPlayerOnInitializePlayer;
+                //await MyStoryboardPlayer.SwitchStoryboard(path, true);
 
                 //var current_time = MyStoryboardPlayer.SourcePlayer.Length;
 
@@ -88,7 +88,7 @@ namespace Milky.OsuPlayer.Control
                 ////});
             }
 
-            MyStoryboardPlayer.SetPlayer(new TimelinePlayer(ComponentPlayer.Current.MusicPlayer));
+            //MyStoryboardPlayer.SetPlayer(new TimelinePlayer(ComponentPlayer.Current.MusicPlayer));
         }
 
         private void OnMyStoryboardPlayerOnInitializePlayer(PlayerBase player, string audioPath)

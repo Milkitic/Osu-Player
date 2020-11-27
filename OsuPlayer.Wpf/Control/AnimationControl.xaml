@@ -95,7 +95,7 @@
                 <shaderEffects:ChromaticAberrationEffect OffsetB="0,0" OffsetR="-0,0" />
             </Border.Effect>-->
             </Border>
-            <Grid Background="#00FFFFFF" MouseDown="Grid_MouseLeftButtonDown_1">
+            <!--<Grid Background="#00FFFFFF" MouseDown="Grid_MouseLeftButtonDown_1">
                 <wpfcontrol:StoryboardPlayer
                     Name="MyStoryboardPlayer"
                     AutoUpdateViewSize="True"
@@ -112,7 +112,7 @@
                         </Binding>
                     </wpfcontrol:StoryboardPlayer.Height>
                 </wpfcontrol:StoryboardPlayer>
-            </Grid>
+            </Grid>-->
         </Grid>
     </Border>
 </UserControl>
