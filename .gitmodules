@@ -10,3 +10,7 @@
 	path = Libraries/OSharp.Beatmap
 	url = https://github.com/Milkitic/OSharp.Beatmap
 	branch = master
+[submodule "Libraries/ReOsuStoryboardPlayer"]
+	path = Libraries/ReOsuStoryboardPlayer
+	url = https://github.com/MikiraSora/ReOsuStoryboardPlayer.git
+	branch = net5_migration
