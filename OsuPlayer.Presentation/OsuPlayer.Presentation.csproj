@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
     <PackageReference Include="NLog">
-      <Version>4.7.0</Version>
+      <Version>4.7.5</Version>
     </PackageReference>
   </ItemGroup>
 
