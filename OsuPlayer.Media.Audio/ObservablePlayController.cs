@@ -137,7 +137,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 if (trueBeatmap == null)
                 {
                     trueBeatmap = beatmap;
-                    trueBeatmap.FolderName = path; // I forgot why I did this but there should be some reasons.
+                    trueBeatmap.FolderNameOrPath = path; // I forgot why I did this but there should be some reasons.
                 }
 
                 PlayList.AddOrSwitchTo(trueBeatmap);

@@ -22,7 +22,7 @@ namespace Milky.OsuPlayer.Common
         public string Version { get; set; } //difficulty name
         public GameMode GameMode { get; set; }
         public int BeatmapId { get; set; }
-        public string FolderName { get; set; }
+        public string FolderNameOrPath { get; set; }
         public string BeatmapFileName { get; set; }
         public double Stars { get; set; }
 
@@ -55,7 +55,7 @@ namespace Milky.OsuPlayer.Common
 
         public MapIdentity GetIdentity()
         {
-            return new MapIdentity(FolderName, Version, InOwnDb);
+            return new MapIdentity(FolderNameOrPath, Version, InOwnDb);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

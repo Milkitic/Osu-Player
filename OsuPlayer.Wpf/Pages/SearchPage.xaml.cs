@@ -115,7 +115,7 @@ namespace Milky.OsuPlayer.Pages
             if (ResultList.SelectedItem == null)
                 return null;
             var map = SafeDbOperator
-                .GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
+                .GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderNameOrPath)
                 .GetHighestDiff();
             return map;
         }
@@ -124,7 +124,7 @@ namespace Milky.OsuPlayer.Pages
         {
             List<Beatmap> beatmaps = ViewModel.SearchedDbMaps;
             if (beatmaps.Count <= 0) return;
-            var group = beatmaps.GroupBy(k => k.FolderName);
+            var group = beatmaps.GroupBy(k => k.FolderNameOrPath);
             List<Beatmap> newBeatmaps = group
                 .Select(sb => sb.GetHighestDiff())
                 .ToList();

@@ -30,7 +30,7 @@ namespace Milky.OsuPlayer.Common
 
         public int GetHashCode(BeatmapDataModel obj)
         {
-            return obj.FolderName.GetHashCode();
+            return obj.FolderNameOrPath.GetHashCode();
         }
 
         //public int GetHashCode(BeatmapViewModel obj)

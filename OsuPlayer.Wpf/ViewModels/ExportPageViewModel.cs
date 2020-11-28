@@ -142,7 +142,7 @@ namespace Milky.OsuPlayer.ViewModels
 
         private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return SafeDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
+            return SafeDbOperator.GetBeatmapsFromFolder(dataModel.FolderNameOrPath)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 

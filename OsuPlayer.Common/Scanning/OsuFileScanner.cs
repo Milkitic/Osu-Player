@@ -121,7 +121,7 @@ namespace Milky.OsuPlayer.Common.Scanning
             var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
             beatmap.BeatmapFileName = fileInfo.Name;
             beatmap.LastModifiedTime = fileInfo.LastWriteTime;
-            beatmap.FolderName = fileInfo.Directory?.Name;
+            beatmap.FolderNameOrPath = fileInfo.Directory?.Name;
             beatmap.InOwnDb = true;
             return beatmap;
         }

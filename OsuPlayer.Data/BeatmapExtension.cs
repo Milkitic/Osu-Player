@@ -41,7 +41,7 @@ namespace Milky.OsuPlayer.Data.Models
             beatmap.GameMode = entry.GameMode.ParseHollyToOSharp();
             beatmap.SongSource = entry.SongSource;
             beatmap.SongTags = entry.SongTags;
-            beatmap.FolderName = entry.FolderName?.TrimEnd();
+            beatmap.FolderNameOrPath = entry.FolderName?.TrimEnd();
             beatmap.AudioFileName = entry.AudioFileName;
 
             return beatmap;

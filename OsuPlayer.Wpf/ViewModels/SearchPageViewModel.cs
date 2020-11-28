@@ -311,11 +311,11 @@ namespace Milky.OsuPlayer.ViewModels
                 {
                     var beatmap = (BeatmapDataModel)param;
                     var control = new DiffSelectControl(
-                        _safeDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName),
+                        _safeDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderNameOrPath),
                         (selected, arg) =>
                         {
                             arg.Handled = true;
-                            var entry = _safeDbOperator.GetBeatmapsFromFolder(selected.FolderName)
+                            var entry = _safeDbOperator.GetBeatmapsFromFolder(selected.FolderNameOrPath)
                                 .FirstOrDefault(k => k.Version == selected.Version);
                             FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
                                 DialogOptionFactory.SelectCollectionOptions);
@@ -361,7 +361,7 @@ namespace Milky.OsuPlayer.ViewModels
                 return new DelegateCommand(param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var beatmaps = _safeDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName);
+                    var beatmaps = _safeDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderNameOrPath);
                     var control = new DiffSelectControl(
                         beatmaps,
                         async (selected, arg) =>
@@ -379,7 +379,7 @@ namespace Milky.OsuPlayer.ViewModels
         private Beatmap GetHighestSrBeatmap(IMapIdentifiable beatmap)
         {
             if (beatmap == null) return null;
-            var map = _safeDbOperator.GetBeatmapsFromFolder(beatmap.FolderName).GetHighestDiff();
+            var map = _safeDbOperator.GetBeatmapsFromFolder(beatmap.FolderNameOrPath).GetHighestDiff();
             return map;
         }
     }

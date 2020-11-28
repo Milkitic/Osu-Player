@@ -315,7 +315,7 @@ namespace Milky.OsuPlayer.Windows
             bool play = AppSettings.Default.Play.AutoPlay;
             if (AppSettings.Default.CurrentMap.IsMapTemporary())
             {
-                await _controller.PlayNewAsync(AppSettings.Default.CurrentMap.Value.FolderName, play);
+                await _controller.PlayNewAsync(AppSettings.Default.CurrentMap.Value.FolderNameOrPath, play);
             }
             else
             {

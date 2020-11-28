@@ -230,7 +230,7 @@ namespace Milky.OsuPlayer.Pages
             var selectedItem = (BeatmapDataModel)RecentList.SelectedItem;
 
             return _recentBeatmaps.FirstOrDefault(k =>
-                k.FolderName == selectedItem.FolderName &&
+                k.FolderNameOrPath == selectedItem.FolderNameOrPath &&
                 k.Version == selectedItem.Version
             );
         }
@@ -238,7 +238,7 @@ namespace Milky.OsuPlayer.Pages
         private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
             return _recentBeatmaps.FirstOrDefault(k =>
-                k.FolderName == dataModel.FolderName &&
+                k.FolderNameOrPath == dataModel.FolderNameOrPath &&
                 k.Version == dataModel.Version
             );
         }

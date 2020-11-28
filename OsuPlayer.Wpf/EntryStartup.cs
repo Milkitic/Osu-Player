@@ -75,15 +75,6 @@ namespace Milky.OsuPlayer
 
         private static void InitLocalDb()
         {
-            FluentMapper.Initialize(config =>
-            {
-                config.AddMap(new StoryboardInfoMap());
-                config.AddMap(new BeatmapMap());
-                config.AddMap(new BeatmapSettingsMap());
-                config.AddMap(new CollectionMap());
-                config.AddMap(new CollectionRelationMap());
-            });
-
             AppDbOperator.ValidateDb();
 
             var appDbOperator = new AppDbOperator();

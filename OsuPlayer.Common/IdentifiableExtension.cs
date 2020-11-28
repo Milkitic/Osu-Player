@@ -52,7 +52,7 @@ namespace Milky.OsuPlayer.Common
                     ArtistUnicode = beatmap.ArtistUnicode,
                     BeatmapId = beatmap.BeatmapId,
                     Creator = beatmap.Creator,
-                    FolderName = beatmap.FolderName,
+                    FolderNameOrPath = beatmap.FolderNameOrPath,
                     GameMode = beatmap.GameMode,
                     SongSource = beatmap.SongSource,
                     SongTags = beatmap.SongTags,
@@ -118,17 +118,17 @@ namespace Milky.OsuPlayer.Common
         {
             if (map.IsMapTemporary())
             {
-                var folder = Path.GetDirectoryName(map.FolderName);
+                var folder = Path.GetDirectoryName(map.FolderNameOrPath);
                 isFromDb = false;
-                freePath = map.FolderName;
+                freePath = map.FolderNameOrPath;
                 return folder;
             }
 
             isFromDb = true;
             freePath = null;
             return map.InOwnDb
-                ? Path.Combine(Domain.CustomSongPath, map.FolderName)
-                : Path.Combine(Domain.OsuSongPath, map.FolderName);
+                ? Path.Combine(Domain.CustomSongPath, map.FolderNameOrPath)
+                : Path.Combine(Domain.OsuSongPath, map.FolderNameOrPath);
         }
     }
 }

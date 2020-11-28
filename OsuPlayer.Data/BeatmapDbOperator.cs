@@ -63,7 +63,7 @@ namespace Milky.OsuPlayer.Data
                     new Where[]
                     {
                         ("version", id.Version),
-                        ("folderName", id.FolderName)
+                        ("folderName", id.FolderNameOrPath)
                     },
                     count: 1).FirstOrDefault();
             }
@@ -123,7 +123,7 @@ namespace Milky.OsuPlayer.Data
                 {
                     if (id is MapIdentity mi && mi.Equals(MapIdentity.Default)) continue;
                     var valueSql = string.Format("('{0}', '{1}', {2}),",
-                        id.FolderName.Replace(@"'", @"''"),
+                        id.FolderNameOrPath.Replace(@"'", @"''"),
                         id.Version.Replace(@"'", @"''"),
                         id.InOwnDb ? 1 : 0); // escape is still safe
                     sb.Append(valueSql);
@@ -230,7 +230,7 @@ SELECT *
                 ["gameMode"] = k.GameMode,
                 ["source"] = k.SongSource,
                 ["tags"] = k.SongTags,
-                ["folderName"] = k.FolderName,
+                ["folderName"] = k.FolderNameOrPath,
                 ["audioName"] = k.AudioFileName,
                 ["own"] = k.InOwnDb,
             }).ToList());

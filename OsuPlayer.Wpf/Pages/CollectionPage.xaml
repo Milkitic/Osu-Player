@@ -204,7 +204,7 @@
                                         MouseDownForeground="#e8e8e8"
                                         MouseOverBackground="#ff6d70"
                                         MouseOverForeground="White"
-                                        Visibility="{Binding CollectionInfo.LockedBool, Converter={StaticResource BoolFalseToVisibleConverter}}" />
+                                        Visibility="{Binding CollectionInfo.IsDefault, Converter={StaticResource BoolFalseToVisibleConverter}}" />
                                 </WrapPanel>
                                 <StackPanel
                                     Margin="5"

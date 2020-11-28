@@ -179,7 +179,7 @@ namespace Milky.OsuPlayer.Pages
             if (MapList.SelectedItem == null)
                 return null;
             var selectedItem = (BeatmapDataModel)MapList.SelectedItem;
-            return _safeDbOperator.GetBeatmapsFromFolder(selectedItem.FolderName)
+            return _safeDbOperator.GetBeatmapsFromFolder(selectedItem.FolderNameOrPath)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
 
@@ -191,7 +191,7 @@ namespace Milky.OsuPlayer.Pages
 
         private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _safeDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
+            return _safeDbOperator.GetBeatmapsFromFolder(dataModel.FolderNameOrPath)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 
