@@ -7,8 +7,7 @@ namespace Milky.OsuPlayer.Data.Models
     {
         //[Key]
         public Guid Id { get; set; }
-        public string SbThumbPath { get; set; }
-        public string SbThumbVideoPath { get; set; }
+        public string StoryboardVideoPath { get; set; }
 
         //fk
         public Beatmap Beatmap { get; set; }

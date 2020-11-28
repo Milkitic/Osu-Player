@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Milky.OsuPlayer.Presentation.Annotations;
 
@@ -6,10 +7,10 @@ namespace Milky.OsuPlayer.Data.Models
 {
     public class BaseEntity : INotifyPropertyChanged
     {
-        private string _createTime;
-        private string _updateTime;
+        private DateTime _createTime;
+        private DateTime _updateTime;
 
-        public string CreateTime
+        public DateTime CreateTime
         {
             get => _createTime;
             set
@@ -20,7 +21,7 @@ namespace Milky.OsuPlayer.Data.Models
             }
         }
 
-        public string UpdateTime
+        public DateTime UpdateTime
         {
             get => _updateTime;
             set

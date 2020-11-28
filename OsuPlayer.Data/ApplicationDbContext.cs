@@ -33,11 +33,10 @@ namespace Milky.OsuPlayer.Data
             base.OnModelCreating(modelBuilder);
         }
 
-        public async Task<BeatmapConfig> GetOrAddBeatmapConfig(Guid id)
+        public async Task<BeatmapConfig> GetOrAddBeatmapConfig(Beatmap beatmap)
         {
             try
             {
-                var beatmap = await Beatmaps.FindAsync(id);
                 if (beatmap == null)
                 {
                     Logger.Debug("需确认加入自定义目录后才可继续");
@@ -46,7 +45,7 @@ namespace Milky.OsuPlayer.Data
 
                 var map = await BeatmapConfigs
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(k => k.BeatmapId == id);
+                    .FirstOrDefaultAsync(k => k.BeatmapId == beatmap.Id);
 
                 if (map != null) return map;
 
@@ -174,6 +173,27 @@ namespace Milky.OsuPlayer.Data
             await SaveChangesAsync();
         }
 
+        public async Task DeleteCollection(Collection collection)
+        {
+            Relations.RemoveRange(Relations.Where(k => k.CollectionId == collection.Id));
+            Collections.Remove(collection);
+            await SaveChangesAsync();
+        }
+
+        public async Task DeleteBeatmapFromCollection(Beatmap beatmap, Collection collection)
+        {
+            if (beatmap.IsTemporary)
+            {
+                Logger.Debug("需确认加入自定义目录后才可继续");
+                return;
+            }
+
+            var relation = await Relations
+                .FirstOrDefaultAsync(k => k.CollectionId == collection.Id && k.BeatmapId == beatmap.Id);
+            Relations.Remove(relation);
+            await SaveChangesAsync();
+        }
+
         public async Task<Collection> GetCollection(Guid id)
         {
             return await Collections.FindAsync(id);
@@ -186,6 +206,161 @@ namespace Milky.OsuPlayer.Data
             var maps = beatmaps.Where(k => !k.IsMapTemporary);
             collection = await Collections.FindAsync(collection.Id);
             collection.Beatmaps.AddRange(maps);
+
+            await SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// ignore null columns
+        /// </summary>
+        /// <param name="beatmapConfig"></param>
+        /// <returns></returns>
+        public async Task AddOrUpdateBeatmapConfig(BeatmapConfig beatmapConfig)
+        {
+            if (beatmapConfig.BeatmapId == Guid.Empty)
+            {
+                Console.WriteLine("No beatmap found.");
+                return;
+            }
+
+            var beatmap = await Beatmaps.FindAsync(beatmapConfig.BeatmapId);
+            if (beatmap == null)
+            {
+                Console.WriteLine("No beatmap found.");
+            }
+
+            var exist = await BeatmapConfigs.FindAsync(beatmapConfig.Id);
+            if (exist == null)
+                BeatmapConfigs.Add(beatmapConfig);
+            else
+            {
+                if (beatmapConfig.MainVolume != null) exist.MainVolume = beatmapConfig.MainVolume.Value;
+                if (beatmapConfig.MusicVolume != null) exist.MusicVolume = beatmapConfig.MusicVolume.Value;
+                if (beatmapConfig.HitsoundVolume != null) exist.HitsoundVolume = beatmapConfig.HitsoundVolume.Value;
+                if (beatmapConfig.SampleVolume != null) exist.SampleVolume = beatmapConfig.SampleVolume.Value;
+                if (beatmapConfig.Offset != null) exist.Offset = beatmapConfig.Offset.Value;
+                if (beatmapConfig.PlaybackRate != null) exist.PlaybackRate = beatmapConfig.PlaybackRate.Value;
+                if (beatmapConfig.PlayUseTempo != null) exist.PlayUseTempo = beatmapConfig.PlayUseTempo.Value;
+                if (beatmapConfig.LyricOffset != null) exist.LyricOffset = beatmapConfig.LyricOffset.Value;
+                if (beatmapConfig.ForceLyricId != null) exist.ForceLyricId = beatmapConfig.ForceLyricId;
+            }
+
+            await SaveChangesAsync();
+        }
+
+        public async Task AddOrUpdateBeatmapToRecent(Beatmap beatmap)
+        {
+            var recent = await RecentList.FirstOrDefaultAsync(k => k.BeatmapId == beatmap.Id);
+            if (recent != null)
+                recent.UpdateTime = DateTime.Now;
+            else
+                RecentList.Add(new BeatmapRecentPlay { Beatmap = beatmap, Id = Guid.NewGuid() });
+            await SaveChangesAsync();
+        }
+
+        public async Task RemoveBeatmapFromRecent(Beatmap beatmap)
+        {
+            var recent = await RecentList.FirstOrDefaultAsync(k => k.BeatmapId == beatmap.Id);
+            if (recent != null)
+                RecentList.Remove(recent);
+
+            await SaveChangesAsync();
+        }
+
+        public async Task RemoveBeatmapsFromRecent(IEnumerable<Beatmap> beatmap)
+        {
+            var recent = RecentList.Join(beatmap, k => k.BeatmapId, k => k.Id, (k, x) => k);
+            RecentList.RemoveRange(recent);
+
+            await SaveChangesAsync();
+        }
+
+        public async Task ClearRecent()
+        {
+            RecentList.RemoveRange(RecentList);
+            await SaveChangesAsync();
+        }
+
+        public async Task AddOrUpdateExportByBeatmap(BeatmapExport export)
+        {
+            if (export.BeatmapId == Guid.Empty)
+            {
+                Console.WriteLine("No beatmap found.");
+                return;
+            }
+
+            var beatmap = await Beatmaps.FindAsync(export.BeatmapId);
+            if (beatmap == null)
+            {
+                Console.WriteLine("No beatmap found.");
+            }
+
+            var exist = await Exports.FindAsync(export.Id);
+            if (exist != null)
+            {
+                exist.UpdateTime = DateTime.Now;
+                exist.ExportPath = export.ExportPath;
+                exist.IsValid = true;
+            }
+            else
+            {
+                export.Beatmap = beatmap;
+                Exports.Add(export);
+            }
+
+            await SaveChangesAsync();
+        }
+
+        public async Task RemoveExport(BeatmapExport export)
+        {
+            Exports.Remove(export);
+            await SaveChangesAsync();
+        }
+
+        public async Task<BeatmapThumb> GetThumb(Beatmap beatmap)
+        {
+            var thumb = await Thumbs
+                .AsNoTracking()
+                .Include(k => k.BeatmapStoryboard)
+                .FirstOrDefaultAsync(k => k.BeatmapId == beatmap.Id);
+            return thumb;
+        }
+
+        public async Task AddOrUpdateThumbPath(Beatmap beatmap, string path)
+        {
+            var thumb = await Thumbs.FirstOrDefaultAsync(k => k.BeatmapId == beatmap.Id);
+            if (thumb != null)
+                thumb.ThumbPath = path;
+            else
+                Thumbs.Add(new BeatmapThumb { Beatmap = beatmap, ThumbPath = path, Id = Guid.NewGuid() });
+
+            await SaveChangesAsync();
+        }
+
+        public async Task AddOrUpdateStoryboardByBeatmap(BeatmapStoryboard storyboard)
+        {
+            if (storyboard.BeatmapId == Guid.Empty)
+            {
+                Console.WriteLine("No beatmap found.");
+                return;
+            }
+
+            var beatmap = await Beatmaps.FindAsync(storyboard.BeatmapId);
+            if (beatmap == null)
+            {
+                Console.WriteLine("No beatmap found.");
+            }
+
+            var exist = await Storyboards.FindAsync(storyboard.Id);
+            if (exist != null)
+            {
+                exist.StoryboardVideoPath = storyboard.StoryboardVideoPath;
+            }
+            else
+            {
+                storyboard.Beatmap = beatmap;
+                Storyboards.Add(storyboard);
+            }
 
             await SaveChangesAsync();
         }

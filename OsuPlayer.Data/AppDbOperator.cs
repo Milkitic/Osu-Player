@@ -263,195 +263,195 @@ namespace Milky.OsuPlayer.Data
         //    }
         //}
 
-        public void UpdateMap(IMapIdentifiable id, int? offset = null)
-        {
-            var updateColumns = new Dictionary<string, object> { ["lastPlayTime"] = DateTime.Now };
-            if (offset != null)
-            {
-                updateColumns.Add("offset", offset);
-            }
+        //public void UpdateMap(IMapIdentifiable id, int? offset = null)
+        //{
+        //    var updateColumns = new Dictionary<string, object> { ["lastPlayTime"] = DateTime.Now };
+        //    if (offset != null)
+        //    {
+        //        updateColumns.Add("offset", offset);
+        //    }
 
-            InnerUpdateMap(id, updateColumns);
-        }
+        //    InnerUpdateMap(id, updateColumns);
+        //}
 
-        public void AddMapExport(IMapIdentifiable id, string exportFilePath)
-        {
-            InnerUpdateMap(id, new Dictionary<string, object> { ["exportFile"] = exportFilePath });
-        }
+        //public void AddMapExport(IMapIdentifiable id, string exportFilePath)
+        //{
+        //    InnerUpdateMap(id, new Dictionary<string, object> { ["exportFile"] = exportFilePath });
+        //}
 
-        public void RemoveMapExport(IMapIdentifiable id)
-        {
-            InnerUpdateMap(id, new Dictionary<string, object> { ["exportFile"] = null });
-        }
+        //public void RemoveMapExport(IMapIdentifiable id)
+        //{
+        //    InnerUpdateMap(id, new Dictionary<string, object> { ["exportFile"] = null });
+        //}
 
         //public void UpdateMap(Beatmap beatmap, int? offset = null)
         //{
         //    UpdateMap(beatmap.GetIdentity(), offset);
         //}
 
-        public void RemoveFromRecent(IMapIdentifiable id)
-        {
-            InnerUpdateMap(id, new Dictionary<string, object> { ["lastPlayTime"] = null });
-        }
+        //public void RemoveFromRecent(IMapIdentifiable id)
+        //{
+        //    InnerUpdateMap(id, new Dictionary<string, object> { ["lastPlayTime"] = null });
+        //}
 
         //public void RemoveFromRecent(Beatmap beatmap)
         //{
         //    RemoveFromRecent(beatmap.GetIdentity());
         //}
 
-        public void ClearRecent()
-        {
-            ThreadedProvider.Update(TABLE_MAP,
-                new Dictionary<string, object>
-                {
-                    ["lastPlayTime"] = null
-                },
-                Array.Empty<Where>());
-        }
+        //public void ClearRecent()
+        //{
+        //    ThreadedProvider.Update(TABLE_MAP,
+        //        new Dictionary<string, object>
+        //        {
+        //            ["lastPlayTime"] = null
+        //        },
+        //        Array.Empty<Where>());
+        //}
 
-        public void RemoveCollection(Collection collection)
-        {
-            ThreadedProvider.Delete(TABLE_COLLECTION, ("id", collection.Id));
-            ThreadedProvider.Delete(TABLE_RELATION, ("collectionId", collection.Id));
-        }
+        //public void RemoveCollection(Collection collection)
+        //{
+        //    ThreadedProvider.Delete(TABLE_COLLECTION, ("id", collection.Id));
+        //    ThreadedProvider.Delete(TABLE_RELATION, ("collectionId", collection.Id));
+        //}
 
         //public void RemoveMapFromCollection(Beatmap beatmap, Collection collection)
         //{
         //    RemoveMapFromCollection(beatmap.GetIdentity(), collection);
         //}
 
-        public void RemoveMapFromCollection(IMapIdentifiable id, Collection collection)
-        {
-            if (id.IsMapTemporary())
-            {
-                Logger.Debug("需确认加入自定义目录后才可继续");
-            }
+        //public void RemoveMapFromCollection(IMapIdentifiable id, Collection collection)
+        //{
+        //    if (id.IsMapTemporary())
+        //    {
+        //        Logger.Debug("需确认加入自定义目录后才可继续");
+        //    }
 
-            var map = GetMapFromDb(id);
-            ThreadedProvider.Delete(TABLE_RELATION, new Where[] { ("collectionId", collection.Id), ("mapId", map.Id) });
-        }
+        //    var map = GetMapFromDb(id);
+        //    ThreadedProvider.Delete(TABLE_RELATION, new Where[] { ("collectionId", collection.Id), ("mapId", map.Id) });
+        //}
 
-        public bool GetMapThumb(Guid beatmapDbId, out string thumbPath)
-        {
-            var dy = ThreadedProvider.Query(TABLE_THUMB,
-                ("mapId", beatmapDbId, "=="),
-                count: 1).FirstOrDefault();
-            thumbPath = dy?.thumbPath;
-            return !(dy is null);
-        }
+        //public bool GetMapThumb(Guid beatmapDbId, out string thumbPath)
+        //{
+        //    var dy = ThreadedProvider.Query(TABLE_THUMB,
+        //        ("mapId", beatmapDbId, "=="),
+        //        count: 1).FirstOrDefault();
+        //    thumbPath = dy?.thumbPath;
+        //    return !(dy is null);
+        //}
 
-        public bool GetMapThumb(Beatmap beatmap, out string thumbPath)
-        {
-            if (beatmap.IsMapTemporary())
-            {
-                Logger.Debug("需确认加入自定义目录后才可继续");
-            }
+        //public bool GetMapThumb(Beatmap beatmap, out string thumbPath)
+        //{
+        //    if (beatmap.IsMapTemporary())
+        //    {
+        //        Logger.Debug("需确认加入自定义目录后才可继续");
+        //    }
 
-            return GetMapThumb(beatmap.Id, out thumbPath);
-        }
+        //    return GetMapThumb(beatmap.Id, out thumbPath);
+        //}
 
-        public void SetMapThumb(Guid beatmapDbId, string thumbPath)
-        {
-            var hasResult = GetMapThumb(beatmapDbId, out _);
+        //public void SetMapThumb(Guid beatmapDbId, string thumbPath)
+        //{
+        //    var hasResult = GetMapThumb(beatmapDbId, out _);
 
-            if (hasResult)
-            {
-                ThreadedProvider.Update(TABLE_THUMB,
-                    new Dictionary<string, object>
-                    {
-                        ["thumbPath"] = thumbPath
-                    },
-                    ("mapId", beatmapDbId, "=="));
-            }
-            else
-            {
-                ThreadedProvider.Insert(TABLE_THUMB,
-                    new Dictionary<string, object>
-                    {
-                        ["id"] = Guid.NewGuid().ToString(),
-                        ["mapId"] = beatmapDbId,
-                        ["thumbPath"] = thumbPath
-                    }
-                );
-            }
-        }
+        //    if (hasResult)
+        //    {
+        //        ThreadedProvider.Update(TABLE_THUMB,
+        //            new Dictionary<string, object>
+        //            {
+        //                ["thumbPath"] = thumbPath
+        //            },
+        //            ("mapId", beatmapDbId, "=="));
+        //    }
+        //    else
+        //    {
+        //        ThreadedProvider.Insert(TABLE_THUMB,
+        //            new Dictionary<string, object>
+        //            {
+        //                ["id"] = Guid.NewGuid().ToString(),
+        //                ["mapId"] = beatmapDbId,
+        //                ["thumbPath"] = thumbPath
+        //            }
+        //        );
+        //    }
+        //}
 
-        public void SetMapThumb(Beatmap beatmap, string thumbPath)
-        {
-            SetMapThumb(beatmap.Id, thumbPath);
-        }
+        //public void SetMapThumb(Beatmap beatmap, string thumbPath)
+        //{
+        //    SetMapThumb(beatmap.Id, thumbPath);
+        //}
 
-        public void SetMapSbInfo(Guid beatmapDbId, BeatmapStoryboard sb)
-        {
-            if (sb.IsMapTemporary())
-            {
-                Logger.Debug("需确认加入自定义目录后才可继续");
-            }
+        //public void SetMapSbInfo(Guid beatmapDbId, BeatmapStoryboard sb)
+        //{
+        //    if (sb.IsMapTemporary())
+        //    {
+        //        Logger.Debug("需确认加入自定义目录后才可继续");
+        //    }
 
-            var hasResult = GetMapThumb(beatmapDbId, out _);
+        //    var hasResult = GetMapThumb(beatmapDbId, out _);
 
-            if (hasResult)
-            {
-                ThreadedProvider.Update(TABLE_SB,
-                    new Dictionary<string, object>
-                    {
-                        ["thumbPath"] = sb.SbThumbPath,
-                        ["thumbVideoPath"] = sb.SbThumbVideoPath,
-                        ["version"] = sb.Version,
-                        ["folder"] = sb.FolderName,
-                        ["ownDb"] = sb.InOwnDb
-                    },
-                    ("mapId", beatmapDbId, "=="));
-            }
-            else
-            {
-                ThreadedProvider.Insert(TABLE_SB,
-                    new Dictionary<string, object>
-                    {
-                        ["id"] = Guid.NewGuid().ToString(),
-                        ["mapId"] = beatmapDbId,
-                        ["thumbPath"] = sb.SbThumbPath,
-                        ["thumbVideoPath"] = sb.SbThumbVideoPath,
-                        ["version"] = sb.Version,
-                        ["folder"] = sb.FolderName,
-                        ["ownDb"] = sb.InOwnDb
-                    }
-                );
-            }
-        }
+        //    if (hasResult)
+        //    {
+        //        ThreadedProvider.Update(TABLE_SB,
+        //            new Dictionary<string, object>
+        //            {
+        //                ["thumbPath"] = sb.SbThumbPath,
+        //                ["thumbVideoPath"] = sb.SbThumbVideoPath,
+        //                ["version"] = sb.Version,
+        //                ["folder"] = sb.FolderName,
+        //                ["ownDb"] = sb.InOwnDb
+        //            },
+        //            ("mapId", beatmapDbId, "=="));
+        //    }
+        //    else
+        //    {
+        //        ThreadedProvider.Insert(TABLE_SB,
+        //            new Dictionary<string, object>
+        //            {
+        //                ["id"] = Guid.NewGuid().ToString(),
+        //                ["mapId"] = beatmapDbId,
+        //                ["thumbPath"] = sb.SbThumbPath,
+        //                ["thumbVideoPath"] = sb.SbThumbVideoPath,
+        //                ["version"] = sb.Version,
+        //                ["folder"] = sb.FolderName,
+        //                ["ownDb"] = sb.InOwnDb
+        //            }
+        //        );
+        //    }
+        //}
 
-        public void SetMapSbInfo(Beatmap beatmap, BeatmapStoryboard sb)
-        {
-            SetMapSbInfo(beatmap.Id, sb);
-        }
+        //public void SetMapSbInfo(Beatmap beatmap, BeatmapStoryboard sb)
+        //{
+        //    SetMapSbInfo(beatmap.Id, sb);
+        //}
 
-        private void InnerUpdateMap(IMapIdentifiable id, Dictionary<string, object> updateColumns)
-        {
-            if (id.IsMapTemporary())
-            {
-                Logger.Debug("需确认加入自定义目录后才可继续");
-            }
+        //private void InnerUpdateMap(IMapIdentifiable id, Dictionary<string, object> updateColumns)
+        //{
+        //    if (id.IsMapTemporary())
+        //    {
+        //        Logger.Debug("需确认加入自定义目录后才可继续");
+        //    }
 
-            GetMapFromDb(id);
-            if (updateColumns.Count == 0) return;
+        //    GetMapFromDb(id);
+        //    if (updateColumns.Count == 0) return;
 
-            try
-            {
-                ThreadedProvider.Update(TABLE_MAP,
-                    updateColumns,
-                    new Where[]
-                    {
-                        ("version", id.Version),
-                        ("folder", id.FolderNameOrPath),
-                        ("ownDb", id.InOwnDb)
-                    },
-                    count: 1);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error while calling InnerUpdateMap().");
-                throw;
-            }
-        }
+        //    try
+        //    {
+        //        ThreadedProvider.Update(TABLE_MAP,
+        //            updateColumns,
+        //            new Where[]
+        //            {
+        //                ("version", id.Version),
+        //                ("folder", id.FolderNameOrPath),
+        //                ("ownDb", id.InOwnDb)
+        //            },
+        //            count: 1);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.Error(ex, "Error while calling InnerUpdateMap().");
+        //        throw;
+        //    }
+        //}
     }
 }

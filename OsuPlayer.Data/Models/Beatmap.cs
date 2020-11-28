@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Milky.OsuPlayer.Data.Models
 {
-    public class Beatmap : BaseEntity, IMapIdentifiable, IEquatable<Beatmap>
+    public class Beatmap : BaseEntity, IEquatable<Beatmap>
     {
         public class Comparer : IEqualityComparer<Beatmap>
         {
@@ -66,13 +66,8 @@ namespace Milky.OsuPlayer.Data.Models
 
         public List<Collection> Collections { get; set; }
 
-        string IMapIdentifiable.FolderName => FolderNameOrPath;
-
         [NotMapped]
         public bool IsTemporary { get; set; }
-
-        [NotMapped]
-        public bool IsMapTemporary => Path.IsPathRooted(FolderNameOrPath);
 
         public MapIdentity GetIdentity()
         {
