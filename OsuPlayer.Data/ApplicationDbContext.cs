@@ -16,9 +16,12 @@ namespace Milky.OsuPlayer.Data
         public DbSet<Beatmap> Beatmaps { get; set; }
         public DbSet<Collection> Collections { get; set; }
         public DbSet<CollectionRelation> Relations { get; set; }
-        public DbSet<BeatmapSettings> BeatmapSettings { get; set; }
-        public DbSet<BeatmapThumb> BeatmapThumbs { get; set; }
-        public DbSet<BeatmapStoryboard> BeatmapStoryboards { get; set; }
+        public DbSet<BeatmapConfig> BeatmapConfigs { get; set; }
+        public DbSet<BeatmapCurrentPlay> Playlist { get; set; }
+        public DbSet<BeatmapRecentPlay> RecentList { get; set; }
+        public DbSet<BeatmapExport> Exports { get; set; }
+        public DbSet<BeatmapThumb> Thumbs { get; set; }
+        public DbSet<BeatmapStoryboard> Storyboards { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -30,35 +33,33 @@ namespace Milky.OsuPlayer.Data
             base.OnModelCreating(modelBuilder);
         }
 
-        public async Task<BeatmapSettings> GetMapSetting(IMapIdentifiable id)
+        public async Task<BeatmapConfig> GetOrAddBeatmapConfig(Guid id)
         {
             try
             {
-                if (id.IsMapTemporary())
+                var beatmap = await Beatmaps.FindAsync(id);
+                if (beatmap == null)
                 {
                     Logger.Debug("需确认加入自定义目录后才可继续");
                     return null;
                 }
 
-                var map = await BeatmapSettings
+                var map = await BeatmapConfigs
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(k => k.Version == id.Version &&
-                                              k.FolderName == id.FolderNameOrPath &&
-                                              k.InOwnDb == id.InOwnDb);
+                    .FirstOrDefaultAsync(k => k.BeatmapId == id);
 
                 if (map != null) return map;
 
                 var guid = Guid.NewGuid();
-                BeatmapSettings.Add(new BeatmapSettings
+                BeatmapConfigs.Add(new BeatmapConfig()
                 {
                     Id = guid,
-                    Version = id.Version,
-                    FolderName = id.FolderNameOrPath,
-                    InOwnDb = id.InOwnDb,
+                    BeatmapId = beatmap.Id,
+
                 });
                 await SaveChangesAsync();
 
-                return await BeatmapSettings.FindAsync(guid);
+                return await BeatmapConfigs.FindAsync(guid);
             }
             catch (Exception ex)
             {
@@ -67,13 +68,143 @@ namespace Milky.OsuPlayer.Data
             }
         }
 
-        public async Task<List<BeatmapSettings>> GetRecentList()
+        public async Task<PaginationQueryResult<Beatmap>> GetRecentList(
+            int page = 0,
+            int countPerPage = 50,
+            BeatmapOrderOptions options = BeatmapOrderOptions.UpdateTime)
         {
-         var list=   BeatmapSettings.Where(k=>k.)
-            return ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
-                    ("lastPlayTime", null, "!="),
-                    orderColumn: "lastPlayTime")
-                .ToList();
+            var list = RecentList.AsNoTracking();
+            var queryable = options switch
+            {
+                BeatmapOrderOptions.UpdateTime => list.OrderByDescending(k => k.UpdateTime),
+                _ => throw new ArgumentOutOfRangeException(nameof(options), options, null)
+            };
+
+            var count = await queryable.CountAsync();
+            var collection = queryable
+                .Include(k => k.Beatmap);
+
+            var result = await collection
+                .Skip(page * countPerPage)
+                .Take(countPerPage)
+                .Select(k => k.Beatmap)
+                .ToListAsync();
+
+            return new PaginationQueryResult<Beatmap>(result, count);
         }
+
+        public async Task<PaginationQueryResult<BeatmapExport>> GetExportList(
+            int page = 0,
+            int countPerPage = 50,
+            BeatmapOrderOptions options = BeatmapOrderOptions.UpdateTime)
+        {
+            var list = Exports.AsNoTracking();
+            var queryable = options switch
+            {
+                BeatmapOrderOptions.UpdateTime => list.OrderByDescending(k => k.CreateTime),
+                _ => throw new ArgumentOutOfRangeException(nameof(options), options, null)
+            };
+
+            var count = await queryable.CountAsync();
+            var collection = queryable
+                .Include(k => k.Beatmap);
+
+            var result = await collection
+                .Skip(page * countPerPage)
+                .Take(countPerPage)
+                .ToListAsync();
+
+            return new PaginationQueryResult<BeatmapExport>(result, count);
+        }
+
+        public async Task<List<Collection>> GetCollections()
+        {
+            return await Collections
+                .AsNoTracking()
+                .OrderByDescending(k => k.Index)
+                .ToListAsync();
+        }
+
+        public async Task<List<Beatmap>> GetBeatmapFromCollection(Collection collection)
+        {
+            collection = await Collections
+                .AsNoTracking()
+                .Include(k => k.Beatmaps)
+                .FirstOrDefaultAsync(k => k.Id == collection.Id);
+
+            return collection.Beatmaps;
+        }
+
+        public async Task<List<Collection>> GetCollectionsByMap(Beatmap beatmap)
+        {
+            beatmap = await Beatmaps
+                .AsNoTracking()
+                .Include(k => k.Collections)
+                .FirstOrDefaultAsync(k => k.Id == beatmap.Id);
+            return beatmap.Collections;
+        }
+
+        public async Task AddOrUpdateCollection(Collection collection)
+        {
+            var result = await GetCollection(collection.Id);
+            if (result == null)
+            {
+                await AddCollection(collection.Name);
+            }
+            else
+            {
+                Collections.Update(collection);
+                await SaveChangesAsync();
+            }
+        }
+
+        public async Task AddCollection(string name, bool locked = false)
+        {
+            var count = await Collections.CountAsync();
+            var maxIndex = count > 0 ? await Collections.MaxAsync(k => k.Index) : -1;
+            var collection = new Collection
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                IsLocked = locked,
+                Index = maxIndex + 1
+            };
+
+            Collections.Add(collection);
+            await SaveChangesAsync();
+        }
+
+        public async Task<Collection> GetCollection(Guid id)
+        {
+            return await Collections.FindAsync(id);
+        }
+
+        public async Task AddMapsToCollection(IList<Beatmap> beatmaps, Collection collection)
+        {
+            if (beatmaps.Count < 1) return;
+
+            var maps = beatmaps.Where(k => !k.IsMapTemporary);
+            collection = await Collections.FindAsync(collection.Id);
+            collection.Beatmaps.AddRange(maps);
+
+            await SaveChangesAsync();
+        }
+    }
+
+    public enum BeatmapOrderOptions
+    {
+        UpdateTime
+    }
+
+    public class PaginationQueryResult<T> where T : class
+    {
+        public PaginationQueryResult(List<T> collection, int count)
+        {
+            Collection = collection;
+            Count = count;
+        }
+
+        public List<T> Collection { get; set; }
+        public int Count { get; set; }
     }
 }

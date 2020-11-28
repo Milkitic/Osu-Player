@@ -12,7 +12,7 @@ namespace Milky.OsuPlayer.Data.Models
         private string _description;
 
         public Guid Id { get; set; }
-        public bool IsDefault { get; set; }
+        public bool IsLocked { get; set; }
 
         public string Name
         {

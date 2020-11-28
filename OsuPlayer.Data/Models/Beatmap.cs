@@ -64,7 +64,12 @@ namespace Milky.OsuPlayer.Data.Models
         public string AudioFileName { get; set; }
         public bool InOwnDb { get; set; }
 
+        public List<Collection> Collections { get; set; }
+
         string IMapIdentifiable.FolderName => FolderNameOrPath;
+
+        [NotMapped]
+        public bool IsTemporary { get; set; }
 
         [NotMapped]
         public bool IsMapTemporary => Path.IsPathRooted(FolderNameOrPath);
