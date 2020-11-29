@@ -1,12 +1,14 @@
-﻿using Milky.OsuPlayer.Shared;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Shared;
 using OSharp.Beatmap;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
-using System.Collections.Generic;
-using System.Linq;
 using OSharpGameMode = OSharp.Beatmap.Sections.GamePlay.GameMode;
 
-namespace Milky.OsuPlayer.Data.Models
+namespace Milky.OsuPlayer.Data
 {
     public static class BeatmapExtension
     {
@@ -44,6 +46,7 @@ namespace Milky.OsuPlayer.Data.Models
             beatmap.FolderNameOrPath = entry.FolderName?.TrimEnd();
             beatmap.AudioFileName = entry.AudioFileName;
 
+            beatmap.Id = HashCode.Combine(beatmap.FolderNameOrPath, beatmap.Version, beatmap.InOwnDb);
             return beatmap;
         }
 

@@ -39,7 +39,8 @@ namespace Milky.OsuPlayer.Data.Models
             }
         }
 
-        public Guid Id { get; set; } = Guid.NewGuid();
+        // HashCode.Combine(Folder, Version, InOwnDb)
+        public int Id { get; set; }
         public string Artist { get; set; }
         public string ArtistUnicode { get; set; }
         public string Title { get; set; }

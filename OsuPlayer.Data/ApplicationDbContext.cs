@@ -1,11 +1,15 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Shared.Models;
+using osu_database_reader.Components.Beatmaps;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Milky.OsuPlayer.Data.Models;
-using OSharp.Beatmap.MetaData;
+using Collection = Milky.OsuPlayer.Data.Models.Collection;
 
 namespace Milky.OsuPlayer.Data
 {
@@ -33,7 +37,93 @@ namespace Milky.OsuPlayer.Data
             base.OnModelCreating(modelBuilder);
         }
 
-        public async Task<BeatmapConfig> GetOrAddBeatmapConfig(Beatmap beatmap)
+        #region Beatmap
+
+        public async Task<List<Beatmap>> SearchBeatmapByOptions(
+            string searchText,
+            BeatmapOrderOptions beatmapOrderOptions,
+            int startIndex, int count)
+        {
+            var sqliteParameters = new List<SqliteParameter>();
+            var command = " SELECT * FROM beatmap WHERE ";
+            var keywordSql = GetKeywordQueryAndArgs(searchText, ref sqliteParameters);
+            var sort = GetOrderAndTakeQueryAndArgs(beatmapOrderOptions, startIndex, count);
+            var sw = Stopwatch.StartNew();
+            try
+            {
+                var beatmaps = await Beatmaps
+                    .FromSqlRaw(command + keywordSql + sort, sqliteParameters.Cast<object>().ToArray())
+                    .ToListAsync();
+                return beatmaps;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while calling SearchBeatmapByOptions().");
+                throw;
+            }
+            finally
+            {
+                Logger.Debug("查询花费: {0}", sw.ElapsedMilliseconds);
+                sw.Stop();
+            }
+        }
+
+        public async Task<List<Beatmap>> GetBeatmapsFromFolder(string folder, bool inOwnDb)
+        {
+            try
+            {
+                return await Beatmaps.Where(k => k.InOwnDb == inOwnDb && k.FolderNameOrPath == folder).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while calling GetBeatmapsFromFolder().");
+                throw;
+            }
+        }
+
+        // questionable
+        public async Task SyncBeatmapsFromHoLLy(IEnumerable<BeatmapEntry> entry)
+        {
+            var all = Beatmaps;
+            var allBeatmaps = entry.Select(BeatmapExtension.ParseFromHolly).ToList();
+            var allIds = allBeatmaps.Select(k => k.Id).ToList();
+
+            var nonExistAnyMore = all.Where(k => !allIds.Contains(k.Id));
+            Beatmaps.RemoveRange(nonExistAnyMore);
+
+            var exists = await all.Where(k => allIds.Contains(k.Id)).Select(k => k.Id).ToListAsync();
+            Beatmaps.UpdateRange(allBeatmaps.Where(k => exists.Contains(k.Id)));
+
+            var news = allIds.Except(exists);
+            Beatmaps.AddRange(allBeatmaps.Where(k => news.Contains(k.Id)));
+
+            await SaveChangesAsync();
+        }
+
+
+        public async Task AddNewMaps(IEnumerable<Beatmap> beatmaps)
+        {
+            Beatmaps.AddRange(beatmaps);
+            await SaveChangesAsync();
+        }
+
+        public async Task RemoveLocalAll()
+        {
+            Beatmaps.RemoveRange(Beatmaps.Where(k => k.InOwnDb));
+            await SaveChangesAsync();
+        }
+
+        public async Task RemoveSyncedAll()
+        {
+            Beatmaps.RemoveRange(Beatmaps.Where(k => !k.InOwnDb));
+            await SaveChangesAsync();
+        }
+
+        #endregion
+
+        #region BeatmapConfig
+
+        public async Task<BeatmapConfig> GetOrAddBeatmapConfigByBeatmap(Beatmap beatmap)
         {
             try
             {
@@ -67,54 +157,47 @@ namespace Milky.OsuPlayer.Data
             }
         }
 
-        public async Task<PaginationQueryResult<Beatmap>> GetRecentList(
-            int page = 0,
-            int countPerPage = 50,
-            BeatmapOrderOptions options = BeatmapOrderOptions.UpdateTime)
+        /// <summary>
+        /// ignore null columns
+        /// </summary>
+        /// <param name="beatmapConfig"></param>
+        /// <returns></returns>
+        public async Task AddOrUpdateBeatmapConfig(BeatmapConfig beatmapConfig)
         {
-            var list = RecentList.AsNoTracking();
-            var queryable = options switch
+            if (beatmapConfig.BeatmapId == 0)
             {
-                BeatmapOrderOptions.UpdateTime => list.OrderByDescending(k => k.UpdateTime),
-                _ => throw new ArgumentOutOfRangeException(nameof(options), options, null)
-            };
+                Console.WriteLine("No beatmap found.");
+                return;
+            }
 
-            var count = await queryable.CountAsync();
-            var collection = queryable
-                .Include(k => k.Beatmap);
+            var beatmap = await Beatmaps.FindAsync(beatmapConfig.BeatmapId);
+            if (beatmap == null)
+            {
+                Console.WriteLine("No beatmap found.");
+            }
 
-            var result = await collection
-                .Skip(page * countPerPage)
-                .Take(countPerPage)
-                .Select(k => k.Beatmap)
-                .ToListAsync();
+            var exist = await BeatmapConfigs.FindAsync(beatmapConfig.Id);
+            if (exist == null)
+                BeatmapConfigs.Add(beatmapConfig);
+            else
+            {
+                if (beatmapConfig.MainVolume != null) exist.MainVolume = beatmapConfig.MainVolume.Value;
+                if (beatmapConfig.MusicVolume != null) exist.MusicVolume = beatmapConfig.MusicVolume.Value;
+                if (beatmapConfig.HitsoundVolume != null) exist.HitsoundVolume = beatmapConfig.HitsoundVolume.Value;
+                if (beatmapConfig.SampleVolume != null) exist.SampleVolume = beatmapConfig.SampleVolume.Value;
+                if (beatmapConfig.Offset != null) exist.Offset = beatmapConfig.Offset.Value;
+                if (beatmapConfig.PlaybackRate != null) exist.PlaybackRate = beatmapConfig.PlaybackRate.Value;
+                if (beatmapConfig.PlayUseTempo != null) exist.PlayUseTempo = beatmapConfig.PlayUseTempo.Value;
+                if (beatmapConfig.LyricOffset != null) exist.LyricOffset = beatmapConfig.LyricOffset.Value;
+                if (beatmapConfig.ForceLyricId != null) exist.ForceLyricId = beatmapConfig.ForceLyricId;
+            }
 
-            return new PaginationQueryResult<Beatmap>(result, count);
+            await SaveChangesAsync();
         }
 
-        public async Task<PaginationQueryResult<BeatmapExport>> GetExportList(
-            int page = 0,
-            int countPerPage = 50,
-            BeatmapOrderOptions options = BeatmapOrderOptions.UpdateTime)
-        {
-            var list = Exports.AsNoTracking();
-            var queryable = options switch
-            {
-                BeatmapOrderOptions.UpdateTime => list.OrderByDescending(k => k.CreateTime),
-                _ => throw new ArgumentOutOfRangeException(nameof(options), options, null)
-            };
+        #endregion
 
-            var count = await queryable.CountAsync();
-            var collection = queryable
-                .Include(k => k.Beatmap);
-
-            var result = await collection
-                .Skip(page * countPerPage)
-                .Take(countPerPage)
-                .ToListAsync();
-
-            return new PaginationQueryResult<BeatmapExport>(result, count);
-        }
+        #region Collection
 
         public async Task<List<Collection>> GetCollections()
         {
@@ -124,17 +207,48 @@ namespace Milky.OsuPlayer.Data
                 .ToListAsync();
         }
 
-        public async Task<List<Beatmap>> GetBeatmapFromCollection(Collection collection)
+        public async Task<PaginationQueryResult<Beatmap>> GetBeatmapsFromCollection(Collection collection,
+            int page = 0,
+            int countPerPage = 50,
+            BeatmapOrderOptions options = BeatmapOrderOptions.CreateTime)
         {
-            collection = await Collections
-                .AsNoTracking()
-                .Include(k => k.Beatmaps)
-                .FirstOrDefaultAsync(k => k.Id == collection.Id);
+            if (collection.Id == Guid.Empty)
+            {
+                Console.WriteLine("No collection found.");
+                return new PaginationQueryResult<Beatmap>(new List<Beatmap>(), 0);
+            }
 
-            return collection.Beatmaps;
+            collection = await Collections.FindAsync(collection.Id);
+            if (collection == null)
+            {
+                Console.WriteLine("No collection found.");
+                return new PaginationQueryResult<Beatmap>(new List<Beatmap>(), 0);
+            }
+
+            var relations = Relations
+                .AsNoTracking()
+                .Where(k => k.CollectionId == collection.Id);
+
+            var beatmaps = relations.Join(Beatmaps, k => k.BeatmapId, k => k.Id, (k, x) => x);
+
+            var count = await beatmaps.CountAsync();
+
+            var enumerable = options switch
+            {
+                BeatmapOrderOptions.UpdateTime => beatmaps.OrderByDescending(k => k.UpdateTime),
+                BeatmapOrderOptions.CreateTime => beatmaps.OrderByDescending(k => k.CreateTime),
+                _ => throw new ArgumentOutOfRangeException(nameof(options), options, null)
+            };
+
+            var result = await enumerable
+                .Skip(page * countPerPage)
+                .Take(countPerPage)
+                .ToListAsync();
+
+            return new PaginationQueryResult<Beatmap>(result, count);
         }
 
-        public async Task<List<Collection>> GetCollectionsByMap(Beatmap beatmap)
+        public async Task<List<Collection>> GetCollectionsByBeatmap(Beatmap beatmap)
         {
             beatmap = await Beatmaps
                 .AsNoTracking()
@@ -184,7 +298,7 @@ namespace Milky.OsuPlayer.Data
         {
             if (beatmap.IsTemporary)
             {
-                Logger.Debug("需确认加入自定义目录后才可继续");
+                Logger.Warn("需确认加入自定义目录后才可继续");
                 return;
             }
 
@@ -199,53 +313,44 @@ namespace Milky.OsuPlayer.Data
             return await Collections.FindAsync(id);
         }
 
-        public async Task AddMapsToCollection(IList<Beatmap> beatmaps, Collection collection)
+        public async Task AddBeatmapsToCollection(IList<Beatmap> beatmaps, Collection collection)
         {
             if (beatmaps.Count < 1) return;
 
-            var maps = beatmaps.Where(k => !k.IsMapTemporary);
+            var maps = beatmaps.Where(k => !k.IsTemporary);
             collection = await Collections.FindAsync(collection.Id);
             collection.Beatmaps.AddRange(maps);
 
             await SaveChangesAsync();
         }
 
-        /// <summary>
-        /// ignore null columns
-        /// </summary>
-        /// <param name="beatmapConfig"></param>
-        /// <returns></returns>
-        public async Task AddOrUpdateBeatmapConfig(BeatmapConfig beatmapConfig)
+        #endregion
+
+        #region Recent
+
+        public async Task<PaginationQueryResult<Beatmap>> GetRecentList(
+            int page = 0,
+            int countPerPage = 50,
+            BeatmapOrderOptions options = BeatmapOrderOptions.UpdateTime)
         {
-            if (beatmapConfig.BeatmapId == Guid.Empty)
+            var list = RecentList.AsNoTracking();
+            var queryable = options switch
             {
-                Console.WriteLine("No beatmap found.");
-                return;
-            }
+                BeatmapOrderOptions.UpdateTime => list.OrderByDescending(k => k.UpdateTime),
+                _ => throw new ArgumentOutOfRangeException(nameof(options), options, null)
+            };
 
-            var beatmap = await Beatmaps.FindAsync(beatmapConfig.BeatmapId);
-            if (beatmap == null)
-            {
-                Console.WriteLine("No beatmap found.");
-            }
+            var count = await queryable.CountAsync();
+            var collection = queryable
+                .Include(k => k.Beatmap);
 
-            var exist = await BeatmapConfigs.FindAsync(beatmapConfig.Id);
-            if (exist == null)
-                BeatmapConfigs.Add(beatmapConfig);
-            else
-            {
-                if (beatmapConfig.MainVolume != null) exist.MainVolume = beatmapConfig.MainVolume.Value;
-                if (beatmapConfig.MusicVolume != null) exist.MusicVolume = beatmapConfig.MusicVolume.Value;
-                if (beatmapConfig.HitsoundVolume != null) exist.HitsoundVolume = beatmapConfig.HitsoundVolume.Value;
-                if (beatmapConfig.SampleVolume != null) exist.SampleVolume = beatmapConfig.SampleVolume.Value;
-                if (beatmapConfig.Offset != null) exist.Offset = beatmapConfig.Offset.Value;
-                if (beatmapConfig.PlaybackRate != null) exist.PlaybackRate = beatmapConfig.PlaybackRate.Value;
-                if (beatmapConfig.PlayUseTempo != null) exist.PlayUseTempo = beatmapConfig.PlayUseTempo.Value;
-                if (beatmapConfig.LyricOffset != null) exist.LyricOffset = beatmapConfig.LyricOffset.Value;
-                if (beatmapConfig.ForceLyricId != null) exist.ForceLyricId = beatmapConfig.ForceLyricId;
-            }
+            var result = await collection
+                .Skip(page * countPerPage)
+                .Take(countPerPage)
+                .Select(k => k.Beatmap)
+                .ToListAsync();
 
-            await SaveChangesAsync();
+            return new PaginationQueryResult<Beatmap>(result, count);
         }
 
         public async Task AddOrUpdateBeatmapToRecent(Beatmap beatmap)
@@ -281,9 +386,37 @@ namespace Milky.OsuPlayer.Data
             await SaveChangesAsync();
         }
 
-        public async Task AddOrUpdateExportByBeatmap(BeatmapExport export)
+        #endregion
+
+        #region Export
+
+        public async Task<PaginationQueryResult<BeatmapExport>> GetExportList(
+            int page = 0,
+            int countPerPage = 50,
+            BeatmapOrderOptions options = BeatmapOrderOptions.UpdateTime)
         {
-            if (export.BeatmapId == Guid.Empty)
+            var list = Exports.AsNoTracking();
+            var queryable = options switch
+            {
+                BeatmapOrderOptions.UpdateTime => list.OrderByDescending(k => k.CreateTime),
+                _ => throw new ArgumentOutOfRangeException(nameof(options), options, null)
+            };
+
+            var count = await queryable.CountAsync();
+            var collection = queryable
+                .Include(k => k.Beatmap);
+
+            var result = await collection
+                .Skip(page * countPerPage)
+                .Take(countPerPage)
+                .ToListAsync();
+
+            return new PaginationQueryResult<BeatmapExport>(result, count);
+        }
+
+        public async Task AddOrUpdateExport(BeatmapExport export)
+        {
+            if (export.BeatmapId == 0)
             {
                 Console.WriteLine("No beatmap found.");
                 return;
@@ -293,6 +426,7 @@ namespace Milky.OsuPlayer.Data
             if (beatmap == null)
             {
                 Console.WriteLine("No beatmap found.");
+                return;
             }
 
             var exist = await Exports.FindAsync(export.Id);
@@ -317,6 +451,10 @@ namespace Milky.OsuPlayer.Data
             await SaveChangesAsync();
         }
 
+        #endregion
+
+        #region Thumb
+
         public async Task<BeatmapThumb> GetThumb(Beatmap beatmap)
         {
             var thumb = await Thumbs
@@ -337,9 +475,13 @@ namespace Milky.OsuPlayer.Data
             await SaveChangesAsync();
         }
 
+        #endregion
+
+        #region Storyboard
+
         public async Task AddOrUpdateStoryboardByBeatmap(BeatmapStoryboard storyboard)
         {
-            if (storyboard.BeatmapId == Guid.Empty)
+            if (storyboard.BeatmapId == 0)
             {
                 Console.WriteLine("No beatmap found.");
                 return;
@@ -364,11 +506,59 @@ namespace Milky.OsuPlayer.Data
 
             await SaveChangesAsync();
         }
-    }
 
-    public enum BeatmapOrderOptions
-    {
-        UpdateTime
+        #endregion
+
+        private static string GetKeywordQueryAndArgs(string keywordStr, ref List<SqliteParameter> sqliteParameters)
+        {
+            if (string.IsNullOrWhiteSpace(keywordStr))
+            {
+                return "1=1";
+            }
+
+            var keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            sqliteParameters ??= new List<SqliteParameter>();
+
+            var sb = new StringBuilder();
+            for (var i = 0; i < keywords.Length; i++)
+            {
+                var keyword = keywords[i];
+                var postfix = $" like @keyword{i} ";
+                sb.AppendLine("(")
+                    .AppendLine($" artist {postfix} OR ")
+                    .AppendLine($" artistU {postfix} OR ")
+                    .AppendLine($" title {postfix} OR ")
+                    .AppendLine($" titleU {postfix} OR ")
+                    .AppendLine($" tags {postfix} OR ")
+                    .AppendLine($" source {postfix} OR ")
+                    .AppendLine($" creator {postfix} OR ")
+                    .AppendLine($" version {postfix} ")
+                    .AppendLine(" ) ");
+
+                sqliteParameters.Add(new SqliteParameter($"keyword{i}", $"%{keyword}%"));
+                if (i != keywords.Length - 1)
+                {
+                    sb.AppendLine(" AND ");
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        private static string GetOrderAndTakeQueryAndArgs(BeatmapOrderOptions beatmapOrderOptions, int startIndex, int count)
+        {
+            string orderBy = beatmapOrderOptions switch
+            {
+                BeatmapOrderOptions.Title => " ORDER BY titleU, title ",
+                BeatmapOrderOptions.CreateTime => " ORDER BY CreateTime DESC ",
+                BeatmapOrderOptions.UpdateTime => " ORDER BY UpdateTime DESC ",
+                BeatmapOrderOptions.Artist => " ORDER BY artistU, artist ",
+                _ => throw new ArgumentOutOfRangeException(nameof(beatmapOrderOptions), beatmapOrderOptions, null)
+            };
+
+            string limit = $" LIMIT {startIndex}, {count} ";
+            return orderBy + limit;
+        }
     }
 
     public class PaginationQueryResult<T> where T : class

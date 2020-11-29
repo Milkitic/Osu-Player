@@ -6,6 +6,7 @@ using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.Generic;
+using BeatmapOrderOptions = Milky.OsuPlayer.Shared.Models.BeatmapOrderOptions;
 
 namespace Milky.OsuPlayer.Utils
 {
@@ -62,12 +63,12 @@ namespace Milky.OsuPlayer.Utils
             }
         }
 
-        public List<Beatmap> SearchBeatmapByOptions(string searchText, BeatmapSortMode sortMode, int startIndex,
+        public List<Beatmap> SearchBeatmapByOptions(string searchText, BeatmapOrderOptions orderOptions, int startIndex,
             int count)
         {
             try
             {
-                return _dbOperator.SearchBeatmapByOptions(searchText, sortMode, startIndex, count);
+                return _dbOperator.SearchBeatmapByOptions(searchText, orderOptions, startIndex, count);
             }
             catch (Exception ex)
             {

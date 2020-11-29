@@ -134,7 +134,7 @@ namespace Milky.OsuPlayer.ViewModels
             //    return;
 
             //SortEnum sortEnum = (SortEnum)cbSortType.SelectedItem;
-            var sortMode = BeatmapSortMode.Artist;
+            var sortMode = BeatmapOrderOptions.Artist;
             _querySw.Restart();
 
             lock (QueryLock)
@@ -151,7 +151,7 @@ namespace Milky.OsuPlayer.ViewModels
                 _querySw.Stop();
 
                 SearchedDbMaps = _safeDbOperator
-                    .SearchBeatmapByOptions(SearchText, BeatmapSortMode.Artist, startIndex, int.MaxValue);
+                    .SearchBeatmapByOptions(SearchText, BeatmapOrderOptions.Artist, startIndex, int.MaxValue);
 
                 List<BeatmapDataModel> sorted = SearchedDbMaps
                     .ToDataModelList(true);
