@@ -53,12 +53,12 @@ namespace Milky.OsuPlayer.UserControls
     public partial class DiffSelectControl : UserControl
     {
         private readonly DiffSelectPageViewModel _viewModel;
-        public DiffSelectControl(IEnumerable<Beatmap> entries, Action<Beatmap, CallbackObj> onSelect)
+        public DiffSelectControl(IEnumerable<Beatmap> beatmaps, Action<Beatmap, CallbackObj> onSelect)
         {
             InitializeComponent();
 
             _viewModel = (DiffSelectPageViewModel)DataContext;
-            _viewModel.Entries = new ObservableCollection<Beatmap>(entries.OrderBy(k => k.GameMode));
+            _viewModel.Entries = new ObservableCollection<Beatmap>(beatmaps.OrderBy(k => k.GameMode));
             _viewModel.Callback = onSelect;
         }
     }

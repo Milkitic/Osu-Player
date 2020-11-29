@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Common;
+﻿using System.Collections.ObjectModel;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
@@ -20,13 +21,12 @@ namespace Milky.OsuPlayer.ViewModels
     public class CollectionPageViewModel : VmBase
     {
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
-        private readonly SafeDbOperator _safeDbOperator = new SafeDbOperator();
 
-        private NumberableObservableCollection<BeatmapDataModel> _beatmaps;
-        private NumberableObservableCollection<BeatmapDataModel> _displayedBeatmaps;
+        private ObservableCollection<Beatmap> _beatmaps;
+        private ObservableCollection<Beatmap> _displayedBeatmaps;
         private Collection _collectionInfo;
 
-        public NumberableObservableCollection<BeatmapDataModel> Beatmaps
+        public ObservableCollection<Beatmap> Beatmaps
         {
             get => _beatmaps;
             set
@@ -36,7 +36,7 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public NumberableObservableCollection<BeatmapDataModel> DisplayedBeatmaps
+        public ObservableCollection<Beatmap> DisplayedBeatmaps
         {
             get => _displayedBeatmaps;
             set

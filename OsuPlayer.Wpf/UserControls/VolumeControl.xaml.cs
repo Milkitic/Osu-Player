@@ -34,14 +34,14 @@ namespace Milky.OsuPlayer.UserControls
         {
             if (_controller != null)
             {
-                Offset.Value = _controller.PlayList.CurrentInfo?.BeatmapSettings?.Offset ?? 0;
+                Offset.Value = _controller.PlayList.CurrentInfo?.BeatmapConfig?.Offset ?? 0;
                 _controller.LoadFinished += Controller_LoadFinished;
             }
         }
 
         private void Controller_LoadFinished(BeatmapContext bc, System.Threading.CancellationToken arg2)
         {
-            Offset.Value = bc.BeatmapSettings.Offset;
+            Offset.Value = bc.BeatmapConfig.Offset;
         }
 
         private void MasterVolume_DragComplete(object sender, DragCompletedEventArgs e)

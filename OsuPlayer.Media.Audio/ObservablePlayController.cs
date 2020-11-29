@@ -70,7 +70,6 @@ namespace Milky.OsuPlayer.Media.Audio
         private OsuMixPlayer _player;
         private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
         private CancellationTokenSource _cts = new CancellationTokenSource();
-        private readonly AppDbOperator _appDbOperator = new AppDbOperator();
         private bool _isFileLoading;
 
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
@@ -97,7 +96,7 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
-        public async Task PlayNewAsync([CanBeNull]Beatmap beatmap, bool playInstantly = true)
+        public async Task PlayNewAsync([CanBeNull] Beatmap beatmap, bool playInstantly = true)
         {
             if (beatmap is null) return;
             PlayList.AddOrSwitchTo(beatmap);
@@ -132,8 +131,12 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 context.OsuFile = osuFile;
 
-                var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
-                Beatmap trueBeatmap = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
+                var beatmap = BeatmapConvertExtension.ParseFromOSharp(osuFile);
+
+                Beatmap trueBeatmap;
+                await using (var dbContext = new ApplicationDbContext())
+                    trueBeatmap = await dbContext.Beatmaps.FindAsync(beatmap.Id);
+
                 if (trueBeatmap == null)
                 {
                     trueBeatmap = beatmap;
@@ -205,9 +208,10 @@ namespace Milky.OsuPlayer.Media.Audio
                     context.OsuFile = osuFile;
                 }
 
-                var album = _appDbOperator.GetCollectionsByMap(context.BeatmapSettings);
+                await using var dbContext = new ApplicationDbContext();
+                var album = await dbContext.GetCollectionsByBeatmap(context.BeatmapConfig);
 
-                bool isFavorite = album != null && album.Count > 0 && album.Any(k => k.LockedBool);
+                bool isFavorite = album.Any(k => k.IsLocked);
                 var metadata = beatmapDetail.Metadata;
                 metadata.IsFavorite = isFavorite;
 
@@ -260,7 +264,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 Player.PlayStatusChanged += Player_PlayStatusChanged;
                 Player.PositionUpdated += Player_PositionUpdated;
                 await Player.Initialize().ConfigureAwait(false); //700 ms
-                Player.ManualOffset = context.BeatmapSettings.Offset;
+                Player.ManualOffset = context.BeatmapConfig.Offset;
 
                 Execute.OnUiThread(() => MusicLoaded?.Invoke(context, _cts.Token));
 
@@ -323,7 +327,8 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             finally
             {
-                _appDbOperator.UpdateMap(context.Beatmap.GetIdentity());
+                await using var dbContext = new ApplicationDbContext();
+                await dbContext.AddOrUpdateBeatmapToRecent(context.Beatmap);
             }
         }
 

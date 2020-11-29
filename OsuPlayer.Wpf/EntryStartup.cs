@@ -10,7 +10,9 @@ using NLog.Config;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.EntityFrameworkCore;
 
 namespace Milky.OsuPlayer
 {
@@ -73,9 +75,10 @@ namespace Milky.OsuPlayer
             return true;
         }
 
-        private static void InitLocalDb()
+        private static async Task InitLocalDb()
         {
-            AppDbOperator.ValidateDb();
+            await using var dbContext = new ApplicationDbContext();
+            dbContext.Database.Migrate();
 
             var appDbOperator = new AppDbOperator();
             var defCol = appDbOperator.GetCollections();

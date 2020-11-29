@@ -10,10 +10,9 @@ using OSharpGameMode = OSharp.Beatmap.Sections.GamePlay.GameMode;
 
 namespace Milky.OsuPlayer.Data
 {
-    public static class BeatmapExtension
+    public static class BeatmapConvertExtension
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private static readonly ConcurrentRandom Random = new ConcurrentRandom();
 
         public static Beatmap UpdateFromHolly(this Beatmap beatmap, BeatmapEntry entry)
         {
@@ -88,6 +87,8 @@ namespace Milky.OsuPlayer.Data
             //FolderName = osuFile.FolderName;
             beatmap.AudioFileName = osuFile.General.AudioFilename;
 
+            beatmap.Id = HashCode.Combine(beatmap.FolderNameOrPath, beatmap.Version, beatmap.InOwnDb);
+
             return beatmap;
         }
 
@@ -99,38 +100,6 @@ namespace Milky.OsuPlayer.Data
         public static OSharpGameMode ParseHollyToOSharp(this osu.Shared.GameMode gameMode)
         {
             return (OSharpGameMode)(int)gameMode;
-        }
-
-        public static Beatmap GetHighestDiff(this IEnumerable<Beatmap> enumerable)
-        {
-            var dictionary = enumerable.GroupBy(k => k.GameMode).ToDictionary(k => k.Key, k => k.ToList());
-            if (dictionary.ContainsKey(OSharpGameMode.Circle))
-            {
-                return dictionary[OSharpGameMode.Circle]
-                    .Aggregate((i1, i2) => i1.DiffSrNoneStandard > i2.DiffSrNoneStandard ? i1 : i2);
-            }
-
-            if (dictionary.ContainsKey(OSharpGameMode.Mania))
-            {
-                return dictionary[OSharpGameMode.Mania]
-                    .Aggregate((i1, i2) => i1.DiffSrNoneMania > i2.DiffSrNoneMania ? i1 : i2);
-            }
-
-            if (dictionary.ContainsKey(OSharpGameMode.Catch))
-            {
-                return dictionary[OSharpGameMode.Catch]
-                    .Aggregate((i1, i2) => i1.DiffSrNoneCtB > i2.DiffSrNoneCtB ? i1 : i2);
-            }
-
-            if (dictionary.ContainsKey(OSharpGameMode.Taiko))
-            {
-                return dictionary[OSharpGameMode.Taiko]
-                    .Aggregate((i1, i2) => i1.DiffSrNoneTaiko > i2.DiffSrNoneTaiko ? i1 : i2);
-            }
-
-            Logger.Warn(@"Get highest difficulty failed.");
-            var randKey = dictionary.Keys.ToList()[Random.Next(dictionary.Keys.Count)];
-            return dictionary[randKey][dictionary[randKey].Count];
         }
     }
 }

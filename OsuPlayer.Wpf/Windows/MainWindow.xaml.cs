@@ -23,6 +23,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Milky.OsuPlayer.Data;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -39,8 +40,6 @@ namespace Milky.OsuPlayer.Windows
         private bool _forceExit = false;
 
         private WindowState _lastState;
-
-        private readonly SafeDbOperator _safeDbOperator = new SafeDbOperator();
 
         private Task _searchLyricTask;
 
@@ -110,10 +109,10 @@ namespace Milky.OsuPlayer.Windows
         /// <summary>
         /// Update collections in the navigation bar.
         /// </summary>
-        public void UpdateCollections()
+        public async Task UpdateCollections()
         {
-            var list = _safeDbOperator.GetCollections();
-            list.Reverse();
+            await using var dbContext = new ApplicationDbContext();
+            var list = await dbContext.GetCollections();
             ViewModel.Collection = new ObservableCollection<Collection>(list);
         }
 
@@ -218,7 +217,7 @@ namespace Milky.OsuPlayer.Windows
                 }
             }
 
-            UpdateCollections();
+            await UpdateCollections();
 
             _controller.LoadFinished += Controller_LoadFinished;
 
@@ -328,12 +327,12 @@ namespace Milky.OsuPlayer.Windows
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
         {
             var addCollectionControl = new AddCollectionControl();
-            FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, (obj, args) =>
+            FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, async (obj, args) =>
             {
                 if (!_safeDbOperator.TryAddCollection(addCollectionControl.CollectionName.Text))
                     return;
 
-                UpdateCollections();
+                await UpdateCollections();
             });
         }
 

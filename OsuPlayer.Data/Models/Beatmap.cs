@@ -64,6 +64,18 @@ namespace Milky.OsuPlayer.Data.Models
         public string FolderNameOrPath { get; set; }
         public string AudioFileName { get; set; }
         public bool InOwnDb { get; set; }
+        
+        public Guid? BeatmapConfigId { get; set; }
+        public BeatmapConfig BeatmapConfig { get; set; }
+
+        public Guid? BeatmapExportId { get; set; }
+        public BeatmapExport BeatmapExport { get; set; }
+
+        public Guid? BeatmapStoryboardId { get; set; }
+        public BeatmapStoryboard BeatmapStoryboard { get; set; }
+
+        public Guid? BeatmapThumbId { get; set; }
+        public BeatmapThumb BeatmapThumb { get; set; }
 
         public List<Collection> Collections { get; set; }
 

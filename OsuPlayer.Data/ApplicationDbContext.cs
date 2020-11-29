@@ -34,27 +34,34 @@ namespace Milky.OsuPlayer.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Collection>().HasData(new Collection
+            {
+                IsLocked = true,
+                Name = "Favorite"
+            });
         }
 
         #region Beatmap
 
-        public async Task<List<Beatmap>> SearchBeatmapByOptions(
+        public async Task<PaginationQueryResult<Beatmap>> SearchBeatmapByOptions(
             string searchText,
             BeatmapOrderOptions beatmapOrderOptions,
-            int startIndex, int count)
+            int page,
+            int countPerPage)
         {
             var sqliteParameters = new List<SqliteParameter>();
             var command = " SELECT * FROM beatmap WHERE ";
             var keywordSql = GetKeywordQueryAndArgs(searchText, ref sqliteParameters);
-            var sort = GetOrderAndTakeQueryAndArgs(beatmapOrderOptions, startIndex, count);
+            var sort = GetOrderAndTakeQueryAndArgs(beatmapOrderOptions, page, countPerPage);
             var sw = Stopwatch.StartNew();
             try
             {
+
+                var totalCount = await Beatmaps.FromSqlRaw(command + keywordSql).CountAsync();
                 var beatmaps = await Beatmaps
                     .FromSqlRaw(command + keywordSql + sort, sqliteParameters.Cast<object>().ToArray())
                     .ToListAsync();
-                return beatmaps;
+                return new PaginationQueryResult<Beatmap>(beatmaps, totalCount);
             }
             catch (Exception ex)
             {
@@ -85,7 +92,7 @@ namespace Milky.OsuPlayer.Data
         public async Task SyncBeatmapsFromHoLLy(IEnumerable<BeatmapEntry> entry)
         {
             var all = Beatmaps;
-            var allBeatmaps = entry.Select(BeatmapExtension.ParseFromHolly).ToList();
+            var allBeatmaps = entry.Select(BeatmapConvertExtension.ParseFromHolly).ToList();
             var allIds = allBeatmaps.Select(k => k.Id).ToList();
 
             var nonExistAnyMore = all.Where(k => !allIds.Contains(k.Id));
@@ -101,7 +108,7 @@ namespace Milky.OsuPlayer.Data
         }
 
 
-        public async Task AddNewMaps(IEnumerable<Beatmap> beatmaps)
+        public async Task AddNewBeatmaps(IEnumerable<Beatmap> beatmaps)
         {
             Beatmaps.AddRange(beatmaps);
             await SaveChangesAsync();
@@ -294,6 +301,15 @@ namespace Milky.OsuPlayer.Data
             await SaveChangesAsync();
         }
 
+        public async Task DeleteBeatmapsFromCollection(IEnumerable<Beatmap> beatmaps, Collection collection)
+        {
+            var ids = beatmaps.Select(k => k.Id).ToList();
+
+            var relations = Relations
+                .Where(k => k.CollectionId == collection.Id && ids.Contains(k.BeatmapId));
+            Relations.RemoveRange(relations);
+            await SaveChangesAsync();
+        }
         public async Task DeleteBeatmapFromCollection(Beatmap beatmap, Collection collection)
         {
             if (beatmap.IsTemporary)
@@ -464,6 +480,16 @@ namespace Milky.OsuPlayer.Data
             return thumb;
         }
 
+
+        public async Task<List<Beatmap>> FillBeatmapThumbs(List<Beatmap> dbMaps)
+        {
+            var allIds = dbMaps.Select(k => k.Id).ToList();
+            var withThumbs = await Beatmaps
+                .Where(k => allIds.Contains(k.Id))
+                .Include(k => k.BeatmapThumb)
+                .ToListAsync();
+            return withThumbs;
+        }
         public async Task AddOrUpdateThumbPath(Beatmap beatmap, string path)
         {
             var thumb = await Thumbs.FirstOrDefaultAsync(k => k.BeatmapId == beatmap.Id);
@@ -545,7 +571,7 @@ namespace Milky.OsuPlayer.Data
             return sb.ToString();
         }
 
-        private static string GetOrderAndTakeQueryAndArgs(BeatmapOrderOptions beatmapOrderOptions, int startIndex, int count)
+        private static string GetOrderAndTakeQueryAndArgs(BeatmapOrderOptions beatmapOrderOptions, int page, int countPerPage)
         {
             string orderBy = beatmapOrderOptions switch
             {
@@ -556,20 +582,8 @@ namespace Milky.OsuPlayer.Data
                 _ => throw new ArgumentOutOfRangeException(nameof(beatmapOrderOptions), beatmapOrderOptions, null)
             };
 
-            string limit = $" LIMIT {startIndex}, {count} ";
+            string limit = $" LIMIT {page * countPerPage}, {countPerPage} ";
             return orderBy + limit;
         }
-    }
-
-    public class PaginationQueryResult<T> where T : class
-    {
-        public PaginationQueryResult(List<T> collection, int count)
-        {
-            Collection = collection;
-            Count = count;
-        }
-
-        public List<T> Collection { get; set; }
-        public int Count { get; set; }
     }
 }

@@ -45,12 +45,12 @@ namespace Milky.OsuPlayer.UserControls
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
         {
             var addCollectionControl = new AddCollectionControl();
-            _overlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, (obj, args) =>
+            _overlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, async (obj, args) =>
             {
                 if (!SafeDbOperator.TryAddCollection(addCollectionControl.CollectionName.Text))
                     return;
 
-                WindowEx.GetCurrentFirst<MainWindow>().UpdateCollections();
+                await WindowEx.GetCurrentFirst<MainWindow>().UpdateCollections();
                 RefreshList();
             });
         }
@@ -66,7 +66,7 @@ namespace Milky.OsuPlayer.UserControls
                 CollectionViewModel.CopyFrom(SafeDbOperator.GetCollections().OrderByDescending(k => k.CreateTime)));
         }
 
-        public static async Task<bool> AddToCollectionAsync([NotNull]Collection col, IList<Beatmap> entries)
+        public static async Task<bool> AddToCollectionAsync([NotNull] Collection col, IList<Beatmap> entries)
         {
             var controller = Service.Get<ObservablePlayController>();
             var appDbOperator = new AppDbOperator();
