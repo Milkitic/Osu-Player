@@ -45,7 +45,11 @@ namespace Milky.OsuPlayer
             }
             else
             {
-                setHotKey.Callback = callback;
+                if (setHotKey.Key != Keys.None) 
+                { 
+                    setHotKey.Callback = callback; 
+                }
+                
             }
         }
 
