@@ -59,8 +59,14 @@ Note the file name format should be like `[locale-name].xaml` which can be found
 * Core with database, settings and other logics: OsuPlayer.Common
 * Audio playing: OsuPlayer.Media.Audio
 
+如果你保持了高活跃度，我们（目前仅我）将会邀请你加入成为仓库的成员，当然还请加入QQ群764558401，便于讨论。此外还有Jetbrain开源许可证等福利。
+
 Welcome to open pull requests if you have some ideas or just want to join in.
 
 If you have a destructive change (framework, lib replacement, etc), please contact me first.
 
 Please open PR and merge to develop branch.
+
+## Speicial Thanks
+<img src="https://account.jetbrains.com/static/images/jetbrains-logo-inv.svg" data-canonical-src="https://account.jetbrains.com/static/images/jetbrains-logo-inv.svg" width="128" height="128" />
+Non-commercial open source license
