@@ -49,6 +49,7 @@ namespace Milky.OsuPlayer
                 { 
                     setHotKey.Callback = callback; 
                 }
+                
             }
         }
 
