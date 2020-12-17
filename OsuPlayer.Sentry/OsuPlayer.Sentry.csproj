@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Sentry" Version="2.1.6" />
+    <PackageReference Include="NLog" Version="4.7.6" />
+    <PackageReference Include="Sentry.NLog" Version="2.1.6" />
+  </ItemGroup>
+
+</Project>

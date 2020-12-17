@@ -8,6 +8,8 @@ using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using NLog;
+using OsuPlayer.Sentry;
+using Sentry;
 using System;
 using System.Windows;
 
@@ -18,9 +20,16 @@ namespace Milky.OsuPlayer
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            LogManager.LoadConfiguration("NLog.config");
+            SentryNLog.Init(LogManager.Configuration);
+        }
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
+            DispatcherUnhandledException += Application_DispatcherUnhandledException;
 
             EntryStartup.Startup();
 
