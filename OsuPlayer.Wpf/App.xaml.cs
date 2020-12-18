@@ -8,9 +8,12 @@ using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using NLog;
-using OsuPlayer.Sentry;
 using System;
 using System.Windows;
+
+#if !DEBUG
+using Milky.OsuPlayer.Sentry;
+#endif
 
 namespace Milky.OsuPlayer
 {
@@ -24,7 +27,6 @@ namespace Milky.OsuPlayer
         {
             LogManager.LoadConfiguration("NLog.config");
             SentryNLog.Init(LogManager.Configuration);
-            LogManager.ReconfigExistingLoggers();
         }
 #endif
 

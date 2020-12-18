@@ -3,7 +3,7 @@ using NLog.Config;
 using Sentry;
 using System.Reflection;
 
-namespace OsuPlayer.Sentry
+namespace Milky.OsuPlayer.Sentry
 {
     public static partial class SentryNLog
     {
@@ -41,6 +41,7 @@ namespace OsuPlayer.Sentry
                 o.ShutdownTimeoutSeconds = 5;
                 o.IncludeEventDataOnBreadcrumbs = true;
             });
+            LogManager.ReconfigExistingLoggers();
         }
     }
 }
