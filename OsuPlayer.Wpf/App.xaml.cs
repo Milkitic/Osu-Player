@@ -74,7 +74,7 @@ namespace Milky.OsuPlayer
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             var logger = LogManager.GetCurrentClassLogger();
-            logger.Error(e.Exception, "DispatcherUnhandledException");
+            logger.Fatal(e.Exception, "DispatcherUnhandledException");
 
             var exceptionWindow = new ExceptionWindow(e.Exception, true);
             var val = exceptionWindow.ShowDialog();

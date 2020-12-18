@@ -31,7 +31,7 @@ namespace Milky.OsuPlayer.Sentry
                 // Send the logger name as a tag
                 o.AddTag("logger", "${logger}");
 
-                o.Environment = "Production";
+                o.Environment = "PRODUCTION";
                 o.AttachStacktrace = true;
                 o.SendDefaultPii = true;
                 o.ShutdownTimeoutSeconds = 5;
