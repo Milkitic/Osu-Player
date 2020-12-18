@@ -5,6 +5,7 @@ using Milky.OsuPlayer.Shared.Models;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ using Collection = Milky.OsuPlayer.Data.Models.Collection;
 
 namespace Milky.OsuPlayer.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : DbContextBase
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
@@ -36,7 +37,7 @@ namespace Milky.OsuPlayer.Data
         {
             modelBuilder.Entity<Collection>().HasData(new Collection
             {
-                IsLocked = true,
+                IsDefault = true,
                 Name = "Favorite"
             });
         }
@@ -89,10 +90,10 @@ namespace Milky.OsuPlayer.Data
         }
 
         // questionable
-        public async Task SyncBeatmapsFromHoLLy(IEnumerable<BeatmapEntry> entry)
+        public async Task SyncBeatmapsFromHoLLy(IEnumerable<BeatmapEntry> entries)
         {
             var all = Beatmaps;
-            var allBeatmaps = entry.Select(BeatmapConvertExtension.ParseFromHolly).ToList();
+            var allBeatmaps = entries.Select(BeatmapConvertExtension.ParseFromHolly).ToList();
             var allIds = allBeatmaps.Select(k => k.Id).ToList();
 
             var nonExistAnyMore = all.Where(k => !allIds.Contains(k.Id));
@@ -106,7 +107,6 @@ namespace Milky.OsuPlayer.Data
 
             await SaveChangesAsync();
         }
-
 
         public async Task AddNewBeatmaps(IEnumerable<Beatmap> beatmaps)
         {
@@ -171,7 +171,7 @@ namespace Milky.OsuPlayer.Data
         /// <returns></returns>
         public async Task AddOrUpdateBeatmapConfig(BeatmapConfig beatmapConfig)
         {
-            if (beatmapConfig.BeatmapId == 0)
+            if (string.IsNullOrEmpty(beatmapConfig.BeatmapId))
             {
                 Console.WriteLine("No beatmap found.");
                 return;
@@ -286,7 +286,7 @@ namespace Milky.OsuPlayer.Data
             {
                 Id = Guid.NewGuid(),
                 Name = name,
-                IsLocked = locked,
+                IsDefault = locked,
                 Index = maxIndex + 1
             };
 
@@ -329,6 +329,7 @@ namespace Milky.OsuPlayer.Data
             return await Collections.FindAsync(id);
         }
 
+        //todo: addorupdate
         public async Task AddBeatmapsToCollection(IList<Beatmap> beatmaps, Collection collection)
         {
             if (beatmaps.Count < 1) return;
@@ -403,6 +404,57 @@ namespace Milky.OsuPlayer.Data
         }
 
         #endregion
+        public async Task AddOrUpdateBeatmapToPlaylist(Beatmap beatmap)
+        {
+            if (beatmap.IsTemporary)
+                throw new Exception("The beatmap is temporary which can not be added to playlist.");
+            var map = await Playlist.FirstOrDefaultAsync(k => k.BeatmapId == beatmap.Id);
+            if (map == null)
+            {
+                Playlist.Add(new BeatmapCurrentPlay
+                {
+                    Id = Guid.NewGuid(),
+                    Beatmap = beatmap,
+                    PlayTime = DateTime.Now
+                });
+            }
+            else
+            {
+                map.PlayTime = DateTime.Now;
+            }
+
+            await SaveChangesAsync();
+        }
+
+        public async Task UpdateBeatmapsToPlaylist(IEnumerable<Beatmap> songList)
+        {
+            var requestIdDic = songList
+                .Where(k => k != null)
+                .Select((beatmap, index) => (index, beatmap))
+                .ToDictionary(k => k.beatmap.Id, k => k.index);
+            var requestId = requestIdDic.Keys.ToHashSet();
+
+            var nonExistAnyMore = Playlist.Where(k => !requestId.Contains(k.BeatmapId));
+            Playlist.RemoveRange(nonExistAnyMore);
+
+            var exists = await Playlist.Where(k => requestId.Contains(k.BeatmapId)).ToListAsync();
+            foreach (var beatmapCurrentPlay in exists)
+            {
+                beatmapCurrentPlay.Index = requestIdDic[beatmapCurrentPlay.BeatmapId];
+            }
+
+            Playlist.UpdateRange(exists);
+
+            var news = Playlist.Except(exists);
+            foreach (var beatmapCurrentPlay in news)
+            {
+                beatmapCurrentPlay.Index = requestIdDic[beatmapCurrentPlay.BeatmapId];
+            }
+
+            Playlist.AddRange(news);
+
+            await SaveChangesAsync();
+        }
 
         #region Export
 
@@ -432,7 +484,7 @@ namespace Milky.OsuPlayer.Data
 
         public async Task AddOrUpdateExport(BeatmapExport export)
         {
-            if (export.BeatmapId == 0)
+            if (string.IsNullOrEmpty(export.BeatmapId))
             {
                 Console.WriteLine("No beatmap found.");
                 return;
@@ -464,6 +516,12 @@ namespace Milky.OsuPlayer.Data
         public async Task RemoveExport(BeatmapExport export)
         {
             Exports.Remove(export);
+            await SaveChangesAsync();
+        }
+
+        public async Task RemoveExports(IEnumerable<BeatmapExport> exports)
+        {
+            Exports.RemoveRange(exports);
             await SaveChangesAsync();
         }
 

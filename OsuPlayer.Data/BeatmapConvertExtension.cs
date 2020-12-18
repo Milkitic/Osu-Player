@@ -45,7 +45,7 @@ namespace Milky.OsuPlayer.Data
             beatmap.FolderNameOrPath = entry.FolderName?.TrimEnd();
             beatmap.AudioFileName = entry.AudioFileName;
 
-            beatmap.Id = HashCode.Combine(beatmap.FolderNameOrPath, beatmap.Version, beatmap.InOwnDb);
+            beatmap.Id = $"!{beatmap.FolderNameOrPath}|{beatmap.Version}|{beatmap.InOwnDb}";
             return beatmap;
         }
 
@@ -87,7 +87,7 @@ namespace Milky.OsuPlayer.Data
             //FolderName = osuFile.FolderName;
             beatmap.AudioFileName = osuFile.General.AudioFilename;
 
-            beatmap.Id = HashCode.Combine(beatmap.FolderNameOrPath, beatmap.Version, beatmap.InOwnDb);
+            beatmap.Id = $"!{beatmap.FolderNameOrPath}|{beatmap.Version}|{beatmap.InOwnDb}";
 
             return beatmap;
         }

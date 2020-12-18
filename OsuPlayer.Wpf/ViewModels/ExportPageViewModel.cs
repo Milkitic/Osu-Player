@@ -1,20 +1,18 @@
-﻿using Milky.OsuPlayer.Common;
+﻿using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
-using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.Utils;
-using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -22,16 +20,26 @@ namespace Milky.OsuPlayer.ViewModels
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private string _exportPath;
-        private NumberableObservableCollection<BeatmapDataModel> _dataModelList;
-        private IEnumerable<Beatmap> _entries;
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
+        private ObservableCollection<OrderedModel<BeatmapExport>> _exportList;
+        private List<OrderedModel<BeatmapExport>> _selectedItems;
 
-        public NumberableObservableCollection<BeatmapDataModel> DataModelList
+        public ObservableCollection<OrderedModel<BeatmapExport>> ExportList
         {
-            get => _dataModelList;
+            get => _exportList;
             set
             {
-                _dataModelList = value;
+                _exportList = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public List<OrderedModel<BeatmapExport>> SelectedItems
+        {
+            get => _selectedItems;
+            set
+            {
+                if (Equals(value, _selectedItems)) return;
+                _selectedItems = value;
                 OnPropertyChanged();
             }
         }
@@ -50,9 +58,9 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(obj =>
+                return new DelegateCommand(async obj =>
                 {
-                    Execute.OnUiThread(InnerUpdate);
+                    await UpdateCollection();
                 });
             }
         }
@@ -75,8 +83,9 @@ namespace Milky.OsuPlayer.ViewModels
                                 Notification.Push(I18NUtil.GetString("err-dirNotFound"), I18NUtil.GetString("text-error"));
                             }
                             break;
-                        case BeatmapDataModel dataModel:
-                            Process.Start("Explorer", "/select," + dataModel.ExportFile);
+                        case OrderedModel<Beatmap> orderedModel:
+                            Process.Start("Explorer", "/select," + orderedModel.Model.BeatmapExport?.ExportPath);
+                            // todo: include
                             break;
                         default:
                             return;
@@ -91,23 +100,19 @@ namespace Milky.OsuPlayer.ViewModels
             {
                 return new DelegateCommand(async obj =>
                 {
-                    if (obj == null) return;
-                    var selected = ((System.Windows.Controls.ListView)obj).SelectedItems;
-                    var entries = ConvertToEntries(selected.Cast<BeatmapDataModel>());
-                    foreach (var entry in entries)
+                    if (SelectedItems == null) return;
+                    foreach (var orderedModel in SelectedItems)
                     {
-                        ExportPage.QueueEntry(entry);
+                        ExportPage.QueueBeatmap(orderedModel.Model.Beatmap);
                     }
 
-                    await Task.Run(() =>
+                    while (ExportPage.IsTaskBusy)
                     {
-                        while (ExportPage.IsTaskBusy)
-                        {
-                            Thread.Sleep(10);
-                            if (!ExportPage.HasTaskSuccess) continue;
-                            Execute.OnUiThread(InnerUpdate);
-                        }
-                    });
+                        await Task.Delay(10);
+                    }
+
+                    if (ExportPage.HasTaskSuccess)
+                        await UpdateCollection();
                 });
             }
         }
@@ -116,73 +121,58 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(obj =>
+                return new DelegateCommand(async obj =>
                 {
-                    if (obj == null) return;
-                    var selected = ((System.Windows.Controls.ListView)obj).SelectedItems;
-                    var dataModels = selected.Cast<BeatmapDataModel>();
+                    if (SelectedItems == null) return;
+                    await using var dbContext = new ApplicationDbContext();
 
-                    foreach (var dataModel in dataModels)
+                    foreach (var orderedModel in SelectedItems)
                     {
-                        if (File.Exists(dataModel.ExportFile))
+                        var export = orderedModel.Model;
+                        if (File.Exists(export.ExportPath))
                         {
-                            File.Delete(dataModel.ExportFile);
-                            var dir = new FileInfo(dataModel.ExportFile).Directory;
+                            File.Delete(export.ExportPath);
+                            var dir = new FileInfo(export.ExportPath).Directory;
                             if (dir.Exists && dir.GetFiles().Length == 0)
                                 dir.Delete();
                         }
-
-                        SafeDbOperator.TryAddMapExport(dataModel.GetIdentity(), null);
                     }
 
-                    Execute.OnUiThread(InnerUpdate);
+                    await dbContext.RemoveExports(SelectedItems.Select(k => k.Model));
+                    await UpdateCollection();
                 });
             }
         }
 
-        private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
+        private async Task UpdateCollection()
         {
-            return SafeDbOperator.GetBeatmapsFromFolder(dataModel.FolderNameOrPath)
-                .FirstOrDefault(k => k.Version == dataModel.Version);
-        }
-
-        private IEnumerable<Beatmap> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)
-        {
-            return dataModels.Select(ConvertToEntry);
-        }
-
-        private void InnerUpdate()
-        {
-            var maps = SafeDbOperator.GetExportedMaps();
-            List<(MapIdentity MapIdentity, string path, string time, string size)> list =
-                new List<(MapIdentity, string, string, string)>();
-            foreach (var map in maps)
+            await using var dbContext = new ApplicationDbContext();
+            var paginationQueryResult = await dbContext.GetExportList();
+            var exports = paginationQueryResult.Collection;
+            foreach (var export in exports)
             {
+                var map = export.Beatmap;
                 try
                 {
-                    var fi = new FileInfo(map.ExportFile);
-                    list.Add(!fi.Exists
-                        ? (map.GetIdentity(), map.ExportFile, "已从目录移除", "已从目录移除")
-                        : (map.GetIdentity(), map.ExportFile, fi.CreationTime.ToString("g"), SharedUtils.CountSize(fi.Length)));
+                    var fi = new FileInfo(export.ExportPath);
+                    if (fi.Exists)
+                    {
+                        export.IsValid = true;
+                        export.Size = fi.Length;
+                        export.CreationTime = fi.CreationTime;
+                    }
+                    else
+                    {
+                        export.IsValid = true;
+                    }
                 }
                 catch (Exception ex)
                 {
-                    list.Add((map.GetIdentity(), map.ExportFile, new DateTime().ToString("g"), "0 B"));
-                    Logger.Error(ex, "Error while updating view item: {0}", map.GetIdentity());
+                    Logger.Error(ex, "Error while updating view item: {0}", map);
                 }
             }
 
-            _entries = SafeDbOperator.GetBeatmapsByIdentifiable(maps);
-            var viewModels = _entries.ToDataModelList(true).ToList();
-            for (var i = 0; i < viewModels.Count; i++)
-            {
-                var sb = list.First(k => k.MapIdentity.Equals(viewModels[i].GetIdentity()));
-                viewModels[i].ExportFile = sb.path;
-                viewModels[i].FileSize = sb.size;
-                viewModels[i].ExportTime = sb.time;
-            }
-
-            DataModelList = new NumberableObservableCollection<BeatmapDataModel>(viewModels);
+            ExportList = new ObservableCollection<OrderedModel<BeatmapExport>>(exports.AsOrdered());
         }
     }
 }

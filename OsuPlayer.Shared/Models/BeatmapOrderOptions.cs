@@ -6,5 +6,6 @@
         Title,
         CreateTime,
         UpdateTime,
+        Index,
     }
 }

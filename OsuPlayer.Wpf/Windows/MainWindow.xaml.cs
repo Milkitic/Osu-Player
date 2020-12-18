@@ -1,7 +1,9 @@
-﻿using Milky.OsuPlayer.Common;
+﻿using Microsoft.EntityFrameworkCore;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Scanning;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
@@ -16,14 +18,12 @@ using Milky.OsuPlayer.UserControls;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using OSharp.Beatmap;
-using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using Milky.OsuPlayer.Data;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -259,8 +259,7 @@ namespace Milky.OsuPlayer.Windows
                         Hide();
                     else
                     {
-                        _forceExit = true;
-                        Close();
+                        ForceClose();
                     }
                 });
 
@@ -276,7 +275,12 @@ namespace Milky.OsuPlayer.Windows
                 return;
             }
 
-            if (_disposed) return;
+            if (_disposed)
+            {
+                Application.Current.Shutdown();
+                return;
+            }
+
             e.Cancel = true;
             GetCurrentFirst<MiniWindow>()?.Close();
             LyricWindow.Dispose();
@@ -302,25 +306,34 @@ namespace Milky.OsuPlayer.Windows
 
         private async void Animation_Loaded(object sender, RoutedEventArgs e)
         {
-            if (AppSettings.Default.CurrentMap == null || !AppSettings.Default.Play.Memory)
+            await using var appDbContext = new ApplicationDbContext();
+            var lastPlay = appDbContext.RecentList.LastOrDefault();
+            if (lastPlay == null || !AppSettings.Default.Play.Memory)
                 return;
 
             // 加至播放列表
-            var entries =
-                _safeDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList.Cast<IMapIdentifiable>());
+            var beatmaps = await appDbContext.Playlist
+                .OrderBy(k => k.Id)
+                .Include(k => k.Beatmap)
+                .Select(k => k.Beatmap)
+                .ToListAsync();
 
-            await _controller.PlayList.SetSongListAsync(entries, true, false, false);
+            var lastBeatmap = await appDbContext.Playlist
+                .OrderByDescending(k => k.PlayTime)
+                .Include(k => k.Beatmap)
+                .Select(k => k.Beatmap)
+                .FirstOrDefaultAsync();
+
+            await _controller.PlayList.SetSongListAsync(beatmaps, true, false, false);
 
             bool play = AppSettings.Default.Play.AutoPlay;
-            if (AppSettings.Default.CurrentMap.IsMapTemporary())
+            if (lastBeatmap.IsTemporary)
             {
-                await _controller.PlayNewAsync(AppSettings.Default.CurrentMap.Value.FolderNameOrPath, play);
+                await _controller.PlayNewAsync(lastBeatmap.FolderNameOrPath, play);
             }
             else
             {
-                var current = _safeDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
-                if (current == null) return;
-                await _controller.PlayNewAsync(current, play);
+                await _controller.PlayNewAsync(lastBeatmap, play);
             }
         }
 
@@ -329,9 +342,8 @@ namespace Milky.OsuPlayer.Windows
             var addCollectionControl = new AddCollectionControl();
             FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, async (obj, args) =>
             {
-                if (!_safeDbOperator.TryAddCollection(addCollectionControl.CollectionName.Text))
-                    return;
-
+                await using var dbContext = new ApplicationDbContext();
+                await dbContext.AddCollection(addCollectionControl.CollectionName.Text); //todo: exists
                 await UpdateCollections();
             });
         }
@@ -415,11 +427,9 @@ namespace Milky.OsuPlayer.Windows
         private void Controller_LikeClicked(object sender, RoutedEventArgs e)
         {
             if (_controller.PlayList.CurrentInfo == null) return;
-            var detail = _controller.PlayList.CurrentInfo.Beatmap;
-            var entry = _safeDbOperator.GetBeatmapByIdentifiable(detail.GetIdentity());
-            if (entry == null) return;
+            var beatmap = _controller.PlayList.CurrentInfo.Beatmap;
 
-            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
+            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(beatmap),
                 DialogOptionFactory.SelectCollectionOptions);
         }
 

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29006.145
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Wpf", "OsuPlayer.Wpf\OsuPlayer.Wpf.csproj", "{02773E4B-21FC-47DB-A7C1-BD096F325136}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Wpf", "OsuPlayer.Wpf\OsuPlayer.Wpf.csproj", "{02773E4B-21FC-47DB-A7C1-BD096F325136}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Media.Audio", "OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj", "{3CD240F8-DA65-44F0-AB58-D78F58109786}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Media.Audio", "OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj", "{3CD240F8-DA65-44F0-AB58-D78F58109786}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Common", "OsuPlayer.Common\OsuPlayer.Common.csproj", "{654D6521-43E1-48D2-BAEE-E694E38EF56D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Common", "OsuPlayer.Common\OsuPlayer.Common.csproj", "{654D6521-43E1-48D2-BAEE-E694E38EF56D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Media.Lyric", "OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj", "{33580E59-AA08-45EF-B79F-2F8FE2F539CC}"
 EndProject
@@ -21,13 +21,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OSharp", "OSharp", "{8743A6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{750A0C8F-B866-4D22-A4BE-C852592C3218}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Devices", "OsuPlayer.Devices\OsuPlayer.Devices.csproj", "{E290C0D7-06B7-47DC-81E7-98F08654FB0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Devices", "OsuPlayer.Devices\OsuPlayer.Devices.csproj", "{E290C0D7-06B7-47DC-81E7-98F08654FB0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Shared", "OsuPlayer.Shared\OsuPlayer.Shared.csproj", "{C842FAB3-EC80-4E95-B402-BF0572F1806D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Shared", "OsuPlayer.Shared\OsuPlayer.Shared.csproj", "{C842FAB3-EC80-4E95-B402-BF0572F1806D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Presentation", "OsuPlayer.Presentation\OsuPlayer.Presentation.csproj", "{93E3612C-D388-438F-A04A-047265820998}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Presentation", "OsuPlayer.Presentation\OsuPlayer.Presentation.csproj", "{93E3612C-D388-438F-A04A-047265820998}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Data", "OsuPlayer.Data\OsuPlayer.Data.csproj", "{094FAC4A-6277-46E8-97B4-C992F1674638}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Data", "OsuPlayer.Data\OsuPlayer.Data.csproj", "{094FAC4A-6277-46E8-97B4-C992F1674638}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

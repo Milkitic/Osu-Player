@@ -1,24 +1,21 @@
-﻿using Dapper.FluentMap;
+﻿using Microsoft.EntityFrameworkCore;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Shared;
 using Newtonsoft.Json;
 using NLog.Config;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.EntityFrameworkCore;
 
 namespace Milky.OsuPlayer
 {
     public static class EntryStartup
     {
-        public static void Startup()
+        public static async Task StartupAsync()
         {
             ConfigurationItemFactory.Default.LayoutRenderers.RegisterDefinition("InvariantCulture", typeof(InvariantCultureLayoutRendererWrapper));
             if (!LoadConfig())
@@ -31,7 +28,7 @@ namespace Milky.OsuPlayer
             //ConsoleManager.Show();
 #endif
 
-            InitLocalDb();
+            await InitLocalDb();
 
             StyleUtilities.SetAlignment();
 
@@ -79,11 +76,6 @@ namespace Milky.OsuPlayer
         {
             await using var dbContext = new ApplicationDbContext();
             dbContext.Database.Migrate();
-
-            var appDbOperator = new AppDbOperator();
-            var defCol = appDbOperator.GetCollections();
-            var locked = defCol.Where(k => k.LockedBool);
-            if (!locked.Any()) appDbOperator.AddCollection("Favorite", true);
         }
     }
 }

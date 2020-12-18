@@ -100,7 +100,7 @@ namespace Milky.OsuPlayer.Common
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Error while creating beatmap thumb cache: {0}", beatmap.GetIdentity());
+                    Logger.Error("Error while creating beatmap thumb cache: {0}", beatmap.ToString());
                     return default;
                 }
                 finally

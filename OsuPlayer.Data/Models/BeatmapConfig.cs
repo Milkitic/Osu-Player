@@ -1,5 +1,4 @@
-﻿using OSharp.Beatmap.MetaData;
-using System;
+﻿using System;
 
 namespace Milky.OsuPlayer.Data.Models
 {
@@ -18,6 +17,6 @@ namespace Milky.OsuPlayer.Data.Models
 
         // fk
         public Beatmap Beatmap { get; set; }
-        public int BeatmapId { get; set; }
+        public string BeatmapId { get; set; }
     }
 }

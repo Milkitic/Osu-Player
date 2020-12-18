@@ -4,10 +4,10 @@ using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using Milky.OsuPlayer.Data;
 
 namespace Milky.OsuPlayer.UserControls
 {
@@ -22,8 +22,6 @@ namespace Milky.OsuPlayer.UserControls
     public partial class VolumeControl : UserControl
     {
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
-
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
 
         public VolumeControl()
         {
@@ -41,7 +39,7 @@ namespace Milky.OsuPlayer.UserControls
 
         private void Controller_LoadFinished(BeatmapContext bc, System.Threading.CancellationToken arg2)
         {
-            Offset.Value = bc.BeatmapConfig.Offset;
+            Offset.Value = bc.BeatmapConfig.Offset ?? 0;
         }
 
         private void MasterVolume_DragComplete(object sender, DragCompletedEventArgs e)
@@ -76,10 +74,12 @@ namespace Milky.OsuPlayer.UserControls
             _controller.Player.ManualOffset = (int)Offset.Value;
         }
 
-        private void Offset_DragComplete(object sender, DragCompletedEventArgs e)
+        private async void Offset_DragComplete(object sender, DragCompletedEventArgs e)
         {
             if (_controller.PlayList.CurrentInfo == null) return;
-            SafeDbOperator.TryUpdateMap(_controller.PlayList.CurrentInfo.Beatmap, _controller.Player.ManualOffset);
+            await using var dbContext = new ApplicationDbContext();
+            _controller.PlayList.CurrentInfo.BeatmapConfig.Offset = _controller.Player.ManualOffset;
+            await dbContext.AddOrUpdateBeatmapConfig(_controller.PlayList.CurrentInfo.BeatmapConfig);
         }
 
         private async void BtnPlayMod_OnClick(object sender, RoutedEventArgs e)

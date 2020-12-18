@@ -153,7 +153,7 @@
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     RenderOptions.BitmapScalingMode="HighQuality"
-                                    Source="{Binding Path=CollectionInfo.ImagePath}"
+                                    Source="{Binding Path=Collection.ImagePath}"
                                     Stretch="UniformToFill" />
                             </Grid>
                             <StackPanel Grid.Column="1" Margin="10">
@@ -164,7 +164,7 @@
                                         FontSize="22"
                                         FontWeight="Regular"
                                         Foreground="#303030">
-                                        <TextBlock Text="{Binding Path=CollectionInfo.Name}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding Path=Collection.Name}" TextWrapping="Wrap" />
                                     </Label>
                                     <buttonComponent:CommonButton
                                         Width="28"
@@ -204,7 +204,7 @@
                                         MouseDownForeground="#e8e8e8"
                                         MouseOverBackground="#ff6d70"
                                         MouseOverForeground="White"
-                                        Visibility="{Binding CollectionInfo.IsLocked, Converter={StaticResource BoolFalseToVisibleConverter}}" />
+                                        Visibility="{Binding Collection.IsDefault, Converter={StaticResource BoolFalseToVisibleConverter}}" />
                                 </WrapPanel>
                                 <StackPanel
                                     Margin="5"
@@ -216,7 +216,7 @@
                                         FontWeight="Regular"
                                         Foreground="#303030" />
                                     <Label
-                                        Content="{Binding Path=CollectionInfo.CreateTime, Converter={StaticResource CvtDate}}"
+                                        Content="{Binding Path=Collection.CreateTime, Converter={StaticResource CvtDate}}"
                                         FontWeight="Light"
                                         Foreground="#303030" />
                                 </StackPanel>
@@ -250,15 +250,15 @@
                                         Foreground="#303030" />
                                     <Label
                                         x:Name="LblDescription"
-                                        Content="{Binding Path=CollectionInfo.Description}"
+                                        Content="{Binding Path=Collection.Description}"
                                         FontWeight="Light">
                                         <Label.Style>
                                             <Style TargetType="{x:Type Label}">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Path=CollectionInfo.Description}" Value="">
+                                                    <DataTrigger Binding="{Binding Path=Collection.Description}" Value="">
                                                         <Setter Property="Visibility" Value="Collapsed" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Path=CollectionInfo.Description}" Value="{x:Null}">
+                                                    <DataTrigger Binding="{Binding Path=Collection.Description}" Value="{x:Null}">
                                                         <Setter Property="Visibility" Value="Collapsed" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -274,10 +274,10 @@
                                             <Style TargetType="{x:Type Label}">
                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Path=CollectionInfo.Description}" Value="">
+                                                    <DataTrigger Binding="{Binding Path=Collection.Description}" Value="">
                                                         <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Path=CollectionInfo.Description}" Value="{x:Null}">
+                                                    <DataTrigger Binding="{Binding Path=Collection.Description}" Value="{x:Null}">
                                                         <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -295,7 +295,7 @@
                                     x:Name="ListCount"
                                     Margin="0,-5,0,0"
                                     HorizontalAlignment="Right"
-                                    Content="{Binding Beatmaps.Count}"
+                                    Content="{Binding DataList.Count}"
                                     FontWeight="Bold"
                                     Foreground="#7A7A7A" />
                             </StackPanel>

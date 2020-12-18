@@ -1,5 +1,4 @@
 ﻿using OSharp.Beatmap;
-using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,6 +8,8 @@ namespace Milky.OsuPlayer.Data.Models
 {
     public class Beatmap : BaseEntity, IEquatable<Beatmap>
     {
+        private BeatmapThumb _beatmapThumb;
+
         public class Comparer : IEqualityComparer<Beatmap>
         {
             private readonly bool _isByIdentity;
@@ -39,12 +40,13 @@ namespace Milky.OsuPlayer.Data.Models
             }
         }
 
-        // HashCode.Combine(Folder, Version, InOwnDb)
-        public int Id { get; set; }
+        // string.Concat(Folder, Version, InOwnDb)
+        public string Id { get; set; }
         public string Artist { get; set; }
         public string ArtistUnicode { get; set; }
         public string Title { get; set; }
         public string TitleUnicode { get; set; }
+
         public string Creator { get; set; } //mapper
         public string Version { get; set; } //difficulty name
         public string BeatmapFileName { get; set; }
@@ -64,7 +66,7 @@ namespace Milky.OsuPlayer.Data.Models
         public string FolderNameOrPath { get; set; }
         public string AudioFileName { get; set; }
         public bool InOwnDb { get; set; }
-        
+
         public Guid? BeatmapConfigId { get; set; }
         public BeatmapConfig BeatmapConfig { get; set; }
 
@@ -75,23 +77,43 @@ namespace Milky.OsuPlayer.Data.Models
         public BeatmapStoryboard BeatmapStoryboard { get; set; }
 
         public Guid? BeatmapThumbId { get; set; }
-        public BeatmapThumb BeatmapThumb { get; set; }
+
+        [NotMapped]
+        public string PreferredArtist => MetaString.GetUnicode(Artist, ArtistUnicode);
+        [NotMapped]
+        public string PreferredTitle => MetaString.GetUnicode(Title, TitleUnicode);
+
+        public BeatmapThumb BeatmapThumb
+        {
+            get => _beatmapThumb;
+            set
+            {
+                if (Equals(value, _beatmapThumb)) return;
+                _beatmapThumb = value;
+                OnPropertyChanged();
+            }
+        }
 
         public List<Collection> Collections { get; set; }
 
-        [NotMapped]
-        public bool IsTemporary { get; set; }
+        [NotMapped] public bool IsTemporary => Id?.StartsWith('!') != true;
 
-        public MapIdentity GetIdentity()
+        public override string ToString()
         {
-            return new MapIdentity(FolderNameOrPath, Version, InOwnDb);
+            if (this.IsTemporary)
+                return $"temp: \"{FolderNameOrPath}\"";
+
+            if (InOwnDb)
+                return $"own: [\"{FolderNameOrPath}\",\"{Version}\"]";
+
+            return $"osu: [\"{FolderNameOrPath}\",\"{Version}\"]";
         }
 
         public bool Equals(Beatmap other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Creator == other.Creator && Version == other.Version && InOwnDb == other.InOwnDb;
+            return FolderNameOrPath == other.FolderNameOrPath && Version == other.Version && InOwnDb == other.InOwnDb;
         }
 
         public override bool Equals(object obj)
@@ -104,7 +126,8 @@ namespace Milky.OsuPlayer.Data.Models
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Creator, Version, InOwnDb);
+            var sign = Path.IsPathRooted(FolderNameOrPath) ? -1 : 1;
+            return sign * HashCode.Combine(FolderNameOrPath, Version, InOwnDb);
         }
 
         public static bool operator ==(Beatmap left, Beatmap right)

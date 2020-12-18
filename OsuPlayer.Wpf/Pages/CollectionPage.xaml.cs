@@ -1,7 +1,6 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
@@ -21,7 +20,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Milky.OsuPlayer.Shared.Models;
 using Beatmap = Milky.OsuPlayer.Data.Models.Beatmap;
 
 namespace Milky.OsuPlayer.Pages
@@ -33,10 +31,10 @@ namespace Milky.OsuPlayer.Pages
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly MainWindow _mainWindow;
-        private IEnumerable<Beatmap> _entries;
+        private IEnumerable<Beatmap> _beatmaps;
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
-        private static Binding _sourceBinding = new Binding(nameof(CollectionPageViewModel.DisplayedBeatmaps))
+        private static Binding _sourceBinding = new Binding(nameof(CollectionPageViewModel.DataList))
         {
             Mode = BindingMode.OneWay
         };
@@ -65,18 +63,17 @@ namespace Milky.OsuPlayer.Pages
             await using var dbContext = new ApplicationDbContext();
             var collectionInfo = await dbContext.GetCollection(colId);
             if (collectionInfo == null) return;
-            ViewModel.CollectionInfo = collectionInfo;
+            ViewModel.Collection = collectionInfo;
             await UpdateList();
         }
 
         public async Task UpdateList()
         {
             await using var dbContext = new ApplicationDbContext();
-            _entries = (await dbContext.GetBeatmapsFromCollection(ViewModel.CollectionInfo, 0, int.MaxValue))
+            _beatmaps = (await dbContext.GetBeatmapsFromCollection(ViewModel.Collection, 0, int.MaxValue))
                 .Collection; // todo: pagination
-            ViewModel.Beatmaps = new ObservableCollection<Beatmap>(_entries);
-            ViewModel.DisplayedBeatmaps = ViewModel.Beatmaps;
-            ListCount.Content = ViewModel.Beatmaps.Count;
+            ViewModel.DataList = new ObservableCollection<OrderedModel<Beatmap>>(_beatmaps.AsOrdered());
+            ListCount.Content = ViewModel.DataList.Count;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -102,8 +99,9 @@ namespace Milky.OsuPlayer.Pages
                 _minimal = minimal;
             }
 
-            var item = ViewModel.Beatmaps?.FirstOrDefault(k =>
-                k.GetIdentity().Equals(_controller.PlayList.CurrentInfo?.Beatmap?.GetIdentity()));
+            var item = ViewModel.DataList?.FirstOrDefault(k =>
+                k.Model.Id.Equals(_controller.PlayList.CurrentInfo?.Beatmap?.Id)
+            );
             if (item != null)
                 MapList.SelectedItem = item;
         }
@@ -111,9 +109,9 @@ namespace Milky.OsuPlayer.Pages
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var keyword = SearchBox.Text.Trim();
-            ViewModel.DisplayedBeatmaps = string.IsNullOrWhiteSpace(keyword)
-                ? ViewModel.Beatmaps
-                : new ObservableCollection<Beatmap>(ViewModel.Beatmaps); // todo: search
+            ViewModel.DataList = string.IsNullOrWhiteSpace(keyword)
+                ? ViewModel.DataList
+                : new ObservableCollection<OrderedModel<Beatmap>>(ViewModel.DataList); // todo: search
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
@@ -144,9 +142,9 @@ namespace Milky.OsuPlayer.Pages
             var beatmaps = selected.Cast<Beatmap>().ToList();
 
             await using var dbContext = new ApplicationDbContext();
-            await dbContext.DeleteBeatmapsFromCollection(beatmaps, ViewModel.CollectionInfo);
+            await dbContext.DeleteBeatmapsFromCollection(beatmaps, ViewModel.Collection);
             var currentInfo = _controller.PlayList.CurrentInfo;
-            if (ViewModel.CollectionInfo.IsLocked &&
+            if (ViewModel.Collection.IsDefault &&
                 beatmaps.Any(k => k.Id == currentInfo.Beatmap.Id))
             {
                 currentInfo.BeatmapDetail.Metadata.IsFavorite = false;
@@ -161,14 +159,14 @@ namespace Milky.OsuPlayer.Pages
             if (result != MessageBoxResult.OK) return;
             await using var dbContext = new ApplicationDbContext();
 
-            await dbContext.DeleteCollection(ViewModel.CollectionInfo);
+            await dbContext.DeleteCollection(ViewModel.Collection);
             _mainWindow.SwitchRecent.IsChecked = true;
             await _mainWindow.UpdateCollections();
         }
 
         private void BtnExportAll_Click(object sender, RoutedEventArgs e)
         {
-            ExportPage.QueueEntries(_entries);
+            ExportPage.QueueBeatmaps(_beatmaps);
         }
 
         private async Task PlaySelected()
@@ -190,13 +188,13 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            FrontDialogOverlay.Default.ShowContent(new EditCollectionControl(ViewModel.CollectionInfo),
+            FrontDialogOverlay.Default.ShowContent(new EditCollectionControl(ViewModel.Collection),
                 DialogOptionFactory.EditCollectionOptions);
         }
 
         private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {
-            var beatmaps = _entries.ToList();
+            var beatmaps = _beatmaps.ToList();
             if (beatmaps.Count <= 0) return;
 
             await _controller.PlayList.SetSongListAsync(beatmaps, true);
@@ -204,11 +202,12 @@ namespace Milky.OsuPlayer.Pages
 
         private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
         {
-            var dataModel = ViewModel.DisplayedBeatmaps[e.Index];
+            var orderedModel = ViewModel.DataList[e.Index];
+            var beatmap = orderedModel.Model;
             try
             {
-                var fileName = await CommonUtils.GetThumbByBeatmapDbId(dataModel).ConfigureAwait(false);
-                Execute.OnUiThread(() => dataModel.BeatmapThumb.ThumbPath =
+                var fileName = await CommonUtils.GetThumbByBeatmapDbId(orderedModel).ConfigureAwait(false);
+                Execute.OnUiThread(() => beatmap.BeatmapThumb.ThumbPath =
                     Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg")
                 );
             }

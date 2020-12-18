@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Documents;
 
 namespace Milky.OsuPlayer.Data.Models
 {
@@ -12,7 +11,7 @@ namespace Milky.OsuPlayer.Data.Models
         private string _description;
 
         public Guid Id { get; set; }
-        public bool IsLocked { get; set; }
+        public bool IsDefault { get; set; }
 
         public string Name
         {

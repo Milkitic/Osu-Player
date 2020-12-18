@@ -7,10 +7,10 @@ namespace Milky.OsuPlayer.ViewModels
 {
     public class SelectCollectionPageViewModel : VmBase
     {
-        private ObservableCollection<CollectionViewModel> _collections;
-        private IList<Beatmap> _entries;
+        private ObservableCollection<Collection> _collections;
+        private IList<Beatmap> _dataList;
 
-        public ObservableCollection<CollectionViewModel> Collections
+        public ObservableCollection<Collection> Collections
         {
             get => _collections;
             set
@@ -20,12 +20,12 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public IList<Beatmap> Entries
+        public IList<Beatmap> DataList
         {
-            get => _entries;
+            get => _dataList;
             set
             {
-                _entries = value;
+                _dataList = value;
                 OnPropertyChanged();
             }
         }

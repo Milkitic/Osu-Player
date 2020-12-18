@@ -11,11 +11,11 @@ using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UserControls;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -25,10 +25,9 @@ namespace Milky.OsuPlayer.Pages
     public class RecentPlayPageVm : VmBase
     {
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
-        private readonly SafeDbOperator _safeDbOperator = new SafeDbOperator();
-        private NumberableObservableCollection<BeatmapDataModel> _beatmaps;
+        private ObservableCollection<OrderedModel<Beatmap>> _beatmaps;
 
-        public NumberableObservableCollection<BeatmapDataModel> Beatmaps
+        public ObservableCollection<OrderedModel<Beatmap>> Beatmaps
         {
             get => _beatmaps;
             set
@@ -42,11 +41,11 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new DelegateCommand<string>(keyword =>
                 {
                     WindowEx.GetCurrentFirst<MainWindow>()
                         .SwitchSearch
-                        .CheckAndAction(page => ((SearchPage)page).Search((string)param));
+                        .CheckAndAction(page => ((SearchPage)page).Search(keyword));
                 });
             }
         }
@@ -55,13 +54,9 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
                 {
-                    var beatmap = (BeatmapDataModel)param;
-                    var map = _safeDbOperator.GetBeatmapByIdentifiable(beatmap);
-
-                    if (map == null) return;
-                    var folder = beatmap.GetFolder(out _, out _);
+                    var folder = orderedModel.Model.GetFolder(out _, out _);
                     if (!Directory.Exists(folder))
                     {
                         Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
@@ -77,12 +72,9 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
                 {
-                    var beatmap = (BeatmapDataModel)param;
-                    var map = _safeDbOperator.GetBeatmapByIdentifiable(beatmap);
-                    if (map == null) return;
-                    Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
+                    Process.Start($"https://osu.ppy.sh/s/{orderedModel.Model.BeatmapSetId}");
                 });
             }
         }
@@ -91,12 +83,9 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
                 {
-                    var beatmap = (BeatmapDataModel)param;
-                    var map = _safeDbOperator.GetBeatmapByIdentifiable(beatmap);
-                    if (map == null) return;
-                    FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(map),
+                    FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(orderedModel),
                         DialogOptionFactory.SelectCollectionOptions);
                 });
             }
@@ -106,12 +95,10 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
                 {
-                    var beatmap = (BeatmapDataModel)param;
-                    var map = _safeDbOperator.GetBeatmapByIdentifiable(beatmap);
-                    if (map == null) return;
-                    ExportPage.QueueEntry(map);
+                    if (orderedModel == null) return;
+                    ExportPage.QueueBeatmap(orderedModel);
                 });
             }
         }
@@ -120,12 +107,10 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(async param =>
+                return new DelegateCommand<OrderedModel<Beatmap>>(async orderedModel =>
                 {
-                    var beatmap = (BeatmapDataModel)param;
-                    var map = _safeDbOperator.GetBeatmapByIdentifiable(beatmap);
-                    if (map == null) return;
-                    await _controller.PlayNewAsync(map);
+                    if (orderedModel == null) return;
+                    await _controller.PlayNewAsync(orderedModel);
                 });
             }
         }
@@ -134,12 +119,10 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(async param =>
+                return new DelegateCommand<OrderedModel<Beatmap>>(async orderedModel =>
                 {
-                    var beatmap = (BeatmapDataModel)param;
-                    var map = _safeDbOperator.GetBeatmapByIdentifiable(beatmap);
-                    if (map == null) return;
-                    await _controller.PlayNewAsync(map);
+                    if (orderedModel == null) return;
+                    await _controller.PlayNewAsync(orderedModel);
                 });
             }
         }
@@ -148,12 +131,12 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new DelegateCommand<OrderedModel<Beatmap>>(async map =>
                 {
-                    var beatmap = (BeatmapDataModel)param;
-                    if (_safeDbOperator.TryRemoveFromRecent(beatmap.GetIdentity()))
+                    await using var appDbContext = new ApplicationDbContext();
+                    await appDbContext.RemoveBeatmapFromRecent(map);
                     {
-                        Beatmaps.Remove(beatmap);
+                        Beatmaps.Remove(map);
                     }
                     //await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
                 });
@@ -166,9 +149,7 @@ namespace Milky.OsuPlayer.Pages
     /// </summary>
     public partial class RecentPlayPage : Page
     {
-        private ObservableCollection<Beatmap> _recentBeatmaps;
         private readonly MainWindow _mainWindow;
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
         private RecentPlayPageVm _viewModel;
 
@@ -179,18 +160,12 @@ namespace Milky.OsuPlayer.Pages
             _viewModel = (RecentPlayPageVm)DataContext;
         }
 
-        public void UpdateList()
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            _recentBeatmaps = new ObservableCollection<Beatmap>(
-                SafeDbOperator.GetBeatmapsByMapInfo(SafeDbOperator.GetRecentList(), TimeSortMode.PlayTime));
-            _viewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_recentBeatmaps.ToDataModelList(false));
-        }
-
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            UpdateList();
+            await UpdateList();
             var item = _viewModel.Beatmaps.FirstOrDefault(k =>
-                k.GetIdentity().Equals(_controller.PlayList.CurrentInfo?.Beatmap?.GetIdentity()));
+                k.Model.Equals(_controller.PlayList.CurrentInfo?.Beatmap)
+            );
             RecentList.SelectedItem = item;
         }
 
@@ -199,53 +174,38 @@ namespace Milky.OsuPlayer.Pages
             PlaySelected();
         }
 
-        private void BtnDelAll_Click(object sender, RoutedEventArgs e)
+        private async void BtnDelAll_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show(_mainWindow, I18NUtil.GetString("ui-ensureRemoveAll"), _mainWindow.Title, MessageBoxButton.OKCancel,
                 MessageBoxImage.Exclamation);
-            if (result == MessageBoxResult.OK)
-            {
-                if (SafeDbOperator.TryClearRecent())
-                    UpdateList();
-            }
+            if (result != MessageBoxResult.OK) return;
+
+            await using var appDbContext = new ApplicationDbContext();
+            await appDbContext.ClearRecent();
+            _viewModel.Beatmaps.Clear();
+        }
+
+        private async Task UpdateList()
+        {
+            await using var appDbContext = new ApplicationDbContext();
+            var queryResult = await appDbContext.GetRecentList();
+            // todo: pagination
+            _viewModel.Beatmaps = new ObservableCollection<OrderedModel<Beatmap>>(queryResult.Collection.AsOrdered());
         }
 
         private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {
-            await _controller.PlayList.SetSongListAsync(_recentBeatmaps, true);
+            await using var appDbContext = new ApplicationDbContext();
+            var paginationQueryResult = await appDbContext.GetRecentList(0, int.MaxValue);
+            await _controller.PlayList.SetSongListAsync(paginationQueryResult.Collection, true);
         }
 
         private async void PlaySelected()
         {
-            var map = GetSelected();
+            var map = (Beatmap)RecentList.SelectedItem;
             if (map == null) return;
 
             await _controller.PlayNewAsync(map);
-        }
-
-        private Beatmap GetSelected()
-        {
-            if (RecentList.SelectedItem == null)
-                return null;
-            var selectedItem = (BeatmapDataModel)RecentList.SelectedItem;
-
-            return _recentBeatmaps.FirstOrDefault(k =>
-                k.FolderNameOrPath == selectedItem.FolderNameOrPath &&
-                k.Version == selectedItem.Version
-            );
-        }
-
-        private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
-        {
-            return _recentBeatmaps.FirstOrDefault(k =>
-                k.FolderNameOrPath == dataModel.FolderNameOrPath &&
-                k.Version == dataModel.Version
-            );
-        }
-
-        private IEnumerable<Beatmap> ConvertToEntries(IEnumerable<BeatmapDataModel> dataModels)
-        {
-            return dataModels.Select(ConvertToEntry);
         }
     }
 }

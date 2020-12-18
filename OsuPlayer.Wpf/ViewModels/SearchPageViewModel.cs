@@ -1,39 +1,38 @@
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Shared.Models;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UiComponents.PanelComponent;
 using Milky.OsuPlayer.UserControls;
-using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
-using OSharp.Beatmap.MetaData;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xaml;
-using Milky.OsuPlayer.Data;
 
 namespace Milky.OsuPlayer.ViewModels
 {
     public class SearchPageViewModel : VmBase
     {
         private const int MaxListCount = 100;
-        private List<Beatmap> _searchedMaps;
 
+        private ObservableCollection<OrderedModel<Beatmap>> _searchedMaps;
         private List<ListPageViewModel> _pages;
         private ListPageViewModel _lastPage;
         private ListPageViewModel _firstPage;
@@ -45,16 +44,18 @@ namespace Milky.OsuPlayer.ViewModels
             get => _searchText;
             set
             {
+                if (Equals(value, _searchText)) return;
                 _searchText = value;
                 OnPropertyChanged();
             }
         }
 
-        public List<Beatmap> SearchedMaps
+        public ObservableCollection<OrderedModel<Beatmap>> SearchedMaps
         {
             get => _searchedMaps;
             private set
             {
+                if (Equals(value, _searchedMaps)) return;
                 _searchedMaps = value;
                 OnPropertyChanged();
             }
@@ -65,6 +66,7 @@ namespace Milky.OsuPlayer.ViewModels
             get => _pages;
             private set
             {
+                if (Equals(value, _pages)) return;
                 _pages = value;
                 OnPropertyChanged();
             }
@@ -75,6 +77,7 @@ namespace Milky.OsuPlayer.ViewModels
             get => _lastPage;
             private set
             {
+                if (Equals(value, _lastPage)) return;
                 _lastPage = value;
                 OnPropertyChanged();
             }
@@ -85,6 +88,7 @@ namespace Milky.OsuPlayer.ViewModels
             get => _firstPage;
             private set
             {
+                if (Equals(value, _firstPage)) return;
                 _firstPage = value;
                 OnPropertyChanged();
             }
@@ -95,6 +99,7 @@ namespace Milky.OsuPlayer.ViewModels
             get => _currentPage;
             private set
             {
+                if (Equals(value, _currentPage)) return;
                 _currentPage = value;
                 OnPropertyChanged();
             }
@@ -133,7 +138,8 @@ namespace Milky.OsuPlayer.ViewModels
                     countPerPage: MaxListCount
                 );
 
-            SearchedMaps = await dbContext.FillBeatmapThumbs(paginationQueryResult.Collection);
+            var result = await dbContext.FillBeatmapThumbs(paginationQueryResult.Collection);
+            SearchedMaps = new ObservableCollection<OrderedModel<Beatmap>>(result.AsOrdered());
             SetPage(paginationQueryResult.Count, page);
 
             lock (QueryLock)
@@ -311,7 +317,7 @@ namespace Milky.OsuPlayer.ViewModels
                     var beatmap = (Beatmap)param;
                     var map = await GetHighestSrBeatmap(beatmap);
                     if (map == null) return;
-                    ExportPage.QueueEntry(map);
+                    ExportPage.QueueBeatmap(map);
                 });
             }
         }

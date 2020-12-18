@@ -18,11 +18,11 @@ namespace Milky.OsuPlayer
     /// </summary>
     public partial class App : Application
     {
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private async void Application_Startup(object sender, StartupEventArgs e)
         {
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
 
-            EntryStartup.Startup();
+            await EntryStartup.StartupAsync();
 
             var controller = new ObservablePlayController();
             controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;

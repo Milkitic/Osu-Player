@@ -1,5 +1,4 @@
-﻿using OSharp.Beatmap.MetaData;
-using System;
+﻿using System;
 
 namespace Milky.OsuPlayer.Data.Models
 {
