@@ -1,0 +1,4 @@
+<project outputDir="." baseDir="..\OsuPlayer.Wpf\bin\Release\net5.0-windows\publish" xmlns="http://confuser.codeplex.com">
+  <rule pattern="true" preset="maximum" inherit="false" />
+  <module path="OsuPlayer.Sentry.dll" />
+</project>
