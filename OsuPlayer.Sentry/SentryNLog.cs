@@ -1,7 +1,6 @@
 using NLog;
 using NLog.Config;
 using Sentry;
-using System.Reflection;
 
 namespace Milky.OsuPlayer.Sentry
 {

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Milky.OsuPlayer.Data.Models
 {
     public class BeatmapConfig : BaseEntity
     {
+        [Key]
         public Guid Id { get; set; }
         public int? MainVolume { get; set; }
         public int? MusicVolume { get; set; }

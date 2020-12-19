@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Milky.OsuPlayer.Data.Models
@@ -9,6 +10,7 @@ namespace Milky.OsuPlayer.Data.Models
         private long _size = 0;
         private DateTime? _creationTime;
 
+        [Key]
         public Guid Id { get; set; }
         public string ExportPath { get; set; }
 

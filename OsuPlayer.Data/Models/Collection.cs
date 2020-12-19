@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Milky.OsuPlayer.Data.Models
 {
@@ -10,6 +11,7 @@ namespace Milky.OsuPlayer.Data.Models
         private string _imagePath;
         private string _description;
 
+        [Key]
         public Guid Id { get; set; }
         public bool IsDefault { get; set; }
 

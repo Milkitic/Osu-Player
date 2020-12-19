@@ -7,7 +7,7 @@ using Milky.OsuPlayer.Data.Models;
 
 namespace Milky.OsuPlayer.Data
 {
-    public class DbContextBase : DbContext
+    public abstract class DbContextBase : DbContext
     {
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
             CancellationToken cancellationToken = default)

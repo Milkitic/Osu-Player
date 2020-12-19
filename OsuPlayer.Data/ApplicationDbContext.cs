@@ -5,7 +5,6 @@ using Milky.OsuPlayer.Shared.Models;
 using osu_database_reader.Components.Beatmaps;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -30,6 +29,7 @@ namespace Milky.OsuPlayer.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.EnableSensitiveDataLogging();
             optionsBuilder.UseSqlite("data source=player.db", options => { });
         }
 
@@ -37,6 +37,7 @@ namespace Milky.OsuPlayer.Data
         {
             modelBuilder.Entity<Collection>().HasData(new Collection
             {
+                Id = Guid.Parse("7e3d1fed-49db-4899-9775-cb4893e547a1"),
                 IsDefault = true,
                 Name = "Favorite"
             });
@@ -51,7 +52,7 @@ namespace Milky.OsuPlayer.Data
             int countPerPage)
         {
             var sqliteParameters = new List<SqliteParameter>();
-            var command = " SELECT * FROM beatmap WHERE ";
+            var command = " SELECT * FROM Beatmaps WHERE ";
             var keywordSql = GetKeywordQueryAndArgs(searchText, ref sqliteParameters);
             var sort = GetOrderAndTakeQueryAndArgs(beatmapOrderOptions, page, countPerPage);
             var sw = Stopwatch.StartNew();
@@ -92,19 +93,20 @@ namespace Milky.OsuPlayer.Data
         // questionable
         public async Task SyncBeatmapsFromHoLLy(IEnumerable<BeatmapEntry> entries)
         {
-            var all = Beatmaps;
             var allBeatmaps = entries.Select(BeatmapConvertExtension.ParseFromHolly).ToList();
             var allIds = allBeatmaps.Select(k => k.Id).ToList();
 
-            var nonExistAnyMore = all.Where(k => !allIds.Contains(k.Id));
-            Beatmaps.RemoveRange(nonExistAnyMore);
+            //var nonExistAnyMore = await Beatmaps.AsNoTracking().Where(k => !allIds.Contains(k.Id)).ToListAsync();
+            //Beatmaps.RemoveRange(nonExistAnyMore);
+            //await SaveChangesAsync();
 
-            var exists = await all.Where(k => allIds.Contains(k.Id)).Select(k => k.Id).ToListAsync();
-            Beatmaps.UpdateRange(allBeatmaps.Where(k => exists.Contains(k.Id)));
+            //var exists = await Beatmaps.AsNoTracking().Where(k => allIds.Contains(k.Id)).Select(k => k.Id).ToListAsync();
+            //Beatmaps.UpdateRange(allBeatmaps.Where(k => exists.Contains(k.Id)));
+            //await SaveChangesAsync();
 
-            var news = allIds.Except(exists);
+            //var news = allIds.Except(exists).ToList();
+            var news = allIds.ToList();
             Beatmaps.AddRange(allBeatmaps.Where(k => news.Contains(k.Id)));
-
             await SaveChangesAsync();
         }
 
@@ -565,7 +567,7 @@ namespace Milky.OsuPlayer.Data
 
         public async Task AddOrUpdateStoryboardByBeatmap(BeatmapStoryboard storyboard)
         {
-            if (storyboard.BeatmapId == 0)
+            if (string.IsNullOrEmpty(storyboard.BeatmapId))
             {
                 Console.WriteLine("No beatmap found.");
                 return;
@@ -609,14 +611,14 @@ namespace Milky.OsuPlayer.Data
                 var keyword = keywords[i];
                 var postfix = $" like @keyword{i} ";
                 sb.AppendLine("(")
-                    .AppendLine($" artist {postfix} OR ")
-                    .AppendLine($" artistU {postfix} OR ")
-                    .AppendLine($" title {postfix} OR ")
-                    .AppendLine($" titleU {postfix} OR ")
-                    .AppendLine($" tags {postfix} OR ")
-                    .AppendLine($" source {postfix} OR ")
-                    .AppendLine($" creator {postfix} OR ")
-                    .AppendLine($" version {postfix} ")
+                    .AppendLine($" Artist {postfix} OR ")
+                    .AppendLine($" ArtistUnicode {postfix} OR ")
+                    .AppendLine($" Title {postfix} OR ")
+                    .AppendLine($" TitleUnicode {postfix} OR ")
+                    .AppendLine($" SongTags {postfix} OR ")
+                    .AppendLine($" SongSource {postfix} OR ")
+                    .AppendLine($" Creator {postfix} OR ")
+                    .AppendLine($" Version {postfix} ")
                     .AppendLine(" ) ");
 
                 sqliteParameters.Add(new SqliteParameter($"keyword{i}", $"%{keyword}%"));
@@ -633,10 +635,10 @@ namespace Milky.OsuPlayer.Data
         {
             string orderBy = beatmapOrderOptions switch
             {
-                BeatmapOrderOptions.Title => " ORDER BY titleU, title ",
+                BeatmapOrderOptions.Title => " ORDER BY TitleUnicode, Title ",
                 BeatmapOrderOptions.CreateTime => " ORDER BY CreateTime DESC ",
                 BeatmapOrderOptions.UpdateTime => " ORDER BY UpdateTime DESC ",
-                BeatmapOrderOptions.Artist => " ORDER BY artistU, artist ",
+                BeatmapOrderOptions.Artist => " ORDER BY ArtistUnicode, Artist ",
                 _ => throw new ArgumentOutOfRangeException(nameof(beatmapOrderOptions), beatmapOrderOptions, null)
             };
 

@@ -1,11 +1,13 @@
 ﻿using Milky.OsuPlayer.Presentation.Annotations;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Milky.OsuPlayer.Data.Models
 {
     public class BeatmapThumb : BaseEntity
     {
         private string _thumbPath;
+        [Key]
         public Guid Id { get; set; }
 
         public string ThumbPath

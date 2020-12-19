@@ -307,7 +307,7 @@ namespace Milky.OsuPlayer.Windows
         private async void Animation_Loaded(object sender, RoutedEventArgs e)
         {
             await using var appDbContext = new ApplicationDbContext();
-            var lastPlay = appDbContext.RecentList.LastOrDefault();
+            var lastPlay = await appDbContext.RecentList.OrderByDescending(k => k.PlayTime).FirstOrDefaultAsync();
             if (lastPlay == null || !AppSettings.Default.Play.Memory)
                 return;
 

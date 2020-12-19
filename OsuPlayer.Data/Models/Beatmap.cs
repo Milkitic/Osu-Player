@@ -1,6 +1,7 @@
 ﻿using OSharp.Beatmap;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 
@@ -41,6 +42,7 @@ namespace Milky.OsuPlayer.Data.Models
         }
 
         // string.Concat(Folder, Version, InOwnDb)
+        [Key]
         public string Id { get; set; }
         public string Artist { get; set; }
         public string ArtistUnicode { get; set; }
@@ -67,21 +69,21 @@ namespace Milky.OsuPlayer.Data.Models
         public string AudioFileName { get; set; }
         public bool InOwnDb { get; set; }
 
-        public Guid? BeatmapConfigId { get; set; }
-        public BeatmapConfig BeatmapConfig { get; set; }
-
-        public Guid? BeatmapExportId { get; set; }
-        public BeatmapExport BeatmapExport { get; set; }
-
-        public Guid? BeatmapStoryboardId { get; set; }
-        public BeatmapStoryboard BeatmapStoryboard { get; set; }
-
-        public Guid? BeatmapThumbId { get; set; }
-
         [NotMapped]
         public string PreferredArtist => MetaString.GetUnicode(Artist, ArtistUnicode);
         [NotMapped]
         public string PreferredTitle => MetaString.GetUnicode(Title, TitleUnicode);
+
+        //public Guid? BeatmapConfigId { get; set; }
+        public BeatmapConfig BeatmapConfig { get; set; }
+
+        //public Guid? BeatmapExportId { get; set; }
+        public BeatmapExport BeatmapExport { get; set; }
+
+        //public Guid? BeatmapStoryboardId { get; set; }
+        public BeatmapStoryboard BeatmapStoryboard { get; set; }
+
+        //public Guid? BeatmapThumbId { get; set; }
 
         public BeatmapThumb BeatmapThumb
         {
