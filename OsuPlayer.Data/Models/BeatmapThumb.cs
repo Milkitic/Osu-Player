@@ -27,6 +27,6 @@ namespace Milky.OsuPlayer.Data.Models
         [CanBeNull] public BeatmapStoryboard BeatmapStoryboard { get; set; }
         public Guid? BeatmapStoryboardId { get; set; }
         public Beatmap Beatmap { get; set; }
-        public string BeatmapId { get; set; }
+        public byte[] BeatmapId { get; set; }
     }
 }

@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Shared;
+﻿using Milky.OsuPlayer.Data.Models;
 using OSharp.Beatmap;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Text;
 using OSharpGameMode = OSharp.Beatmap.Sections.GamePlay.GameMode;
 
 namespace Milky.OsuPlayer.Data
@@ -45,7 +45,7 @@ namespace Milky.OsuPlayer.Data
             beatmap.FolderNameOrPath = entry.FolderName?.TrimEnd();
             beatmap.AudioFileName = entry.AudioFileName;
 
-            beatmap.Id = $"!{beatmap.FolderNameOrPath}|{beatmap.Version}|{beatmap.InOwnDb}";
+            beatmap.Id = Zip($"!{beatmap.FolderNameOrPath}|{beatmap.Version}|{beatmap.InOwnDb}");
             return beatmap;
         }
 
@@ -87,7 +87,7 @@ namespace Milky.OsuPlayer.Data
             //FolderName = osuFile.FolderName;
             beatmap.AudioFileName = osuFile.General.AudioFilename;
 
-            beatmap.Id = $"!{beatmap.FolderNameOrPath}|{beatmap.Version}|{beatmap.InOwnDb}";
+            beatmap.Id = Zip($"!{beatmap.FolderNameOrPath}|{beatmap.Version}|{(beatmap.InOwnDb ? 1 : 0)}");
 
             return beatmap;
         }
@@ -100,6 +100,34 @@ namespace Milky.OsuPlayer.Data
         public static OSharpGameMode ParseHollyToOSharp(this osu.Shared.GameMode gameMode)
         {
             return (OSharpGameMode)(int)gameMode;
+        }
+
+        public static byte[] Zip(string str)
+        {
+            var bytes = Encoding.UTF8.GetBytes(str);
+
+            using var msi = new MemoryStream(bytes);
+            using var mso = new MemoryStream();
+            using (var gs = new GZipStream(mso, CompressionMode.Compress))
+            {
+                msi.CopyTo(gs);
+            }
+
+            var array = mso.ToArray();
+            return array;
+        }
+
+        public static string Unzip(byte[] bytes)
+        {
+            using var msi = new MemoryStream(bytes);
+            using var mso = new MemoryStream();
+            using (var gs = new GZipStream(msi, CompressionMode.Decompress))
+            {
+                gs.CopyTo(mso);
+            }
+
+            var unzip = Encoding.UTF8.GetString(mso.ToArray());
+            return unzip;
         }
     }
 }

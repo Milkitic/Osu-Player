@@ -141,7 +141,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 {
                     trueBeatmap = beatmap;
                     trueBeatmap.FolderNameOrPath = path; // temp map
-                    trueBeatmap.Id = $"{beatmap.FolderNameOrPath}|{beatmap.Version}|{beatmap.InOwnDb}";
+                    //trueBeatmap.Id = $"{beatmap.FolderNameOrPath}|{beatmap.Version}|{beatmap.InOwnDb}";
                 }
 
                 PlayList.AddOrSwitchTo(trueBeatmap);

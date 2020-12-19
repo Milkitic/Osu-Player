@@ -12,6 +12,6 @@ namespace Milky.OsuPlayer.Data.Models
         public Collection Collection { get; set; }
         public Guid CollectionId { get; set; }
         public Beatmap Beatmap { get; set; }
-        public string BeatmapId { get; set; }
+        public byte[] BeatmapId { get; set; }
     }
 }

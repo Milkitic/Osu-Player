@@ -1,9 +1,11 @@
 ﻿using OSharp.Beatmap;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
+using System.Linq;
 
 namespace Milky.OsuPlayer.Data.Models
 {
@@ -43,7 +45,7 @@ namespace Milky.OsuPlayer.Data.Models
 
         // string.Concat(Folder, Version, InOwnDb)
         [Key]
-        public string Id { get; set; }
+        public byte[] Id { get; set; }
         public string Artist { get; set; }
         public string ArtistUnicode { get; set; }
         public string Title { get; set; }
@@ -98,7 +100,7 @@ namespace Milky.OsuPlayer.Data.Models
 
         public List<Collection> Collections { get; set; }
 
-        [NotMapped] public bool IsTemporary => Id?.StartsWith('!') != true;
+        [NotMapped] public bool IsTemporary => Id == null || Id.Length == 0;
 
         public override string ToString()
         {
@@ -115,7 +117,9 @@ namespace Milky.OsuPlayer.Data.Models
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return FolderNameOrPath == other.FolderNameOrPath && Version == other.Version && InOwnDb == other.InOwnDb;
+            if (Id == null || Id.Length == 0)
+                return FolderNameOrPath == other.FolderNameOrPath && Version == other.Version && InOwnDb == other.InOwnDb;
+            return Id.SequenceEqual(other.Id);
         }
 
         public override bool Equals(object obj)
@@ -128,18 +132,26 @@ namespace Milky.OsuPlayer.Data.Models
 
         public override int GetHashCode()
         {
-            var sign = Path.IsPathRooted(FolderNameOrPath) ? -1 : 1;
-            return sign * HashCode.Combine(FolderNameOrPath, Version, InOwnDb);
+            if (Id == null || Id.Length == 0)
+            {
+                return HashCode.Combine(FolderNameOrPath, Version, InOwnDb);
+            }
+
+            return ((IStructuralEquatable)Id).GetHashCode(EqualityComparer<byte>.Default);
         }
 
         public static bool operator ==(Beatmap left, Beatmap right)
         {
+            if (ReferenceEquals(left, right)) return true;
+            if (ReferenceEquals(left, null)) return false;
+            if (ReferenceEquals(right, null)) return false;
+            if (left.GetType() != right.GetType()) return false;
             return Equals(left, right);
         }
 
         public static bool operator !=(Beatmap left, Beatmap right)
         {
-            return !Equals(left, right);
+            return !(left == right);
         }
 
         #region Only used in HoLLy

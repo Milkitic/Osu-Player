@@ -58,10 +58,13 @@ namespace Milky.OsuPlayer.Data
             var sw = Stopwatch.StartNew();
             try
             {
-
-                var totalCount = await Beatmaps.FromSqlRaw(command + keywordSql).CountAsync();
+                var sql = command + keywordSql;
+                var totalCount = await Beatmaps
+                    .FromSqlRaw(sql, sqliteParameters.Cast<object>().ToArray())
+                    .CountAsync();
+                var s = sql + sort;
                 var beatmaps = await Beatmaps
-                    .FromSqlRaw(command + keywordSql + sort, sqliteParameters.Cast<object>().ToArray())
+                    .FromSqlRaw(s, sqliteParameters.Cast<object>().ToArray())
                     .ToListAsync();
                 return new PaginationQueryResult<Beatmap>(beatmaps, totalCount);
             }
@@ -96,17 +99,24 @@ namespace Milky.OsuPlayer.Data
             var allBeatmaps = entries.Select(BeatmapConvertExtension.ParseFromHolly).ToList();
             var allIds = allBeatmaps.Select(k => k.Id).ToList();
 
-            //var nonExistAnyMore = await Beatmaps.AsNoTracking().Where(k => !allIds.Contains(k.Id)).ToListAsync();
-            //Beatmaps.RemoveRange(nonExistAnyMore);
-            //await SaveChangesAsync();
+            var nonExistAnyMore = await Beatmaps.AsNoTracking().Where(k => !allIds.Contains(k.Id)).ToListAsync();
+            if (nonExistAnyMore.Count > 0)
+                Beatmaps.RemoveRange(nonExistAnyMore);
 
-            //var exists = await Beatmaps.AsNoTracking().Where(k => allIds.Contains(k.Id)).Select(k => k.Id).ToListAsync();
-            //Beatmaps.UpdateRange(allBeatmaps.Where(k => exists.Contains(k.Id)));
-            //await SaveChangesAsync();
+            var exists = await Beatmaps.AsNoTracking().Where(k => allIds.Contains(k.Id)).Select(k => k.Id).ToListAsync();
+            if (exists.Count > 0)
+            {
+                var existsHashSet = exists.ToHashSet();
+                Beatmaps.UpdateRange(allBeatmaps.Where(k => existsHashSet.Contains(k.Id)));
+            }
 
-            //var news = allIds.Except(exists).ToList();
-            var news = allIds.ToList();
-            Beatmaps.AddRange(allBeatmaps.Where(k => news.Contains(k.Id)));
+            var news = allIds.Except(exists).ToHashSet();
+            if (news.Count > 0)
+            {
+                var addRange = allBeatmaps.Where(k => news.Contains(k.Id)).ToHashSet();
+                Beatmaps.AddRange(addRange);
+            }
+
             await SaveChangesAsync();
         }
 
@@ -173,7 +183,7 @@ namespace Milky.OsuPlayer.Data
         /// <returns></returns>
         public async Task AddOrUpdateBeatmapConfig(BeatmapConfig beatmapConfig)
         {
-            if (string.IsNullOrEmpty(beatmapConfig.BeatmapId))
+            if (beatmapConfig.BeatmapId == null || beatmapConfig.BeatmapId.Length == 0)
             {
                 Console.WriteLine("No beatmap found.");
                 return;
@@ -486,7 +496,7 @@ namespace Milky.OsuPlayer.Data
 
         public async Task AddOrUpdateExport(BeatmapExport export)
         {
-            if (string.IsNullOrEmpty(export.BeatmapId))
+            if (export.BeatmapId == null || export.BeatmapId.Length == 0)
             {
                 Console.WriteLine("No beatmap found.");
                 return;
@@ -567,7 +577,7 @@ namespace Milky.OsuPlayer.Data
 
         public async Task AddOrUpdateStoryboardByBeatmap(BeatmapStoryboard storyboard)
         {
-            if (string.IsNullOrEmpty(storyboard.BeatmapId))
+            if (storyboard.BeatmapId == null || storyboard.BeatmapId.Length == 0)
             {
                 Console.WriteLine("No beatmap found.");
                 return;
@@ -644,6 +654,23 @@ namespace Milky.OsuPlayer.Data
 
             string limit = $" LIMIT {page * countPerPage}, {countPerPage} ";
             return orderBy + limit;
+        }
+    }
+
+    public class HashCodeComparer : IEqualityComparer<Beatmap>
+    {
+        public bool Equals(Beatmap x, Beatmap y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, null)) return false;
+            if (ReferenceEquals(y, null)) return false;
+            if (x.GetType() != y.GetType()) return false;
+            return x.Equals(y);
+        }
+
+        public int GetHashCode(Beatmap obj)
+        {
+            return obj.GetHashCode();
         }
     }
 }

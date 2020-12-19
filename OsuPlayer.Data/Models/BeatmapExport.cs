@@ -52,6 +52,6 @@ namespace Milky.OsuPlayer.Data.Models
 
         //fk
         public Beatmap Beatmap { get; set; }
-        public string BeatmapId { get; set; }
+        public byte[] BeatmapId { get; set; }
     }
 }

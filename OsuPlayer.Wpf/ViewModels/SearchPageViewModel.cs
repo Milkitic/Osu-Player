@@ -123,28 +123,33 @@ namespace Milky.OsuPlayer.ViewModels
                 _isQuerying = true;
             }
 
-            await Task.Run(() =>
+            try
             {
-                while (_querySw.ElapsedMilliseconds < 300)
-                    Thread.Sleep(10);
-                _querySw.Stop();
-            });
+                await Task.Run(() =>
+                {
+                    while (_querySw.ElapsedMilliseconds < 300)
+                        Thread.Sleep(10);
+                    _querySw.Stop();
+                });
 
-            await using var dbContext = new ApplicationDbContext();
-            var paginationQueryResult = await dbContext
-                .SearchBeatmapByOptions(SearchText,
-                    sortMode,
-                    page: page,
-                    countPerPage: MaxListCount
-                );
+                await using var dbContext = new ApplicationDbContext();
+                var paginationQueryResult = await dbContext
+                    .SearchBeatmapByOptions(SearchText,
+                        sortMode,
+                        page: page,
+                        countPerPage: MaxListCount
+                    );
 
-            var result = await dbContext.FillBeatmapThumbs(paginationQueryResult.Collection);
-            SearchedMaps = new ObservableCollection<OrderedModel<Beatmap>>(result.AsOrdered());
-            SetPage(paginationQueryResult.Count, page);
-
-            lock (QueryLock)
+                var result = await dbContext.FillBeatmapThumbs(paginationQueryResult.Collection);
+                SearchedMaps = new ObservableCollection<OrderedModel<Beatmap>>(result.AsOrdered());
+                SetPage(paginationQueryResult.Count, page);
+            }
+            finally
             {
-                _isQuerying = false;
+                lock (QueryLock)
+                {
+                    _isQuerying = false;
+                }
             }
         }
 
