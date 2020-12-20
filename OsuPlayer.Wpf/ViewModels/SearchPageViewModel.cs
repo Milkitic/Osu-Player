@@ -32,7 +32,7 @@ namespace Milky.OsuPlayer.ViewModels
     {
         private const int MaxListCount = 100;
 
-        private ObservableCollection<OrderedModel<Beatmap>> _searchedMaps;
+        private ObservableCollection<OrderedModel<Beatmap>> _dataList;
         private List<ListPageViewModel> _pages;
         private ListPageViewModel _lastPage;
         private ListPageViewModel _firstPage;
@@ -50,13 +50,13 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public ObservableCollection<OrderedModel<Beatmap>> SearchedMaps
+        public ObservableCollection<OrderedModel<Beatmap>> DataList
         {
-            get => _searchedMaps;
+            get => _dataList;
             private set
             {
-                if (Equals(value, _searchedMaps)) return;
-                _searchedMaps = value;
+                if (Equals(value, _dataList)) return;
+                _dataList = value;
                 OnPropertyChanged();
             }
         }
@@ -141,7 +141,7 @@ namespace Milky.OsuPlayer.ViewModels
                     );
 
                 var result = await dbContext.FillBeatmapThumbs(paginationQueryResult.Collection);
-                SearchedMaps = new ObservableCollection<OrderedModel<Beatmap>>(result.AsOrdered());
+                DataList = new ObservableCollection<OrderedModel<Beatmap>>(result.AsOrdered());
                 SetPage(paginationQueryResult.Count, page);
             }
             finally
@@ -223,7 +223,7 @@ namespace Milky.OsuPlayer.ViewModels
                             return;
                         }
 
-                        SetPage(SearchedMaps.Count, page.Index - 1);
+                        SetPage(DataList.Count, page.Index - 1);
                     }
                     else
                     {
@@ -234,7 +234,7 @@ namespace Milky.OsuPlayer.ViewModels
                             return;
                         }
 
-                        SetPage(SearchedMaps.Count, reqPage - 1);
+                        SetPage(DataList.Count, reqPage - 1);
                     }
                 });
             }

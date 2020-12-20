@@ -33,7 +33,7 @@ namespace Milky.OsuPlayer.Pages
 
         public SearchPageViewModel ViewModel { get; set; }
 
-        private static readonly Binding _sourceBinding = new Binding(nameof(SearchPageViewModel.SearchedMaps))
+        private static readonly Binding _sourceBinding = new Binding(nameof(SearchPageViewModel.DataList))
         {
             Mode = BindingMode.OneWay
         };
@@ -124,7 +124,7 @@ namespace Milky.OsuPlayer.Pages
 
         private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {
-            List<Beatmap> beatmaps = ViewModel.SearchedMaps.Select(k => k.Model).ToList();
+            List<Beatmap> beatmaps = ViewModel.DataList.Select(k => k.Model).ToList();
             if (beatmaps.Count <= 0) return;
             var group = beatmaps.GroupBy(k => k.FolderNameOrPath);
             List<Beatmap> newBeatmaps = group
@@ -143,7 +143,7 @@ namespace Milky.OsuPlayer.Pages
 
         private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
         {
-            var beatmap = ViewModel.SearchedMaps[e.Index].Model;
+            var beatmap = ViewModel.DataList[e.Index].Model;
             try
             {
                 var fileName = await CommonUtils.GetThumbByBeatmapDbId(beatmap).ConfigureAwait(false);
