@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:osuPlayer="clr-namespace:Milky.OsuPlayer"
     xmlns:panelComponent="clr-namespace:Milky.OsuPlayer.UiComponents.PanelComponent"
+    xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:textBoxComponent="clr-namespace:Milky.OsuPlayer.UiComponents.TextBoxComponent"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
@@ -27,7 +28,7 @@
         <converters:DateTimeConverter x:Key="CvtDate" />
         <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
             <MenuItem
-                Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={presentation:RootObject}}"
                 CommandParameter="{Binding}"
                 Style="{StaticResource DefaultMenuItem}">
                 <MenuItem.Header>
@@ -38,28 +39,28 @@
             </MenuItem>
             <Separator />
             <MenuItem
-                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={presentation:RootObject}}"
                 CommandParameter="{Binding AutoTitle}"
                 Header="{DynamicResource ui-ctxMenu-searchTitle}"
                 Style="{StaticResource DefaultMenuItem}" />
             <MenuItem
-                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={presentation:RootObject}}"
                 CommandParameter="{Binding AutoArtist}"
                 Header="{DynamicResource ui-ctxMenu-searchArtist}"
                 Style="{StaticResource DefaultMenuItem}" />
             <MenuItem
-                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={presentation:RootObject}}"
                 CommandParameter="{Binding SongSource}"
                 Header="{DynamicResource ui-ctxMenu-searchSource}"
                 Style="{StaticResource DefaultMenuItem}" />
             <MenuItem
-                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={presentation:RootObject}}"
                 CommandParameter="{Binding Creator}"
                 Header="{DynamicResource ui-ctxMenu-searchCreator}"
                 Style="{StaticResource DefaultMenuItem}" />
             <Separator />
             <MenuItem
-                Command="{Binding DataContext.OpenSourceFolderCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                Command="{Binding DataContext.OpenSourceFolderCommand, Mode=OneWay, Source={presentation:RootObject}}"
                 CommandParameter="{Binding}"
                 Style="{StaticResource DefaultMenuItem}">
                 <MenuItem.Header>
@@ -69,13 +70,13 @@
                 </MenuItem.Header>
             </MenuItem>
             <MenuItem
-                Command="{Binding DataContext.OpenScorePageCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                Command="{Binding DataContext.OpenScorePageCommand, Mode=OneWay, Source={presentation:RootObject}}"
                 CommandParameter="{Binding}"
                 Header="{DynamicResource ui-ctxMenu-openScorePage}"
                 Style="{StaticResource DefaultMenuItem}" />
             <Separator />
             <MenuItem
-                Command="{Binding DataContext.SaveCollectionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                Command="{Binding DataContext.SaveCollectionCommand, Mode=OneWay, Source={presentation:RootObject}}"
                 CommandParameter="{Binding}"
                 Style="{StaticResource DefaultMenuItem}">
                 <MenuItem.Header>
@@ -85,13 +86,13 @@
                 </MenuItem.Header>
             </MenuItem>
             <MenuItem
-                Command="{Binding DataContext.ExportCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                Command="{Binding DataContext.ExportCommand, Mode=OneWay, Source={presentation:RootObject}}"
                 CommandParameter="{Binding}"
                 Header="{DynamicResource ui-ctxMenu-export}"
                 Style="{StaticResource DefaultMenuItem}" />
             <Separator />
             <MenuItem
-                Command="{Binding DataContext.RemoveCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                Command="{Binding DataContext.RemoveCommand, Mode=OneWay, Source={presentation:RootObject}}"
                 CommandParameter="{Binding}"
                 Style="{StaticResource DefaultMenuItem}">
                 <MenuItem.Header>
@@ -401,7 +402,7 @@
                                     <ListBox.Resources>
                                         <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
                                             <Button
-                                                Command="{Binding DataContext.DirectPlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
+                                                Command="{Binding DataContext.DirectPlayCommand, Mode=OneWay, Source={presentation:RootObject}}"
                                                 CommandParameter="{Binding}"
                                                 Cursor="Hand">
                                                 <Button.Template>

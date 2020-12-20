@@ -6,6 +6,9 @@
     xmlns:local="clr-namespace:Milky.OsuPlayer.UserControls.ItemsControls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:osuPlayer="clr-namespace:Milky.OsuPlayer"
+    xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
+    xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+    x:Name="Self"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -123,6 +126,19 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Margin" Value="2,1" />
             <Setter Property="Background" Value="#80FFFFFF" />
+            <Setter Property="ContextMenu">
+                <Setter.Value>
+                    <ContextMenu>
+                        <d:Object.DataContext>
+                            <osuPlayer:OrderedBeatmap />
+                        </d:Object.DataContext>
+                        <MenuItem
+                            Command="{Binding Path=TestCommand, Source={local:RootBeatmapDataGrid}}"
+                            CommandParameter="{Binding}"
+                            Header="Click Me" />
+                    </ContextMenu>
+                </Setter.Value>
+            </Setter>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="DataGridRow">
@@ -215,7 +231,7 @@
             <Setter Property="RowHeaderStyle" Value="{StaticResource MyDataGridRowHeader}" />
         </Style>
     </UserControl.Resources>
-    <DataGrid ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:BeatmapDataGrid}, Path=DataList}" Style="{StaticResource DataGrid}">
+    <DataGrid ItemsSource="{Binding ElementName=Self, Path=DataList, Mode=OneWay}" Style="{StaticResource DataGrid}">
         <DataGrid.Columns>
             <DataGridTemplateColumn>
                 <DataGridTemplateColumn.CellTemplate>

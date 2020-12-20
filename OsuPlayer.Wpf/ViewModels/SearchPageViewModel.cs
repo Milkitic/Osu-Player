@@ -373,14 +373,4 @@ namespace Milky.OsuPlayer.ViewModels
             return map;
         }
     }
-
-    [MarkupExtensionReturnType(typeof(ContentControl))]
-    public class RootObject : MarkupExtension
-    {
-        public override object ProvideValue(IServiceProvider serviceProvider)
-        {
-            var rootObjectProvider = (IRootObjectProvider)serviceProvider.GetService(typeof(IRootObjectProvider));
-            return rootObjectProvider?.RootObject;
-        }
-    }
 }
