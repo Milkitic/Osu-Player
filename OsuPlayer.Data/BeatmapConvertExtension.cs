@@ -1,17 +1,18 @@
-﻿using Milky.OsuPlayer.Shared;
+﻿using Milky.OsuPlayer.Data.Models;
 using OSharp.Beatmap;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
-using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using OSharpGameMode = OSharp.Beatmap.Sections.GamePlay.GameMode;
 
-namespace Milky.OsuPlayer.Data.Models
+namespace Milky.OsuPlayer.Data
 {
-    public static class BeatmapExtension
+    public static class BeatmapConvertExtension
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private static readonly ConcurrentRandom Random = new ConcurrentRandom();
 
         public static Beatmap UpdateFromHolly(this Beatmap beatmap, BeatmapEntry entry)
         {
@@ -41,9 +42,10 @@ namespace Milky.OsuPlayer.Data.Models
             beatmap.GameMode = entry.GameMode.ParseHollyToOSharp();
             beatmap.SongSource = entry.SongSource;
             beatmap.SongTags = entry.SongTags;
-            beatmap.FolderName = entry.FolderName?.TrimEnd();
+            beatmap.FolderNameOrPath = entry.FolderName?.TrimEnd();
             beatmap.AudioFileName = entry.AudioFileName;
 
+            beatmap.Id = Zip($"!{beatmap.FolderNameOrPath}|{beatmap.Version}|{beatmap.InOwnDb}");
             return beatmap;
         }
 
@@ -85,6 +87,8 @@ namespace Milky.OsuPlayer.Data.Models
             //FolderName = osuFile.FolderName;
             beatmap.AudioFileName = osuFile.General.AudioFilename;
 
+            beatmap.Id = Zip($"!{beatmap.FolderNameOrPath}|{beatmap.Version}|{(beatmap.InOwnDb ? 1 : 0)}");
+
             return beatmap;
         }
 
@@ -98,36 +102,32 @@ namespace Milky.OsuPlayer.Data.Models
             return (OSharpGameMode)(int)gameMode;
         }
 
-        public static Beatmap GetHighestDiff(this IEnumerable<Beatmap> enumerable)
+        public static byte[] Zip(string str)
         {
-            var dictionary = enumerable.GroupBy(k => k.GameMode).ToDictionary(k => k.Key, k => k.ToList());
-            if (dictionary.ContainsKey(OSharpGameMode.Circle))
+            var bytes = Encoding.UTF8.GetBytes(str);
+
+            using var msi = new MemoryStream(bytes);
+            using var mso = new MemoryStream();
+            using (var gs = new GZipStream(mso, CompressionMode.Compress))
             {
-                return dictionary[OSharpGameMode.Circle]
-                    .Aggregate((i1, i2) => i1.DiffSrNoneStandard > i2.DiffSrNoneStandard ? i1 : i2);
+                msi.CopyTo(gs);
             }
 
-            if (dictionary.ContainsKey(OSharpGameMode.Mania))
+            var array = mso.ToArray();
+            return array;
+        }
+
+        public static string Unzip(byte[] bytes)
+        {
+            using var msi = new MemoryStream(bytes);
+            using var mso = new MemoryStream();
+            using (var gs = new GZipStream(msi, CompressionMode.Decompress))
             {
-                return dictionary[OSharpGameMode.Mania]
-                    .Aggregate((i1, i2) => i1.DiffSrNoneMania > i2.DiffSrNoneMania ? i1 : i2);
+                gs.CopyTo(mso);
             }
 
-            if (dictionary.ContainsKey(OSharpGameMode.Catch))
-            {
-                return dictionary[OSharpGameMode.Catch]
-                    .Aggregate((i1, i2) => i1.DiffSrNoneCtB > i2.DiffSrNoneCtB ? i1 : i2);
-            }
-
-            if (dictionary.ContainsKey(OSharpGameMode.Taiko))
-            {
-                return dictionary[OSharpGameMode.Taiko]
-                    .Aggregate((i1, i2) => i1.DiffSrNoneTaiko > i2.DiffSrNoneTaiko ? i1 : i2);
-            }
-
-            Logger.Warn(@"Get highest difficulty failed.");
-            var randKey = dictionary.Keys.ToList()[Random.Next(dictionary.Keys.Count)];
-            return dictionary[randKey][dictionary[randKey].Count];
+            var unzip = Encoding.UTF8.GetString(mso.ToArray());
+            return unzip;
         }
     }
 }

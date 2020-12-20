@@ -70,7 +70,6 @@ namespace Milky.OsuPlayer.Media.Audio
         private OsuMixPlayer _player;
         private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
         private CancellationTokenSource _cts = new CancellationTokenSource();
-        private readonly AppDbOperator _appDbOperator = new AppDbOperator();
         private bool _isFileLoading;
 
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
@@ -97,7 +96,7 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
-        public async Task PlayNewAsync([CanBeNull]Beatmap beatmap, bool playInstantly = true)
+        public async Task PlayNewAsync([CanBeNull] Beatmap beatmap, bool playInstantly = true)
         {
             if (beatmap is null) return;
             PlayList.AddOrSwitchTo(beatmap);
@@ -132,12 +131,17 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 context.OsuFile = osuFile;
 
-                var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
-                Beatmap trueBeatmap = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
+                var beatmap = BeatmapConvertExtension.ParseFromOSharp(osuFile);
+
+                Beatmap trueBeatmap;
+                await using (var dbContext = new ApplicationDbContext())
+                    trueBeatmap = await dbContext.Beatmaps.FindAsync(beatmap.Id);
+
                 if (trueBeatmap == null)
                 {
                     trueBeatmap = beatmap;
-                    trueBeatmap.FolderName = path; // I forgot why I did this but there should be some reasons.
+                    trueBeatmap.FolderNameOrPath = path; // temp map
+                    //trueBeatmap.Id = $"{beatmap.FolderNameOrPath}|{beatmap.Version}|{beatmap.InOwnDb}";
                 }
 
                 PlayList.AddOrSwitchTo(trueBeatmap);
@@ -205,9 +209,10 @@ namespace Milky.OsuPlayer.Media.Audio
                     context.OsuFile = osuFile;
                 }
 
-                var album = _appDbOperator.GetCollectionsByMap(context.BeatmapSettings);
+                await using var dbContext = new ApplicationDbContext();
+                var album = await dbContext.GetCollectionsByBeatmap(context.Beatmap);
 
-                bool isFavorite = album != null && album.Count > 0 && album.Any(k => k.LockedBool);
+                bool isFavorite = album.Any(k => k.IsDefault);
                 var metadata = beatmapDetail.Metadata;
                 metadata.IsFavorite = isFavorite;
 
@@ -260,7 +265,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 Player.PlayStatusChanged += Player_PlayStatusChanged;
                 Player.PositionUpdated += Player_PositionUpdated;
                 await Player.Initialize().ConfigureAwait(false); //700 ms
-                Player.ManualOffset = context.BeatmapSettings.Offset;
+                Player.ManualOffset = context.BeatmapConfig.Offset ?? 0;
 
                 Execute.OnUiThread(() => MusicLoaded?.Invoke(context, _cts.Token));
 
@@ -291,8 +296,9 @@ namespace Milky.OsuPlayer.Media.Audio
                 context.FullLoaded = true;
                 // load finished
                 Execute.OnUiThread(() => LoadFinished?.Invoke(context, _cts.Token));
-                AppSettings.Default.CurrentMap = beatmap.GetIdentity();
-                AppSettings.SaveDefault();
+                await using var appDbContext = new ApplicationDbContext();
+                await appDbContext.AddOrUpdateBeatmapToPlaylist(beatmap);
+
                 if (!isReading)
                 {
                     IsFileLoading = false;
@@ -323,7 +329,8 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             finally
             {
-                _appDbOperator.UpdateMap(context.Beatmap.GetIdentity());
+                await using var dbContext = new ApplicationDbContext();
+                await dbContext.AddOrUpdateBeatmapToRecent(context.Beatmap);
             }
         }
 
@@ -391,10 +398,10 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
-        private void PlayList_SongListChanged()
+        private async void PlayList_SongListChanged()
         {
-            AppSettings.Default.CurrentList = new HashSet<MapIdentity>(PlayList.SongList.Select(k => k.GetIdentity()));
-            AppSettings.SaveDefault();
+            await using var appDbContext = new ApplicationDbContext();
+            await appDbContext.UpdateBeatmapsToPlaylist(PlayList.SongList);
         }
 
         private async Task PlayByControl(PlayControlType control, bool auto)

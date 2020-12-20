@@ -6,14 +6,13 @@ using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Annotations;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,33 +24,38 @@ namespace Milky.OsuPlayer.UserControls
     /// </summary>
     public partial class SelectCollectionControl : UserControl
     {
+        private readonly IList<Beatmap> _beatmaps;
         private SelectCollectionPageViewModel _viewModel;
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
         private FrontDialogOverlay _overlay;
 
-        public SelectCollectionControl(Beatmap entry) : this(new[] { entry })
+        public SelectCollectionControl(Beatmap beatmap) : this(new[] { beatmap })
         {
         }
 
-        public SelectCollectionControl(IList<Beatmap> entries)
+        public SelectCollectionControl(IList<Beatmap> beatmaps)
         {
+            _beatmaps = beatmaps;
             InitializeComponent();
+        }
+
+        private async void SelectCollectionControl_OnInitialized(object? sender, EventArgs e)
+        {
             _viewModel = (SelectCollectionPageViewModel)DataContext;
-            _viewModel.Entries = entries;
-            RefreshList();
+            _viewModel.DataList = _beatmaps;
+            await RefreshList();
             _overlay = FrontDialogOverlay.Default.GetOrCreateSubOverlay();
         }
 
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
         {
             var addCollectionControl = new AddCollectionControl();
-            _overlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, (obj, args) =>
+            _overlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, async (obj, args) =>
             {
-                if (!SafeDbOperator.TryAddCollection(addCollectionControl.CollectionName.Text))
-                    return;
+                await using var dbContext = new ApplicationDbContext();
+                await dbContext.AddCollection(addCollectionControl.CollectionName.Text);// todo: exist
+                await WindowEx.GetCurrentFirst<MainWindow>().UpdateCollections();
 
-                WindowEx.GetCurrentFirst<MainWindow>().UpdateCollections();
-                RefreshList();
+                await RefreshList();
             });
         }
 
@@ -60,20 +64,20 @@ namespace Milky.OsuPlayer.UserControls
             FrontDialogOverlay.Default.RaiseOk();
         }
 
-        private void RefreshList()
+        private async Task RefreshList()
         {
-            _viewModel.Collections = new ObservableCollection<CollectionViewModel>(
-                CollectionViewModel.CopyFrom(SafeDbOperator.GetCollections().OrderByDescending(k => k.CreateTime)));
+            await using var dbContext = new ApplicationDbContext();
+            _viewModel.Collections = new ObservableCollection<Collection>(await dbContext.GetCollections());
         }
 
-        public static async Task<bool> AddToCollectionAsync([NotNull]Collection col, IList<Beatmap> entries)
+        public static async Task<bool> AddToCollectionAsync([NotNull] Collection col, IList<Beatmap> beatmaps)
         {
             var controller = Service.Get<ObservablePlayController>();
-            var appDbOperator = new AppDbOperator();
-            if (entries == null || entries.Count <= 0) return false;
+            await using var dbContext = new ApplicationDbContext();
+            if (beatmaps == null || beatmaps.Count <= 0) return false;
             if (string.IsNullOrEmpty(col.ImagePath))
             {
-                var first = entries[0];
+                var first = beatmaps[0];
                 var dir = first.GetFolder(out var isFromDb, out var freePath);
                 var filePath = isFromDb ? Path.Combine(dir, first.BeatmapFileName) : freePath;
                 var osuFile = await OsuFile.ReadFromFileAsync(filePath, options =>
@@ -89,18 +93,22 @@ namespace Milky.OsuPlayer.UserControls
                     if (File.Exists(imgPath))
                     {
                         col.ImagePath = imgPath;
-                        appDbOperator.UpdateCollection(col);
+                        await dbContext.AddOrUpdateCollection(col);
                     }
                 }
             }
 
-            appDbOperator.AddMapsToCollection(entries, col);
-            foreach (var beatmap in entries)
+            await dbContext.AddBeatmapsToCollection(beatmaps, col);
+            if (col.IsDefault)
             {
-                if (!controller.PlayList.CurrentInfo.Beatmap.GetIdentity().Equals(beatmap.GetIdentity()) ||
-                    !col.LockedBool) continue;
-                controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite = false;
-                break;
+                foreach (var beatmap in beatmaps)
+                {
+                    if (controller.PlayList.CurrentInfo.Beatmap.Equals(beatmap))
+                    {
+                        controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite = true;
+                        break;
+                    }
+                }
             }
 
             return true;

@@ -7,6 +7,8 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Milky.OsuPlayer</RootNamespace>
     <AssemblyName>OsuPlayer</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <Version>3.0.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
@@ -32,12 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper">
-      <Version>2.0.35</Version>
-    </PackageReference>
-    <PackageReference Include="Dapper.FluentMap">
-      <Version>1.8.0</Version>
-    </PackageReference>
     <PackageReference Include="FFME.Windows">
       <Version>4.2.330</Version>
     </PackageReference>

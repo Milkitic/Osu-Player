@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Data;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer.Pages
@@ -29,7 +30,6 @@ namespace Milky.OsuPlayer.Pages
         //Page view model
         private static bool _hasTaskSuccess;
         private readonly MainWindow _mainWindow;
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
 
         public ExportPageViewModel ViewModel { get; }
         public static readonly ConcurrentQueue<Beatmap> TaskQueue = new ConcurrentQueue<Beatmap>();
@@ -58,17 +58,17 @@ namespace Milky.OsuPlayer.Pages
             ViewModel.ExportPath = AppSettings.Default.Export.MusicPath;
         }
 
-        public static void QueueEntries(IEnumerable<Beatmap> entries)
+        public static void QueueBeatmaps(IEnumerable<Beatmap> beatmaps)
         {
-            foreach (var entry in entries)
-                TaskQueue.Enqueue(entry);
+            foreach (var beatmap in beatmaps)
+                TaskQueue.Enqueue(beatmap);
 
             StartTask();
         }
 
-        public static void QueueEntry(Beatmap entry)
+        public static void QueueBeatmap(Beatmap beatmap)
         {
-            TaskQueue.Enqueue(entry);
+            TaskQueue.Enqueue(beatmap);
             StartTask();
         }
 
@@ -80,21 +80,21 @@ namespace Milky.OsuPlayer.Pages
             {
                 while (!TaskQueue.IsEmpty)
                 {
-                    if (!TaskQueue.TryDequeue(out var entry))
+                    if (!TaskQueue.TryDequeue(out var beatmap))
                         continue;
-                    await CopyFileAsync(entry);
+                    await CopyFileAsync(beatmap);
                     HasTaskSuccess = true;
                 }
             });
         }
 
-        private static async Task CopyFileAsync(Beatmap entry)
+        private static async Task CopyFileAsync(Beatmap beatmap)
         {
             try
             {
-                var folder = entry.GetFolder(out _, out _);
-                var mp3FileInfo = new FileInfo(Path.Combine(folder, entry.AudioFileName));
-                var osuFile = await OsuFile.ReadFromFileAsync(Path.Combine(folder, entry.BeatmapFileName), options =>
+                var folder = beatmap.GetFolder(out _, out _);
+                var mp3FileInfo = new FileInfo(Path.Combine(folder, beatmap.AudioFileName));
+                var osuFile = await OsuFile.ReadFromFileAsync(Path.Combine(folder, beatmap.BeatmapFileName), options =>
                 {
                     options.IncludeSection("Events");
                     options.IgnoreSample();
@@ -104,12 +104,12 @@ namespace Milky.OsuPlayer.Pages
 
                 var bgFileInfo = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));
 
-                var artistUtf = MetaString.GetUnicode(entry.Artist, entry.ArtistUnicode);
-                var titleUtf = MetaString.GetUnicode(entry.Title, entry.TitleUnicode);
-                var artistAsc = MetaString.GetOriginal(entry.Artist, entry.ArtistUnicode);
-                var creator = entry.Creator;
-                var version = entry.Version;
-                var source = entry.SongSource;
+                var artistUtf = MetaString.GetUnicode(beatmap.Artist, beatmap.ArtistUnicode);
+                var titleUtf = MetaString.GetUnicode(beatmap.Title, beatmap.TitleUnicode);
+                var artistAsc = MetaString.GetOriginal(beatmap.Artist, beatmap.ArtistUnicode);
+                var creator = beatmap.Creator;
+                var version = beatmap.Version;
+                var source = beatmap.SongSource;
 
                 ConstructNameWithEscaping(out var escapedMp3, out var escapedBg,
                     titleUtf, artistUtf, creator, version);
@@ -125,12 +125,22 @@ namespace Milky.OsuPlayer.Pages
                 if (bgFileInfo.Exists)
                     Export(bgFileInfo, exportBgFolder, exportBgName);
                 if (mp3FileInfo.Exists || bgFileInfo.Exists)
-                    SafeDbOperator.TryAddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
+                {
+                    await using var appDbContext = new ApplicationDbContext();
+                    await appDbContext.AddOrUpdateExport(new BeatmapExport
+                    {
+                        Beatmap = beatmap,
+                        BeatmapId = beatmap.Id,
+                        ExportPath = Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension),
+                        IsValid = true,
+                        Id = Guid.NewGuid()
+                    });
+                }
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Error while exporting beatmap: {0}", entry.GetIdentity());
-                Notification.Push($"Error while exporting beatmap: {entry.GetIdentity()}\r\n{ex.Message}");
+                Logger.Error(ex, "Error while exporting beatmap: {0}", beatmap.ToString());
+                Notification.Push($"Error while exporting beatmap: {beatmap.ToString()}\r\n{ex.Message}");
             }
         }
 

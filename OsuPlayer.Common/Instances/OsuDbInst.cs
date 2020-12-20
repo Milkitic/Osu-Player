@@ -29,7 +29,6 @@ namespace Milky.OsuPlayer.Common.Instances
         }
 
         private readonly object _scanningObject = new object();
-        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
 
         public ViewModelClass ViewModel { get; set; } = new ViewModelClass();
 
@@ -65,7 +64,8 @@ namespace Milky.OsuPlayer.Common.Instances
             if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
             {
                 var db = await ReadDbAsync(path);
-                await _beatmapDbOperator.SyncMapsFromHoLLyAsync(db.Beatmaps, addOnly);
+                await using var dbContext = new ApplicationDbContext();
+                await dbContext.SyncBeatmapsFromHoLLy(db.Beatmaps);
             }
 
             lock (_scanningObject)

@@ -40,7 +40,7 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            CurrentVer.Content = Service.Get<UpdateInst>().CurrentVersion;
+            CurrentVer.Content = Service.Get<UpdateInst>().CurrentVersionString;
             if (Service.Get<UpdateInst>().NewRelease != null)
                 NewVersion.Visibility = Visibility.Visible;
             GetLastUpdate();

@@ -1,22 +1,21 @@
-﻿using Dapper.FluentMap;
+﻿using Microsoft.EntityFrameworkCore;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Shared;
 using Newtonsoft.Json;
 using NLog.Config;
 using System;
 using System.IO;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Milky.OsuPlayer
 {
     public static class EntryStartup
     {
-        public static void Startup()
+        public static async Task StartupAsync()
         {
             ConfigurationItemFactory.Default.LayoutRenderers.RegisterDefinition("InvariantCulture", typeof(InvariantCultureLayoutRendererWrapper));
             if (!LoadConfig())
@@ -29,7 +28,7 @@ namespace Milky.OsuPlayer
             //ConsoleManager.Show();
 #endif
 
-            InitLocalDb();
+            await InitLocalDb();
 
             StyleUtilities.SetAlignment();
 
@@ -73,23 +72,10 @@ namespace Milky.OsuPlayer
             return true;
         }
 
-        private static void InitLocalDb()
+        private static async Task InitLocalDb()
         {
-            FluentMapper.Initialize(config =>
-            {
-                config.AddMap(new StoryboardInfoMap());
-                config.AddMap(new BeatmapMap());
-                config.AddMap(new BeatmapSettingsMap());
-                config.AddMap(new CollectionMap());
-                config.AddMap(new CollectionRelationMap());
-            });
-
-            AppDbOperator.ValidateDb();
-
-            var appDbOperator = new AppDbOperator();
-            var defCol = appDbOperator.GetCollections();
-            var locked = defCol.Where(k => k.LockedBool);
-            if (!locked.Any()) appDbOperator.AddCollection("Favorite", true);
+            await using var dbContext = new ApplicationDbContext();
+            dbContext.Database.Migrate();
         }
     }
 }

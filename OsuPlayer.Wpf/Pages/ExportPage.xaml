@@ -89,7 +89,7 @@
                         Background="{StaticResource WhiteBrush80}"
                         BorderThickness="0"
                         ItemContainerStyle="{StaticResource GridView}"
-                        ItemsSource="{Binding DataModelList, Mode=OneWay}">
+                        ItemsSource="{Binding ExportList, Mode=OneWay}">
                         <ListView.ContextMenu>
                             <ContextMenu x:Name="Menu" Style="{StaticResource DefaultContextMenu}">
                                 <MenuItem

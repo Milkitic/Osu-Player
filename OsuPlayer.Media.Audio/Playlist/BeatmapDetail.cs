@@ -89,8 +89,6 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         public Beatmap Beatmap { get; }
         public double Stars { get; set; }
         public long SongLength { get; set; }
-        public MapIdentity Identity => Beatmap.GetIdentity();
-
         public string BaseFolder { get; set; }
         public string MapPath { get; set; }
         public string BackgroundPath { get; set; }

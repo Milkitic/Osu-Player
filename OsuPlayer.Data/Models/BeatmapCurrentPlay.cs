@@ -3,15 +3,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Milky.OsuPlayer.Data.Models
 {
-    public class CollectionRelation : BaseEntity
+    public class BeatmapCurrentPlay : BaseEntity
     {
         [Key]
         public Guid Id { get; set; }
+        public DateTime PlayTime { get; set; }
+        public int Index { get; set; }
 
         // fk
-        public Collection Collection { get; set; }
-        public Guid CollectionId { get; set; }
-        public Beatmap Beatmap { get; set; }
         public byte[] BeatmapId { get; set; }
+        public Beatmap Beatmap { get; set; }
     }
 }

@@ -77,10 +77,10 @@ namespace Milky.OsuPlayer.UserControls
                     switch (s)
                     {
                         case "0":
-                            mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.AutoTitle));
+                            mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.PreferredTitle));
                             break;
                         case "1":
-                            mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.AutoArtist));
+                            mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.PreferredArtist));
                             break;
                         case "2":
                             mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.SongSource));
@@ -149,7 +149,7 @@ namespace Milky.OsuPlayer.UserControls
             {
                 return new DelegateCommand(param =>
                 {
-                    ExportPage.QueueEntry(SelectedMap);
+                    ExportPage.QueueBeatmap(SelectedMap);
                 });
             }
         }

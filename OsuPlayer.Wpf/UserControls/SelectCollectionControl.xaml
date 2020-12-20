@@ -2,13 +2,14 @@
     x:Class="Milky.OsuPlayer.UserControls.SelectCollectionControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    FontFamily="{StaticResource SspRegular}"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
-    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontFamily="{StaticResource SspRegular}"
+    Initialized="SelectCollectionControl_OnInitialized"
     mc:Ignorable="d">
     <UserControl.DataContext>
         <viewModels:SelectCollectionPageViewModel />
@@ -74,7 +75,7 @@
                             BorderThickness="0"
                             Click="BtnClose_Click"
                             Command="{Binding SelectCommand}"
-                            CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.Entries}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.DataList}"
                             CornerRadius="0">
                             <Grid HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>

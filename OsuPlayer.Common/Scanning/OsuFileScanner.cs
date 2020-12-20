@@ -15,7 +15,6 @@ namespace Milky.OsuPlayer.Common.Scanning
 
         public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();
         private CancellationTokenSource _scanCts;
-        private readonly AppDbOperator _dbOperator = new AppDbOperator();
 
         private static readonly object ScanObject = new object();
         private static readonly object CancelObject = new object();
@@ -30,7 +29,8 @@ namespace Milky.OsuPlayer.Common.Scanning
             }
 
             _scanCts = new CancellationTokenSource();
-            _dbOperator.RemoveLocalAll();
+            await using var dbContext = new ApplicationDbContext();
+            await dbContext.RemoveLocalAll();
             var dirInfo = new DirectoryInfo(path);
             if (dirInfo.Exists)
             {
@@ -107,7 +107,8 @@ namespace Milky.OsuPlayer.Common.Scanning
 
             try
             {
-                _dbOperator.AddNewMaps(beatmaps);
+                await using var dbContext = new ApplicationDbContext();
+                await dbContext.AddNewBeatmaps(beatmaps);
             }
             catch (Exception ex)
             {
@@ -118,10 +119,10 @@ namespace Milky.OsuPlayer.Common.Scanning
 
         private Beatmap GetBeatmapObj(LocalOsuFile osuFile, FileInfo fileInfo)
         {
-            var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
+            var beatmap = BeatmapConvertExtension.ParseFromOSharp(osuFile);
             beatmap.BeatmapFileName = fileInfo.Name;
             beatmap.LastModifiedTime = fileInfo.LastWriteTime;
-            beatmap.FolderName = fileInfo.Directory?.Name;
+            beatmap.FolderNameOrPath = fileInfo.Directory?.Name;
             beatmap.InOwnDb = true;
             return beatmap;
         }
