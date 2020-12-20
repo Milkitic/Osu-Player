@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Media.Audio.Playlist;
+using System.Windows;
 
 namespace Milky.OsuPlayer.Windows
 {
@@ -20,12 +20,12 @@ namespace Milky.OsuPlayer.Windows
 
         private void SLink_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://osu.ppy.sh/s/" + _info.BeatmapDetail.Metadata.BeatmapsetId);
+            ProcessLegacy.StartLegacy("https://osu.ppy.sh/s/" + _info.BeatmapDetail.Metadata.BeatmapsetId);
         }
 
         private void BLink_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://osu.ppy.sh/b/" + _info.BeatmapDetail.Metadata.BeatmapId);
+            ProcessLegacy.StartLegacy("https://osu.ppy.sh/b/" + _info.BeatmapDetail.Metadata.BeatmapId);
         }
     }
 }

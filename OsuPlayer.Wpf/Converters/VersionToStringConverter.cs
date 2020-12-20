@@ -1,7 +1,7 @@
-﻿using System;
+﻿using OSharp.Beatmap.Sections.GamePlay;
+using System;
 using System.Globalization;
 using System.Windows.Data;
-using OSharp.Beatmap.Sections.GamePlay;
 
 namespace Milky.OsuPlayer.Converters
 {
@@ -24,6 +24,24 @@ namespace Milky.OsuPlayer.Converters
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class NonEmptyStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string s)
+            {
+                return s;
+            }
+
+            return parameter;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -423,7 +423,7 @@
                 ItemsSource="{Binding AllFontFamilies}"
                 Loaded="FrameworkElement_OnLoaded"
                 SelectedItem="{Binding FontFamily, Mode=TwoWay}"
-                Style="{StaticResource ListView}"
+                Style="{StaticResource ListViewWithoutBorder}"
                 TextBlock.FontSize="16">
                 <ListView.View>
                     <GridView ColumnHeaderContainerStyle="{StaticResource HiddenHeaderStyle}">

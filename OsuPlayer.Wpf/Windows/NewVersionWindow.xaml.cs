@@ -1,7 +1,6 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Presentation;
-using System.Diagnostics;
 using System.Windows;
 
 namespace Milky.OsuPlayer.Windows
@@ -22,29 +21,6 @@ namespace Milky.OsuPlayer.Windows
             MainGrid.DataContext = _release;
         }
 
-        //private void OpenHyperlink(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
-        //{
-        //    var p = e.Parameter.ToString();
-        //    if (p == "later")
-        //    {
-        //        Close();
-        //    }
-        //    else if (p == "ignore")
-        //    {
-        //        AppSettings.Default.IgnoredVer = _release.NewVerString;
-        //        AppSettings.SaveDefault();
-        //        Close();
-        //    }
-        //    else if (p == "update")
-        //    {
-        //        UpdateWindow updateWindow = new UpdateWindow(_release, _mainWindow);
-        //        updateWindow.Show();
-        //        Close();
-        //    }
-        //    else
-        //        Process.Start(p);
-        //}
-
         private void Update_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             var updateWindow = new UpdateWindow(_release, _mainWindow);
@@ -54,7 +30,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void HtmlUrl_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(_release.HtmlUrl);
+            ProcessLegacy.StartLegacy(_release.HtmlUrl);
         }
 
         private void Skip_Click(object sender, RoutedEventArgs e)

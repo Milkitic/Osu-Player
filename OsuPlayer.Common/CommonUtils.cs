@@ -1,38 +1,35 @@
 ﻿using Microsoft.Win32;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using OSharp.Beatmap;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using Milky.OsuPlayer.Data.Models;
 
 namespace Milky.OsuPlayer.Common
 {
+    public static class ProcessLegacy
+    {
+        public static void StartLegacy(string command)
+        {
+            Process.Start(new ProcessStartInfo(command) { UseShellExecute = true });
+        }
+
+        public static void StartLegacy(string command, string arguments)
+        {
+            Process.Start(new ProcessStartInfo(command) { UseShellExecute = true, Arguments = arguments });
+        }
+    }
+
     public static class CommonUtils
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private static readonly SemaphoreSlim Lock = new SemaphoreSlim(5);
-        ///// <summary>
-        ///// Copy resource to folder
-        ///// </summary>
-        ///// <param name="filename">File name in resource.</param>
-        ///// <param name="path">Path to save.</param>
-        //public static void ExportResource(string filename, string path)
-        //{
-        //    System.Resources.ResourceManager rm = Properties.Resources.ResourceManager;
-        //    byte[] obj = (byte[])rm.GetObject(filename, null);
-        //    if (obj == null)
-        //        return;
-        //    using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
-        //    {
-        //        fs.Write(obj, 0, obj.Length);
-        //        fs.Close();
-        //    }
-        //}
 
         public static bool? BrowseDb(out string path)
         {

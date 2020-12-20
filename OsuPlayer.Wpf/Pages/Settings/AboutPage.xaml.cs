@@ -1,13 +1,13 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -30,12 +30,12 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void LinkGithub_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://github.com/Milkitic/Osu-Player");
+            ProcessLegacy.StartLegacy("https://github.com/Milkitic/Osu-Player");
         }
 
         private void LinkFeedback_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://github.com/Milkitic/Osu-Player/issues/new");
+            ProcessLegacy.StartLegacy("https://github.com/Milkitic/Osu-Player/issues/new");
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -97,7 +97,7 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void LinkLicense_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://github.com/Milkitic/Osu-Player/blob/master/LICENSE");
+            ProcessLegacy.StartLegacy("https://github.com/Milkitic/Osu-Player/blob/master/LICENSE");
         }
 
         private void LinkPrivacy_Click(object sender, RoutedEventArgs e)

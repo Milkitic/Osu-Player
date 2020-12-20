@@ -67,8 +67,8 @@ namespace Milky.OsuPlayer
 
         private void Downloader_OnFinishDownloading()
         {
-            Process.Start(new FileInfo(_savePath).DirectoryName);
-            Process.Start(_savePath);
+            ProcessLegacy.StartLegacy(new FileInfo(_savePath).DirectoryName);
+            ProcessLegacy.StartLegacy(_savePath);
             Dispatcher.BeginInvoke(new Action(Close));
         }
 

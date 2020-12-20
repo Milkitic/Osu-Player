@@ -177,11 +177,11 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style TargetType="{x:Type ListView}">
+    <Style x:Key="ListViewBaseStyle" TargetType="{x:Type ListView}">
         <Setter Property="AlternationCount" Value="2" />
         <Setter Property="Background" Value="#B0FFFFFF" />
     </Style>
-    <Style x:Key="ListView" TargetType="{x:Type ListView}">
+    <Style x:Key="ListViewWithoutBorder" TargetType="{x:Type ListView}">
         <Setter Property="BorderThickness" Value="0" />
     </Style>
 </ResourceDictionary>

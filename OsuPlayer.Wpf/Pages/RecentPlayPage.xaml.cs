@@ -25,9 +25,9 @@ namespace Milky.OsuPlayer.Pages
     public class RecentPlayPageVm : VmBase
     {
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
-        private ObservableCollection<OrderedModel<Beatmap>> _beatmaps;
+        private ObservableCollection<OrderedBeatmap> _beatmaps;
 
-        public ObservableCollection<OrderedModel<Beatmap>> Beatmaps
+        public ObservableCollection<OrderedBeatmap> Beatmaps
         {
             get => _beatmaps;
             set
@@ -54,7 +54,7 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
+                return new DelegateCommand<OrderedBeatmap>(orderedModel =>
                 {
                     var folder = orderedModel.Model.GetFolder(out _, out _);
                     if (!Directory.Exists(folder))
@@ -63,7 +63,7 @@ namespace Milky.OsuPlayer.Pages
                         return;
                     }
 
-                    Process.Start(folder);
+                    ProcessLegacy.StartLegacy(folder);
                 });
             }
         }
@@ -72,9 +72,9 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
+                return new DelegateCommand<OrderedBeatmap>(orderedModel =>
                 {
-                    Process.Start($"https://osu.ppy.sh/s/{orderedModel.Model.BeatmapSetId}");
+                    ProcessLegacy.StartLegacy($"https://osu.ppy.sh/s/{orderedModel.Model.BeatmapSetId}");
                 });
             }
         }
@@ -83,7 +83,7 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
+                return new DelegateCommand<OrderedBeatmap>(orderedModel =>
                 {
                     FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(orderedModel),
                         DialogOptionFactory.SelectCollectionOptions);
@@ -95,7 +95,7 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
+                return new DelegateCommand<OrderedBeatmap>(orderedModel =>
                 {
                     if (orderedModel == null) return;
                     ExportPage.QueueBeatmap(orderedModel);
@@ -107,7 +107,7 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(async orderedModel =>
+                return new DelegateCommand<OrderedBeatmap>(async orderedModel =>
                 {
                     if (orderedModel == null) return;
                     await _controller.PlayNewAsync(orderedModel);
@@ -119,7 +119,7 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(async orderedModel =>
+                return new DelegateCommand<OrderedBeatmap>(async orderedModel =>
                 {
                     if (orderedModel == null) return;
                     await _controller.PlayNewAsync(orderedModel);
@@ -131,7 +131,7 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(async map =>
+                return new DelegateCommand<OrderedBeatmap>(async map =>
                 {
                     await using var appDbContext = new ApplicationDbContext();
                     await appDbContext.RemoveBeatmapFromRecent(map);
@@ -190,7 +190,7 @@ namespace Milky.OsuPlayer.Pages
             await using var appDbContext = new ApplicationDbContext();
             var queryResult = await appDbContext.GetRecentList();
             // todo: pagination
-            _viewModel.Beatmaps = new ObservableCollection<OrderedModel<Beatmap>>(queryResult.Collection.AsOrdered());
+            _viewModel.Beatmaps = new ObservableCollection<OrderedBeatmap>(queryResult.Collection.AsOrderedBeatmap());
         }
 
         private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)

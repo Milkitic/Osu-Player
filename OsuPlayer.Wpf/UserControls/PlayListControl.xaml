@@ -176,7 +176,7 @@
                 MouseMove="PlayList_MouseMove"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 SelectionChanged="PlayList_SelectionChanged"
-                Style="{StaticResource ListView}">
+                Style="{StaticResource ListViewWithoutBorder}">
                 <ListView.Resources>
                     <DataTemplate x:Key="PlayingDt">
                         <Border

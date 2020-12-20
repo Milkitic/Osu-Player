@@ -22,10 +22,10 @@ namespace Milky.OsuPlayer.ViewModels
     {
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
-        private ObservableCollection<OrderedModel<Beatmap>> _dataList;
+        private ObservableCollection<OrderedBeatmap> _dataList;
         private Collection _collection;
 
-        public ObservableCollection<OrderedModel<Beatmap>> DataList
+        public ObservableCollection<OrderedBeatmap> DataList
         {
             get => _dataList;
             set
@@ -62,7 +62,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
+                return new DelegateCommand<OrderedBeatmap>(orderedModel =>
                 {
                     var beatmap = orderedModel.Model;
                     var folderName = beatmap.GetFolder(out _, out _);
@@ -72,7 +72,7 @@ namespace Milky.OsuPlayer.ViewModels
                         return;
                     }
 
-                    Process.Start(folderName);
+                    ProcessLegacy.StartLegacy(folderName);
                 });
             }
         }
@@ -81,9 +81,9 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
+                return new DelegateCommand<OrderedBeatmap>(orderedModel =>
                 {
-                    Process.Start($"https://osu.ppy.sh/s/{orderedModel.Model.BeatmapSetId}");
+                    ProcessLegacy.StartLegacy($"https://osu.ppy.sh/s/{orderedModel.Model.BeatmapSetId}");
                 });
             }
         }
@@ -92,7 +92,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
+                return new DelegateCommand<OrderedBeatmap>(orderedModel =>
                 {
                     FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(orderedModel),
                         DialogOptionFactory.SelectCollectionOptions);
@@ -104,7 +104,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
+                return new DelegateCommand<OrderedBeatmap>(orderedModel =>
                 {
                     ExportPage.QueueBeatmap(orderedModel); //todo: export notification
                 });
@@ -115,7 +115,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(async orderedModel =>
+                return new DelegateCommand<OrderedBeatmap>(async orderedModel =>
                 {
                     await _controller.PlayNewAsync(orderedModel);
                 });
@@ -126,7 +126,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(async orderedModel =>
+                return new DelegateCommand<OrderedBeatmap>(async orderedModel =>
                 {
                     await _controller.PlayNewAsync(orderedModel);
                 });
@@ -137,7 +137,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand<OrderedModel<Beatmap>>(async orderedModel =>
+                return new DelegateCommand<OrderedBeatmap>(async orderedModel =>
                 {
                     await using var appDbContext = new ApplicationDbContext();
                     //todo: support multiply

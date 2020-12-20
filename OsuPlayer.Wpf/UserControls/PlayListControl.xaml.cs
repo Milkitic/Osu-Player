@@ -99,7 +99,7 @@ namespace Milky.OsuPlayer.UserControls
             {
                 return new DelegateCommand(param =>
                 {
-                    Process.Start(SelectedMap.GetFolder(out _, out _));
+                    ProcessLegacy.StartLegacy(SelectedMap.GetFolder(out _, out _));
                 });
             }
         }
@@ -110,7 +110,7 @@ namespace Milky.OsuPlayer.UserControls
             {
                 return new DelegateCommand(param =>
                 {
-                    Process.Start($"https://osu.ppy.sh/b/{SelectedMap.BeatmapId}");
+                    ProcessLegacy.StartLegacy($"https://osu.ppy.sh/b/{SelectedMap.BeatmapId}");
                 });
             }
         }

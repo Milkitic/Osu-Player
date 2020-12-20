@@ -72,7 +72,7 @@ namespace Milky.OsuPlayer.Pages
             await using var dbContext = new ApplicationDbContext();
             _beatmaps = (await dbContext.GetBeatmapsFromCollection(ViewModel.Collection, 0, int.MaxValue))
                 .Collection; // todo: pagination
-            ViewModel.DataList = new ObservableCollection<OrderedModel<Beatmap>>(_beatmaps.AsOrdered());
+            ViewModel.DataList = new ObservableCollection<OrderedBeatmap>(_beatmaps.AsOrderedBeatmap());
             ListCount.Content = ViewModel.DataList.Count;
         }
 
@@ -111,7 +111,7 @@ namespace Milky.OsuPlayer.Pages
             var keyword = SearchBox.Text.Trim();
             ViewModel.DataList = string.IsNullOrWhiteSpace(keyword)
                 ? ViewModel.DataList
-                : new ObservableCollection<OrderedModel<Beatmap>>(ViewModel.DataList); // todo: search
+                : new ObservableCollection<OrderedBeatmap>(ViewModel.DataList); // todo: search
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)

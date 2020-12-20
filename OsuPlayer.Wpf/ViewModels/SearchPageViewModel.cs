@@ -32,7 +32,7 @@ namespace Milky.OsuPlayer.ViewModels
     {
         private const int MaxListCount = 100;
 
-        private ObservableCollection<OrderedModel<Beatmap>> _dataList;
+        private ObservableCollection<OrderedBeatmap> _dataList;
         private List<ListPageViewModel> _pages;
         private ListPageViewModel _lastPage;
         private ListPageViewModel _firstPage;
@@ -50,7 +50,7 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public ObservableCollection<OrderedModel<Beatmap>> DataList
+        public ObservableCollection<OrderedBeatmap> DataList
         {
             get => _dataList;
             private set
@@ -141,7 +141,7 @@ namespace Milky.OsuPlayer.ViewModels
                     );
 
                 var result = await dbContext.FillBeatmapThumbs(paginationQueryResult.Collection);
-                DataList = new ObservableCollection<OrderedModel<Beatmap>>(result.AsOrdered());
+                DataList = new ObservableCollection<OrderedBeatmap>(result.AsOrderedBeatmap());
                 SetPage(paginationQueryResult.Count, page);
             }
             finally
@@ -257,7 +257,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(async param =>
+                return new DelegateCommand<OrderedBeatmap>(async param =>
                 {
                     var beatmap = (Beatmap)param;
                     var map = await GetHighestSrBeatmap(beatmap);
@@ -269,7 +269,7 @@ namespace Milky.OsuPlayer.ViewModels
                         return;
                     }
 
-                    Process.Start(folderName);
+                    ProcessLegacy.StartLegacy(folderName);
                 });
             }
         }
@@ -278,12 +278,12 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(async param =>
+                return new DelegateCommand<OrderedBeatmap>(async param =>
                 {
                     var beatmap = (Beatmap)param;
                     var map = await GetHighestSrBeatmap(beatmap);
                     if (map == null) return;
-                    Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
+                    ProcessLegacy.StartLegacy($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
                 });
             }
         }
@@ -292,7 +292,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(async param =>
+                return new DelegateCommand<OrderedBeatmap>(async param =>
                 {
                     var beatmap = (Beatmap)param;
 
@@ -317,7 +317,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(async param =>
+                return new DelegateCommand<OrderedBeatmap>(async param =>
                 {
                     var beatmap = (Beatmap)param;
                     var map = await GetHighestSrBeatmap(beatmap);
@@ -331,7 +331,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(async param =>
+                return new DelegateCommand<OrderedBeatmap>(async param =>
                 {
                     var beatmap = (Beatmap)param;
                     var map = await GetHighestSrBeatmap(beatmap);
@@ -346,7 +346,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(async param =>
+                return new DelegateCommand<OrderedBeatmap>(async param =>
                 {
                     var beatmap = (Beatmap)param;
                     await using var dbContext = new ApplicationDbContext();

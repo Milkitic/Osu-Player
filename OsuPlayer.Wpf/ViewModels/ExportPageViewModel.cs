@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Data;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation.Interaction;
@@ -76,15 +77,15 @@ namespace Milky.OsuPlayer.ViewModels
                         case string path:
                             if (Directory.Exists(path))
                             {
-                                Process.Start(path);
+                                ProcessLegacy.StartLegacy(path);
                             }
                             else
                             {
                                 Notification.Push(I18NUtil.GetString("err-dirNotFound"), I18NUtil.GetString("text-error"));
                             }
                             break;
-                        case OrderedModel<Beatmap> orderedModel:
-                            Process.Start("Explorer", "/select," + orderedModel.Model.BeatmapExport?.ExportPath);
+                        case OrderedBeatmap orderedModel:
+                            ProcessLegacy.StartLegacy("Explorer", "/select," + orderedModel.Model.BeatmapExport?.ExportPath);
                             // todo: include
                             break;
                         default:

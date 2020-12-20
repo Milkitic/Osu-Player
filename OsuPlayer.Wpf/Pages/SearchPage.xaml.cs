@@ -4,7 +4,6 @@ using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.PanelComponent;
 using Milky.OsuPlayer.ViewModels;
@@ -59,6 +58,7 @@ namespace Milky.OsuPlayer.Pages
 
         private async void SearchPage_Loaded(object sender, RoutedEventArgs e)
         {
+            return;
             var minimal = AppSettings.Default.Interface.MinimalMode;
             if (minimal != _minimal)
             {
@@ -113,7 +113,7 @@ namespace Milky.OsuPlayer.Pages
         private async Task<Beatmap> GetSelectedDefault()
         {
             await using var appDbContext = new ApplicationDbContext();
-            if (!(ResultList.SelectedItem is OrderedModel<Beatmap> beatmap)) return null;
+            if (!(ResultList.SelectedItem is OrderedBeatmap beatmap)) return null;
 
             var allMaps = await appDbContext
                 .GetBeatmapsFromFolder(beatmap.Model.FolderNameOrPath, beatmap.Model.InOwnDb);
