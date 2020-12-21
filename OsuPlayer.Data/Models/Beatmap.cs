@@ -2,13 +2,52 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using Milky.OsuPlayer.Presentation.Annotations;
 
 namespace Milky.OsuPlayer.Data.Models
 {
+    public class BeatmapGroup : INotifyPropertyChanged
+    {
+        private ObservableCollection<Beatmap> _beatmaps;
+
+        public string Artist { get; set; }
+        public string ArtistUnicode { get; set; }
+        public string Title { get; set; }
+        public string TitleUnicode { get; set; }
+
+        public string Creator { get; set; } //mapper
+        public int BeatmapSetId { get; set; }
+        public string SongSource { get; set; }
+        public string SongTags { get; set; }
+        public string FolderNameOrPath { get; set; }
+        public bool InOwnDb { get; set; }
+
+        public ObservableCollection<Beatmap> Beatmaps
+        {
+            get => _beatmaps;
+            set
+            {
+                if (Equals(value, _beatmaps)) return;
+                _beatmaps = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
     public class Beatmap : BaseEntity, IEquatable<Beatmap>
     {
         private BeatmapThumb _beatmapThumb;

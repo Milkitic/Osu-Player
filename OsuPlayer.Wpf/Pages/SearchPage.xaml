@@ -245,7 +245,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <itemsControls:BeatmapDataGrid Grid.Row="1" DataList="{Binding DataList}" />
+            <itemsControls:BeatmapDataGrid Grid.Row="1" BeatmapList="{Binding DataList}" />
             <ListBox
                 x:Name="ResultCardList"
                 Padding="3,0"

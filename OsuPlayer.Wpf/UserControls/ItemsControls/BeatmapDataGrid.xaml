@@ -13,6 +13,74 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <UserControl.Resources>
+        <ContextMenu x:Key="BeatmapCtxMenu">
+            <d:Object.DataContext>
+                <osuPlayer:OrderedBeatmap />
+            </d:Object.DataContext>
+            <MenuItem
+                Command="{Binding PlayCommand, Mode=OneWay, Source={local:RootBeatmapDataGrid}}"
+                CommandParameter="{Binding}"
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-play}" /><Run Text="... (Enter)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
+            <Separator />
+            <MenuItem
+                Command="{Binding SearchByConditionCommand, Mode=OneWay, Source={local:RootBeatmapDataGrid}}"
+                CommandParameter="{Binding Model.PreferredTitle}"
+                Header="{DynamicResource ui-ctxMenu-searchTitle}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding SearchByConditionCommand, Mode=OneWay, Source={local:RootBeatmapDataGrid}}"
+                CommandParameter="{Binding Model.PreferredArtist}"
+                Header="{DynamicResource ui-ctxMenu-searchArtist}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding SearchByConditionCommand, Mode=OneWay, Source={local:RootBeatmapDataGrid}}"
+                CommandParameter="{Binding Model.SongSource}"
+                Header="{DynamicResource ui-ctxMenu-searchSource}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <MenuItem
+                Command="{Binding SearchByConditionCommand, Mode=OneWay, Source={local:RootBeatmapDataGrid}}"
+                CommandParameter="{Binding Model.Creator}"
+                Header="{DynamicResource ui-ctxMenu-searchCreator}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding OpenSourceFolderCommand, Mode=OneWay, Source={local:RootBeatmapDataGrid}}"
+                CommandParameter="{Binding}"
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-ctxMenu-openSourceFolder}" /><Run Text=" (Ctrl+O)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem
+                Command="{Binding OpenScorePageCommand, Mode=OneWay, Source={local:RootBeatmapDataGrid}}"
+                CommandParameter="{Binding}"
+                Header="{DynamicResource ui-ctxMenu-openScorePage}"
+                Style="{StaticResource DefaultMenuItem}" />
+            <Separator />
+            <MenuItem
+                Command="{Binding SaveCollectionCommand, Mode=OneWay, Source={local:RootBeatmapDataGrid}}"
+                CommandParameter="{Binding}"
+                Style="{StaticResource DefaultMenuItem}">
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="{DynamicResource ui-ctxMenu-saveTo}" /><Run Text="... (Ctrl+S)" />
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem
+                Command="{Binding ExportCommand, Mode=OneWay, Source={local:RootBeatmapDataGrid}}"
+                CommandParameter="{Binding}"
+                Header="{DynamicResource ui-ctxMenu-export}"
+                Style="{StaticResource DefaultMenuItem}" />
+        </ContextMenu>
         <Color x:Key="secondary">#E4DFDA</Color>
         <Color x:Key="primary">#4281A4</Color>
         <Color x:Key="success">#48A9A6</Color>
@@ -126,19 +194,7 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Margin" Value="2,1" />
             <Setter Property="Background" Value="#80FFFFFF" />
-            <Setter Property="ContextMenu">
-                <Setter.Value>
-                    <ContextMenu>
-                        <d:Object.DataContext>
-                            <osuPlayer:OrderedBeatmap />
-                        </d:Object.DataContext>
-                        <MenuItem
-                            Command="{Binding Path=TestCommand, Source={local:RootBeatmapDataGrid}}"
-                            CommandParameter="{Binding}"
-                            Header="Click Me" />
-                    </ContextMenu>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="ContextMenu" Value="{StaticResource BeatmapCtxMenu}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="DataGridRow">
@@ -231,7 +287,7 @@
             <Setter Property="RowHeaderStyle" Value="{StaticResource MyDataGridRowHeader}" />
         </Style>
     </UserControl.Resources>
-    <DataGrid ItemsSource="{Binding ElementName=Self, Path=DataList, Mode=OneWay}" Style="{StaticResource DataGrid}">
+    <DataGrid ScrollViewer.CanContentScroll="False" ItemsSource="{Binding ElementName=Self, Path=BeatmapList, Mode=OneWay}" Style="{StaticResource DataGrid}">
         <DataGrid.Columns>
             <DataGridTemplateColumn>
                 <DataGridTemplateColumn.CellTemplate>
@@ -243,7 +299,9 @@
             <DataGridTemplateColumn MinWidth="300" Header="{DynamicResource ui-title}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate DataType="osuPlayer:OrderedBeatmap">
-                        <TextBlock Text="{Binding Model.Title}" />
+                        <TextBlock
+                            Foreground="#232323"
+                            Text="{Binding Model.Title}" />
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
@@ -274,7 +332,7 @@
                                 VerticalAlignment="Center"
                                 FontSize="13"
                                 FontStyle="Italic"
-                                Foreground="#FF9C9C9C"
+                                Foreground="#727272"
                                 Text="{Binding Model.SongSource}">
                                 <TextBlock.Style>
                                     <Style TargetType="{x:Type TextBlock}">
