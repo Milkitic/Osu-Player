@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Shared.Models.NostModels;
 
 namespace Milky.OsuPlayer.Media.Audio
@@ -82,12 +83,31 @@ namespace Milky.OsuPlayer.Media.Audio
             {
                 if (_otherFile is MusicScore score)
                 {
-                    return new List<SoundElement>();
+                    var dir = Path.GetDirectoryName(_path);
+                    var all = score.NoteData
+                        .Where(k => k.Hand == 2)
+                        .SelectMany(k => k.SubNoteData);
+                    var ele = all.Select(k =>
+                    {
+                        var s = score.TrackInfo.First(o => o.Index == k.TrackIndex).Name;
+                        var isGeneric = _generics.Contains(s);
+
+                        var name = s + "_" +
+                                   KeysoundFilenameUtilities.GetFileSuffix(k.ScalePiano);
+                        var path = isGeneric
+                            ? Path.Combine(Domain.DefaultPath, "generic", s, name)
+                            : Path.Combine(dir, name);
+                        return SoundElement.Create(k.StartTimingMsec, k.Velocity / 128f, 0, path);
+                    });
+                    return new List<SoundElement>(ele);
                 }
 
                 throw new NotImplementedException("unknown file");
             }
         }
+
+        private static string[] _generics = new[]
+            {"key_apiano1", "key_apiano2", "key_apiano3", "key_harpsichord1", "key_organ1", "key_organ2"};
 
         public override async Task SetPlaybackRate(float rate, bool useTempo)
         {
