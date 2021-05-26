@@ -134,9 +134,9 @@ namespace Milky.OsuPlayer.Windows
                     if (!_controller.IsPlayerReady) return;
 
                     var lyricInst = Service.Get<LyricsInst>();
-                    var meta = _controller.PlayList.CurrentInfo.OsuFile.Metadata;
-                    MetaString metaArtist = meta.ArtistMeta;
-                    MetaString metaTitle = meta.TitleMeta;
+                    var meta = _controller.PlayList.CurrentInfo?.OsuFile?.Metadata;
+                    MetaString metaArtist = meta?.ArtistMeta ?? default;
+                    MetaString metaTitle = meta?.TitleMeta ?? default;
                     var lyric = await lyricInst.LyricProvider.GetLyricAsync(metaArtist.ToUnicodeString(),
                         metaTitle.ToUnicodeString(), (int)_controller.Player.Duration.TotalMilliseconds);
                     LyricWindow.SetNewLyric(lyric, metaArtist, metaTitle);

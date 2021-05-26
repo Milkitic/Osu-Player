@@ -169,7 +169,7 @@ namespace Milky.OsuPlayer.UserControls
             var openFileDialog = new OpenFileDialog
             {
                 Title = @"请选择一个.osu文件",
-                Filter = @"Osu Files(*.osu)|*.osu"
+                Filter = @"Nostalgia XML Files(*.xml)|*.xml|Osu Files(*.osu)|*.osu"
             };
             var result = openFileDialog.ShowDialog();
             var path = result == true ? openFileDialog.FileName : null;

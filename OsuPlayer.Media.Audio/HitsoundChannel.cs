@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Shared.Models.NostModels;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
@@ -20,6 +21,8 @@ namespace Milky.OsuPlayer.Media.Audio
         private readonly OsuMixPlayer _player;
         private readonly OsuFile _osuFile;
         private readonly string _sourceFolder;
+        private object _otherFile;
+        private readonly string _path;
 
         public HitsoundChannel(OsuMixPlayer player, OsuFile osuFile, string sourceFolder, AudioPlaybackEngine engine)
             : base(engine)
@@ -30,28 +33,50 @@ namespace Milky.OsuPlayer.Media.Audio
 
             Description = nameof(HitsoundChannel);
         }
+        public HitsoundChannel(OsuMixPlayer player, object otherFile, string path, string sourceFolder, AudioPlaybackEngine engine)
+            : base(engine)
+        {
+            _player = player;
+            _otherFile = otherFile;
+            _path = path;
+            _sourceFolder = sourceFolder;
+
+            Description = nameof(HitsoundChannel);
+        }
 
         public override async Task<IEnumerable<SoundElement>> GetSoundElements()
         {
-            List<RawHitObject> hitObjects = _osuFile.HitObjects.HitObjectList;
-            var elements = new ConcurrentBag<SoundElement>();
-
-            var dirInfo = new DirectoryInfo(_sourceFolder);
-            var waves = new HashSet<string>(dirInfo.EnumerateFiles()
-                .Where(k => AudioPlaybackEngine.SupportExtensions.Contains(
-                    k.Extension, StringComparer.OrdinalIgnoreCase)
-                )
-                .Select(p => Path.GetFileNameWithoutExtension(p.Name))
-            );
-
-            await Task.Run(() =>
+            if (_osuFile != null)
             {
-                hitObjects.AsParallel()
-                    .WithDegreeOfParallelism(/*Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 :*/ 1)
-                    .ForAll(obj => { AddSingleHitObject(obj, waves, elements).Wait(); });
-            }).ConfigureAwait(false);
+                List<RawHitObject> hitObjects = _osuFile.HitObjects.HitObjectList;
+                var elements = new ConcurrentBag<SoundElement>();
 
-            return new List<SoundElement>(elements);
+                var dirInfo = new DirectoryInfo(_sourceFolder);
+                var waves = new HashSet<string>(dirInfo.EnumerateFiles()
+                    .Where(k => AudioPlaybackEngine.SupportExtensions.Contains(
+                        k.Extension, StringComparer.OrdinalIgnoreCase)
+                    )
+                    .Select(p => Path.GetFileNameWithoutExtension(p.Name))
+                );
+
+                await Task.Run(() =>
+                {
+                    hitObjects.AsParallel()
+                        .WithDegreeOfParallelism(/*Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 :*/ 1)
+                        .ForAll(obj => { AddSingleHitObject(obj, waves, elements).Wait(); });
+                }).ConfigureAwait(false);
+
+                return new List<SoundElement>(elements);
+            }
+            else
+            {
+                if (_otherFile is MusicScore score)
+                {
+                    return new List<SoundElement>();
+                }
+
+                throw new NotImplementedException("unknown file");
+            }
         }
 
         private async Task AddSingleHitObject(RawHitObject obj, HashSet<string> waves,

@@ -1,4 +1,5 @@
-﻿using Milky.OsuPlayer.Data.Models;
+﻿using System;
+using Milky.OsuPlayer.Data.Models;
 using OSharp.Beatmap;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
@@ -6,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using Milky.OsuPlayer.Shared.Models.NostModels;
 using OSharpGameMode = OSharp.Beatmap.Sections.GamePlay.GameMode;
 
 namespace Milky.OsuPlayer.Data
@@ -128,6 +130,16 @@ namespace Milky.OsuPlayer.Data
 
             var unzip = Encoding.UTF8.GetString(mso.ToArray());
             return unzip;
+        }
+
+        public static Beatmap ParseFromNost(MusicScore musicscore, string path)
+        {
+            return new Beatmap()
+            {
+                Artist = path,
+                Title = path
+                //Id = Zip($"{new Random().Next()}")
+            };
         }
     }
 }

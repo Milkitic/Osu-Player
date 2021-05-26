@@ -15,7 +15,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Milky.OsuPlayer.Presentation.Annotations;
+using Milky.OsuPlayer.Shared.Models.NostModels;
 using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Media.Audio
@@ -119,19 +121,55 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 Logger.Info("Start load new song from path: {0}", path);
                 var context = PlayList.CurrentInfo;
-                context.BeatmapDetail.MapPath = path;
-                context.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path);
+
+                if (PlayList.HasCurrent)
+                {
+                    context.BeatmapDetail.MapPath = path;
+                    context.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path);
+                }
 
                 await ClearPlayer().ConfigureAwait(false);
                 Execute.OnUiThread(() => PreLoadStarted?.Invoke(path, _cts.Token));
-                var osuFile =
-                    await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
-                        .ConfigureAwait(false); //50 ms
-                if (!osuFile.ReadSuccess) throw osuFile.ReadException;
 
-                context.OsuFile = osuFile;
+                var ext = Path.GetExtension(path).ToLower();
+                Beatmap beatmap;
+                if (ext == ".osu")
+                {
+                    var osuFile =
+                        await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
+                            .ConfigureAwait(false); //50 ms
+                    if (!osuFile.ReadSuccess) throw osuFile.ReadException;
 
-                var beatmap = BeatmapConvertExtension.ParseFromOSharp(osuFile);
+                    beatmap = BeatmapConvertExtension.ParseFromOSharp(osuFile);
+                    if (!PlayList.HasCurrent)
+                    {
+                        await PlayList.SetSongListAsync(new List<Beatmap>() { beatmap }, true);
+                    }
+
+                    context.OsuFile = osuFile;
+
+                }
+                else if (ext == ".xml")
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(MusicScore));
+                    StreamReader xmlreader = new StreamReader(path);
+                    var musicscore = serializer.Deserialize(xmlreader) as MusicScore;
+
+                    beatmap = BeatmapConvertExtension.ParseFromNost(musicscore, path);
+
+                    if (!PlayList.HasCurrent)
+                    {
+                        await PlayList.SetSongListAsync(new List<Beatmap>() { beatmap }, true, false, false);
+                        context = PlayList.CurrentInfo;
+                    }
+
+                    context.OtherFile = musicscore;
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
+
 
                 Beatmap trueBeatmap;
                 await using (var dbContext = new ApplicationDbContext())
@@ -193,75 +231,120 @@ namespace Milky.OsuPlayer.Media.Audio
                 Execute.OnUiThread(() => LoadStarted?.Invoke(context, _cts.Token));
 
                 // meta
-                var osuFile = context.OsuFile;
                 var beatmapDetail = context.BeatmapDetail;
 
                 var folder = beatmap.GetFolder(out var isFromDb, out var freePath).Trim();
-                if (osuFile == null)
-                {
-                    Logger.Info("Start load new song from db: {0}", beatmap.BeatmapFileName);
-                    string path = isFromDb ? Path.Combine(folder, beatmap.BeatmapFileName) : freePath;
-                    beatmapDetail.MapPath = path;
-                    beatmapDetail.BaseFolder = Path.GetDirectoryName(path);
 
-                    osuFile = await OsuFile.ReadFromFileAsync(path).ConfigureAwait(false);
-                    if (!osuFile.ReadSuccess) throw osuFile.ReadException;
-                    context.OsuFile = osuFile;
+                var metadata = beatmapDetail.Metadata;
+                if (!context.Beatmap.IsTemporary)
+                {
+                    await using var dbContext = new ApplicationDbContext();
+                    var album = await dbContext.GetCollectionsByBeatmap(context.Beatmap);
+                    bool isFavorite = album.Any(k => k.IsDefault);
+                    metadata.IsFavorite = isFavorite;
                 }
 
-                await using var dbContext = new ApplicationDbContext();
-                var album = await dbContext.GetCollectionsByBeatmap(context.Beatmap);
+                string path = isFromDb ? Path.Combine(folder, beatmap.BeatmapFileName) : freePath;
+                beatmapDetail.MapPath = path;
+                beatmapDetail.BaseFolder = Path.GetDirectoryName(path);
 
-                bool isFavorite = album.Any(k => k.IsDefault);
-                var metadata = beatmapDetail.Metadata;
-                metadata.IsFavorite = isFavorite;
+                var isNost = Path.GetExtension(freePath).Equals(".xml", StringComparison.OrdinalIgnoreCase);
+                LocalOsuFile osuFile;
+                if (isNost)
+                {
+                    var otherFile = context.OtherFile;
+                    if (otherFile == null)
+                    {
+                        Logger.Info("Start load new song from db: {0}", beatmap.BeatmapFileName);
+                        XmlSerializer serializer = new XmlSerializer(typeof(MusicScore));
+                        StreamReader xmlreader = new StreamReader(path);
+                        var musicscore = serializer.Deserialize(xmlreader) as MusicScore;
+                        context.OtherFile = musicscore;
 
-                metadata.Artist = osuFile.Metadata.ArtistMeta;
-                metadata.Title = osuFile.Metadata.TitleMeta;
-                metadata.BeatmapId = osuFile.Metadata.BeatmapId;
-                metadata.BeatmapsetId = osuFile.Metadata.BeatmapSetId;
-                metadata.Creator = osuFile.Metadata.Creator;
-                metadata.Version = osuFile.Metadata.Version;
-                metadata.Source = osuFile.Metadata.Source;
-                metadata.Tags = osuFile.Metadata.TagList;
+                        metadata.Artist = new MetaString(context.Beatmap.Artist, context.Beatmap.Artist);
+                        metadata.Title = new MetaString(context.Beatmap.Title, context.Beatmap.Title);
+                    }
+                }
+                else
+                {
+                    osuFile = context.OsuFile;
+                    if (osuFile == null)
+                    {
+                        Logger.Info("Start load new song from db: {0}", beatmap.BeatmapFileName);
 
-                metadata.HP = osuFile.Difficulty.HpDrainRate;
-                metadata.CS = osuFile.Difficulty.CircleSize;
-                metadata.AR = osuFile.Difficulty.ApproachRate;
-                metadata.OD = osuFile.Difficulty.OverallDifficulty;
 
+                        osuFile = await OsuFile.ReadFromFileAsync(path).ConfigureAwait(false);
+                        if (!osuFile.ReadSuccess) throw osuFile.ReadException;
+                        context.OsuFile = osuFile;
+                    }
+
+                    metadata.Artist = osuFile.Metadata.ArtistMeta;
+                    metadata.Title = osuFile.Metadata.TitleMeta;
+                    metadata.BeatmapId = osuFile.Metadata.BeatmapId;
+                    metadata.BeatmapsetId = osuFile.Metadata.BeatmapSetId;
+                    metadata.Creator = osuFile.Metadata.Creator;
+                    metadata.Version = osuFile.Metadata.Version;
+                    metadata.Source = osuFile.Metadata.Source;
+                    metadata.Tags = osuFile.Metadata.TagList;
+
+                    metadata.HP = osuFile.Difficulty.HpDrainRate;
+                    metadata.CS = osuFile.Difficulty.CircleSize;
+                    metadata.AR = osuFile.Difficulty.ApproachRate;
+                    metadata.OD = osuFile.Difficulty.OverallDifficulty;
+                }
+
+                osuFile = context.OsuFile;
                 Execute.OnUiThread(() => MetaLoaded?.Invoke(context, _cts.Token));
 
                 // background
                 var defaultPath = Path.Combine(Domain.ResourcePath, "official", "registration.jpg");
-
-                if (osuFile.Events.BackgroundInfo != null)
-                {
-                    var bgPath = Path.Combine(beatmapDetail.BaseFolder,
-                        osuFile.Events.BackgroundInfo.Filename);
-                    beatmapDetail.BackgroundPath = File.Exists(bgPath)
-                        ? bgPath
-                        : File.Exists(defaultPath) ? defaultPath : null;
-                }
-                else
+                if (isNost)
                 {
                     beatmapDetail.BackgroundPath = File.Exists(defaultPath)
                         ? defaultPath
                         : null;
                 }
+                else
+                {
+                    if (osuFile.Events.BackgroundInfo != null)
+                    {
+                        var bgPath = Path.Combine(beatmapDetail.BaseFolder,
+                            osuFile.Events.BackgroundInfo.Filename);
+                        beatmapDetail.BackgroundPath = File.Exists(bgPath)
+                            ? bgPath
+                            : File.Exists(defaultPath) ? defaultPath : null;
+                    }
+                    else
+                    {
+                        beatmapDetail.BackgroundPath = File.Exists(defaultPath)
+                            ? defaultPath
+                            : null;
+                    }
+                }
 
                 Execute.OnUiThread(() => BackgroundInfoLoaded?.Invoke(context, _cts.Token));
 
                 // music
-                beatmapDetail.MusicPath = Path.Combine(beatmapDetail.BaseFolder,
-                    osuFile.General.AudioFilename);
+                if (isNost)
+                {
+                    beatmapDetail.MusicPath = "D:\\a.wav";
+                }
+                else
+                {
+                    beatmapDetail.MusicPath = Path.Combine(beatmapDetail.BaseFolder,
+                        osuFile.General.AudioFilename);
+                }
 
                 if (PlayList.PreInfo?.BeatmapDetail?.BaseFolder != PlayList.CurrentInfo?.BeatmapDetail?.BaseFolder)
                 {
                     CachedSound.ClearCacheSounds();
                 }
 
-                Player = new OsuMixPlayer(osuFile, beatmapDetail.BaseFolder);
+                if (isNost)
+                    Player = new OsuMixPlayer(context.OtherFile, path, beatmapDetail.BaseFolder);
+                else
+                    Player = new OsuMixPlayer(osuFile, beatmapDetail.BaseFolder);
+
                 Player.PlayStatusChanged += Player_PlayStatusChanged;
                 Player.PositionUpdated += Player_PositionUpdated;
                 await Player.Initialize().ConfigureAwait(false); //700 ms
@@ -270,7 +353,9 @@ namespace Milky.OsuPlayer.Media.Audio
                 Execute.OnUiThread(() => MusicLoaded?.Invoke(context, _cts.Token));
 
                 // video
-                var videoName = osuFile.Events.VideoInfo?.Filename;
+                string videoName;
+                if (isNost) videoName = null;
+                else videoName = osuFile.Events.VideoInfo?.Filename;
 
                 if (videoName != null)
                 {
@@ -283,14 +368,17 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
 
                 // storyboard
-                var analyzer = new OsuFileAnalyzer(osuFile);
-                if (osuFile.Events.ElementGroup.ElementList.Count > 0)
-                    Execute.OnUiThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
-                else
+                if (!isNost)
                 {
-                    var osbFile = Path.Combine(beatmapDetail.BaseFolder, analyzer.OsbFileName);
-                    if (File.Exists(osbFile) && await OsuFile.OsbFileHasStoryboard(osbFile).ConfigureAwait(false))
+                    var analyzer = new OsuFileAnalyzer(osuFile);
+                    if (osuFile.Events.ElementGroup.ElementList.Count > 0)
                         Execute.OnUiThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
+                    else
+                    {
+                        var osbFile = Path.Combine(beatmapDetail.BaseFolder, analyzer.OsbFileName);
+                        if (File.Exists(osbFile) && await OsuFile.OsbFileHasStoryboard(osbFile).ConfigureAwait(false))
+                            Execute.OnUiThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
+                    }
                 }
 
                 context.FullLoaded = true;
@@ -401,7 +489,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private async void PlayList_SongListChanged()
         {
             await using var appDbContext = new ApplicationDbContext();
-            await appDbContext.UpdateBeatmapsToPlaylist(PlayList.SongList);
+            await appDbContext.UpdateBeatmapsToPlaylist(PlayList.SongList.Where(k => !k.IsTemporary));
         }
 
         private async Task PlayByControl(PlayControlType control, bool auto)
