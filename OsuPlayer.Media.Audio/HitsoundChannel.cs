@@ -72,7 +72,23 @@ namespace Milky.OsuPlayer.Media.Audio
             {
                 if (_otherFile is MusicScore score)
                 {
-                    return new List<SoundElement>();
+                    var dir = Path.GetDirectoryName(_path);
+                    var all = score.NoteData
+                        .Where(k => k.Hand != 2)
+                        .SelectMany(k => k.SubNoteData);
+                    var ele = all.Select(k =>
+                    {
+                        var s = score.TrackInfo.First(o => o.Index == k.TrackIndex).Name;
+                        var isGeneric = Generics.Contains(s);
+
+                        var name = s + "_" +
+                                   KeysoundFilenameUtilities.GetFileSuffix(k.ScalePiano);
+                        var path = isGeneric
+                            ? Path.Combine(Domain.DefaultPath, "generic", s, name)
+                            : Path.Combine(dir, name);
+                        return SoundElement.Create(k.StartTimingMsec, k.Velocity / 128f, 0, path + ".wav");
+                    });
+                    return new List<SoundElement>(ele);
                 }
 
                 throw new NotImplementedException("unknown file");

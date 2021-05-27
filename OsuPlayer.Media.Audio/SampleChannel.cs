@@ -90,14 +90,14 @@ namespace Milky.OsuPlayer.Media.Audio
                     var ele = all.Select(k =>
                     {
                         var s = score.TrackInfo.First(o => o.Index == k.TrackIndex).Name;
-                        var isGeneric = _generics.Contains(s);
+                        var isGeneric = Generics.Contains(s);
 
                         var name = s + "_" +
                                    KeysoundFilenameUtilities.GetFileSuffix(k.ScalePiano);
                         var path = isGeneric
                             ? Path.Combine(Domain.DefaultPath, "generic", s, name)
                             : Path.Combine(dir, name);
-                        return SoundElement.Create(k.StartTimingMsec, k.Velocity / 128f, 0, path);
+                        return SoundElement.Create(k.StartTimingMsec, k.Velocity / 128f, 0, path + ".wav");
                     });
                     return new List<SoundElement>(ele);
                 }
@@ -105,9 +105,6 @@ namespace Milky.OsuPlayer.Media.Audio
                 throw new NotImplementedException("unknown file");
             }
         }
-
-        private static string[] _generics = new[]
-            {"key_apiano1", "key_apiano2", "key_apiano3", "key_harpsichord1", "key_organ1", "key_organ2"};
 
         public override async Task SetPlaybackRate(float rate, bool useTempo)
         {
