@@ -21,7 +21,7 @@ namespace Exporter
         static async Task Main(string[] args)
         {
             var sw = Stopwatch.StartNew();
-            var path = @"C:\Users\milki\Desktop\NNSongs\m_l0002_connect_01hard.xml";
+            var path = @"C:\Users\milki\Desktop\NNSongs\m_l0001_senbonzakura_02extreme.xml";
             //var o = File.ReadAllText(path);
             XmlSerializer serializer = new XmlSerializer(typeof(MusicScore));
             StreamReader xmlreader = new StreamReader(path);
@@ -65,7 +65,8 @@ namespace Exporter
             sourceProvider = new WaveFloatTo16Provider(sourceProvider);
 
             //using var outStream = new MemoryStream();
-            using var outStream = new FileStream("F:\\test.mp3", FileMode.Create, FileAccess.Write);
+            var filename = Path.GetFileNameWithoutExtension(path);
+            using var outStream = new FileStream("E:\\" + filename + ".mp3", FileMode.Create, FileAccess.Write);
             var writer = new LameMP3FileWriter(outStream, sourceProvider.WaveFormat, 320);
 
             //var buffer = new byte[sourceProvider.WaveFormat.AverageBytesPerSecond * 4];
@@ -120,7 +121,12 @@ namespace Exporter
                     var path = isGeneric
                         ? Path.Combine(Domain.DefaultPath, "generic", s, name)
                         : Path.Combine(dir, name);
-                    return SoundElement.Create(k.StartTimingMsec, k.Velocity / 128f, 0, path + ".wav");
+                    float volume = k.Velocity / 128f;
+                    if (volume > 1)
+                    {
+
+                    }
+                    return SoundElement.Create(k.StartTimingMsec, volume, 0, path + ".wav", k.EndTimingMsec);
                 });
             return new List<SoundElement>(ele);
         }

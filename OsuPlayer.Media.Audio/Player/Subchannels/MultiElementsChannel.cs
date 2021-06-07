@@ -326,8 +326,20 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                     {
                         case SlideControlType.None:
                             var cachedSound = await soundElement.GetCachedSoundAsync().ConfigureAwait(false);
-                            Submixer.PlaySound(cachedSound, soundElement.Volume,
+                            var flag = Submixer.PlaySound(cachedSound, soundElement.Volume,
                                 soundElement.Balance * BalanceFactor);
+                            if (soundElement.SubSoundElement != null)
+                                soundElement.SubSoundElement.RelatedProvider = flag;
+
+                            break;
+                        case SlideControlType.StopNote:
+                            if (soundElement.RelatedProvider != null)
+                            {
+                                Submixer.RemoveMixerInput(soundElement.RelatedProvider);
+                                var fadeOut = new FadeInOutSampleProvider(soundElement.RelatedProvider);
+                                fadeOut.BeginFadeOut(400);
+                                Submixer.AddMixerInput(fadeOut);
+                            }
                             break;
                         case SlideControlType.StartNew:
                             Submixer.RemoveMixerInput(_sliderSlideBalance);
@@ -396,7 +408,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             var queue = new ConcurrentQueue<SoundElement>();
             if (SoundElements == null)
             {
-                SoundElements = new List<SoundElement>(await GetSoundElements().ConfigureAwait(false));
+                var o = new List<SoundElement>(await GetSoundElements().ConfigureAwait(false));
+                SoundElements = new List<SoundElement>(o.Concat(o.Where(k => k.SubSoundElement != null).Select(k => k.SubSoundElement)));
                 Duration = TimeSpan.FromMilliseconds(SoundElements.Count == 0 ? 0 : SoundElements.Max(k => k.Offset));
                 SoundElements.Sort(new SoundElementTimingComparer());
             }

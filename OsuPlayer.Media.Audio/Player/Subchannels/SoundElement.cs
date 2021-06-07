@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Milky.OsuPlayer.Media.Audio.Wave;
+using NAudio.Wave;
 using OSharp.Beatmap.Sections.HitObject;
 
 namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
@@ -16,6 +18,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         public string FilePath { get; private set; }
         public HitsoundType SlideType { get; private set; }
         public SlideControlType ControlType { get; private set; } = SlideControlType.None;
+        internal ISampleProvider? RelatedProvider { get; set; }
+        internal SoundElement? SubSoundElement { get; private set; }
 
         internal async Task<CachedSound> GetCachedSoundAsync()
         {
@@ -27,7 +31,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             return result;
         }
 
-        public static SoundElement Create(double offset, float volume, float balance, string filePath)
+        public static SoundElement Create(double offset, float volume, float balance, string filePath, double? forceStopOffset = null)
         {
             var se = new SoundElement
             {
@@ -36,6 +40,15 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                 Balance = balance,
                 FilePath = filePath,
             };
+
+            if (forceStopOffset != null)
+            {
+                se.SubSoundElement = new SoundElement
+                {
+                    Offset = forceStopOffset.Value,
+                    ControlType = SlideControlType.StopNote
+                };
+            }
 
             return se;
         }

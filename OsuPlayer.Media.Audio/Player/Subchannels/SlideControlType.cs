@@ -2,6 +2,7 @@
 {
     public enum SlideControlType
     {
-        None, StartNew, StopRunning, ChangeBalance, ChangeVolume
+        None, StartNew, StopRunning, ChangeBalance, ChangeVolume,
+        StopNote
     }
 }
