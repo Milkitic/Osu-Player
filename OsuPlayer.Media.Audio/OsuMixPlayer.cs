@@ -10,20 +10,50 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
+    public class FileCache
+    {
+        private readonly ConcurrentDictionary<string, string> _pathCache =
+            new ConcurrentDictionary<string, string>();
+
+        public string GetFileUntilFind(string sourceFolder, string fileNameWithoutExtension)
+        {
+            var combine = Path.Combine(sourceFolder, fileNameWithoutExtension);
+            if (_pathCache.TryGetValue(combine, out var value))
+            {
+                return value;
+            }
+
+            string path = "";
+            foreach (var extension in AudioPlaybackEngine.SupportExtensions)
+            {
+                path = Path.Combine(sourceFolder, fileNameWithoutExtension + extension);
+
+                if (File.Exists(path))
+                {
+                    _pathCache.TryAdd(combine, path);
+                    return path;
+                }
+            }
+
+            _pathCache.TryAdd(combine, path);
+            return path;
+        }
+    }
+    
     public class OsuMixPlayer : MultichannelPlayer
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly ConcurrentDictionary<string, string> _pathCache =
-            new ConcurrentDictionary<string, string>();
 
         private OsuFile _osuFile;
         private string _sourceFolder;
         private int _manualOffset;
         private object _otherFile;
         private readonly string _path;
+        internal FileCache _fileCache;
 
         public override string Description { get; } = "OsuPlayer";
 
@@ -57,6 +87,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public override async Task Initialize()
         {
+            _fileCache = new FileCache();
             try
             {
                 if (CachedSound.DefaultSounds.Count == 0)
@@ -99,9 +130,9 @@ namespace Milky.OsuPlayer.Media.Audio
             AddSubchannel(MusicChannel);
             await MusicChannel.Initialize().ConfigureAwait(false);
             if (_otherFile == null)
-                HitsoundChannel = new HitsoundChannel(this, _osuFile, _sourceFolder, Engine);
+                HitsoundChannel = new HitsoundChannel(_fileCache, _osuFile, _sourceFolder, Engine);
             else
-                HitsoundChannel = new HitsoundChannel(this, _otherFile, _path, _sourceFolder, Engine);
+                HitsoundChannel = new HitsoundChannel(_fileCache, _otherFile, _path, _sourceFolder, Engine);
             AddSubchannel(HitsoundChannel);
             await HitsoundChannel.Initialize().ConfigureAwait(false);
 
@@ -119,6 +150,11 @@ namespace Milky.OsuPlayer.Media.Audio
             //        .Select(k => k.FilePath))
             //    .Concat(new[] { mp3Path })
             //).ConfigureAwait(false);
+            //using var stream = new MemoryStream();
+            //var o = new WaveFileWriter(stream, Engine.RootMixer.WaveFormat);
+            //Engine.RootMixer.ReadFully
+            //WaveFileWriter.WriteWavFileToStream(stream, Engine.RootMixer.ToWaveProvider());
+
             foreach (var channel in Subchannels)
             {
                 channel.PlayStatusChanged += status => Logger.Debug($"{channel.Description}: {status}");
@@ -187,30 +223,6 @@ namespace Milky.OsuPlayer.Media.Audio
             }
 
             AppSettings.SaveDefault();
-        }
-
-        public string GetFileUntilFind(string sourceFolder, string fileNameWithoutExtension)
-        {
-            var combine = Path.Combine(sourceFolder, fileNameWithoutExtension);
-            if (_pathCache.TryGetValue(combine, out var value))
-            {
-                return value;
-            }
-
-            string path = "";
-            foreach (var extension in AudioPlaybackEngine.SupportExtensions)
-            {
-                path = Path.Combine(sourceFolder, fileNameWithoutExtension + extension);
-
-                if (File.Exists(path))
-                {
-                    _pathCache.TryAdd(combine, path);
-                    return path;
-                }
-            }
-
-            _pathCache.TryAdd(combine, path);
-            return path;
         }
 
         public override ValueTask DisposeAsync()

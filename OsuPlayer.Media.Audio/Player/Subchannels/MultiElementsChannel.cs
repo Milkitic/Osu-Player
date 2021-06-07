@@ -29,6 +29,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         private ConcurrentQueue<SoundElement> _soundElementsQueue;
 
         private VolumeSampleProvider _volumeProvider;
+        private bool _isVolumeEnabled = false;
 
         private Task _playingTask;
         //private Task _calibrationTask;
@@ -74,19 +75,25 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         public MixingSampleProvider Submixer { get; protected set; }
 
         public MultiElementsChannel(AudioPlaybackEngine engine,
+            bool enableVolume = true,
             SingleMediaChannel referenceChannel = null) : base(engine)
         {
+            if (!enableVolume) Submixer = engine.RootMixer;
             ReferenceChannel = referenceChannel;
         }
 
         public override async Task Initialize()
         {
-            Submixer = new MixingSampleProvider(WaveFormatFactory.IeeeWaveFormat)
+            if (Submixer == null)
             {
-                ReadFully = true
-            };
-            _volumeProvider = new VolumeSampleProvider(Submixer);
-            Engine.AddRootSample(_volumeProvider);
+                Submixer = new MixingSampleProvider(WaveFormatFactory.IeeeWaveFormat)
+                {
+                    ReadFully = true
+                };
+                _volumeProvider = new VolumeSampleProvider(Submixer);
+                _isVolumeEnabled = true;
+                Engine.AddRootSample(_volumeProvider);
+            }
 
             SampleControl.Volume = 1;
             SampleControl.Balance = 0;
@@ -288,84 +295,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                         // wow nothing here
                     }
 
-                    while (_soundElementsQueue.TryPeek(out var soundElement) &&
-                        soundElement.Offset <= _sw.ElapsedMilliseconds &&
-                        _soundElementsQueue.TryDequeue(out soundElement))
-                    {
-                        lock (_skipLock)
-                        {
-                            // wow nothing here
-                        }
-
-                        try
-                        {
-                            switch (soundElement.ControlType)
-                            {
-                                case SlideControlType.None:
-                                    var cachedSound = await soundElement.GetCachedSoundAsync().ConfigureAwait(false);
-                                    Submixer.PlaySound(cachedSound, soundElement.Volume,
-                                        soundElement.Balance * BalanceFactor);
-                                    break;
-                                case SlideControlType.StartNew:
-                                    Submixer.RemoveMixerInput(_sliderSlideBalance);
-                                    Submixer.RemoveMixerInput(_sliderAdditionBalance);
-                                    cachedSound = await soundElement.GetCachedSoundAsync().ConfigureAwait(false);
-                                    _lastSliderStream?.Dispose();
-                                    if (cachedSound is null) continue;
-                                    var byteArray = new byte[cachedSound.AudioData.Length * sizeof(float)];
-                                    Buffer.BlockCopy(cachedSound.AudioData, 0, byteArray, 0, byteArray.Length);
-
-                                    _lastSliderStream = new MemoryStream(byteArray);
-                                    var myf = new RawSourceWaveStream(_lastSliderStream, cachedSound.WaveFormat);
-                                    var loop = new LoopStream(myf);
-                                    if (soundElement.SlideType.HasFlag(HitsoundType.Slide))
-                                    {
-                                        _sliderSlideVolume = new VolumeSampleProvider(loop.ToSampleProvider())
-                                        {
-                                            Volume = soundElement.Volume
-                                        };
-                                        _sliderSlideBalance = new BalanceSampleProvider(_sliderSlideVolume)
-                                        {
-                                            Balance = soundElement.Balance * BalanceFactor
-                                        };
-                                        Submixer.AddMixerInput(_sliderSlideBalance);
-                                    }
-                                    else if (soundElement.SlideType.HasFlag(HitsoundType.SlideWhistle))
-                                    {
-                                        _sliderAdditionVolume = new VolumeSampleProvider(loop.ToSampleProvider())
-                                        {
-                                            Volume = soundElement.Volume
-                                        };
-                                        _sliderAdditionBalance = new BalanceSampleProvider(_sliderAdditionVolume)
-                                        {
-                                            Balance = soundElement.Balance * BalanceFactor
-                                        };
-                                        Submixer.AddMixerInput(_sliderAdditionBalance);
-                                    }
-
-                                    break;
-                                case SlideControlType.StopRunning:
-                                    Submixer.RemoveMixerInput(_sliderSlideBalance);
-                                    Submixer.RemoveMixerInput(_sliderAdditionBalance);
-                                    break;
-                                case SlideControlType.ChangeBalance:
-                                    if (_sliderAdditionBalance != null)
-                                        _sliderAdditionBalance.Balance = soundElement.Balance * BalanceFactor;
-                                    if (_sliderSlideBalance != null)
-                                        _sliderSlideBalance.Balance = soundElement.Balance * BalanceFactor;
-                                    break;
-                                case SlideControlType.ChangeVolume:
-                                    if (_sliderAdditionVolume != null) _sliderAdditionVolume.Volume = soundElement.Volume;
-                                    if (_sliderSlideVolume != null) _sliderSlideVolume.Volume = soundElement.Volume;
-                                    break;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(ex, "Error while play target element. Source: {0}; ControlType",
-                                soundElement.FilePath, soundElement.ControlType);
-                        }
-                    }
+                    await TakeElements((int)_sw.ElapsedMilliseconds);
 
                     if (!TaskEx.TaskSleep(1, _cts)) break;
                 }
@@ -377,6 +307,88 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
                 }
             }, TaskCreationOptions.LongRunning);
             _playingTask.Start();
+        }
+
+        public async Task TakeElements(int offset)
+        {
+            while (_soundElementsQueue.TryPeek(out var soundElement) &&
+                   soundElement.Offset <= offset &&
+                   _soundElementsQueue.TryDequeue(out soundElement))
+            {
+                lock (_skipLock)
+                {
+                    // wow nothing here
+                }
+
+                try
+                {
+                    switch (soundElement.ControlType)
+                    {
+                        case SlideControlType.None:
+                            var cachedSound = await soundElement.GetCachedSoundAsync().ConfigureAwait(false);
+                            Submixer.PlaySound(cachedSound, soundElement.Volume,
+                                soundElement.Balance * BalanceFactor);
+                            break;
+                        case SlideControlType.StartNew:
+                            Submixer.RemoveMixerInput(_sliderSlideBalance);
+                            Submixer.RemoveMixerInput(_sliderAdditionBalance);
+                            cachedSound = await soundElement.GetCachedSoundAsync().ConfigureAwait(false);
+                            _lastSliderStream?.Dispose();
+                            if (cachedSound is null) continue;
+                            var byteArray = new byte[cachedSound.AudioData.Length * sizeof(float)];
+                            Buffer.BlockCopy(cachedSound.AudioData, 0, byteArray, 0, byteArray.Length);
+
+                            _lastSliderStream = new MemoryStream(byteArray);
+                            var myf = new RawSourceWaveStream(_lastSliderStream, cachedSound.WaveFormat);
+                            var loop = new LoopStream(myf);
+                            if (soundElement.SlideType.HasFlag(HitsoundType.Slide))
+                            {
+                                _sliderSlideVolume = new VolumeSampleProvider(loop.ToSampleProvider())
+                                {
+                                    Volume = soundElement.Volume
+                                };
+                                _sliderSlideBalance = new BalanceSampleProvider(_sliderSlideVolume)
+                                {
+                                    Balance = soundElement.Balance * BalanceFactor
+                                };
+                                Submixer.AddMixerInput(_sliderSlideBalance);
+                            }
+                            else if (soundElement.SlideType.HasFlag(HitsoundType.SlideWhistle))
+                            {
+                                _sliderAdditionVolume = new VolumeSampleProvider(loop.ToSampleProvider())
+                                {
+                                    Volume = soundElement.Volume
+                                };
+                                _sliderAdditionBalance = new BalanceSampleProvider(_sliderAdditionVolume)
+                                {
+                                    Balance = soundElement.Balance * BalanceFactor
+                                };
+                                Submixer.AddMixerInput(_sliderAdditionBalance);
+                            }
+
+                            break;
+                        case SlideControlType.StopRunning:
+                            Submixer.RemoveMixerInput(_sliderSlideBalance);
+                            Submixer.RemoveMixerInput(_sliderAdditionBalance);
+                            break;
+                        case SlideControlType.ChangeBalance:
+                            if (_sliderAdditionBalance != null)
+                                _sliderAdditionBalance.Balance = soundElement.Balance * BalanceFactor;
+                            if (_sliderSlideBalance != null)
+                                _sliderSlideBalance.Balance = soundElement.Balance * BalanceFactor;
+                            break;
+                        case SlideControlType.ChangeVolume:
+                            if (_sliderAdditionVolume != null) _sliderAdditionVolume.Volume = soundElement.Volume;
+                            if (_sliderSlideVolume != null) _sliderSlideVolume.Volume = soundElement.Volume;
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, "Error while play target element. Source: {0}; ControlType",
+                        soundElement.FilePath, soundElement.ControlType);
+                }
+            }
         }
 
         protected async Task RequeueAsync(TimeSpan startTime)
@@ -433,8 +445,8 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
             _cts?.Dispose();
             Logger.Debug($"Disposing: Disposed {nameof(_cts)}.");
-
-            Engine.RemoveRootSample(_volumeProvider);
+            if (_volumeProvider != null)
+                Engine.RemoveRootSample(_volumeProvider);
             //await base.DisposeAsync().ConfigureAwait(false);
             //Logger.Debug($"Disposing: Disposed base.");
         }

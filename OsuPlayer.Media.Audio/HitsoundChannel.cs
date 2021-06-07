@@ -18,25 +18,25 @@ namespace Milky.OsuPlayer.Media.Audio
 {
     public class HitsoundChannel : MultiElementsChannel
     {
-        private readonly OsuMixPlayer _player;
+        private readonly FileCache _fileCache;
         private readonly OsuFile _osuFile;
         private readonly string _sourceFolder;
         private object _otherFile;
         private readonly string _path;
 
-        public HitsoundChannel(OsuMixPlayer player, OsuFile osuFile, string sourceFolder, AudioPlaybackEngine engine)
+        public HitsoundChannel(FileCache fileCache, OsuFile osuFile, string sourceFolder, AudioPlaybackEngine engine)
             : base(engine)
         {
-            _player = player;
+            _fileCache = fileCache;
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
 
             Description = nameof(HitsoundChannel);
         }
-        public HitsoundChannel(OsuMixPlayer player, object otherFile, string path, string sourceFolder, AudioPlaybackEngine engine)
+        public HitsoundChannel(FileCache fileCache, object otherFile, string path, string sourceFolder, AudioPlaybackEngine engine)
             : base(engine)
         {
-            _player = player;
+            _fileCache = fileCache;
             _otherFile = otherFile;
             _path = path;
             _sourceFolder = sourceFolder;
@@ -270,7 +270,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 return new[]
                 {
                     ValueTuple.Create(
-                        _player.GetFileUntilFind(_sourceFolder,
+                        _fileCache.GetFileUntilFind(_sourceFolder,
                             Path.GetFileNameWithoutExtension(hitObject.FileName)),
                         itemHitsound
                     )
@@ -314,7 +314,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 if (timingPoint.Track == 0)
                     filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutExt + AudioPlaybackEngine.WavExtension);
                 else if (waves.Contains(fileNameWithoutExt))
-                    filePath = _player.GetFileUntilFind(_sourceFolder, fileNameWithoutExt);
+                    filePath = _fileCache.GetFileUntilFind(_sourceFolder, fileNameWithoutExt);
                 else
                     filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutIndex + AudioPlaybackEngine.WavExtension);
 

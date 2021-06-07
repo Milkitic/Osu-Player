@@ -58,7 +58,7 @@ namespace Milky.OsuPlayer.Media.Audio
                         .ForAll(sample =>
                         {
                             var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
-                                _player.GetFileUntilFind(_sourceFolder,
+                                _player._fileCache.GetFileUntilFind(_sourceFolder,
                                     Path.GetFileNameWithoutExtension(sample.Filename))
                             );
                             elements.Add(element);

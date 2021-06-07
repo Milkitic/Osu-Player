@@ -14,6 +14,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
     {
         private readonly IWavePlayer _outputDevice;
         private readonly VolumeSampleProvider _volumeProvider;
+        private TimingSampleProvider _timingProvider;
 
         public static ICollection<string> SupportExtensions { get; } =
             new ReadOnlyCollection<string>(new[] { WavExtension, Mp3Extension, OggExtension });
@@ -23,10 +24,23 @@ namespace Milky.OsuPlayer.Media.Audio.Player
         public const string Mp3Extension = ".mp3";
 
         public MixingSampleProvider RootMixer { get; }
+        public ISampleProvider Root => _timingProvider;
+        public event Action<AudioPlaybackEngine, TimeSpan, TimeSpan> Updated;
         public float RootVolume
         {
             get => _volumeProvider.Volume;
             set => _volumeProvider.Volume = value;
+        }
+
+        public AudioPlaybackEngine()
+        {
+            RootMixer = new MixingSampleProvider(WaveFormatFactory.IeeeWaveFormat)
+            {
+                ReadFully = true
+            };
+            _volumeProvider = new VolumeSampleProvider(RootMixer);
+            _timingProvider = new TimingSampleProvider(_volumeProvider);
+            _timingProvider.Updated += (a, b) => Updated?.Invoke(this, a, b);
         }
 
         public AudioPlaybackEngine(IWavePlayer outputDevice)
@@ -36,9 +50,10 @@ namespace Milky.OsuPlayer.Media.Audio.Player
                 ReadFully = true
             };
             _volumeProvider = new VolumeSampleProvider(RootMixer);
-
+            _timingProvider = new TimingSampleProvider(_volumeProvider);
+            _timingProvider.Updated += (a, b) => Updated?.Invoke(this, a, b);
             _outputDevice = outputDevice;
-            _outputDevice.Init(_volumeProvider);
+            _outputDevice.Init(_timingProvider);
             _outputDevice.Play();
         }
 
