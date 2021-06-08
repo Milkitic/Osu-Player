@@ -3,11 +3,11 @@ using System.IO;
 
 namespace Nostool
 {
-    static class Dierectoies
+    static class Directories
     {
-        static Dierectoies()
+        static Directories()
         {
-            Type t = typeof(Dierectoies);
+            Type t = typeof(Directories);
             var infos = t.GetProperties();
             foreach (var item in infos)
             {
@@ -29,5 +29,6 @@ namespace Nostool
             "NostExporter");
 
         public static string TempFolder { get; } = Path.Combine(AppDataFolder, "temp");
+        public static string ExportFolder { get; } = Path.Combine(Environment.CurrentDirectory, "export");
     }
 }

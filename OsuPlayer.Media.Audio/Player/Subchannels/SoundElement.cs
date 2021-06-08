@@ -12,7 +12,16 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
         private SoundElement() { }
 
         public double Offset { get; private set; }
-        public double NearlyPlayEndTime => GetCachedSoundAsync().Result.Duration.TotalMilliseconds + Offset;
+        public double NearlyPlayEndTime
+        {
+            get
+            {
+                var cachedSound = GetCachedSoundAsync().Result;
+                if (cachedSound == null) return 0;
+                return cachedSound.Duration.TotalMilliseconds + Offset;
+            }
+        }
+
         public float Volume { get; private set; }
         public float Balance { get; private set; }
         public string FilePath { get; private set; }

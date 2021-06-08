@@ -13,12 +13,16 @@ namespace Nostool.Audio
     public class NoteChannel : MultiElementsChannel
     {
         private readonly string _path;
+        private readonly float _seRadio;
+        private readonly float _bgmRadio;
         private readonly MusicScore _musicScore;
 
-        public NoteChannel(string path, MusicScore musicScore, AudioPlaybackEngine engine)
+        public NoteChannel(string path, float seRadio, float bgmRadio, MusicScore musicScore, AudioPlaybackEngine engine)
             : base(engine)
         {
             _path = path;
+            _seRadio = seRadio;
+            _bgmRadio = bgmRadio;
             _musicScore = musicScore;
         }
 
@@ -46,9 +50,21 @@ namespace Nostool.Audio
                         ? Path.Combine(Domain.DefaultPath, "generic", s, name)
                         : Path.Combine(dir, name);
                     float volume = (float)k.Velocity / sbyte.MaxValue;
+                    if (_seRadio < 1)
+                        volume *= _seRadio;
                     return SoundElement.Create(k.StartTimingMsec, volume, k.Balance, $"{path}.wav", k.EndTimingMsec);
                 });
-            return new List<SoundElement>(ele);
+            var soundElements = new List<SoundElement>(ele);
+            var backtrack = Path.Combine(dir, "_backtrack.wav");
+            if (File.Exists(backtrack))
+            {
+                float volume = 1;
+                if (_bgmRadio < 1)
+                    volume *= _bgmRadio;
+                soundElements.Insert(0, SoundElement.Create(0, volume, 0, backtrack));
+            }
+
+            return soundElements;
         }
     }
 }

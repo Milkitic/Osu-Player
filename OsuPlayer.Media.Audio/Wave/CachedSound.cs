@@ -65,11 +65,6 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
                     .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
                     .ForAll(k => GetOrCreateCacheSound(k, false).Wait());
             }).ConfigureAwait(false);
-
-            //foreach (var path in paths)
-            //{
-            //    await CreateCacheSound(path, false).ConfigureAwait(false); // Cache each file once before play.
-            //}
         }
 
         /// <summary>
@@ -79,10 +74,12 @@ namespace Milky.OsuPlayer.Media.Audio.Wave
         /// <returns></returns>
         public static async Task CreateDefaultCacheSounds(IEnumerable<string> paths)
         {
-            foreach (var path in paths)
+            await Task.Run(() =>
             {
-                await GetOrCreateCacheSound(path, true).ConfigureAwait(false);
-            }
+                paths.AsParallel()
+                    .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
+                    .ForAll(k => GetOrCreateCacheSound(k, true).Wait());
+            }).ConfigureAwait(false);
         }
 
         public static async Task<CachedSound> GetOrCreateCacheSound(string path)

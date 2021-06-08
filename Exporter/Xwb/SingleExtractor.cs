@@ -31,7 +31,7 @@ namespace Nostool.Xwb
 
         public async Task ExtractAsync()
         {
-            var tmpFolder = Dierectoies.TempFolder;
+            var tmpFolder = Directories.TempFolder;
 
             var mapping = await ReadIndexMappingAsync();
             var tmpXsb = Path.Combine(tmpFolder, Path.GetRandomFileName() + ".xsb");

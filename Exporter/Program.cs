@@ -8,6 +8,7 @@ using Milky.OsuPlayer.Shared.Models.NostModels;
 using NAudio.Lame;
 using NAudio.Wave;
 using Nostool.Audio;
+using Nostool.Composer;
 using Nostool.Xwb;
 
 namespace Nostool
@@ -16,18 +17,21 @@ namespace Nostool
     {
         private static async Task Main(string[] args)
         {
-
+            var composer =
+                new NostComposer(@"G:\GitHub\Osu-Player\Exporter\bin\Debug\net5.0-windows\test\op\music_list.xml");
+            await composer.ComposeSingleByFolder(
+                @"G:\GitHub\Osu-Player\Exporter\bin\Debug\net5.0-windows\test\op\music\");
             //var single = new SingleExtractor(@"C:\Users\milki\Downloads\xwb_split_112\key_cat1.xwb");
             //await single.ExtractAsync();
 
-            MultiExtractor o;
-            o = new MultiExtractor(@"E:\milkitic\others\OP2\PAN-001-2019100200\contents\data\sound", ".\\test", "op");
-            await o.ExtractAsync();
+            //MultiExtractor o;
+            //o = new MultiExtractor(@"E:\milkitic\others\OP2\PAN-001-2019100200\contents\data\sound", ".\\test", "op");
+            //await o.ExtractAsync();
 
-            Console.WriteLine("======Done op!======");
-            o = new MultiExtractor(@"E:\milkitic\others\OP2\PAN-001-2019100200\contents\data_op2\sound", ".\\test", "op2");
-            await o.ExtractAsync();
-            Console.WriteLine("======Done op2!======");
+            //Console.WriteLine("======Done op!======");
+            //o = new MultiExtractor(@"E:\milkitic\others\OP2\PAN-001-2019100200\contents\data_op2\sound", ".\\test", "op2");
+            //await o.ExtractAsync();
+            //Console.WriteLine("======Done op2!======");
 
             return;
             var sw = Stopwatch.StartNew();
@@ -47,7 +51,7 @@ namespace Nostool
         {
             var sw2 = Stopwatch.StartNew();
             var engine = new AudioPlaybackEngine();
-            var noteChannel = new NoteChannel(path, mScore, engine);
+            var noteChannel = new NoteChannel(path, 0.7f, 0.7f, mScore, engine);
             await noteChannel.Initialize();
 
             Console.WriteLine("init: " + sw2.Elapsed);
