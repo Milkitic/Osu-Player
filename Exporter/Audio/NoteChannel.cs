@@ -8,7 +8,7 @@ using Milky.OsuPlayer.Media.Audio.Player;
 using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
 using Milky.OsuPlayer.Shared.Models.NostModels;
 
-namespace Exporter.Audio
+namespace Nostool.Audio
 {
     public class NoteChannel : MultiElementsChannel
     {

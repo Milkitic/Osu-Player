@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <AssemblyName>Nostool</AssemblyName>
-    <RootNamespace>Exporter</RootNamespace>
+    <RootNamespace>Nostool</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

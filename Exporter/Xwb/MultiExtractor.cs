@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Exporter.Xwb
+namespace Nostool.Xwb
 {
     public class MultiExtractor
     {

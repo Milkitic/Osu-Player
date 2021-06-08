@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Exporter
+namespace Nostool
 {
     /// <summary>
     /// IO帮助类
