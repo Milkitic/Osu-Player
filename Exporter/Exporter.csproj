@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
+    <AssemblyName>Nostool</AssemblyName>
+    <RootNamespace>Exporter</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +13,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="unxwb.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="xwb_split.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

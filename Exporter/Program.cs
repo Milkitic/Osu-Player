@@ -1,27 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using Milky.OsuPlayer.Common;
+﻿using Exporter.Audio;
+using Exporter.Xwb;
 using Milky.OsuPlayer.Media.Audio.Player;
-using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
 using Milky.OsuPlayer.Shared.Models.NostModels;
 using NAudio.Lame;
-using NAudio.Utils;
 using NAudio.Wave;
-using Newtonsoft.Json;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Exporter
 {
-    class Program
+    internal class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
+
+            //var single = new SingleExtractor(@"C:\Users\milki\Downloads\xwb_split_112\key_cat1.xwb");
+            //await single.ExtractAsync();
+
+            MultiExtractor o;
+            o = new MultiExtractor(@"E:\milkitic\others\OP2\PAN-001-2019100200\contents\data\sound", ".\\test", "op");
+            await o.ExtractAsync();
+
+            Console.WriteLine("======Done op!======");
+            o = new MultiExtractor(@"E:\milkitic\others\OP2\PAN-001-2019100200\contents\data_op2\sound", ".\\test", "op2");
+            await o.ExtractAsync();
+            Console.WriteLine("======Done op2!======");
+
+            return;
             var sw = Stopwatch.StartNew();
-            var path = @"C:\Users\milki\Desktop\NNSongs\m_l0001_senbonzakura_02extreme.xml";
+            var path = @"C:\Users\milki\Desktop\NNSongs\m_l0011_sugarsong_01hard.xml";
             //var o = File.ReadAllText(path);
             XmlSerializer serializer = new XmlSerializer(typeof(MusicScore));
             StreamReader xmlreader = new StreamReader(path);
@@ -88,47 +98,6 @@ namespace Exporter
         {
             //Console.Out.WriteLineAsync(arg2.ToString());
 
-        }
-    }
-
-    public class NoteChannel : MultiElementsChannel
-    {
-        private readonly string _path;
-        private readonly MusicScore _musicScore;
-
-        public NoteChannel(string path, MusicScore musicScore, AudioPlaybackEngine engine)
-            : base(engine)
-        {
-            _path = path;
-            _musicScore = musicScore;
-        }
-
-        public override async Task<IEnumerable<SoundElement>> GetSoundElements()
-        {
-            var dir = Path.GetDirectoryName(_path);
-            var all = _musicScore.NoteData
-                .SelectMany(k => k.SubNoteData);
-            var ele = all
-                .AsParallel()
-                .WithDegreeOfParallelism(Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1)
-                .Select(k =>
-                {
-                    var s = _musicScore.TrackInfo.First(o => o.Index == k.TrackIndex).Name;
-                    var isGeneric = Generics.Contains(s);
-
-                    var name = s + "_" +
-                               KeysoundFilenameUtilities.GetFileSuffix(k.ScalePiano);
-                    var path = isGeneric
-                        ? Path.Combine(Domain.DefaultPath, "generic", s, name)
-                        : Path.Combine(dir, name);
-                    float volume = k.Velocity / 128f;
-                    if (volume > 1)
-                    {
-
-                    }
-                    return SoundElement.Create(k.StartTimingMsec, volume, 0, path + ".wav", k.EndTimingMsec);
-                });
-            return new List<SoundElement>(ele);
         }
     }
 }

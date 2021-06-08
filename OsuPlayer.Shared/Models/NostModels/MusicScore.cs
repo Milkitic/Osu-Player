@@ -83,6 +83,8 @@ namespace Milky.OsuPlayer.Shared.Models.NostModels
         public byte Velocity { get; set; }
         [XmlElement("track_index")]
         public int TrackIndex { get; set; }
+        [XmlIgnore]
+        public float Balance { get; set; }
     }
     [Serializable]
     public class MusicScoreEvent
