@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Media.Audio.Player;
@@ -16,7 +18,8 @@ namespace Nostool.Audio
         private readonly float _seRadio;
         private readonly float _bgmRadio;
         private readonly MusicScore _musicScore;
-
+        private static HashSet<string> _generics = new HashSet<string>();
+        private static SemaphoreSlim _ss = new SemaphoreSlim(1, 1);
         public NoteChannel(string path, float seRadio, float bgmRadio, MusicScore musicScore, AudioPlaybackEngine engine)
             : base(engine)
         {
@@ -28,6 +31,25 @@ namespace Nostool.Audio
 
         public override async Task<IEnumerable<SoundElement>> GetSoundElements()
         {
+            await _ss.WaitAsync();
+            try
+            {
+                if (_generics.Count == 0)
+                {
+                    var di = new DirectoryInfo(Path.Combine(Domain.DefaultPath, "op"));
+                    var allMatches = di.EnumerateFiles("*.wav").SelectMany(k => new string[]
+                    {
+                        k.Name.Split('_')[0],
+                        string.Join("_", k.Name.Split('_').Take(2))
+                    });
+                    _generics = new HashSet<string>(allMatches, StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            finally
+            {
+                _ss.Release();
+            }
+
             var dir = Path.GetDirectoryName(_path);
             var all = _musicScore.NoteData
                 .SelectMany(k =>
@@ -42,12 +64,12 @@ namespace Nostool.Audio
                 .Select(k =>
                 {
                     var s = _musicScore.TrackInfo.First(o => o.Index == k.TrackIndex).Name;
-                    var isGeneric = Generics.Contains(s);
+                    var isGeneric = _generics.Contains(s);
 
                     var name = s + "_" +
                                KeysoundFilenameUtilities.GetFileSuffix(k.ScalePiano);
                     var path = isGeneric
-                        ? Path.Combine(Domain.DefaultPath, "generic", s, name)
+                        ? Path.Combine(Domain.DefaultPath, "op", name)
                         : Path.Combine(dir, name);
                     float volume = (float)k.Velocity / sbyte.MaxValue;
                     if (_seRadio < 1)

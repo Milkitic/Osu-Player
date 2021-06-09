@@ -18,9 +18,13 @@ namespace Nostool
         private static async Task Main(string[] args)
         {
             var composer =
-                new NostComposer(@"G:\GitHub\Osu-Player\Exporter\bin\Debug\net5.0-windows\test\op\music_list.xml");
-            await composer.ComposeSingleByFolder(
-                @"G:\GitHub\Osu-Player\Exporter\bin\Debug\net5.0-windows\test\op\music\");
+                new NostComposer(@"G:\GitHub\Osu-Player\Exporter\bin\Debug\net5.0-windows\test\op2\music_list.xml"
+                , @"G:\GitHub\Osu-Player\Exporter\bin\Debug\net5.0-windows\test\op\music",
+                @"G:\GitHub\Osu-Player\Exporter\bin\Debug\net5.0-windows\test\op2\music");
+            await composer.ComposeByMusicList();
+            //await composer.ComposeSingleByFolder(
+            //    @"G:\GitHub\Osu-Player\Exporter\bin\Debug\net5.0-windows\test\op\music\");
+            //await composer.ComposeSingleByBaseName("M_C0007_chopin_gensoimp");
             //var single = new SingleExtractor(@"C:\Users\milki\Downloads\xwb_split_112\key_cat1.xwb");
             //await single.ExtractAsync();
 

@@ -17,9 +17,6 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 {
     public abstract class MultiElementsChannel : Subchannel, ISoundElementsProvider
     {
-        protected static string[] Generics = new[]
-            {"key_apiano1", "key_apiano2", "key_apiano3", "key_harpsichord1", "key_organ1", "key_organ2"};
-
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly VariableStopwatch _sw = new VariableStopwatch();
 

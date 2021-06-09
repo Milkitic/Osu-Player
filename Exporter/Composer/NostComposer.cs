@@ -78,12 +78,14 @@ namespace Nostool.Composer
 
     class NostComposer
     {
-        //private readonly string _musicListPath;
+        private readonly string _musicListPath;
+        public string[] MusicFolders { get; }
         public Dictionary<string, MusicSpec> Mapping { get; private set; }
 
-        public NostComposer(string musicListPath)
+        public NostComposer(string musicListPath, params string[] musicFolders)
         {
-            //_musicListPath = musicListPath;
+            _musicListPath = musicListPath;
+            MusicFolders = musicFolders;
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             var serializer = new XmlSerializer(typeof(MusicList));
             var xmlReader = XmlReader.Create(musicListPath);
@@ -118,33 +120,115 @@ namespace Nostool.Composer
             }
         }
 
-        public async Task<List<string>> ComposeSingleByFolder(string musicFolder)
+        public async Task<List<string>> ComposeByMusicList()
         {
-            var di = new DirectoryInfo(musicFolder)
-                .EnumerateDirectories()
-                .AsParallel()
-                .Select<DirectoryInfo, Task<string>>(async k =>
+            var result = await Task.Run(() =>
+            {
+                var list = new List<string>();
+                var all = Mapping.Keys.ToList();
+
+                int i = 0;
+                while (true)
                 {
-                    var xml = k.EnumerateFiles("*.xml").FirstOrDefault();
-                    if (xml == null) return null;
-                    return await ComposeSingleByPath(xml.FullName);
+                    var sub = all
+                        .Skip(Environment.ProcessorCount * 3 * i)
+                        .Take(Environment.ProcessorCount * 3)
+                        .ToList();
+                    if (sub.Count == 0) break;
+                    var paths = sub
+                        .AsParallel()
+                        .WithDegreeOfParallelism(Environment.ProcessorCount + 1)
+                        .Select(k =>
+                        {
+                            try
+                            {
+                                return ComposeSingleByBaseName(k).Result;
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                                return null;
+                            }
+                        });
+                    list.AddRange(paths);
+                    CachedSound.ClearCacheSounds();
+                    i++;
+                }
 
-                });
-            await Task.WhenAll(di);
-            return di.Select(k => k.Result).ToList();
+                return list;
+            });
+            return result.ToList();
         }
 
-        public async Task<string> ComposeSingleByBaseName(string path)
+        public async Task<List<string>> ComposeSingleByFolderIndex(int index)
         {
-            throw new NotImplementedException();
+            var result = await Task.Run(() =>
+            {
+                var list = new List<string>();
+                var allDirs = new DirectoryInfo(MusicFolders[index]).GetDirectories();
+
+                int i = 0;
+                while (true)
+                {
+                    var sub = allDirs
+                        .Skip(Environment.ProcessorCount * 3 * i)
+                        .Take(Environment.ProcessorCount * 3)
+                        .ToList();
+                    if (sub.Count == 0) break;
+                    var paths = sub
+                        .AsParallel()
+                        .WithDegreeOfParallelism(Environment.ProcessorCount + 1)
+                        .Select(k =>
+                        {
+                            var xml = k.EnumerateFiles($"{k.Name.ToLower()}*.xml").FirstOrDefault();
+                            if (xml == null) return null;
+                            try
+                            {
+                                return ComposeSingleByPath(xml.FullName).Result;
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                                return null;
+                            }
+                        });
+                    list.AddRange(paths);
+                    CachedSound.ClearCacheSounds();
+                    i++;
+                }
+
+                return list;
+            });
+            return result.ToList();
         }
+
+        public async Task<string> ComposeSingleByBaseName(string basename)
+        {
+            basename = basename.ToLower();
+            foreach (var musicFolder in MusicFolders)
+            {
+                var fullPath = Path.Combine(musicFolder, basename);
+
+                var di = new DirectoryInfo(fullPath);
+                if (!di.Exists) continue;
+
+                var fi = di.EnumerateFiles($"{basename}*.xml").FirstOrDefault();
+                if (fi == null) return null;
+
+                return await ComposeSingleByPath(fi.FullName);
+            }
+
+            throw new Exception($"Basename \"{basename}\" not exist.");
+        }
+
         private static async Task<string> Write(string path, MusicScore mScore, MusicSpec musicSpec)
         {
             var sw2 = Stopwatch.StartNew();
-            var engine = new AudioPlaybackEngine();
-            var seRatio = (musicSpec.KeyVolume + 12) / 12;
-            var bgmRatio = (musicSpec.BgmVolume + 12);
-            var noteChannel = new NoteChannel(path, seRatio, bgmRatio, mScore, engine);
+            var seRatio = (musicSpec.KeyVolume + 12) / 12f;
+            var bgmRatio = (musicSpec.BgmVolume + 12f) / 12f;
+
+            using var engine = new AudioPlaybackEngine();
+            await using var noteChannel = new NoteChannel(path, seRatio, bgmRatio, mScore, engine);
             await noteChannel.Initialize();
 
             Console.WriteLine("init: " + sw2.Elapsed);
@@ -172,10 +256,12 @@ namespace Nostool.Composer
             sourceProvider = new WaveFloatTo16Provider(sourceProvider);
 
             //using var outStream = new MemoryStream();
-            var filename = /*Path.GetFileNameWithoutExtension(path)*/$"{musicSpec.Artist} - {musicSpec.Title}.mp3";
+            var filename = string.IsNullOrWhiteSpace(musicSpec.Artist)
+                ? ReplaceInvalidChars($"{musicSpec.Title}.mp3")
+                : ReplaceInvalidChars($"{musicSpec.Artist} - {musicSpec.Title}.mp3");
             var filepath = Path.Combine(Directories.ExportFolder, filename);
             await using var outStream = new FileStream(filepath, FileMode.Create, FileAccess.Write);
-            var writer = new LameMP3FileWriter(outStream, sourceProvider.WaveFormat, 320, new ID3TagData
+            await using var writer = new LameMP3FileWriter(outStream, sourceProvider.WaveFormat, 320, new ID3TagData
             {
                 Title = musicSpec.Title,
                 Artist = musicSpec.Artist,
@@ -197,6 +283,11 @@ namespace Nostool.Composer
             outStream.Flush();
             Console.WriteLine("write: " + sw2.Elapsed);
             return filepath;
+        }
+
+        public static string ReplaceInvalidChars(string filename)
+        {
+            return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
         }
     }
 }

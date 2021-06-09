@@ -79,7 +79,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     var ele = all.Select(k =>
                     {
                         var s = score.TrackInfo.First(o => o.Index == k.TrackIndex).Name;
-                        var isGeneric = Generics.Contains(s);
+                        var isGeneric = true;
 
                         var name = s + "_" +
                                    KeysoundFilenameUtilities.GetFileSuffix(k.ScalePiano);
