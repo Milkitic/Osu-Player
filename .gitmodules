@@ -10,3 +10,7 @@
 	path = Libraries/OSharp.Beatmap
 	url = https://github.com/Milkitic/OSharp.Beatmap
 	branch = master
+[submodule "Libraries/Milki.Extensions.Audio"]
+	path = Libraries/Milki.Extensions.Audio
+	url = https://github.com/Milkitic/Milki.Extensions.Audio.git
+	branch = master

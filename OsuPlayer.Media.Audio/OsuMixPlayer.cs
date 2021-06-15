@@ -10,11 +10,18 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Milki.Extensions.MixPlayer;
+using Milki.Extensions.MixPlayer.NAudioExtensions;
+using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
+using Milki.Extensions.MixPlayer.Subchannels;
+using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
     public class OsuMixPlayer : MultichannelPlayer
     {
+        public static OsuMixPlayer Current { get; private set; }
+
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly ConcurrentDictionary<string, string> _pathCache =
             new ConcurrentDictionary<string, string>();
@@ -28,7 +35,7 @@ namespace Milky.OsuPlayer.Media.Audio
         public SingleMediaChannel MusicChannel { get; private set; }
         public HitsoundChannel HitsoundChannel { get; private set; }
         public SampleChannel SampleChannel { get; private set; }
-
+        public IWavePlayer Device => Engine.OutputDevice;
         public int ManualOffset
         {
             get => _manualOffset;
@@ -44,6 +51,7 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
+            Current = this;
         }
 
         public override async Task Initialize()
@@ -113,7 +121,7 @@ namespace Milky.OsuPlayer.Media.Audio
             InitVolume();
 
             await CachedSound.GetOrCreateCacheSound(mp3Path);
-            await BufferSoundElements();
+            await BufferSoundElementsAsync();
         }
 
         private void InitVolume()

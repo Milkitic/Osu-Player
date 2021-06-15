@@ -1,12 +1,13 @@
-﻿using Milky.OsuPlayer.Media.Audio.Player;
-using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
-using OSharp.Beatmap;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Milki.Extensions.MixPlayer;
+using Milki.Extensions.MixPlayer.NAudioExtensions;
+using Milki.Extensions.MixPlayer.Subchannels;
+using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Media.Audio
 {

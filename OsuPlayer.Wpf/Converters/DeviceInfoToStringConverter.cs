@@ -1,8 +1,8 @@
-﻿using Milky.OsuPlayer.Utils;
-using OsuPlayer.Devices;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows.Data;
+using Milki.Extensions.MixPlayer.Devices;
+using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Converters
 {
@@ -10,13 +10,13 @@ namespace Milky.OsuPlayer.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is IDeviceInfo b)) return value;
-            if (b.Equals(WasapiInfo.Default))
+            if (!(value is DeviceInfo b)) return value;
+            if (b.Equals(DeviceInfo.DefaultWasapi))
             {
                 return I18NUtil.GetString("ui-sets-content-systemDefault");
             }
 
-            return $"({b.OutputMethod}) {b.FriendlyName}";
+            return $"({b.Provider}) {b.Name}";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

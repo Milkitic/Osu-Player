@@ -1,17 +1,18 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Media.Audio.Player;
-using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
-using Milky.OsuPlayer.Shared;
-using OSharp.Beatmap;
-using OSharp.Beatmap.Sections.GamePlay;
-using OSharp.Beatmap.Sections.HitObject;
-using OSharp.Beatmap.Sections.Timing;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Milki.Extensions.MixPlayer;
+using Milki.Extensions.MixPlayer.NAudioExtensions;
+using Milki.Extensions.MixPlayer.Subchannels;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Shared;
+using OSharp.Beatmap;
+using OSharp.Beatmap.Sections.GamePlay;
+using OSharp.Beatmap.Sections.HitObject;
+using OSharp.Beatmap.Sections.Timing;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
