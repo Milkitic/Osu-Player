@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Milki.Extensions.MixPlayer;
-using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milki.Extensions.MixPlayer.Subchannels;
 using Milky.OsuPlayer.Common;

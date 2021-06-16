@@ -8,7 +8,6 @@ using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.Subchannels;
 using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Shared;
 using OSharp.Beatmap;
 using OSharp.Beatmap.Sections.GamePlay;
 using OSharp.Beatmap.Sections.HitObject;
