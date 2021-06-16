@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using Milki.Extensions.MixPlayer;
 
 namespace Milky.OsuPlayer
 {
@@ -24,6 +25,8 @@ namespace Milky.OsuPlayer
                 return;
             }
 
+            InitMixPlayerConfig();
+
 #if DEBUG
             //ConsoleManager.Show();
 #endif
@@ -34,6 +37,26 @@ namespace Milky.OsuPlayer
 
             //https://ffmpeg.zeranoe.com/builds/win32/shared/ffmpeg-4.2.1-win32-shared.zip
             Unosquare.FFME.Library.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg");
+        }
+
+        private static void InitMixPlayerConfig()
+        {
+            var playSection = AppSettings.Default.Play;
+            var configuration = Configuration.Instance;
+            configuration.CacheDir = Domain.CachePath;
+            configuration.DefaultDir = Domain.DefaultPath;
+            configuration.PlaybackRate = playSection.PlaybackRate;
+            configuration.KeepTune = playSection.PlayUseTempo;
+            configuration.GeneralOffset = (uint)playSection.GeneralOffset;
+            AppSettings.Default.Play.PropertyChanged += (sender, e) =>
+            {
+                if (e.PropertyName == nameof(AppSettings.Play.PlaybackRate))
+                    configuration.PlaybackRate = playSection.PlaybackRate;
+                else if (e.PropertyName == nameof(AppSettings.Play.PlayUseTempo))
+                    configuration.KeepTune = playSection.PlayUseTempo;
+                else if (e.PropertyName == nameof(AppSettings.Play.GeneralOffset))
+                    configuration.GeneralOffset = (uint)playSection.GeneralOffset;
+            };
         }
 
         private static bool LoadConfig()

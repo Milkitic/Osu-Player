@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Milki.Extensions\src\Milki.Extensions.MixPlayer\Milki.Extensions.MixPlayer.csproj" />
+    <ProjectReference Include="..\Libraries\Milki.Extensions.Audio\src\Milki.Extensions.MixPlayer\Milki.Extensions.MixPlayer.csproj" />
     <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj" />
     <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj" />
     <ProjectReference Include="..\OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj" />

@@ -1,6 +1,6 @@
-﻿using Milky.OsuPlayer.Presentation.Annotations;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Milky.OsuPlayer.Presentation.Annotations;
 
 namespace Milky.OsuPlayer.Data.Models
 {

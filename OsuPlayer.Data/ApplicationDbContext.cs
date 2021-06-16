@@ -1,14 +1,14 @@
-﻿using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Shared.Models;
-using osu_database_reader.Components.Beatmaps;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Shared.Models;
+using osu_database_reader.Components.Beatmaps;
 using Collection = Milky.OsuPlayer.Data.Models.Collection;
 
 namespace Milky.OsuPlayer.Data
