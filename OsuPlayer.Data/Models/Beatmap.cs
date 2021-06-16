@@ -11,6 +11,7 @@ namespace Milky.OsuPlayer.Data.Models
     public class Beatmap : BaseEntity, IEquatable<Beatmap>
     {
         private BeatmapThumb _beatmapThumb;
+        internal bool temp;
 
         public class Comparer : IEqualityComparer<Beatmap>
         {
@@ -99,7 +100,7 @@ namespace Milky.OsuPlayer.Data.Models
 
         public List<Collection> Collections { get; set; }
 
-        [NotMapped] public bool IsTemporary => Id == null || Id.Length == 0;
+        [NotMapped] public bool IsTemporary => temp || Id == null || Id.Length == 0;
 
         public override string ToString()
         {

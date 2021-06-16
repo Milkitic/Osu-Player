@@ -88,7 +88,7 @@ namespace Milky.OsuPlayer.Data
             beatmap.AudioFileName = osuFile.General.AudioFilename;
 
             beatmap.Id = Zip($"!{beatmap.FolderNameOrPath}|{beatmap.Version}|{(beatmap.InOwnDb ? 1 : 0)}");
-
+            beatmap.temp = true;
             return beatmap;
         }
 

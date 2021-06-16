@@ -124,8 +124,8 @@
     </None>
   </ItemGroup>
 
-  <Target Condition=" '$(Configuration)'!='Debug'" Name="PostBuild" AfterTargets="PostBuildEvent">
+  <!--<Target Condition=" '$(Configuration)'!='Debug'" Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File &quot;$(SolutionDir)post-build.ps1&quot; $(OutDir)" />
-  </Target>
+  </Target>-->
 
 </Project>

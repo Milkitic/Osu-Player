@@ -235,7 +235,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 return new[]
                 {
                     ValueTuple.Create(
-                        _player.GetFileUntilFind(_sourceFolder,
+                        _player.FileCache.GetFileUntilFind(_sourceFolder,
                             Path.GetFileNameWithoutExtension(hitObject.FileName)),
                         itemHitsound
                     )
@@ -279,7 +279,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 if (timingPoint.Track == 0)
                     filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutExt + Information.WavExtension);
                 else if (waves.Contains(fileNameWithoutExt))
-                    filePath = _player.GetFileUntilFind(_sourceFolder, fileNameWithoutExt);
+                    filePath = _player.FileCache.GetFileUntilFind(_sourceFolder, fileNameWithoutExt);
                 else
                     filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutIndex + Information.WavExtension);
 

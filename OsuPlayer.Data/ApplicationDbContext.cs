@@ -152,6 +152,11 @@ namespace Milky.OsuPlayer.Data
                     return null;
                 }
 
+                if (beatmap.IsTemporary)
+                {
+                    return new BeatmapConfig();
+                }
+
                 var map = await BeatmapConfigs
                     .AsNoTracking()
                     .FirstOrDefaultAsync(k => k.BeatmapId == beatmap.Id);
@@ -384,6 +389,12 @@ namespace Milky.OsuPlayer.Data
 
         public async Task AddOrUpdateBeatmapToRecent(Beatmap beatmap)
         {
+            if (beatmap.IsTemporary)
+            {
+                //throw new Exception("The beatmap is temporary which can not be added to playlist.");
+                return;
+            }
+
             var recent = await RecentList.FirstOrDefaultAsync(k => k.BeatmapId == beatmap.Id);
             if (recent != null)
                 recent.UpdateTime = DateTime.Now;
@@ -419,7 +430,11 @@ namespace Milky.OsuPlayer.Data
         public async Task AddOrUpdateBeatmapToPlaylist(Beatmap beatmap)
         {
             if (beatmap.IsTemporary)
-                throw new Exception("The beatmap is temporary which can not be added to playlist.");
+            {
+                //throw new Exception("The beatmap is temporary which can not be added to playlist.");
+                return;
+            }
+
             var map = await Playlist.FirstOrDefaultAsync(k => k.BeatmapId == beatmap.Id);
             if (map == null)
             {
@@ -457,7 +472,7 @@ namespace Milky.OsuPlayer.Data
 
             Playlist.UpdateRange(exists);
 
-            var news = Playlist.Except(exists);
+            var news = (await Playlist.ToListAsync()).Except(exists).ToList();
             foreach (var beatmapCurrentPlay in news)
             {
                 beatmapCurrentPlay.Index = requestIdDic[beatmapCurrentPlay.BeatmapId];

@@ -14,6 +14,36 @@ using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
+    public class FileCache
+    {
+        private readonly ConcurrentDictionary<string, string> _pathCache =
+            new ConcurrentDictionary<string, string>();
+
+        public string GetFileUntilFind(string sourceFolder, string fileNameWithoutExtension)
+        {
+            var combine = Path.Combine(sourceFolder, fileNameWithoutExtension);
+            if (_pathCache.TryGetValue(combine, out var value))
+            {
+                return value;
+            }
+
+            string path = "";
+            foreach (var extension in Information.SupportExtensions)
+            {
+                path = Path.Combine(sourceFolder, fileNameWithoutExtension + extension);
+
+                if (File.Exists(path))
+                {
+                    _pathCache.TryAdd(combine, path);
+                    return path;
+                }
+            }
+
+            _pathCache.TryAdd(combine, path);
+            return path;
+        }
+    }
+
     public class OsuMixPlayer : MultichannelPlayer
     {
         public static OsuMixPlayer Current { get; private set; }
@@ -26,6 +56,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private string _sourceFolder;
         private int _manualOffset;
 
+        internal FileCache FileCache;
         public override string Description { get; } = "OsuPlayer";
 
         public SingleMediaChannel MusicChannel { get; private set; }
@@ -52,6 +83,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public override async Task Initialize()
         {
+            FileCache = new FileCache();
             try
             {
                 if (CachedSound.DefaultSounds.Count == 0)
@@ -82,7 +114,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private async Task InnerLoad()
         {
-            var mp3Path = Path.Combine(_sourceFolder, _osuFile.General.AudioFilename);
+            var mp3Path = Path.Combine(_sourceFolder, _osuFile?.General.AudioFilename ?? ".");
             MusicChannel = new SingleMediaChannel(Engine, mp3Path,
                 AppSettings.Default?.Play?.PlaybackRate ?? 1,
                 AppSettings.Default?.Play?.PlayUseTempo ?? true)
@@ -177,30 +209,6 @@ namespace Milky.OsuPlayer.Media.Audio
             }
 
             AppSettings.SaveDefault();
-        }
-
-        public string GetFileUntilFind(string sourceFolder, string fileNameWithoutExtension)
-        {
-            var combine = Path.Combine(sourceFolder, fileNameWithoutExtension);
-            if (_pathCache.TryGetValue(combine, out var value))
-            {
-                return value;
-            }
-
-            string path = "";
-            foreach (var extension in Information.SupportExtensions)
-            {
-                path = Path.Combine(sourceFolder, fileNameWithoutExtension + extension);
-
-                if (File.Exists(path))
-                {
-                    _pathCache.TryAdd(combine, path);
-                    return path;
-                }
-            }
-
-            _pathCache.TryAdd(combine, path);
-            return path;
         }
 
         public override ValueTask DisposeAsync()
