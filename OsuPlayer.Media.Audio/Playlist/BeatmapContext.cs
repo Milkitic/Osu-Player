@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Coosu.Beatmap;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
-using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Media.Audio.Playlist
 {

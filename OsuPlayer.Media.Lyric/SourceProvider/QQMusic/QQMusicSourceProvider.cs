@@ -1,6 +1,6 @@
-﻿using Milky.OsuPlayer.Media.Lyric.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Milky.OsuPlayer.Media.Lyric.Models;
 
 namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic
 {

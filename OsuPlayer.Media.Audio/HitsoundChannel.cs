@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Coosu.Beatmap;
+using Coosu.Beatmap.Sections.GamePlay;
+using Coosu.Beatmap.Sections.HitObject;
+using Coosu.Beatmap.Sections.Timing;
 using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.Subchannels;
 using Milky.OsuPlayer.Common;
-using OSharp.Beatmap;
-using OSharp.Beatmap.Sections.GamePlay;
-using OSharp.Beatmap.Sections.HitObject;
-using OSharp.Beatmap.Sections.Timing;
 
 namespace Milky.OsuPlayer.Media.Audio
 {

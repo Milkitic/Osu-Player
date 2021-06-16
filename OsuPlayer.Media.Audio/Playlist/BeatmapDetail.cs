@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Coosu.Beatmap;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Interaction;
-using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Media.Audio.Playlist
 {

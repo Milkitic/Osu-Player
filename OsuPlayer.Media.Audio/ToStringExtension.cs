@@ -1,6 +1,6 @@
 ﻿using System;
-using OSharp.Beatmap.Sections.HitObject;
-using OSharp.Beatmap.Sections.Timing;
+using Coosu.Beatmap.Sections.HitObject;
+using Coosu.Beatmap.Sections.Timing;
 
 namespace Milky.OsuPlayer.Media.Audio
 {

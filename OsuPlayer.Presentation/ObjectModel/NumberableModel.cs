@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Milky.OsuPlayer.Presentation.ObjectModel
+﻿namespace Milky.OsuPlayer.Presentation.ObjectModel
 {
     public class NumberableModel
     {

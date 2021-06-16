@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Coosu.Beatmap;
 using Milki.Extensions.MixPlayer;
 using Milky.OsuPlayer.Common;
-using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Media.Audio
 {

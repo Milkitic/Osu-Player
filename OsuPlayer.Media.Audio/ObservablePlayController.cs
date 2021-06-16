@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Coosu.Beatmap;
 using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milky.OsuPlayer.Common;
@@ -11,7 +12,6 @@ using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Annotations;
 using Milky.OsuPlayer.Presentation.Interaction;
-using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
