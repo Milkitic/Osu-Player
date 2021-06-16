@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using OSharp.Beatmap;
+using Coosu.Beatmap;
 
 namespace Milky.OsuPlayer.Data.Models
 {
@@ -63,7 +63,7 @@ namespace Milky.OsuPlayer.Data.Models
         public int AudioPreviewTime { get; set; } //NOTE: in ms
         public int BeatmapId { get; set; }
         public int BeatmapSetId { get; set; }
-        public OSharp.Beatmap.Sections.GamePlay.GameMode GameMode { get; set; }
+        public Coosu.Beatmap.Sections.GamePlay.GameMode GameMode { get; set; }
         public string SongSource { get; set; }
         public string SongTags { get; set; }
         public string FolderNameOrPath { get; set; }

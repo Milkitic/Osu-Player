@@ -1,12 +1,10 @@
 ﻿using System;
+using System.IO;
+using System.Threading.Tasks;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Presentation.Interaction;
 using osu.Shared.Serialization;
 using osu_database_reader.BinaryFiles;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Milky.OsuPlayer.Data.Models;
 
 namespace Milky.OsuPlayer.Common.Instances
 {

@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
-using OSharp.Beatmap.MetaData;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {

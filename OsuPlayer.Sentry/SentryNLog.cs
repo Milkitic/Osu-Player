@@ -11,7 +11,7 @@ namespace Milky.OsuPlayer.Sentry
             // https://github.com/mkaring/ConfuserEx
             // https://docs.sentry.io/platforms/dotnet/nlog/
 
-            string dsn = __dsn;
+            string dsn = "";
             config.AddSentry(o =>
             {
                 o.Dsn = new Dsn(dsn);

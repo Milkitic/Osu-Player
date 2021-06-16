@@ -2,11 +2,11 @@
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using Coosu.Beatmap;
 using Milky.OsuPlayer.Data.Models;
-using OSharp.Beatmap;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
-using OSharpGameMode = OSharp.Beatmap.Sections.GamePlay.GameMode;
+using OSharpGameMode = Coosu.Beatmap.Sections.GamePlay.GameMode;
 
 namespace Milky.OsuPlayer.Data
 {

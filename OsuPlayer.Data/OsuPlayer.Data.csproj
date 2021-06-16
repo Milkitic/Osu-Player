@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Coosu.Beatmap" Version="1.0.0" />
     <PackageReference Include="HoLLy.osu.DatabaseReader">
       <Version>2.1.1</Version>
     </PackageReference>
@@ -23,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj" />
     <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj" />
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
   </ItemGroup>

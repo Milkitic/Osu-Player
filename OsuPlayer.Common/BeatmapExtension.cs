@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Milky.OsuPlayer.Data.Models;
 using System.IO;
 using System.Linq;
-using OSharp.Beatmap.Sections.GamePlay;
+using Coosu.Beatmap.Sections.GamePlay;
+using Milky.OsuPlayer.Data.Models;
 
 namespace Milky.OsuPlayer.Common
 {
