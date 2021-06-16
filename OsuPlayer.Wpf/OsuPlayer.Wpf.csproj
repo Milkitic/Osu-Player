@@ -37,21 +37,21 @@
     <PackageReference Include="FFME.Windows">
       <Version>4.2.330</Version>
     </PackageReference>
-    <PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.14" />
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.18" />
     <PackageReference Include="Markdig.Wpf">
-      <Version>0.4.0</Version>
+      <Version>0.5.0.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
     <PackageReference Include="MouseKeyHook" Version="5.6.0" />
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.3</Version>
+      <Version>13.0.1</Version>
     </PackageReference>
     <PackageReference Include="NLog">
-      <Version>4.7.6</Version>
+      <Version>4.7.10</Version>
     </PackageReference>
     <PackageReference Include="NLog.Schema">
-      <Version>4.7.5</Version>
+      <Version>4.7.10</Version>
     </PackageReference>
     <PackageReference Include="osu.Shared">
       <Version>1.0.3</Version>
@@ -60,7 +60,7 @@
       <Version>2.1.6</Version>
     </PackageReference>
     <PackageReference Include="System.Data.SQLite.Core">
-      <Version>1.0.112.1</Version>
+      <Version>1.0.114.2</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation">
       <Version>4.3.0</Version>

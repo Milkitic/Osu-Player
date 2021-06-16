@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Sentry" Version="2.1.6" />
-    <PackageReference Include="NLog" Version="4.7.6" />
+    <PackageReference Include="NLog" Version="4.7.10" />
     <PackageReference Include="Sentry.NLog" Version="2.1.6" />
   </ItemGroup>
 
