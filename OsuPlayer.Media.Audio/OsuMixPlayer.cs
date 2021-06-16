@@ -1,11 +1,4 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Media.Audio.Player;
-using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Media.Audio.Wave;
-using OSharp.Beatmap;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
@@ -14,7 +7,11 @@ using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milki.Extensions.MixPlayer.Subchannels;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Media.Audio.Playlist;
 using NAudio.Wave;
+using OSharp.Beatmap;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
@@ -47,7 +44,7 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
-        public OsuMixPlayer(OsuFile osuFile, string sourceFolder)
+        public OsuMixPlayer(OsuFile osuFile, string sourceFolder) : base(AppSettings.Default.Play.DeviceInfo)
         {
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
@@ -192,7 +189,7 @@ namespace Milky.OsuPlayer.Media.Audio
             }
 
             string path = "";
-            foreach (var extension in AudioPlaybackEngine.SupportExtensions)
+            foreach (var extension in Information.SupportExtensions)
             {
                 path = Path.Combine(sourceFolder, fileNameWithoutExtension + extension);
 
