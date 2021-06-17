@@ -28,4 +28,16 @@
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="default\*.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="libs\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="libs\.gitignore">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

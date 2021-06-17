@@ -49,14 +49,12 @@ namespace Milky.OsuPlayer.Media.Audio
         public static OsuMixPlayer Current { get; private set; }
 
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly ConcurrentDictionary<string, string> _pathCache =
-            new ConcurrentDictionary<string, string>();
+        private FileCache _fileCache;
 
         private OsuFile _osuFile;
         private string _sourceFolder;
         private int _manualOffset;
 
-        internal FileCache FileCache;
         public override string Description { get; } = "OsuPlayer";
 
         public SingleMediaChannel MusicChannel { get; private set; }
@@ -74,6 +72,13 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
+        public OsuMixPlayer(LocalOsuFile osuFile) : base(AppSettings.Default?.Play?.DeviceInfo)
+        {
+            _osuFile = osuFile;
+            _sourceFolder = Path.GetDirectoryName(osuFile.OriginPath);
+            Current = this;
+        }
+
         public OsuMixPlayer(OsuFile osuFile, string sourceFolder) : base(AppSettings.Default.Play.DeviceInfo)
         {
             _osuFile = osuFile;
@@ -83,7 +88,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public override async Task Initialize()
         {
-            FileCache = new FileCache();
+            _fileCache = new FileCache();
             try
             {
                 if (CachedSound.DefaultSounds.Count == 0)
@@ -126,11 +131,14 @@ namespace Milky.OsuPlayer.Media.Audio
             AddSubchannel(MusicChannel);
             await MusicChannel.Initialize().ConfigureAwait(false);
 
-            HitsoundChannel = new HitsoundChannel(this, _osuFile, _sourceFolder, Engine);
+            HitsoundChannel = new HitsoundChannel(_osuFile, _sourceFolder, Engine, _fileCache);
             AddSubchannel(HitsoundChannel);
             await HitsoundChannel.Initialize().ConfigureAwait(false);
 
-            SampleChannel = new SampleChannel(this, _osuFile, _sourceFolder, Engine);
+            SampleChannel = new SampleChannel(_osuFile, _sourceFolder, Engine, new Subchannel[]
+            {
+                MusicChannel, HitsoundChannel
+            }, _fileCache);
             AddSubchannel(SampleChannel);
             await SampleChannel.Initialize().ConfigureAwait(false);
             //await CachedSound.CreateCacheSounds(HitsoundChannel.SoundElementCollection

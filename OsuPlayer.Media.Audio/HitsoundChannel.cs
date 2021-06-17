@@ -17,14 +17,20 @@ namespace Milky.OsuPlayer.Media.Audio
 {
     public class HitsoundChannel : MultiElementsChannel
     {
-        private readonly OsuMixPlayer _player;
+        private readonly FileCache _cache;
         private readonly OsuFile _osuFile;
         private readonly string _sourceFolder;
 
-        public HitsoundChannel(OsuMixPlayer player, OsuFile osuFile, string sourceFolder, AudioPlaybackEngine engine)
+        public HitsoundChannel(LocalOsuFile osuFile, AudioPlaybackEngine engine, FileCache cache = null)
+            : this(osuFile, Path.GetDirectoryName(osuFile.OriginPath), engine, cache)
+        {
+        }
+
+        public HitsoundChannel(OsuFile osuFile, string sourceFolder, AudioPlaybackEngine engine, FileCache cache = null)
             : base(engine)
         {
-            _player = player;
+            _cache = cache ?? new FileCache();
+
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
 
@@ -235,7 +241,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 return new[]
                 {
                     ValueTuple.Create(
-                        _player.FileCache.GetFileUntilFind(_sourceFolder,
+                        _cache.GetFileUntilFind(_sourceFolder,
                             Path.GetFileNameWithoutExtension(hitObject.FileName)),
                         itemHitsound
                     )
@@ -279,7 +285,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 if (timingPoint.Track == 0)
                     filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutExt + Information.WavExtension);
                 else if (waves.Contains(fileNameWithoutExt))
-                    filePath = _player.FileCache.GetFileUntilFind(_sourceFolder, fileNameWithoutExt);
+                    filePath = _cache.GetFileUntilFind(_sourceFolder, fileNameWithoutExt);
                 else
                     filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutIndex + Information.WavExtension);
 

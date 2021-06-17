@@ -13,15 +13,22 @@ namespace Milky.OsuPlayer.Media.Audio
 {
     public class SampleChannel : MultiElementsChannel
     {
-        private readonly OsuMixPlayer _player;
+        private readonly FileCache _cache;
         private readonly OsuFile _osuFile;
         private readonly string _sourceFolder;
         private NightcoreTilingProvider _nightcore;
 
-        public SampleChannel(OsuMixPlayer player, OsuFile osuFile, string sourceFolder, AudioPlaybackEngine engine)
-            : base(engine)
+        public SampleChannel(LocalOsuFile osuFile, AudioPlaybackEngine engine,
+            ICollection<Subchannel> referencedChannels, FileCache cache = null)
+            : this(osuFile, Path.GetDirectoryName(osuFile.OriginPath), engine, referencedChannels, cache)
         {
-            _player = player;
+        }
+
+        public SampleChannel(OsuFile osuFile, string sourceFolder, AudioPlaybackEngine engine,
+            ICollection<Subchannel> referencedChannels, FileCache cache = null)
+            : base(engine, null, referencedChannels)
+        {
+            _cache = cache;
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
 
@@ -42,8 +49,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     .ForAll(sample =>
                     {
                         var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
-                            _player.FileCache.GetFileUntilFind(_sourceFolder,
-                                Path.GetFileNameWithoutExtension(sample.Filename))
+                            _cache.GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(sample.Filename))
                         );
                         elements.Add(element);
                     });
@@ -53,8 +59,8 @@ namespace Milky.OsuPlayer.Media.Audio
 
             if (PlaybackRate.Equals(1.5f) && !UseTempo)
             {
-                var duration = MathEx.Max(_player.MusicChannel.ChannelEndTime,
-                    _player.HitsoundChannel.ChannelEndTime,
+                var duration1 = MathEx.Max(ReferencedChannels.Select(k => k.ChannelEndTime));
+                var duration = MathEx.Max(duration1,
                     TimeSpan.FromMilliseconds(samples.Count == 0 ? 0 : samples.Max(k => k.Offset))
                 );
                 _nightcore = new NightcoreTilingProvider(_osuFile, duration);
