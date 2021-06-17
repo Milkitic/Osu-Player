@@ -84,6 +84,7 @@ namespace Milky.OsuPlayer.Media.Audio
             else // sliders
             {
                 // edges
+                bool forceUseSlide = obj.SliderInfo.EdgeSamples == null;
                 foreach (var item in obj.SliderInfo.Edges)
                 {
                     var itemOffset = item.Offset;
@@ -92,9 +93,15 @@ namespace Milky.OsuPlayer.Media.Audio
                     float balance = GetObjectBalance(item.Point.X);
                     float volume = GetObjectVolume(obj, timingPoint);
 
-                    var hs = obj.Hitsound == HitsoundType.Normal ? item.EdgeHitsound : obj.Hitsound | item.EdgeHitsound;
-                    var addition = item.EdgeAddition == ObjectSamplesetType.Auto ? obj.AdditionSet : item.EdgeAddition;
-                    var sample = item.EdgeSample == ObjectSamplesetType.Auto ? obj.SampleSet : item.EdgeSample;
+                    var hs = forceUseSlide
+                        ? obj.Hitsound
+                        : item.EdgeHitsound;
+                    var addition = forceUseSlide
+                        ? obj.AdditionSet
+                        : item.EdgeAddition;
+                    var sample = forceUseSlide
+                        ? obj.SampleSet
+                        : item.EdgeSample;
                     var tuples = AnalyzeHitsoundFiles(hs, sample, addition,
                         timingPoint, obj, waves);
                     foreach (var (filePath, _) in tuples)
