@@ -205,8 +205,10 @@ namespace Milky.OsuPlayer.Media.Audio
                     }
 
                     // end slide
-                    var stopElement = SoundElement.CreateLoopStopSignal(endOffset);
+                    var stopElement = SoundElement.CreateLoopStopSignal(endOffset, 0);
+                    var stopElement2 = SoundElement.CreateLoopStopSignal(endOffset, 1);
                     slideElements.Add(stopElement);
+                    slideElements.Add(stopElement2);
                     foreach (var slideElement in slideElements)
                     {
                         elements.Add(slideElement);
