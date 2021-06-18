@@ -27,7 +27,7 @@ namespace Milky.OsuPlayer.Media.Audio
         }
 
         public HitsoundChannel(OsuFile osuFile, string sourceFolder, AudioPlaybackEngine engine, FileCache cache = null)
-            : base(engine)
+            : base(engine, new MixSettings { ForceMode = true })
         {
             _cache = cache ?? new FileCache();
 

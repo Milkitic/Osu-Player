@@ -15,12 +15,15 @@ namespace CorePlayerTest
         {
             Configuration.Instance.SetLogger(LoggerFactory.Create(k => k.AddConsole()));
 
-            var path = "E:\\Games\\osu!\\Songs\\3198 Rhapsody - Emerald Sword\\" +
-                       //"1376486 Risshuu feat. Choko - Take\\" +
-                       "Rhapsody - Emerald Sword (Reikin) [net].osu";
+            //var path = "E:\\Games\\osu!\\Songs\\3198 Rhapsody - Emerald Sword\\" +
+            //           //"1376486 Risshuu feat. Choko - Take\\" +
+            //           "Rhapsody - Emerald Sword (Reikin) [net].osu";
             //var path = "E:\\Games\\osu!\\Songs\\take yf\\" +
             //           //"1376486 Risshuu feat. Choko - Take\\" +
             //           "Risshuu feat. Choko - Take (yf_bmp) [test].osu";
+            var path = "F:\\milkitic\\Songs\\" +
+                       "1376486 Risshuu feat. Choko - Take\\" +
+                       "Risshuu feat. Choko - Take (yf_bmp) [Ta~ke take take take take take tatata~].osu";
             var folder = Path.GetDirectoryName(path);
             var osuFile = await OsuFile.ReadFromFileAsync(path);
             if (!osuFile.ReadSuccess)
