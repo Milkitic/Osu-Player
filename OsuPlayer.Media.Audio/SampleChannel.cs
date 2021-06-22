@@ -26,7 +26,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public SampleChannel(OsuFile osuFile, string sourceFolder, AudioPlaybackEngine engine,
             ICollection<Subchannel> referencedChannels, FileCache cache = null)
-            : base(engine, null, referencedChannels)
+            : base(engine, new MixSettings(), referencedChannels)
         {
             _cache = cache;
             _osuFile = osuFile;
