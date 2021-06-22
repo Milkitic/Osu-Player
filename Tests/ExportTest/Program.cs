@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Coosu.Beatmap;
 using Microsoft.Extensions.Logging;
 using Milki.Extensions.MixPlayer;
+using Milki.Extensions.MixPlayer.Exporters;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.Subchannels;
 using Milky.OsuPlayer.Media.Audio;
@@ -22,8 +23,8 @@ namespace ExportTest
         private static async Task ExportOsu()
         {
             var path = "F:\\milkitic\\Songs\\" +
-                       "1376486 Risshuu feat. Choko - Take\\" +
-                       "Risshuu feat. Choko - Take (yf_bmp) [Ta~ke take take take take take tatata~].osu";
+                       "1346316 Nekomata Master feat. Mimi Nyami - TWINKLING\\" +
+                       "Nekomata Master feat. Mimi Nyami - TWINKLING (yf_bmp) [Another].osu";
 
             //var path = "E:\\Games\\osu!\\Songs\\3198 Rhapsody - Emerald Sword\\" +
             //           //"1376486 Risshuu feat. Choko - Take\\" +
@@ -44,19 +45,19 @@ namespace ExportTest
             await using var directChannel = new DirectChannel(mp3Path, osuFile.General.AudioLeadIn, engine);
             await using var hitsoundChannel = new HitsoundChannel(osuFile, engine, fileCache)
             {
-                ManualOffset = 40
+                ManualOffset = 50,
             };
             await using var sampleChannel = new SampleChannel(osuFile, engine, new Subchannel[]
             {
                 directChannel, hitsoundChannel
             }, fileCache)
             {
-                ManualOffset = 40
+                ManualOffset = 50,
             };
 
             var exporter = new Mp3Exporter(new MultiElementsChannel[] { directChannel, hitsoundChannel, sampleChannel }, engine);
             string pre = null;
-            await exporter.ExportAsync("test.mp3", 192, null, progress =>
+            await exporter.ExportAsync("test.mp3", progress =>
             {
                 var p = $"Progress: {progress:P0}";
                 if (pre != p)
