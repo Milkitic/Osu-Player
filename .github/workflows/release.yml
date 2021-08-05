@@ -54,7 +54,7 @@ jobs:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       with:
         name: ${{ env.ProjectName }}-${{ steps.tag.outputs.tag }}
-        prerelease: false
+        prerelease: true
         draft: false
         files: |
           ./ci-pack/${{ env.ProjectName }}-${{ steps.tag.outputs.tag }}.7z
