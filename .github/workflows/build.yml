@@ -34,6 +34,7 @@ jobs:
         
     - name: action-minver
       uses: thefringeninja/action-minver@2.0.0-preview1
+      if: ${{ success() }}
       id: version
       with:
         tag-prefix: v
