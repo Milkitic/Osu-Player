@@ -37,7 +37,7 @@ jobs:
       id: version
       with:
         tag-prefix: v
-        minimum-major-minor: 1.0.0
+        minimum-major-minor: 1.0
       
     - name: Upload artifact
       uses: actions/upload-artifact@v2
