@@ -34,7 +34,7 @@ jobs:
     - name: Publish
       run: |
         echo ${{ github.ref }}      
-        dotnet publish OsuPlayer.Wpf --no-restore --no-self-contained --configuration Release --output ci-publish
+        dotnet publish OsuPlayer.Wpf --no-restore --framework net5.0-windows --runtime win-x64 --self-contained --configuration Release --output ci-publish
 
     - name: Get tag
       uses: dawidd6/action-get-tag@v1
