@@ -10,11 +10,10 @@ namespace Milky.OsuPlayer.Sentry
         {
             // https://github.com/mkaring/ConfuserEx
             // https://docs.sentry.io/platforms/dotnet/nlog/
-
-            string dsn = "";
+            
             config.AddSentry(o =>
             {
-                o.Dsn = new Dsn(dsn);
+                o.Dsn = new Dsn(__dsn);
                 //Optionally specify a separate format for message
                 o.Layout = "${message}";
                 // Optionally specify a separate format for breadcrumbs

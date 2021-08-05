@@ -1,0 +1,50 @@
+name: Build
+env:
+  ProjectName: Osu-player
+on:
+  push:
+    branches: [ master,develop,dev/ci  ]
+  pull_request:
+    branches: [ master,develop,dev/ci ]
+  
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        submodules: 'recursive'
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Secrets
+      shell: pwsh
+      run: |
+        echo 'namespace Milky.OsuPlayer.Sentry{public static partial class SentryNLog{ private const string __dsn ="${{ secrets.SENTRY_DSN }}";}}'>OsuPlayer.Sentry/SentryNLog.Secret.cs  
+
+    - name: Publish
+      run: |
+        echo ${{ github.ref }}
+        dotnet publish OsuPlayer.Wpf --no-restore --no-self-contained --configuration Release --output ci-publish
+        
+    - name: action-minver
+      uses: thefringeninja/action-minver@2.0.0-preview1
+      id: version
+      
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      if: ${{ success() && !startsWith(github.ref, 'refs/tags/') }}
+      with:
+        name: Osu-player-${{ steps.version.outputs.version }}
+        path: ci-publish/
+        if-no-files-found: error
