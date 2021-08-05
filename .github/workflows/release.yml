@@ -29,12 +29,22 @@ jobs:
     - name: Secrets
       shell: pwsh
       run: |
-        echo 'namespace Milky.OsuPlayer.Sentry{public static partial class SentryNLog{ private const string __dsn ="${{ secrets.SENTRY_DSN }}";}}'>OsuPlayer.Sentry/SentryNLog.Secret.cs      
+        echo 'namespace Milky.OsuPlayer.Sentry{public static partial class SentryNLog{ private static string __dsn ="${{ secrets.SENTRY_DSN }}";}}'>OsuPlayer.Sentry/SentryNLog.Secret.cs      
    
     - name: Publish
       run: |
         echo ${{ github.ref }}      
         dotnet publish OsuPlayer.Wpf --no-restore --framework net5.0-windows --runtime win-x64 --self-contained --configuration Release --output ci-publish
+   
+    - name: Confuser
+      shell: pwsh
+      run: |
+        mkdir ConfuserEx -Force
+        Invoke-WebRequest https://github.com/mkaring/ConfuserEx/releases/download/v1.5.0/ConfuserEx-CLI.zip -OutFile "ConfuserEx/cli.zip"
+        7z x "ConfuserEx/cli.zip" -oConfuserEx/
+        copy .\OsuPlayer.Sentry\Confuse.crproj .
+        .\ConfuserEx\Confuser.CLI.exe Confuse.crproj -n
+        del .\ci-publish\OsuPlayer.Sentry.pdb -Force
 
     - name: Get tag
       uses: dawidd6/action-get-tag@v1
