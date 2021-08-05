@@ -26,16 +26,11 @@ jobs:
         
     - name: Restore dependencies
       run: dotnet restore
-      
-    - name: Secrets
-      shell: pwsh
-      run: |
-        echo 'namespace Milky.OsuPlayer.Sentry{public static partial class SentryNLog{ private const string __dsn ="${{ secrets.SENTRY_DSN }}";}}'>OsuPlayer.Sentry/SentryNLog.Secret.cs  
 
     - name: Publish
       run: |
         echo ${{ github.ref }}
-        dotnet publish OsuPlayer.Wpf --no-restore --no-self-contained --configuration Release --output ci-publish
+        dotnet publish OsuPlayer.Wpf --no-restore --no-self-contained --configuration Debug --output ci-publish
         
     - name: action-minver
       uses: thefringeninja/action-minver@2.0.0-preview1
