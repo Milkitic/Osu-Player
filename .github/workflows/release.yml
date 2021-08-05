@@ -27,16 +27,19 @@ jobs:
       run: dotnet restore
       
     - name: Secrets
+      if: ${{ success() }}
       shell: pwsh
       run: |
         echo 'namespace Milky.OsuPlayer.Sentry{public static partial class SentryNLog{ private static string __dsn ="${{ secrets.SENTRY_DSN }}";}}'>OsuPlayer.Sentry/SentryNLog.Secret.cs      
    
     - name: Publish
+      if: ${{ success() }}
       run: |
         echo ${{ github.ref }}      
         dotnet publish OsuPlayer.Wpf --no-restore --framework net5.0-windows --runtime win-x64 --self-contained --configuration Release --output ci-publish
    
     - name: Confuser
+      if: ${{ success() }}
       shell: pwsh
       run: |
         mkdir ConfuserEx -Force
