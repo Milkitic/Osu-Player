@@ -20,9 +20,6 @@
     <PackageReference Include="osu.Shared">
       <Version>1.0.3</Version>
     </PackageReference>
-    <PackageReference Include="System.Data.SQLite.Core">
-      <Version>1.0.114.2</Version>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
