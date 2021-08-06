@@ -1,260 +1,43 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3CD240F8-DA65-44F0-AB58-D78F58109786}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <RootNamespace>Milky.OsuPlayer.Media.Audio</RootNamespace>
-    <AssemblyName>OsuPlayer.Media.Audio</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Microsoft.WindowsAPICodePack.Shell">
-      <HintPath>..\Libraries\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
-    </Reference>
-    <Reference Include="NAudio, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NAudio.1.10.0\lib\net35\NAudio.dll</HintPath>
-    </Reference>
-    <Reference Include="NAudio.Vorbis, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NAudio.Vorbis.1.2.0\lib\net45\NAudio.Vorbis.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.7.0\lib\net45\NLog.dll</HintPath>
-    </Reference>
-    <Reference Include="NVorbis, Version=0.10.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NVorbis.0.10.0\lib\net45\NVorbis.dll</HintPath>
-    </Reference>
-    <Reference Include="osu-database-reader, Version=2.1.1.0, Culture=neutral, PublicKeyToken=null" />
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="NLog">
+      <Version>4.7.10</Version>
+    </PackageReference>
+    <PackageReference Include="System.Memory">
+      <Version>4.5.4</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="DeviceProviderExtension.cs" />
-    <Compile Include="HitsoundChannel.cs" />
-    <Compile Include="NightcoreTilingProvider.cs" />
-    <Compile Include="ObservablePlayController.cs" />
-    <Compile Include="OsuMixPlayer.cs" />
-    <Compile Include="Player\AudioPlaybackEngine.cs" />
-    <Compile Include="Player\ChannelEndTimeComparer.cs" />
-    <Compile Include="Player\IChannel.cs" />
-    <Compile Include="Player\ISoundElementsProvider.cs" />
-    <Compile Include="Player\MixingSampleProviderExtension.cs" />
-    <Compile Include="Player\MultichannelPlayer.cs" />
-    <Compile Include="Player\PlayStatus.cs" />
-    <Compile Include="Player\SampleControl.cs" />
-    <Compile Include="Player\StopMode.cs" />
-    <Compile Include="Player\Subchannel.cs" />
-    <Compile Include="Player\Subchannels\MultiElementsChannel.cs" />
-    <Compile Include="Player\Subchannels\SingleMediaChannel.cs" />
-    <Compile Include="Player\Subchannels\SlideControlType.cs" />
-    <Compile Include="Player\Subchannels\SoundElement.cs" />
-    <Compile Include="Player\Subchannels\SoundElementTimingComparer.cs" />
-    <Compile Include="Playlist\BeatmapContext.cs" />
-    <Compile Include="Playlist\BeatmapDetail.cs" />
-    <Compile Include="Playlist\PlayControlResult.cs" />
-    <Compile Include="Playlist\PlayControlType.cs" />
-    <Compile Include="Playlist\PlayList.cs" />
-    <Compile Include="Playlist\PlayModifier.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SampleChannel.cs" />
-    <Compile Include="SoundTouch\SoundTouch.cs" />
-    <Compile Include="SoundTouch\SoundTouchInterop32.cs" />
-    <Compile Include="SoundTouch\SoundTouchInterop64.cs" />
-    <Compile Include="SoundTouch\SoundTouchProfile.cs" />
-    <Compile Include="SoundTouch\SoundTouchSettings.cs" />
-    <Compile Include="ToStringExtension.cs" />
-    <Compile Include="VariableStopwatch.cs" />
-    <Compile Include="Wave\BalanceSampleProvider.cs" />
-    <Compile Include="Wave\CachedSound.cs" />
-    <Compile Include="Wave\CachedSoundSampleProvider.cs" />
-    <Compile Include="Wave\LoopStream.cs" />
-    <Compile Include="Wave\MyAudioFileReader.cs" />
-    <Compile Include="Wave\VariableSpeedSampleProvider.cs" />
-    <Compile Include="Wave\WaveFormatFactory.cs" />
+    <ProjectReference Include="..\Libraries\Milki.Extensions.Audio\src\Milki.Extensions.MixPlayer\Milki.Extensions.MixPlayer.csproj" />
+    <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj" />
+    <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj" />
+    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj" />
+    <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Update="default\*.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="libs\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="libs\.gitignore">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
-      <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
-      <Name>OSharp.Beatmap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\OSharp.Storyboard\OSharp.Storyboard.csproj">
-      <Project>{D18BDC44-577C-49BA-BB91-1311422D362A}</Project>
-      <Name>OSharp.Storyboard</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
-      <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>
-      <Name>OsuPlayer.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj">
-      <Project>{094FAC4A-6277-46E8-97B4-C992F1674638}</Project>
-      <Name>OsuPlayer.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Devices\OsuPlayer.Devices.csproj">
-      <Project>{E290C0D7-06B7-47DC-81E7-98F08654FB0D}</Project>
-      <Name>OsuPlayer.Devices</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj">
-      <Project>{93E3612C-D388-438F-A04A-047265820998}</Project>
-      <Name>OsuPlayer.Presentation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj">
-      <Project>{C842FAB3-EC80-4E95-B402-BF0572F1806D}</Project>
-      <Name>OsuPlayer.Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="extensions\plugins\SoundTouch\COPYING.TXT">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="default\blank.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\default.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\drum-hitclap.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\drum-hitfinish.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\drum-hitnormal.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\drum-hitwhistle.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\drum-sliderslide.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\drum-slidertick.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\drum-sliderwhistle.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\nightcore-clap.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\nightcore-finish.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\nightcore-hat.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\nightcore-kick.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\normal-hitclap.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\normal-hitfinish.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\normal-hitnormal.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\normal-hitwhistle.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\normal-sliderslide.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\normal-slidertick.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\normal-sliderwhistle.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\soft-hitclap.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\soft-hitfinish.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\soft-hitnormal.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\soft-hitwhistle.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\soft-sliderslide.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\soft-slidertick.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="default\soft-sliderwhistle.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\SoundTouch\SoundTouch.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="extensions\plugins\SoundTouch\SoundTouch_x64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

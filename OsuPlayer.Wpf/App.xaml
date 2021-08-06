@@ -2,8 +2,8 @@
     x:Class="Milky.OsuPlayer.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    DispatcherUnhandledException="Application_DispatcherUnhandledException"
     Exit="Application_Exit"
+    ShutdownMode="OnExplicitShutdown"
     Startup="Application_Startup"
     StartupUri="Windows/MainWindow.xaml">
     <Application.Resources>

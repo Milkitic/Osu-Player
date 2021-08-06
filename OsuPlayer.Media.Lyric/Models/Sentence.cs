@@ -8,7 +8,7 @@ namespace Milky.OsuPlayer.Media.Lyric.Models
 
         public int StartTime { get; set; }
         public string Content { get; set; }
-        
+
         public Sentence(string content, int start_time)
         {
             this.StartTime = start_time;
@@ -40,9 +40,9 @@ namespace Milky.OsuPlayer.Media.Lyric.Models
             return $"{GetTimeline(StartTime)}{Content}";
         }
 
-        public static Sentence operator +(Sentence a,Sentence b)
+        public static Sentence operator +(Sentence a, Sentence b)
         {
-            return new Sentence(a.Content + Environment.NewLine + b.Content, ((a.StartTime<0?b.StartTime:a.StartTime)+(b.StartTime<0?a.StartTime:b.StartTime))/2); 
+            return new Sentence(a.Content + Environment.NewLine + b.Content, ((a.StartTime < 0 ? b.StartTime : a.StartTime) + (b.StartTime < 0 ? a.StartTime : b.StartTime)) / 2);
         }
     }
 }

@@ -1,30 +1,36 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Media.Audio.Player;
-using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
-using Milky.OsuPlayer.Shared;
-using OSharp.Beatmap;
-using OSharp.Beatmap.Sections.GamePlay;
-using OSharp.Beatmap.Sections.HitObject;
-using OSharp.Beatmap.Sections.Timing;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Coosu.Beatmap;
+using Coosu.Beatmap.Sections.GamePlay;
+using Coosu.Beatmap.Sections.HitObject;
+using Coosu.Beatmap.Sections.Timing;
+using Milki.Extensions.MixPlayer;
+using Milki.Extensions.MixPlayer.NAudioExtensions;
+using Milki.Extensions.MixPlayer.Subchannels;
+using Milky.OsuPlayer.Common;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
     public class HitsoundChannel : MultiElementsChannel
     {
-        private readonly OsuMixPlayer _player;
+        private readonly FileCache _cache;
         private readonly OsuFile _osuFile;
         private readonly string _sourceFolder;
 
-        public HitsoundChannel(OsuMixPlayer player, OsuFile osuFile, string sourceFolder, AudioPlaybackEngine engine)
-            : base(engine)
+        public HitsoundChannel(LocalOsuFile osuFile, AudioPlaybackEngine engine, FileCache cache = null)
+            : this(osuFile, Path.GetDirectoryName(osuFile.OriginPath), engine, cache)
         {
-            _player = player;
+        }
+
+        public HitsoundChannel(OsuFile osuFile, string sourceFolder, AudioPlaybackEngine engine, FileCache cache = null)
+            : base(engine, new MixSettings { ForceMode = true })
+        {
+            _cache = cache ?? new FileCache();
+
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
 
@@ -38,7 +44,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
             var dirInfo = new DirectoryInfo(_sourceFolder);
             var waves = new HashSet<string>(dirInfo.EnumerateFiles()
-                .Where(k => AudioPlaybackEngine.SupportExtensions.Contains(
+                .Where(k => Information.SupportExtensions.Contains(
                     k.Extension, StringComparer.OrdinalIgnoreCase)
                 )
                 .Select(p => Path.GetFileNameWithoutExtension(p.Name))
@@ -78,6 +84,7 @@ namespace Milky.OsuPlayer.Media.Audio
             else // sliders
             {
                 // edges
+                bool forceUseSlide = obj.SliderInfo.EdgeSamples == null;
                 foreach (var item in obj.SliderInfo.Edges)
                 {
                     var itemOffset = item.Offset;
@@ -86,9 +93,15 @@ namespace Milky.OsuPlayer.Media.Audio
                     float balance = GetObjectBalance(item.Point.X);
                     float volume = GetObjectVolume(obj, timingPoint);
 
-                    var hs = obj.Hitsound == HitsoundType.Normal ? item.EdgeHitsound : obj.Hitsound | item.EdgeHitsound;
-                    var addition = item.EdgeAddition == ObjectSamplesetType.Auto ? obj.AdditionSet : item.EdgeAddition;
-                    var sample = item.EdgeSample == ObjectSamplesetType.Auto ? obj.SampleSet : item.EdgeSample;
+                    var hs = forceUseSlide
+                        ? obj.Hitsound
+                        : item.EdgeHitsound;
+                    var addition = forceUseSlide
+                        ? obj.AdditionSet
+                        : item.EdgeAddition;
+                    var sample = forceUseSlide
+                        ? obj.SampleSet
+                        : item.EdgeSample;
                     var tuples = AnalyzeHitsoundFiles(hs, sample, addition,
                         timingPoint, obj, waves);
                     foreach (var (filePath, _) in tuples)
@@ -133,8 +146,15 @@ namespace Milky.OsuPlayer.Media.Audio
                         timingPoint, obj, waves);
                     foreach (var (filePath, hitsoundType) in tuples)
                     {
-                        var element = SoundElement.CreateSlideSignal(startOffset, volume, balance, filePath,
-                            hitsoundType);
+                        int channel;
+                        if (hitsoundType.HasFlag(HitsoundType.Slide))
+                            channel = 0;
+                        else if (hitsoundType.HasFlag(HitsoundType.SlideWhistle))
+                            channel = 1;
+                        else
+                            continue;
+
+                        var element = SoundElement.CreateLoopSignal(startOffset, volume, balance, filePath, channel);
                         slideElements.Add(element);
                     }
 
@@ -158,27 +178,26 @@ namespace Milky.OsuPlayer.Media.Audio
                             foreach (var (filePath, hitsoundType) in tuples)
                             {
                                 SoundElement element;
-                                if (hitsoundType.HasFlag(HitsoundType.Slide) &&
-                                    slideElements
-                                        .Last(k => k.SlideType.HasFlag(HitsoundType.Slide))
-                                        .FilePath == filePath)
+                                if (hitsoundType.HasFlag(HitsoundType.Slide) && slideElements
+                                    .Last(k => k.PlaybackType == PlaybackType.Loop)
+                                    .FilePath == filePath)
                                 {
                                     // optimize by only change volume
-                                    element = SoundElement.CreateVolumeSignal(timing.Offset, volume);
-                                }
-                                else if (hitsoundType.HasFlag(HitsoundType.Slide) &&
-                                         slideElements
-                                             .Last(k => k.SlideType.HasFlag(HitsoundType.Slide))
-                                             .FilePath == filePath)
-                                {
-                                    // optimize by only change volume
-                                    element = SoundElement.CreateVolumeSignal(timing.Offset, volume);
+                                    element = SoundElement.CreateLoopVolumeSignal(timing.Offset, volume);
                                 }
                                 else
                                 {
+                                    int channel;
+                                    if (hitsoundType.HasFlag(HitsoundType.Slide))
+                                        channel = 0;
+                                    else if (hitsoundType.HasFlag(HitsoundType.SlideWhistle))
+                                        channel = 1;
+                                    else
+                                        continue;
+
                                     // new sample
-                                    element = SoundElement.CreateSlideSignal(timing.Offset, volume, balance,
-                                        filePath, hitsoundType);
+                                    element = SoundElement.CreateLoopSignal(timing.Offset, volume, balance,
+                                        filePath, channel);
                                 }
 
                                 slideElements.Add(element);
@@ -193,8 +212,10 @@ namespace Milky.OsuPlayer.Media.Audio
                     }
 
                     // end slide
-                    var stopElement = SoundElement.CreateStopSignal(endOffset);
+                    var stopElement = SoundElement.CreateLoopStopSignal(endOffset, 0);
+                    var stopElement2 = SoundElement.CreateLoopStopSignal(endOffset, 1);
                     slideElements.Add(stopElement);
+                    slideElements.Add(stopElement2);
                     foreach (var slideElement in slideElements)
                     {
                         elements.Add(slideElement);
@@ -209,7 +230,7 @@ namespace Milky.OsuPlayer.Media.Audio
                         offset = k.Offset,
                         balance = GetObjectBalance(k.Point.X)
                     })
-                    .Select(k => SoundElement.CreateBalanceSignal(k.offset, k.balance));
+                    .Select(k => SoundElement.CreateLoopBalanceSignal(k.offset, k.balance));
                 foreach (var balanceElement in all)
                 {
                     elements.Add(balanceElement);
@@ -229,7 +250,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 return new[]
                 {
                     ValueTuple.Create(
-                        _player.GetFileUntilFind(_sourceFolder,
+                        _cache.GetFileUntilFind(_sourceFolder,
                             Path.GetFileNameWithoutExtension(hitObject.FileName)),
                         itemHitsound
                     )
@@ -271,11 +292,11 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 string filePath;
                 if (timingPoint.Track == 0)
-                    filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutExt + AudioPlaybackEngine.WavExtension);
+                    filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutExt + Information.WavExtension);
                 else if (waves.Contains(fileNameWithoutExt))
-                    filePath = _player.GetFileUntilFind(_sourceFolder, fileNameWithoutExt);
+                    filePath = _cache.GetFileUntilFind(_sourceFolder, fileNameWithoutExt);
                 else
-                    filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutIndex + AudioPlaybackEngine.WavExtension);
+                    filePath = Path.Combine(Domain.DefaultPath, fileNameWithoutIndex + Information.WavExtension);
 
                 tuples[i] = (filePath, hitsoundType);
             }

@@ -12,6 +12,7 @@
     xmlns:converters="clr-namespace:Milky.OsuPlayer.Converters"
     xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
     xmlns:panelComponent="clr-namespace:Milky.OsuPlayer.UiComponents.PanelComponent"
+    xmlns:objectModel="clr-namespace:Milky.OsuPlayer.Presentation.ObjectModel;assembly=OsuPlayer.Presentation"
     x:Name="CurrentPage"
     Title="SearchPage"
     d:DesignHeight="450"
@@ -30,7 +31,7 @@
         <QuinticEase x:Key="QuinticEaseOut" EasingMode="EaseOut" />
         <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
             <d:Object.DataContext>
-                <common:BeatmapDataModel />
+                <objectModel:OrderedModel  />
             </d:Object.DataContext>
             <MenuItem
                 Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"

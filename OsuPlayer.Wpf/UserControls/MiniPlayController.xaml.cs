@@ -1,14 +1,15 @@
 ﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.Utils;
 using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.EntityFrameworkCore;
 
 namespace Milky.OsuPlayer.UserControls
 {
@@ -52,7 +53,6 @@ namespace Milky.OsuPlayer.UserControls
     public partial class MiniPlayController : UserControl
     {
         private MiniPlayListControlVm _viewModel;
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
 
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
@@ -121,14 +121,16 @@ namespace Milky.OsuPlayer.UserControls
             PopMode.IsOpen = true;
         }
 
-        private async void CommonButton_Click(object sender, RoutedEventArgs e)
+        private async void ButtonLike_Click(object sender, RoutedEventArgs e)
         {
-            var collection = SafeDbOperator.GetCollections().First(k => k.LockedBool);
+            await using var dbContext = new ApplicationDbContext();
+
+            var collection = await dbContext.Collections.FirstOrDefaultAsync(k => k.IsDefault);
             var metadata = _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata;
             if (metadata.IsFavorite)
             {
-                if (SafeDbOperator.TryRemoveMapFromCollection(_controller.PlayList.CurrentInfo.Beatmap, collection))
-                    metadata.IsFavorite = false;
+                await dbContext.DeleteBeatmapFromCollection(_controller.PlayList.CurrentInfo.Beatmap, collection);
+                metadata.IsFavorite = false;
             }
             else
             {

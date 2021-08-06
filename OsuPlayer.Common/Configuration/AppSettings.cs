@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
-using OSharp.Beatmap.MetaData;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Common.Configuration
 {
@@ -30,8 +29,8 @@ namespace Milky.OsuPlayer.Common.Configuration
         public List<HotKey> HotKeys { get; set; } = new List<HotKey>();
         public LyricSection Lyric { get; set; } = new LyricSection();
         public ExportSection Export { get; set; } = new ExportSection();
-        public HashSet<MapIdentity> CurrentList { get; set; } = new HashSet<MapIdentity>();
-        public MapIdentity? CurrentMap { get; set; }
+        //public HashSet<MapIdentity> CurrentList { get; set; } = new HashSet<MapIdentity>();
+        //public int? CurrentMapHash { get; set; }
         public DateTime? LastUpdateCheck { get; set; } = null;
         public string IgnoredVer { get; set; } = null;
 

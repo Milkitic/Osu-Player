@@ -4,13 +4,13 @@ using System.Linq;
 
 namespace Milky.OsuPlayer.Media.Lyric.Models
 {
-    public class MultiLyrics:Lyrics
+    public class MultiLyrics : Lyrics
     {
         private readonly IEnumerable<Lyrics> lyricses;
 
         public MultiLyrics(params Lyrics[] lyricses)
         {
-            this.lyricses=lyricses.OfType<Lyrics>();
+            this.lyricses = lyricses.OfType<Lyrics>();
         }
 
         public override (Sentence, int) GetCurrentSentence(int time)
@@ -25,14 +25,14 @@ namespace Milky.OsuPlayer.Media.Lyric.Models
                 if (result.Item1.Equals(Sentence.Empty))
                     continue;
 
-                sentence=sentence+result.Item1;
-                min_index=Math.Min(min_index, result.Item2);
+                sentence = sentence + result.Item1;
+                min_index = Math.Min(min_index, result.Item2);
             }
 
             //trim newline in sentence content
-            sentence.Content=sentence.Content.Trim('\n', '\r');
+            sentence.Content = sentence.Content.Trim('\n', '\r');
 
-            return (sentence,min_index);
+            return (sentence, min_index);
         }
     }
 }

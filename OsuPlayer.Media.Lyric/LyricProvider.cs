@@ -1,7 +1,7 @@
-﻿using Milky.OsuPlayer.Media.Lyric.Models;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Media.Lyric.Models;
+using Milky.OsuPlayer.Media.Lyric.SourceProvider;
 
 namespace Milky.OsuPlayer.Media.Lyric
 {

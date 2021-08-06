@@ -87,7 +87,7 @@
                 VerticalAlignment="Center"
                 Background="Transparent"
                 BorderThickness="0"
-                Click="CommonButton_Click"
+                Click="ButtonLike_Click"
                 IconMargin="0"
                 IconSize="18"
                 IconTemplate="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}"

@@ -1,6 +1,5 @@
-﻿using Milky.OsuPlayer.Presentation.Interaction;
-using System.Drawing;
-using Newtonsoft.Json;
+﻿using System.Drawing;
+using Milky.OsuPlayer.Presentation.Interaction;
 using Path = System.IO.Path;
 using Point = System.Windows.Point;
 

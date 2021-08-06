@@ -1,13 +1,13 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Shared.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Media.Audio.Playlist
 {

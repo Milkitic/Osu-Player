@@ -1,16 +1,16 @@
-﻿using Milky.OsuPlayer.Data.Models;
+﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Presentation.Annotations;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Properties;
+using Milky.OsuPlayer.Data.Models;
 
 namespace Milky.OsuPlayer.ViewModels
 {
     internal class StoryboardVm : INotifyPropertyChanged
     {
         private bool _isScanned;
-        private ObservableCollection<BeatmapDataModel> _beatmapModels;
+        private ObservableCollection<Beatmap> _beatmapModels;
 
         public bool IsScanned
         {
@@ -23,7 +23,7 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public ObservableCollection<BeatmapDataModel> BeatmapModels
+        public ObservableCollection<Beatmap> BeatmapModels
         {
             get => _beatmapModels;
             set

@@ -1,20 +1,20 @@
-﻿using Microsoft.Win32;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
-using OSharp.Beatmap;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using Coosu.Beatmap;
+using Microsoft.Win32;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 
 namespace Milky.OsuPlayer.Common
 {
     public static class CommonUtils
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private static AppDbOperator _appDbOperator = new AppDbOperator();
         private static readonly SemaphoreSlim Lock = new SemaphoreSlim(5);
         ///// <summary>
         ///// Copy resource to folder
@@ -46,20 +46,22 @@ namespace Milky.OsuPlayer.Common
             return result;
         }
 
-        public static async Task<string> GetThumbByBeatmapDbId(BeatmapDataModel dataModel)
+        public static async Task<string> GetThumbByBeatmapDbId(Beatmap beatmap)
         {
             return await Task.Run(async () =>
             {
                 await Lock.WaitAsync();
                 try
                 {
-                    if (_appDbOperator.GetMapThumb(dataModel.BeatmapDbId, out var path) && path != null)
+                    await using var dbContext = new ApplicationDbContext();
+                    var thumb = await dbContext.GetThumb(beatmap);
+                    if (thumb != null)
                     {
-                        if (File.Exists(path)) return path;
+                        if (File.Exists(thumb.ThumbPath)) return thumb.ThumbPath;
                     }
 
-                    var folder = dataModel.GetFolder(out var isFromDb, out var freePath);
-                    var osuFilePath = isFromDb ? Path.Combine(folder, dataModel.BeatmapFileName) : freePath;
+                    var folder = beatmap.GetFolder(out var isFromDb, out var freePath);
+                    var osuFilePath = isFromDb ? Path.Combine(folder, beatmap.BeatmapFileName) : freePath;
 
                     if (!File.Exists(osuFilePath))
                     {
@@ -80,7 +82,7 @@ namespace Milky.OsuPlayer.Common
                     var sourceBgFile = osuFile.Events?.BackgroundInfo?.Filename;
                     if (string.IsNullOrWhiteSpace(sourceBgFile))
                     {
-                        _appDbOperator.SetMapThumb(dataModel.BeatmapDbId, null);
+                        await dbContext.AddOrUpdateThumbPath(beatmap, null);
                         return null;
                     }
 
@@ -93,12 +95,12 @@ namespace Milky.OsuPlayer.Common
                     }
 
                     ResizeImageAndSave(sourceBgPath, guidStr, height: 200);
-                    _appDbOperator.SetMapThumb(dataModel.BeatmapDbId, guidStr);
+                    await dbContext.AddOrUpdateThumbPath(beatmap, guidStr);
                     return guidStr;
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Error while creating beatmap thumb cache: {0}", dataModel.GetIdentity());
+                    Logger.Error("Error while creating beatmap thumb cache: {0}", beatmap.ToString());
                     return default;
                 }
                 finally
@@ -121,7 +123,8 @@ namespace Milky.OsuPlayer.Common
             byte[] imageBytes = LoadImageData(sourcePath);
             BitmapSource bitmapSource = CreateImage(imageBytes, width, height);
             imageBytes = GetEncodedImageData(bitmapSource, ".jpg");
-            SaveImageData(imageBytes, Path.Combine(Domain.ThumbCachePath, $"{targetName}.jpg"));
+            var filePath = Path.Combine(Domain.ThumbCachePath, $"{targetName}.jpg");
+            SaveImageData(imageBytes, filePath);
         }
 
         private static byte[] LoadImageData(string filePath)

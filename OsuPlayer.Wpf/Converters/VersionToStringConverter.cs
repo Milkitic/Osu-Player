@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using OSharp.Beatmap.Sections.GamePlay;
+using Coosu.Beatmap.Sections.GamePlay;
 
 namespace Milky.OsuPlayer.Converters
 {

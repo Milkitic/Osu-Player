@@ -5,6 +5,7 @@ using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
+using Milky.OsuPlayer.Data;
 
 namespace Milky.OsuPlayer.UserControls
 {
@@ -14,7 +15,6 @@ namespace Milky.OsuPlayer.UserControls
     public partial class EditCollectionControl : UserControl
     {
         private readonly Collection _collection;
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
         private EditCollectionPageViewModel _viewModel;
 
         public EditCollectionControl(Collection collection)
@@ -27,16 +27,15 @@ namespace Milky.OsuPlayer.UserControls
             _viewModel.CoverPath = _collection.ImagePath;
         }
 
-        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        private async void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             _collection.Name = _viewModel.Name;
             _collection.Description = _viewModel.Description;
             _collection.ImagePath = _viewModel.CoverPath;
 
-            if (SafeDbOperator.TryUpdateCollection(_collection))
-            {
-                FrontDialogOverlay.Default.RaiseOk();
-            }
+            await using var appDbContext = new ApplicationDbContext();
+            await appDbContext.AddOrUpdateCollection(_collection);
+            FrontDialogOverlay.Default.RaiseOk();
         }
 
         private void BtnChooseImg_Click(object sender, RoutedEventArgs e)

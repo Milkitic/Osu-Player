@@ -1,34 +1,17 @@
 ﻿using System;
-using Dapper.FluentMap.Mapping;
+using System.ComponentModel.DataAnnotations;
 
 namespace Milky.OsuPlayer.Data.Models
 {
-    public class CollectionRelationMap : EntityMap<CollectionRelation>
+    public class CollectionRelation : BaseEntity
     {
-        public CollectionRelationMap()
-        {
-            Map(p => p.Id).ToColumn("id");
-            Map(p => p.CollectionId).ToColumn("collectionId");
-            Map(p => p.MapId).ToColumn("mapId");
-            Map(p => p.AddTime).ToColumn("addTime");
-        }
-    }
+        [Key]
+        public Guid Id { get; set; }
 
-    public class CollectionRelation
-    {
-        public CollectionRelation() { }
-
-        public CollectionRelation(string id, string collectionId, string mapId)
-        {
-            Id = id;
-            CollectionId = collectionId;
-            MapId = mapId;
-            AddTime = DateTime.Now;
-        }
-
-        public string Id { get; set; }
-        public string CollectionId { get; set; }
-        public string MapId { get; set; }
-        public DateTime? AddTime { get; set; }
+        // fk
+        public Collection Collection { get; set; }
+        public Guid CollectionId { get; set; }
+        public Beatmap Beatmap { get; set; }
+        public byte[] BeatmapId { get; set; }
     }
 }

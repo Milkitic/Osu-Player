@@ -1,17 +1,19 @@
 ﻿using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.PanelComponent;
-using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -25,14 +27,13 @@ namespace Milky.OsuPlayer.Pages
     public partial class SearchPage : Page
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
-        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
+        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
         private MainWindow _mainWindow;
 
         public SearchPageViewModel ViewModel { get; set; }
 
-        private static Binding _sourceBinding = new Binding(nameof(SearchPageViewModel.DisplayedMaps))
+        private static readonly Binding _sourceBinding = new Binding(nameof(SearchPageViewModel.DataList))
         {
             Mode = BindingMode.OneWay
         };
@@ -41,7 +42,6 @@ namespace Milky.OsuPlayer.Pages
         public SearchPage()
         {
             _mainWindow = (MainWindow)Application.Current.MainWindow;
-
             InitializeComponent();
         }
 
@@ -102,7 +102,7 @@ namespace Milky.OsuPlayer.Pages
 
         private async void PlaySelectedDefault()
         {
-            var map = GetSelectedDefault();
+            var map = await GetSelectedDefault();
             if (map == null)
                 return;
             //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
@@ -110,21 +110,23 @@ namespace Milky.OsuPlayer.Pages
             await _controller.PlayNewAsync(map);
         }
 
-        private Beatmap GetSelectedDefault()
+        private async Task<Beatmap> GetSelectedDefault()
         {
-            if (ResultList.SelectedItem == null)
-                return null;
-            var map = SafeDbOperator
-                .GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
-                .GetHighestDiff();
+            await using var appDbContext = new ApplicationDbContext();
+            if (!(ResultList.SelectedItem is OrderedModel<Beatmap> beatmap)) return null;
+
+            var allMaps = await appDbContext
+                .GetBeatmapsFromFolder(beatmap.Model.FolderNameOrPath, beatmap.Model.InOwnDb);
+
+            var map = allMaps.GetHighestDiff();
             return map;
         }
 
         private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {
-            List<Beatmap> beatmaps = ViewModel.SearchedDbMaps;
+            List<Beatmap> beatmaps = ViewModel.DataList.Select(k => k.Model).ToList();
             if (beatmaps.Count <= 0) return;
-            var group = beatmaps.GroupBy(k => k.FolderName);
+            var group = beatmaps.GroupBy(k => k.FolderNameOrPath);
             List<Beatmap> newBeatmaps = group
                 .Select(sb => sb.GetHighestDiff())
                 .ToList();
@@ -141,11 +143,37 @@ namespace Milky.OsuPlayer.Pages
 
         private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
         {
-            var dataModel = ViewModel.DisplayedMaps[e.Index];
+            var beatmap = ViewModel.DataList[e.Index].Model;
             try
             {
-                var fileName = await CommonUtils.GetThumbByBeatmapDbId(dataModel).ConfigureAwait(false);
-                Execute.OnUiThread(() => dataModel.ThumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg"));
+                var fileName = await CommonUtils.GetThumbByBeatmapDbId(beatmap).ConfigureAwait(false);
+                var thumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg");
+                if (beatmap.BeatmapThumb == null)
+                {
+                    Execute.OnUiThread(() =>
+                    {
+                        beatmap.BeatmapThumb = new BeatmapThumb
+                        {
+                            Beatmap = beatmap,
+                            BeatmapId = beatmap.Id,
+                            ThumbPath = thumbPath
+                        };
+                    });
+                    await using var dbContext = new ApplicationDbContext();
+                    dbContext.Add(beatmap.BeatmapThumb);
+                    await dbContext.SaveChangesAsync();
+                }
+                else
+                {
+                    var update = beatmap.BeatmapThumb.ThumbPath != thumbPath;
+                    Execute.OnUiThread(() => beatmap.BeatmapThumb.ThumbPath = thumbPath);
+                    if (update)
+                    {
+                        await using var dbContext = new ApplicationDbContext();
+                        dbContext.Thumbs.Update(beatmap.BeatmapThumb);
+                        await dbContext.SaveChangesAsync();
+                    }
+                }
             }
             catch (Exception ex)
             {

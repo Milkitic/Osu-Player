@@ -43,7 +43,7 @@ namespace Milky.OsuPlayer.Media.Lyric.Models
             if (b == null)
                 return a;
 
-            if (a.IsTranslatedLyrics==b.IsTranslatedLyrics)
+            if (a.IsTranslatedLyrics == b.IsTranslatedLyrics)
             {
                 return a;
             }

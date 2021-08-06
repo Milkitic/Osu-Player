@@ -1,22 +1,22 @@
-﻿using Dapper.FluentMap;
+﻿using Microsoft.EntityFrameworkCore;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Shared;
 using Newtonsoft.Json;
 using NLog.Config;
 using System;
 using System.IO;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using Milki.Extensions.MixPlayer;
 
 namespace Milky.OsuPlayer
 {
     public static class EntryStartup
     {
-        public static void Startup()
+        public static async Task StartupAsync()
         {
             ConfigurationItemFactory.Default.LayoutRenderers.RegisterDefinition("InvariantCulture", typeof(InvariantCultureLayoutRendererWrapper));
             if (!LoadConfig())
@@ -25,16 +25,38 @@ namespace Milky.OsuPlayer
                 return;
             }
 
+            InitMixPlayerConfig();
+
 #if DEBUG
             //ConsoleManager.Show();
 #endif
 
-            InitLocalDb();
+            await InitLocalDb();
 
             StyleUtilities.SetAlignment();
 
             //https://ffmpeg.zeranoe.com/builds/win32/shared/ffmpeg-4.2.1-win32-shared.zip
             Unosquare.FFME.Library.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg");
+        }
+
+        private static void InitMixPlayerConfig()
+        {
+            var playSection = AppSettings.Default.Play;
+            var configuration = Configuration.Instance;
+            configuration.CacheDir = Domain.CachePath;
+            configuration.DefaultDir = Domain.DefaultPath;
+            configuration.PlaybackRate = playSection.PlaybackRate;
+            configuration.KeepTune = playSection.PlayUseTempo;
+            configuration.GeneralOffset = (uint)playSection.GeneralOffset;
+            AppSettings.Default.Play.PropertyChanged += (sender, e) =>
+            {
+                if (e.PropertyName == nameof(AppSettings.Play.PlaybackRate))
+                    configuration.PlaybackRate = playSection.PlaybackRate;
+                else if (e.PropertyName == nameof(AppSettings.Play.PlayUseTempo))
+                    configuration.KeepTune = playSection.PlayUseTempo;
+                else if (e.PropertyName == nameof(AppSettings.Play.GeneralOffset))
+                    configuration.GeneralOffset = (uint)playSection.GeneralOffset;
+            };
         }
 
         private static bool LoadConfig()
@@ -73,23 +95,10 @@ namespace Milky.OsuPlayer
             return true;
         }
 
-        private static void InitLocalDb()
+        private static async Task InitLocalDb()
         {
-            FluentMapper.Initialize(config =>
-            {
-                config.AddMap(new StoryboardInfoMap());
-                config.AddMap(new BeatmapMap());
-                config.AddMap(new BeatmapSettingsMap());
-                config.AddMap(new CollectionMap());
-                config.AddMap(new CollectionRelationMap());
-            });
-
-            AppDbOperator.ValidateDb();
-
-            var appDbOperator = new AppDbOperator();
-            var defCol = appDbOperator.GetCollections();
-            var locked = defCol.Where(k => k.LockedBool);
-            if (!locked.Any()) appDbOperator.AddCollection("Favorite", true);
+            await using var dbContext = new ApplicationDbContext();
+            dbContext.Database.Migrate();
         }
     }
 }

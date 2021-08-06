@@ -1,25 +1,26 @@
-﻿using System;
+﻿using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 
 namespace Milky.OsuPlayer.UserControls
 {
     public class DiffSelectPageViewModel : VmBase
     {
-        private ObservableCollection<Beatmap> _entries;
+        private ObservableCollection<Beatmap> _dataList;
 
-        public ObservableCollection<Beatmap> Entries
+        public ObservableCollection<Beatmap> DataList
         {
-            get => _entries;
+            get => _dataList;
             set
             {
-                _entries = value;
+                if (Equals(value, _dataList)) return;
+                _dataList = value;
                 OnPropertyChanged();
             }
         }
@@ -32,7 +33,7 @@ namespace Milky.OsuPlayer.UserControls
             {
                 return new DelegateCommand(obj =>
                 {
-                    var selectedMap = Entries.FirstOrDefault(k => k.Version == (string)obj);
+                    var selectedMap = DataList.FirstOrDefault(k => k.Version == (string)obj);
                     var callbackObj = new CallbackObj();
                     Callback?.Invoke(selectedMap, callbackObj);
                     if (!callbackObj.Handled)
@@ -53,12 +54,12 @@ namespace Milky.OsuPlayer.UserControls
     public partial class DiffSelectControl : UserControl
     {
         private readonly DiffSelectPageViewModel _viewModel;
-        public DiffSelectControl(IEnumerable<Beatmap> entries, Action<Beatmap, CallbackObj> onSelect)
+        public DiffSelectControl(IEnumerable<Beatmap> beatmaps, Action<Beatmap, CallbackObj> onSelect)
         {
             InitializeComponent();
 
             _viewModel = (DiffSelectPageViewModel)DataContext;
-            _viewModel.Entries = new ObservableCollection<Beatmap>(entries.OrderBy(k => k.GameMode));
+            _viewModel.DataList = new ObservableCollection<Beatmap>(beatmaps.OrderBy(k => k.GameMode));
             _viewModel.Callback = onSelect;
         }
     }

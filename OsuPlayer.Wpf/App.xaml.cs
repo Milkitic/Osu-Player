@@ -11,6 +11,10 @@ using NLog;
 using System;
 using System.Windows;
 
+#if !DEBUG
+using Milky.OsuPlayer.Sentry;
+#endif
+
 namespace Milky.OsuPlayer
 {
     /// <summary>
@@ -18,12 +22,20 @@ namespace Milky.OsuPlayer
     /// </summary>
     public partial class App : Application
     {
-        [STAThread]
-        public static void Main()
+#if !DEBUG
+        public App()
+        {
+            LogManager.LoadConfiguration("NLog.config");
+            SentryNLog.Init(LogManager.Configuration);
+        }
+#endif
+
+        private async void Application_Startup(object sender, StartupEventArgs e)
         {
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
+            DispatcherUnhandledException += Application_DispatcherUnhandledException;
 
-            EntryStartup.Startup();
+            await EntryStartup.StartupAsync();
 
             var controller = new ObservablePlayController();
             controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
@@ -36,9 +48,8 @@ namespace Milky.OsuPlayer
 
             Service.Get<LyricsInst>().ReloadLyricProvider();
 
-            var app = new App();
-            app.InitializeComponent();
-            app.Run();
+            Execute.SetMainThreadContext();
+            I18NUtil.LoadI18N();
         }
 
         private static void OnCurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -63,7 +74,7 @@ namespace Milky.OsuPlayer
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             var logger = LogManager.GetCurrentClassLogger();
-            logger.Error(e.Exception, "DispatcherUnhandledException");
+            logger.Fatal(e.Exception, "DispatcherUnhandledException");
 
             var exceptionWindow = new ExceptionWindow(e.Exception, true);
             var val = exceptionWindow.ShowDialog();
@@ -72,12 +83,6 @@ namespace Milky.OsuPlayer
             {
                 Environment.Exit(1);
             }
-        }
-
-        private void Application_Startup(object sender, StartupEventArgs e)
-        {
-            Execute.SetMainThreadContext();
-            I18NUtil.LoadI18N();
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
