@@ -10,13 +10,13 @@ namespace Milky.OsuPlayer.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is DeviceInfo b)) return value;
-            if (b.Equals(DeviceInfo.DefaultWasapi))
+            if (value is not DeviceDescription b) return value;
+            if (b.Equals(DeviceDescription.WasapiDefault))
             {
                 return I18NUtil.GetString("ui-sets-content-systemDefault");
             }
 
-            return $"({b.Provider}) {b.Name}";
+            return $"({b.WavePlayerType}) {b.FriendlyName}";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

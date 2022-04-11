@@ -264,7 +264,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 if (PlayList.PreInfo?.BeatmapDetail?.BaseFolder != PlayList.CurrentInfo?.BeatmapDetail?.BaseFolder)
                 {
-                    CachedSound.ClearCacheSounds();
+                    CachedSoundFactory.ClearCacheSounds();
                 }
 
                 Player = new OsuMixPlayer(osuFile, beatmapDetail.BaseFolder);

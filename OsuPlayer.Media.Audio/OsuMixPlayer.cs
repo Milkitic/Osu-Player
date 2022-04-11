@@ -72,14 +72,14 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
-        public OsuMixPlayer(LocalOsuFile osuFile) : base(AppSettings.Default?.Play?.DeviceInfo)
+        public OsuMixPlayer(LocalOsuFile osuFile) : base(AppSettings.Default?.Play?.DeviceDescription)
         {
             _osuFile = osuFile;
             _sourceFolder = Path.GetDirectoryName(osuFile.OriginPath);
             Current = this;
         }
 
-        public OsuMixPlayer(OsuFile osuFile, string sourceFolder) : base(AppSettings.Default.Play.DeviceInfo)
+        public OsuMixPlayer(OsuFile osuFile, string sourceFolder) : base(AppSettings.Default.Play.DeviceDescription)
         {
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
@@ -91,10 +91,13 @@ namespace Milky.OsuPlayer.Media.Audio
             _fileCache = new FileCache();
             try
             {
-                if (CachedSound.DefaultSounds.Count == 0)
+                if (CachedSoundFactory.GetCount("special") == 0)
                 {
                     var files = new DirectoryInfo(Domain.DefaultPath).GetFiles("*.wav");
-                    await CachedSound.CreateDefaultCacheSounds(files.Select(k => k.FullName)).ConfigureAwait(false);
+                    foreach (var file in files)
+                    {
+                        await CachedSoundFactory.GetOrCreateCacheSound(Engine.FileWaveFormat, file.FullName).ConfigureAwait(false);
+                    }
                 }
 
                 await InnerLoad().ConfigureAwait(false);
@@ -156,7 +159,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
             InitVolume();
 
-            await CachedSound.GetOrCreateCacheSound(mp3Path);
+            await CachedSoundFactory.GetOrCreateCacheSound(Engine.FileWaveFormat, mp3Path);
             await BufferSoundElementsAsync();
         }
 

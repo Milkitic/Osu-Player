@@ -57,7 +57,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
             var elementList = new List<SoundElement>(elements);
 
-            if (PlaybackRate.Equals(1.5f) && !UseTempo)
+            if (PlaybackRate.Equals(1.5f) && !KeepTune)
             {
                 var duration1 = MathEx.Max(ReferencedChannels.Select(k => k.ChannelEndTime));
                 var duration = MathEx.Max(duration1,
@@ -70,12 +70,12 @@ namespace Milky.OsuPlayer.Media.Audio
             return elementList;
         }
 
-        public override async Task SetPlaybackRate(float rate, bool useTempo)
+        public override async Task SetPlaybackRate(float rate, bool keepTune)
         {
             var oldRate = PlaybackRate;
-            var oldTempo = UseTempo;
-            await base.SetPlaybackRate(rate, useTempo).ConfigureAwait(false);
-            if (oldTempo != UseTempo)
+            var oldKeepTune = KeepTune;
+            await base.SetPlaybackRate(rate, keepTune).ConfigureAwait(false);
+            if (oldKeepTune != KeepTune)
             {
                 SoundElements = null;
                 await RequeueAsync(Position).ConfigureAwait(false);

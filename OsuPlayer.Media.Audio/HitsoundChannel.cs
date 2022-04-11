@@ -21,6 +21,8 @@ namespace Milky.OsuPlayer.Media.Audio
         private readonly OsuFile _osuFile;
         private readonly string _sourceFolder;
 
+        public int ForceOffset { get; set; } = 0;
+
         public HitsoundChannel(LocalOsuFile osuFile, AudioPlaybackEngine engine, FileCache cache = null)
             : this(osuFile, Path.GetDirectoryName(osuFile.OriginPath), engine, cache)
         {
@@ -77,7 +79,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     timingPoint, obj, waves);
                 foreach (var (filePath, _) in tuples)
                 {
-                    var element = SoundElement.Create(itemOffset, volume, balance, filePath);
+                    var element = SoundElement.Create(itemOffset + ForceOffset, volume, balance, filePath);
                     elements.Add(element);
                 }
             }
@@ -106,7 +108,7 @@ namespace Milky.OsuPlayer.Media.Audio
                         timingPoint, obj, waves);
                     foreach (var (filePath, _) in tuples)
                     {
-                        var element = SoundElement.Create(itemOffset, volume, balance, filePath);
+                        var element = SoundElement.Create(itemOffset + ForceOffset, volume, balance, filePath);
                         elements.Add(element);
                     }
                 }
@@ -124,7 +126,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     var (filePath, _) = AnalyzeHitsoundFiles(HitsoundType.Tick, obj.SampleSet, obj.AdditionSet,
                         timingPoint, obj, waves).First();
 
-                    var element = SoundElement.Create(itemOffset, volume, balance, filePath);
+                    var element = SoundElement.Create(itemOffset + ForceOffset, volume, balance, filePath);
                     elements.Add(element);
                 }
 
@@ -154,7 +156,7 @@ namespace Milky.OsuPlayer.Media.Audio
                         else
                             continue;
 
-                        var element = SoundElement.CreateLoopSignal(startOffset, volume, balance, filePath, channel);
+                        var element = SoundElement.CreateLoopSignal(startOffset + ForceOffset, volume, balance, filePath, channel);
                         slideElements.Add(element);
                     }
 
@@ -183,7 +185,7 @@ namespace Milky.OsuPlayer.Media.Audio
                                     .FilePath == filePath)
                                 {
                                     // optimize by only change volume
-                                    element = SoundElement.CreateLoopVolumeSignal(timing.Offset, volume);
+                                    element = SoundElement.CreateLoopVolumeSignal(timing.Offset + ForceOffset, volume);
                                 }
                                 else
                                 {
@@ -196,7 +198,7 @@ namespace Milky.OsuPlayer.Media.Audio
                                         continue;
 
                                     // new sample
-                                    element = SoundElement.CreateLoopSignal(timing.Offset, volume, balance,
+                                    element = SoundElement.CreateLoopSignal(timing.Offset + ForceOffset, volume, balance,
                                         filePath, channel);
                                 }
 
@@ -212,8 +214,8 @@ namespace Milky.OsuPlayer.Media.Audio
                     }
 
                     // end slide
-                    var stopElement = SoundElement.CreateLoopStopSignal(endOffset, 0);
-                    var stopElement2 = SoundElement.CreateLoopStopSignal(endOffset, 1);
+                    var stopElement = SoundElement.CreateLoopStopSignal(endOffset + ForceOffset, 0);
+                    var stopElement2 = SoundElement.CreateLoopStopSignal(endOffset + ForceOffset, 1);
                     slideElements.Add(stopElement);
                     slideElements.Add(stopElement2);
                     foreach (var slideElement in slideElements)
@@ -230,7 +232,7 @@ namespace Milky.OsuPlayer.Media.Audio
                         offset = k.Offset,
                         balance = GetObjectBalance(k.Point.X)
                     })
-                    .Select(k => SoundElement.CreateLoopBalanceSignal(k.offset, k.balance));
+                    .Select(k => SoundElement.CreateLoopBalanceSignal(k.offset + ForceOffset, k.balance));
                 foreach (var balanceElement in all)
                 {
                     elements.Add(balanceElement);
