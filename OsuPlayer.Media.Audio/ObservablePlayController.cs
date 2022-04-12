@@ -129,13 +129,8 @@ namespace Milky.OsuPlayer.Media.Audio
                 if (!osuFile.ReadSuccess) throw osuFile.ReadException;
 
                 var beatmap = BeatmapConvertExtension.ParseFromOSharp(osuFile);
-                if (!PlayList.HasCurrent)
-                {
-                    await PlayList.SetSongListAsync(new List<Beatmap>() { beatmap }, true);
-                }
 
-                context.OsuFile = osuFile;
-
+         
                 Beatmap trueBeatmap;
                 await using (var dbContext = new ApplicationDbContext())
                     trueBeatmap = await dbContext.Beatmaps.FindAsync(beatmap.Id);
@@ -147,6 +142,14 @@ namespace Milky.OsuPlayer.Media.Audio
                     //trueBeatmap.Id = $"{beatmap.FolderNameOrPath}|{beatmap.Version}|{beatmap.InOwnDb}";
                 }
 
+                if (!PlayList.HasCurrent)
+                {
+                    _readLock.Release();
+                    await PlayList.SetSongListAsync(new List<Beatmap>() { beatmap }, true);
+                    return;
+                }
+
+                context.OsuFile = osuFile;
                 PlayList.AddOrSwitchTo(trueBeatmap);
 
                 InitializeContextHandle(context);
@@ -154,6 +157,8 @@ namespace Milky.OsuPlayer.Media.Audio
                 {
                     if (playInstantly) await context.PlayHandle.Invoke().ConfigureAwait(false);
                 }
+
+                _readLock.Release();
             }
             catch (Exception ex)
             {
@@ -161,11 +166,11 @@ namespace Milky.OsuPlayer.Media.Audio
                 LoadError?.Invoke(currentInfo, ex);
                 Logger.Error(ex, "Error while loading new beatmap. BeatmapId: {0}; BeatmapSetId: {1}",
                     currentInfo?.Beatmap?.BeatmapId, currentInfo?.Beatmap?.BeatmapSetId);
+                _readLock.Release();
             }
             finally
             {
                 IsFileLoading = false;
-                _readLock.Release();
             }
         }
 
