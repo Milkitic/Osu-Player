@@ -83,8 +83,8 @@ namespace Milky.OsuPlayer.Pages.Settings
                 RadioInsert.IsChecked = true;
             ChkAutoPlay.IsChecked = AppSettings.Default.Play.AutoPlay;
             ChkMemory.IsChecked = AppSettings.Default.Play.Memory;
-            SliderLatency.Value = AppSettings.Default.Play.DesiredLatency;
-            BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
+            SliderLatency.Value = AppSettings.Default.Play.DeviceDescription.Latency;
+            BoxLatency.Text = AppSettings.Default.Play.DeviceDescription.Latency.ToString();
             var itemsSource = DeviceCreationHelper.GetCachedAvailableDevices();
             DeviceInfoCombo.ItemsSource = itemsSource;
             if (itemsSource.Contains(AppSettings.Default.Play.DeviceDescription))
@@ -107,25 +107,25 @@ namespace Milky.OsuPlayer.Pages.Settings
             if (num > SliderLatency.Maximum)
             {
                 num = (int)SliderLatency.Maximum;
-                AppSettings.Default.Play.DesiredLatency = num;
-                BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
+                AppSettings.Default.Play.DeviceDescription.Latency = num;
+                BoxLatency.Text = AppSettings.Default.Play.DeviceDescription.Latency.ToString();
             }
             else if (num < SliderLatency.Minimum)
             {
                 num = (int)SliderLatency.Minimum;
-                AppSettings.Default.Play.DesiredLatency = num;
-                BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
+                AppSettings.Default.Play.DeviceDescription.Latency = num;
+                BoxLatency.Text = AppSettings.Default.Play.DeviceDescription.Latency.ToString();
             }
 
-            AppSettings.Default.Play.DesiredLatency = num;
-            SliderLatency.Value = AppSettings.Default.Play.DesiredLatency;
+            AppSettings.Default.Play.DeviceDescription.Latency = num;
+            SliderLatency.Value = AppSettings.Default.Play.DeviceDescription.Latency;
             AppSettings.SaveDefault();
         }
 
         private void SliderLatency_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            AppSettings.Default.Play.DesiredLatency = (int)SliderLatency.Value;
-            BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
+            AppSettings.Default.Play.DeviceDescription.Latency = (int)SliderLatency.Value;
+            BoxLatency.Text = AppSettings.Default.Play.DeviceDescription.Latency.ToString();
             AppSettings.SaveDefault();
         }
 

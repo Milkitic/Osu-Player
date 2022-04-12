@@ -16,7 +16,7 @@ namespace Milky.OsuPlayer.Common.Configuration
         [JsonIgnore]
         public int GeneralActualOffset => GeneralOffset + 0;
         public bool ReplacePlayList { get; set; } = true;
-        public bool UsePlayerV2 { get; set; } = false;
+        //public bool UsePlayerV2 { get; set; } = false;
 
         public float PlaybackRate
         {
@@ -43,8 +43,6 @@ namespace Milky.OsuPlayer.Common.Configuration
         public bool AutoPlay { get; set; } = false;
         public bool Memory { get; set; } = true;
         public DeviceDescription DeviceDescription { get; set; } = null;
-        public int DesiredLatency { get; set; } = 5;
-        public bool IsExclusive { get; set; } = false;
         public PlaylistMode PlayListMode { get; set; } = PlaylistMode.Normal;
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -30,12 +30,26 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void LinkGithub_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://github.com/Milkitic/Osu-Player");
+            new Process
+            {
+                StartInfo =
+                {
+                    FileName = "https://github.com/Milkitic/Osu-Player",
+                    UseShellExecute = true
+                }
+            }.Start();
         }
 
         private void LinkFeedback_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://github.com/Milkitic/Osu-Player/issues/new");
+            new Process
+            {
+                StartInfo =
+                {
+                    FileName = "https://github.com/Milkitic/Osu-Player/discussions",
+                    UseShellExecute = true
+                }
+            }.Start();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
