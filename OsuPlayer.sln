@@ -1,25 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29006.145
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32317.152
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Wpf", "OsuPlayer.Wpf\OsuPlayer.Wpf.csproj", "{02773E4B-21FC-47DB-A7C1-BD096F325136}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Wpf", "Legacy\OsuPlayer.Wpf\OsuPlayer.Wpf.csproj", "{02773E4B-21FC-47DB-A7C1-BD096F325136}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Media.Audio", "OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj", "{3CD240F8-DA65-44F0-AB58-D78F58109786}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Media.Audio", "Legacy\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj", "{3CD240F8-DA65-44F0-AB58-D78F58109786}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Common", "OsuPlayer.Common\OsuPlayer.Common.csproj", "{654D6521-43E1-48D2-BAEE-E694E38EF56D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Common", "Legacy\OsuPlayer.Common\OsuPlayer.Common.csproj", "{654D6521-43E1-48D2-BAEE-E694E38EF56D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Media.Lyric", "OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj", "{33580E59-AA08-45EF-B79F-2F8FE2F539CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Media.Lyric", "Legacy\OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj", "{33580E59-AA08-45EF-B79F-2F8FE2F539CC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{750A0C8F-B866-4D22-A4BE-C852592C3218}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Shared", "OsuPlayer.Shared\OsuPlayer.Shared.csproj", "{C842FAB3-EC80-4E95-B402-BF0572F1806D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Shared", "Legacy\OsuPlayer.Shared\OsuPlayer.Shared.csproj", "{C842FAB3-EC80-4E95-B402-BF0572F1806D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Presentation", "OsuPlayer.Presentation\OsuPlayer.Presentation.csproj", "{93E3612C-D388-438F-A04A-047265820998}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Presentation", "Legacy\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj", "{93E3612C-D388-438F-A04A-047265820998}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Data", "OsuPlayer.Data\OsuPlayer.Data.csproj", "{094FAC4A-6277-46E8-97B4-C992F1674638}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Data", "Legacy\OsuPlayer.Data\OsuPlayer.Data.csproj", "{094FAC4A-6277-46E8-97B4-C992F1674638}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Sentry", "OsuPlayer.Sentry\OsuPlayer.Sentry.csproj", "{D7CDC8CD-D55B-427C-B62D-3ED039785047}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Sentry", "Legacy\OsuPlayer.Sentry\OsuPlayer.Sentry.csproj", "{D7CDC8CD-D55B-427C-B62D-3ED039785047}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milki.Extensions.MixPlayer", "Libraries\Milki.Extensions.Audio\src\Milki.Extensions.MixPlayer\Milki.Extensions.MixPlayer.csproj", "{016963A7-E069-4EF4-8218-2B21C2D3E269}"
 EndProject
@@ -29,7 +29,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorePlayerTest", "Tests\Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExportTest", "Tests\ExportTest\ExportTest.csproj", "{7CF4CDB7-219E-4618-A928-E72F97435FF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BassTest", "Tests\BassTest\BassTest.csproj", "{4438E3CF-3430-4E86-BE27-E9E1C38B9D35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BassTest", "Tests\BassTest\BassTest.csproj", "{4438E3CF-3430-4E86-BE27-E9E1C38B9D35}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Legacy", "Legacy", "{7988EFEB-B6C6-4FE8-A254-EA00F2EA3BD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -415,6 +417,14 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{02773E4B-21FC-47DB-A7C1-BD096F325136} = {7988EFEB-B6C6-4FE8-A254-EA00F2EA3BD9}
+		{3CD240F8-DA65-44F0-AB58-D78F58109786} = {7988EFEB-B6C6-4FE8-A254-EA00F2EA3BD9}
+		{654D6521-43E1-48D2-BAEE-E694E38EF56D} = {7988EFEB-B6C6-4FE8-A254-EA00F2EA3BD9}
+		{33580E59-AA08-45EF-B79F-2F8FE2F539CC} = {7988EFEB-B6C6-4FE8-A254-EA00F2EA3BD9}
+		{C842FAB3-EC80-4E95-B402-BF0572F1806D} = {7988EFEB-B6C6-4FE8-A254-EA00F2EA3BD9}
+		{93E3612C-D388-438F-A04A-047265820998} = {7988EFEB-B6C6-4FE8-A254-EA00F2EA3BD9}
+		{094FAC4A-6277-46E8-97B4-C992F1674638} = {7988EFEB-B6C6-4FE8-A254-EA00F2EA3BD9}
+		{D7CDC8CD-D55B-427C-B62D-3ED039785047} = {7988EFEB-B6C6-4FE8-A254-EA00F2EA3BD9}
 		{016963A7-E069-4EF4-8218-2B21C2D3E269} = {750A0C8F-B866-4D22-A4BE-C852592C3218}
 		{A8039DBD-C647-4BB5-BAB5-38169C4BF934} = {9C61D5C2-C8AF-42D6-88C3-A8D52806F1A9}
 		{7CF4CDB7-219E-4618-A928-E72F97435FF7} = {9C61D5C2-C8AF-42D6-88C3-A8D52806F1A9}

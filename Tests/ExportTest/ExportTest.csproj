@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\Milki.Extensions.Audio\src\Milki.Extensions.MixPlayer\Milki.Extensions.MixPlayer.csproj" />
-    <ProjectReference Include="..\..\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj" />
+    <ProjectReference Include="..\..\Legacy\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj" />
   </ItemGroup>
 
 </Project>
