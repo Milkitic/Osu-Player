@@ -11,13 +11,10 @@
     <PackageReference Include="Anotar.NLog.Fody" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Milki.Extensions.MixPlayer" Version="0.0.1" />
     <PackageReference Include="Milki.Extensions.MouseKeyHook" Version="0.0.1" />
     <PackageReference Include="NLog" Version="4.7.15" />
     <PackageReference Include="YamlDotNet" Version="11.2.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Libraries\Milki.Extensions.Audio\src\Milki.Extensions.MixPlayer\Milki.Extensions.MixPlayer.csproj" />
   </ItemGroup>
 
 </Project>
