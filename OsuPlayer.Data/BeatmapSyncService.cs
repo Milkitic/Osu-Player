@@ -1,29 +1,20 @@
 ﻿using Anotar.NLog;
 using Microsoft.EntityFrameworkCore;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Shared;
-using OsuPlayer.Shared.Configuration;
 
 namespace OsuPlayer.Data;
 
 public class BeatmapSyncService
 {
     private readonly ApplicationDbContext _dbContext;
-    private readonly AppSettings _configuration;
 
     public BeatmapSyncService(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
-        _configuration = ConfigurationFactory.GetConfiguration<AppSettings>();
     }
 
     public async ValueTask SynchronizeManaged(IEnumerable<PlayItemDetail> fromDb)
     {
-        if (_configuration.Data.OsuBaseFolder == null)
-        {
-            throw new ArgumentNullException(nameof(SectionData.OsuBaseFolder), default(string));
-        }
-
         var dbItems = await _dbContext.PlayItems
             .AsNoTracking()
             .Where(k => k.IsAutoManaged)
