@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -11,10 +10,13 @@
     <PackageReference Include="Anotar.NLog.Fody" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Milki.Extensions.MixPlayer" Version="0.0.1" />
     <PackageReference Include="Milki.Extensions.MouseKeyHook" Version="0.0.1" />
     <PackageReference Include="NLog" Version="4.7.15" />
     <PackageReference Include="YamlDotNet" Version="11.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Libraries\Milki.Extensions.Audio\src\Milki.Extensions.MixPlayer\Milki.Extensions.MixPlayer.csproj" />
   </ItemGroup>
 
 </Project>

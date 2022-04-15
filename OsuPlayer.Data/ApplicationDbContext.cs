@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Drawing;
+using Microsoft.EntityFrameworkCore;
+using OsuPlayer.Data.Conversions;
 using OsuPlayer.Data.Models;
 
 namespace OsuPlayer.Data;
@@ -22,5 +24,33 @@ public sealed class ApplicationDbContext : DbContext
         }
 
         optionsBuilder.UseSqlite("data source=./databases/application.db");
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder
+            .Properties<Point?>()
+            .HaveConversion<PointDbConverter>();
+        configurationBuilder
+            .Properties<Rectangle?>()
+            .HaveConversion<RectangleDbConverter>();
+        configurationBuilder
+            .Properties<TimeSpan?>()
+            .HaveConversion<TimespanDbConverter>();
+        configurationBuilder
+            .Properties<DateTime?>()
+            .HaveConversion<DateTimeDbConverter>();
+        configurationBuilder
+            .Properties<Point>()
+            .HaveConversion<PointDbConverter>();
+        configurationBuilder
+            .Properties<Rectangle>()
+            .HaveConversion<RectangleDbConverter>();
+        configurationBuilder
+            .Properties<TimeSpan>()
+            .HaveConversion<TimespanDbConverter>();
+        configurationBuilder
+            .Properties<DateTime>()
+            .HaveConversion<DateTimeDbConverter>();
     }
 }

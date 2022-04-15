@@ -18,7 +18,7 @@ public class BeatmapSyncService
         var dbItems = await _dbContext.PlayItems
             .AsNoTracking()
             .Where(k => k.IsAutoManaged)
-            .ToDictionaryAsync(k => k.Path, k => (k.Id, k.CachedInfoId));
+            .ToDictionaryAsync(k => k.Path, k => (k.Id, CachedInfoId: k.PlayItemDetailId));
 
         LogTo.Debug(() => $"Sync: found {dbItems.Count} items.");
 

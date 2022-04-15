@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace OsuPlayer.Data.Models;
 
@@ -10,8 +11,9 @@ public sealed class PlayItem
     /// IsAutoManaged==true: ./...
     /// IsAutoManaged==false: FullPath
     /// </summary>
+    [MaxLength(1024)]
     public string Path { get; set; } = null!;
     public bool IsAutoManaged { get; set; }
     public PlayItemDetail PlayItemDetail { get; set; } = null!;
-    public int CachedInfoId { get; set; }
+    public int PlayItemDetailId { get; set; }
 }
