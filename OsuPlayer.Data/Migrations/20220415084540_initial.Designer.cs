@@ -11,7 +11,7 @@ using OsuPlayer.Data;
 namespace OsuPlayer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220415084301_initial")]
+    [Migration("20220415084540_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -162,9 +162,11 @@ namespace OsuPlayer.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("MinimalWindowPosition")
+                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("MinimalWindowWorkingArea")
+                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("ShowFullNavigation")

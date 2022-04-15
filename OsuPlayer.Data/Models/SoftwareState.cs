@@ -11,7 +11,9 @@ public sealed class SoftwareState
     public bool ShowWelcome { get; set; }
     public bool ShowFullNavigation { get; set; }
     public bool ShowMinimalWindow { get; set; }
+    [MaxLength(32)]
     public Point? MinimalWindowPosition { get; set; }
+    [MaxLength(32)]
     public Rectangle? MinimalWindowWorkingArea { get; set; }
     public DateTime? LastUpdateCheck { get; set; }
     public DateTime? LastSync { get; set; }

@@ -160,9 +160,11 @@ namespace OsuPlayer.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("MinimalWindowPosition")
+                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("MinimalWindowWorkingArea")
+                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("ShowFullNavigation")

@@ -51,8 +51,8 @@ namespace OsuPlayer.Data.Migrations
                     ShowWelcome = table.Column<bool>(type: "INTEGER", nullable: false),
                     ShowFullNavigation = table.Column<bool>(type: "INTEGER", nullable: false),
                     ShowMinimalWindow = table.Column<bool>(type: "INTEGER", nullable: false),
-                    MinimalWindowPosition = table.Column<string>(type: "TEXT", nullable: true),
-                    MinimalWindowWorkingArea = table.Column<string>(type: "TEXT", nullable: true),
+                    MinimalWindowPosition = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                    MinimalWindowWorkingArea = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
                     LastUpdateCheck = table.Column<long>(type: "INTEGER", nullable: true),
                     LastSync = table.Column<long>(type: "INTEGER", nullable: true),
                     IgnoredVersion = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true)
