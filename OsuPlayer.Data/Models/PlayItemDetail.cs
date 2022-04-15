@@ -1,17 +1,10 @@
 ﻿using Coosu.Database.DataTypes;
 
-namespace OsuPlayer.Data;
+namespace OsuPlayer.Data.Models;
 
-public class BeatmapMark
+public sealed class PlayItemDetail
 {
-    public bool IsAutoManaged { get; set; }
-    public string RelativePath { get; set; } = null!;
-    public BeatmapCachedInfo CachedInfo { get; set; } = null!;
-    public int CachedInfoId { get; set; }
-}
-
-public class BeatmapCachedInfo
-{
+    public int Id { get; set; }
     public string Artist { get; set; } = null!;
     public string ArtistUnicode { get; set; } = null!;
     public string Title { get; set; } = null!;
