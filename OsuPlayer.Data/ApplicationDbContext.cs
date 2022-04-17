@@ -1,25 +1,12 @@
-﻿using System.Diagnostics;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Text;
 using Anotar.NLog;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using NLog;
 using OsuPlayer.Data.Conversions;
 using OsuPlayer.Data.Models;
 
 namespace OsuPlayer.Data;
-
-public enum BeatmapOrderOptions
-{
-    ArtistUnicode,
-    TitleUnicode,
-    //CreateTime,
-    //UpdateTime,
-    Creator,
-    Index,
-}
 
 public sealed class ApplicationDbContext : DbContext
 {
