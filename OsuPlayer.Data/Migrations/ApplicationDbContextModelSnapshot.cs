@@ -133,12 +133,29 @@ namespace OsuPlayer.Data.Migrations
                     b.Property<long>("TotalTime")
                         .HasColumnType("INTEGER");
 
+                    b.Property<long>("UpdateTime")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Version")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Artist");
+
+                    b.HasIndex("ArtistUnicode");
+
+                    b.HasIndex("Creator");
+
+                    b.HasIndex("Source");
+
+                    b.HasIndex("Tags");
+
+                    b.HasIndex("Title");
+
+                    b.HasIndex("TitleUnicode");
 
                     b.HasIndex("Artist", "ArtistUnicode", "Title", "TitleUnicode", "Creator", "Source", "Tags");
 

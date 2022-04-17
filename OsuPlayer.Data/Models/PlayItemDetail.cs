@@ -8,6 +8,13 @@ namespace OsuPlayer.Data.Models;
     nameof(Title), nameof(TitleUnicode),
     nameof(Creator), nameof(Source), nameof(Tags)
 )]
+[Index(nameof(Artist))]
+[Index(nameof(ArtistUnicode))]
+[Index(nameof(Title))]
+[Index(nameof(TitleUnicode))]
+[Index(nameof(Creator))]
+[Index(nameof(Source))]
+[Index(nameof(Tags))]
 public sealed class PlayItemDetail
 {
     public int Id { get; set; }
@@ -50,4 +57,5 @@ public sealed class PlayItemDetail
     [MaxLength(1024)] public string Tags { get; set; } = null!;
     [MaxLength(128)] public string FolderName { get; set; } = null!;
     [MaxLength(128)] public string AudioFileName { get; set; } = null!;
+    public DateTime UpdateTime { get; set; }
 }

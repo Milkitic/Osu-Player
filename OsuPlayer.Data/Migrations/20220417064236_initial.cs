@@ -35,7 +35,8 @@ namespace OsuPlayer.Data.Migrations
                     Source = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     Tags = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: false),
                     FolderName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    AudioFileName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false)
+                    AudioFileName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    UpdateTime = table.Column<long>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,9 +85,44 @@ namespace OsuPlayer.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_PlayItemDetails_Artist",
+                table: "PlayItemDetails",
+                column: "Artist");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PlayItemDetails_Artist_ArtistUnicode_Title_TitleUnicode_Creator_Source_Tags",
                 table: "PlayItemDetails",
                 columns: new[] { "Artist", "ArtistUnicode", "Title", "TitleUnicode", "Creator", "Source", "Tags" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayItemDetails_ArtistUnicode",
+                table: "PlayItemDetails",
+                column: "ArtistUnicode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayItemDetails_Creator",
+                table: "PlayItemDetails",
+                column: "Creator");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayItemDetails_Source",
+                table: "PlayItemDetails",
+                column: "Source");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayItemDetails_Tags",
+                table: "PlayItemDetails",
+                column: "Tags");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayItemDetails_Title",
+                table: "PlayItemDetails",
+                column: "Title");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayItemDetails_TitleUnicode",
+                table: "PlayItemDetails",
+                column: "TitleUnicode");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlayItems_Path",

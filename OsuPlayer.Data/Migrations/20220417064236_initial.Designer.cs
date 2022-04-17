@@ -11,7 +11,7 @@ using OsuPlayer.Data;
 namespace OsuPlayer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220417051537_initial")]
+    [Migration("20220417064236_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,12 +135,29 @@ namespace OsuPlayer.Data.Migrations
                     b.Property<long>("TotalTime")
                         .HasColumnType("INTEGER");
 
+                    b.Property<long>("UpdateTime")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Version")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Artist");
+
+                    b.HasIndex("ArtistUnicode");
+
+                    b.HasIndex("Creator");
+
+                    b.HasIndex("Source");
+
+                    b.HasIndex("Tags");
+
+                    b.HasIndex("Title");
+
+                    b.HasIndex("TitleUnicode");
 
                     b.HasIndex("Artist", "ArtistUnicode", "Title", "TitleUnicode", "Creator", "Source", "Tags");
 
