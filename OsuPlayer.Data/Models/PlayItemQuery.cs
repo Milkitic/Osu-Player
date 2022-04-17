@@ -4,18 +4,7 @@ namespace OsuPlayer.Data.Models;
 
 public class PlayItemQuery
 {
-    public PlayItemQuery()
-    {
-        IsAutoManaged = false;
-        DefaultStarRatingStd = 0;
-        DefaultStarRatingTaiko = 0;
-        DefaultStarRatingCtB = 0;
-        DefaultStarRatingMania = 0;
-        BeatmapId = 0;
-        BeatmapSetId = 0;
-        GameMode = DbGameMode.Circle;
-    }
-
+    public int Id { get; init; }
     public string Path { get; init; } = null!;
     public bool IsAutoManaged { get; init; }
     public string Artist { get; init; } = null!;

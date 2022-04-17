@@ -15,8 +15,8 @@ public enum BeatmapOrderOptions
 {
     ArtistUnicode,
     TitleUnicode,
-    CreateTime,
-    UpdateTime,
+    //CreateTime,
+    //UpdateTime,
     Creator,
     Index,
 }
@@ -88,6 +88,7 @@ public sealed class ApplicationDbContext : DbContext
                 playItemDetail => playItemDetail.Id,
                 (playItem, playItemDetail) => new PlayItemQuery
                 {
+                    Id = playItem.Id,
                     Path = playItem.Path,
                     IsAutoManaged = playItem.IsAutoManaged,
                     Artist = playItemDetail.Artist,
@@ -108,11 +109,15 @@ public sealed class ApplicationDbContext : DbContext
                 });
 
             var totalCount = await query.CountAsync();
-
-            query = query
-                .OrderBy(k => k.ArtistUnicode)
-                .Skip((page - 1) * countPerPage)
-                .Take(countPerPage);
+            query = beatmapOrderOptions switch
+            {
+                BeatmapOrderOptions.Index => query.OrderBy(k => k.Id),
+                BeatmapOrderOptions.ArtistUnicode => query.OrderBy(k => k.ArtistUnicode),
+                BeatmapOrderOptions.TitleUnicode => query.OrderBy(k => k.TitleUnicode),
+                BeatmapOrderOptions.Creator => query.OrderBy(k => k.Creator),
+                _ => throw new ArgumentOutOfRangeException(nameof(beatmapOrderOptions), beatmapOrderOptions, null)
+            };
+            query = query.Skip((page - 1) * countPerPage).Take(countPerPage);
             var beatmaps = await query.ToListAsync();
 
             return new PaginationQueryResult<PlayItemQuery>(beatmaps, totalCount);
@@ -207,8 +212,9 @@ public sealed class ApplicationDbContext : DbContext
     {
         string orderBy = beatmapOrderOptions switch
         {
+            BeatmapOrderOptions.Index => " ORDER BY p.Id ",
             BeatmapOrderOptions.TitleUnicode => " ORDER BY d.TitleUnicode, d.Title ",
-            BeatmapOrderOptions.UpdateTime => " ORDER BY d.UpdateTime DESC ",
+            //BeatmapOrderOptions.UpdateTime => " ORDER BY d.UpdateTime DESC ",
             BeatmapOrderOptions.ArtistUnicode => " ORDER BY d.ArtistUnicode, d.Artist ",
             BeatmapOrderOptions.Creator => " ORDER BY d.Creator ",
             _ => throw new ArgumentOutOfRangeException(nameof(beatmapOrderOptions), beatmapOrderOptions, null)
