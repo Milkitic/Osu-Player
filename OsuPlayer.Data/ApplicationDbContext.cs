@@ -174,6 +174,12 @@ public sealed class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<PlayList>().HasData(new PlayList
+        {
+            Id = 1,
+            IsDefault = true,
+            Name = "Favorite"
+        });
         modelBuilder.Entity<PlayItem>()
             .HasMany(p => p.PlayLists)
             .WithMany(p => p.PlayItems)

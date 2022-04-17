@@ -11,7 +11,7 @@ using OsuPlayer.Data;
 namespace OsuPlayer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220417091134_initial")]
+    [Migration("20220417091636_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -328,6 +328,9 @@ namespace OsuPlayer.Data.Migrations
                     b.Property<int>("Index")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -340,6 +343,17 @@ namespace OsuPlayer.Data.Migrations
                     b.HasIndex("Index");
 
                     b.ToTable("PlayLists");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreateTime = 0L,
+                            Index = 0,
+                            IsDefault = true,
+                            Name = "Favorite",
+                            UpdateTime = 0L
+                        });
                 });
 
             modelBuilder.Entity("OsuPlayer.Data.Models.PlayListPlayItemRelation", b =>

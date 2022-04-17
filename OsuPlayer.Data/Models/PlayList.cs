@@ -6,6 +6,7 @@ namespace OsuPlayer.Data.Models;
 public sealed class PlayList
 {
     public int Id { get; set; }
+    public bool IsDefault { get; set; }
     public string Name { get; set; } = null!;
     public int Index { get; set; }
     public string? ImagePath { get; set; }

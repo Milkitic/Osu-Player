@@ -119,6 +119,7 @@ namespace OsuPlayer.Data.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    IsDefault = table.Column<bool>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Index = table.Column<int>(type: "INTEGER", nullable: false),
                     ImagePath = table.Column<string>(type: "TEXT", nullable: true),
@@ -208,6 +209,11 @@ namespace OsuPlayer.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "PlayLists",
+                columns: new[] { "Id", "CreateTime", "Description", "ImagePath", "Index", "IsDefault", "Name", "UpdateTime" },
+                values: new object[] { 1, 0L, null, null, 0, true, "Favorite", 0L });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CurrentPlaying_Index",
