@@ -23,4 +23,5 @@ public sealed class PlayItem
     public DateTime? LastPlay { get; set; }
 
     public List<PlayList> PlayLists { get; set; }
+    public List<PlayListPlayItemRelation> PlayListRelations { get; set; }
 }

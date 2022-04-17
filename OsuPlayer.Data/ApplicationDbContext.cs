@@ -15,7 +15,7 @@ public sealed class ApplicationDbContext : DbContext
 
 
     public DbSet<PlayList> PlayLists { get; set; }
-    public DbSet<PlayListRelation> PlayListRelations { get; set; }
+    public DbSet<PlayListPlayItemRelation> PlayListRelations { get; set; }
 
     public DbSet<PlayItem> PlayItems { get; set; }
     public DbSet<PlayItemDetail> PlayItemDetails { get; set; }
@@ -170,6 +170,26 @@ public sealed class ApplicationDbContext : DbContext
         configurationBuilder
             .Properties<DateTime>()
             .HaveConversion<DateTimeDbConverter>();
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PlayItem>()
+            .HasMany(p => p.PlayLists)
+            .WithMany(p => p.PlayItems)
+            .UsingEntity<PlayListPlayItemRelation>(
+                j => j
+                    .HasOne(pt => pt.PlayList)
+                    .WithMany(t => t.PlayListRelations)
+                    .HasForeignKey(pt => pt.PlayListId),
+                j => j
+                    .HasOne(pt => pt.PlayItem)
+                    .WithMany(p => p.PlayListRelations)
+                    .HasForeignKey(pt => pt.PlayItemId),
+                j =>
+                {
+                    j.HasKey(t => new { t.PlayItemId, t.PlayListId });
+                });
     }
 
     private static string GetKeywordQueryAndArgs(string keywordStr, ref List<SqliteParameter> sqliteParameters)

@@ -12,6 +12,7 @@ public sealed class PlayList
     public string? Description { get; set; }
 
     public List<PlayItem> PlayItems { get; set; } = null!;
+    public List<PlayListPlayItemRelation> PlayListRelations { get; set; }
     public DateTime CreateTime { get; set; }
     public DateTime UpdateTime { get; set; }
 }

@@ -186,41 +186,15 @@ namespace OsuPlayer.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PlayItemPlayList",
-                columns: table => new
-                {
-                    PlayItemsId = table.Column<int>(type: "INTEGER", nullable: false),
-                    PlayListsId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PlayItemPlayList", x => new { x.PlayItemsId, x.PlayListsId });
-                    table.ForeignKey(
-                        name: "FK_PlayItemPlayList_PlayItems_PlayItemsId",
-                        column: x => x.PlayItemsId,
-                        principalTable: "PlayItems",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PlayItemPlayList_PlayLists_PlayListsId",
-                        column: x => x.PlayListsId,
-                        principalTable: "PlayLists",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PlayListRelations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    CollectionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    PlayListId = table.Column<int>(type: "INTEGER", nullable: false),
                     PlayItemId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PlayListRelations", x => x.Id);
+                    table.PrimaryKey("PK_PlayListRelations", x => new { x.PlayItemId, x.PlayListId });
                     table.ForeignKey(
                         name: "FK_PlayListRelations_PlayItems_PlayItemId",
                         column: x => x.PlayItemId,
@@ -228,8 +202,8 @@ namespace OsuPlayer.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PlayListRelations_PlayLists_CollectionId",
-                        column: x => x.CollectionId,
+                        name: "FK_PlayListRelations_PlayLists_PlayListId",
+                        column: x => x.PlayListId,
                         principalTable: "PlayLists",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -286,11 +260,6 @@ namespace OsuPlayer.Data.Migrations
                 column: "TitleUnicode");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlayItemPlayList_PlayListsId",
-                table: "PlayItemPlayList",
-                column: "PlayListsId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PlayItems_Path",
                 table: "PlayItems",
                 column: "Path",
@@ -312,14 +281,9 @@ namespace OsuPlayer.Data.Migrations
                 column: "PlayItemDetailId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlayListRelations_CollectionId",
+                name: "IX_PlayListRelations_PlayListId",
                 table: "PlayListRelations",
-                column: "CollectionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PlayListRelations_PlayItemId",
-                table: "PlayListRelations",
-                column: "PlayItemId");
+                column: "PlayListId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlayLists_Index",
@@ -334,9 +298,6 @@ namespace OsuPlayer.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "ExportList");
-
-            migrationBuilder.DropTable(
-                name: "PlayItemPlayList");
 
             migrationBuilder.DropTable(
                 name: "PlayListRelations");

@@ -340,23 +340,17 @@ namespace OsuPlayer.Data.Migrations
                     b.ToTable("PlayLists");
                 });
 
-            modelBuilder.Entity("OsuPlayer.Data.Models.PlayListRelation", b =>
+            modelBuilder.Entity("OsuPlayer.Data.Models.PlayListPlayItemRelation", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CollectionId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("PlayItemId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("Id");
+                    b.Property<int>("PlayListId")
+                        .HasColumnType("INTEGER");
 
-                    b.HasIndex("CollectionId");
+                    b.HasKey("PlayItemId", "PlayListId");
 
-                    b.HasIndex("PlayItemId");
+                    b.HasIndex("PlayListId");
 
                     b.ToTable("PlayListRelations");
                 });
@@ -399,21 +393,6 @@ namespace OsuPlayer.Data.Migrations
                     b.ToTable("SoftwareStates");
                 });
 
-            modelBuilder.Entity("PlayItemPlayList", b =>
-                {
-                    b.Property<int>("PlayItemsId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("PlayListsId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("PlayItemsId", "PlayListsId");
-
-                    b.HasIndex("PlayListsId");
-
-                    b.ToTable("PlayItemPlayList");
-                });
-
             modelBuilder.Entity("OsuPlayer.Data.Models.PlayItem", b =>
                 {
                     b.HasOne("OsuPlayer.Data.Models.PlayItemAsset", "PlayItemAsset")
@@ -437,38 +416,33 @@ namespace OsuPlayer.Data.Migrations
                     b.Navigation("PlayItemDetail");
                 });
 
-            modelBuilder.Entity("OsuPlayer.Data.Models.PlayListRelation", b =>
+            modelBuilder.Entity("OsuPlayer.Data.Models.PlayListPlayItemRelation", b =>
                 {
-                    b.HasOne("OsuPlayer.Data.Models.PlayList", "Collection")
-                        .WithMany()
-                        .HasForeignKey("CollectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("OsuPlayer.Data.Models.PlayItem", "PlayItem")
-                        .WithMany()
+                        .WithMany("PlayListRelations")
                         .HasForeignKey("PlayItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Collection");
+                    b.HasOne("OsuPlayer.Data.Models.PlayList", "PlayList")
+                        .WithMany("PlayListRelations")
+                        .HasForeignKey("PlayListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("PlayItem");
+
+                    b.Navigation("PlayList");
                 });
 
-            modelBuilder.Entity("PlayItemPlayList", b =>
+            modelBuilder.Entity("OsuPlayer.Data.Models.PlayItem", b =>
                 {
-                    b.HasOne("OsuPlayer.Data.Models.PlayItem", null)
-                        .WithMany()
-                        .HasForeignKey("PlayItemsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("PlayListRelations");
+                });
 
-                    b.HasOne("OsuPlayer.Data.Models.PlayList", null)
-                        .WithMany()
-                        .HasForeignKey("PlayListsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            modelBuilder.Entity("OsuPlayer.Data.Models.PlayList", b =>
+                {
+                    b.Navigation("PlayListRelations");
                 });
 #pragma warning restore 612, 618
         }
