@@ -11,7 +11,7 @@ public sealed class PlayItem
     /// IsAutoManaged==true: ./...
     /// IsAutoManaged==false: FullPath
     /// </summary>
-    [MaxLength(1024)]
+    [MaxLength(512)]
     public string Path { get; set; } = null!;
     public bool IsAutoManaged { get; set; }
     public PlayItemDetail PlayItemDetail { get; set; } = null!;

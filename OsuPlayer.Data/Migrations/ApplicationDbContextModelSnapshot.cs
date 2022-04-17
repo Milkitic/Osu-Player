@@ -28,7 +28,7 @@ namespace OsuPlayer.Data.Migrations
 
                     b.Property<string>("Path")
                         .IsRequired()
-                        .HasMaxLength(1024)
+                        .HasMaxLength(512)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("PlayItemDetailId")
@@ -139,6 +139,8 @@ namespace OsuPlayer.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Artist", "ArtistUnicode", "Title", "TitleUnicode", "Creator", "Source", "Tags");
 
                     b.ToTable("PlayItemDetails");
                 });

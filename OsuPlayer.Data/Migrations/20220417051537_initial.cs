@@ -68,7 +68,7 @@ namespace OsuPlayer.Data.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Path = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: false),
+                    Path = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false),
                     IsAutoManaged = table.Column<bool>(type: "INTEGER", nullable: false),
                     PlayItemDetailId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
@@ -82,6 +82,11 @@ namespace OsuPlayer.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayItemDetails_Artist_ArtistUnicode_Title_TitleUnicode_Creator_Source_Tags",
+                table: "PlayItemDetails",
+                columns: new[] { "Artist", "ArtistUnicode", "Title", "TitleUnicode", "Creator", "Source", "Tags" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlayItems_Path",

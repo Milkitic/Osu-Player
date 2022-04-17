@@ -18,12 +18,16 @@ public sealed class ApplicationDbContext : DbContext
         if (optionsBuilder.IsConfigured) return;
 
         optionsBuilder.EnableSensitiveDataLogging();
-        if (!Directory.Exists("./databases"))
+        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Milki.OsuPlayer");
+        var dataBases = Path.Combine(dir, "databases");
+        if (!Directory.Exists(dataBases))
         {
-            Directory.CreateDirectory("./databases");
+            Directory.CreateDirectory(dataBases);
         }
 
-        optionsBuilder.UseSqlite("data source=./databases/application.db");
+        var db = Path.Combine(dataBases, "application.db");
+        optionsBuilder.UseSqlite("data source=" + db);
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
