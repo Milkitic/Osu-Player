@@ -15,7 +15,7 @@ public class BeatmapSyncService
         _dbContext = dbContext;
     }
 
-    public async ValueTask SynchronizeManaged(IEnumerable<PlayItemDetail> fromDb)
+    public async ValueTask SynchronizeManaged(IEnumerable<PlayItemDetail> fromOsuDb)
     {
         var sw = Stopwatch.StartNew();
         var dbItems = await _dbContext.PlayItems
@@ -29,7 +29,7 @@ public class BeatmapSyncService
         LogTo.Debug(() => $"Found {dbItems.Count} items in {sw.ElapsedMilliseconds}ms.");
         sw.Restart();
 
-        var newAllPaths = fromDb
+        var newAllPaths = fromOsuDb
             .Select(k =>
             {
                 var separator = Path.DirectorySeparatorChar;
@@ -78,37 +78,33 @@ public class BeatmapSyncService
         var existNeedUpdate = dbItems
             .Select((k, i) =>
             {
-                if (newAllPaths.TryGetValue(k.Key, out var newDetail))
-                {
-                    var oldDetial = k.Value.PlayItemDetail;
-                    oldDetial.FolderName = newDetail.FolderName;
-                    oldDetial.Artist = newDetail.Artist;
-                    oldDetial.ArtistUnicode = newDetail.ArtistUnicode;
-                    oldDetial.Title = newDetail.Title;
-                    oldDetial.TitleUnicode = newDetail.TitleUnicode;
-                    oldDetial.Creator = newDetail.Creator;
-                    oldDetial.Version = newDetail.Version;
+                if (!newAllPaths.TryGetValue(k.Key, out var newDetail)) return null!;
+                var oldDetial = k.Value.PlayItemDetail;
+                oldDetial.FolderName = newDetail.FolderName;
+                oldDetial.Artist = newDetail.Artist;
+                oldDetial.ArtistUnicode = newDetail.ArtistUnicode;
+                oldDetial.Title = newDetail.Title;
+                oldDetial.TitleUnicode = newDetail.TitleUnicode;
+                oldDetial.Creator = newDetail.Creator;
+                oldDetial.Version = newDetail.Version;
 
-                    oldDetial.BeatmapFileName = newDetail.BeatmapFileName;
-                    oldDetial.LastModified = newDetail.LastModified;
-                    oldDetial.DefaultStarRatingStd = newDetail.DefaultStarRatingStd;
-                    oldDetial.DefaultStarRatingTaiko = newDetail.DefaultStarRatingTaiko;
-                    oldDetial.DefaultStarRatingCtB = newDetail.DefaultStarRatingCtB;
-                    oldDetial.DefaultStarRatingMania = newDetail.DefaultStarRatingMania;
-                    oldDetial.DrainTime = newDetail.DrainTime;
-                    oldDetial.TotalTime = newDetail.TotalTime;
-                    oldDetial.AudioPreviewTime = newDetail.AudioPreviewTime;
-                    oldDetial.BeatmapId = newDetail.BeatmapId;
-                    oldDetial.BeatmapSetId = newDetail.BeatmapSetId;
-                    oldDetial.GameMode = newDetail.GameMode;
-                    oldDetial.Source = newDetail.Source;
-                    oldDetial.Tags = newDetail.Tags;
-                    oldDetial.FolderName = newDetail.FolderName;
-                    oldDetial.AudioFileName = newDetail.AudioFileName;
-                    return newDetail;
-                }
-
-                return null!;
+                oldDetial.BeatmapFileName = newDetail.BeatmapFileName;
+                oldDetial.LastModified = newDetail.LastModified;
+                oldDetial.DefaultStarRatingStd = newDetail.DefaultStarRatingStd;
+                oldDetial.DefaultStarRatingTaiko = newDetail.DefaultStarRatingTaiko;
+                oldDetial.DefaultStarRatingCtB = newDetail.DefaultStarRatingCtB;
+                oldDetial.DefaultStarRatingMania = newDetail.DefaultStarRatingMania;
+                oldDetial.DrainTime = newDetail.DrainTime;
+                oldDetial.TotalTime = newDetail.TotalTime;
+                oldDetial.AudioPreviewTime = newDetail.AudioPreviewTime;
+                oldDetial.BeatmapId = newDetail.BeatmapId;
+                oldDetial.BeatmapSetId = newDetail.BeatmapSetId;
+                oldDetial.GameMode = newDetail.GameMode;
+                oldDetial.Source = newDetail.Source;
+                oldDetial.Tags = newDetail.Tags;
+                oldDetial.FolderName = newDetail.FolderName;
+                oldDetial.AudioFileName = newDetail.AudioFileName;
+                return newDetail;
             })
             .Where(k => k != null!)
             .ToArray();
