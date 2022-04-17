@@ -12,8 +12,20 @@ public sealed class ApplicationDbContext : DbContext
 {
 #nullable disable
     public DbSet<SoftwareState> SoftwareStates { get; set; }
+
+
+    public DbSet<PlayList> PlayLists { get; set; }
+    public DbSet<PlayListRelation> PlayListRelations { get; set; }
+
     public DbSet<PlayItem> PlayItems { get; set; }
     public DbSet<PlayItemDetail> PlayItemDetails { get; set; }
+    public DbSet<PlayItemConfig> PlayItemConfigs { get; set; }
+    public DbSet<PlayItemAsset> PlayItemAssets { get; set; }
+
+    public DbSet<LoosePlayItem> CurrentPlaying { get; set; }
+
+    public DbSet<ExportItem> ExportList { get; set; }
+
 #nullable restore
 
     private const string SearchCommand1 =

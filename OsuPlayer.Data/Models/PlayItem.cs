@@ -16,4 +16,11 @@ public sealed class PlayItem
     public bool IsAutoManaged { get; set; }
     public PlayItemDetail PlayItemDetail { get; set; } = null!;
     public int PlayItemDetailId { get; set; }
+    public PlayItemConfig? PlayItemConfig { get; set; }
+    public int? PlayItemConfigId { get; set; }
+    public PlayItemAsset? PlayItemAsset { get; set; }
+    public int? PlayItemAssetId { get; set; }
+    public DateTime? LastPlay { get; set; }
+
+    public List<PlayList> PlayLists { get; set; }
 }

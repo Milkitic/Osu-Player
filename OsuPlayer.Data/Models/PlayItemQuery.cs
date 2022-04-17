@@ -1,8 +1,9 @@
-﻿using Coosu.Database.DataTypes;
+﻿using System.ComponentModel.DataAnnotations;
+using Coosu.Database.DataTypes;
 
 namespace OsuPlayer.Data.Models;
 
-public class PlayItemQuery
+public sealed class PlayItemQuery
 {
     public int Id { get; init; }
     public string Path { get; init; } = null!;
