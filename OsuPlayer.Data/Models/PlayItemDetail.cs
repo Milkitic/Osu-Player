@@ -21,22 +21,22 @@ public sealed class PlayItemDetail
     public DateTime LastModified { get; set; }
 
     /// <summary>
-    /// Should / 10
+    /// Should / 1_000_000_000
     /// </summary>
     public long DefaultStarRatingStd { get; set; }
 
     /// <summary>
-    /// Should / 10
+    /// Should / 1_000_000_000
     /// </summary>
     public long DefaultStarRatingTaiko { get; set; }
 
     /// <summary>
-    /// Should / 10
+    /// Should / 1_000_000_000
     /// </summary>
     public long DefaultStarRatingCtB { get; set; }
 
     /// <summary>
-    /// Should / 10
+    /// Should / 1_000_000_000
     /// </summary>
     public long DefaultStarRatingMania { get; set; }
 
