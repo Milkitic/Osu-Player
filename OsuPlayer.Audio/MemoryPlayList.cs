@@ -2,7 +2,7 @@
 
 namespace OsuPlayer.Audio;
 
-public class PlayList
+public class MemoryPlayList
 {
     private readonly Random _random = new();
     private PlaylistMode _mode;
@@ -197,24 +197,3 @@ public enum Direction
 {
     Next, Previous
 }
-
-//public class PlayContext
-//{
-//    public PlayContext(string path)
-//    {
-//        Path = path;
-//    }
-
-//    public event Func<Task>? Restarted;
-//    public event Func<Task>? PlayStarted;
-//    public event Func<Task>? Paused;
-//    public event Func<Task>? Stopped;
-//    //public event Func<Task>? PlayPause;
-//    public event Func<double, bool, Task>? TimingSet;
-
-//    public string Path { get; }
-
-//    public bool IsPlaying { get; set; }
-//    public bool FullLoaded { get; set; }
-//    public bool PlayInstantly { get; set; }
-//}

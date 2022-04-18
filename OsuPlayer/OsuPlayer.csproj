@@ -10,6 +10,7 @@
     <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,6 +36,7 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OsuPlayer.Audio\OsuPlayer.Audio.csproj" />
     <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj" />
   </ItemGroup>
 </Project>

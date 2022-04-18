@@ -1,5 +1,8 @@
 using System.Text;
+using System.Threading.Tasks;
+using OsuPlayer;
 using OsuPlayer.Audio;
+using OsuPlayer.Core;
 using OsuPlayer.Shared;
 using Xunit;
 using Xunit.Abstractions;
@@ -16,9 +19,9 @@ namespace UnitTests
         }
 
         [Fact]
-        public void Test1()
+        public void MemoryPlayList()
         {
-            var playList = new PlayList();
+            var playList = new MemoryPlayList();
             playList.Mode = PlaylistMode.Random;
 
             var paths = new[] { "0a", "1b", "2c", "3d", "4e", "5f", "6g" };
@@ -43,6 +46,24 @@ namespace UnitTests
             playList.SetPointerByPath("zz", true);
 
             playList.RemovePaths("zz");
+        }
+
+        [Fact]
+        public void StandardizePath()
+        {
+            var path = PathUtils.StandardizePath(@"E:/Games/osu!\Songs\BmsToOsu/IIDX\29075\P -  (bms2osu) [lv.10].osu",
+                @"E:\Games/osu!\Songs\");
+        }
+
+        [Fact]
+        public async Task PlayController()
+        {
+            var playController = new PlayController(@"E:\Games\osu!\Songs\");
+            await playController.SwitchFile(@"E:/Games/osu!\Songs\BmsToOsu/IIDX\29075\P -  (bms2osu) [lv.10].osu", false);
+            await playController.SwitchFile(@"E:\”Œœ∑◊ ¡œ\osu thing\beatmap bak\Laur - Vindication\Laur - Vindication (yf_bmp) [Extra].osu", false);
+
+            var path = PathUtils.StandardizePath(@"E:/Games/osu!\Songs\BmsToOsu/IIDX\29075\P -  (bms2osu) [lv.10].osu",
+                @"E:\Games/osu!\Songs\");
         }
     }
 }

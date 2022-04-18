@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Anotar.NLog.Fody" Version="6.0.0" />
+    <PackageReference Include="Coosu.Beatmap" Version="2.2.0-alpha.8" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
   </ItemGroup>
 

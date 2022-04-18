@@ -4,6 +4,7 @@ using Anotar.NLog;
 using Microsoft.EntityFrameworkCore;
 using OsuPlayer.Data.Conversions;
 using OsuPlayer.Data.Models;
+using OsuPlayer.Shared;
 
 namespace OsuPlayer.Data;
 
@@ -98,6 +99,47 @@ public sealed class ApplicationDbContext : DbContext
             LogTo.ErrorException("Error while searching beatmap.", ex);
             throw;
         }
+    }
+
+    public async Task<PlayItem> GetOrAddPlayItem(string standardizedPath)
+    {
+        var playItem = await PlayItems
+            .AsNoTracking()
+            .Include(k => k.PlayItemDetail)
+            .Include(k => k.PlayItemConfig)
+            .Include(k => k.PlayItemAsset)
+            .Include(k => k.PlayLists)
+            .Include(k => k.PlayListRelations)
+            .FirstOrDefaultAsync(k => k.Path == standardizedPath);
+
+        if (playItem != null) return playItem;
+        var folder = PathUtils.GetFolder(standardizedPath);
+        var entity = new PlayItem
+        {
+            Path = standardizedPath,
+            IsAutoManaged = false,
+            Folder = folder,
+            PlayItemAsset = new PlayItemAsset(),
+            PlayItemConfig = new PlayItemConfig(),
+            PlayItemDetail = new PlayItemDetail()
+            {
+                Artist = "",
+                ArtistUnicode = "",
+                Title = "",
+                TitleUnicode = "",
+                Creator = "",
+                Version = "",
+                BeatmapFileName = "",
+                Source = "",
+                Tags = "",
+                FolderName = folder,
+                AudioFileName = ""
+            },
+        };
+
+        PlayItems.Add(entity);
+        await SaveChangesAsync();
+        return entity;
     }
 
     public async Task<PlayItem> GetFullInfo(PlayItemDetail playItemDetail, bool createExtraInfos)

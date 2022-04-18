@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -22,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\OsuPlayer.Audio\OsuPlayer.Audio.csproj" />
+    <ProjectReference Include="..\..\OsuPlayer.Core\OsuPlayer.Core.csproj" />
   </ItemGroup>
 
 </Project>
