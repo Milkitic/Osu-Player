@@ -9,7 +9,7 @@ public sealed class PlayerOptions
         DefaultFolder = defaultFolder;
     }
 
-    public string DefaultFolder { get; set; }
+    public string DefaultFolder { get; }
     public DeviceDescription? DeviceDescription { get; set; }
     public float InitialPlaybackRate { get; set; }
     public bool InitialKeepTune { get; set; }

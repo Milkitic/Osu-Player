@@ -112,7 +112,30 @@ public sealed class ApplicationDbContext : DbContext
             .Include(k => k.PlayListRelations)
             .FirstOrDefaultAsync(k => k.Path == standardizedPath);
 
-        if (playItem != null) return playItem;
+        if (playItem != null)
+        {
+            bool changed = false;
+            if (playItem.PlayItemConfig == null)
+            {
+                playItem.PlayItemConfig = new PlayItemConfig();
+                changed = true;
+            }
+
+            if (playItem.PlayItemAsset == null)
+            {
+                playItem.PlayItemAsset = new PlayItemAsset();
+                changed = true;
+            }
+
+            if (changed)
+            {
+                await SaveChangesAsync();
+            }
+
+            Entry(playItem).State = EntityState.Detached;
+            return playItem;
+        }
+
         var folder = PathUtils.GetFolder(standardizedPath);
         var entity = new PlayItem
         {
@@ -199,9 +222,7 @@ public sealed class ApplicationDbContext : DbContext
     {
         if (optionsBuilder.IsConfigured) return;
         optionsBuilder.EnableSensitiveDataLogging();
-        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Milki.OsuPlayer");
-        var dataBases = Path.Combine(dir, "databases");
+        var dataBases = Path.Combine(Constants.ApplicationDir, "databases");
         if (!Directory.Exists(dataBases))
         {
             Directory.CreateDirectory(dataBases);

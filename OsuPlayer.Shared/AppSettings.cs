@@ -6,6 +6,9 @@ namespace OsuPlayer.Shared;
 public class AppSettings : ConfigurationBase
 {
     private SectionSoftware _software = new();
+    private SectionData _data = new();
+    private SectionPlay _play = new();
+    private SectionHotKey _hotKey = new();
 
     public SectionSoftware Software
     {
@@ -13,7 +16,21 @@ public class AppSettings : ConfigurationBase
         set => _software = value;
     }
 
-    public SectionData Data { get; set; }
-    public SectionPlay Play { get; set; }
-    public SectionHotKey HotKey { get; set; }
+    public SectionData Data
+    {
+        get => _data ??= new();
+        set => _data = value;
+    }
+
+    public SectionPlay Play
+    {
+        get => _play ??= new();
+        set => _play = value;
+    }
+
+    public SectionHotKey HotKey
+    {
+        get => _hotKey ??= new();
+        set => _hotKey = value;
+    }
 }

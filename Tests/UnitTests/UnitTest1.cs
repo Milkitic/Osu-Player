@@ -58,7 +58,8 @@ namespace UnitTests
         [Fact]
         public async Task PlayController()
         {
-            var playController = new PlayController(@"E:\Games\osu!\Songs\");
+            var appSettings = ConfigurationFactory.GetConfiguration<AppSettings>();
+            var playController = new PlayController(appSettings);
             await playController.SwitchFile(@"E:/Games/osu!\Songs\BmsToOsu/IIDX\29075\P -  (bms2osu) [lv.10].osu", false);
             await playController.SwitchFile(@"E:\”Œœ∑◊ ¡œ\osu thing\beatmap bak\Laur - Vindication\Laur - Vindication (yf_bmp) [Extra].osu", false);
 

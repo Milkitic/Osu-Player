@@ -18,8 +18,7 @@ public static class ConfigurationFactory
             return (T)val;
 
         var filename = (t.GetCustomAttribute<TableAttribute>()?.Name ?? t.FullName) + ".yaml";
-        var folder = "./configs";
-        var path = Path.Combine(folder, filename);
+        var path = Path.Combine(Constants.ConfigDir, filename);
         converter ??= new YamlConverter();
         var success = TryLoadConfigFromFile<T>(path, converter, out var config, out var ex);
         if (!success) throw ex!;

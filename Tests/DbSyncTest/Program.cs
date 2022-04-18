@@ -2,6 +2,7 @@
 using Coosu.Database;
 using Microsoft.EntityFrameworkCore;
 using OsuPlayer.Data;
+using OsuPlayer.Shared;
 
 await using var appDbContext = new ApplicationDbContext();
 
@@ -10,6 +11,7 @@ await using var appDbContext = new ApplicationDbContext();
 //var beatmaps = reader.EnumerateDbModels();
 //var syncer = new BeatmapSyncService(appDbContext);
 //await syncer.SynchronizeManaged(beatmaps);
+var appSettings = ConfigurationFactory.GetConfiguration<AppSettings>();
 
 
 var ok2 = await appDbContext
