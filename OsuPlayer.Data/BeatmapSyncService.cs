@@ -3,6 +3,7 @@ using Anotar.NLog;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using OsuPlayer.Data.Models;
+using OsuPlayer.Shared;
 
 namespace OsuPlayer.Data;
 
@@ -89,20 +90,20 @@ public class BeatmapSyncService
                 oldDetial.Version = newDetail.Version;
 
                 oldDetial.BeatmapFileName = newDetail.BeatmapFileName;
-                oldDetial.LastModified = newDetail.LastModified;
+                //oldDetial.LastModified = newDetail.LastModified;
                 oldDetial.DefaultStarRatingStd = newDetail.DefaultStarRatingStd;
                 oldDetial.DefaultStarRatingTaiko = newDetail.DefaultStarRatingTaiko;
                 oldDetial.DefaultStarRatingCtB = newDetail.DefaultStarRatingCtB;
                 oldDetial.DefaultStarRatingMania = newDetail.DefaultStarRatingMania;
-                oldDetial.DrainTime = newDetail.DrainTime;
+                //oldDetial.DrainTime = newDetail.DrainTime;
                 oldDetial.TotalTime = newDetail.TotalTime;
-                oldDetial.AudioPreviewTime = newDetail.AudioPreviewTime;
+                //oldDetial.AudioPreviewTime = newDetail.AudioPreviewTime;
                 oldDetial.BeatmapId = newDetail.BeatmapId;
                 oldDetial.BeatmapSetId = newDetail.BeatmapSetId;
-                oldDetial.GameMode = newDetail.GameMode;
+                //oldDetial.GameMode = newDetail.GameMode;
                 oldDetial.Source = newDetail.Source;
                 oldDetial.Tags = newDetail.Tags;
-                oldDetial.FolderName = newDetail.FolderName;
+                oldDetial.FolderName = PathUtils.GetFolder(k.Key);
                 oldDetial.AudioFileName = newDetail.AudioFileName;
                 return newDetail;
             })
@@ -127,12 +128,13 @@ public class BeatmapSyncService
             playItemDetail.Value.Id = maxDetailId++;
             listDetail.Add(playItemDetail.Value);
 
-            var lastSeparator = playItemDetail.Key.LastIndexOf('/');
-            var folder = playItemDetail.Key[..lastSeparator];
+            var path = playItemDetail.Key;
+            var folder = PathUtils.GetFolder(path);
+            playItemDetail.Value.FolderName = folder;
             listItem.Add(new PlayItem
             {
                 IsAutoManaged = true,
-                Path = playItemDetail.Key,
+                Path = path,
                 Folder = folder,
                 PlayItemDetailId = playItemDetail.Value.Id
             });

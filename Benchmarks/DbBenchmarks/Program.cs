@@ -24,7 +24,7 @@ public class SearchComparison
     public async Task<object?> Auto()
     {
         await using var appDbContext = new ApplicationDbContext();
-        return await appDbContext.SearchBeatmapAutoAsync("yf_bmp",
+        return await appDbContext.SearchPlayItemsAsync("yf_bmp",
             BeatmapOrderOptions.Artist, 0, 300);
     }
 }

@@ -27,7 +27,7 @@ public sealed class ApplicationDbContext : DbContext
 
 #nullable restore
 
-    public async Task<PaginationQueryResult<PlayGroupQuery>> SearchBeatmapAutoAsync(string searchText,
+    public async Task<PaginationQueryResult<PlayGroupQuery>> SearchPlayItemsAsync(string searchText,
         BeatmapOrderOptions beatmapOrderOptions,
         int page,
         int countPerPage)
@@ -98,6 +98,59 @@ public sealed class ApplicationDbContext : DbContext
             LogTo.ErrorException("Error while searching beatmap.", ex);
             throw;
         }
+    }
+
+    public async Task<PlayItem> GetFullInfo(PlayItemDetail playItemDetail, bool createExtraInfos)
+    {
+        if (!createExtraInfos)
+        {
+            return await PlayItems
+                .AsNoTracking()
+                .Include(k => k.PlayItemDetail)
+                .Include(k => k.PlayItemConfig)
+                .Include(k => k.PlayItemAsset)
+                .Include(k => k.PlayLists)
+                .Include(k => k.PlayListRelations)
+                .FirstAsync(k => k.PlayItemDetailId == playItemDetail.Id);
+        }
+
+        var playItem = await PlayItems
+            .Include(k => k.PlayItemDetail)
+            .Include(k => k.PlayItemConfig)
+            .Include(k => k.PlayItemAsset)
+            .Include(k => k.PlayLists)
+            .Include(k => k.PlayListRelations)
+            .FirstAsync(k => k.PlayItemDetailId == playItemDetail.Id);
+
+
+        bool changed = false;
+        if (playItem.PlayItemConfig == null)
+        {
+            playItem.PlayItemConfig = new PlayItemConfig();
+            changed = true;
+        }
+
+        if (playItem.PlayItemAsset == null)
+        {
+            playItem.PlayItemAsset = new PlayItemAsset();
+            changed = true;
+        }
+
+        if (changed)
+        {
+            await SaveChangesAsync();
+        }
+
+        Entry(playItem).State = EntityState.Detached;
+        return playItem;
+    }
+
+    public async Task<IReadOnlyList<PlayItemDetail>> GetPlayItemDetailsByFolderAsync(string folder)
+    {
+        return await PlayItemDetails
+            .AsNoTracking()
+            .Where(k => k.FolderName == folder)
+            .ToArrayAsync();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

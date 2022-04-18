@@ -70,8 +70,8 @@ namespace OsuPlayer.Data.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Offset = table.Column<int>(type: "INTEGER", nullable: true),
-                    LyricOffset = table.Column<int>(type: "INTEGER", nullable: true)
+                    Offset = table.Column<int>(type: "INTEGER", nullable: false),
+                    LyricOffset = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -91,17 +91,13 @@ namespace OsuPlayer.Data.Migrations
                     Creator = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     Version = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
                     BeatmapFileName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    LastModified = table.Column<long>(type: "INTEGER", nullable: false),
                     DefaultStarRatingStd = table.Column<long>(type: "INTEGER", nullable: false),
                     DefaultStarRatingTaiko = table.Column<long>(type: "INTEGER", nullable: false),
                     DefaultStarRatingCtB = table.Column<long>(type: "INTEGER", nullable: false),
                     DefaultStarRatingMania = table.Column<long>(type: "INTEGER", nullable: false),
-                    DrainTime = table.Column<long>(type: "INTEGER", nullable: false),
                     TotalTime = table.Column<long>(type: "INTEGER", nullable: false),
-                    AudioPreviewTime = table.Column<long>(type: "INTEGER", nullable: false),
                     BeatmapId = table.Column<int>(type: "INTEGER", nullable: false),
                     BeatmapSetId = table.Column<int>(type: "INTEGER", nullable: false),
-                    GameMode = table.Column<byte>(type: "INTEGER", nullable: false),
                     Source = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     Tags = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: false),
                     FolderName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),

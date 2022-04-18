@@ -11,7 +11,7 @@ using OsuPlayer.Data;
 namespace OsuPlayer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220417143102_initial")]
+    [Migration("20220418033715_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -188,10 +188,10 @@ namespace OsuPlayer.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("LyricOffset")
+                    b.Property<int>("LyricOffset")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("Offset")
+                    b.Property<int>("Offset")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -219,9 +219,6 @@ namespace OsuPlayer.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("TEXT");
-
-                    b.Property<long>("AudioPreviewTime")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("BeatmapFileName")
                         .IsRequired()
@@ -251,19 +248,10 @@ namespace OsuPlayer.Data.Migrations
                     b.Property<long>("DefaultStarRatingTaiko")
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("DrainTime")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("FolderName")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("TEXT");
-
-                    b.Property<byte>("GameMode")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("LastModified")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Source")
                         .IsRequired()
