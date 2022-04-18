@@ -21,6 +21,8 @@ public static class PathUtils
         var truePath = Path.GetRelativePath(baseFolder, path);
         if (truePath.Contains("..", StringComparison.Ordinal))
             return path.Replace('\\', '/'); // Not in base folder
+        if (Path.IsPathRooted(truePath))
+            return truePath.Replace('\\', '/');
 
         var separator = Path.DirectorySeparatorChar;
         var finalPath = string.Create(truePath.Length + 2, truePath, (span, s) =>

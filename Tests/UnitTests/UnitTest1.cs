@@ -60,8 +60,8 @@ namespace UnitTests
         {
             var appSettings = ConfigurationFactory.GetConfiguration<AppSettings>();
             var playController = new PlayController(appSettings);
-            await playController.SwitchFile(@"E:/Games/osu!\Songs\BmsToOsu/IIDX\29075\P -  (bms2osu) [lv.10].osu", false);
-            await playController.SwitchFile(@"E:\”Œœ∑◊ ¡œ\osu thing\beatmap bak\Laur - Vindication\Laur - Vindication (yf_bmp) [Extra].osu", false);
+            //await playController.SwitchFile(@"E:/Games/osu!\Songs\BmsToOsu/IIDX\29075\P -  (bms2osu) [lv.10].osu", false);
+            await playController.SwitchFile(@"E:\262741 BiBi - Fuyu ga Kureta Yokan\BiBi - Fuyu ga Kureta Yokan (Sakaue Nachi) [Expert].osu", false);
 
             var path = PathUtils.StandardizePath(@"E:/Games/osu!\Songs\BmsToOsu/IIDX\29075\P -  (bms2osu) [lv.10].osu",
                 @"E:\Games/osu!\Songs\");

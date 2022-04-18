@@ -9,10 +9,17 @@ namespace OsuPlayer.Core;
 
 public class PlayController : IAsyncDisposable
 {
+    public event Func<PlayItemContext, Task>? PlayerDisposing;
+
+    public event Func<PlayItemContext, Task>? MetaLoaded;
+    public event Func<PlayItemContext, Task>? BackgroundLoaded;
+    public event Func<PlayItemContext, Task>? PlayerLoaded;
+    public event Func<PlayItemContext, Task>? VideoLoaded;
+    public event Func<PlayItemContext, Task>? StoryboardLoaded;
+    public event Func<PlayItemContext, Task>? FileLoaded;
+
     private readonly AsyncLock _asyncLock = new();
     private readonly AppSettings _settings;
-    private string SongFolder => Path.Combine(_settings.Data.OsuBaseFolder ?? Constants.ApplicationDir, "Songs");
-    public event Func<PlayItemContext, Task>? PlayerDisposing;
 
     public PlayController(AppSettings settings)
     {
@@ -22,6 +29,9 @@ public class PlayController : IAsyncDisposable
             Directory.CreateDirectory(SongFolder);
         }
     }
+    private string SongFolder => Path.Combine(_settings.Data.OsuBaseFolder ?? Constants.ApplicationDir, "Songs");
+
+    public bool IsFileLoading { get; private set; }
 
     public MemoryPlayList PlayList { get; } = new();
     public PlayItemContext? PlayItemContext { get; private set; }
@@ -30,29 +40,34 @@ public class PlayController : IAsyncDisposable
     public async Task SwitchFile(string path, bool play)
     {
         using var _ = await _asyncLock.LockAsync();
-
-        var standardizedPath = PathUtils.StandardizePath(path, SongFolder);
-
-        //LogTo.Info($"Start load new song from path: {standardizedPath}");
-        if (PlayItemContext?.PlayItem.Path.Equals(standardizedPath) == true)
+        IsFileLoading = true;
+        try
         {
-            //LogTo.Debug(() => "Same file to play, recreating...");
+            var standardizedPath = PathUtils.StandardizePath(path, SongFolder);
+
+            //LogTo.Info($"Start load new song from path: {standardizedPath}");
+            if (PlayItemContext?.PlayItem.Path.Equals(standardizedPath) == true)
+            {
+                //LogTo.Debug(() => "Same file to play, recreating...");
+            }
+
+            await ClearPlayer();
+            PlayList.SetPointerByPath(standardizedPath, true);
+
+            await using var dbContext = new ApplicationDbContext();
+
+            var playItem = await dbContext.GetOrAddPlayItem(standardizedPath);
+            var context = new PlayItemContext(playItem);
+            await HandlePlayItem(context, path);
+            dbContext.Update(context.PlayItem);
+            await dbContext.SaveChangesAsync();
+
+            await dbContext.AddOrUpdateBeatmapToRecentPlayAsync(playItem, playItem.LastPlay!.Value);
+            // Todo: Add to CurrentPlaying
         }
-
-        await ClearPlayer();
-        PlayList.SetPointerByPath(standardizedPath, true);
-
-        await using var dbContext = new ApplicationDbContext();
-
-        var playItem = await dbContext.GetOrAddPlayItem(standardizedPath);
-        var context = new PlayItemContext(playItem);
-        await HandlePlayItem(context, path);
-        dbContext.Update(context.PlayItem);
-        await dbContext.SaveChangesAsync();
-
-        if (PlayItemContext?.PlayItem.Folder != playItem.Folder)
+        finally
         {
-            CachedSoundFactory.ClearCacheSounds();
+            IsFileLoading = false;
         }
     }
 
@@ -67,8 +82,12 @@ public class PlayController : IAsyncDisposable
     private async Task HandlePlayItemOsu(PlayItemContext context, string path)
     {
         var coosu = await OsuFile.ReadFromFileAsync(path);
-        context.PlayItem.LastPlay = DateTime.Now;
-        var playItemDetail = context.PlayItem.PlayItemDetail;
+        context.Tags.Add("coosu", coosu);
+
+        var playItem = context.PlayItem;
+        var playItemDetail = playItem.PlayItemDetail;
+
+        playItem.LastPlay = DateTime.Now;
         playItemDetail.Artist = coosu.Metadata.Artist;
         playItemDetail.ArtistUnicode = coosu.Metadata.ArtistUnicode ?? "";
         playItemDetail.AudioFileName = coosu.General.AudioFilename ?? "";
@@ -81,10 +100,63 @@ public class PlayController : IAsyncDisposable
         playItemDetail.Title = coosu.Metadata.Title;
         playItemDetail.TitleUnicode = coosu.Metadata.TitleUnicode ?? "";
         playItemDetail.Version = coosu.Metadata.Version ?? "";
+        context.IsFavorite = playItem.PlayLists.Any(k => k.IsDefault);
+        if (MetaLoaded != null)
+        {
+            await MetaLoaded.Invoke(context);
+        }
 
-        var player = new OsuMixPlayer(GetOptions(_settings, context.PlayItem.PlayItemConfig!), coosu);
+        // Player
+        if (PlayItemContext?.PlayItem.Folder != playItem.Folder)
+        {
+            CachedSoundFactory.ClearCacheSounds();
+        }
+        var player = new OsuMixPlayer(GetOptions(_settings, playItem.PlayItemConfig!), coosu);
         player.PlayStatusChanged += Player_PlayStatusChanged;
         player.PositionUpdated += Player_PositionUpdated;
+        Player = player;
+        if (PlayerLoaded != null)
+        {
+            await PlayerLoaded.Invoke(context);
+        }
+
+        // Background
+        context.BackgroundPath = coosu.Events.BackgroundInfo == null
+            ? null
+            : Path.Combine(playItem.Folder, coosu.Events.BackgroundInfo.Filename);
+        if (BackgroundLoaded != null)
+        {
+            await BackgroundLoaded.Invoke(context);
+        }
+
+        // Video
+        context.VideoPath = coosu.Events.VideoInfo == null
+            ? null
+            : Path.Combine(playItem.Folder, coosu.Events.VideoInfo.Filename);
+        context.VideoOffset = coosu.Events.VideoInfo?.Offset ?? 0d;
+        if (VideoLoaded != null)
+        {
+            await VideoLoaded.Invoke(context);
+        }
+
+        // Storyboard
+        if (!string.IsNullOrWhiteSpace(coosu.Events.StoryboardText))
+        {
+            if (StoryboardLoaded != null)
+            {
+                await StoryboardLoaded.Invoke(context);
+            }
+        }
+        else
+        {
+            var osbFileName = Coosu.Shared.IO.PathUtils.EscapeFileName(
+                $"{coosu.Metadata.Artist} - {coosu.Metadata.Title} ({coosu.Metadata.Creator}).osb");
+            var osbFile = Path.Combine(playItem.Folder, osbFileName);
+            if (File.Exists(osbFile) && await OsuFile.OsbFileHasStoryboard(osbFile))
+            {
+                if (StoryboardLoaded != null) await StoryboardLoaded.Invoke(context);
+            }
+        }
     }
 
     private static PlayerOptions GetOptions(AppSettings settings, PlayItemConfig config)
@@ -100,7 +172,7 @@ public class PlayController : IAsyncDisposable
             InitialOffset = config?.Offset ?? 0,
             InitialPlaybackRate = play.PlaybackRate,
             InitialKeepTune = play.IsTuneKept,
-            DeviceDescription = play.DeviceDescription
+            DeviceDescription = play.DeviceDescription,
         };
     }
 
@@ -158,5 +230,7 @@ public sealed class PlayItemContext
     public Dictionary<string, object> Tags { get; } = new();
     public bool IsFavorite { get; set; }
     public string? BackgroundPath { get; set; }
+    public string? VideoPath { get; set; }
     public PlayItem PlayItem { get; }
+    public double VideoOffset { get; set; }
 }

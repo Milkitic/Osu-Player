@@ -23,6 +23,7 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<PlayItemAsset> PlayItemAssets { get; set; }
 
     public DbSet<LoosePlayItem> CurrentPlaying { get; set; }
+    public DbSet<LoosePlayItem> RecentPlay { get; set; }
 
     public DbSet<ExportItem> ExportList { get; set; }
 
@@ -297,5 +298,38 @@ public sealed class ApplicationDbContext : DbContext
             k.Source.Contains(searchText) ||
             k.Creator.Contains(searchText) ||
             k.Version.Contains(searchText);
+    }
+
+    public async Task AddOrUpdateBeatmapToRecentPlayAsync(PlayItem playItem, DateTime playTime)
+    {
+        var playItemDetail = playItem.PlayItemDetail;
+        var map = await RecentPlay
+            .FirstOrDefaultAsync(k => k.PlayItemId == playItem.Id || k.PlayItemPath == playItem.Path);
+        if (map == null)
+        {
+        
+            RecentPlay.Add(new LoosePlayItem
+            {
+                Artist = playItemDetail.Artist,
+                Creator = playItemDetail.Creator,
+                Title = playItemDetail.Title,
+                LastPlay = playTime,
+                PlayItemId = playItem.Id,
+                PlayItemPath = playItem.Path,
+                Version = playItemDetail.Version,
+            });
+        }
+        else
+        {
+            map.Artist = playItemDetail.Artist;
+            map.Creator = playItemDetail.Creator;
+            map.Title = playItemDetail.Title;
+            map.LastPlay = playTime;
+            map.PlayItemId = playItem.Id;
+            map.PlayItemPath = playItem.Path;
+            map.Version = playItemDetail.Version;
+        }
+
+        await SaveChangesAsync();
     }
 }
