@@ -159,6 +159,7 @@ namespace OsuPlayer.Data.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Path = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false),
+                    Folder = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false),
                     IsAutoManaged = table.Column<bool>(type: "INTEGER", nullable: false),
                     PlayItemDetailId = table.Column<int>(type: "INTEGER", nullable: false),
                     PlayItemConfigId = table.Column<int>(type: "INTEGER", nullable: true),
@@ -264,6 +265,11 @@ namespace OsuPlayer.Data.Migrations
                 name: "IX_PlayItemDetails_TitleUnicode",
                 table: "PlayItemDetails",
                 column: "TitleUnicode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayItems_Folder",
+                table: "PlayItems",
+                column: "Folder");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlayItems_Path",

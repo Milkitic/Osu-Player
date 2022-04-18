@@ -11,7 +11,7 @@ using OsuPlayer.Data;
 namespace OsuPlayer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220417091636_initial")]
+    [Migration("20220417143102_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -121,6 +121,11 @@ namespace OsuPlayer.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Folder")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsAutoManaged")
                         .HasColumnType("INTEGER");
 
@@ -142,6 +147,8 @@ namespace OsuPlayer.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Folder");
 
                     b.HasIndex("Path")
                         .IsUnique();

@@ -119,6 +119,11 @@ namespace OsuPlayer.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Folder")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsAutoManaged")
                         .HasColumnType("INTEGER");
 
@@ -140,6 +145,8 @@ namespace OsuPlayer.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Folder");
 
                     b.HasIndex("Path")
                         .IsUnique();

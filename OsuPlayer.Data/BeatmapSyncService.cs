@@ -126,10 +126,14 @@ public class BeatmapSyncService
         {
             playItemDetail.Value.Id = maxDetailId++;
             listDetail.Add(playItemDetail.Value);
+
+            var lastSeparator = playItemDetail.Key.LastIndexOf('/');
+            var folder = playItemDetail.Key[..lastSeparator];
             listItem.Add(new PlayItem
             {
                 IsAutoManaged = true,
                 Path = playItemDetail.Key,
+                Folder = folder,
                 PlayItemDetailId = playItemDetail.Value.Id
             });
         }

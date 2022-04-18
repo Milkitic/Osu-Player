@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace OsuPlayer.Data.Models;
 
 [Index(nameof(Path), IsUnique = true)]
+[Index(nameof(Folder))]
 public sealed class PlayItem
 {
     public int Id { get; set; }
@@ -13,6 +14,8 @@ public sealed class PlayItem
     /// </summary>
     [MaxLength(512)]
     public string Path { get; set; } = null!;
+    [MaxLength(512)]
+    public string Folder { get; set; } = null!;
     public bool IsAutoManaged { get; set; }
     public PlayItemDetail PlayItemDetail { get; set; } = null!;
     public int PlayItemDetailId { get; set; }

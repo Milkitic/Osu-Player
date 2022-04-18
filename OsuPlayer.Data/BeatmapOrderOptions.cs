@@ -2,10 +2,7 @@
 
 public enum BeatmapOrderOptions
 {
-    ArtistUnicode,
-    TitleUnicode,
-    //CreateTime,
-    //UpdateTime,
+    Artist,
+    Title,
     Creator,
-    Index,
 }

@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
-using System.Text;
+using System.Linq.Expressions;
 using Anotar.NLog;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using OsuPlayer.Data.Conversions;
 using OsuPlayer.Data.Models;
@@ -28,44 +27,7 @@ public sealed class ApplicationDbContext : DbContext
 
 #nullable restore
 
-    private const string SearchCommand1 =
-        @"SELECT d.Id, p.Path, p.IsAutoManaged, p.PlayItemDetailId FROM (SELECT * FROM PlayItemDetails WHERE ";
-
-    private const string SearchCommand2 = @") d INNER JOIN PlayItems p ON p.PlayItemDetailId = d.Id";
-
-    public async Task<PaginationQueryResult<PlayItem>> SearchBeatmapAsyncOld(string searchText,
-        BeatmapOrderOptions beatmapOrderOptions,
-        int page,
-        int countPerPage)
-    {
-        var sqliteParameters = new List<SqliteParameter>();
-        var keywordSql = GetKeywordQueryAndArgs(searchText, ref sqliteParameters);
-
-        var sort = GetOrderAndTakeQueryAndArgs(beatmapOrderOptions, page, countPerPage);
-        try
-        {
-            var sql = SearchCommand1 + keywordSql + SearchCommand2;
-            var totalCount = await PlayItems
-                .FromSqlRaw(sql, sqliteParameters.Cast<object>().ToArray())
-                .AsNoTracking()
-                .CountAsync();
-
-            var s = sql + sort;
-            var beatmaps = await PlayItems
-                .FromSqlRaw(s, sqliteParameters.Cast<object>().ToArray())
-                .AsNoTracking()
-                .Include(k => k.PlayItemDetail)
-                .ToArrayAsync();
-            return new PaginationQueryResult<PlayItem>(beatmaps, totalCount);
-        }
-        catch (Exception ex)
-        {
-            LogTo.ErrorException("Error while searching beatmap.", ex);
-            throw;
-        }
-    }
-
-    public async Task<PaginationQueryResult<PlayItemQuery>> SearchBeatmapAsync(string searchText,
+    public async Task<PaginationQueryResult<PlayGroupQuery>> SearchBeatmapAutoAsync(string searchText,
         BeatmapOrderOptions beatmapOrderOptions,
         int page,
         int countPerPage)
@@ -73,53 +35,63 @@ public sealed class ApplicationDbContext : DbContext
         if (page <= 0) page = 1;
         try
         {
-            var query = PlayItems.AsNoTracking().Join(
-                PlayItemDetails.Where(k =>
-                    k.Artist.Contains(searchText) ||
-                    k.ArtistUnicode.Contains(searchText) ||
-                    k.Title.Contains(searchText) ||
-                    k.TitleUnicode.Contains(searchText) ||
-                    k.Tags.Contains(searchText) ||
-                    k.Source.Contains(searchText) ||
-                    k.Creator.Contains(searchText) ||
-                    k.Version.Contains(searchText)),
-                playItem => playItem.PlayItemDetailId,
-                playItemDetail => playItemDetail.Id,
-                (playItem, playItemDetail) => new PlayItemQuery
+            var query = PlayItems
+                .AsNoTracking()
+                .Include(k => k.PlayItemAsset)
+                .Join(PlayItemDetails.Where(GetWhereExpression(searchText)),
+                    playItem => playItem.PlayItemDetailId,
+                    playItemDetail => playItemDetail.Id,
+                    (playItem, playItemDetail) => new
+                    {
+                        PlayItem = playItem,
+                        PlayItemDetail = playItemDetail,
+                        PlayItemAssets = playItem.PlayItemAsset
+                    })
+                .Select(k => new PlayGroupQuery
                 {
-                    Id = playItem.Id,
-                    Path = playItem.Path,
-                    IsAutoManaged = playItem.IsAutoManaged,
-                    Artist = playItemDetail.Artist,
-                    ArtistUnicode = playItemDetail.ArtistUnicode,
-                    Title = playItemDetail.Title,
-                    TitleUnicode = playItemDetail.TitleUnicode,
-                    Tags = playItemDetail.Tags,
-                    Source = playItemDetail.Source,
-                    Creator = playItemDetail.Creator,
-                    Version = playItemDetail.Version,
-                    DefaultStarRatingStd = playItemDetail.DefaultStarRatingStd,
-                    DefaultStarRatingTaiko = playItemDetail.DefaultStarRatingTaiko,
-                    DefaultStarRatingCtB = playItemDetail.DefaultStarRatingCtB,
-                    DefaultStarRatingMania = playItemDetail.DefaultStarRatingMania,
-                    BeatmapId = playItemDetail.BeatmapId,
-                    BeatmapSetId = playItemDetail.BeatmapSetId,
-                    GameMode = playItemDetail.GameMode
+                    Folder = k.PlayItem.Folder,
+                    IsAutoManaged = k.PlayItem.IsAutoManaged,
+                    Artist = k.PlayItemDetail.Artist,
+                    ArtistUnicode = k.PlayItemDetail.ArtistUnicode,
+                    Title = k.PlayItemDetail.Title,
+                    TitleUnicode = k.PlayItemDetail.TitleUnicode,
+                    Tags = k.PlayItemDetail.Tags,
+                    Source = k.PlayItemDetail.Source,
+                    Creator = k.PlayItemDetail.Creator,
+                    BeatmapSetId = k.PlayItemDetail.BeatmapSetId,
+                    ThumbPath = k.PlayItemAssets == null ? null : k.PlayItemAssets.ThumbPath,
+                    StoryboardVideoPath = k.PlayItemAssets == null ? null : k.PlayItemAssets.StoryboardVideoPath,
+                    VideoPath = k.PlayItemAssets == null ? null : k.PlayItemAssets.VideoPath,
                 });
 
-            var totalCount = await query.CountAsync();
-            query = beatmapOrderOptions switch
+            var sqlStr = query.ToQueryString();
+            var fullResult = await query.ToArrayAsync();
+
+            var enumerable = fullResult
+                .GroupBy(k => k.Folder, StringComparer.Ordinal)
+                .SelectMany(k => k
+                    .GroupBy(o => o, MetaComparer.Instance)
+                    .Select(o => o.First())
+                );
+
+            enumerable = beatmapOrderOptions switch
             {
-                BeatmapOrderOptions.Index => query.OrderBy(k => k.Id),
-                BeatmapOrderOptions.ArtistUnicode => query.OrderBy(k => k.ArtistUnicode),
-                BeatmapOrderOptions.TitleUnicode => query.OrderBy(k => k.TitleUnicode),
-                BeatmapOrderOptions.Creator => query.OrderBy(k => k.Creator),
+                BeatmapOrderOptions.Artist => enumerable.OrderBy(k =>
+                        string.IsNullOrEmpty(k.ArtistUnicode) ? k.Artist : k.ArtistUnicode,
+                    StringComparer.InvariantCultureIgnoreCase),
+                BeatmapOrderOptions.Title => enumerable.OrderBy(k =>
+                        string.IsNullOrEmpty(k.TitleUnicode) ? k.Title : k.TitleUnicode,
+                    StringComparer.InvariantCultureIgnoreCase),
+                BeatmapOrderOptions.Creator => enumerable.OrderBy(k => k.Creator,
+                    StringComparer.OrdinalIgnoreCase),
                 _ => throw new ArgumentOutOfRangeException(nameof(beatmapOrderOptions), beatmapOrderOptions, null)
             };
-            query = query.Skip((page - 1) * countPerPage).Take(countPerPage);
-            var beatmaps = await query.ToListAsync();
 
-            return new PaginationQueryResult<PlayItemQuery>(beatmaps, totalCount);
+            var bufferResult = enumerable.ToArray();
+            var totalCount = bufferResult.Length;
+            var beatmaps = bufferResult.Skip((page - 1) * countPerPage).Take(countPerPage).ToArray();
+
+            return new PaginationQueryResult<PlayGroupQuery>(beatmaps, totalCount);
         }
         catch (Exception ex)
         {
@@ -198,54 +170,16 @@ public sealed class ApplicationDbContext : DbContext
                 });
     }
 
-    private static string GetKeywordQueryAndArgs(string keywordStr, ref List<SqliteParameter> sqliteParameters)
+    private static Expression<Func<PlayItemDetail, bool>> GetWhereExpression(string searchText)
     {
-        if (string.IsNullOrWhiteSpace(keywordStr))
-        {
-            return "1=1";
-        }
-
-        var keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-        var sb = new StringBuilder();
-        for (var i = 0; i < keywords.Length; i++)
-        {
-            var keyword = keywords[i];
-            var postfix = $" like @keyword{i} ";
-            sb.AppendLine("(")
-                .AppendLine($" Artist {postfix} OR ")
-                .AppendLine($" ArtistUnicode {postfix} OR ")
-                .AppendLine($" Title {postfix} OR ")
-                .AppendLine($" TitleUnicode {postfix} OR ")
-                .AppendLine($" Tags {postfix} OR ")
-                .AppendLine($" Source {postfix} OR ")
-                .AppendLine($" Creator {postfix} OR ")
-                .AppendLine($" Version {postfix} ")
-                .AppendLine(" ) ");
-
-            sqliteParameters.Add(new SqliteParameter($"keyword{i}", $"%{keyword}%"));
-            if (i != keywords.Length - 1)
-            {
-                sb.AppendLine(" AND ");
-            }
-        }
-
-        return sb.ToString();
-    }
-
-    private static string GetOrderAndTakeQueryAndArgs(BeatmapOrderOptions beatmapOrderOptions, int page,
-        int countPerPage)
-    {
-        string orderBy = beatmapOrderOptions switch
-        {
-            BeatmapOrderOptions.Index => " ORDER BY p.Id ",
-            BeatmapOrderOptions.TitleUnicode => " ORDER BY d.TitleUnicode, d.Title ",
-            //BeatmapOrderOptions.UpdateTime => " ORDER BY d.UpdateTime DESC ",
-            BeatmapOrderOptions.ArtistUnicode => " ORDER BY d.ArtistUnicode, d.Artist ",
-            BeatmapOrderOptions.Creator => " ORDER BY d.Creator ",
-            _ => throw new ArgumentOutOfRangeException(nameof(beatmapOrderOptions), beatmapOrderOptions, null)
-        };
-
-        string limit = $" LIMIT {page * countPerPage}, {countPerPage} ";
-        return orderBy + limit;
+        return k =>
+            k.Artist.Contains(searchText) ||
+            k.ArtistUnicode.Contains(searchText) ||
+            k.Title.Contains(searchText) ||
+            k.TitleUnicode.Contains(searchText) ||
+            k.Tags.Contains(searchText) ||
+            k.Source.Contains(searchText) ||
+            k.Creator.Contains(searchText) ||
+            k.Version.Contains(searchText);
     }
 }

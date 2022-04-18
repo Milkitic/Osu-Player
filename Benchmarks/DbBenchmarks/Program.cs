@@ -1,14 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
-using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Order;
 using BenchmarkDotNet.Running;
 using OsuPlayer.Data;
-using Perfolizer.Horology;
 
 BenchmarkRunner.Run<SearchComparison>();
 
@@ -23,18 +20,11 @@ public class SearchComparison
     {
     }
 
-
-    [Benchmark(Baseline = true)]
-    public async Task<object?> New()
-    {
-        await using var appDbContext = new ApplicationDbContext();
-        return await appDbContext.SearchBeatmapAsync("Camellia", BeatmapOrderOptions.ArtistUnicode, 0, 3000);
-    }
-
     [Benchmark]
-    public async Task<object?> Old()
+    public async Task<object?> Auto()
     {
         await using var appDbContext = new ApplicationDbContext();
-        return await appDbContext.SearchBeatmapAsyncOld("Camellia", BeatmapOrderOptions.ArtistUnicode, 0, 3000);
+        return await appDbContext.SearchBeatmapAutoAsync("yf_bmp",
+            BeatmapOrderOptions.Artist, 0, 300);
     }
 }
