@@ -27,4 +27,21 @@ public sealed class PlayItem
 
     public List<PlayList> PlayLists { get; set; }
     public List<PlayListPlayItemRelation> PlayListRelations { get; set; }
+
+    public LoosePlayItem ToLoosePlayItem(DateTime playTime)
+    {
+        return new LoosePlayItem
+        {
+            Artist = string.IsNullOrEmpty(PlayItemDetail.ArtistUnicode)
+                ? PlayItemDetail.Artist
+                : PlayItemDetail.ArtistUnicode,
+            Creator = PlayItemDetail.Creator,
+            Title = string.IsNullOrEmpty(PlayItemDetail.TitleUnicode)
+                ? PlayItemDetail.Title
+                : PlayItemDetail.TitleUnicode,
+            LastPlay = playTime,
+            PlayItemId = Id,
+            Version = PlayItemDetail.Version,
+        };
+    }
 }

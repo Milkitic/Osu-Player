@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Linq.Expressions;
-using Anotar.NLog;
 using Microsoft.EntityFrameworkCore;
 using OsuPlayer.Data.Conversions;
 using OsuPlayer.Data.Models;
@@ -8,7 +7,7 @@ using OsuPlayer.Shared;
 
 namespace OsuPlayer.Data;
 
-public sealed class ApplicationDbContext : DbContext
+public sealed partial class ApplicationDbContext : DbContext
 {
 #nullable disable
     public DbSet<SoftwareState> SoftwareStates { get; set; }
@@ -22,85 +21,12 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<PlayItemConfig> PlayItemConfigs { get; set; }
     public DbSet<PlayItemAsset> PlayItemAssets { get; set; }
 
-    public DbSet<LoosePlayItem> CurrentPlaying { get; set; }
+    public DbSet<LoosePlayItem> CurrentPlay { get; set; }
     public DbSet<LoosePlayItem> RecentPlay { get; set; }
 
-    public DbSet<ExportItem> ExportList { get; set; }
+    public DbSet<ExportItem> Exports { get; set; }
 
 #nullable restore
-
-    public async Task<PaginationQueryResult<PlayGroupQuery>> SearchPlayItemsAsync(string searchText,
-        BeatmapOrderOptions beatmapOrderOptions,
-        int page,
-        int countPerPage)
-    {
-        if (page <= 0) page = 1;
-        try
-        {
-            var query = PlayItems
-                .AsNoTracking()
-                .Include(k => k.PlayItemAsset)
-                .Join(PlayItemDetails.Where(GetWhereExpression(searchText)),
-                    playItem => playItem.PlayItemDetailId,
-                    playItemDetail => playItemDetail.Id,
-                    (playItem, playItemDetail) => new
-                    {
-                        PlayItem = playItem,
-                        PlayItemDetail = playItemDetail,
-                        PlayItemAssets = playItem.PlayItemAsset
-                    })
-                .Select(k => new PlayGroupQuery
-                {
-                    Folder = k.PlayItem.Folder,
-                    IsAutoManaged = k.PlayItem.IsAutoManaged,
-                    Artist = k.PlayItemDetail.Artist,
-                    ArtistUnicode = k.PlayItemDetail.ArtistUnicode,
-                    Title = k.PlayItemDetail.Title,
-                    TitleUnicode = k.PlayItemDetail.TitleUnicode,
-                    Tags = k.PlayItemDetail.Tags,
-                    Source = k.PlayItemDetail.Source,
-                    Creator = k.PlayItemDetail.Creator,
-                    BeatmapSetId = k.PlayItemDetail.BeatmapSetId,
-                    ThumbPath = k.PlayItemAssets == null ? null : k.PlayItemAssets.ThumbPath,
-                    StoryboardVideoPath = k.PlayItemAssets == null ? null : k.PlayItemAssets.StoryboardVideoPath,
-                    VideoPath = k.PlayItemAssets == null ? null : k.PlayItemAssets.VideoPath,
-                });
-
-            var sqlStr = query.ToQueryString();
-            var fullResult = await query.ToArrayAsync();
-
-            var enumerable = fullResult
-                .GroupBy(k => k.Folder, StringComparer.Ordinal)
-                .SelectMany(k => k
-                    .GroupBy(o => o, MetaComparer.Instance)
-                    .Select(o => o.First())
-                );
-
-            enumerable = beatmapOrderOptions switch
-            {
-                BeatmapOrderOptions.Artist => enumerable.OrderBy(k =>
-                        string.IsNullOrEmpty(k.ArtistUnicode) ? k.Artist : k.ArtistUnicode,
-                    StringComparer.InvariantCultureIgnoreCase),
-                BeatmapOrderOptions.Title => enumerable.OrderBy(k =>
-                        string.IsNullOrEmpty(k.TitleUnicode) ? k.Title : k.TitleUnicode,
-                    StringComparer.InvariantCultureIgnoreCase),
-                BeatmapOrderOptions.Creator => enumerable.OrderBy(k => k.Creator,
-                    StringComparer.OrdinalIgnoreCase),
-                _ => throw new ArgumentOutOfRangeException(nameof(beatmapOrderOptions), beatmapOrderOptions, null)
-            };
-
-            var bufferResult = enumerable.ToArray();
-            var totalCount = bufferResult.Length;
-            var beatmaps = bufferResult.Skip((page - 1) * countPerPage).Take(countPerPage).ToArray();
-
-            return new PaginationQueryResult<PlayGroupQuery>(beatmaps, totalCount);
-        }
-        catch (Exception ex)
-        {
-            LogTo.ErrorException("Error while searching beatmap.", ex);
-            throw;
-        }
-    }
 
     public async Task<PlayItem> GetOrAddPlayItem(string standardizedPath)
     {
@@ -166,7 +92,7 @@ public sealed class ApplicationDbContext : DbContext
         return entity;
     }
 
-    public async Task<PlayItem> GetFullInfo(PlayItemDetail playItemDetail, bool createExtraInfos)
+    public async Task<PlayItem> GetPlayItemByDetail(PlayItemDetail playItemDetail, bool createExtraInfos)
     {
         if (!createExtraInfos)
         {
@@ -211,12 +137,33 @@ public sealed class ApplicationDbContext : DbContext
         return playItem;
     }
 
-    public async Task<IReadOnlyList<PlayItemDetail>> GetPlayItemDetailsByFolderAsync(string folder)
+    public async Task<IReadOnlyList<PlayItemDetail>> GetPlayItemDetailsByFolderAsync(string standardizedFolder)
     {
         return await PlayItemDetails
             .AsNoTracking()
-            .Where(k => k.FolderName == folder)
+            .Where(k => k.FolderName == standardizedFolder)
             .ToArrayAsync();
+    }
+
+    public async Task UpdateThumbPath(PlayItem playItem, string path)
+    {
+        var playItemAsset = await PlayItemAssets.FirstAsync(k => k.PlayItemId == playItem.Id);
+        playItemAsset.ThumbPath = path;
+        await SaveChangesAsync();
+    }
+
+    public async Task UpdateVideoPath(PlayItem playItem, string path)
+    {
+        var playItemAsset = await PlayItemAssets.FirstAsync(k => k.PlayItemId == playItem.Id);
+        playItemAsset.VideoPath = path;
+        await SaveChangesAsync();
+    }
+
+    public async Task UpdateStoryboardVideoPath(PlayItem playItem, string path)
+    {
+        var playItemAsset = await PlayItemAssets.FirstAsync(k => k.PlayItemId == playItem.Id);
+        playItemAsset.StoryboardVideoPath = path;
+        await SaveChangesAsync();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -281,10 +228,7 @@ public sealed class ApplicationDbContext : DbContext
                     .HasOne(pt => pt.PlayItem)
                     .WithMany(p => p.PlayListRelations)
                     .HasForeignKey(pt => pt.PlayItemId),
-                j =>
-                {
-                    j.HasKey(t => new { t.PlayItemId, t.PlayListId });
-                });
+                j => { j.HasKey(t => new { t.PlayItemId, t.PlayListId }); });
     }
 
     private static Expression<Func<PlayItemDetail, bool>> GetWhereExpression(string searchText)
@@ -300,36 +244,20 @@ public sealed class ApplicationDbContext : DbContext
             k.Version.Contains(searchText);
     }
 
-    public async Task AddOrUpdateBeatmapToRecentPlayAsync(PlayItem playItem, DateTime playTime)
+    public override int SaveChanges()
     {
-        var playItemDetail = playItem.PlayItemDetail;
-        var map = await RecentPlay
-            .FirstOrDefaultAsync(k => k.PlayItemId == playItem.Id || k.PlayItemPath == playItem.Path);
-        if (map == null)
+        foreach (var e in ChangeTracker.Entries())
         {
-        
-            RecentPlay.Add(new LoosePlayItem
+            if (e.Entity is IAutoCreatable creatable && e.State == EntityState.Added)
             {
-                Artist = playItemDetail.Artist,
-                Creator = playItemDetail.Creator,
-                Title = playItemDetail.Title,
-                LastPlay = playTime,
-                PlayItemId = playItem.Id,
-                PlayItemPath = playItem.Path,
-                Version = playItemDetail.Version,
-            });
-        }
-        else
-        {
-            map.Artist = playItemDetail.Artist;
-            map.Creator = playItemDetail.Creator;
-            map.Title = playItemDetail.Title;
-            map.LastPlay = playTime;
-            map.PlayItemId = playItem.Id;
-            map.PlayItemPath = playItem.Path;
-            map.Version = playItemDetail.Version;
+                creatable.CreateTime = DateTime.Now;
+            }
+            else if (e.Entity is IAutoUpdatable updatable && e.State == EntityState.Modified)
+            {
+                updatable.UpdatedTime = DateTime.Now;
+            }
         }
 
-        await SaveChangesAsync();
+        return base.SaveChanges();
     }
 }

@@ -52,7 +52,7 @@ public class BeatmapSyncService
 
                 return new KeyValuePair<string, PlayItemDetail>(finalPath, k);
             })
-            .Distinct(KeyComparer.Instance)
+            .Distinct(StringKeyComparer.Instance)
             .ToDictionary(k => k.Key, k => k.Value);
 
         LogTo.Debug(() => $"Enumerate {dbItems.Count} items in osu!db in {sw.ElapsedMilliseconds}ms.");
@@ -69,7 +69,7 @@ public class BeatmapSyncService
         if (obsoleteNeedDel.Count > 0)
         {
             await _dbContext.BulkDeleteAsync(obsoleteNeedDel);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.BulkSaveChangesAsync();
 
             LogTo.Debug(() => $"Delete {dbItems.Count} items in {sw.ElapsedMilliseconds}ms.");
             sw.Restart();

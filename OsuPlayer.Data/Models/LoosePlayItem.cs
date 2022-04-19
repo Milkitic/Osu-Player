@@ -21,6 +21,17 @@ public sealed class LoosePlayItem
     public string Version { get; set; } = null!;
 
     public int? PlayItemId { get; set; }
-    [MaxLength(512)]
-    public string? PlayItemPath { get; set; }
+    //[MaxLength(512)]
+    //public string? PlayItemPath { get; set; }
+
+    public void UpdateFromPlayItem(PlayItem playItem, DateTime playTime)
+    {
+        Artist = playItem.PlayItemDetail.Artist;
+        Creator = playItem.PlayItemDetail.Creator;
+        Title = playItem.PlayItemDetail.Title;
+        LastPlay = playTime;
+        PlayItemId = playItem.Id;
+        //PlayItemPath = playItem.Path;
+        Version = playItem.PlayItemDetail.Version;
+    }
 }

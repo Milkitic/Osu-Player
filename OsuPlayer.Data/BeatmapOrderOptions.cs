@@ -2,7 +2,10 @@
 
 public enum BeatmapOrderOptions
 {
+    Index,
     Artist,
     Title,
     Creator,
+    UpdateTime,
+    CreateTime
 }

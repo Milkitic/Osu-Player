@@ -3,7 +3,7 @@
 namespace OsuPlayer.Data.Models;
 
 [Index(nameof(Index))]
-public sealed class PlayList
+public sealed class PlayList : IAutoCreatable, IAutoUpdatable
 {
     public int Id { get; set; }
     public bool IsDefault { get; set; }
@@ -14,6 +14,7 @@ public sealed class PlayList
 
     public List<PlayItem> PlayItems { get; set; } = null!;
     public List<PlayListPlayItemRelation> PlayListRelations { get; set; }
+
     public DateTime CreateTime { get; set; }
-    public DateTime UpdateTime { get; set; }
+    public DateTime UpdatedTime { get; set; }
 }

@@ -20,7 +20,7 @@ var first = ok2.Results.FirstOrDefault();
 if (first != null)
 {
     var allBeatmapsInFolder = await appDbContext.GetPlayItemDetailsByFolderAsync(first.Folder);
-    var itemFull = await appDbContext.GetFullInfo(allBeatmapsInFolder[0], true);
+    var itemFull = await appDbContext.GetPlayItemByDetail(allBeatmapsInFolder[0], true);
     var playlist = appDbContext.PlayLists
         .Include(k => k.PlayItems)
         .First();

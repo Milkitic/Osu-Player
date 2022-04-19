@@ -58,4 +58,5 @@ public sealed class PlayItemDetail
     [MaxLength(128)] public string FolderName { get; set; } = null!;
     [MaxLength(128)] public string AudioFileName { get; set; } = null!;
     public DateTime UpdateTime { get; set; }
+    public int PlayItemId { get; set; }
 }

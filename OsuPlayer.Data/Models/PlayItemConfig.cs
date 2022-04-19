@@ -7,4 +7,5 @@ public sealed class PlayItemConfig
     public int LyricOffset { get; set; }
     //[MaxLength(512)]
     //public string? ForceLyricId { get; set; }
+    public int PlayItemId { get; set; }
 }

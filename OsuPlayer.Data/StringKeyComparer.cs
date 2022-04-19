@@ -2,13 +2,13 @@
 
 namespace OsuPlayer.Data;
 
-public class KeyComparer : IEqualityComparer<KeyValuePair<string, PlayItemDetail>>
+public class StringKeyComparer : IEqualityComparer<KeyValuePair<string, PlayItemDetail>>
 {
-    private KeyComparer()
+    private StringKeyComparer()
     {
     }
 
-    public static KeyComparer Instance { get; } = new();
+    public static StringKeyComparer Instance { get; } = new();
 
     public bool Equals(KeyValuePair<string, PlayItemDetail> x, KeyValuePair<string, PlayItemDetail> y)
     {
