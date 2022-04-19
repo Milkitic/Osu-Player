@@ -9,27 +9,7 @@ namespace OsuPlayer.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "CurrentPlaying",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Index = table.Column<int>(type: "INTEGER", nullable: false),
-                    LastPlay = table.Column<long>(type: "INTEGER", nullable: false),
-                    Title = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Artist = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Creator = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    Version = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    PlayItemId = table.Column<int>(type: "INTEGER", nullable: true),
-                    PlayItemPath = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CurrentPlaying", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExportList",
+                name: "Exports",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -46,7 +26,26 @@ namespace OsuPlayer.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExportList", x => x.Id);
+                    table.PrimaryKey("PK_Exports", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LoosePlayItem",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
+                    LastPlay = table.Column<long>(type: "INTEGER", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Artist = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Creator = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Version = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    PlayItemId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LoosePlayItem", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -121,7 +120,7 @@ namespace OsuPlayer.Data.Migrations
                     ImagePath = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     CreateTime = table.Column<long>(type: "INTEGER", nullable: false),
-                    UpdateTime = table.Column<long>(type: "INTEGER", nullable: false)
+                    UpdatedTime = table.Column<long>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -188,7 +187,9 @@ namespace OsuPlayer.Data.Migrations
                 columns: table => new
                 {
                     PlayListId = table.Column<int>(type: "INTEGER", nullable: false),
-                    PlayItemId = table.Column<int>(type: "INTEGER", nullable: false)
+                    PlayItemId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreateTime = table.Column<long>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -209,17 +210,17 @@ namespace OsuPlayer.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "PlayLists",
-                columns: new[] { "Id", "CreateTime", "Description", "ImagePath", "Index", "IsDefault", "Name", "UpdateTime" },
+                columns: new[] { "Id", "CreateTime", "Description", "ImagePath", "Index", "IsDefault", "Name", "UpdatedTime" },
                 values: new object[] { 1, 0L, null, null, 0, true, "Favorite", 0L });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CurrentPlaying_Index",
-                table: "CurrentPlaying",
+                name: "IX_LoosePlayItem_Index",
+                table: "LoosePlayItem",
                 column: "Index");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CurrentPlaying_LastPlay",
-                table: "CurrentPlaying",
+                name: "IX_LoosePlayItem_LastPlay",
+                table: "LoosePlayItem",
                 column: "LastPlay");
 
             migrationBuilder.CreateIndex(
@@ -302,10 +303,10 @@ namespace OsuPlayer.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CurrentPlaying");
+                name: "Exports");
 
             migrationBuilder.DropTable(
-                name: "ExportList");
+                name: "LoosePlayItem");
 
             migrationBuilder.DropTable(
                 name: "PlayListRelations");

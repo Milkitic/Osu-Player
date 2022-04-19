@@ -1,9 +1,11 @@
-﻿using OsuPlayer.Shared.Configuration;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using OsuPlayer.Shared.Configuration;
 using OsuPlayer.Shared.Configuration.Framework;
 
 namespace OsuPlayer.Shared;
 
-public class AppSettings : ConfigurationBase
+[Table("appsettings")]
+public sealed class AppSettings : ConfigurationBase
 {
     private SectionSoftware _software = new();
     private SectionData _data = new();

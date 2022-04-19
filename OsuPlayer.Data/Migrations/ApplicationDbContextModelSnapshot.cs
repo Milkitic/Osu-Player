@@ -62,7 +62,7 @@ namespace OsuPlayer.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExportList");
+                    b.ToTable("Exports");
                 });
 
             modelBuilder.Entity("OsuPlayer.Data.Models.LoosePlayItem", b =>
@@ -90,10 +90,6 @@ namespace OsuPlayer.Data.Migrations
                     b.Property<int?>("PlayItemId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("PlayItemPath")
-                        .HasMaxLength(512)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -110,7 +106,7 @@ namespace OsuPlayer.Data.Migrations
 
                     b.HasIndex("LastPlay");
 
-                    b.ToTable("CurrentPlaying");
+                    b.ToTable("LoosePlayItem");
                 });
 
             modelBuilder.Entity("OsuPlayer.Data.Models.PlayItem", b =>
@@ -328,7 +324,7 @@ namespace OsuPlayer.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("UpdateTime")
+                    b.Property<long>("UpdatedTime")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -345,7 +341,7 @@ namespace OsuPlayer.Data.Migrations
                             Index = 0,
                             IsDefault = true,
                             Name = "Favorite",
-                            UpdateTime = 0L
+                            UpdatedTime = 0L
                         });
                 });
 
@@ -355,6 +351,12 @@ namespace OsuPlayer.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("PlayListId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("CreateTime")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Index")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("PlayItemId", "PlayListId");

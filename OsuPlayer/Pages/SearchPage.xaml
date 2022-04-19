@@ -1,0 +1,43 @@
+﻿<Page
+    x:Class="OsuPlayer.Pages.SearchPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:OsuPlayer.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:OsuPlayer.Data.Models"
+    NavigationCacheMode="Enabled"
+    mc:Ignorable="d">
+
+    <!--<Page.Background>
+        <ThemeResource ResourceKey="ApplicationPageBackgroundThemeBrush" />
+    </Page.Background>-->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <TextBox
+                x:Name="SearchTextBox"
+                Header="Enter your name:"
+                PlaceholderText="Type to search"
+                TextChanged="TextBox_OnTextChanged" />
+        </StackPanel>
+
+        <GridView x:Name="GridView" Grid.Row="1">
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="models:PlayGroupQuery">
+                    <Grid Width="200" Height="300">
+                        <StackPanel>
+                            <TextBlock Text="{Binding ArtistAuto}" />
+                            <TextBlock Text="{Binding TitleAuto}" />
+                            <TextBlock Text="{Binding Creator}" />
+                            <TextBlock Text="{Binding Folder}" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+    </Grid>
+</Page>

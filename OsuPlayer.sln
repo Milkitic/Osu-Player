@@ -49,7 +49,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Audio", "OsuPlaye
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "Tests\UnitTests\UnitTests.csproj", "{DC35FCD0-E53D-4E8C-8CB9-A5564ABE9D3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPlayer.Core", "OsuPlayer.Core\OsuPlayer.Core.csproj", "{0853A843-6D5E-40BF-8513-FF66A97D53D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Core", "OsuPlayer.Core\OsuPlayer.Core.csproj", "{0853A843-6D5E-40BF-8513-FF66A97D53D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

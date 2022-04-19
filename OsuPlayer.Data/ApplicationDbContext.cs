@@ -147,22 +147,25 @@ public sealed partial class ApplicationDbContext : DbContext
 
     public async Task UpdateThumbPath(PlayItem playItem, string path)
     {
-        var playItemAsset = await PlayItemAssets.FirstAsync(k => k.PlayItemId == playItem.Id);
-        playItemAsset.ThumbPath = path;
+        var item = await GetOrAddPlayItem(playItem.Path);
+        item.PlayItemAsset!.ThumbPath = path;
+        Update(item.PlayItemAsset);
         await SaveChangesAsync();
     }
 
     public async Task UpdateVideoPath(PlayItem playItem, string path)
     {
-        var playItemAsset = await PlayItemAssets.FirstAsync(k => k.PlayItemId == playItem.Id);
-        playItemAsset.VideoPath = path;
+        var item = await GetOrAddPlayItem(playItem.Path);
+        item.PlayItemAsset!.VideoPath = path;
+        Update(item.PlayItemAsset);
         await SaveChangesAsync();
     }
 
     public async Task UpdateStoryboardVideoPath(PlayItem playItem, string path)
     {
-        var playItemAsset = await PlayItemAssets.FirstAsync(k => k.PlayItemId == playItem.Id);
-        playItemAsset.StoryboardVideoPath = path;
+        var item = await GetOrAddPlayItem(playItem.Path);
+        item.PlayItemAsset!.StoryboardVideoPath = path;
+        Update(item.PlayItemAsset);
         await SaveChangesAsync();
     }
 

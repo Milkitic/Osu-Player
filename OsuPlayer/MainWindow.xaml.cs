@@ -16,6 +16,7 @@ using Windows.Storage;
 using Coosu.Database;
 using Microsoft.EntityFrameworkCore;
 using OsuPlayer.Data;
+using OsuPlayer.Pages;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -30,21 +31,43 @@ namespace OsuPlayer
         public MainWindow()
         {
             this.InitializeComponent();
+            ExtendsContentIntoTitleBar = true;
+            SetTitleBar(AppTitleBar);
         }
 
         private void myButton_Click(object sender, RoutedEventArgs e)
         {
-            myButton.Content = "Clicked";
+            //myButton.Content = "Clicked";
         }
 
         private async void FrameworkElement_OnLoaded(object sender, RoutedEventArgs e)
         {
-            await using var appDbContext = new ApplicationDbContext();
+            //await using var appDbContext = new ApplicationDbContext();
             //await appDbContext.Database.MigrateAsync();
-            var reader = new OsuDbReader(@"E:\Games\osu!\osu!.db");
-            var beatmaps = reader.EnumerateDbModels();
-            var syncer = new BeatmapSyncService(appDbContext);
-            await syncer.SynchronizeManaged(beatmaps);
+            //var reader = new OsuDbReader(@"E:\Games\osu!\osu!.db");
+            //var beatmaps = reader.EnumerateDbModels();
+            //var syncer = new BeatmapSyncService(appDbContext);
+            //await syncer.SynchronizeManaged(beatmaps);
+        }
+
+        private void NavigationView_OnSelectionChanged(NavigationView sender,
+            NavigationViewSelectionChangedEventArgs args)
+        {
+            if (args.IsSettingsSelected)
+            {
+                contentFrame.Navigate(typeof(SettingPage));
+            }
+            else
+            {
+                var selectedItem = (NavigationViewItem?)args.SelectedItem;
+                if (selectedItem == null) return;
+
+                string selectedItemTag = (string)selectedItem.Tag;
+                sender.Header = selectedItemTag;
+                string pageName = "OsuPlayer.Pages." + selectedItemTag;
+                var pageType = Type.GetType(pageName);
+                contentFrame.Navigate(pageType);
+            }
         }
     }
 }
