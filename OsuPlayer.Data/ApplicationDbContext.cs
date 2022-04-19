@@ -234,19 +234,6 @@ public sealed partial class ApplicationDbContext : DbContext
                 j => { j.HasKey(t => new { t.PlayItemId, t.PlayListId }); });
     }
 
-    private static Expression<Func<PlayItemDetail, bool>> GetWhereExpression(string searchText)
-    {
-        return k =>
-            k.Artist.Contains(searchText) ||
-            k.ArtistUnicode.Contains(searchText) ||
-            k.Title.Contains(searchText) ||
-            k.TitleUnicode.Contains(searchText) ||
-            k.Tags.Contains(searchText) ||
-            k.Source.Contains(searchText) ||
-            k.Creator.Contains(searchText) ||
-            k.Version.Contains(searchText);
-    }
-
     public override int SaveChanges()
     {
         foreach (var e in ChangeTracker.Entries())

@@ -12,9 +12,12 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics;
 using Windows.Storage;
 using Coosu.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.UI;
+using Microsoft.UI.Windowing;
 using OsuPlayer.Data;
 using OsuPlayer.Pages;
 
@@ -28,11 +31,27 @@ namespace OsuPlayer
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        private readonly AppWindow _appWindow;
+
         public MainWindow()
         {
             this.InitializeComponent();
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(AppTitleBar);
+
+            _appWindow = this.GetAppWindow();
+
+            SetInitialRect();
+        }
+
+        private void SetInitialRect()
+        {
+            var area = DisplayArea.GetFromWindowId(_appWindow.Id, DisplayAreaFallback.Primary);
+            var width = 998;
+            var height = 759;
+            var left = area.WorkArea.X + area.WorkArea.Width / 2 - width / 2;
+            var top = area.WorkArea.Y + area.WorkArea.Height / 2 - height / 2;
+            _appWindow.MoveAndResize(new RectInt32(left, top, width, height));
         }
 
         private void myButton_Click(object sender, RoutedEventArgs e)
@@ -55,6 +74,7 @@ namespace OsuPlayer
         {
             if (args.IsSettingsSelected)
             {
+                sender.Header = "Settings";
                 contentFrame.Navigate(typeof(SettingPage));
             }
             else

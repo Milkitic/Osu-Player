@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq.Expressions;
 using Anotar.NLog;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,17 @@ public sealed partial class ApplicationDbContext
     {
         if (page <= 0) page = 1;
 
+        var array = searchText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        IQueryable<PlayItemDetail> playItemDetails = PlayItemDetails;
+        foreach (var s in array)
+        {
+            playItemDetails = playItemDetails.Where(GetWhereExpression(s));
+        }
+
         var query = PlayItems
             .AsNoTracking()
             .Include(k => k.PlayItemAsset)
-            .Join(PlayItemDetails.Where(GetWhereExpression(searchText)),
+            .Join(playItemDetails,
                 playItem => playItem.PlayItemDetailId,
                 playItemDetail => playItemDetail.Id,
                 (playItem, playItemDetail) => new
@@ -280,5 +288,19 @@ public sealed partial class ApplicationDbContext
         }
 
         await SaveChangesAsync();
+    }
+
+    private static Expression<Func<PlayItemDetail, bool>> GetWhereExpression(string searchText)
+    {
+        var text = $"%{searchText}%";
+        return k =>
+            EF.Functions.Like(k.Artist, text) ||
+            EF.Functions.Like(k.ArtistUnicode, text) ||
+            EF.Functions.Like(k.Title, text) ||
+            EF.Functions.Like(k.TitleUnicode, text) ||
+            EF.Functions.Like(k.Tags, text) ||
+            EF.Functions.Like(k.Source, text) ||
+            EF.Functions.Like(k.Creator, text) ||
+            EF.Functions.Like(k.Version, text);
     }
 }

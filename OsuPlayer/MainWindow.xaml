@@ -28,7 +28,11 @@
                 Text="App title"
                 TextWrapping="NoWrap" />
         </Grid>
-        <NavigationView Grid.Row="1" SelectionChanged="NavigationView_OnSelectionChanged">
+        <NavigationView
+            Grid.Row="1"
+            IsBackButtonVisible="Collapsed"
+            PaneDisplayMode="LeftCompact"
+            SelectionChanged="NavigationView_OnSelectionChanged">
             <NavigationView.MenuItems>
                 <NavigationViewItem
                     Content="Menu Item1"

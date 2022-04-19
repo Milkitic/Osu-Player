@@ -15,7 +15,7 @@ var appSettings = ConfigurationFactory.GetConfiguration<AppSettings>();
 
 
 var ok2 = await appDbContext
-    .SearchPlayItemsAsync("yf_bmp", BeatmapOrderOptions.Artist, 0, 300);
+    .SearchPlayItemsAsync("yf_bmp camellia", BeatmapOrderOptions.Artist, 0, 300);
 var first = ok2.Results.FirstOrDefault();
 if (first != null)
 {
