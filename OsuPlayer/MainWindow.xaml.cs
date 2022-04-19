@@ -23,6 +23,7 @@ using OsuPlayer.Pages;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
+//https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.symbol?view=winrt-22000
 
 namespace OsuPlayer
 {
@@ -47,8 +48,8 @@ namespace OsuPlayer
         private void SetInitialRect()
         {
             var area = DisplayArea.GetFromWindowId(_appWindow.Id, DisplayAreaFallback.Primary);
-            var width = 998;
-            var height = 759;
+            var width = 1085;
+            var height = 805;
             var left = area.WorkArea.X + area.WorkArea.Width / 2 - width / 2;
             var top = area.WorkArea.Y + area.WorkArea.Height / 2 - height / 2;
             _appWindow.MoveAndResize(new RectInt32(left, top, width, height));

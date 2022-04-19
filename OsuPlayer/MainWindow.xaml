@@ -5,16 +5,20 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:OsuPlayer"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:media="using:CommunityToolkit.WinUI.UI.Media"
     mc:Ignorable="d">
     <Grid Loaded="FrameworkElement_OnLoaded">
+        <Grid.Background>
+            <media:TilesBrush DpiMode="Default96Dpi" TextureUri="ms-appx:///Assets/osu_texture.png" />
+        </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid
             x:Name="AppTitleBar"
-            Height="30"
-            Background="Pink">
+            Height="40"
+            Background="Transparent">
             <Image
                 Width="16"
                 Height="16"
@@ -24,26 +28,49 @@
                 x:Name="AppTitleTextBlock"
                 Margin="28,0,0,0"
                 VerticalAlignment="Center"
-                Style="{StaticResource CaptionTextBlockStyle}"
                 Text="App title"
-                TextWrapping="NoWrap" />
+                TextWrapping="NoWrap">
+                <!--<TextBlock.Style>
+                    <StaticResource ResourceKey="CaptionTextBlockStyle" />
+                </TextBlock.Style>-->
+            </TextBlock>
         </Grid>
         <NavigationView
             Grid.Row="1"
+            Background="Transparent"
             IsBackButtonVisible="Collapsed"
-            PaneDisplayMode="LeftCompact"
+            IsBackEnabled="False"
+            IsPaneOpen="True"
+            OpenPaneLength="170"
+            PaneDisplayMode="Left"
             SelectionChanged="NavigationView_OnSelectionChanged">
+
+            <NavigationView.PaneToggleButtonStyle>
+                <Style BasedOn="{StaticResource PaneToggleButtonStyle}" TargetType="Button">
+                    <Setter Property="Foreground" Value="White" />
+                </Style>
+            </NavigationView.PaneToggleButtonStyle>
             <NavigationView.MenuItems>
+                <NavigationViewItemHeader Content="DISCOVERY" Foreground="#D8D8D8" />
                 <NavigationViewItem
-                    Content="Menu Item1"
-                    Icon="Play"
+                    Content="Search"
+                    Foreground="White"
+                    Icon="Find"
                     Tag="SearchPage" />
+                <!--<NavigationViewItemHeader Content="MINE" />-->
                 <NavigationViewItem
-                    Content="Menu Item2"
-                    Icon="Save"
+                    Content="Recent Play"
+                    Foreground="White"
+                    Icon="Clock"
                     Tag="RecentPage" />
+                <NavigationViewItem
+                    Content="Exports"
+                    Foreground="White"
+                    Icon="Download"
+                    Tag="ExportPage" />
+                <NavigationViewItemHeader Content="PLAY LISTS" Foreground="#D8D8D8" />
             </NavigationView.MenuItems>
-            <Frame x:Name="contentFrame" />
+            <Frame x:Name="contentFrame" Background="Transparent" />
         </NavigationView>
     </Grid>
 

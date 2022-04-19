@@ -2,42 +2,96 @@
     x:Class="OsuPlayer.Pages.SearchPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:OsuPlayer.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:OsuPlayer.Data.Models"
+    Loaded="SearchPage_OnLoaded"
     NavigationCacheMode="Enabled"
     mc:Ignorable="d">
-
     <!--<Page.Background>
         <ThemeResource ResourceKey="ApplicationPageBackgroundThemeBrush" />
     </Page.Background>-->
-    <Grid>
+    <Grid
+        x:Name="MainGrid"
+        Background="Transparent"
+        Translation="0,0,-32">
+        <Grid.Resources>
+            <ThemeShadow x:Key="SharedShadow1" x:Name="SharedShadow" />
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <StackPanel>
+        <StackPanel Margin="30,10">
             <TextBox
                 x:Name="SearchTextBox"
-                Header="Enter your name:"
-                PlaceholderText="Type to search"
+                Padding="10"
+                IsSpellCheckEnabled="False"
+                PlaceholderForeground="#999999"
+                PlaceholderText="Title, Artist, Mapper, Source, Tags"
                 TextChanged="TextBox_OnTextChanged" />
         </StackPanel>
 
-        <GridView x:Name="GridView" Grid.Row="1">
+        <controls:AdaptiveGridView
+            x:Name="GridView"
+            Grid.Row="1"
+            Padding="25,0"
+            DesiredWidth="500"
+            ItemHeight="100">
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="models:PlayGroupQuery">
-                    <Grid Width="200" Height="300">
-                        <StackPanel>
-                            <TextBlock Text="{Binding ArtistAuto}" />
-                            <TextBlock Text="{Binding TitleAuto}" />
-                            <TextBlock Text="{Binding Creator}" />
-                            <TextBlock Text="{Binding Folder}" />
+                    <Grid
+                        Margin="0"
+                        Background="White"
+                        CornerRadius="10"
+                        Shadow="{StaticResource SharedShadow1}"
+                        Translation="0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Border Background="Gray" />
+                        <!--<Grid.Width>200</Grid.Width>
+                        <Grid.Height>250</Grid.Height>-->
+                        <!--<Grid.Padding>7</Grid.Padding>-->
+                        <StackPanel
+                            Grid.Column="1"
+                            Margin="-8,0,0,0"
+                            Padding="8"
+                            Background="#F0F0F0"
+                            CornerRadius="8">
+                            <TextBlock
+                                FontSize="17"
+                                FontWeight="Bold"
+                                Text="{x:Bind ArtistAuto}" />
+                            <TextBlock FontSize="15">
+                                <Run Text="Artist" /><Run Text=": " /><Run Text="{x:Bind TitleAuto}" />
+                            </TextBlock>
+                            <TextBlock FontSize="13">
+                                <Run Text="Creator" /><Run Text=": " /><Run Text="{x:Bind Creator}" />
+                            </TextBlock>
+                            <!--<TextBlock Text="{x:Bind Folder}" TextWrapping="Wrap" />-->
                         </StackPanel>
                     </Grid>
                 </DataTemplate>
             </GridView.ItemTemplate>
-        </GridView>
+            <GridView.ItemContainerStyle>
+                <Style BasedOn="{StaticResource GridViewItemRevealStyle}" TargetType="GridViewItem">
+                    <Setter Property="FocusVisualMargin" Value="-3" />
+                    <Setter Property="FocusVisualPrimaryBrush" Value="Blue" />
+                    <Setter Property="FocusVisualPrimaryThickness" Value="3" />
+                    <Setter Property="Margin" Value="5" />
+                    <!--<Setter Property="BorderBrush" Value="#D0D0D0" />-->
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="IsHoldingEnabled" Value="True" />
+                    <!--<Setter Property="CornerRadius" Value="10" />-->
+                    <!--<Setter Property="Shadow" Value="{StaticResource SharedShadow1}" />-->
+
+                    <!--<Setter Property="Translation" Value="0,0,32" />-->
+                </Style>
+            </GridView.ItemContainerStyle>
+        </controls:AdaptiveGridView>
     </Grid>
 </Page>

@@ -13,25 +13,26 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\osu_texture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Pages\ExportPage.xaml" />
     <None Remove="Pages\RecentPage.xaml" />
     <None Remove="Pages\SearchPage.xaml" />
     <None Remove="Pages\SettingPage.xaml" />
+    <None Remove="Resources\osu_texture.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Assets\*.png" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Anotar.NLog.Fody" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Media" Version="7.1.2" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.3" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22000.197" />
     <Manifest Include="$(ApplicationManifest)" />
@@ -46,6 +47,16 @@
   <ItemGroup>
     <ProjectReference Include="..\OsuPlayer.Audio\OsuPlayer.Audio.csproj" />
     <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\osu_texture.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\ExportPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\SettingPage.xaml">
