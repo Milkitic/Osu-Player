@@ -24,7 +24,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <StackPanel Margin="30,10">
+        <StackPanel Margin="30,10,30,0">
             <TextBox
                 x:Name="SearchTextBox"
                 Padding="10"
@@ -37,7 +37,7 @@
         <controls:AdaptiveGridView
             x:Name="GridView"
             Grid.Row="1"
-            Padding="25,0"
+            Padding="25,10,25,10"
             DesiredWidth="500"
             ItemHeight="100">
             <GridView.ItemTemplate>

@@ -62,8 +62,11 @@ namespace OsuPlayer
 
         private async void FrameworkElement_OnLoaded(object sender, RoutedEventArgs e)
         {
-            //await using var appDbContext = new ApplicationDbContext();
-            //await appDbContext.Database.MigrateAsync();
+            await using var appDbContext = new ApplicationDbContext();
+            await appDbContext.Database.MigrateAsync();
+
+            var settingsItem = (NavigationViewItem)NavigationView.SettingsItem;
+            settingsItem.Foreground = new SolidColorBrush(Colors.White);
             //var reader = new OsuDbReader(@"E:\Games\osu!\osu!.db");
             //var beatmaps = reader.EnumerateDbModels();
             //var syncer = new BeatmapSyncService(appDbContext);

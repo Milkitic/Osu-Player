@@ -1,21 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using System.Threading.Tasks;
+using Anotar.NLog;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Anotar.NLog;
-using CommunityToolkit.WinUI.UI.Media;
-using Microsoft.Graphics.Canvas.Effects;
 using OsuPlayer.Data;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -28,30 +16,58 @@ namespace OsuPlayer.Pages;
 /// </summary>
 public sealed partial class SearchPage : Page
 {
-    //private readonly ThemeShadow _shadow;
+    private TaskCompletionSource? _tcs;
+    private CancellationTokenSource? _cts;
 
     public SearchPage()
     {
         this.InitializeComponent();
-        //_shadow = new ThemeShadow();
-        //s.Receivers.Add(MainGrid);
     }
 
     private async void TextBox_OnTextChanged(object sender, TextChangedEventArgs e)
     {
-        await using var ctx = new ApplicationDbContext();
-        var results = await ctx.SearchPlayItemsAsync(SearchTextBox.Text, BeatmapOrderOptions.Artist, 0, 5000);
+        var searchText = SearchTextBox.Text;
+        if (!await DelayTextChanged().ConfigureAwait(false)) return;
+
+        await using var dbContext = new ApplicationDbContext();
+        var results = await dbContext
+            .SearchPlayItemsAsync(searchText, BeatmapOrderOptions.Artist, 0, 5000)
+            .ConfigureAwait(false);
 
         LogTo.Info("Find " + results.Results.Count + " results.");
 
-        GridView.ItemsSource = results.Results;
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            GridView.ItemsSource = results.Results;
+        });
     }
 
-    private async void SearchPage_OnLoaded(object sender, RoutedEventArgs e)
+    private async Task<bool> DelayTextChanged()
+    {
+        if (_tcs != null)
+        {
+            _tcs.TrySetCanceled();
+            _cts!.Dispose();
+        }
+
+        _tcs = new TaskCompletionSource();
+        _cts = new CancellationTokenSource(300);
+        _cts.Token.Register(() => _tcs?.TrySetResult());
+
+        try
+        {
+            await _tcs.Task;
+        }
+        catch (TaskCanceledException)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void SearchPage_OnLoaded(object sender, RoutedEventArgs e)
     {
         SearchTextBox.Focus(FocusState.Programmatic);
-        //await Task.Delay(1000);
-        //SharedShadow.Receivers.Add(MainGrid);
-        //Rectangle.Shadow = SharedShadow;
-    } 
+    }
 }

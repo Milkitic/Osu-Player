@@ -8,6 +8,27 @@
     xmlns:media="using:CommunityToolkit.WinUI.UI.Media"
     mc:Ignorable="d">
     <Grid Loaded="FrameworkElement_OnLoaded">
+        <Grid.Resources>
+            <media:TilesBrush
+                x:Key="NavigationViewDefaultPaneBackground"
+                DpiMode="Default96Dpi"
+                TextureUri="ms-appx:///Assets/osu_texture.png" />
+            <!--  https://github.com/microsoft/microsoft-ui-xaml/blob/main/dev/NavigationView/NavigationView_rs1_themeresources.xaml#L32  -->
+            <!--<SolidColorBrush x:Key="AppBarButtonBackgroundPointerOver" Color="Blue" />-->
+
+            <AcrylicBrush x:Key="NavigationViewContentBackground" x:Name="NavigationViewContentBackground" />
+
+            <SolidColorBrush x:Key="NavigationViewItemForeground" Color="White" />
+            <SolidColorBrush x:Key="NavigationViewItemForegroundPointerOver" Color="White" />
+            <SolidColorBrush x:Key="NavigationViewItemForegroundPressed" Color="#E0E0E0" />
+            <SolidColorBrush x:Key="NavigationViewItemForegroundChecked" Color="Black" />
+            <SolidColorBrush x:Key="NavigationViewItemForegroundSelectedPressed" Color="Black" />
+
+            <SolidColorBrush x:Key="NavigationViewItemBackgroundPointerOver" Color="#20FFFFFF" />
+            <SolidColorBrush x:Key="NavigationViewItemBackgroundSelected" Color="White" />
+            <SolidColorBrush x:Key="NavigationViewItemBackgroundSelectedPressed" Color="White" />
+            <SolidColorBrush x:Key="NavigationViewItemBackgroundSelectedPointerOver" Color="White" />
+        </Grid.Resources>
         <Grid.Background>
             <media:TilesBrush DpiMode="Default96Dpi" TextureUri="ms-appx:///Assets/osu_texture.png" />
         </Grid.Background>
@@ -20,7 +41,7 @@
             Height="40"
             Background="Transparent">
             <Image
-                Width="16"
+                Width="16" Canvas.ZIndex="10"
                 Height="16"
                 Margin="8,0"
                 HorizontalAlignment="Left" />
@@ -28,7 +49,10 @@
                 x:Name="AppTitleTextBlock"
                 Margin="28,0,0,0"
                 VerticalAlignment="Center"
-                Text="App title"
+                FontSize="15"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Osu Player"
                 TextWrapping="NoWrap">
                 <!--<TextBlock.Style>
                     <StaticResource ResourceKey="CaptionTextBlockStyle" />
@@ -36,16 +60,19 @@
             </TextBlock>
         </Grid>
         <NavigationView
+            x:Name="NavigationView"
             Grid.Row="1"
             Background="Transparent"
+            CompactModeThresholdWidth="480"
+            ExpandedModeThresholdWidth="700"
             IsBackButtonVisible="Collapsed"
             IsBackEnabled="False"
             IsPaneOpen="True"
             OpenPaneLength="170"
-            PaneDisplayMode="Left"
+            PaneDisplayMode="Auto"
             SelectionChanged="NavigationView_OnSelectionChanged">
-
             <NavigationView.PaneToggleButtonStyle>
+                <!--https://github.com/microsoft/InventorySample/blob/master/src/Inventory.App/Styles/NavigationView.xaml-->
                 <Style BasedOn="{StaticResource PaneToggleButtonStyle}" TargetType="Button">
                     <Setter Property="Foreground" Value="White" />
                 </Style>
@@ -54,18 +81,15 @@
                 <NavigationViewItemHeader Content="DISCOVERY" Foreground="#D8D8D8" />
                 <NavigationViewItem
                     Content="Search"
-                    Foreground="White"
                     Icon="Find"
                     Tag="SearchPage" />
                 <!--<NavigationViewItemHeader Content="MINE" />-->
                 <NavigationViewItem
                     Content="Recent Play"
-                    Foreground="White"
                     Icon="Clock"
                     Tag="RecentPage" />
                 <NavigationViewItem
                     Content="Exports"
-                    Foreground="White"
                     Icon="Download"
                     Tag="ExportPage" />
                 <NavigationViewItemHeader Content="PLAY LISTS" Foreground="#D8D8D8" />

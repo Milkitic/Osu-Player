@@ -12,15 +12,12 @@
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Remove="Assets\osu_texture.png" />
-  </ItemGroup>
+
   <ItemGroup>
     <None Remove="Pages\ExportPage.xaml" />
     <None Remove="Pages\RecentPage.xaml" />
     <None Remove="Pages\SearchPage.xaml" />
     <None Remove="Pages\SettingPage.xaml" />
-    <None Remove="Resources\osu_texture.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,8 +30,8 @@
     </PackageReference>
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Media" Version="7.1.2" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.3" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22000.197" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.0-preview2" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22598-preview" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 

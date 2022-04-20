@@ -34,6 +34,7 @@ namespace OsuPlayer
         public App()
         {
             this.InitializeComponent();
+            App.Current.RequestedTheme = ApplicationTheme.Light;
         }
 
         /// <summary>
