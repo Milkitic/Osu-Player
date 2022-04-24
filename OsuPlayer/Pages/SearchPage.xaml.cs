@@ -18,6 +18,7 @@ public sealed partial class SearchPage : Page
 {
     private TaskCompletionSource? _tcs;
     private CancellationTokenSource? _cts;
+    private bool _isLoaded;
 
     public SearchPage()
     {
@@ -28,7 +29,27 @@ public sealed partial class SearchPage : Page
     {
         var searchText = SearchTextBox.Text;
         if (!await DelayTextChanged().ConfigureAwait(false)) return;
+        await UpdateSearch(searchText);
+    }
 
+    private void SearchPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        if (!_isLoaded)
+        {
+            SearchPage_OnFirstLoaded(sender, e);
+            _isLoaded = true;
+        }
+
+        SearchTextBox.Focus(FocusState.Programmatic);
+    }
+
+    private async void SearchPage_OnFirstLoaded(object sender, RoutedEventArgs e)
+    {
+        await UpdateSearch("");
+    }
+
+    private async Task UpdateSearch(string searchText)
+    {
         await using var dbContext = new ApplicationDbContext();
         var results = await dbContext
             .SearchPlayItemsAsync(searchText, BeatmapOrderOptions.Artist, 0, 5000)
@@ -36,10 +57,7 @@ public sealed partial class SearchPage : Page
 
         LogTo.Info("Find " + results.Results.Count + " results.");
 
-        DispatcherQueue.TryEnqueue(() =>
-        {
-            GridView.ItemsSource = results.Results;
-        });
+        DispatcherQueue.TryEnqueue(() => { GridView.ItemsSource = results.Results; });
     }
 
     private async Task<bool> DelayTextChanged()
@@ -64,10 +82,5 @@ public sealed partial class SearchPage : Page
         }
 
         return true;
-    }
-
-    private void SearchPage_OnLoaded(object sender, RoutedEventArgs e)
-    {
-        SearchTextBox.Focus(FocusState.Programmatic);
     }
 }

@@ -65,9 +65,9 @@
                             <TextBlock
                                 FontSize="17"
                                 FontWeight="Bold"
-                                Text="{x:Bind ArtistAuto}" />
+                                Text="{x:Bind TitleAuto}" />
                             <TextBlock FontSize="15">
-                                <Run Text="Artist" /><Run Text=": " /><Run Text="{x:Bind TitleAuto}" />
+                                <Run Text="Artist" /><Run Text=": " /><Run Text="{x:Bind ArtistAuto}" />
                             </TextBlock>
                             <TextBlock FontSize="13">
                                 <Run Text="Creator" /><Run Text=": " /><Run Text="{x:Bind Creator}" />
