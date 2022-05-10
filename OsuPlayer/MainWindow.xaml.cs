@@ -48,8 +48,8 @@ namespace OsuPlayer
         private void SetInitialRect()
         {
             var area = DisplayArea.GetFromWindowId(_appWindow.Id, DisplayAreaFallback.Primary);
-            var width = 1085;
-            var height = 805;
+            var width = 1185;
+            var height = 895;
             var left = area.WorkArea.X + area.WorkArea.Width / 2 - width / 2;
             var top = area.WorkArea.Y + area.WorkArea.Height / 2 - height / 2;
             _appWindow.MoveAndResize(new RectInt32(left, top, width, height));

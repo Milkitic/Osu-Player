@@ -14,6 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Controls\PlayControl.xaml" />
     <None Remove="Pages\ExportPage.xaml" />
     <None Remove="Pages\RecentPage.xaml" />
     <None Remove="Pages\SearchPage.xaml" />
@@ -46,7 +47,10 @@
     <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\osu_texture.png">
+    <Resource Include="Resources\osu_*.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\osu_*.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
@@ -67,6 +71,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\SearchPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\PlayControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
