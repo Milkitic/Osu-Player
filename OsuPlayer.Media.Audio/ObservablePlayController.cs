@@ -119,6 +119,11 @@ namespace Milky.OsuPlayer.Media.Audio
                     throw new FileNotFoundException("cannot locate file", path);
 
                 Logger.Info("Start load new song from path: {0}", path);
+                if (PlayList.CurrentInfo == null)
+                {
+                    PlayList.InitializeEmptyCurrentInfo();
+                }
+
                 var context = PlayList.CurrentInfo;
                 context.BeatmapDetail.MapPath = path;
                 context.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path);
