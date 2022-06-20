@@ -10,6 +10,7 @@
     <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
+    <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -31,8 +32,8 @@
     </PackageReference>
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Media" Version="7.1.2" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.0-preview2" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22598-preview" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22000.194" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
@@ -42,10 +43,21 @@
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnablePreviewMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
   </ItemGroup>
+
+  <!-- 
+    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution 
+    Explorer "Package and Publish" context menu entry to be enabled for this project even if 
+    the Windows App SDK Nuget package has not yet been restored.
+  -->
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\OsuPlayer.Audio\OsuPlayer.Audio.csproj" />
     <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <Resource Include="Resources\osu_*.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -54,6 +66,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
+
   <ItemGroup>
     <Page Update="Pages\ExportPage.xaml">
       <Generator>MSBuild:Compile</Generator>
