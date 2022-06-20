@@ -1,12 +1,12 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Media.Audio.Player;
-using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
-using OSharp.Beatmap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Coosu.Beatmap;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Media.Audio.Player;
+using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
@@ -69,7 +69,7 @@ namespace Milky.OsuPlayer.Media.Audio
         public async Task<IEnumerable<SoundElement>> GetSoundElements()
         {
             var timingSection = _osuFile.TimingPoints;
-            var redLines = timingSection.TimingList.Where(k => !k.Inherit);
+            var redLines = timingSection.TimingList.Where(k => !k.IsInherit);
             var allTimings = timingSection.GetInterval(0.5);
             var redlineGroups = redLines
                 .Select(k =>

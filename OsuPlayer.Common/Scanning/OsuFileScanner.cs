@@ -1,11 +1,11 @@
-﻿using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using OSharp.Beatmap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Coosu.Beatmap;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 
 namespace Milky.OsuPlayer.Common.Scanning
 {
@@ -85,16 +85,15 @@ namespace Milky.OsuPlayer.Common.Scanning
                     var osuFile = await OsuFile.ReadFromFileAsync(fileInfo.FullName,
                         options =>
                         {
-                            options.IncludeSection("General", "Metadata", "TimingPoints", "Difficulty", "HitObjects",
-                                "Events");
+                            options.IncludeSection("General");
+                            options.IncludeSection("Metadata");
+                            options.IncludeSection("TimingPoints");
+                            options.IncludeSection("Difficulty");
+                            options.IncludeSection("HitObjects");
+                            options.IncludeSection("Events");
                             options.IgnoreSample();
                             options.IgnoreStoryboard();
                         });
-                    if (!osuFile.ReadSuccess)
-                    {
-                        Logger.Warn(osuFile.ReadException, "Osu file format error, skipped {0}", fileInfo.FullName);
-                        continue;
-                    }
 
                     var beatmap = GetBeatmapObj(osuFile, fileInfo);
                     beatmaps.Add(beatmap);

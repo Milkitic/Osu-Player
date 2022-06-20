@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Coosu.Beatmap.Sections.HitObject;
 using Milky.OsuPlayer.Media.Audio.Wave;
-using OSharp.Beatmap.Sections.HitObject;
 
 namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 {

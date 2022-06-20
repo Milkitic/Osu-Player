@@ -1,11 +1,11 @@
-﻿using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using OSharp.Beatmap.MetaData;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using Coosu.Beatmap.MetaData;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 
 namespace Milky.OsuPlayer.Common
 {
@@ -67,16 +67,16 @@ namespace Milky.OsuPlayer.Common
                 {
                     switch (beatmap.GameMode)
                     {
-                        case OSharp.Beatmap.Sections.GamePlay.GameMode.Circle:
+                        case Coosu.Beatmap.Sections.GamePlay.GameMode.Circle:
                             model.Stars = Math.Round(beatmap.DiffSrNoneStandard, 2);
                             break;
-                        case OSharp.Beatmap.Sections.GamePlay.GameMode.Taiko:
+                        case Coosu.Beatmap.Sections.GamePlay.GameMode.Taiko:
                             model.Stars = Math.Round(beatmap.DiffSrNoneTaiko, 2);
                             break;
-                        case OSharp.Beatmap.Sections.GamePlay.GameMode.Catch:
+                        case Coosu.Beatmap.Sections.GamePlay.GameMode.Catch:
                             model.Stars = Math.Round(beatmap.DiffSrNoneCtB, 2);
                             break;
-                        case OSharp.Beatmap.Sections.GamePlay.GameMode.Mania:
+                        case Coosu.Beatmap.Sections.GamePlay.GameMode.Mania:
                             model.Stars = Math.Round(beatmap.DiffSrNoneMania, 2);
                             break;
                     }

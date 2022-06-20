@@ -1,10 +1,10 @@
-﻿using Milky.OsuPlayer.Presentation.ObjectModel;
-using OSharp.Beatmap;
-using OSharp.Beatmap.MetaData;
-using OSharp.Beatmap.Sections.GamePlay;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Coosu.Beatmap;
+using Coosu.Beatmap.MetaData;
+using Coosu.Beatmap.Sections.GamePlay;
+using Milky.OsuPlayer.Presentation.ObjectModel;
 
 namespace Milky.OsuPlayer.Common
 {

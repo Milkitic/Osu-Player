@@ -1,3 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Markup;
+using System.Xaml;
+using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
@@ -12,18 +24,6 @@ using Milky.OsuPlayer.UiComponents.PanelComponent;
 using Milky.OsuPlayer.UserControls;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
-using OSharp.Beatmap.MetaData;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Markup;
-using System.Xaml;
 
 namespace Milky.OsuPlayer.ViewModels
 {

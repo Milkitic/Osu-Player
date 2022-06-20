@@ -1,13 +1,4 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Shared.Models;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
-using OSharp.Beatmap;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +6,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Coosu.Beatmap;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Shared.Models;
+using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.ViewModels;
+using Milky.OsuPlayer.Windows;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer.Pages
@@ -100,7 +100,6 @@ namespace Milky.OsuPlayer.Pages
                     options.IgnoreSample();
                     options.IgnoreStoryboard();
                 });
-                if (!osuFile.ReadSuccess) return;
 
                 var bgFileInfo = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));
 

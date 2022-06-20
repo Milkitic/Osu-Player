@@ -1,4 +1,12 @@
-﻿using Milky.OsuPlayer.Common;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using Coosu.Beatmap;
+using Coosu.Beatmap.MetaData;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Scanning;
@@ -15,14 +23,6 @@ using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UserControls;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
-using OSharp.Beatmap;
-using OSharp.Beatmap.MetaData;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace Milky.OsuPlayer.Windows
 {

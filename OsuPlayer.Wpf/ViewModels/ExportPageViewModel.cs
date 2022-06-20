@@ -1,12 +1,4 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Presentation.ObjectModel;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Utils;
-using OSharp.Beatmap.MetaData;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -14,7 +6,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Coosu.Beatmap.MetaData;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Pages;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Presentation.ObjectModel;
+using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.ViewModels
 {

@@ -1,11 +1,11 @@
-﻿using Milky.OsuPlayer.Data;
+﻿using System;
+using System.Collections.Generic;
+using Coosu.Beatmap.MetaData;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Annotations;
 using Milky.OsuPlayer.Shared.Models;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using OSharp.Beatmap.MetaData;
-using System;
-using System.Collections.Generic;
 
 namespace Milky.OsuPlayer.Utils
 {

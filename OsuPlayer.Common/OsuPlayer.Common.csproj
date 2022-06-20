@@ -82,14 +82,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
-      <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
-      <Name>OSharp.Beatmap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\OSharp.Common\OSharp.Common.csproj">
-      <Project>{4c8d4eea-e81b-4fd3-b6a4-9857abc152a5}</Project>
-      <Name>OSharp.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj">
       <Project>{094FAC4A-6277-46E8-97B4-C992F1674638}</Project>
       <Name>OsuPlayer.Data</Name>
@@ -112,6 +104,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Coosu.Beatmap">
+      <Version>2.2.1</Version>
+    </PackageReference>
     <PackageReference Include="Dapper">
       <Version>2.0.123</Version>
     </PackageReference>

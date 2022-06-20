@@ -1,10 +1,10 @@
-﻿using Milky.OsuPlayer.Shared;
-using OSharp.Beatmap;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Coosu.Beatmap;
+using Milky.OsuPlayer.Shared;
 using osu.Shared;
 using osu_database_reader.Components.Beatmaps;
-using System.Collections.Generic;
-using System.Linq;
-using OSharpGameMode = OSharp.Beatmap.Sections.GamePlay.GameMode;
+using OSharpGameMode = Coosu.Beatmap.Sections.GamePlay.GameMode;
 
 namespace Milky.OsuPlayer.Data.Models
 {

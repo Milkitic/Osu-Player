@@ -1,10 +1,4 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Media.Audio.Wave;
-using Milky.OsuPlayer.Shared;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
-using OSharp.Beatmap.Sections.HitObject;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,6 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Coosu.Beatmap.Sections.HitObject;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Media.Audio.Wave;
+using Milky.OsuPlayer.Shared;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 
 namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 {

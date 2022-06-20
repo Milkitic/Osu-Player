@@ -1,8 +1,8 @@
-﻿using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using OSharp.Beatmap;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Coosu.Beatmap;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 
 namespace Milky.OsuPlayer.Media.Audio.Playlist
 {

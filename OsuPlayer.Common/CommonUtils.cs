@@ -1,13 +1,13 @@
-﻿using Microsoft.Win32;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
-using OSharp.Beatmap;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using Coosu.Beatmap;
+using Microsoft.Win32;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Data;
 
 namespace Milky.OsuPlayer.Common
 {
@@ -73,7 +73,6 @@ namespace Milky.OsuPlayer.Common
                             options.IgnoreStoryboard();
                         })
                         .ConfigureAwait(false);
-                    if (!osuFile.ReadSuccess) return null;
 
                     var guidStr = Guid.NewGuid().ToString();
 

@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Coosu.Beatmap">
+      <HintPath>C:\Users\milkitic\.nuget\packages\coosu.beatmap\2.2.1\lib\net472\Coosu.Beatmap.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -65,14 +68,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
-      <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
-      <Name>OSharp.Beatmap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\OSharp.Common\OSharp.Common.csproj">
-      <Project>{4C8D4EEA-E81B-4FD3-B6A4-9857ABC152A5}</Project>
-      <Name>OSharp.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj">
       <Project>{93E3612C-D388-438F-A04A-047265820998}</Project>
       <Name>OsuPlayer.Presentation</Name>
@@ -83,6 +78,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Coosu.Beatmap">
+      <Version>2.2.1</Version>
+    </PackageReference>
     <PackageReference Include="Dapper">
       <Version>2.0.123</Version>
     </PackageReference>

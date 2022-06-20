@@ -1,12 +1,12 @@
-﻿using Milky.OsuPlayer.Media.Audio.Player;
-using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
-using OSharp.Beatmap;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Coosu.Beatmap;
+using Milky.OsuPlayer.Media.Audio.Player;
+using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
@@ -30,7 +30,7 @@ namespace Milky.OsuPlayer.Media.Audio
         public override async Task<IEnumerable<SoundElement>> GetSoundElements()
         {
             var elements = new ConcurrentBag<SoundElement>();
-            var samples = _osuFile.Events.SampleInfo;
+            var samples = _osuFile.Events.Samples;
             if (samples == null)
                 return new List<SoundElement>(elements);
 

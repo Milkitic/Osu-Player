@@ -1,5 +1,5 @@
-﻿using Dapper.FluentMap.Mapping;
-using OSharp.Beatmap.MetaData;
+﻿using Coosu.Beatmap.MetaData;
+using Dapper.FluentMap.Mapping;
 
 namespace Milky.OsuPlayer.Data.Models
 {

@@ -1,12 +1,8 @@
 ﻿using System.Collections.Generic;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Data;
+using Coosu.Beatmap;
+using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Shared.Models;
-using OSharp.Beatmap;
-using OSharp.Beatmap.MetaData;
 
 namespace Milky.OsuPlayer.Media.Audio.Playlist
 {

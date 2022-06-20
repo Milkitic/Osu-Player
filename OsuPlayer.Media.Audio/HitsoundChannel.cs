@@ -1,17 +1,17 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Media.Audio.Player;
-using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
-using Milky.OsuPlayer.Shared;
-using OSharp.Beatmap;
-using OSharp.Beatmap.Sections.GamePlay;
-using OSharp.Beatmap.Sections.HitObject;
-using OSharp.Beatmap.Sections.Timing;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Coosu.Beatmap;
+using Coosu.Beatmap.Sections.GamePlay;
+using Coosu.Beatmap.Sections.HitObject;
+using Coosu.Beatmap.Sections.Timing;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Media.Audio.Player;
+using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
+using Milky.OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
@@ -78,7 +78,8 @@ namespace Milky.OsuPlayer.Media.Audio
             else // sliders
             {
                 // edges
-                foreach (var item in obj.SliderInfo.Edges)
+                var sliderEdges = obj.SliderInfo.GetEdges();
+                foreach (var item in sliderEdges)
                 {
                     var itemOffset = item.Offset;
                     var timingPoint = _osuFile.TimingPoints.GetLine(itemOffset);
@@ -99,8 +100,8 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
 
                 // ticks
-                var ticks = obj.SliderInfo.Ticks;
-                foreach (var sliderTick in ticks)
+                var sliderTicks = obj.SliderInfo.GetSliderTicks();
+                foreach (var sliderTick in sliderTicks)
                 {
                     var itemOffset = sliderTick.Offset;
                     var timingPoint = _osuFile.TimingPoints.GetLine(itemOffset);
@@ -120,7 +121,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     var slideElements = new List<SoundElement>();
 
                     var startOffset = obj.Offset;
-                    var endOffset = obj.SliderInfo.Edges[obj.SliderInfo.Edges.Length - 1].Offset;
+                    var endOffset = sliderEdges[sliderEdges.Length - 1].Offset;
                     var timingPoint = _osuFile.TimingPoints.GetLine(startOffset);
 
                     float balance = GetObjectBalance(obj.X);
@@ -202,8 +203,8 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
 
                 // change balance while sliding (not supported in original game)
-                var trails = obj.SliderInfo.BallTrail;
-                var all = trails
+                var sliderSlides = obj.SliderInfo.GetSliderSlides();
+                var all = sliderSlides
                     .Select(k => new
                     {
                         offset = k.Offset,

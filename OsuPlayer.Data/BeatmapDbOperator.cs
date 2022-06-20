@@ -1,15 +1,15 @@
-﻿using Dapper;
-using Milky.OsuPlayer.Data.Dapper;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Shared.Models;
-using OSharp.Beatmap.MetaData;
-using osu_database_reader.Components.Beatmaps;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Coosu.Beatmap.MetaData;
+using Dapper;
+using Milky.OsuPlayer.Data.Dapper;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Shared.Models;
+using osu_database_reader.Components.Beatmaps;
 
 namespace Milky.OsuPlayer.Data
 {

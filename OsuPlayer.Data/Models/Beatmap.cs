@@ -1,8 +1,8 @@
-﻿using Dapper.FluentMap.Mapping;
-using OSharp.Beatmap;
-using OSharp.Beatmap.MetaData;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Coosu.Beatmap;
+using Coosu.Beatmap.MetaData;
+using Dapper.FluentMap.Mapping;
 
 namespace Milky.OsuPlayer.Data.Models
 {
@@ -56,7 +56,7 @@ namespace Milky.OsuPlayer.Data.Models
         public int AudioPreviewTime { get; set; } //NOTE: in ms
         public int BeatmapId { get; set; }
         public int BeatmapSetId { get; set; }
-        public OSharp.Beatmap.Sections.GamePlay.GameMode GameMode { get; set; }
+        public Coosu.Beatmap.Sections.GamePlay.GameMode GameMode { get; set; }
         public string SongSource { get; set; }
         public string SongTags { get; set; }
         public string FolderName { get; set; } = "";

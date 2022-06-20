@@ -1,4 +1,13 @@
-﻿using Milky.OsuPlayer.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using Coosu.Beatmap;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
@@ -9,14 +18,6 @@ using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
-using OSharp.Beatmap;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 
 namespace Milky.OsuPlayer.UserControls
 {
@@ -66,7 +67,7 @@ namespace Milky.OsuPlayer.UserControls
                 CollectionViewModel.CopyFrom(SafeDbOperator.GetCollections().OrderByDescending(k => k.CreateTime)));
         }
 
-        public static async Task<bool> AddToCollectionAsync([NotNull]Collection col, IList<Beatmap> entries)
+        public static async Task<bool> AddToCollectionAsync([NotNull] Collection col, IList<Beatmap> entries)
         {
             var controller = Service.Get<ObservablePlayController>();
             var appDbOperator = new AppDbOperator();
@@ -76,21 +77,27 @@ namespace Milky.OsuPlayer.UserControls
                 var first = entries[0];
                 var dir = first.GetFolder(out var isFromDb, out var freePath);
                 var filePath = isFromDb ? Path.Combine(dir, first.BeatmapFileName) : freePath;
-                var osuFile = await OsuFile.ReadFromFileAsync(filePath, options =>
+                try
                 {
-                    options.IncludeSection("Events");
-                    options.IgnoreSample();
-                    options.IgnoreStoryboard();
-                });
-                if (!osuFile.ReadSuccess) return false;
-                if (osuFile.Events.BackgroundInfo != null)
-                {
-                    var imgPath = Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
-                    if (File.Exists(imgPath))
+                    var osuFile = await OsuFile.ReadFromFileAsync(filePath, options =>
                     {
-                        col.ImagePath = imgPath;
-                        appDbOperator.UpdateCollection(col);
+                        options.IncludeSection("Events");
+                        options.IgnoreSample();
+                        options.IgnoreStoryboard();
+                    });
+                    if (osuFile.Events.BackgroundInfo != null)
+                    {
+                        var imgPath = Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
+                        if (File.Exists(imgPath))
+                        {
+                            col.ImagePath = imgPath;
+                            appDbOperator.UpdateCollection(col);
+                        }
                     }
+                }
+                catch (Exception e)
+                {
+                    return false;
                 }
             }
 

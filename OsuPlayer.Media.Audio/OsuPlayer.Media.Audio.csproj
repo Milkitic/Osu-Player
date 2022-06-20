@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Coosu.Beatmap">
+      <HintPath>C:\Users\milkitic\.nuget\packages\coosu.beatmap\2.2.1\lib\net472\Coosu.Beatmap.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack.Shell">
       <HintPath>..\Libraries\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
     </Reference>
@@ -100,14 +103,6 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Libraries\OSharp.Beatmap\OSharp.Beatmap.csproj">
-      <Project>{631a4abe-0c76-4972-97f2-f6928f0608ee}</Project>
-      <Name>OSharp.Beatmap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\OSharp.Storyboard\OSharp.Storyboard.csproj">
-      <Project>{D18BDC44-577C-49BA-BB91-1311422D362A}</Project>
-      <Name>OSharp.Storyboard</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj">
       <Project>{654d6521-43e1-48d2-baee-e694e38ef56d}</Project>
       <Name>OsuPlayer.Common</Name>
@@ -224,6 +219,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Coosu.Beatmap">
+      <Version>2.2.1</Version>
+    </PackageReference>
     <PackageReference Include="NAudio.Vorbis">
       <Version>1.5.0</Version>
     </PackageReference>

@@ -1,22 +1,21 @@
-﻿using Milky.OsuPlayer.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Coosu.Beatmap;
+using Coosu.Beatmap.MetaData;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio.Player;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Media.Audio.Wave;
+using Milky.OsuPlayer.Presentation.Annotations;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared;
-using OSharp.Beatmap;
-using OSharp.Beatmap.MetaData;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Milky.OsuPlayer.Presentation.Annotations;
-using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
@@ -97,7 +96,7 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
-        public async Task PlayNewAsync([CanBeNull]Beatmap beatmap, bool playInstantly = true)
+        public async Task PlayNewAsync([CanBeNull] Beatmap beatmap, bool playInstantly = true)
         {
             if (beatmap is null) return;
             PlayList.AddOrSwitchTo(beatmap);
@@ -130,10 +129,8 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 await ClearPlayer().ConfigureAwait(false);
                 Execute.OnUiThread(() => PreLoadStarted?.Invoke(path, _cts.Token));
-                var osuFile =
-                    await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
-                        .ConfigureAwait(false); //50 ms
-                if (!osuFile.ReadSuccess) throw osuFile.ReadException;
+                var osuFile = await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
+                    .ConfigureAwait(false); //50 ms
 
                 context.OsuFile = osuFile;
 
@@ -206,7 +203,6 @@ namespace Milky.OsuPlayer.Media.Audio
                     beatmapDetail.BaseFolder = Path.GetDirectoryName(path);
 
                     osuFile = await OsuFile.ReadFromFileAsync(path).ConfigureAwait(false);
-                    if (!osuFile.ReadSuccess) throw osuFile.ReadException;
                     context.OsuFile = osuFile;
                 }
 
@@ -284,8 +280,10 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 // storyboard
                 var analyzer = new OsuFileAnalyzer(osuFile);
-                if (osuFile.Events.ElementGroup.ElementList.Count > 0)
+                if (!string.IsNullOrWhiteSpace(osuFile.Events.StoryboardText))
+                {
                     Execute.OnUiThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
+                }
                 else
                 {
                     var osbFile = Path.Combine(beatmapDetail.BaseFolder, analyzer.OsbFileName);
