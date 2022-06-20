@@ -12,6 +12,7 @@
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
+    <!--<WindowsPackageType>None</WindowsPackageType>-->
   </PropertyGroup>
 
   <ItemGroup>

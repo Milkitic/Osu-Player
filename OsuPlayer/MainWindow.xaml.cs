@@ -37,10 +37,18 @@ namespace OsuPlayer
         public MainWindow()
         {
             this.InitializeComponent();
-            ExtendsContentIntoTitleBar = true;
-            SetTitleBar(AppTitleBar);
-
             _appWindow = this.GetAppWindow();
+
+            ExtendsContentIntoTitleBar = true;
+
+            if (!AppWindowTitleBar.IsCustomizationSupported())
+            {
+                SetTitleBar(AppTitleBar);
+            }
+            else
+            {
+                AppTitleBar.Visibility = Visibility.Collapsed;
+            }
 
             SetInitialRect();
         }
