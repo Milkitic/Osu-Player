@@ -9,7 +9,6 @@ using Dapper;
 using Milky.OsuPlayer.Data.Dapper;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Shared.Models;
-using osu_database_reader.Components.Beatmaps;
 
 namespace Milky.OsuPlayer.Data
 {
@@ -161,7 +160,7 @@ SELECT *
         }
 
         // todo: to be optimized
-        public static async Task SyncMapsFromHoLLyAsync(this AppDbOperator op, IEnumerable<BeatmapEntry> entry, bool addOnly)
+        public static async Task SyncMapsFromOsuDbAsync(this AppDbOperator op, IEnumerable<Beatmap> newList, bool addOnly)
         {
             Exception exc = null;
             if (addOnly)
@@ -171,7 +170,6 @@ SELECT *
                     try
                     {
                         var dbMaps = op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP, ("own", false));
-                        var newList = entry.Select(BeatmapExtension.ParseFromHolly);
                         var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
 
                         AddNewMaps(op, except);
@@ -190,9 +188,7 @@ SELECT *
                     try
                     {
                         RemoveSyncedAll(op);
-
-                        var osuMaps = entry.Select(BeatmapExtension.ParseFromHolly);
-                        AddNewMaps(op, osuMaps);
+                        AddNewMaps(op, newList);
                     }
                     catch (Exception ex)
                     {

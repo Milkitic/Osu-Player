@@ -2,8 +2,6 @@
 using System.Linq;
 using Coosu.Beatmap;
 using Milky.OsuPlayer.Shared;
-using osu.Shared;
-using osu_database_reader.Components.Beatmaps;
 using OSharpGameMode = Coosu.Beatmap.Sections.GamePlay.GameMode;
 
 namespace Milky.OsuPlayer.Data.Models
@@ -13,44 +11,6 @@ namespace Milky.OsuPlayer.Data.Models
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private static readonly ConcurrentRandom Random = new ConcurrentRandom();
 
-        public static Beatmap UpdateFromHolly(this Beatmap beatmap, BeatmapEntry entry)
-        {
-            beatmap.Artist = entry.Artist;
-            beatmap.ArtistUnicode = entry.ArtistUnicode;
-            beatmap.Title = entry.Title;
-            beatmap.TitleUnicode = entry.TitleUnicode;
-            beatmap.Creator = entry.Creator;
-            beatmap.Version = entry.Version;
-            beatmap.BeatmapFileName = entry.BeatmapFileName;
-            beatmap.LastModifiedTime = entry.LastModifiedTime;
-            beatmap.DiffSrNoneStandard = entry.DiffStarRatingStandard.ContainsKey(Mods.None)
-                  ? entry.DiffStarRatingStandard[Mods.None]
-                  : -1;
-            beatmap.DiffSrNoneTaiko = entry.DiffStarRatingTaiko.ContainsKey(Mods.None)
-                  ? entry.DiffStarRatingTaiko[Mods.None]
-                  : -1;
-            beatmap.DiffSrNoneCtB = entry.DiffStarRatingCtB.ContainsKey(Mods.None) ? entry.DiffStarRatingCtB[Mods.None] : -1;
-            beatmap.DiffSrNoneMania = entry.DiffStarRatingMania.ContainsKey(Mods.None)
-                  ? entry.DiffStarRatingMania[Mods.None]
-                  : -1;
-            beatmap.DrainTimeSeconds = entry.DrainTimeSeconds;
-            beatmap.TotalTime = entry.TotalTime;
-            beatmap.AudioPreviewTime = entry.AudioPreviewTime;
-            beatmap.BeatmapId = entry.BeatmapId;
-            beatmap.BeatmapSetId = entry.BeatmapSetId;
-            beatmap.GameMode = entry.GameMode.ParseHollyToOSharp();
-            beatmap.SongSource = entry.SongSource;
-            beatmap.SongTags = entry.SongTags;
-            beatmap.FolderName = entry.FolderName?.TrimEnd();
-            beatmap.AudioFileName = entry.AudioFileName;
-
-            return beatmap;
-        }
-
-        public static Beatmap ParseFromHolly(BeatmapEntry entry)
-        {
-            return (new Beatmap()).UpdateFromHolly(entry);
-        }
 
         public static Beatmap UpdateFromOSharp(this Beatmap beatmap, OsuFile osuFile)
         {

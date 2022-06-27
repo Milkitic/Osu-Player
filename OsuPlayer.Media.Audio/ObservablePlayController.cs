@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
+using Coosu.Beatmap.Extensions;
 using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
@@ -279,16 +280,16 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
 
                 // storyboard
-                var analyzer = new OsuFileAnalyzer(osuFile);
                 if (!string.IsNullOrWhiteSpace(osuFile.Events.StoryboardText))
                 {
                     Execute.OnUiThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
                 }
                 else
                 {
-                    var osbFile = Path.Combine(beatmapDetail.BaseFolder, analyzer.OsbFileName);
-                    if (File.Exists(osbFile) && await OsuFile.OsbFileHasStoryboard(osbFile).ConfigureAwait(false))
+                    if (await osuFile.OsuFileHasOsbStoryboard().ConfigureAwait(false))
+                    {
                         Execute.OnUiThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
+                    }
                 }
 
                 context.FullLoaded = true;

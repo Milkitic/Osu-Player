@@ -45,6 +45,7 @@ namespace Milky.OsuPlayer.Data.Models
         public string TitleUnicode { get; set; }
         public string Creator { get; set; } //mapper
         public string Version { get; set; } //difficulty name
+        public string AudioFileName { get; set; }
         public string BeatmapFileName { get; set; }
         public DateTime LastModifiedTime { get; set; }
         public double DiffSrNoneStandard { get; set; }
@@ -60,7 +61,6 @@ namespace Milky.OsuPlayer.Data.Models
         public string SongSource { get; set; }
         public string SongTags { get; set; }
         public string FolderName { get; set; } = "";
-        public string AudioFileName { get; set; }
         public Guid Id { get; set; } = Guid.NewGuid();
         public bool InOwnDb { get; set; }
 

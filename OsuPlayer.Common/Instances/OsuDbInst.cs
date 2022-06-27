@@ -1,12 +1,12 @@
 ﻿using System;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Presentation.Interaction;
-using osu.Shared.Serialization;
-using osu_database_reader.BinaryFiles;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Coosu.Database;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Presentation.Interaction;
 
 namespace Milky.OsuPlayer.Common.Instances
 {
@@ -64,33 +64,27 @@ namespace Milky.OsuPlayer.Common.Instances
 
             if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
             {
-                var db = await ReadDbAsync(path);
-                await _beatmapDbOperator.SyncMapsFromHoLLyAsync(db.Beatmaps, addOnly);
+                var beatmaps = await ReadDbAsync(path);
+                await _beatmapDbOperator.SyncMapsFromOsuDbAsync(beatmaps, addOnly);
             }
 
             lock (_scanningObject)
                 ViewModel.IsScanning = false;
         }
 
-        private static async Task<OsuDb> ReadDbAsync(string path)
+        private static async Task<IReadOnlyList<Beatmap>> ReadDbAsync(string path)
         {
             return await Task.Run(() =>
             {
-                var db = new OsuDb();
                 try
                 {
-                    using (var fs = new FileStream(path, FileMode.Open))
-                    {
-                        db.ReadFromStream(new SerializationReader(fs));
-                    }
+                    using var reader = new OsuDbReader(path);
+                    return reader.EnumerateBeatmapCustom().ToArray();
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(
-                        $"Read osu!db failed. This file may be corrupted. osu! version: {db.OsuVersion}", ex);
+                    throw new Exception($"Read osu!db failed. This file may be corrupted.", ex);
                 }
-
-                return db;
             });
         }
 
