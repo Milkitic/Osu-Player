@@ -423,7 +423,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
 
         public abstract Task<IEnumerable<SoundElement>> GetSoundElements();
 
-        public override async Task DisposeAsync()
+        public override async ValueTask DisposeAsync()
         {
             await Stop().ConfigureAwait(false);
             Logger.Debug($"Disposing: Stopped.");

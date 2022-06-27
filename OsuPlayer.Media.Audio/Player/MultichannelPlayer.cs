@@ -339,7 +339,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
             _channelsQueue = null;
         }
 
-        public virtual async Task DisposeAsync()
+        public virtual async ValueTask DisposeAsync()
         {
             Logger.Debug($"Disposing: Start to dispose.");
             await DisposeSubChannelsAsync();

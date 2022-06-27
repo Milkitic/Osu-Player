@@ -56,7 +56,6 @@
     <Compile Include="DictionaryExtension.cs" />
     <Compile Include="Models\ExportGroupStyle.cs" />
     <Compile Include="Models\ExportNamingStyle.cs" />
-    <Compile Include="IAsyncDisposable.cs" />
     <Compile Include="ListExtension.cs" />
     <Compile Include="MyCancellationTokenSource.cs" />
     <Compile Include="Models\PlaylistMode.cs" />

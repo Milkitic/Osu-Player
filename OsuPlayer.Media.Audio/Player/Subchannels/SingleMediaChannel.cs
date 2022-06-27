@@ -215,7 +215,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player.Subchannels
             await Task.CompletedTask;
         }
 
-        public override async Task DisposeAsync()
+        public override async ValueTask DisposeAsync()
         {
             try
             {

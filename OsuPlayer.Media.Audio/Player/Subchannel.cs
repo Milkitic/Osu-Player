@@ -77,7 +77,7 @@ namespace Milky.OsuPlayer.Media.Audio.Player
 
         public abstract Task SetPlaybackRate(float rate, bool useTempo);
 
-        public virtual async Task DisposeAsync()
+        public virtual async ValueTask DisposeAsync()
         {
             //Engine?.Dispose();
             await Task.CompletedTask;

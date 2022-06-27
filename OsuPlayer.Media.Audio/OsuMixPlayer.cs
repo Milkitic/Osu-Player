@@ -199,7 +199,7 @@ namespace Milky.OsuPlayer.Media.Audio
             return path;
         }
 
-        public override Task DisposeAsync()
+        public override ValueTask DisposeAsync()
         {
             if (AppSettings.Default?.Volume != null)
                 AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
