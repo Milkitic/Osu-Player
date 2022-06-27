@@ -53,11 +53,6 @@ namespace Milky.OsuPlayer.Data.Models
             return (new Beatmap()).UpdateFromOSharp(osuFile);
         }
 
-        public static OSharpGameMode ParseHollyToOSharp(this osu.Shared.GameMode gameMode)
-        {
-            return (OSharpGameMode)(int)gameMode;
-        }
-
         public static Beatmap GetHighestDiff(this IEnumerable<Beatmap> enumerable)
         {
             var dictionary = enumerable.GroupBy(k => k.GameMode).ToDictionary(k => k.Key, k => k.ToList());
