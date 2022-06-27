@@ -6,9 +6,10 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
+using Milki.Extensions.MixPlayer;
+using Milki.Extensions.MixPlayer.Devices;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Player;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
@@ -16,7 +17,6 @@ using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using NAudio.Wave;
-using OsuPlayer.Devices;
 
 namespace Milky.OsuPlayer.UserControls
 {
@@ -130,7 +130,7 @@ namespace Milky.OsuPlayer.UserControls
             PlayProgress.Maximum = _controller.Player.Duration.TotalMilliseconds;
             LblTotal.Content = _controller.Player.Duration.ToString(@"mm\:ss");
 
-            _device = DeviceProvider.GetCurrentDevice();
+            _device = DeviceCreationHelper.CurrentDevice;
             if (_device is AsioOut asio)
             {
                 BtnAsio.Visibility = Visibility.Visible;

@@ -1,23 +1,25 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
+using Coosu.Beatmap.Extensions;
+using Milki.Extensions.MixPlayer;
+using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
+using Milki.Extensions.MixPlayer.Subchannels;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Media.Audio.Player;
-using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
 using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Media.Audio.Wave;
+using NAudio.Wave;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
     public class OsuMixPlayer : MultichannelPlayer
     {
+        public static OsuMixPlayer Current { get; private set; }
+
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly ConcurrentDictionary<string, string> _pathCache =
-            new ConcurrentDictionary<string, string>();
+        private HitsoundFileCache _fileCache;
 
         private OsuFile _osuFile;
         private string _sourceFolder;
@@ -28,7 +30,7 @@ namespace Milky.OsuPlayer.Media.Audio
         public SingleMediaChannel MusicChannel { get; private set; }
         public HitsoundChannel HitsoundChannel { get; private set; }
         public SampleChannel SampleChannel { get; private set; }
-
+        public IWavePlayer Device => Engine.OutputDevice;
         public int ManualOffset
         {
             get => _manualOffset;
@@ -40,20 +42,32 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
-        public OsuMixPlayer(OsuFile osuFile, string sourceFolder)
+        public OsuMixPlayer(LocalOsuFile osuFile) : base(AppSettings.Default?.Play?.DeviceDescription)
+        {
+            _osuFile = osuFile;
+            _sourceFolder = Path.GetDirectoryName(osuFile.OriginalPath);
+            Current = this;
+        }
+
+        public OsuMixPlayer(OsuFile osuFile, string sourceFolder) : base(AppSettings.Default.Play.DeviceDescription)
         {
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
+            Current = this;
         }
 
         public override async Task Initialize()
         {
+            _fileCache = new HitsoundFileCache();
             try
             {
-                if (CachedSound.DefaultSounds.Count == 0)
+                if (CachedSoundFactory.GetCount("internal") == 0)
                 {
                     var files = new DirectoryInfo(Domain.DefaultPath).GetFiles("*.wav");
-                    await CachedSound.CreateDefaultCacheSounds(files.Select(k => k.FullName)).ConfigureAwait(false);
+                    foreach (var file in files.Select(k => k.FullName))
+                    {
+                        await CachedSoundFactory.GetOrCreateCacheSound(Engine.WaveFormat, file).ConfigureAwait(false);
+                    }
                 }
 
                 await InnerLoad().ConfigureAwait(false);
@@ -78,7 +92,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private async Task InnerLoad()
         {
-            var mp3Path = Path.Combine(_sourceFolder, _osuFile.General.AudioFilename);
+            var mp3Path = Path.Combine(_sourceFolder, _osuFile?.General.AudioFilename ?? ".");
             MusicChannel = new SingleMediaChannel(Engine, mp3Path,
                 AppSettings.Default?.Play?.PlaybackRate ?? 1,
                 AppSettings.Default?.Play?.PlayUseTempo ?? true)
@@ -90,11 +104,14 @@ namespace Milky.OsuPlayer.Media.Audio
             AddSubchannel(MusicChannel);
             await MusicChannel.Initialize().ConfigureAwait(false);
 
-            HitsoundChannel = new HitsoundChannel(this, _osuFile, _sourceFolder, Engine);
+            HitsoundChannel = new HitsoundChannel(_osuFile, _sourceFolder, Engine, _fileCache);
             AddSubchannel(HitsoundChannel);
             await HitsoundChannel.Initialize().ConfigureAwait(false);
 
-            SampleChannel = new SampleChannel(this, _osuFile, _sourceFolder, Engine);
+            SampleChannel = new SampleChannel(_osuFile, _sourceFolder, Engine, new Subchannel[]
+            {
+                MusicChannel, HitsoundChannel
+            }, _fileCache);
             AddSubchannel(SampleChannel);
             await SampleChannel.Initialize().ConfigureAwait(false);
             //await CachedSound.CreateCacheSounds(HitsoundChannel.SoundElementCollection
@@ -112,8 +129,8 @@ namespace Milky.OsuPlayer.Media.Audio
 
             InitVolume();
 
-            await CachedSound.GetOrCreateCacheSound(mp3Path);
-            await BufferSoundElements();
+            await CachedSoundFactory.GetOrCreateCacheSound(Engine.WaveFormat, mp3Path);
+            await BufferSoundElementsAsync();
         }
 
         private void InitVolume()
@@ -173,30 +190,6 @@ namespace Milky.OsuPlayer.Media.Audio
             }
 
             AppSettings.SaveDefault();
-        }
-
-        public string GetFileUntilFind(string sourceFolder, string fileNameWithoutExtension)
-        {
-            var combine = Path.Combine(sourceFolder, fileNameWithoutExtension);
-            if (_pathCache.TryGetValue(combine, out var value))
-            {
-                return value;
-            }
-
-            string path = "";
-            foreach (var extension in AudioPlaybackEngine.SupportExtensions)
-            {
-                path = Path.Combine(sourceFolder, fileNameWithoutExtension + extension);
-
-                if (File.Exists(path))
-                {
-                    _pathCache.TryAdd(combine, path);
-                    return path;
-                }
-            }
-
-            _pathCache.TryAdd(combine, path);
-            return path;
         }
 
         public override ValueTask DisposeAsync()

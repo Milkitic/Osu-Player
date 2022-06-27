@@ -5,22 +5,31 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Media.Audio.Player;
-using Milky.OsuPlayer.Media.Audio.Player.Subchannels;
+using Coosu.Beatmap.Extensions;
+using Milki.Extensions.MixPlayer;
+using Milki.Extensions.MixPlayer.NAudioExtensions;
+using Milki.Extensions.MixPlayer.Subchannels;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
     public class SampleChannel : MultiElementsChannel
     {
-        private readonly OsuMixPlayer _player;
+        private readonly HitsoundFileCache _cache;
         private readonly OsuFile _osuFile;
         private readonly string _sourceFolder;
         private NightcoreTilingProvider _nightcore;
 
-        public SampleChannel(OsuMixPlayer player, OsuFile osuFile, string sourceFolder, AudioPlaybackEngine engine)
-            : base(engine)
+        public SampleChannel(LocalOsuFile osuFile, AudioPlaybackEngine engine,
+            ICollection<Subchannel> referencedChannels, HitsoundFileCache cache = null)
+            : this(osuFile, Path.GetDirectoryName(osuFile.OriginalPath), engine, referencedChannels, cache)
         {
-            _player = player;
+        }
+
+        public SampleChannel(OsuFile osuFile, string sourceFolder, AudioPlaybackEngine engine,
+            ICollection<Subchannel> referencedChannels, HitsoundFileCache cache = null)
+            : base(engine, new MixSettings(), referencedChannels)
+        {
+            _cache = cache;
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
 
@@ -41,8 +50,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     .ForAll(sample =>
                     {
                         var element = SoundElement.Create(sample.Offset, sample.Volume / 100f, 0,
-                            _player.GetFileUntilFind(_sourceFolder,
-                                Path.GetFileNameWithoutExtension(sample.Filename))
+                            _cache.GetFileUntilFind(_sourceFolder, Path.GetFileNameWithoutExtension(sample.Filename), out _)
                         );
                         elements.Add(element);
                     });
@@ -50,10 +58,10 @@ namespace Milky.OsuPlayer.Media.Audio
 
             var elementList = new List<SoundElement>(elements);
 
-            if (PlaybackRate.Equals(1.5f) && !UseTempo)
+            if (PlaybackRate.Equals(1.5f) && !KeepTune)
             {
-                var duration = MathEx.Max(_player.MusicChannel.ChannelEndTime,
-                    _player.HitsoundChannel.ChannelEndTime,
+                var duration1 = MathEx.Max(ReferencedChannels.Select(k => k.ChannelEndTime));
+                var duration = MathEx.Max(duration1,
                     TimeSpan.FromMilliseconds(samples.Count == 0 ? 0 : samples.Max(k => k.Offset))
                 );
                 _nightcore = new NightcoreTilingProvider(_osuFile, duration);
@@ -66,9 +74,9 @@ namespace Milky.OsuPlayer.Media.Audio
         public override async Task SetPlaybackRate(float rate, bool useTempo)
         {
             var oldRate = PlaybackRate;
-            var oldTempo = UseTempo;
+            var oldKeepTune = KeepTune;
             await base.SetPlaybackRate(rate, useTempo).ConfigureAwait(false);
-            if (oldTempo != UseTempo)
+            if (oldKeepTune != KeepTune)
             {
                 SoundElements = null;
                 await RequeueAsync(Position).ConfigureAwait(false);

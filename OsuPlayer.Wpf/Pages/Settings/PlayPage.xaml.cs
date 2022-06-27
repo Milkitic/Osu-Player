@@ -1,7 +1,7 @@
-﻿using OsuPlayer.Devices;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using Milki.Extensions.MixPlayer.Devices;
 using Milky.OsuPlayer.Common.Configuration;
 
 namespace Milky.OsuPlayer.Pages.Settings
@@ -85,19 +85,19 @@ namespace Milky.OsuPlayer.Pages.Settings
             ChkMemory.IsChecked = AppSettings.Default.Play.Memory;
             SliderLatency.Value = AppSettings.Default.Play.DesiredLatency;
             BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
-            var itemsSource = DeviceProvider.EnumerateAvailableDevices().ToList();
+            var itemsSource = DeviceCreationHelper.GetCachedAvailableDevices();
             DeviceInfoCombo.ItemsSource = itemsSource;
-            if (itemsSource.Contains(AppSettings.Default.Play.DeviceInfo))
+            if (itemsSource.Contains(AppSettings.Default.Play.DeviceDescription))
             {
-                DeviceInfoCombo.SelectedItem = AppSettings.Default.Play.DeviceInfo;
+                DeviceInfoCombo.SelectedItem = AppSettings.Default.Play.DeviceDescription;
             }
             else
             {
                 DeviceInfoCombo.SelectedIndex = 0;
             }
 
-            var selectedItem = (IDeviceInfo)DeviceInfoCombo.SelectedItem;
-            SliderLatency.IsEnabled = selectedItem.OutputMethod != OutputMethod.Asio;
+            var selectedItem = (DeviceDescription)DeviceInfoCombo.SelectedItem;
+            SliderLatency.IsEnabled = selectedItem.WavePlayerType != WavePlayerType.ASIO;
         }
 
         private void BoxLatency_TextChanged(object sender, TextChangedEventArgs e)
@@ -131,9 +131,9 @@ namespace Milky.OsuPlayer.Pages.Settings
 
         private void DeviceInfoCombo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var newVal = (IDeviceInfo)e.AddedItems[0];
-            SliderLatency.IsEnabled = newVal.OutputMethod != OutputMethod.Asio;
-            AppSettings.Default.Play.DeviceInfo = newVal;
+            var newVal = (DeviceDescription)e.AddedItems[0];
+            SliderLatency.IsEnabled = newVal.WavePlayerType != WavePlayerType.ASIO;
+            AppSettings.Default.Play.DeviceDescription = newVal;
             AppSettings.SaveDefault();
             //CheckExclusive.Visibility =
             //    newVal.OutputMethod == OutputMethod.Wasapi ? Visibility.Visible : Visibility.Hidden;

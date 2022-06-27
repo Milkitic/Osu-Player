@@ -7,16 +7,15 @@ using System.Threading.Tasks;
 using Coosu.Beatmap;
 using Coosu.Beatmap.Extensions;
 using Coosu.Beatmap.MetaData;
+using Milki.Extensions.MixPlayer;
+using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio.Player;
 using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Media.Audio.Wave;
 using Milky.OsuPlayer.Presentation.Annotations;
 using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
@@ -255,7 +254,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 if (PlayList.PreInfo?.BeatmapDetail?.BaseFolder != PlayList.CurrentInfo?.BeatmapDetail?.BaseFolder)
                 {
-                    CachedSound.ClearCacheSounds();
+                    CachedSoundFactory.ClearCacheSounds();
                 }
 
                 Player = new OsuMixPlayer(osuFile, beatmapDetail.BaseFolder);
