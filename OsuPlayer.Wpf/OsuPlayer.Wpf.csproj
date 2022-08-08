@@ -9,8 +9,6 @@
     <RootNamespace>Milki.OsuPlayer</RootNamespace>
     <AssemblyName>OsuPlayer</AssemblyName>
     <LangVersion>latest</LangVersion>
-    <MinVerMinimumMajorMinor>1.0</MinVerMinimumMajorMinor>
-    <MinVerTagPrefix>v</MinVerTagPrefix>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
@@ -43,7 +41,7 @@
 
   <ItemGroup>
     <PackageReference Include="FFME.Windows">
-      <Version>4.2.330</Version>
+      <Version>4.4.350</Version>
     </PackageReference>
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.1.5" />
     <PackageReference Include="Markdig.Wpf">
@@ -51,10 +49,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
-    <PackageReference Include="MinVer" Version="2.5.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="MouseKeyHook" Version="5.6.0" />
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>

@@ -1,0 +1,6 @@
+<Project>
+    <PropertyGroup>
+        <MinVerMinimumMajorMinor>1.0</MinVerMinimumMajorMinor>
+        <MinVerTagPrefix>v</MinVerTagPrefix>
+    </PropertyGroup>
+</Project>
