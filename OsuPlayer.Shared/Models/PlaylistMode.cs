@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Shared.Models
+﻿namespace Milki.OsuPlayer.Shared.Models
 {
     public enum PlaylistMode
     {

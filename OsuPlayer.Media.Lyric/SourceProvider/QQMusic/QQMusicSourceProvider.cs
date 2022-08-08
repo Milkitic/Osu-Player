@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Milky.OsuPlayer.Media.Lyric.Models;
+using Milki.OsuPlayer.Media.Lyric.Models;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic
+namespace Milki.OsuPlayer.Media.Lyric.SourceProvider.QQMusic
 {
     [SourceProviderName("qqmusic", "DarkProjector")]
     public class QQMusicSourceProvider : SourceProviderBase<Song, QQMusicSearch, QQMusicLyricDownloader, QQMusicLyricParser>

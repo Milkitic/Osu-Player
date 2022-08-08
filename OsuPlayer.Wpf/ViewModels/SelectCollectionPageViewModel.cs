@@ -1,9 +1,9 @@
-﻿using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.ViewModels
+namespace Milki.OsuPlayer.ViewModels
 {
     public class SelectCollectionPageViewModel : VmBase
     {

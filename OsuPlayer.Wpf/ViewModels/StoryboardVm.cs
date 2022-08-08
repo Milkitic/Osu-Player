@@ -1,11 +1,10 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Presentation.Annotations;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Milky.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Presentation.Annotations;
 
-namespace Milky.OsuPlayer.ViewModels
+namespace Milki.OsuPlayer.ViewModels
 {
     internal class StoryboardVm : INotifyPropertyChanged
     {

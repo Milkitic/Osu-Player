@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Milky.OsuPlayer.Data
+namespace Milki.OsuPlayer.Data
 {
     public class PaginationQueryResult<T> where T : class
     {

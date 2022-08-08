@@ -6,26 +6,26 @@ using System.Threading.Tasks;
 using System.Windows;
 using Coosu.Beatmap;
 using Microsoft.EntityFrameworkCore;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Scanning;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Instances;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.UserControls;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.ViewModels;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Common.Instances;
+using Milki.OsuPlayer.Common.Scanning;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Instances;
+using Milki.OsuPlayer.Media.Audio;
+using Milki.OsuPlayer.Media.Audio.Playlist;
+using Milki.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Shared;
+using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.UiComponents.NotificationComponent;
+using Milki.OsuPlayer.UserControls;
+using Milki.OsuPlayer.Utils;
+using Milki.OsuPlayer.ViewModels;
 
-namespace Milky.OsuPlayer.Windows
+namespace Milki.OsuPlayer.Windows
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Milky.OsuPlayer.Common
+namespace Milki.OsuPlayer.Common
 {
     public class GithubRelease
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace Milky.OsuPlayer.Presentation.Interaction
+namespace Milki.OsuPlayer.Presentation.Interaction
 {
     public class DelegateCommand : ICommand
     {

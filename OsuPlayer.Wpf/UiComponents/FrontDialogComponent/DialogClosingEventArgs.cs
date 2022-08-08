@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Milky.OsuPlayer.UiComponents.FrontDialogComponent
+namespace Milki.OsuPlayer.UiComponents.FrontDialogComponent
 {
     public class DialogClosingEventArgs : EventArgs
     {

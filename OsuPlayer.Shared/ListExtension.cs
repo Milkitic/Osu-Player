@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Milky.OsuPlayer.Shared
+namespace Milki.OsuPlayer.Shared
 {
     public static class ListExtension
     {

@@ -1,5 +1,5 @@
 ﻿
-namespace Milky.OsuPlayer.Presentation
+namespace Milki.OsuPlayer.Presentation
 {
     public interface IWindowBase
     {

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Milky.OsuPlayer.Converters
+namespace Milki.OsuPlayer.Converters
 {
     public class MiniWindowConverter : IValueConverter
     {

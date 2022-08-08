@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Coosu.Beatmap.Sections.GamePlay;
-using Coosu.Beatmap.Sections.HitObject;
-using Coosu.Beatmap.Sections.Timing;
 using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.Subchannels;
-using Milky.OsuPlayer.Common;
 
-namespace Milky.OsuPlayer.Media.Audio
+namespace Milki.OsuPlayer.Media.Audio
 {
     public class HitsoundChannel : MultiElementsChannel
     {

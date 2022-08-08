@@ -7,17 +7,17 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Shared.Models;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Shared.Models;
+using Milki.OsuPlayer.UiComponents.NotificationComponent;
+using Milki.OsuPlayer.ViewModels;
+using Milki.OsuPlayer.Windows;
 using Path = System.IO.Path;
 
-namespace Milky.OsuPlayer.Pages
+namespace Milki.OsuPlayer.Pages
 {
     /// <summary>
     /// ExportPage.xaml 的交互逻辑

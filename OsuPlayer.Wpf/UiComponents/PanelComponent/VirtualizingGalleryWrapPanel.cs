@@ -5,9 +5,9 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Milky.OsuPlayer.Common;
+using Milki.OsuPlayer.Common;
 
-namespace Milky.OsuPlayer.UiComponents.PanelComponent
+namespace Milki.OsuPlayer.UiComponents.PanelComponent
 {
     public class VirtualizingGalleryWrapPanel : VirtualizingPanel, IScrollInfo
     {

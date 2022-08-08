@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Kugou
+﻿namespace Milki.OsuPlayer.Media.Lyric.SourceProvider.Kugou
 {
     class KugouLyricsParser
     {

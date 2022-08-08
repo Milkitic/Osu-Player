@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
 
-namespace Milky.OsuPlayer.Converters
+namespace Milki.OsuPlayer.Converters
 {
     public class ExceptionToStringConverter : IValueConverter
     {

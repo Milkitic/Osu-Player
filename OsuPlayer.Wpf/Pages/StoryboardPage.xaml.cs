@@ -1,9 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
+using Milki.OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Pages
+namespace Milki.OsuPlayer.Pages
 {
     /// <summary>
     /// StoryboardPage.xaml 的交互逻辑

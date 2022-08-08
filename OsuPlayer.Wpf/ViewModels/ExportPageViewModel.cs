@@ -1,11 +1,4 @@
-﻿using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Presentation.ObjectModel;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -13,8 +6,15 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Pages;
+using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Presentation.ObjectModel;
+using Milki.OsuPlayer.UiComponents.NotificationComponent;
+using Milki.OsuPlayer.Utils;
 
-namespace Milky.OsuPlayer.ViewModels
+namespace Milki.OsuPlayer.ViewModels
 {
     public class ExportPageViewModel : VmBase
     {

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Common.Instances;
+using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.UiComponents.NotificationComponent;
 
-namespace Milky.OsuPlayer.UserControls
+namespace Milki.OsuPlayer.UserControls
 {
     public class WelcomeControlVm : VmBase
     {

@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 using System.Windows.Input;
 
-namespace Milky.OsuPlayer.Utils
+namespace Milki.OsuPlayer.Utils
 {
     internal static class KeyConverter
     {

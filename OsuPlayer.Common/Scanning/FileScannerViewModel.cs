@@ -1,6 +1,6 @@
-﻿using Milky.OsuPlayer.Presentation.Interaction;
+﻿using Milki.OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.Common.Scanning
+namespace Milki.OsuPlayer.Common.Scanning
 {
     public class FileScannerViewModel : VmBase
     {

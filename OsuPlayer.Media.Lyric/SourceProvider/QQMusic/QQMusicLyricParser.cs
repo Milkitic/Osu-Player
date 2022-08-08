@@ -2,9 +2,9 @@
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using Milky.OsuPlayer.Media.Lyric.Models;
+using Milki.OsuPlayer.Media.Lyric.Models;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic
+namespace Milki.OsuPlayer.Media.Lyric.SourceProvider.QQMusic
 {
     public class QQMusicLyricParser : LyricParserBase
     {

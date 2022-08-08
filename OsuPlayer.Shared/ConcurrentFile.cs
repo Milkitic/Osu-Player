@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using SysIO = System.IO;
 
-namespace Milky.OsuPlayer.Shared
+namespace Milki.OsuPlayer.Shared
 {
     public static class ConcurrentFile
     {

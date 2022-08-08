@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors;
 
-namespace Milky.OsuPlayer.Presentation.Interaction
+namespace Milki.OsuPlayer.Presentation.Interaction
 {
     /// <summary>
     /// This <see cref="T:System.Windows.Interactivity.TriggerAction`1" /> can be

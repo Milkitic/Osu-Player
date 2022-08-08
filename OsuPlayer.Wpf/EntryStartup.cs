@@ -1,18 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Shared;
-using Newtonsoft.Json;
-using NLog.Config;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.EntityFrameworkCore;
 using Milki.Extensions.MixPlayer;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Shared;
+using Newtonsoft.Json;
+using NLog.Config;
 
-namespace Milky.OsuPlayer
+namespace Milki.OsuPlayer
 {
     public static class EntryStartup
     {

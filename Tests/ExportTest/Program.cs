@@ -7,7 +7,7 @@ using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.Exporters;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.Subchannels;
-using Milky.OsuPlayer.Media.Audio;
+using Milki.OsuPlayer.Media.Audio;
 using NAudio.Wave;
 
 namespace ExportTest

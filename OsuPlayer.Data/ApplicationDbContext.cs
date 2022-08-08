@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Shared.Models;
-using Collection = Milky.OsuPlayer.Data.Models.Collection;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Shared.Models;
+using Collection = Milki.OsuPlayer.Data.Models.Collection;
 
-namespace Milky.OsuPlayer.Data
+namespace Milki.OsuPlayer.Data
 {
     public class ApplicationDbContext : DbContextBase
     {

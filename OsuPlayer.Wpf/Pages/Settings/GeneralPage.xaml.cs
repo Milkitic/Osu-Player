@@ -1,20 +1,19 @@
-﻿using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Scanning;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.Windows;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.Utils;
+using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Common.Instances;
+using Milki.OsuPlayer.Common.Scanning;
+using Milki.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.Utils;
+using Milki.OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Pages.Settings
+namespace Milki.OsuPlayer.Pages.Settings
 {
     /// <summary>
     /// GeneralPage.xaml 的交互逻辑

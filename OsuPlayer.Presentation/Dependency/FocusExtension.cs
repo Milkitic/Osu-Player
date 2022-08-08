@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Milky.OsuPlayer.Presentation.Dependency
+namespace Milki.OsuPlayer.Presentation.Dependency
 {
     public static class FocusExtension
     {

@@ -4,9 +4,9 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using Milky.OsuPlayer.Common;
+using Milki.OsuPlayer.Common;
 
-namespace Milky.OsuPlayer.UiComponents.NotificationComponent
+namespace Milki.OsuPlayer.UiComponents.NotificationComponent
 {
     /// <summary>
     /// NotifyControl.xaml 的交互逻辑

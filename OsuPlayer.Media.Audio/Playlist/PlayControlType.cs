@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Media.Audio.Playlist
+﻿namespace Milki.OsuPlayer.Media.Audio.Playlist
 {
     public enum PlayControlType
     {

@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Media.Lyric.SourceProvider
+﻿namespace Milki.OsuPlayer.Media.Lyric.SourceProvider
 {
     public abstract class LyricDownloaderBase
     {

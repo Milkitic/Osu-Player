@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Presentation.ObjectModel
+﻿namespace Milki.OsuPlayer.Presentation.ObjectModel
 {
     public class NumberableModel
     {

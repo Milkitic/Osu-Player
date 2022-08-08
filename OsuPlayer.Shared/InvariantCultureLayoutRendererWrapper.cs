@@ -6,7 +6,7 @@ using NLog.Config;
 using NLog.LayoutRenderers;
 using NLog.LayoutRenderers.Wrappers;
 
-namespace Milky.OsuPlayer.Shared
+namespace Milki.OsuPlayer.Shared
 {
     [LayoutRenderer("InvariantCulture")]
     [ThreadAgnostic]

@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.UiComponents.ButtonComponent
+namespace Milki.OsuPlayer.UiComponents.ButtonComponent
 {
     public class CommonButton : Button
     {

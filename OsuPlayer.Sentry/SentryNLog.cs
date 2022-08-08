@@ -1,8 +1,7 @@
 using NLog;
 using NLog.Config;
-using Sentry;
 
-namespace Milky.OsuPlayer.Sentry
+namespace Milki.OsuPlayer.Sentry
 {
     public static partial class SentryNLog
     {

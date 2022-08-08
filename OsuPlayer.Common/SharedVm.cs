@@ -1,7 +1,7 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Presentation.Interaction;
+﻿using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.Common
+namespace Milki.OsuPlayer.Common
 {
     public class SharedVm : VmBase
     {

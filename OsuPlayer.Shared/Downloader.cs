@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Milky.OsuPlayer.Shared
+namespace Milki.OsuPlayer.Shared
 {
     public class Downloader
     {

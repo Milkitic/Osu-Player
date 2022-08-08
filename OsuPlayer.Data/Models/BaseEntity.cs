@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Milky.OsuPlayer.Presentation.Annotations;
 
-namespace Milky.OsuPlayer.Data.Models
+namespace Milki.OsuPlayer.Data.Models
 {
     public class BaseEntity : INotifyPropertyChanged
     {

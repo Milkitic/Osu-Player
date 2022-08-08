@@ -3,7 +3,7 @@ using System.Collections;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 
-namespace Milky.OsuPlayer.Common.Configuration
+namespace Milki.OsuPlayer.Common.Configuration
 {
     [JsonConverter(typeof(HotKeyConverter))]
     // 01 01 00000025

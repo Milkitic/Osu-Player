@@ -2,9 +2,9 @@
 using System.Globalization;
 using System.Windows.Data;
 using Milki.Extensions.MixPlayer.Devices;
-using Milky.OsuPlayer.Utils;
+using Milki.OsuPlayer.Utils;
 
-namespace Milky.OsuPlayer.Converters
+namespace Milki.OsuPlayer.Converters
 {
     public class DeviceInfoToStringConverter : IValueConverter
     {

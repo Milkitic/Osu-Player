@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Media.Lyric.Models;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider;
+using Milki.OsuPlayer.Media.Lyric.Models;
+using Milki.OsuPlayer.Media.Lyric.SourceProvider;
 
-namespace Milky.OsuPlayer.Media.Lyric
+namespace Milki.OsuPlayer.Media.Lyric
 {
     public class LyricProvider
     {

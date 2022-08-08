@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.Media.Audio.Playlist
+namespace Milki.OsuPlayer.Media.Audio.Playlist
 {
     public class BeatmapDetail : VmBase
     {

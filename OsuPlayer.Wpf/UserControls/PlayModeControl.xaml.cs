@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.Shared.Models;
+using Milki.OsuPlayer.Media.Audio;
+using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.Shared.Models;
 
-namespace Milky.OsuPlayer.UserControls
+namespace Milki.OsuPlayer.UserControls
 {
     /// <summary>
     /// PlayModeControl.xaml 的交互逻辑

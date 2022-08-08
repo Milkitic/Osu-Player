@@ -6,11 +6,11 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using Coosu.Beatmap;
 using Microsoft.Win32;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
 
-namespace Milky.OsuPlayer.Common
+namespace Milki.OsuPlayer.Common
 {
     public static class CommonUtils
     {

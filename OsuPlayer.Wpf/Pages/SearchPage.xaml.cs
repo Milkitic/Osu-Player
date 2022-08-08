@@ -1,15 +1,4 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Presentation.ObjectModel;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponents.PanelComponent;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,8 +7,19 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Media.Audio;
+using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Presentation.ObjectModel;
+using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.UiComponents.PanelComponent;
+using Milki.OsuPlayer.ViewModels;
+using Milki.OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Pages
+namespace Milki.OsuPlayer.Pages
 {
     /// <summary>
     /// SearchPage.xaml 的交互逻辑

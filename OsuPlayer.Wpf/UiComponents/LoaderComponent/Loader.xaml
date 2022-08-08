@@ -2,7 +2,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
-    xmlns:loaderComponent="clr-namespace:Milky.OsuPlayer.UiComponents.LoaderComponent">
+    xmlns:loaderComponent="clr-namespace:Milki.OsuPlayer.UiComponents.LoaderComponent">
     <Style TargetType="{x:Type loaderComponent:Loader}">
         <Setter Property="Template">
             <Setter.Value>

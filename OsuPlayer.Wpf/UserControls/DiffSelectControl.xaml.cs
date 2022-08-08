@@ -1,14 +1,14 @@
-﻿using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 
-namespace Milky.OsuPlayer.UserControls
+namespace Milki.OsuPlayer.UserControls
 {
     public class DiffSelectPageViewModel : VmBase
     {

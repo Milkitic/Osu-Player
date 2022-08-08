@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:custom="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent">
+    xmlns:custom="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent">
     <Style TargetType="{x:Type custom:PlayerControlButton}">
         <Setter Property="Template">
             <Setter.Value>

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Milky.OsuPlayer.Media.Lyric.Models;
+using Milki.OsuPlayer.Media.Lyric.Models;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider
+namespace Milki.OsuPlayer.Media.Lyric.SourceProvider
 {
     public abstract class SourceProviderBase
     {

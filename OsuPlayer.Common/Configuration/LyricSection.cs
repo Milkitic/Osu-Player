@@ -1,6 +1,6 @@
-﻿using Milky.OsuPlayer.Media.Lyric;
+﻿using Milki.OsuPlayer.Media.Lyric;
 
-namespace Milky.OsuPlayer.Common.Configuration
+namespace Milki.OsuPlayer.Common.Configuration
 {
     public class LyricSection
     {

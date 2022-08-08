@@ -9,7 +9,7 @@ using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.Subchannels;
 
-namespace Milky.OsuPlayer.Media.Audio
+namespace Milki.OsuPlayer.Media.Audio
 {
     public class SampleChannel : MultiElementsChannel
     {

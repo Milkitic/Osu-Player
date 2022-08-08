@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Media.Lyric.Output
+﻿namespace Milki.OsuPlayer.Media.Lyric.Output
 {
     public abstract class OutputBase
     {

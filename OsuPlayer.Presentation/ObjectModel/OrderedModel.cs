@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Milky.OsuPlayer.Presentation.ObjectModel
+namespace Milki.OsuPlayer.Presentation.ObjectModel
 {
     public class OrderedModel<T> : OrderedModel, IEquatable<OrderedModel<T>>, IOrderedModel
     {

@@ -1,6 +1,6 @@
-﻿using Milky.OsuPlayer.Presentation.Interaction;
+﻿using Milki.OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.ViewModels
+namespace Milki.OsuPlayer.ViewModels
 {
     public class EditCollectionPageViewModel : VmBase
     {

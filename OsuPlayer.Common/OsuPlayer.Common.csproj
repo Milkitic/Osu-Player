@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0-windows</TargetFrameworks>
-    <RootNamespace>Milky.OsuPlayer.Common</RootNamespace>
+    <RootNamespace>Milki.OsuPlayer.Common</RootNamespace>
     <UseWindowsForms>True</UseWindowsForms>
   </PropertyGroup>
 

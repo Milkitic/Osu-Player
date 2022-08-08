@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 
-namespace Milky.OsuPlayer.Shared.Dependency
+namespace Milki.OsuPlayer.Shared.Dependency
 {
     public static class Service
     {

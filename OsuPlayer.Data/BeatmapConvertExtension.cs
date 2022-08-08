@@ -3,9 +3,9 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Data.Models;
 
-namespace Milky.OsuPlayer.Data
+namespace Milki.OsuPlayer.Data
 {
     public static class BeatmapConvertExtension
     {

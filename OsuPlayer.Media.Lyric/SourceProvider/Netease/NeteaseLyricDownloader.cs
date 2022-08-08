@@ -2,7 +2,7 @@
 using System.Net;
 using Newtonsoft.Json.Linq;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
+namespace Milki.OsuPlayer.Media.Lyric.SourceProvider.Netease
 {
     public class NeteaseLyricDownloader : LyricDownloaderBase
     {

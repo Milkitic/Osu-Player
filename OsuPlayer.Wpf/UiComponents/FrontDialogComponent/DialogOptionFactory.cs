@@ -1,6 +1,6 @@
-﻿using Milky.OsuPlayer.Utils;
+﻿using Milki.OsuPlayer.Utils;
 
-namespace Milky.OsuPlayer.UiComponents.FrontDialogComponent
+namespace Milki.OsuPlayer.UiComponents.FrontDialogComponent
 {
     internal class DialogOptionFactory
     {

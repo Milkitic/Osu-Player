@@ -1,15 +1,15 @@
-﻿using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.Windows;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Milky.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Utils;
+using Milki.OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Pages.Settings
+namespace Milki.OsuPlayer.Pages.Settings
 {
     /// <summary>
     /// HotKeyPage.xaml 的交互逻辑

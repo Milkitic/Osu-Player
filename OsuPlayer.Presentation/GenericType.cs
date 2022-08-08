@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Markup;
 
-namespace Milky.OsuPlayer.Presentation
+namespace Milki.OsuPlayer.Presentation
 {
     public class GenericType : MarkupExtension
     {

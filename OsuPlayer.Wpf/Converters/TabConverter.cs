@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace Milky.OsuPlayer.Converters
+namespace Milki.OsuPlayer.Converters
 {
     public static class HeaderParams
     {

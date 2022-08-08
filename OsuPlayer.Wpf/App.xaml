@@ -1,5 +1,5 @@
 ﻿<Application
-    x:Class="Milky.OsuPlayer.App"
+    x:Class="Milki.OsuPlayer.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Exit="Application_Exit"

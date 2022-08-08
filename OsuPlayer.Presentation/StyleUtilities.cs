@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Windows;
 
-namespace Milky.OsuPlayer.Presentation
+namespace Milki.OsuPlayer.Presentation
 {
     public static class StyleUtilities
     {

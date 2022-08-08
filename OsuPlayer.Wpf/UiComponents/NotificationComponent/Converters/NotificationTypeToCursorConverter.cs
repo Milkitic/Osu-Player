@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace Milky.OsuPlayer.UiComponents.NotificationComponent.Converters
+namespace Milki.OsuPlayer.UiComponents.NotificationComponent.Converters
 {
     internal class NotificationTypeToCursorConverter : IValueConverter
     {

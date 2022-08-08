@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 
-namespace Milky.OsuPlayer.Presentation
+namespace Milki.OsuPlayer.Presentation
 {
     /// <summary>
     /// 扩展窗体基础类

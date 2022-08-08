@@ -5,7 +5,7 @@ using System.Linq;
 using System.Windows.Markup;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.Utils
+namespace Milki.OsuPlayer.Utils
 {
     public class FontFamilyComparer : IComparer<FontFamily>
     {

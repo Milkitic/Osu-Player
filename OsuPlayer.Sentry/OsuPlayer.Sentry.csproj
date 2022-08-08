@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Milky.OsuPlayer.Sentry</RootNamespace>
+    <RootNamespace>Milki.OsuPlayer.Sentry</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

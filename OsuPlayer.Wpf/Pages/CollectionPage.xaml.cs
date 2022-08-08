@@ -1,17 +1,4 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Presentation.ObjectModel;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponents.PanelComponent;
-using Milky.OsuPlayer.UserControls;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -20,9 +7,22 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Beatmap = Milky.OsuPlayer.Data.Models.Beatmap;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Media.Audio;
+using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Presentation.ObjectModel;
+using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.UiComponents.PanelComponent;
+using Milki.OsuPlayer.UserControls;
+using Milki.OsuPlayer.Utils;
+using Milki.OsuPlayer.ViewModels;
+using Milki.OsuPlayer.Windows;
+using Beatmap = Milki.OsuPlayer.Data.Models.Beatmap;
 
-namespace Milky.OsuPlayer.Pages
+namespace Milki.OsuPlayer.Pages
 {
     /// <summary>
     /// CollectionPage.xaml 的交互逻辑

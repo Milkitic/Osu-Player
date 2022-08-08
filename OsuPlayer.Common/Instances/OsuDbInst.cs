@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Coosu.Database;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.Common.Instances
+namespace Milki.OsuPlayer.Common.Instances
 {
     public class OsuDbInst
     {

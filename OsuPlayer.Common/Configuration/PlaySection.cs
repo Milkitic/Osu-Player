@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Milki.Extensions.MixPlayer.Devices;
+using Milki.OsuPlayer.Shared.Models;
 using Milky.OsuPlayer.Presentation.Annotations;
-using Milky.OsuPlayer.Shared.Models;
 using Newtonsoft.Json;
 
-namespace Milky.OsuPlayer.Common.Configuration
+namespace Milki.OsuPlayer.Common.Configuration
 {
     public class PlaySection : INotifyPropertyChanged
     {

@@ -8,14 +8,14 @@ using Coosu.Beatmap;
 using Coosu.Beatmap.Extensions;
 using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio.Playlist;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Media.Audio.Playlist;
+using Milki.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.Annotations;
-using Milky.OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.Media.Audio
+namespace Milki.OsuPlayer.Media.Audio
 {
 
     public sealed class ObservablePlayController : VmBase, IAsyncDisposable

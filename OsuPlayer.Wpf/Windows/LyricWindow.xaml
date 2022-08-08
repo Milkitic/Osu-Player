@@ -1,16 +1,17 @@
-﻿<presentation:WindowEx
-    x:Class="Milky.OsuPlayer.Windows.LyricWindow"
+﻿<presentation1:WindowEx
+    x:Class="Milki.OsuPlayer.Windows.LyricWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:debugging="clr-namespace:Milky.OsuPlayer.Presentation.Debugging;assembly=OsuPlayer.Presentation"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
     xmlns:shaderEffects="clr-namespace:MDS.ShaderEffects;assembly=ShaderEffects"
-    xmlns:textBlockComponent="clr-namespace:Milky.OsuPlayer.UiComponents.TextBlockComponent"
-    xmlns:textBoxComponent="clr-namespace:Milky.OsuPlayer.UiComponents.TextBoxComponent"
-    xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+    xmlns:presentation1="clr-namespace:Milki.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
+    xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
+    xmlns:debugging="clr-namespace:Milki.OsuPlayer.Presentation.Debugging;assembly=OsuPlayer.Presentation"
+    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
+    xmlns:textBlockComponent="clr-namespace:Milki.OsuPlayer.UiComponents.TextBlockComponent"
+    xmlns:textBoxComponent="clr-namespace:Milki.OsuPlayer.UiComponents.TextBoxComponent"
     Title="Lyric Window"
     Height="90"
     AllowsTransparency="True"
@@ -24,7 +25,7 @@
     Topmost="True"
     WindowStyle="None"
     mc:Ignorable="d">
-    <presentation:WindowEx.Resources>
+    <presentation1:WindowEx.Resources>
         <ControlTemplate x:Key="PlayButtonTempl">
             <Canvas Width="1000" Height="1000">
                 <Path Fill="{TemplateBinding Foreground}">
@@ -86,10 +87,10 @@
                 <Path Data="{StaticResource No}" Fill="{TemplateBinding Foreground}" />
             </Canvas>
         </ControlTemplate>
-    </presentation:WindowEx.Resources>
-    <presentation:WindowEx.DataContext>
+    </presentation1:WindowEx.Resources>
+    <presentation1:WindowEx.DataContext>
         <viewModels:LyricWindowViewModel />
-    </presentation:WindowEx.DataContext>
+    </presentation1:WindowEx.DataContext>
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -448,5 +449,5 @@
             </ListView>
         </Popup>
     </Grid>
-</presentation:WindowEx>
+</presentation1:WindowEx>
 

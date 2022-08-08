@@ -1,15 +1,15 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.Utils;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Media.Audio;
+using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.Utils;
 
-namespace Milky.OsuPlayer.ViewModels
+namespace Milki.OsuPlayer.ViewModels
 {
     public class LyricWindowViewModel : VmBase
     {

@@ -1,21 +1,22 @@
-﻿<presentation:WindowEx
-    x:Class="Milky.OsuPlayer.Windows.MainWindow"
+﻿<presentation1:WindowEx
+    x:Class="Milki.OsuPlayer.Windows.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
-    xmlns:converters="clr-namespace:Milky.OsuPlayer.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:frontDialogComponent="clr-namespace:Milky.OsuPlayer.UiComponents.FrontDialogComponent"
-    xmlns:local="clr-namespace:Milky.OsuPlayer.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:Milky.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
-    xmlns:notificationComponent="clr-namespace:Milky.OsuPlayer.UiComponents.NotificationComponent"
-    xmlns:pages="clr-namespace:Milky.OsuPlayer.Pages"
     xmlns:presentation="clr-namespace:Milky.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
-    xmlns:radioButtonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.RadioButtonComponent"
     xmlns:tb="http://www.hardcodet.net/taskbar"
-    xmlns:userControls="clr-namespace:Milky.OsuPlayer.UserControls"
-    xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
+    xmlns:presentation1="clr-namespace:Milki.OsuPlayer.Presentation;assembly=OsuPlayer.Presentation"
+    xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
+    xmlns:converters="clr-namespace:Milki.OsuPlayer.Converters"
+    xmlns:local="clr-namespace:Milki.OsuPlayer.Windows"
+    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
+    xmlns:radioButtonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.RadioButtonComponent"
+    xmlns:pages="clr-namespace:Milki.OsuPlayer.Pages"
+    xmlns:models="clr-namespace:Milki.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
+    xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
+    xmlns:frontDialogComponent="clr-namespace:Milki.OsuPlayer.UiComponents.FrontDialogComponent"
+    xmlns:notificationComponent="clr-namespace:Milki.OsuPlayer.UiComponents.NotificationComponent"
     Title="Osu Player"
     Width="998"
     Height="759"
@@ -37,10 +38,10 @@
             ResizeBorderThickness="3"
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
-    <presentation:WindowEx.DataContext>
+    <presentation1:WindowEx.DataContext>
         <viewModels:MainWindowViewModel />
-    </presentation:WindowEx.DataContext>
-    <presentation:WindowEx.Resources>
+    </presentation1:WindowEx.DataContext>
+    <presentation1:WindowEx.Resources>
         <converters:NavigationWidthConverter x:Key="CvtNavigationWidth" />
         <!--<converter:IconMarginConverter x:Key="CvtIconMargin" />-->
         <converters:TitleIconConverter x:Key="CvtTitleIcon" />
@@ -49,7 +50,7 @@
         <converters:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
         <converters:MsToStringConverter x:Key="MsToStringConverter" />
         <converters:SwitchRadioChangeConverter x:Key="SwitchRadioChangeConverter" />
-    </presentation:WindowEx.Resources>
+    </presentation1:WindowEx.Resources>
     <Grid Margin="{Binding WindowState, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource WindowMarginConverter}}">
         <Grid.Background>
             <ImageBrush
@@ -521,4 +522,4 @@
             </ContextMenu>
         </Grid.Resources>
     </Grid>
-</presentation:WindowEx>
+</presentation1:WindowEx>

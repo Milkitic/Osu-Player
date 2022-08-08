@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media.Animation;
 
-namespace Milky.OsuPlayer.Presentation.Debugging
+namespace Milki.OsuPlayer.Presentation.Debugging
 {
     // HOWTO: add the following attached property to any trigger and you will see when it is activated/deactivated in the output window
     //        TriggerTracing.TriggerName="your debug name"

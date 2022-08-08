@@ -1,9 +1,9 @@
 ﻿using System.Drawing;
-using Milky.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Presentation.Interaction;
 using Path = System.IO.Path;
 using Point = System.Windows.Point;
 
-namespace Milky.OsuPlayer.Common.Configuration
+namespace Milki.OsuPlayer.Common.Configuration
 {
     public class GeneralSection
     {

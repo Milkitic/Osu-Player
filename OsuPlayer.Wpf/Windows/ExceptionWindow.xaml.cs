@@ -1,8 +1,8 @@
-﻿using Milky.OsuPlayer.Presentation.Interaction;
-using System;
+﻿using System;
 using System.Windows;
+using Milki.OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.Windows
+namespace Milki.OsuPlayer.Windows
 {
     internal class ExceptionWindowViewModel : VmBase
     {

@@ -2,9 +2,9 @@
 using Coosu.Beatmap.Sections.GamePlay;
 using Coosu.Database;
 using Coosu.Database.DataTypes;
-using Beatmap = Milky.OsuPlayer.Data.Models.Beatmap;
+using Beatmap = Milki.OsuPlayer.Data.Models.Beatmap;
 
-namespace Milky.OsuPlayer.Common;
+namespace Milki.OsuPlayer.Common;
 
 public static class OsuDbReaderExtensions
 {

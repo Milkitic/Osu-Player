@@ -6,7 +6,7 @@
     <UseWPF>True</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Milky.OsuPlayer</RootNamespace>
+    <RootNamespace>Milki.OsuPlayer</RootNamespace>
     <AssemblyName>OsuPlayer</AssemblyName>
     <LangVersion>latest</LangVersion>
     <MinVerMinimumMajorMinor>1.0</MinVerMinimumMajorMinor>

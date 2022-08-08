@@ -6,7 +6,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace Milky.OsuPlayer.Presentation.Interaction
+namespace Milki.OsuPlayer.Presentation.Interaction
 {
     public static class Execute
     {

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.Presentation.Dependency
+namespace Milki.OsuPlayer.Presentation.Dependency
 {
     public static class ObjectExtension
     {

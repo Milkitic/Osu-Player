@@ -1,22 +1,22 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.Windows;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Media.Audio;
+using Milki.OsuPlayer.Media.Audio.Playlist;
+using Milki.OsuPlayer.Pages;
+using Milki.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.UserControls
+namespace Milki.OsuPlayer.UserControls
 {
     public class PlayListControlVm : VmBase
     {

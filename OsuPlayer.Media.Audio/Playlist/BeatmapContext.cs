@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
 
-namespace Milky.OsuPlayer.Media.Audio.Playlist
+namespace Milki.OsuPlayer.Media.Audio.Playlist
 {
     public class BeatmapContext
     {

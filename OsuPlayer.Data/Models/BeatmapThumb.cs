@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Milky.OsuPlayer.Presentation.Annotations;
 
-namespace Milky.OsuPlayer.Data.Models
+namespace Milki.OsuPlayer.Data.Models
 {
     public class BeatmapThumb : BaseEntity
     {

@@ -1,18 +1,3 @@
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Presentation.ObjectModel;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.Shared.Models;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.UiComponents.PanelComponent;
-using Milky.OsuPlayer.UserControls;
-using Milky.OsuPlayer.Windows;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,8 +10,23 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xaml;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Media.Audio;
+using Milki.OsuPlayer.Pages;
+using Milki.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Presentation.ObjectModel;
+using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.Shared.Models;
+using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.UiComponents.NotificationComponent;
+using Milki.OsuPlayer.UiComponents.PanelComponent;
+using Milki.OsuPlayer.UserControls;
+using Milki.OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.ViewModels
+namespace Milki.OsuPlayer.ViewModels
 {
     public class SearchPageViewModel : VmBase
     {

@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Windows;
+using Milki.OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Pages
+namespace Milki.OsuPlayer.Pages
 {
     /// <summary>
     /// FindPage.xaml 的交互逻辑

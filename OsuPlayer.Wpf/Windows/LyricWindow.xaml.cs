@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.Drawing;
-//using System.Drawing.Drawing2D;
-//using System.Drawing.Text;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,20 +10,24 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Lyric.Models;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.ViewModels;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Media.Audio;
+using Milki.OsuPlayer.Media.Lyric.Models;
+using Milki.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.ViewModels;
+//using System.Drawing;
+//using System.Drawing.Drawing2D;
+//using System.Drawing.Text;
+
 //using Brush = System.Drawing.Brush;
 //using Color = System.Drawing.Color;
 //using FontFamily = System.Drawing.FontFamily;
 //using Image = System.Drawing.Image;
 //using Pen = System.Drawing.Pen;
 
-namespace Milky.OsuPlayer.Windows
+namespace Milki.OsuPlayer.Windows
 {
     /// <summary>
     /// LyricWindow.xaml 的交互逻辑

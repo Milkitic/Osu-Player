@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using Milky.OsuPlayer.Presentation.Annotations;
 
-namespace Milky.OsuPlayer.Presentation.Interaction
+namespace Milki.OsuPlayer.Presentation.Interaction
 {
     /// <summary>
     /// ViewModel基础类

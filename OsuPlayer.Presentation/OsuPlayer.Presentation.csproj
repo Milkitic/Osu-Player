@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>True</UseWPF>
-    <RootNamespace>Milky.OsuPlayer.Presentation</RootNamespace>
+    <RootNamespace>Milki.OsuPlayer.Presentation</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

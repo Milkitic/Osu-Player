@@ -1,21 +1,20 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Scanning;
-using Milky.OsuPlayer.Instances;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.Windows;
-using NLog;
-using System;
+﻿using System;
 using System.Windows;
-
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Common.Instances;
+using Milki.OsuPlayer.Common.Scanning;
+using Milki.OsuPlayer.Instances;
+using Milki.OsuPlayer.Media.Audio;
+using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.Utils;
+using Milki.OsuPlayer.Windows;
+using NLog;
 #if !DEBUG
 using Milky.OsuPlayer.Sentry;
 #endif
 
-namespace Milky.OsuPlayer
+namespace Milki.OsuPlayer
 {
     /// <summary>
     /// App.xaml 的交互逻辑

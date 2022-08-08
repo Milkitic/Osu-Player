@@ -5,7 +5,7 @@ using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.Subchannels;
 using Milky.OsuPlayer.Presentation.Annotations;
 
-namespace Milky.OsuPlayer.Media.Audio
+namespace Milki.OsuPlayer.Media.Audio
 {
     public class DirectChannel : MultiElementsChannel
     {

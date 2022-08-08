@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Milky.OsuPlayer.Shared</RootNamespace>
+    <RootNamespace>Milki.OsuPlayer.Shared</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

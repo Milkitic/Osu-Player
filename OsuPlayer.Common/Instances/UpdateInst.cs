@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Milky.OsuPlayer.Common.Instances
+namespace Milki.OsuPlayer.Common.Instances
 {
     public class UpdateInst
     {

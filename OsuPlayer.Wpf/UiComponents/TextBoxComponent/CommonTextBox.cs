@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace Milky.OsuPlayer.UiComponents.TextBoxComponent
+namespace Milki.OsuPlayer.UiComponents.TextBoxComponent
 {
     public class CommonTextBox : TextBox
     {

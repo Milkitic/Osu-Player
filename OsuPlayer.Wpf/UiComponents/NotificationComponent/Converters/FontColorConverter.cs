@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.UiComponents.NotificationComponent.Converters
+namespace Milki.OsuPlayer.UiComponents.NotificationComponent.Converters
 {
     internal class FontColorConverter : IValueConverter
     {

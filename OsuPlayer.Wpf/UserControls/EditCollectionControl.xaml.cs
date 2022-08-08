@@ -1,13 +1,12 @@
-﻿using Microsoft.Win32;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.ViewModels;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Data;
+using Microsoft.Win32;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.ViewModels;
 
-namespace Milky.OsuPlayer.UserControls
+namespace Milki.OsuPlayer.UserControls
 {
     /// <summary>
     /// EditCollectionControl.xaml 的交互逻辑

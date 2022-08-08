@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Milky.OsuPlayer.UserControls
+namespace Milki.OsuPlayer.UserControls
 {
     /// <summary>
     /// AddCollectionControl.xaml 的交互逻辑

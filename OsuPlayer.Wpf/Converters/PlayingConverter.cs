@@ -4,11 +4,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Milky.OsuPlayer.Shared.Models;
-using Milky.OsuPlayer.UiComponents.ButtonComponent;
-using Milky.OsuPlayer.Windows;
+using Milki.OsuPlayer.Shared.Models;
+using Milki.OsuPlayer.UiComponents.ButtonComponent;
+using Milki.OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Converters
+namespace Milki.OsuPlayer.Converters
 {
     public class PlayingConverter : IMultiValueConverter
     {

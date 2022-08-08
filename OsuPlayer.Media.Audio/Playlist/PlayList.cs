@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Shared.Models;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Shared;
+using Milki.OsuPlayer.Shared.Models;
 
-namespace Milky.OsuPlayer.Media.Audio.Playlist
+namespace Milki.OsuPlayer.Media.Audio.Playlist
 {
     public class PlayList : VmBase
     {

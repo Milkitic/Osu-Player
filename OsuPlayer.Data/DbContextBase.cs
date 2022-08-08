@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Milky.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Data.Models;
 
-namespace Milky.OsuPlayer.Data
+namespace Milki.OsuPlayer.Data
 {
     public abstract class DbContextBase : DbContext
     {

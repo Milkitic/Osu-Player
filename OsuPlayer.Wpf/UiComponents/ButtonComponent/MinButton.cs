@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Milky.OsuPlayer.UiComponents.ButtonComponent
+namespace Milki.OsuPlayer.UiComponents.ButtonComponent
 {
     public class MinButton : SystemButton
     {

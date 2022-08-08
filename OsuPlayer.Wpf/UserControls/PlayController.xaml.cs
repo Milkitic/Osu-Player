@@ -7,17 +7,17 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using Milki.Extensions.MixPlayer;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.Windows;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Media.Audio;
+using Milki.OsuPlayer.Media.Audio.Playlist;
+using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.UiComponents.NotificationComponent;
+using Milki.OsuPlayer.Utils;
+using Milki.OsuPlayer.Windows;
 using NAudio.Wave;
 
-namespace Milky.OsuPlayer.UserControls
+namespace Milki.OsuPlayer.UserControls
 {
     public class PlayControllerVm : VmBase
     {

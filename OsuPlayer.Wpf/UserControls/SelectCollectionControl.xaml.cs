@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Media.Audio;
+using Milki.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.ViewModels;
+using Milki.OsuPlayer.Windows;
 using Milky.OsuPlayer.Presentation.Annotations;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.UserControls
+namespace Milki.OsuPlayer.UserControls
 {
     /// <summary>
     /// SelectCollectionControl.xaml 的交互逻辑

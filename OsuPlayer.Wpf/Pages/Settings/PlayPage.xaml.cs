@@ -2,9 +2,9 @@
 using System.Windows;
 using System.Windows.Controls;
 using Milki.Extensions.MixPlayer.Devices;
-using Milky.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Common.Configuration;
 
-namespace Milky.OsuPlayer.Pages.Settings
+namespace Milki.OsuPlayer.Pages.Settings
 {
     /// <summary>
     /// PlayPage.xaml 的交互逻辑

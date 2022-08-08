@@ -1,13 +1,13 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Media.Lyric;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider.Auto;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider.Kugou;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease;
-using Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic;
-using System;
+﻿using System;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Media.Lyric;
+using Milki.OsuPlayer.Media.Lyric.SourceProvider;
+using Milki.OsuPlayer.Media.Lyric.SourceProvider.Auto;
+using Milki.OsuPlayer.Media.Lyric.SourceProvider.Kugou;
+using Milki.OsuPlayer.Media.Lyric.SourceProvider.Netease;
+using Milki.OsuPlayer.Media.Lyric.SourceProvider.QQMusic;
 
-namespace Milky.OsuPlayer.Instances
+namespace Milki.OsuPlayer.Instances
 {
     public class LyricsInst
     {

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Coosu.Beatmap;
 
-namespace Milky.OsuPlayer.Data.Models
+namespace Milki.OsuPlayer.Data.Models
 {
     public class Beatmap : BaseEntity, IEquatable<Beatmap>
     {
@@ -153,40 +153,5 @@ namespace Milky.OsuPlayer.Data.Models
         {
             return !(left == right);
         }
-
-        #region Only used in HoLLy
-
-        //public string BeatmapChecksum { get; set; }
-        //public RankStatus RankedStatus { get; set; }
-        //public ushort CountHitCircles { get; set; }
-        //public ushort CountSliders { get; set; }
-        //public ushort CountSpinners { get; set; }
-        //public float ApproachRate { get; set; }
-        //public float CircleSize { get; set; }
-        //public float HpDrainRate { get; set; }
-        //public float OveralDifficulty { get; set; }
-        //public double SliderVelocity { get; set; }
-        //public List<Timing> TimingPoints { get; set; }
-        //public int ThreadId { get; set; } //what's this?
-        //public Rank GradeStandard { get; set; }
-        //public Rank GradeTaiko { get; set; }
-        //public Rank GradeCtB { get; set; }
-        //public Rank GradeMania { get; set; }
-        //public short OffsetLocal { get; set; }
-        //public float StackLeniency { get; set; }
-        //public short OffsetOnline { get; set; }
-        //public string TitleFont { get; set; }
-        //public bool Unplayed { get; set; }
-        //public DateTime LastPlayed { get; set; }
-        //public bool IsOsz2 { get; set; }
-        //public DateTime LastCheckAgainstOsuRepo { get; set; }
-        //public bool IgnoreBeatmapSounds { get; set; }
-        //public bool IgnoreBeatmapSkin { get; set; }
-        //public bool DisableStoryBoard { get; set; }
-        //public bool DisableVideo { get; set; }
-        //public bool VisualOverride { get; set; }
-        //public byte ManiaScrollSpeed { get; set; }
-
-        #endregion
     }
 }

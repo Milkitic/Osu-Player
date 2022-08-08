@@ -1,4 +1,4 @@
-namespace Milky.OsuPlayer.Sentry
+namespace Milki.OsuPlayer.Sentry
 {
     public static partial class SentryNLog
     {

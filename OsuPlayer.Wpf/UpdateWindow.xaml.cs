@@ -1,14 +1,14 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Windows;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Shared;
+using Milki.OsuPlayer.Windows;
 using Path = System.IO.Path;
 
-namespace Milky.OsuPlayer
+namespace Milki.OsuPlayer
 {
     /// <summary>
     /// UpdateWindow.xaml 的交互逻辑

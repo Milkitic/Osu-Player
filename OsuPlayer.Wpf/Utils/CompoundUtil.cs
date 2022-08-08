@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Utils
+﻿namespace Milki.OsuPlayer.Utils
 {
     class CompoundUtil
     {

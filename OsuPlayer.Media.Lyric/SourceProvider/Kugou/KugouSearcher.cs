@@ -4,7 +4,7 @@ using System.IO;
 using System.Net;
 using Newtonsoft.Json.Linq;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Kugou
+namespace Milki.OsuPlayer.Media.Lyric.SourceProvider.Kugou
 {
     public class KugouSearchResultSong : SearchSongResultBase
     {

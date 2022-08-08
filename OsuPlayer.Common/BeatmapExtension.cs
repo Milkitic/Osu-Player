@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Coosu.Beatmap.Sections.GamePlay;
-using Milky.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Data.Models;
 
-namespace Milky.OsuPlayer.Common
+namespace Milki.OsuPlayer.Common
 {
     public static class BeatmapExtension
     {

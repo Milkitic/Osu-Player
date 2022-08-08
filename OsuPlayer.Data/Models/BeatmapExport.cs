@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Milky.OsuPlayer.Data.Models
+namespace Milki.OsuPlayer.Data.Models
 {
     public class BeatmapExport : BaseEntity
     {

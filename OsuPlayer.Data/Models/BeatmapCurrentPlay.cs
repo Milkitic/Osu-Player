@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Milky.OsuPlayer.Data.Models
+namespace Milki.OsuPlayer.Data.Models
 {
     public class BeatmapCurrentPlay : BaseEntity
     {

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.UiComponents.LoaderComponent
+namespace Milki.OsuPlayer.UiComponents.LoaderComponent
 {
     public class Loader : System.Windows.Controls.Control
     {

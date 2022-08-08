@@ -1,10 +1,10 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Presentation;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
+using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Presentation;
 
-namespace Milky.OsuPlayer.Windows
+namespace Milki.OsuPlayer.Windows
 {
     /// <summary>
     /// NewVersionWindow.xaml 的交互逻辑
