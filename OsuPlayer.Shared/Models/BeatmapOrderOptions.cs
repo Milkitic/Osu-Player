@@ -1,11 +1,11 @@
-﻿namespace Milki.OsuPlayer.Shared.Models
+﻿namespace Milki.OsuPlayer.Shared.Models;
+
+public enum BeatmapOrderOptions
 {
-    public enum BeatmapOrderOptions
-    {
-        Artist,
-        Title,
-        CreateTime,
-        UpdateTime,
-        Index,
-    }
+    Index,
+    Artist,
+    Title,
+    Creator,
+    UpdateTime,
+    CreateTime
 }

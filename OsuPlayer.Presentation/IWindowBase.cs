@@ -1,8 +1,7 @@
 ﻿
-namespace Milki.OsuPlayer.Presentation
+namespace Milki.OsuPlayer.Wpf;
+
+public interface IWindowBase
 {
-    public interface IWindowBase
-    {
-        bool IsClosed { get; set; }
-    }
+    bool IsClosed { get; set; }
 }

@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Media;
 using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Common.Configuration;
-using Milki.OsuPlayer.Media.Audio;
 using Milki.OsuPlayer.Presentation.Interaction;
 using Milki.OsuPlayer.Shared.Dependency;
 using Milki.OsuPlayer.Utils;

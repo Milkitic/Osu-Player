@@ -21,7 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj" />
     <ProjectReference Include="..\OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj" />
-    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj" />
+    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Wpf.csproj" />
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
   </ItemGroup>
 

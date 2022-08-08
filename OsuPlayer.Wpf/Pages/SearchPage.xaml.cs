@@ -11,7 +11,6 @@ using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Common.Configuration;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
-using Milki.OsuPlayer.Media.Audio;
 using Milki.OsuPlayer.Presentation.Interaction;
 using Milki.OsuPlayer.Presentation.ObjectModel;
 using Milki.OsuPlayer.Shared.Dependency;

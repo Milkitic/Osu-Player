@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Milki.Extensions.MixPlayer.Devices;
-using Milki.OsuPlayer.Shared.Models;
+using Milki.OsuPlayer.Shared;
 using Milky.OsuPlayer.Presentation.Annotations;
 using Newtonsoft.Json;
 

@@ -1,24 +1,23 @@
 ﻿using System.Reflection;
 using System.Windows;
 
-namespace Milki.OsuPlayer.Presentation
+namespace Milki.OsuPlayer.Wpf;
+
+public static class StyleUtilities
 {
-    public static class StyleUtilities
+    public static void SetAlignment()
     {
-        public static void SetAlignment()
+        //获取系统是以Left-handed（true）还是Right-handed（false）
+        var ifLeft = SystemParameters.MenuDropAlignment;
+
+        if (ifLeft)
         {
-            //获取系统是以Left-handed（true）还是Right-handed（false）
-            var ifLeft = SystemParameters.MenuDropAlignment;
+            // change to false
+            var t = typeof(SystemParameters);
+            var field = t.GetField("_menuDropAlignment", BindingFlags.NonPublic | BindingFlags.Static);
+            field?.SetValue(null, false);
 
-            if (ifLeft)
-            {
-                // change to false
-                var t = typeof(SystemParameters);
-                var field = t.GetField("_menuDropAlignment", BindingFlags.NonPublic | BindingFlags.Static);
-                field?.SetValue(null, false);
-
-                ifLeft = SystemParameters.MenuDropAlignment;
-            }
+            ifLeft = SystemParameters.MenuDropAlignment;
         }
     }
 }

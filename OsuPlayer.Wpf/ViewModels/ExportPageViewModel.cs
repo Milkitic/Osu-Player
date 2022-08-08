@@ -20,10 +20,10 @@ namespace Milki.OsuPlayer.ViewModels
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private string _exportPath;
-        private ObservableCollection<OrderedModel<BeatmapExport>> _exportList;
-        private List<OrderedModel<BeatmapExport>> _selectedItems;
+        private ObservableCollection<OrderedModel<ExportItem>> _exportList;
+        private List<OrderedModel<ExportItem>> _selectedItems;
 
-        public ObservableCollection<OrderedModel<BeatmapExport>> ExportList
+        public ObservableCollection<OrderedModel<ExportItem>> ExportList
         {
             get => _exportList;
             set
@@ -33,7 +33,7 @@ namespace Milki.OsuPlayer.ViewModels
             }
         }
 
-        public List<OrderedModel<BeatmapExport>> SelectedItems
+        public List<OrderedModel<ExportItem>> SelectedItems
         {
             get => _selectedItems;
             set
@@ -84,7 +84,7 @@ namespace Milki.OsuPlayer.ViewModels
                             }
                             break;
                         case OrderedModel<Beatmap> orderedModel:
-                            Process.Start("Explorer", "/select," + orderedModel.Model.BeatmapExport?.ExportPath);
+                            Process.Start("Explorer", "/select," + orderedModel.Model.ExportItem?.ExportPath);
                             // todo: include
                             break;
                         default:
@@ -172,7 +172,7 @@ namespace Milki.OsuPlayer.ViewModels
                 }
             }
 
-            ExportList = new ObservableCollection<OrderedModel<BeatmapExport>>(exports.AsOrdered());
+            ExportList = new ObservableCollection<OrderedModel<ExportItem>>(exports.AsOrdered());
         }
     }
 }

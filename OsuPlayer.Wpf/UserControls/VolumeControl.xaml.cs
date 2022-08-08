@@ -1,11 +1,10 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using Milki.OsuPlayer.Audio.Playlist;
 using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Common.Configuration;
 using Milki.OsuPlayer.Data;
-using Milki.OsuPlayer.Media.Audio;
-using Milki.OsuPlayer.Media.Audio.Playlist;
 using Milki.OsuPlayer.Presentation.Interaction;
 using Milki.OsuPlayer.Shared.Dependency;
 

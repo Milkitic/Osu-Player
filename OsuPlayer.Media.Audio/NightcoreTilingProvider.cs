@@ -4,162 +4,164 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
+using Coosu.Beatmap.Sections.Timing;
 using Milki.Extensions.MixPlayer;
-using Milki.OsuPlayer.Common;
 
-namespace Milki.OsuPlayer.Media.Audio
+namespace Milki.OsuPlayer.Audio;
+
+internal class NightcoreTilingProvider : ISoundElementsProvider
 {
-    internal class NightcoreTilingProvider : ISoundElementsProvider
+    private readonly struct RhythmGroup
     {
-        private readonly OsuFile _osuFile;
-        private readonly TimeSpan _maxDuration;
-
-        public NightcoreTilingProvider(OsuFile osuFile, TimeSpan maxDuration)
+        public RhythmGroup(int periodCount, int loopCount, (string, int)[] relativeNode)
         {
-            _osuFile = osuFile;
-            _maxDuration = maxDuration;
+            PeriodCount = periodCount;
+            LoopCount = loopCount;
+            RelativeNodes = relativeNode;
         }
 
-        private static readonly string NC_FINISH = Path.Combine(Domain.DefaultPath, "nightcore-finish.wav");
-        private static readonly string NC_KICK = Path.Combine(Domain.DefaultPath, "nightcore-kick.wav");
-        private static readonly string NC_CLAP = Path.Combine(Domain.DefaultPath, "nightcore-clap.wav");
+        public readonly int PeriodCount;
+        public readonly int LoopCount;
+        public readonly (string fileName, int skipRhythm)[] RelativeNodes;
+    }
 
-        private struct RhythmGroup
+    private readonly OsuFile _osuFile;
+    private readonly TimeSpan _maxDuration;
+
+    private readonly string? _ncFinish;
+    private readonly string? _ncKick;
+    private readonly string? _ncClap;
+    private readonly Dictionary<int, RhythmGroup>? _rhythmDeclarations;
+
+    public NightcoreTilingProvider(string defaultFolder, OsuFile osuFile, TimeSpan maxDuration)
+    {
+        _osuFile = osuFile;
+        _maxDuration = maxDuration;
+
+        _ncFinish ??= Path.Combine(defaultFolder, "nightcore-finish.wav");
+        _ncKick ??= Path.Combine(defaultFolder, "nightcore-kick.wav");
+        _ncClap ??= Path.Combine(defaultFolder, "nightcore-clap.wav");
+        _rhythmDeclarations ??= new Dictionary<int, RhythmGroup>
         {
-            public RhythmGroup(int periodCount, int loopCount, (string, int)[] relativeNode)
+            [3] = new(6, 4, new[]
             {
-                PeriodCount = periodCount;
-                LoopCount = loopCount;
-                RelativeNodes = relativeNode;
+                (_ncKick, 2), (_ncClap, 1), (_ncKick, 2), (_ncClap, 1),
+            }),
+            [4] = new(8, 4, new[]
+            {
+                (_ncKick, 2), (_ncClap, 2), (_ncKick, 2), (_ncClap, 2),
+            }),
+            [5] = new(5, 8, new[]
+            {
+                (_ncKick, 2), (_ncClap, 2), (_ncKick, 1),
+            }),
+            [6] = new(6, 8, new[]
+            {
+                (_ncKick, 2), (_ncClap, 2), (_ncKick, 2),
+            }),
+            [7] = new(7, 8, new[]
+            {
+                (_ncKick, 2), (_ncClap, 2), (_ncKick, 2), (_ncClap, 1),
+            })
+        };
+    }
+
+    public Task<IEnumerable<SoundElement>> GetSoundElements()
+    {
+        var timingSection = _osuFile.TimingPoints;
+        var redLines = timingSection?.TimingList.Where(k => !k.IsInherit)
+                       ?? Array.Empty<TimingPoint>();
+        var allTimings = timingSection?.GetInterval(0.5)
+                         ?? new Dictionary<double, double>();
+        var redLineGroups = redLines
+            .Select(k =>
+                (k, allTimings.FirstOrDefault(o => Math.Abs(o.Key - k.Offset) < 0.001).Value)
+            )
+            .ToList();
+
+        var maxTime = MathEx.Max(_maxDuration.TotalMilliseconds,
+            _osuFile.HitObjects?.MaxTime ?? 0,
+            timingSection?.MaxTime ?? 0
+        );
+        var hitsoundList = new List<SoundElement>();
+
+        for (int i = 0; i < redLineGroups.Count; i++)
+        {
+            var (currentLine, interval) = redLineGroups[i];
+            var startTime = currentLine.Offset;
+            var endTime = i == redLineGroups.Count - 1 ? maxTime : redLineGroups[i + 1].k.Offset;
+            var rhythm = currentLine.Rhythm;
+
+            double period; // 一个周期的1/2数量
+            double loopCount; // 周期总数
+            double currentTime = startTime;
+
+            if (!_rhythmDeclarations!.TryGetValue(rhythm, out var ncRhythm))
+            {
+                rhythm = 4;
+                ncRhythm = _rhythmDeclarations[rhythm];
             }
 
-            public int PeriodCount { get; set; }
-
-            public int LoopCount { get; set; }
-
-            public (string fileName, int skipRhythm)[] RelativeNodes { get; set; }
-        }
-
-        private readonly Dictionary<int, RhythmGroup> _rhythmDeclarations =
-            new Dictionary<int, RhythmGroup>
+            period = ncRhythm.PeriodCount * interval;
+            loopCount = ncRhythm.LoopCount;
+            var exit = false;
+            while (!exit)
             {
-                [3] = new RhythmGroup(6, 4, new[]
+                for (int j = 0; j < loopCount; j++)
                 {
-                     (NC_KICK, 2), (NC_CLAP, 1), (NC_KICK, 2), (NC_CLAP, 1),
-                }),
-                [4] = new RhythmGroup(8, 4, new[]
-                {
-                     (NC_KICK, 2), (NC_CLAP, 2), (NC_KICK, 2), (NC_CLAP, 2),
-                }),
-                [5] = new RhythmGroup(5, 8, new[]
-                {
-                     (NC_KICK, 2), (NC_CLAP, 2), (NC_KICK, 1),
-                }),
-                [6] = new RhythmGroup(6, 8, new[]
-                {
-                     (NC_KICK, 2), (NC_CLAP, 2), (NC_KICK, 2),
-                }),
-                [7] = new RhythmGroup(7, 8, new[]
-                {
-                     (NC_KICK, 2), (NC_CLAP, 2), (NC_KICK, 2), (NC_CLAP, 1),
-                })
-            };
-
-        public async Task<IEnumerable<SoundElement>> GetSoundElements()
-        {
-            var timingSection = _osuFile.TimingPoints;
-            var redLines = timingSection.TimingList.Where(k => !k.IsInherit);
-            var allTimings = timingSection.GetInterval(0.5);
-            var redlineGroups = redLines
-                .Select(k =>
-                    (k, allTimings.FirstOrDefault(o => Math.Abs(o.Key - k.Offset) < 0.001).Value)
-                )
-                .ToList();
-
-            var maxTime = MathEx.Max(_maxDuration.TotalMilliseconds,
-                _osuFile.HitObjects.MaxTime,
-                timingSection.MaxTime
-            );
-            var hitsoundList = new List<SoundElement>();
-
-            for (int i = 0; i < redlineGroups.Count; i++)
-            {
-                var (currentLine, interval) = redlineGroups[i];
-                var startTime = currentLine.Offset;
-                var endTime = i == redlineGroups.Count - 1 ? maxTime : redlineGroups[i + 1].k.Offset;
-                var rhythm = currentLine.Rhythm;
-
-                double period; // 一个周期的1/2数量
-                double loopCount; // 周期总数
-                double currentTime = startTime;
-
-                if (!_rhythmDeclarations.ContainsKey(rhythm))
-                {
-                    rhythm = 4;
-                }
-
-                var ncRhythm = _rhythmDeclarations[rhythm];
-                period = ncRhythm.PeriodCount * interval;
-                loopCount = ncRhythm.LoopCount;
-                var exit = false;
-                while (!exit)
-                {
-                    for (int j = 0; j < loopCount; j++)
+                    if (exit) break;
+                    if (j == 0)
                     {
-                        if (exit) break;
-                        if (j == 0)
+                        var soundElement = GetHitsoundAndSkip(ref currentTime, 0, _ncFinish!);
+                        hitsoundList.Add(soundElement);
+                    }
+
+                    foreach (var (fileName, skipRhythm) in ncRhythm.RelativeNodes)
+                    {
+                        var soundElement = GetHitsoundAndSkip(ref currentTime, interval * skipRhythm, fileName);
+                        if (!(soundElement.Offset >= endTime))
                         {
-                            var soundElement = GetHitsoundAndSkip(ref currentTime, 0, NC_FINISH);
                             hitsoundList.Add(soundElement);
                         }
-
-                        foreach (var (fileName, skipRhythm) in ncRhythm.RelativeNodes)
+                        else
                         {
-                            var soundElement = GetHitsoundAndSkip(ref currentTime, interval * skipRhythm, fileName);
-                            if (!(soundElement.Offset >= endTime))
-                            {
-                                hitsoundList.Add(soundElement);
-                            }
-                            else
-                            {
-                                if (soundElement.Offset.Equals(endTime)) hitsoundList.Add(soundElement);
-                                exit = true;
-                                break;
-                            }
+                            if (soundElement.Offset.Equals(endTime)) hitsoundList.Add(soundElement);
+                            exit = true;
+                            break;
                         }
                     }
                 }
             }
-
-            return hitsoundList;
         }
 
-        private static SoundElement GetHitsoundAndSkip(ref double currentTime, double skipTime,
-            string fileName)
-        {
-            var ele = SoundElement.Create(currentTime, 1, 0, fileName);
-            currentTime += skipTime;
-            return ele;
-        }
+        return Task.FromResult<IEnumerable<SoundElement>>(hitsoundList);
     }
 
-    public static class MathEx
+    private static SoundElement GetHitsoundAndSkip(ref double currentTime, double skipTime,
+        string fileName)
     {
-        public static T Max<T>(params T[] values) where T : IComparable
+        var ele = SoundElement.Create(currentTime, 1, 0, fileName);
+        currentTime += skipTime;
+        return ele;
+    }
+}
+
+public static class MathEx
+{
+    public static T Max<T>(params T[] values) where T : struct, IComparable
+    {
+        return Max(values.AsEnumerable());
+    }
+
+    public static T Max<T>(IEnumerable<T> values) where T : struct, IComparable
+    {
+        var def = default(T);
+
+        foreach (var value in values)
         {
-            return Max(values.AsEnumerable());
+            if (def.CompareTo(value) < 0) def = value;
         }
 
-        public static T Max<T>(IEnumerable<T> values) where T : IComparable
-        {
-            var def = default(T);
-
-            foreach (var value in values)
-            {
-                if (def == null || def.CompareTo(value) < 0) def = value;
-            }
-
-            return def;
-        }
+        return def;
     }
 }

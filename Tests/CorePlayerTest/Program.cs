@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Coosu.Beatmap;
 using Microsoft.Extensions.Logging;
 using Milki.Extensions.MixPlayer;
-using Milki.OsuPlayer.Media.Audio;
+using Milki.OsuPlayer.Audio;
 
 namespace CorePlayerTest
 {

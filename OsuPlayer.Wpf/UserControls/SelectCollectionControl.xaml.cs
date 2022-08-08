@@ -9,7 +9,6 @@ using Coosu.Beatmap;
 using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
-using Milki.OsuPlayer.Media.Audio;
 using Milki.OsuPlayer.Presentation;
 using Milki.OsuPlayer.Shared.Dependency;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;

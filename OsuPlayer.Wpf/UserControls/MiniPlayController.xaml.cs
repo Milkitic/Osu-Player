@@ -3,10 +3,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
+using Milki.OsuPlayer.Audio.Playlist;
 using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Data;
-using Milki.OsuPlayer.Media.Audio;
-using Milki.OsuPlayer.Media.Audio.Playlist;
 using Milki.OsuPlayer.Presentation.Interaction;
 using Milki.OsuPlayer.Shared.Dependency;
 

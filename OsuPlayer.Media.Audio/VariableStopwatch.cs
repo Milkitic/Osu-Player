@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Milki.OsuPlayer.Media.Audio
+namespace Milki.OsuPlayer.Audio
 {
     public class VariableStopwatch : Stopwatch
     {

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Windows;
-using Milki.OsuPlayer.Media.Audio.Playlist;
+using Milki.OsuPlayer.Audio.Playlist;
 
 namespace Milki.OsuPlayer.Windows
 {

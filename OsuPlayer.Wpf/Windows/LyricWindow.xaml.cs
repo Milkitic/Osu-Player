@@ -11,7 +11,6 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Coosu.Beatmap;
 using Milki.OsuPlayer.Common.Configuration;
-using Milki.OsuPlayer.Media.Audio;
 using Milki.OsuPlayer.Media.Lyric.Models;
 using Milki.OsuPlayer.Presentation;
 using Milki.OsuPlayer.Presentation.Interaction;

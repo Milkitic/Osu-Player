@@ -1,149 +1,90 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Threading.Tasks;
+using Anotar.NLog;
 using Coosu.Beatmap;
 using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milki.Extensions.MixPlayer.Subchannels;
-using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Common.Configuration;
-using Milki.OsuPlayer.Media.Audio.Playlist;
 using NAudio.Wave;
 
-namespace Milki.OsuPlayer.Media.Audio
+namespace Milki.OsuPlayer.Audio;
+
+public sealed class OsuMixPlayer : MultichannelPlayer
 {
-    public class FileCache
+    private readonly FileCache _fileCache = new();
+    private readonly PlayerOptions _options;
+    private readonly OsuFile _osuFile;
+    private readonly string _sourceFolder;
+
+    private int _manualOffset;
+
+    public OsuMixPlayer(PlayerOptions options, LocalOsuFile osuFile)
+        : base(options.DeviceDescription)
     {
-        private readonly ConcurrentDictionary<string, string> _pathCache =
-            new ConcurrentDictionary<string, string>();
+        _options = options;
+        _osuFile = osuFile;
+        _sourceFolder = Path.GetDirectoryName(osuFile.OriginalPath)!;
+    }
 
-        public string GetFileUntilFind(string sourceFolder, string fileNameWithoutExtension)
+    public OsuMixPlayer(PlayerOptions options, OsuFile osuFile, string sourceFolder)
+        : base(options.DeviceDescription)
+    {
+        _options = options;
+        _osuFile = osuFile;
+        _sourceFolder = sourceFolder;
+    }
+
+    public override string Description => nameof(OsuMixPlayer);
+
+    public SingleMediaChannel? MusicChannel { get; private set; }
+    public HitsoundChannel? HitsoundChannel { get; private set; }
+    public SampleChannel? SampleChannel { get; private set; }
+    public IWavePlayer? Device => Engine.OutputDevice;
+
+    public int ManualOffset
+    {
+        get => _manualOffset;
+        set
         {
-            var combine = Path.Combine(sourceFolder, fileNameWithoutExtension);
-            if (_pathCache.TryGetValue(combine, out var value))
-            {
-                return value;
-            }
-
-            string path = "";
-            foreach (var extension in Information.SupportExtensions)
-            {
-                path = Path.Combine(sourceFolder, fileNameWithoutExtension + extension);
-
-                if (File.Exists(path))
-                {
-                    _pathCache.TryAdd(combine, path);
-                    return path;
-                }
-            }
-
-            _pathCache.TryAdd(combine, path);
-            return path;
+            if (HitsoundChannel != null) HitsoundChannel.ManualOffset = value;
+            if (SampleChannel != null) SampleChannel.ManualOffset = value;
+            _manualOffset = value;
         }
     }
 
-    public class OsuMixPlayer : MultichannelPlayer
+    public override async Task Initialize()
     {
-        public static OsuMixPlayer Current { get; private set; }
-
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private FileCache _fileCache;
-
-        private OsuFile _osuFile;
-        private string _sourceFolder;
-        private int _manualOffset;
-
-        public override string Description { get; } = "OsuPlayer";
-
-        public SingleMediaChannel MusicChannel { get; private set; }
-        public HitsoundChannel HitsoundChannel { get; private set; }
-        public SampleChannel SampleChannel { get; private set; }
-        public IWavePlayer Device => Engine.OutputDevice;
-        public int ManualOffset
+        try
         {
-            get => _manualOffset;
-            set
+            if (CachedSoundFactory.GetCount("special") == 0)
             {
-                if (HitsoundChannel != null) HitsoundChannel.ManualOffset = value;
-                if (SampleChannel != null) SampleChannel.ManualOffset = value;
-                _manualOffset = value;
-            }
-        }
-
-        public OsuMixPlayer(LocalOsuFile osuFile) : base(AppSettings.Default?.Play?.DeviceInfo)
-        {
-            _osuFile = osuFile;
-            _sourceFolder = Path.GetDirectoryName(osuFile.OriginalPath);
-            Current = this;
-        }
-
-        public OsuMixPlayer(OsuFile osuFile, string sourceFolder) : base(AppSettings.Default.Play.DeviceInfo)
-        {
-            _osuFile = osuFile;
-            _sourceFolder = sourceFolder;
-            Current = this;
-        }
-
-        public override async Task Initialize()
-        {
-            _fileCache = new FileCache();
-            try
-            {
-                if (CachedSoundFactory.GetCount() == 0)
+                foreach (var file in new DirectoryInfo(_options.DefaultFolder).EnumerateFiles("*.wav"))
                 {
-                    var files = new DirectoryInfo(Domain.DefaultPath).GetFiles("*.wav");
-                    foreach (var file in files)
-                    {
-                        await CachedSoundFactory.GetOrCreateCacheSound(Engine.WaveFormat, file.FullName)
-                            .ConfigureAwait(false);
-                    }
+                    await CachedSoundFactory.GetOrCreateCacheSound(Engine.FileWaveFormat, file.FullName);
                 }
-
-                await InnerLoad().ConfigureAwait(false);
-                await base.Initialize().ConfigureAwait(false);
             }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error while Initializing players.");
-                throw;
-            }
-        }
 
-        public async Task Reload(OsuFile osuFile, string sourceFolder)
-        {
-            await DisposeSubChannelsAsync();
-            _osuFile = osuFile;
-            _sourceFolder = sourceFolder;
-
-            await InnerLoad().ConfigureAwait(false);
-            await base.Initialize().ConfigureAwait(false);
-        }
-
-        private async Task InnerLoad()
-        {
             var mp3Path = Path.Combine(_sourceFolder, _osuFile?.General.AudioFilename ?? ".");
-            MusicChannel = new SingleMediaChannel(Engine, mp3Path,
-                AppSettings.Default?.Play?.PlaybackRate ?? 1,
-                AppSettings.Default?.Play?.PlayUseTempo ?? true)
+            MusicChannel = new SingleMediaChannel(Engine, mp3Path, _options.InitialPlaybackRate, _options.InitialKeepTune)
             {
                 Description = "Music",
                 IsReferenced = true
             };
 
             AddSubchannel(MusicChannel);
-            await MusicChannel.Initialize().ConfigureAwait(false);
+            await MusicChannel.Initialize();
 
-            HitsoundChannel = new HitsoundChannel(_osuFile, _sourceFolder, Engine, _fileCache);
+            HitsoundChannel = new HitsoundChannel(_options.DefaultFolder, _osuFile, _sourceFolder, Engine, _fileCache);
             AddSubchannel(HitsoundChannel);
-            await HitsoundChannel.Initialize().ConfigureAwait(false);
+            await HitsoundChannel.Initialize();
 
-            SampleChannel = new SampleChannel(_osuFile, _sourceFolder, Engine, new Subchannel[]
+            SampleChannel = new SampleChannel(_options.DefaultFolder, _osuFile, _sourceFolder, Engine, new Subchannel[]
             {
                 MusicChannel, HitsoundChannel
             }, _fileCache);
             AddSubchannel(SampleChannel);
-            await SampleChannel.Initialize().ConfigureAwait(false);
+            await SampleChannel.Initialize();
             //await CachedSound.CreateCacheSounds(HitsoundChannel.SoundElementCollection
             //    .Where(k => k.FilePath != null)
             //    .Select(k => k.FilePath)
@@ -151,82 +92,80 @@ namespace Milki.OsuPlayer.Media.Audio
             //        .Where(k => k.FilePath != null)
             //        .Select(k => k.FilePath))
             //    .Concat(new[] { mp3Path })
-            //).ConfigureAwait(false);
+            //);
             foreach (var channel in Subchannels)
             {
-                channel.PlayStatusChanged += status => Logger.Debug($"{channel.Description}: {status}");
+                channel.PlayStatusChanged += status =>
+                {
+                    LogTo.Debug(() => $"{channel.Description} PlayStatus changed to {status}.");
+                };
             }
 
-            InitVolume();
+            SetMainVolume(_options.InitialMainVolume);
+            SetMusicVolume(_options.InitialMusicVolume);
+            SetHitsoundVolume(_options.InitialHitsoundVolume);
+            SetSampleVolume(_options.InitialSampleVolume);
+            SetHitsoundBalance(_options.InitialHitsoundBalance);
+            ManualOffset = _options.InitialOffset;
 
-            await CachedSoundFactory.GetOrCreateCacheSound(Engine.WaveFormat, mp3Path);
+            await CachedSoundFactory.GetOrCreateCacheSound(Engine.FileWaveFormat, mp3Path);
             await BufferSoundElementsAsync();
+
+            await base.Initialize();
         }
-
-        private void InitVolume()
+        catch (Exception ex)
         {
-            MusicChannel.Volume = AppSettings.Default?.Volume?.Music ?? 1;
-            HitsoundChannel.Volume = AppSettings.Default?.Volume?.Hitsound ?? 1;
-            HitsoundChannel.BalanceFactor = AppSettings.Default?.Volume?.BalanceFactor / 100 ?? 0;
-            SampleChannel.Volume = AppSettings.Default?.Volume?.Sample ?? 1;
-            Volume = AppSettings.Default?.Volume?.Main ?? 1;
-            if (AppSettings.Default?.Volume != null)
-                AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
+            LogTo.ErrorException("Error while Initializing players.", ex);
+            throw;
         }
+    }
 
-        private void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    public void SetMainVolume(float volume)
+    {
+        Volume = volume;
+    }
+
+    public void SetMusicVolume(float volume)
+    {
+        if (MusicChannel != null) MusicChannel.Volume = volume;
+    }
+
+    public void SetHitsoundVolume(float volume)
+    {
+        if (HitsoundChannel != null) HitsoundChannel.Volume = volume;
+    }
+
+    public void SetSampleVolume(float volume)
+    {
+        if (SampleChannel != null) SampleChannel.Volume = volume;
+    }
+
+    public void SetHitsoundBalance(float balance)
+    {
+        if (HitsoundChannel != null) HitsoundChannel.BalanceFactor = balance;
+    }
+
+    public async Task SetPlayMods(PlayModifier modifier)
+    {
+        switch (modifier)
         {
-            switch (e.PropertyName)
-            {
-                case nameof(AppSettings.Default.Volume.Music):
-                    MusicChannel.Volume = AppSettings.Default.Volume.Music;
-                    break;
-                case nameof(AppSettings.Default.Volume.Hitsound):
-                    HitsoundChannel.Volume = AppSettings.Default.Volume.Hitsound;
-                    break;
-                case nameof(AppSettings.Default.Volume.BalanceFactor):
-                    HitsoundChannel.BalanceFactor = AppSettings.Default.Volume.BalanceFactor / 100;
-                    break;
-                case nameof(AppSettings.Default.Volume.Sample):
-                    SampleChannel.Volume = AppSettings.Default.Volume.Sample;
-                    break;
-                case nameof(AppSettings.Default.Volume.Main):
-                    Volume = AppSettings.Default.Volume.Main;
-                    break;
-            }
-        }
-
-        public async Task SetPlayMod(PlayModifier modifier)
-        {
-            switch (modifier)
-            {
-                case PlayModifier.None:
-                    await SetPlaybackRate(1, false).ConfigureAwait(false);
-                    break;
-                case PlayModifier.DoubleTime:
-                    await SetPlaybackRate(1.5f, true).ConfigureAwait(false);
-                    break;
-                case PlayModifier.NightCore:
-                    await SetPlaybackRate(1.5f, false).ConfigureAwait(false);
-                    break;
-                case PlayModifier.HalfTime:
-                    await SetPlaybackRate(0.75f, true).ConfigureAwait(false);
-                    break;
-                case PlayModifier.DayCore:
-                    await SetPlaybackRate(0.75f, false).ConfigureAwait(false);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(modifier), modifier, null);
-            }
-
-            AppSettings.SaveDefault();
-        }
-
-        public override ValueTask DisposeAsync()
-        {
-            if (AppSettings.Default?.Volume != null)
-                AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
-            return base.DisposeAsync();
+            case PlayModifier.None:
+                await SetPlaybackRate(1, false);
+                break;
+            case PlayModifier.DoubleTime:
+                await SetPlaybackRate(1.5f, true);
+                break;
+            case PlayModifier.NightCore:
+                await SetPlaybackRate(1.5f, false);
+                break;
+            case PlayModifier.HalfTime:
+                await SetPlaybackRate(0.75f, true);
+                break;
+            case PlayModifier.DayCore:
+                await SetPlaybackRate(0.75f, false);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(modifier), modifier, null);
         }
     }
 }

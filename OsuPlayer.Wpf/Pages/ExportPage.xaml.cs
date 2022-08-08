@@ -133,7 +133,7 @@ namespace Milki.OsuPlayer.Pages
                 if (mp3FileInfo.Exists || bgFileInfo.Exists)
                 {
                     await using var appDbContext = new ApplicationDbContext();
-                    await appDbContext.AddOrUpdateExport(new BeatmapExport
+                    await appDbContext.AddOrUpdateExport(new ExportItem
                     {
                         Beatmap = beatmap,
                         BeatmapId = beatmap.Id,

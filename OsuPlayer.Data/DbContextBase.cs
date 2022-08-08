@@ -1,42 +1,37 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Milki.OsuPlayer.Data.Models;
 
-namespace Milki.OsuPlayer.Data
+namespace Milki.OsuPlayer.Data;
+
+public abstract class DbContextBase : DbContext
 {
-    public abstract class DbContextBase : DbContext
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
+        CancellationToken cancellationToken = default)
     {
-        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
-            CancellationToken cancellationToken = default)
-        {
-            this.ModifyModelTimestamp();
-            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-        }
+        ModifyModelTimestamp();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
 
-        public override int SaveChanges()
-        {
-            this.ModifyModelTimestamp();
-            return base.SaveChanges();
-        }
+    public override int SaveChanges()
+    {
+        ModifyModelTimestamp();
+        return base.SaveChanges();
+    }
 
-        private void ModifyModelTimestamp()
+    private void ModifyModelTimestamp()
+    {
+        foreach (var e in ChangeTracker.Entries())
         {
-            var entries = ChangeTracker
-                .Entries()
-                .Where(e => e.Entity is BaseEntity && e.State is EntityState.Added or EntityState.Modified);
-
-            foreach (var entityEntry in entries)
+            if (e.Entity is IAutoCreatable creatable && e.State == EntityState.Added)
             {
-                var baseEntity = (BaseEntity)entityEntry.Entity;
-                baseEntity.UpdateTime = DateTime.Now;
-
-                if (entityEntry.State == EntityState.Added)
-                {
-                    baseEntity.CreateTime = DateTime.Now;
-                }
+                creatable.CreateTime = DateTime.Now;
+            }
+            else if (e.Entity is IAutoUpdatable updatable && e.State == EntityState.Modified)
+            {
+                updatable.UpdatedTime = DateTime.Now;
             }
         }
     }

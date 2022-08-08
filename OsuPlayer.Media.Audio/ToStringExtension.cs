@@ -2,7 +2,7 @@
 using Coosu.Beatmap.Sections.HitObject;
 using Coosu.Beatmap.Sections.Timing;
 
-namespace Milki.OsuPlayer.Media.Audio
+namespace Milki.OsuPlayer.Audio
 {
     public static class ToStringExtension
     {

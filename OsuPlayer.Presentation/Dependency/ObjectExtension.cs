@@ -3,50 +3,101 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
-namespace Milki.OsuPlayer.Presentation.Dependency
+namespace Milki.OsuPlayer.Wpf.Dependency;
+
+public static class ObjectExtension
 {
-    public static class ObjectExtension
+    public static T GetParentObjectByName<T>(this DependencyObject obj, string name) where T : FrameworkElement
     {
-        public static T GetParentObjectByName<T>(this DependencyObject obj, string name) where T : FrameworkElement
+        DependencyObject parent = VisualTreeHelper.GetParent(obj);
+        while (parent != null)
         {
-            DependencyObject parent = VisualTreeHelper.GetParent(obj);
-            while (parent != null)
+            if (parent is T && (((T)parent).Name == name || string.IsNullOrEmpty(name)))
             {
-                if (parent is T && (((T)parent).Name == name || string.IsNullOrEmpty(name)))
-                {
-                    return (T)parent;
-                }
-                parent = VisualTreeHelper.GetParent(parent);
+                return (T)parent;
             }
+            parent = VisualTreeHelper.GetParent(parent);
+        }
+        return null;
+    }
+
+    public static T GetParentObject<T>(this FrameworkElement obj) where T : FrameworkElement
+    {
+        return FindParentObjects(obj) as T;
+    }
+
+    public static FrameworkElement FindParentObjects(this FrameworkElement obj, params Type[] types)
+    {
+        DependencyObject parent = VisualTreeHelper.GetParent(obj);
+        while (parent != null)
+        {
+            if (parent is FrameworkElement fe)
+            {
+                if (types.Length == 0)
+                    return fe;
+
+                var type = fe.GetType();
+                if (types.Any(k => type.IsSubclassOf(k) || k == type))
+                {
+                    return fe;
+                }
+            }
+
+            parent = VisualTreeHelper.GetParent(parent);
+        }
+
+        return null;
+    }
+
+    public static T FindChildObjects<T>(this DependencyObject parent, string childName) where T : DependencyObject
+    {
+        if (parent == null)
+        {
             return null;
         }
 
-        public static T GetParentObject<T>(this FrameworkElement obj) where T : FrameworkElement
-        {
-            return FindParentObjects(obj) as T;
-        }
+        T foundChild = null;
 
-        public static FrameworkElement FindParentObjects(this FrameworkElement obj, params Type[] types)
+        int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+
+        for (int i = 0; i < childrenCount; i++)
         {
-            DependencyObject parent = VisualTreeHelper.GetParent(obj);
-            while (parent != null)
+            var child = VisualTreeHelper.GetChild(parent, i);
+            T childType = child as T;
+
+            if (childType == null)
             {
-                if (parent is FrameworkElement fe)
-                {
-                    if (types.Length == 0)
-                        return fe;
+                foundChild = FindChildObjects<T>(child, childName);
 
-                    var type = fe.GetType();
-                    if (types.Any(k => type.IsSubclassOf(k)))
+                if (foundChild != null) break;
+            }
+            else
+            if (!string.IsNullOrEmpty(childName))
+            {
+                var frameworkElement = child as FrameworkElement;
+
+                if (frameworkElement != null && frameworkElement.Name == childName)
+                {
+                    foundChild = (T)child;
+                    break;
+                }
+                else
+                {
+                    foundChild = FindChildObjects<T>(child, childName);
+
+                    if (foundChild != null)
                     {
-                        return fe;
+                        break;
                     }
                 }
-
-                parent = VisualTreeHelper.GetParent(parent);
             }
-
-            return null;
+            else
+            {
+                foundChild = (T)child;
+                break;
+            }
         }
+
+        return foundChild;
     }
 }
