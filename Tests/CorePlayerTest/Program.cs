@@ -26,11 +26,6 @@ namespace CorePlayerTest
                        "Risshuu feat. Choko - Take (yf_bmp) [Ta~ke take take take take take tatata~].osu";
             var folder = Path.GetDirectoryName(path);
             var osuFile = await OsuFile.ReadFromFileAsync(path);
-            if (!osuFile.ReadSuccess)
-            {
-                throw osuFile.ReadException;
-            }
-
             var player = new OsuMixPlayer(osuFile);
             await player.Initialize();
 

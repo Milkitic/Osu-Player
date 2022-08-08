@@ -68,7 +68,7 @@ namespace Milky.OsuPlayer.Media.Audio
         public async Task<IEnumerable<SoundElement>> GetSoundElements()
         {
             var timingSection = _osuFile.TimingPoints;
-            var redLines = timingSection.TimingList.Where(k => !k.Inherit);
+            var redLines = timingSection.TimingList.Where(k => !k.IsInherit);
             var allTimings = timingSection.GetInterval(0.5);
             var redlineGroups = redLines
                 .Select(k =>

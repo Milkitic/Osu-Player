@@ -8,6 +8,7 @@ using Milki.Extensions.MixPlayer.Exporters;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.Subchannels;
 using Milky.OsuPlayer.Media.Audio;
+using NAudio.Wave;
 
 namespace ExportTest
 {
@@ -32,12 +33,7 @@ namespace ExportTest
 
             var folder = Path.GetDirectoryName(path);
             var osuFile = await OsuFile.ReadFromFileAsync(path);
-            if (!osuFile.ReadSuccess)
-            {
-                throw osuFile.ReadException;
-            }
-
-            using var engine = new AudioPlaybackEngine();
+            using var engine = new AudioPlaybackEngine(default(IWavePlayer));
             var mp3Path = Path.Combine(folder, osuFile?.General.AudioFilename ?? ".");
 
             var fileCache = new FileCache();

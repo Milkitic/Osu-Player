@@ -42,7 +42,7 @@ namespace Milky.OsuPlayer.Common.Configuration
 
         public bool AutoPlay { get; set; } = false;
         public bool Memory { get; set; } = true;
-        public DeviceInfo DeviceInfo { get; set; } = null;
+        public DeviceDescription DeviceInfo { get; set; } = null;
         public int DesiredLatency { get; set; } = 5;
         public bool IsExclusive { get; set; } = false;
         public PlaylistMode PlayListMode { get; set; } = PlaylistMode.Normal;

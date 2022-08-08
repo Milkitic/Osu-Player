@@ -93,13 +93,20 @@ namespace Milky.OsuPlayer.Pages
             {
                 var folder = beatmap.GetFolder(out _, out _);
                 var mp3FileInfo = new FileInfo(Path.Combine(folder, beatmap.AudioFileName));
-                var osuFile = await OsuFile.ReadFromFileAsync(Path.Combine(folder, beatmap.BeatmapFileName), options =>
+                LocalOsuFile osuFile;
+                try
                 {
-                    options.IncludeSection("Events");
-                    options.IgnoreSample();
-                    options.IgnoreStoryboard();
-                });
-                if (!osuFile.ReadSuccess) return;
+                    osuFile = await OsuFile.ReadFromFileAsync(Path.Combine(folder, beatmap.BeatmapFileName), options =>
+                    {
+                        options.IncludeSection("Events");
+                        options.IgnoreSample();
+                        options.IgnoreStoryboard();
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return;
+                }
 
                 var bgFileInfo = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));
 

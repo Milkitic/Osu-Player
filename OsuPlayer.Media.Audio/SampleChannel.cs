@@ -20,7 +20,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public SampleChannel(LocalOsuFile osuFile, AudioPlaybackEngine engine,
             ICollection<Subchannel> referencedChannels, FileCache cache = null)
-            : this(osuFile, Path.GetDirectoryName(osuFile.OriginPath), engine, referencedChannels, cache)
+            : this(osuFile, Path.GetDirectoryName(osuFile.OriginalPath), engine, referencedChannels, cache)
         {
         }
 
@@ -38,7 +38,7 @@ namespace Milky.OsuPlayer.Media.Audio
         public override async Task<IEnumerable<SoundElement>> GetSoundElements()
         {
             var elements = new ConcurrentBag<SoundElement>();
-            var samples = _osuFile.Events.SampleInfo;
+            var samples = _osuFile.Events?.Samples;
             if (samples == null)
                 return new List<SoundElement>(elements);
 
@@ -57,7 +57,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
             var elementList = new List<SoundElement>(elements);
 
-            if (PlaybackRate.Equals(1.5f) && !UseTempo)
+            if (PlaybackRate.Equals(1.5f) && !KeepTune)
             {
                 var duration1 = MathEx.Max(ReferencedChannels.Select(k => k.ChannelEndTime));
                 var duration = MathEx.Max(duration1,
@@ -73,9 +73,9 @@ namespace Milky.OsuPlayer.Media.Audio
         public override async Task SetPlaybackRate(float rate, bool useTempo)
         {
             var oldRate = PlaybackRate;
-            var oldTempo = UseTempo;
+            var oldTempo = KeepTune;
             await base.SetPlaybackRate(rate, useTempo).ConfigureAwait(false);
-            if (oldTempo != UseTempo)
+            if (oldTempo != KeepTune)
             {
                 SoundElements = null;
                 await RequeueAsync(Position).ConfigureAwait(false);

@@ -1,22 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>net6.0-windows</TargetFrameworks>
     <RootNamespace>Milky.OsuPlayer.Data</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Coosu.Beatmap" Version="1.0.0" />
+    <PackageReference Include="Coosu.Beatmap" Version="2.3.12" />
     <PackageReference Include="HoLLy.osu.DatabaseReader">
       <Version>3.0.0</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.8">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.7" />
     <PackageReference Include="NLog">
-      <Version>4.7.10</Version>
+      <Version>5.0.1</Version>
     </PackageReference>
     <PackageReference Include="osu.Shared">
       <Version>1.0.3</Version>

@@ -80,13 +80,21 @@ namespace Milky.OsuPlayer.UserControls
                 var first = beatmaps[0];
                 var dir = first.GetFolder(out var isFromDb, out var freePath);
                 var filePath = isFromDb ? Path.Combine(dir, first.BeatmapFileName) : freePath;
-                var osuFile = await OsuFile.ReadFromFileAsync(filePath, options =>
+                LocalOsuFile osuFile;
+                try
                 {
-                    options.IncludeSection("Events");
-                    options.IgnoreSample();
-                    options.IgnoreStoryboard();
-                });
-                if (!osuFile.ReadSuccess) return false;
+                    osuFile = await OsuFile.ReadFromFileAsync(filePath, options =>
+                    {
+                        options.IncludeSection("Events");
+                        options.IgnoreSample();
+                        options.IgnoreStoryboard();
+                    });
+                }
+                catch (Exception e)
+                {
+                    return false;
+                }
+
                 if (osuFile.Events.BackgroundInfo != null)
                 {
                     var imgPath = Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);

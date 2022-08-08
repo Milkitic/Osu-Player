@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>Milky.OsuPlayer.Sentry</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sentry" Version="3.8.3" />
-    <PackageReference Include="NLog" Version="4.7.10" />
-    <PackageReference Include="Sentry.NLog" Version="3.8.3" />
+    <PackageReference Include="Sentry" Version="3.20.1" />
+    <PackageReference Include="NLog" Version="5.0.1" />
+    <PackageReference Include="Sentry.NLog" Version="3.20.1" />
   </ItemGroup>
 
 </Project>
