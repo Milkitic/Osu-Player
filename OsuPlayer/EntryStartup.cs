@@ -7,8 +7,8 @@ using Milki.Extensions.MixPlayer;
 using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Common.Configuration;
 using Milki.OsuPlayer.Data;
-using Milki.OsuPlayer.Presentation;
 using Milki.OsuPlayer.Shared;
+using Milki.OsuPlayer.Wpf;
 using Newtonsoft.Json;
 using NLog.Config;
 

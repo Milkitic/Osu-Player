@@ -12,10 +12,10 @@ using System.Windows.Media.Animation;
 using Coosu.Beatmap;
 using Milki.OsuPlayer.Common.Configuration;
 using Milki.OsuPlayer.Media.Lyric.Models;
-using Milki.OsuPlayer.Presentation;
-using Milki.OsuPlayer.Presentation.Interaction;
 using Milki.OsuPlayer.Shared.Dependency;
 using Milki.OsuPlayer.ViewModels;
+using Milki.OsuPlayer.Wpf;
+
 //using System.Drawing;
 //using System.Drawing.Drawing2D;
 //using System.Drawing.Text;

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer", "OsuPlayer.Wpf\OsuPlayer.csproj", "{02773E4B-21FC-47DB-A7C1-BD096F325136}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer", "OsuPlayer\OsuPlayer.csproj", "{02773E4B-21FC-47DB-A7C1-BD096F325136}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Audio", "OsuPlayer.Media.Audio\OsuPlayer.Audio.csproj", "{3CD240F8-DA65-44F0-AB58-D78F58109786}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Audio", "OsuPlayer.Audio\OsuPlayer.Audio.csproj", "{3CD240F8-DA65-44F0-AB58-D78F58109786}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Common", "OsuPlayer.Common\OsuPlayer.Common.csproj", "{654D6521-43E1-48D2-BAEE-E694E38EF56D}"
 EndProject
@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Media.Lyric", "Os
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Shared", "OsuPlayer.Shared\OsuPlayer.Shared.csproj", "{C842FAB3-EC80-4E95-B402-BF0572F1806D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Wpf", "OsuPlayer.Presentation\OsuPlayer.Wpf.csproj", "{93E3612C-D388-438F-A04A-047265820998}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Wpf", "OsuPlayer.Wpf\OsuPlayer.Wpf.csproj", "{93E3612C-D388-438F-A04A-047265820998}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPlayer.Data", "OsuPlayer.Data\OsuPlayer.Data.csproj", "{094FAC4A-6277-46E8-97B4-C992F1674638}"
 EndProject
