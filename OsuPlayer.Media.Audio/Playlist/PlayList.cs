@@ -169,6 +169,11 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         {
             return await SwitchByControl(true, false).ConfigureAwait(false);
         }
+        
+        public void InitializeEmptyCurrentInfo()
+        {
+            CurrentInfo = new BeatmapContext();
+        }
 
         private async Task<PlayControlResult> AutoSwitchAfterCollectionChanged(bool playInstantly)
         {

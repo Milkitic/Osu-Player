@@ -121,6 +121,10 @@ namespace Milky.OsuPlayer.Media.Audio
                     context.BeatmapDetail.MapPath = path;
                     context.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path);
                 }
+                else
+                {
+                    PlayList.InitializeEmptyCurrentInfo();
+                }
 
                 await ClearPlayer().ConfigureAwait(false);
                 Execute.OnUiThread(() => PreLoadStarted?.Invoke(path, _cts.Token));
