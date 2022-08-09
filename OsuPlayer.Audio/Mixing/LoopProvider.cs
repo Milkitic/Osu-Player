@@ -5,7 +5,7 @@ using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
-namespace Milki.OsuPlayer.Audio.New;
+namespace Milki.OsuPlayer.Audio.Mixing;
 
 internal sealed class LoopProvider : IDisposable
 {

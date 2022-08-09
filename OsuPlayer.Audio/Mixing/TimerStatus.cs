@@ -1,4 +1,4 @@
-﻿namespace Milki.OsuPlayer.Audio.New;
+﻿namespace Milki.OsuPlayer.Audio.Mixing;
 
 public enum TimerStatus
 {

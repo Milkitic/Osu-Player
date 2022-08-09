@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using NAudio.Wave;
 
-namespace Milki.OsuPlayer.Audio.New;
+namespace Milki.OsuPlayer.Audio.Mixing;
 
 public interface ITrack : IAsyncDisposable
 {

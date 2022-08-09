@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Milki.OsuPlayer.Audio.New;
+namespace Milki.OsuPlayer.Audio.Mixing;
 
 public class TimerSource
 {

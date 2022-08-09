@@ -2,7 +2,7 @@
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using NAudio.Wave;
 
-namespace Milki.OsuPlayer.Audio.New;
+namespace Milki.OsuPlayer.Audio.Mixing;
 
 public class SeekableCachedSoundSampleProvider : ISampleProvider
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NAudio.Wave;
 
-namespace Milki.OsuPlayer.Audio.New;
+namespace Milki.OsuPlayer.Audio.Mixing;
 
 public class TrackPlayer : IAsyncDisposable
 {

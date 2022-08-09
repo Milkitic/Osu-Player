@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 
-namespace Milki.OsuPlayer.Audio.New;
+namespace Milki.OsuPlayer.Audio.Mixing;
 
 public class SoundSeekingTrack : Track
 {
