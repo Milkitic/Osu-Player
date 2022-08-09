@@ -20,14 +20,18 @@ public class SoundMixingTrack : Track
     private bool _rebuildRequested;
     private bool _isPlayReady;
 
-    public SoundMixingTrack(MixingSettings mixingSettings, TimerSource timerSource) : base(timerSource)
+    public SoundMixingTrack(MixingSettings mixingSettings, TimerSource timerSource,
+        List<HitsoundNode>? hitsoundNodes = null)
+        : base(timerSource)
     {
+        HitsoundNodes = hitsoundNodes ?? new List<HitsoundNode>();
+
         _mixingSettings = mixingSettings;
         _waveFormat = mixingSettings.WaveFormat;
         _loopProviders = new LoopProviders();
     }
 
-    public List<HitsoundNode> HitsoundNodes { get; } = new List<HitsoundNode>();
+    public List<HitsoundNode> HitsoundNodes { get; }
 
     public void RebuildSoundElementQueue()
     {
