@@ -1,21 +1,44 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 
 namespace Milki.OsuPlayer.Audio.Mixing;
 
 public class SoundSeekingTrack : Track
 {
-    private readonly CachedSound _cachedSound;
+    private readonly WaveFormat _waveFormat;
     private readonly VariableSpeedOptions _sharedVariableSpeedOptions;
-    private SeekableCachedSoundSampleProvider? _cachedSoundSampleProvider;
-    private VariableSpeedSampleProvider? _variableSpeedSampleProvider;
-    private bool _keepTune;
 
-    public SoundSeekingTrack(CachedSound cachedSound, TimerSource timerSource) : base(timerSource)
+    private SeekableCachedSoundSampleProvider? _cachedSoundSampleProvider;
+    private SmartWaveReader? _smartWaveReader;
+    private VariableSpeedSampleProvider? _variableSpeedSampleProvider;
+
+    private string? _path;
+    private bool _keepTune;
+    private bool _readFully = true;
+
+    public SoundSeekingTrack(TimerSource timerSource, WaveFormat waveFormat) : base(timerSource)
     {
-        _cachedSound = cachedSound;
+        _waveFormat = waveFormat;
         _sharedVariableSpeedOptions = new VariableSpeedOptions(true, true);
+    }
+
+    public string? Path
+    {
+        get => _path;
+        set => _path = IsInitialized
+            ? throw new InvalidOperationException("Could not change path after track initialized.")
+            : value;
+    }
+
+    public bool ReadFully
+    {
+        get => _readFully;
+        set => _readFully = IsInitialized
+            ? throw new InvalidOperationException("Could not change option after track initialized.")
+            : value;
     }
 
     public bool KeepTune
@@ -61,15 +84,37 @@ public class SoundSeekingTrack : Track
         return ValueTask.CompletedTask;
     }
 
-    protected override ValueTask InitializeCoreAsync()
+    protected override async ValueTask InitializeCoreAsync()
     {
-        _cachedSoundSampleProvider = new SeekableCachedSoundSampleProvider(_cachedSound);
-        _variableSpeedSampleProvider = new VariableSpeedSampleProvider(_cachedSoundSampleProvider,
-            readDurationMilliseconds: 10, _sharedVariableSpeedOptions);
-        _variableSpeedSampleProvider.PlaybackRate = TimerSource.Rate;
-        Duration = _cachedSound.Duration.TotalMilliseconds;
+        if (Path != null)
+        {
+            if (ReadFully)
+            {
+                var cachedSound = (await CachedSoundFactory.GetOrCreateCacheSound(_waveFormat, Path, checkFileExist: false))!;
+                _cachedSoundSampleProvider = new SeekableCachedSoundSampleProvider(cachedSound);
+                _variableSpeedSampleProvider = new VariableSpeedSampleProvider(_cachedSoundSampleProvider,
+                    readDurationMilliseconds: 10, _sharedVariableSpeedOptions);
+                Duration = cachedSound.Duration.TotalMilliseconds;
+            }
+            else
+            {
+                ISampleProvider sampleProvider = _smartWaveReader = new SmartWaveReader(Path);
+                if (_smartWaveReader.WaveFormat.Channels == 1)
+                    sampleProvider = new MonoToStereoSampleProvider(sampleProvider);
+                if (_smartWaveReader.WaveFormat.SampleRate != _waveFormat.SampleRate)
+                    sampleProvider = new WdlResamplingSampleProvider(sampleProvider, _waveFormat.SampleRate);
+                _variableSpeedSampleProvider = new VariableSpeedSampleProvider(sampleProvider,
+                    readDurationMilliseconds: 10, _sharedVariableSpeedOptions);
+                Duration = _smartWaveReader.TotalTime.TotalMilliseconds;
+            }
+        }
+        else
+        {
+            throw new Exception("Path not specified.");
+        }
+
         RootSampleProvider = _variableSpeedSampleProvider;
-        return ValueTask.CompletedTask;
+        _variableSpeedSampleProvider.PlaybackRate = TimerSource.Rate;
     }
 
     protected virtual double GetDifferenceTolerance() => 10;

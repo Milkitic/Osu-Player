@@ -69,7 +69,7 @@ public sealed class SampleChannel : MultiElementsChannel
             var duration = MathEx.Max(duration1,
                 TimeSpan.FromMilliseconds(samples.Count == 0 ? 0 : samples.Max(k => k.Offset))
             );
-            _nightcoreTilingProvider = new NightcoreTilingProvider(_defaultFolder, _osuFile, duration);
+            _nightcoreTilingProvider = new NightcoreTilingProvider(_defaultFolder, _osuFile, duration.TotalMilliseconds);
             elementList.AddRange(await _nightcoreTilingProvider.GetSoundElements());
         }
 

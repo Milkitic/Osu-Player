@@ -8,7 +8,6 @@ public abstract class Track : ITrack
 {
     protected readonly TimerSource TimerSource;
 
-    private bool _isInitialized;
     private double _duration;
     private double _previous;
     private TimerStatus _previousStatus;
@@ -23,20 +22,21 @@ public abstract class Track : ITrack
         timerSource.RateChanged += TimerSource_RateChanged;
     }
 
+    protected bool IsInitialized { get; private set; }
     public ISampleProvider? RootSampleProvider { get; protected set; }
 
     public double Offset { get; set; }
 
     public double Duration
     {
-        get => _isInitialized ? _duration : throw new InvalidOperationException("Track is not initialized.");
+        get => IsInitialized ? _duration : throw new InvalidOperationException("Track is not initialized.");
         protected set => _duration = value;
     }
 
     public async ValueTask InitializeAsync()
     {
         await InitializeCoreAsync();
-        _isInitialized = true;
+        IsInitialized = true;
     }
 
     public abstract ValueTask DisposeAsync();

@@ -2,29 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Milki.Extensions.MixPlayer.NAudioExtensions;
 using NAudio.Wave;
 
 namespace Milki.OsuPlayer.Audio.Mixing;
 
 public class TrackPlayer : IAsyncDisposable
 {
-    private readonly AudioEngine _engine;
-    private readonly TimerSource _timerSource;
+    protected readonly TimerSource TimerSource;
+    protected readonly AudioPlaybackEngine Engine;
+
     private readonly HashSet<ISampleProvider?> _trackHashSet;
 
     private double _previous;
     private TimerStatus _previousStatus = TimerStatus.Stop;
     private float _previousRate;
 
-    public TrackPlayer(AudioEngine engine)
+    public TrackPlayer(AudioPlaybackEngine engine)
     {
-        _engine = engine;
-        _timerSource = new TimerSource();
+        Engine = engine;
+        TimerSource = new TimerSource();
         Tracks = new List<Track>();
         _trackHashSet = new HashSet<ISampleProvider?>();
-        _timerSource.TimeUpdated += TimerSource_TimeUpdated;
-        _timerSource.StatusChanged += TimerSource_StatusChanged;
-        _timerSource.RateChanged += TimerSource_RateChanged;
+        TimerSource.TimeUpdated += TimerSource_TimeUpdated;
+        TimerSource.StatusChanged += TimerSource_StatusChanged;
+        TimerSource.RateChanged += TimerSource_RateChanged;
     }
 
     public PlayerStatus PlayerStatus { get; private set; }
@@ -131,6 +133,16 @@ public class TrackPlayer : IAsyncDisposable
         PlayerStatus = PlayerStatus.Playing;
     }
 
+    public void SetRate(float rate, bool keepTune)
+    {
+        foreach (var track in Tracks.Where(k => k is SoundSeekingTrack).Cast<SoundSeekingTrack>())
+        {
+            track.KeepTune = keepTune;
+        }
+
+        TimerSource.Rate = rate;
+    }
+
     public virtual async ValueTask InitializeAsync()
     {
         foreach (var track in Tracks)
@@ -143,16 +155,16 @@ public class TrackPlayer : IAsyncDisposable
         {
             if (track is SoundSeekingTrack)
             {
-                if (_timerSource.IsRunning && track.RootSampleProvider != null)
+                if (TimerSource.IsRunning && track.RootSampleProvider != null)
                 {
-                    AddToMusicMixer(track.RootSampleProvider);
+                    AddToMixer(track.RootSampleProvider);
                 }
             }
             else
             {
                 if (track.RootSampleProvider != null)
                 {
-                    _engine.EffectMixer.AddMixerInput(track.RootSampleProvider);
+                    Engine.AddMixerInput(track.RootSampleProvider);
                 }
             }
         }
@@ -177,7 +189,7 @@ public class TrackPlayer : IAsyncDisposable
         {
             foreach (var track in Tracks.Where(k => k is SoundSeekingTrack))
             {
-                RemoveFromMusicMixer(track.RootSampleProvider);
+                RemoveFromMixer(track.RootSampleProvider);
             }
         }
         else if (previousStatus is TimerStatus.Stop or TimerStatus.Reset &&
@@ -185,7 +197,7 @@ public class TrackPlayer : IAsyncDisposable
         {
             foreach (var track in Tracks.Where(k => k is SoundSeekingTrack))
             {
-                AddToMusicMixer(track.RootSampleProvider);
+                AddToMixer(track.RootSampleProvider);
             }
         }
     }
@@ -195,9 +207,9 @@ public class TrackPlayer : IAsyncDisposable
 
     protected virtual ValueTask PlayCoreAsync()
     {
-        if (!_timerSource.IsRunning)
+        if (!TimerSource.IsRunning)
         {
-            _timerSource.Start();
+            TimerSource.Start();
         }
 
         return ValueTask.CompletedTask;
@@ -205,17 +217,17 @@ public class TrackPlayer : IAsyncDisposable
 
     protected virtual void PauseCore()
     {
-        _timerSource.Stop();
+        TimerSource.Stop();
     }
 
     protected virtual void StopCore()
     {
-        _timerSource.Reset();
+        TimerSource.Reset();
     }
 
     protected virtual ValueTask SeekCore(TimeSpan time)
     {
-        _timerSource.SkipTo(time.TotalMilliseconds);
+        TimerSource.SkipTo(time.TotalMilliseconds);
         return ValueTask.CompletedTask;
     }
 
@@ -224,19 +236,19 @@ public class TrackPlayer : IAsyncDisposable
         return ValueTask.CompletedTask;
     }
 
-    private void AddToMusicMixer(ISampleProvider? sampleProvider)
+    private void AddToMixer(ISampleProvider? sampleProvider)
     {
-        if (sampleProvider != null) return;
+        if (sampleProvider == null) return;
         if (_trackHashSet.Contains(sampleProvider)) return;
         _trackHashSet.Add(sampleProvider);
-        _engine.MusicMixer.AddMixerInput(sampleProvider);
+        Engine.AddMixerInput(sampleProvider);
     }
 
-    private void RemoveFromMusicMixer(ISampleProvider? sampleProvider)
+    private void RemoveFromMixer(ISampleProvider? sampleProvider)
     {
-        if (sampleProvider != null) return;
+        if (sampleProvider == null) return;
         _trackHashSet.Remove(sampleProvider);
-        _engine.MusicMixer.RemoveMixerInput(sampleProvider);
+        Engine.RemoveMixerInput(sampleProvider);
     }
 
     private void TimerSource_TimeUpdated(double current)

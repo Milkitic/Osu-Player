@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Coosu.Beatmap.Extensions.Playback;
@@ -10,7 +11,6 @@ namespace Milki.OsuPlayer.Audio.Mixing;
 
 public class SoundMixingTrack : Track
 {
-    private readonly MixingSettings _mixingSettings;
     private readonly WaveFormat _waveFormat;
     private readonly LoopProviders _loopProviders;
 
@@ -20,22 +20,21 @@ public class SoundMixingTrack : Track
     private bool _rebuildRequested;
     private bool _isPlayReady;
 
-    public SoundMixingTrack(MixingSettings mixingSettings, TimerSource timerSource,
+    public SoundMixingTrack(TimerSource timerSource, WaveFormat waveFormat,
         List<HitsoundNode>? hitsoundNodes = null)
         : base(timerSource)
     {
         HitsoundNodes = hitsoundNodes ?? new List<HitsoundNode>();
-
-        _mixingSettings = mixingSettings;
-        _waveFormat = mixingSettings.WaveFormat;
+        _waveFormat = waveFormat;
         _loopProviders = new LoopProviders();
     }
 
-    public List<HitsoundNode> HitsoundNodes { get; }
+    public float BalanceRatio { get; set; } = 0.3f;
+    public List<HitsoundNode> HitsoundNodes { get; set; }
 
     public void RebuildSoundElementQueue()
     {
-        var currentTime = TimerSource.ElapsedMilliseconds;
+        var currentTime = TimerSource.ElapsedMilliseconds - Offset;
         var queue = new Queue<HitsoundNode>();
         foreach (var hitsoundNode in HitsoundNodes.OrderBy(k => k.Offset))
         {
@@ -103,21 +102,14 @@ public class SoundMixingTrack : Track
         };
         _volumeProvider = new EnhancedVolumeSampleProvider(_mixingSampleProvider);
         RootSampleProvider = _volumeProvider;
+        await InitializeHitsoundAsync();
+    }
+
+    private async Task InitializeHitsoundAsync()
+    {
         Duration = HitsoundNodes is { Count: not 0 } ? HitsoundNodes.Max(k => k.Offset) : 0;
         RebuildSoundElementQueue();
         await InitializeActualDurationAsync();
-        //var hitsoundNodes = HitsoundNodes;
-        //if (hitsoundNodes != null)
-        //{
-        //    await Task.Run(() =>
-        //    {
-        //        hitsoundNodes
-        //            .Where(k => k.Filename != null)
-        //            .TakeLast(9)
-        //            .AsParallel()
-        //            .Select(k => CachedSoundFactory.GetOrCreateCacheSound(_waveFormat, k.Filename!));
-        //    });
-        //}
     }
 
     protected virtual ValueTask InitializeActualDurationAsync()
@@ -131,7 +123,7 @@ public class SoundMixingTrack : Track
         {
             if (!CacheManager.Instance.TryGetAudioByNode(playableNode, out var cachedSound)) return;
             var volume = playableNode.Volume;
-            var balance = playableNode.Balance;
+            var balance = playableNode.Balance * BalanceRatio;
             rootMixer.AddMixerInput(
                 new BalanceSampleProvider(
                         new EnhancedVolumeSampleProvider(
@@ -171,14 +163,4 @@ public class SoundMixingTrack : Track
             }
         }
     }
-}
-
-public class MixingSettings
-{
-    public MixingSettings(WaveFormat waveFormat)
-    {
-        WaveFormat = waveFormat;
-    }
-
-    public WaveFormat WaveFormat { get; }
 }

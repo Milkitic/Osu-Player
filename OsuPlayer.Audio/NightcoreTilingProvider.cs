@@ -26,14 +26,14 @@ internal class NightcoreTilingProvider : ISoundElementsProvider
     }
 
     private readonly OsuFile _osuFile;
-    private readonly TimeSpan _maxDuration;
+    private readonly double _maxDuration;
 
     private readonly string? _ncFinish;
     private readonly string? _ncKick;
     private readonly string? _ncClap;
     private readonly Dictionary<int, RhythmGroup>? _rhythmDeclarations;
 
-    public NightcoreTilingProvider(string defaultFolder, OsuFile osuFile, TimeSpan maxDuration)
+    public NightcoreTilingProvider(string defaultFolder, OsuFile osuFile, double maxDuration)
     {
         _osuFile = osuFile;
         _maxDuration = maxDuration;
@@ -79,8 +79,9 @@ internal class NightcoreTilingProvider : ISoundElementsProvider
             )
             .ToList();
 
-        var maxTime = MathEx.Max(_maxDuration.TotalMilliseconds,
+        var maxTime = MathEx.Max(_maxDuration,
             _osuFile.HitObjects?.MaxTime ?? 0,
+            _osuFile.Events?.Samples?.Count > 0 ? _osuFile.Events.Samples.Max(k => k.Offset) : 0,
             timingSection?.MaxTime ?? 0
         );
         var hitsoundList = new List<SoundElement>();

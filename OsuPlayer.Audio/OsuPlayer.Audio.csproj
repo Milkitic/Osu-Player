@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="resources\default\*.ogg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="resources\default\*.ogg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Anotar.NLog.Fody" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -34,9 +42,9 @@
     <None Update="runtimes\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="resources\default\*.ogg">
+    <!--<None Update="resources\default\*.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </None>-->
   </ItemGroup>
 
 </Project>
