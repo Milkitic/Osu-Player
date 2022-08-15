@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Anotar.NLog;
 using Coosu.Beatmap.Extensions.Playback;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using NAudio.Wave;
@@ -121,7 +123,12 @@ public class SoundMixingTrack : Track
     {
         if (hitsoundNode is PlayableNode playableNode)
         {
-            if (!CacheManager.Instance.TryGetAudioByNode(playableNode, out var cachedSound)) return;
+            if (!CacheManager.Instance.TryGetAudioByNode(playableNode, out var cachedSound))
+            {
+                LogTo.Warn("Failed to find CachedSound to play PlayableNode:" + DebuggerDisplay(hitsoundNode));
+                return;
+            }
+
             var volume = playableNode.Volume;
             var balance = playableNode.Balance * BalanceRatio;
             rootMixer.AddMixerInput(
@@ -144,10 +151,13 @@ public class SoundMixingTrack : Track
                     _loopProviders.RemoveAll(rootMixer);
                 }
 
-                if (CacheManager.Instance.TryGetAudioByNode(controlNode, out var cachedSound))
+                if (!CacheManager.Instance.TryGetAudioByNode(controlNode, out var cachedSound))
                 {
-                    _loopProviders.Create(controlNode, cachedSound!, rootMixer, volume, balance);
+                    LogTo.Warn("Failed to find CachedSound to play ControlNode:" + DebuggerDisplay(hitsoundNode));
+                    return;
                 }
+
+                _loopProviders.Create(controlNode, cachedSound!, rootMixer, volume, balance);
             }
             else if (controlNode.ControlType == ControlType.StopSliding)
             {
@@ -162,5 +172,29 @@ public class SoundMixingTrack : Track
                 _loopProviders.ChangeAllBalances(balance);
             }
         }
+    }
+
+    public string DebuggerDisplay(HitsoundNode node)
+    {
+        if (node is PlayableNode playableNode)
+        {
+            return $"PL{(playableNode.UseUserSkin ? "D" : "")}:{Offset}: " +
+                $"P{(int)playableNode.PlayablePriority}: " +
+                $"V{(playableNode.Volume * 10):#.#}: " +
+                $"B{(playableNode.Balance * 10):#.#}: " +
+                $"{(playableNode.Filename)}";
+        }
+
+        if (node is ControlNode controlNode)
+        {
+            return $"CT{(controlNode.UseUserSkin ? "D" : "")}:{Offset}: " +
+                   $"O{Offset}: " +
+                   $"T{(int)controlNode.ControlType}{(controlNode.ControlType is ControlType.StartSliding or ControlType.StopSliding ? (int)controlNode.SlideChannel : "")}: " +
+                   $"V{(controlNode.Volume * 10):#.#}: " +
+                   $"B{(controlNode.Balance * 10):#.#}: " +
+                   $"{(controlNode.Filename == null ? "" : Path.GetFileNameWithoutExtension(controlNode.Filename))}";
+        }
+
+        return "";
     }
 }

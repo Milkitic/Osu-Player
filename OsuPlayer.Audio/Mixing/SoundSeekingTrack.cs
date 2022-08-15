@@ -90,7 +90,8 @@ public class SoundSeekingTrack : Track
         {
             if (ReadFully)
             {
-                var cachedSound = (await CachedSoundFactory.GetOrCreateCacheSound(_waveFormat, Path, checkFileExist: false))!;
+                var cachedSound = (await CachedSoundFactory.GetOrCreateCacheSound(_waveFormat, Path, checkFileExist: false,
+                    useWdlResampler: true))!;
                 _cachedSoundSampleProvider = new SeekableCachedSoundSampleProvider(cachedSound);
                 _variableSpeedSampleProvider = new VariableSpeedSampleProvider(_cachedSoundSampleProvider,
                     readDurationMilliseconds: 10, _sharedVariableSpeedOptions);

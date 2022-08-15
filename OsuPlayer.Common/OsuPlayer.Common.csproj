@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Coosu.Beatmap" Version="2.3.12" />
     <PackageReference Include="Coosu.Database" Version="2.3.12" />
-    <PackageReference Include="Milki.Extensions.MixPlayer" Version="0.0.27" />
+    <PackageReference Include="Milki.Extensions.MixPlayer" Version="0.0.30" />
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
     </PackageReference>

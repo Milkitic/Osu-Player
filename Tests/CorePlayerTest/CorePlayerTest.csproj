@@ -11,7 +11,12 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\OsuPlayer.Audio\OsuPlayer.Audio.csproj" />
-    <ProjectReference Include="..\..\OsuPlayer.Media.Audio\OsuPlayer.Audio.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

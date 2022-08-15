@@ -1,0 +1,1 @@
+[assembly: Anotar.NLog.LogMinimalMessage]

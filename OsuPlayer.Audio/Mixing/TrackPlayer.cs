@@ -21,7 +21,7 @@ public class TrackPlayer : IAsyncDisposable
     public TrackPlayer(AudioPlaybackEngine engine)
     {
         Engine = engine;
-        TimerSource = new TimerSource();
+        TimerSource = new TimerSource(3);
         Tracks = new List<Track>();
         _trackHashSet = new HashSet<ISampleProvider?>();
         TimerSource.TimeUpdated += TimerSource_TimeUpdated;

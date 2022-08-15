@@ -30,7 +30,8 @@ public class EsuMixingTrack : SoundMixingTrack
                 .TakeLast(9)
                 .AsParallel()
                 .Select(k => (node: k,
-                    cache: CachedSoundFactory.GetOrCreateCacheSound(_waveFormat, k.Filename!).Result))
+                    cache: CachedSoundFactory.GetOrCreateCacheSound(_waveFormat, k.Filename!, useWdlResampler: true)
+                        .Result))
                 .ToArray();
         });
 

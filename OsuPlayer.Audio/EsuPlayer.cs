@@ -178,11 +178,12 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
                 resources
                     .Where(k => k.EndsWith(".ogg", StringComparison.Ordinal))
                     .AsParallel()
+                    .WithDegreeOfParallelism(1)
                     .ForAll(resource =>
                     {
                         var path = $"res://OsuPlayer.Audio/{resource}";
                         var result = CachedSoundFactory.GetOrCreateCacheSound(Engine.FileWaveFormat, path,
-                            SkinSoundFlag, false).Result;
+                            SkinSoundFlag, false, useWdlResampler: true).Result;
                         Debug.Assert(result != null);
                     });
             });

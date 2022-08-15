@@ -29,7 +29,13 @@ namespace CorePlayerTest
                        "Risshuu feat. Choko - Take (yf_bmp) [Ta~ke take take take take take tatata~].osu";
             var folder = Path.GetDirectoryName(path);
             var osuFile = await OsuFile.ReadFromFileAsync(path);
-            var engine = new AudioPlaybackEngine(default(DeviceDescription));
+            var engine = new AudioPlaybackEngine(new DeviceDescription()
+            {
+                WavePlayerType = WavePlayerType.WASAPI,
+                FriendlyName = null,
+                IsExclusive = false,
+                Latency = 1
+            });
             var player = new EsuPlayer(osuFile, engine);
             await player.InitializeAsync();
 
