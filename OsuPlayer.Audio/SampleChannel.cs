@@ -42,7 +42,7 @@ public sealed class SampleChannel : MultiElementsChannel
     public override async Task<IEnumerable<SoundElement>> GetSoundElements()
     {
         var elements = new ConcurrentBag<SoundElement>();
-        var samples = _osuFile.Events.Samples;
+        var samples = _osuFile.Events?.Samples;
         if (samples == null)
         {
             return Array.Empty<SoundElement>();

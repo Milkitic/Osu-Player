@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
@@ -12,7 +14,6 @@ using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milki.OsuPlayer.Audio.Mixing;
 using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
 
 namespace Milki.OsuPlayer.Audio;
 
@@ -20,7 +21,7 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
 {
     public const string SkinSoundFlag = "UserSkin";
 
-    private readonly HashSet<ISampleProvider?> _trackHashSet;
+    private bool _isMusicTrackAdded;
 
     private readonly string _folder;
     private readonly string _fileName;
@@ -30,9 +31,6 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
     private readonly EsuMixingTrack _hitsoundTrack;
     private readonly EsuMixingTrack _sampleTrack;
 
-    private readonly MixingSampleProvider _musicMixer;
-    private readonly MixingSampleProvider _hitsoundMixer;
-    private readonly MixingSampleProvider _sampleMixer;
     private readonly EnhancedVolumeSampleProvider _musicVsp;
     private readonly EnhancedVolumeSampleProvider _hitsoundVsp;
     private readonly EnhancedVolumeSampleProvider _sampleVsp;
@@ -45,27 +43,19 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
         _osuFile = osuFile;
         _folder = Path.GetDirectoryName(osuFile.OriginalPath)!;
         _fileName = Path.GetFileName(osuFile.OriginalPath)!;
+
         var waveFormat = engine.WaveFormat;
         _musicTrack = new SoundSeekingTrack(TimerSource, waveFormat);
         _hitsoundTrack = new EsuMixingTrack(TimerSource, waveFormat);
         _sampleTrack = new EsuMixingTrack(TimerSource, waveFormat);
-        _trackHashSet = new HashSet<ISampleProvider?>();
 
-        _musicMixer = new MixingSampleProvider(waveFormat) { ReadFully = true };
-        _musicVsp = new EnhancedVolumeSampleProvider(_musicMixer) { Volume = 1f };
-        _hitsoundMixer = new MixingSampleProvider(waveFormat) { ReadFully = true };
-        _hitsoundVsp = new EnhancedVolumeSampleProvider(_hitsoundMixer) { Volume = 1f };
-        _sampleMixer = new MixingSampleProvider(waveFormat) { ReadFully = true };
-        _sampleVsp = new EnhancedVolumeSampleProvider(_sampleMixer) { Volume = 1f };
-
-        Engine.RootMixer.AddMixerInput(_musicVsp);
-        Engine.RootMixer.AddMixerInput(_hitsoundVsp);
-        Engine.RootMixer.AddMixerInput(_sampleVsp);
-
-        Tracks.Add(_musicTrack);
-        Tracks.Add(_hitsoundTrack);
-        Tracks.Add(_sampleTrack);
+        _musicVsp = new EnhancedVolumeSampleProvider(null!) { Volume = 1f };
+        _hitsoundVsp = new EnhancedVolumeSampleProvider(null!) { Volume = 1f };
+        _sampleVsp = new EnhancedVolumeSampleProvider(null!) { Volume = 1f };
     }
+
+    public TimeSpan PlayTime => TimerSource.Elapsed;
+    public TimeSpan TotalTime => TimeSpan.FromMilliseconds(Duration);
 
     public float Volume
     {
@@ -175,19 +165,43 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
 
         await InitializeMusicTrack();
         await InitializeHitsoundTrack(hitsoundNodes);
-        _nightcoreTilingProvider =
-            new NightcoreTilingProvider(null, _osuFile, _musicTrack.Duration);
+
+        var folder = "res://OsuPlayer.Audio/Milki.OsuPlayer.Audio.resources.default";
+        _nightcoreTilingProvider = new NightcoreTilingProvider(folder, _osuFile, _musicTrack.Duration);
         await InitializeSampleTrack(hitsoundNodes);
 
         if (CachedSoundFactory.GetCount(SkinSoundFlag) == 0)
         {
-            foreach (var file in new DirectoryInfo(null).EnumerateFiles("*.ogg"))
+            var resources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+            await Task.Run(() =>
             {
-                await CachedSoundFactory.GetOrCreateCacheSound(Engine.FileWaveFormat, file.FullName);
-            }
+                resources
+                    .Where(k => k.EndsWith(".ogg", StringComparison.Ordinal))
+                    .AsParallel()
+                    .ForAll(resource =>
+                    {
+                        var path = $"res://OsuPlayer.Audio/{resource}";
+                        var result = CachedSoundFactory.GetOrCreateCacheSound(Engine.FileWaveFormat, path,
+                            SkinSoundFlag, false).Result;
+                        Debug.Assert(result != null);
+                    });
+            });
         }
 
+        _musicVsp.Source = _musicTrack.RootSampleProvider;
+        _hitsoundVsp.Source = _hitsoundTrack.RootSampleProvider;
+        _sampleVsp.Source = _sampleTrack.RootSampleProvider;
+
+        Engine.RootMixer.AddMixerInput(_musicVsp);
+        Engine.RootMixer.AddMixerInput(_hitsoundVsp);
+        Engine.RootMixer.AddMixerInput(_sampleVsp);
+
+        Tracks.Add(_musicTrack);
+        Tracks.Add(_hitsoundTrack);
+        Tracks.Add(_sampleTrack);
+
         Duration = Tracks.Max(k => k.Duration);
+        PlayerStatus = PlayerStatus.Ready;
     }
 
     private async ValueTask InitializeMusicTrack()
@@ -200,13 +214,19 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
 
     private async ValueTask InitializeHitsoundTrack(List<HitsoundNode> hitsoundNodes)
     {
-        _hitsoundTrack.HitsoundNodes = hitsoundNodes.Where(k => k is not PlayableNode { PlayablePriority: PlayablePriority.Sampling }).ToList();
+        _hitsoundTrack.HitsoundNodes = hitsoundNodes.Where(k => k is not PlayableNode
+        {
+            PlayablePriority: PlayablePriority.Sampling
+        }).ToList();
         await _hitsoundTrack.InitializeAsync();
     }
 
     private async ValueTask InitializeSampleTrack(List<HitsoundNode> hitsoundNodes)
     {
-        _sampleTrack.HitsoundNodes = hitsoundNodes.Where(k => k is PlayableNode { PlayablePriority: PlayablePriority.Sampling }).ToList();
+        _sampleTrack.HitsoundNodes = hitsoundNodes.Where(k => k is PlayableNode
+        {
+            PlayablePriority: PlayablePriority.Sampling
+        }).ToList();
         await _sampleTrack.InitializeAsync();
     }
 
@@ -215,36 +235,26 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
         if (previousStatus is TimerStatus.Start or TimerStatus.Restart &&
             currentStatus is TimerStatus.Stop or TimerStatus.Reset)
         {
-            foreach (var track in Tracks.Where(k => k is SoundSeekingTrack))
-            {
-                RemoveFromMusicMixer(track.RootSampleProvider);
-            }
+            PauseMusic();
         }
         else if (previousStatus is TimerStatus.Stop or TimerStatus.Reset &&
                  currentStatus is TimerStatus.Start or TimerStatus.Restart)
         {
-            foreach (var track in Tracks.Where(k => k is SoundSeekingTrack))
-            {
-                AddToMusicMixer(track.RootSampleProvider);
-            }
+            PlayMusic();
         }
     }
 
-    private void AddToMusicMixer(ISampleProvider? sampleProvider)
+    private void PlayMusic()
     {
-        if (sampleProvider == null) return;
-        if (_trackHashSet.Contains(sampleProvider)) return;
-
-        _trackHashSet.Add(sampleProvider);
-        _musicMixer.AddMixerInput(sampleProvider);
+        if (_isMusicTrackAdded) return;
+        _isMusicTrackAdded = true;
+        Engine.AddMixerInput(_musicVsp);
     }
 
-    private void RemoveFromMusicMixer(ISampleProvider? sampleProvider)
+    private void PauseMusic()
     {
-        if (sampleProvider == null) return;
-
-        _trackHashSet.Remove(sampleProvider);
-        _musicMixer.RemoveMixerInput(sampleProvider);
+        _isMusicTrackAdded = false;
+        Engine.RemoveMixerInput(_musicVsp);
     }
 
     #region INotifyPropertyChanged

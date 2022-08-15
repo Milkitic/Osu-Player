@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using Coosu.Beatmap;
 using Microsoft.Extensions.Logging;
 using Milki.Extensions.MixPlayer;
+using Milki.Extensions.MixPlayer.Devices;
+using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.OsuPlayer.Audio;
+using Milki.OsuPlayer.Audio.Mixing;
 
 namespace CorePlayerTest
 {
@@ -26,18 +29,19 @@ namespace CorePlayerTest
                        "Risshuu feat. Choko - Take (yf_bmp) [Ta~ke take take take take take tatata~].osu";
             var folder = Path.GetDirectoryName(path);
             var osuFile = await OsuFile.ReadFromFileAsync(path);
-            var player = new OsuMixPlayer(osuFile);
-            await player.Initialize();
+            var engine = new AudioPlaybackEngine(default(DeviceDescription));
+            var player = new EsuPlayer(osuFile, engine);
+            await player.InitializeAsync();
 
             bool finished = false;
-            player.PlayStatusChanged += status =>
-            {
-                if (status == PlayStatus.Finished)
-                {
-                    finished = true;
-                }
-            };
-            await player.Play();
+            //player.PlayStatusChanged += status =>
+            //{
+            //    if (status == PlayStatus.Finished)
+            //    {
+            //        finished = true;
+            //    }
+            //};
+            player.Play();
             var cts = new CancellationTokenSource();
             Task.Run(() =>
             {
@@ -52,13 +56,13 @@ namespace CorePlayerTest
                 }
             });
 
-            while (!cts.IsCancellationRequested && player.PlayStatus != PlayStatus.Finished)
+            while (!cts.IsCancellationRequested && player.PlayerStatus != PlayerStatus.Ready)
             {
-                Console.WriteLine(player.Position + "/" + player.Duration);
+                Console.WriteLine(player.PlayTime + "/" + player.TotalTime);
                 Thread.Sleep(200);
             }
 
-            await player.Stop();
+            player.Stop();
             await player.DisposeAsync();
             Console.WriteLine("done");
 

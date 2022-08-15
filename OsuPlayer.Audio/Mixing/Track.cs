@@ -8,7 +8,6 @@ public abstract class Track : ITrack
 {
     protected readonly TimerSource TimerSource;
 
-    private double _duration;
     private double _previous;
     private TimerStatus _previousStatus;
     private float _previousRate;
@@ -27,11 +26,7 @@ public abstract class Track : ITrack
 
     public double Offset { get; set; }
 
-    public double Duration
-    {
-        get => IsInitialized ? _duration : throw new InvalidOperationException("Track is not initialized.");
-        protected set => _duration = value;
-    }
+    public double Duration { get; protected set; }
 
     public async ValueTask InitializeAsync()
     {

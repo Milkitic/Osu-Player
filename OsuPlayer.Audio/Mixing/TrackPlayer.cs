@@ -29,7 +29,7 @@ public class TrackPlayer : IAsyncDisposable
         TimerSource.RateChanged += TimerSource_RateChanged;
     }
 
-    public PlayerStatus PlayerStatus { get; private set; }
+    public PlayerStatus PlayerStatus { get; protected set; }
     public List<Track> Tracks { get; }
     public double Duration { get; protected set; }
 

@@ -37,10 +37,10 @@ internal class NightcoreTilingProvider : ISoundElementsProvider
     {
         _osuFile = osuFile;
         _maxDuration = maxDuration;
-
-        _ncFinish ??= Path.Combine(defaultFolder, "nightcore-finish.wav");
-        _ncKick ??= Path.Combine(defaultFolder, "nightcore-kick.wav");
-        _ncClap ??= Path.Combine(defaultFolder, "nightcore-clap.wav");
+        var isResourceStyle = defaultFolder.StartsWith("res://", StringComparison.OrdinalIgnoreCase);
+        _ncFinish ??= GetPath(defaultFolder, isResourceStyle, "nightcore-finish.ogg");
+        _ncKick ??= GetPath(defaultFolder, isResourceStyle, "nightcore-kick.ogg");
+        _ncClap ??= GetPath(defaultFolder, isResourceStyle, "nightcore-clap.ogg");
         _rhythmDeclarations ??= new Dictionary<int, RhythmGroup>
         {
             [3] = new(6, 4, new[]
@@ -144,6 +144,11 @@ internal class NightcoreTilingProvider : ISoundElementsProvider
         var ele = SoundElement.Create(currentTime, 1, 0, fileName);
         currentTime += skipTime;
         return ele;
+    }
+
+    private static string GetPath(string defaultFolder, bool isResourceStyle, string fileName)
+    {
+        return isResourceStyle ? defaultFolder + "." + fileName : Path.Combine(defaultFolder, fileName);
     }
 }
 

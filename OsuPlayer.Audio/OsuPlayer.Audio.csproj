@@ -19,12 +19,12 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Coosu.Beatmap" Version="2.3.12" />
-    <PackageReference Include="Milki.Extensions.MixPlayer" Version="0.0.26" />
+    <PackageReference Include="Milki.Extensions.MixPlayer" Version="0.0.28" />
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
     </PackageReference>
     <PackageReference Include="NLog">
-      <Version>5.0.1</Version>
+      <Version>5.0.2</Version>
     </PackageReference>
     <PackageReference Include="System.Memory">
       <Version>4.5.5</Version>
