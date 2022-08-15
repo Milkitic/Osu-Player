@@ -24,9 +24,11 @@ namespace CorePlayerTest
             //var path = "E:\\Games\\osu!\\Songs\\take yf\\" +
             //           //"1376486 Risshuu feat. Choko - Take\\" +
             //           "Risshuu feat. Choko - Take (yf_bmp) [test].osu";
-            var path = "F:\\milkitic\\Songs\\" +
-                       "1376486 Risshuu feat. Choko - Take\\" +
-                       "Risshuu feat. Choko - Take (yf_bmp) [Ta~ke take take take take take tatata~].osu";
+            //var path = "F:\\milkitic\\Songs\\" +
+            //           "1376486 Risshuu feat. Choko - Take\\" +
+            //           "Risshuu feat. Choko - Take (yf_bmp) [Ta~ke take take take take take tatata~].osu";
+            var path =
+                @"C:\Users\milkitic\AppData\Local\osu!\Songs\cYsmix_triangles\cYsmix - triangles (yf_bmp) [Expert].osu";
             var folder = Path.GetDirectoryName(path);
             var osuFile = await OsuFile.ReadFromFileAsync(path);
             var engine = new AudioPlaybackEngine(new DeviceDescription()
@@ -36,7 +38,11 @@ namespace CorePlayerTest
                 IsExclusive = false,
                 Latency = 1
             });
-            var player = new EsuPlayer(osuFile, engine);
+            var player = new EsuPlayer(osuFile, engine)
+            {
+                Volume = 0.05f,
+                Offset = 35
+            };
             await player.InitializeAsync();
 
             bool finished = false;
@@ -47,25 +53,33 @@ namespace CorePlayerTest
             //        finished = true;
             //    }
             //};
-            player.Play();
+
             var cts = new CancellationTokenSource();
             Task.Run(() =>
             {
-                while (true)
+                while (!cts.IsCancellationRequested)
                 {
-                    var i = Console.ReadLine();
-                    if (i == "q")
-                    {
-                        cts.Cancel();
-                        return;
-                    }
+                    Console.WriteLine($"{player.PlayTime:mm\\:ss\\.fff}/{player.TotalTime:mm\\:ss\\.fff}");
+                    Thread.Sleep(200);
                 }
             });
 
-            while (!cts.IsCancellationRequested && player.PlayerStatus != PlayerStatus.Ready)
+            player.Play();
+            await Task.Delay(4000);
+
+            player.Pause();
+            await Task.Delay(1000);
+            player.Seek(TimeSpan.FromSeconds(30));
+            player.Play();
+
+            while (true)
             {
-                Console.WriteLine(player.PlayTime + "/" + player.TotalTime);
-                Thread.Sleep(200);
+                var consoleKeyInfo = Console.ReadKey(true);
+                if (consoleKeyInfo.KeyChar == 'q')
+                {
+                    cts.Cancel();
+                    break;
+                }
             }
 
             player.Stop();

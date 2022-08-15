@@ -2,7 +2,7 @@
 using Coosu.Beatmap.Extensions.Playback;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 
-namespace Milki.OsuPlayer.Audio.Mixing;
+namespace Milki.OsuPlayer.Audio;
 
 public class CacheManager
 {
@@ -14,12 +14,12 @@ public class CacheManager
     private readonly ConcurrentDictionary<HitsoundNode, CachedSound?> _hitsoundNodeToCachedSoundMapping = new();
     private readonly ConcurrentDictionary<string, CachedSound?> _filenameToCachedSoundMapping = new();
 
-    public void AddCachedSound(CachedSound cachedSound, string path)
+    public void AddCachedSound(string path, CachedSound? cachedSound)
     {
         _filenameToCachedSoundMapping.TryAdd(path, cachedSound);
     }
 
-    public void AddCachedSound(CachedSound cachedSound, HitsoundNode hitsoundNode)
+    public void AddCachedSound(HitsoundNode hitsoundNode, CachedSound? cachedSound)
     {
         _hitsoundNodeToCachedSoundMapping.TryAdd(hitsoundNode, cachedSound);
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Anotar.NLog;
 using Coosu.Beatmap;
 using Coosu.Beatmap.Extensions.Playback;
 using JetBrains.Annotations;
@@ -37,6 +39,8 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
 
     private NightcoreTilingProvider? _nightcoreTilingProvider;
     private PlayModifier _playModifier;
+    private List<HitsoundNode>? _hitsoundNodes;
+    private int _nextCachingTime;
 
     public EsuPlayer(LocalOsuFile osuFile, AudioPlaybackEngine engine) : base(engine)
     {
@@ -161,14 +165,17 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
     {
         var osuDir = new OsuDirectory(_folder);
         await osuDir.InitializeAsync(_fileName);
-        var hitsoundNodes = await osuDir.GetHitsoundNodesAsync(_osuFile);
+        _hitsoundNodes = await osuDir.GetHitsoundNodesAsync(_osuFile);
+
+        AddAudioCacheInBackground(0, 13000, _hitsoundNodes);
+        _nextCachingTime = 10000;
 
         await InitializeMusicTrack();
-        await InitializeHitsoundTrack(hitsoundNodes);
+        await InitializeHitsoundTrack(_hitsoundNodes);
 
         var folder = "res://OsuPlayer.Audio/Milki.OsuPlayer.Audio.resources.default";
         _nightcoreTilingProvider = new NightcoreTilingProvider(folder, _osuFile, _musicTrack.Duration);
-        await InitializeSampleTrack(hitsoundNodes);
+        await InitializeSampleTrack(_hitsoundNodes);
 
         if (CachedSoundFactory.GetCount(SkinSoundFlag) == 0)
         {
@@ -233,16 +240,37 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
 
     public override void OnStatusChanged(TimerStatus previousStatus, TimerStatus currentStatus)
     {
-        if (previousStatus is TimerStatus.Start or TimerStatus.Restart &&
+        //Console.WriteLine(previousStatus + "->" + currentStatus);
+        if (previousStatus is TimerStatus.Start or TimerStatus.Restart or TimerStatus.Skip &&
             currentStatus is TimerStatus.Stop or TimerStatus.Reset)
         {
             PauseMusic();
         }
-        else if (previousStatus is TimerStatus.Stop or TimerStatus.Reset &&
+        else if (previousStatus is TimerStatus.Stop or TimerStatus.Reset or TimerStatus.Skip &&
                  currentStatus is TimerStatus.Start or TimerStatus.Restart)
         {
             PlayMusic();
         }
+    }
+
+    public override void OnUpdated(double previous, double current)
+    {
+        if (current > _nextCachingTime && _hitsoundNodes != null)
+        {
+            AddAudioCacheInBackground(_nextCachingTime, _nextCachingTime + 13000, _hitsoundNodes);
+            _nextCachingTime += 10000;
+        }
+    }
+
+    protected override async ValueTask SeekCore(TimeSpan time)
+    {
+        if (_hitsoundNodes != null)
+        {
+            await AddAudioCacheAsync((int)time.TotalMilliseconds,
+                (int)time.TotalMilliseconds + 13000, _hitsoundNodes);
+        }
+
+        await base.SeekCore(time);
     }
 
     private void PlayMusic()
@@ -256,6 +284,76 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
     {
         _isMusicTrackAdded = false;
         Engine.RemoveMixerInput(_musicVsp);
+    }
+
+    private async void AddAudioCacheInBackground(int startTime, int endTime, IEnumerable<HitsoundNode> hitsoundNodes)
+    {
+        await AddAudioCacheAsync(startTime, endTime, hitsoundNodes);
+    }
+
+    private async Task AddAudioCacheAsync(int startTime, int endTime, IEnumerable<HitsoundNode> hitsoundNodes)
+    {
+        if (hitsoundNodes is IList { Count: 0 })
+        {
+            LogTo.Warn($"No hitsounds in list, stop adding cache.");
+            return;
+        }
+
+        var hitsoundList = hitsoundNodes;
+        var folder = _folder;
+        var waveFormat = Engine.WaveFormat;
+        await Task.Run(() =>
+        {
+            hitsoundList
+                .Where(k => k.Offset >= startTime && k.Offset < endTime)
+                .AsParallel()
+                .WithDegreeOfParallelism(1)
+                //.WithDegreeOfParallelism(Environment.ProcessorCount == 1 ? 1 : Environment.ProcessorCount / 2)
+                .ForAll(playableNode => { AddHitsoundCache(playableNode, folder, waveFormat).Wait(); });
+        });
+    }
+
+    private async Task AddHitsoundCache(HitsoundNode hitsoundNode,
+        string beatmapFolder,
+        WaveFormat waveFormat)
+    {
+        if (hitsoundNode.Filename == null)
+        {
+            if (hitsoundNode is PlayableNode)
+            {
+                LogTo.Warn($"Filename is null, add null cache.");
+            }
+
+            CacheManager.Instance.AddCachedSound(hitsoundNode, null);
+            return;
+        }
+
+        string path;
+        string? identifier = null;
+        if (hitsoundNode.UseUserSkin)
+        {
+            identifier = "internal";
+            path = $"res://OsuPlayer.Audio/Milki.OsuPlayer.Audio.resources.default.{hitsoundNode.Filename}.ogg";
+        }
+        else
+        {
+            path = Path.Combine(beatmapFolder, hitsoundNode.Filename);
+        }
+
+        var (result, status) = await CachedSoundFactory
+            .GetOrCreateCacheSoundStatus(waveFormat, path, identifier, checkFileExist: false);
+
+        if (result == null)
+        {
+            LogTo.Warn("Caching sound failed: " + (File.Exists(path) ? path : "FileNotFound"));
+        }
+        else if (status == true)
+        {
+            LogTo.Info("Cached sound: " + path);
+        }
+
+        CacheManager.Instance.AddCachedSound(hitsoundNode, result);
+        CacheManager.Instance.AddCachedSound(Path.GetFileNameWithoutExtension(path), result);
     }
 
     #region INotifyPropertyChanged

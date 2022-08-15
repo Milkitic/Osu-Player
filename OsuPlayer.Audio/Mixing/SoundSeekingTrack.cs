@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Anotar.NLog;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -10,6 +11,7 @@ public class SoundSeekingTrack : Track
 {
     private readonly WaveFormat _waveFormat;
     private readonly VariableSpeedOptions _sharedVariableSpeedOptions;
+    private readonly EnhancedVolumeSampleProvider _volumeSampleProvider;
 
     private SeekableCachedSoundSampleProvider? _cachedSoundSampleProvider;
     private SmartWaveReader? _smartWaveReader;
@@ -18,11 +20,14 @@ public class SoundSeekingTrack : Track
     private string? _path;
     private bool _keepTune;
     private bool _readFully = true;
+    private double _previousCurrentPlayTime;
+    private ISampleProvider? _normalSampleProvider;
 
     public SoundSeekingTrack(TimerSource timerSource, WaveFormat waveFormat) : base(timerSource)
     {
         _waveFormat = waveFormat;
         _sharedVariableSpeedOptions = new VariableSpeedOptions(true, true);
+        _volumeSampleProvider = new EnhancedVolumeSampleProvider(null);
     }
 
     public string? Path
@@ -63,18 +68,22 @@ public class SoundSeekingTrack : Track
         var diffTolerance = GetDifferenceTolerance();
 
         var currentPlayTime = sampleProvider.PlayTime.TotalMilliseconds;
+        if (Math.Abs(_previousCurrentPlayTime - currentPlayTime) <= 0.0001) return;
         var diffMilliseconds = Math.Abs(currentPlayTime - current);
         if (diffMilliseconds > diffTolerance)
         {
-            //Logger.Debug($"Music offset too large {diffMilliseconds:N2}ms for {diffTolerance:N0}ms, will force to seek.");
+            LogTo.Debug($"Music offset too large {diffMilliseconds:N2}ms for {diffTolerance:N0}ms, will force to seek.");
             sampleProvider.PlayTime = TimeSpan.FromMilliseconds(current);
         }
+
+        _previousCurrentPlayTime = currentPlayTime;
     }
 
     public override void OnRateChanged(float previousRate, float currentRate)
     {
         var sampleProvider = _variableSpeedSampleProvider;
         if (sampleProvider == null) return;
+        ChangeSourceByTimer();
         sampleProvider.PlaybackRate = currentRate;
     }
 
@@ -93,18 +102,19 @@ public class SoundSeekingTrack : Track
                 var cachedSound = (await CachedSoundFactory.GetOrCreateCacheSound(_waveFormat, Path, checkFileExist: false,
                     useWdlResampler: true))!;
                 _cachedSoundSampleProvider = new SeekableCachedSoundSampleProvider(cachedSound);
+                _normalSampleProvider = _cachedSoundSampleProvider;
                 _variableSpeedSampleProvider = new VariableSpeedSampleProvider(_cachedSoundSampleProvider,
                     readDurationMilliseconds: 10, _sharedVariableSpeedOptions);
                 Duration = cachedSound.Duration.TotalMilliseconds;
             }
             else
             {
-                ISampleProvider sampleProvider = _smartWaveReader = new SmartWaveReader(Path);
+                _normalSampleProvider = _smartWaveReader = new SmartWaveReader(Path);
                 if (_smartWaveReader.WaveFormat.Channels == 1)
-                    sampleProvider = new MonoToStereoSampleProvider(sampleProvider);
+                    _normalSampleProvider = new MonoToStereoSampleProvider(_normalSampleProvider);
                 if (_smartWaveReader.WaveFormat.SampleRate != _waveFormat.SampleRate)
-                    sampleProvider = new WdlResamplingSampleProvider(sampleProvider, _waveFormat.SampleRate);
-                _variableSpeedSampleProvider = new VariableSpeedSampleProvider(sampleProvider,
+                    _normalSampleProvider = new WdlResamplingSampleProvider(_normalSampleProvider, _waveFormat.SampleRate);
+                _variableSpeedSampleProvider = new VariableSpeedSampleProvider(_normalSampleProvider,
                     readDurationMilliseconds: 10, _sharedVariableSpeedOptions);
                 Duration = _smartWaveReader.TotalTime.TotalMilliseconds;
             }
@@ -114,9 +124,18 @@ public class SoundSeekingTrack : Track
             throw new Exception("Path not specified.");
         }
 
-        RootSampleProvider = _variableSpeedSampleProvider;
+        ChangeSourceByTimer();
+
+        RootSampleProvider = _volumeSampleProvider;
         _variableSpeedSampleProvider.PlaybackRate = TimerSource.Rate;
     }
 
-    protected virtual double GetDifferenceTolerance() => 10;
+    private void ChangeSourceByTimer()
+    {
+        _volumeSampleProvider.Source = Math.Abs(TimerSource.Rate - 1f) < 0.005
+            ? _normalSampleProvider
+            : _variableSpeedSampleProvider;
+    }
+
+    protected virtual double GetDifferenceTolerance() => 8;
 }

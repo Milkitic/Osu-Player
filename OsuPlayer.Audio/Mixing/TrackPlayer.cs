@@ -129,7 +129,7 @@ public class TrackPlayer : IAsyncDisposable
         PlayerStatus = PlayerStatus.Seeking;
         StopCore();
         await SeekCore(time);
-        Play();
+        await PlayCoreAsync();
         PlayerStatus = PlayerStatus.Playing;
     }
 
