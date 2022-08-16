@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Milki.OsuPlayer.Audio.Internal;
+﻿namespace Milki.OsuPlayer.Audio.Internal;
 
 internal static class MathEx
 {

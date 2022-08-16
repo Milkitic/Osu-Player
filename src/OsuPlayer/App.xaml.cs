@@ -88,12 +88,15 @@ public partial class App : Application
     private void BuildServices()
     {
         var services = new ServiceCollection();
+        services.AddTransient(_ => AppSettings.Default);
         services.AddDbContext<ApplicationDbContext>();
         services.AddScoped<BeatmapSyncService>();
+        services.AddSingleton<KeyHookService>();
         services.AddSingleton<UpdateService>();
         services.AddSingleton<LyricsService>();
         services.AddSingleton<OsuFileScanningService>();
-        services.AddSingleton<OsuPlayList>();
+        services.AddSingleton<PlayListService>();
+        services.AddSingleton<PlayerService>();
 
         ServiceProvider = services.BuildServiceProvider();
     }
@@ -101,10 +104,14 @@ public partial class App : Application
     private async ValueTask InitializeServicesAsync()
     {
         ServiceProvider.GetService<LyricsService>()!.ReloadLyricProvider();
-        ServiceProvider.GetService<OsuPlayList>()!.Mode = AppSettings.Default.PlaySection.PlayListMode;
+        var osuPlayList = ServiceProvider.GetService<PlayListService>()!;
+        osuPlayList.Mode = AppSettings.Default.PlaySection.PlayListMode;
+       
 
         await using var dbContext = ServiceProvider.GetService<ApplicationDbContext>()!;
         await dbContext.Database.MigrateAsync();
+
+
     }
 
     private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

@@ -24,7 +24,7 @@ namespace Milki.OsuPlayer.Pages.Settings
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            EnableLyric.IsChecked = AppSettings.Default.LyricSection.EnableLyric;
+            EnableLyric.IsChecked = AppSettings.Default.LyricSection.IsDesktopLyricEnabled;
             if (AppSettings.Default.LyricSection.LyricSource == LyricSource.Auto)
                 SourceAuto.IsChecked = true;
             else if (AppSettings.Default.LyricSection.LyricSource == LyricSource.Netease)

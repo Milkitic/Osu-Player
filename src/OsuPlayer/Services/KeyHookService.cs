@@ -1,96 +1,80 @@
 ﻿#nullable enable
 using System;
-using System.Linq;
-using System.Windows.Forms;
-using Anotar.NLog;
+using System.Collections.Generic;
+using Milki.Extensions.MouseKeyHook;
 using Milki.OsuPlayer.Configuration;
+using Milki.OsuPlayer.Shared.Models;
 
 namespace Milki.OsuPlayer.Services;
 
 public sealed class KeyHookService : IDisposable
 {
-    private readonly IKeyboardMouseEvents _globalHook;
-    private bool _holdingCtrl, _holdingAlt, _holdingShift;
+    public Action? TogglePlayAction { get; set; }
+    public Action? PrevSongAction { get; set; }
+    public Action? NextSongAction { get; set; }
+    public Action? VolumeUpAction { get; set; }
+    public Action? VolumeDownAction { get; set; }
+    public Action? SwitchFullMiniModeAction { get; set; }
+    public Action? AddCurrentToFavAction { get; set; }
+    public Action? SwitchLyricWindowAction { get; set; }
 
-    public HotKeyType? ConfigType { get; set; }
+    private readonly List<Guid> _registerList = new();
+    private readonly AppSettings _appSettings;
+    private readonly IKeyboardHook _keyboardHook;
 
-    public KeyHookService()
+    public KeyHookService(AppSettings appSettings)
     {
-        _globalHook.KeyDown += GlobalHookKeyDown;
-        _globalHook.KeyUp += GlobalHookKeyUp;
+        _appSettings = appSettings;
+        _keyboardHook = KeyboardHookFactory.CreateGlobal();
     }
 
-    public static void AddKeyHook(HotKeyType type, Action callback)
+    public void InitializeAndActivateHotKeys()
     {
-        var setHotKey = AppSettings.Default.HotKeys.FirstOrDefault(k => k.Type == type);
-        if (setHotKey == null)
+        RegisterKey(_appSettings.HotKeys.TogglePlay, () => TogglePlayAction);
+        RegisterKey(_appSettings.HotKeys.PrevSong, () => PrevSongAction);
+        RegisterKey(_appSettings.HotKeys.NextSong, () => NextSongAction);
+        RegisterKey(_appSettings.HotKeys.VolumeUp, () => VolumeUpAction);
+        RegisterKey(_appSettings.HotKeys.VolumeDown, () => VolumeDownAction);
+        RegisterKey(_appSettings.HotKeys.SwitchFullMiniMode, () => SwitchFullMiniModeAction);
+        RegisterKey(_appSettings.HotKeys.AddCurrentToFav, () => AddCurrentToFavAction);
+        RegisterKey(_appSettings.HotKeys.SwitchLyricWindow, () => SwitchLyricWindowAction);
+    }
+
+    private void RegisterKey(BindKeys? bindKeys, Func<Action?> getAction)
+    {
+        if (bindKeys == null) return;
+        if (bindKeys.Keys == null) return;
+
+        var modifier = bindKeys.ModifierKeys;
+        var keys = bindKeys.Keys.Value;
+
+        if (modifier == HookModifierKeys.None)
         {
-            setHotKey = new HotKey { Type = type, Callback = callback };
-            AppSettings.Default.HotKeys.Add(setHotKey);
+            _registerList.Add(_keyboardHook.RegisterKeyDown(keys, KeyboardCallback));
         }
         else
         {
-            if (setHotKey.Key != Keys.None)
-            {
-                setHotKey.Callback = callback;
-            }
+            _registerList.Add(_keyboardHook.RegisterHotkey(modifier, keys, KeyboardCallback));
+        }
+
+        void KeyboardCallback(HookModifierKeys hookModifierKeys, HookKeys hookKeys, KeyAction keyAction)
+        {
+            getAction()?.Invoke();
         }
     }
 
-    public static void BindHotKey(HotKeyType type, bool useCtrl, bool useAlt, bool useShift, Keys key)
+    public void DeactivateHotKeys()
     {
-        var hotKey = AppSettings.Default.HotKeys.FirstOrDefault(k => k.Type == type);
-        if (hotKey == null)
+        foreach (var guid in _registerList)
         {
-            LogTo.Warn("HotKey shouldn't be null.");
-            return;
+            _keyboardHook.TryUnregister(guid);
         }
 
-        hotKey.Key = key;
-        hotKey.UseControlKey = useCtrl;
-        hotKey.UseAltKey = useAlt;
-        hotKey.UseShiftKey = useShift;
-    }
-
-    private void GlobalHookKeyDown(object sender, KeyEventArgs e)
-    {
-        if (e.KeyCode == Keys.LControlKey || e.KeyCode == Keys.RControlKey)
-            _holdingCtrl = true;
-        else if (e.KeyCode == Keys.LShiftKey || e.KeyCode == Keys.RShiftKey)
-            _holdingShift = true;
-        else if (e.KeyCode == Keys.LMenu || e.KeyCode == Keys.RMenu)
-            _holdingAlt = true;
-        else
-        {
-            if (ConfigType != null)
-            {
-                BindHotKey(ConfigType.Value, _holdingCtrl, _holdingAlt, _holdingShift, e.KeyCode);
-            }
-            else
-                AppSettings.Default.HotKeys.FirstOrDefault(key =>
-                    _holdingCtrl == key.UseControlKey && _holdingAlt == key.UseAltKey &&
-                    _holdingShift == key.UseShiftKey && e.KeyCode == key.Key)?.Callback?.Invoke();
-        }
-    }
-
-    private void GlobalHookKeyUp(object sender, KeyEventArgs e)
-    {
-        if (e.KeyCode == Keys.LControlKey || e.KeyCode == Keys.RControlKey)
-            _holdingCtrl = false;
-        else if (e.KeyCode == Keys.LShiftKey || e.KeyCode == Keys.RShiftKey)
-            _holdingShift = false;
-        else if (e.KeyCode == Keys.LMenu || e.KeyCode == Keys.RMenu)
-            _holdingAlt = false;
-        else
-        {
-            // ignore
-        }
+        _registerList.Clear();
     }
 
     public void Dispose()
     {
-        _globalHook.KeyDown -= GlobalHookKeyDown;
-        _globalHook.KeyUp -= GlobalHookKeyUp;
-        _globalHook.Dispose();
+        _keyboardHook.Dispose();
     }
 }

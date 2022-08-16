@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace Milki.OsuPlayer.Shared;
+﻿namespace Milki.OsuPlayer.Shared;
 
 public static class Constants
 {

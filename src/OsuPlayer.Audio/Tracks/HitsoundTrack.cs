@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Coosu.Beatmap.Extensions.Playback;
+﻿using Coosu.Beatmap.Extensions.Playback;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milki.OsuPlayer.Audio.Mixing;
 using NAudio.Wave;

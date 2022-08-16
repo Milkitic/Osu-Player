@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Anotar.NLog;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -87,7 +83,7 @@ public sealed partial class ApplicationDbContext
         return new PaginationQueryResult<PlayGroupQuery>(beatmaps, totalCount);
     }
 
-    public async ValueTask<PlayList[]> GetCollectionsAsync()
+    public async ValueTask<PlayList[]> GetPlayListsAsync()
     {
         return await PlayLists
             .AsNoTracking()

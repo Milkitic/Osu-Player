@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Anotar.NLog;
+﻿using Anotar.NLog;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;

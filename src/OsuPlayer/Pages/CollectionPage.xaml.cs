@@ -158,7 +158,7 @@ namespace Milki.OsuPlayer.Pages
 
             await dbContext.DeleteCollection(ViewModel.Collection);
             _mainWindow.SwitchRecent.IsChecked = true;
-            await _mainWindow.UpdateCollections();
+            await _mainWindow.UpdatePlayLists();
         }
 
         private void BtnExportAll_Click(object sender, RoutedEventArgs e)

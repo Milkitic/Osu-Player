@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Coosu.Beatmap;
+﻿using Coosu.Beatmap;
 using Coosu.Beatmap.Extensions.Playback;
 
 namespace Milki.OsuPlayer.Audio.Internal;

@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <nullable>enable</nullable>
-    <IsTrimmable>true</IsTrimmable>
     <RootNamespace>Milki.OsuPlayer.Shared</RootNamespace>
+    <nullable>enable</nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
 
   <ItemGroup>

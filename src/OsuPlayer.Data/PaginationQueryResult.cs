@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Milki.OsuPlayer.Data;
+﻿namespace Milki.OsuPlayer.Data;
 
 public class PaginationQueryResult<T>
 {

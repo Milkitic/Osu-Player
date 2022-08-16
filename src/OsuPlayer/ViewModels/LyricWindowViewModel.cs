@@ -42,6 +42,17 @@ namespace Milki.OsuPlayer.ViewModels
                 OnPropertyChanged();
             }
         }
+        
+        private bool _isLyricWindowLocked;
+        public bool IsLyricWindowLocked
+        {
+            get => _isLyricWindowLocked;
+            set
+            {
+                _isLyricWindowLocked = value;
+                OnPropertyChanged();
+            }
+        }
 
         public object FontFamily
         {

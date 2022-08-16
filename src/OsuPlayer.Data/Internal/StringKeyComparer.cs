@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Milki.OsuPlayer.Data.Models;
+﻿using Milki.OsuPlayer.Data.Models;
 
 namespace Milki.OsuPlayer.Data.Internal;
 

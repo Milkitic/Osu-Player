@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Milki.OsuPlayer.Shared.Models;
+﻿using Milki.OsuPlayer.Shared.Models;
 
 namespace Milki.OsuPlayer.Audio;
 
-public class OsuPlayList
+public class PlayListService
 {
     private readonly Random _random = new();
     private PlaylistMode _mode;

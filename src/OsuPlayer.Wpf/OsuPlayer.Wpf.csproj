@@ -2,10 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <nullable>enable</nullable>
     <UseWPF>true</UseWPF>
-    <IsTrimmable>true</IsTrimmable>
     <RootNamespace>Milki.OsuPlayer.Wpf</RootNamespace>
+    <nullable>enable</nullable>
+    <IsTrimmable>true</IsTrimmable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

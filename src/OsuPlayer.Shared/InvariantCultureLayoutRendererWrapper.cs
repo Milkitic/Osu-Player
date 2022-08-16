@@ -1,6 +1,4 @@
 ﻿using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
 using NLog;
 using NLog.Config;
 using NLog.LayoutRenderers;

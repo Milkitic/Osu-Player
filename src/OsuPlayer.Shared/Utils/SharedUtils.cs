@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Milki.OsuPlayer.Shared;
-
-namespace Milki.OsuPlayer.Shared.Utils;
+﻿namespace Milki.OsuPlayer.Shared.Utils;
 
 public static class SharedUtils
 {

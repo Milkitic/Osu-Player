@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Milki.OsuPlayer.Data.Models;
+﻿namespace Milki.OsuPlayer.Data.Models;
 
 public sealed class PlayListPlayItemRelation : IAutoCreatable
 {

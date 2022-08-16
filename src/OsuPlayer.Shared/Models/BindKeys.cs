@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using Milki.Extensions.MouseKeyHook;
 
 namespace Milki.OsuPlayer.Shared.Models;

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Coosu.Database;
+﻿using Coosu.Database;
 using Coosu.Database.DataTypes;
 using Milki.OsuPlayer.Data.Models;
 

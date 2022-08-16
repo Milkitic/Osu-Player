@@ -337,7 +337,7 @@ namespace Milki.OsuPlayer.Windows
             MetaString metaArtist = meta?.ArtistMeta ?? default;
             MetaString metaTitle = meta?.TitleMeta ?? default;
             SetNewLyric(null, metaArtist, metaTitle);
-            AppSettings.Default.LyricSection.EnableLyric = true;
+            AppSettings.Default.LyricSection.IsDesktopLyricEnabled = true;
             AppSettings.SaveDefault();
             ViewModel.IsLyricWindowShown = true;
             _mainWindow.SetLyricSynchronously();
@@ -346,7 +346,7 @@ namespace Milki.OsuPlayer.Windows
 
         public new void Hide()
         {
-            AppSettings.Default.LyricSection.EnableLyric = false;
+            AppSettings.Default.LyricSection.IsDesktopLyricEnabled = false;
             AppSettings.SaveDefault();
             ViewModel.IsLyricWindowShown = false;
             CancelTask();

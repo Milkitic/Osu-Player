@@ -4,11 +4,11 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <UseWPF>True</UseWPF>
-    <UseWindowsForms>True</UseWindowsForms>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Milki.OsuPlayer</RootNamespace>
     <AssemblyName>OsuPlayer</AssemblyName>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>10</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">

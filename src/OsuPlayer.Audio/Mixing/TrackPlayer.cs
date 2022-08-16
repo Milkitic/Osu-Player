@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Milki.Extensions.MixPlayer.NAudioExtensions;
+﻿using Milki.Extensions.MixPlayer.NAudioExtensions;
 using NAudio.Wave;
 
 namespace Milki.OsuPlayer.Audio.Mixing;

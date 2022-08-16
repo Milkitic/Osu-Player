@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Milki.OsuPlayer.Shared.Utils;
+﻿namespace Milki.OsuPlayer.Shared.Utils;
 
 public static class TaskUtils
 {

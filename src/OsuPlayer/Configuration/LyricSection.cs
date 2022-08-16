@@ -4,7 +4,7 @@ namespace Milki.OsuPlayer.Configuration;
 
 public class LyricSection
 {
-    public bool EnableLyric { get; set; } = true;
+    public bool IsDesktopLyricEnabled { get; set; } = true;
     public LyricSource LyricSource { get; set; } = LyricSource.Auto;
     public LyricProvideType ProvideType { get; set; } = LyricProvideType.Original;
     public bool StrictMode { get; set; } = true;

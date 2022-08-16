@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 
 namespace Milki.OsuPlayer.Audio.Mixing;
 

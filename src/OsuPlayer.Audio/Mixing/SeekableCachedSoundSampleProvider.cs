@@ -1,5 +1,4 @@
-﻿using System;
-using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
+﻿using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using NAudio.Wave;
 
 namespace Milki.OsuPlayer.Audio.Mixing;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Milki.OsuPlayer.Shared.Utils;
+﻿namespace Milki.OsuPlayer.Shared.Utils;
 
 public static class ListExtensions
 {

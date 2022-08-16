@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using Coosu.Beatmap;
+﻿using Coosu.Beatmap;
 using Milki.OsuPlayer.Data.Models;
 
 namespace Milki.OsuPlayer.Data
