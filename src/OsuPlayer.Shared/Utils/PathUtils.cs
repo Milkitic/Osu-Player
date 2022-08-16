@@ -13,7 +13,7 @@ public static class PathUtils
         throw new Exception("The path does not have a folder");
     }
 
-    public static string StandardizePath(string path, string baseFolder)
+    public static string StandardizePath(string path, string? baseFolder)
     {
         if (baseFolder == null) return path.Replace('\\', '/');
         if (path.StartsWith('.')) return path.Replace('\\', '/');

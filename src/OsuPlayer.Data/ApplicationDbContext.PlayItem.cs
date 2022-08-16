@@ -9,7 +9,7 @@ public sealed partial class ApplicationDbContext
     public async Task<PlayItem> GetOrAddPlayItem(string standardizedPath)
     {
         var playItem = await PlayItems
-            .AsNoTracking()
+            //.AsNoTracking()
             .Include(k => k.PlayItemDetail)
             .Include(k => k.PlayItemConfig)
             .Include(k => k.PlayItemAsset)
@@ -37,7 +37,7 @@ public sealed partial class ApplicationDbContext
                 await SaveChangesAsync();
             }
 
-            Entry(playItem).State = EntityState.Detached;
+            //Entry(playItem).State = EntityState.Detached;
             return playItem;
         }
 
@@ -47,6 +47,7 @@ public sealed partial class ApplicationDbContext
             Path = standardizedPath,
             IsAutoManaged = false,
             Folder = folder,
+            PlayLists = new List<PlayList>(),
             PlayItemAsset = new PlayItemAsset(),
             PlayItemConfig = new PlayItemConfig(),
             PlayItemDetail = new PlayItemDetail()

@@ -168,12 +168,15 @@ public class TrackPlayer : IAsyncDisposable
         PlayerStatus = PlayerStatus.Ready;
     }
 
-    public async ValueTask DisposeAsync()
+    public virtual async ValueTask DisposeAsync()
     {
         foreach (var track in Tracks)
         {
             await track.DisposeAsync();
+            RemoveFromMixer(track.RootSampleProvider);
         }
+
+        Tracks.Clear();
     }
 
     public virtual void OnUpdated(double previous, double current) { }

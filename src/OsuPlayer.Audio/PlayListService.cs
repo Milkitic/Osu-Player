@@ -110,6 +110,11 @@ public class PlayListService
         _pointer = pointer;
     }
 
+    public string? GetCurrentPath()
+    {
+        return _pointer == null ? null : _pathList[_pathIndexList[_pointer.Value]];
+    }
+
     public string? GetNextPath(PlayDirection playDirection, bool forceLoop)
     {
         if (_pointer == null && _pathList.Count > 0)
@@ -185,10 +190,5 @@ public class PlayListService
             var k = _random.Next(n + 1);
             (list[k], list[n]) = (list[n], list[k]);
         }
-    }
-
-    private string? GetCurrentPath()
-    {
-        return _pointer == null ? null : _pathList[_pathIndexList[_pointer.Value]];
     }
 }

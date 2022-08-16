@@ -204,6 +204,19 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
         PlayerStatus = PlayerStatus.Ready;
     }
 
+    public override async ValueTask DisposeAsync()
+    {
+        foreach (var track in Tracks)
+        {
+            await track.DisposeAsync();
+        }
+        
+        Engine.RootMixer.RemoveMixerInput(_musicVsp);
+        Engine.RootMixer.RemoveMixerInput(_hitsoundVsp);
+        Engine.RootMixer.RemoveMixerInput(_sampleVsp);
+        Tracks.Clear();
+    }
+
     private async ValueTask InitializeMusicTrack()
     {
         var audioFile = Path.Combine(_folder, _osuFile.General?.AudioFilename ?? "audio.mp3");

@@ -85,6 +85,7 @@ public sealed class AppSettings : IConfigurationBase
 
         public static string LanguageDir => Path.Combine(Environment.CurrentDirectory, "languages");
         public static string ResourceDir => Path.Combine(Environment.CurrentDirectory, "resources");
+        public static string OfficialBgDir => Path.Combine(Environment.CurrentDirectory, "official");
         public static string ToolDir => Path.Combine(Environment.CurrentDirectory, "tools");
     }
 }
