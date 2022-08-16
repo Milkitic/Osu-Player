@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Windows;
-using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Shared.Models;
+using Milki.OsuPlayer.Wpf;
 
 namespace Milki.OsuPlayer.Windows
 {

@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Xaml;
-using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Shared.Utils;
 
@@ -38,7 +37,7 @@ namespace Milki.OsuPlayer.Utils
             var defUiStrings = defLocale.Keys.Cast<object>()
                 .ToDictionary(defKey => (string)defKey, defKey => (string)defLocale[defKey]);
 
-            foreach (var enumerateFile in SharedUtils.EnumerateFiles(Domain.LangPath, ".xaml"))
+            foreach (var enumerateFile in SharedUtils.EnumerateFiles(AppSettings.Directories.LanguageDir, ".xaml"))
             {
                 try
                 {
@@ -160,7 +159,7 @@ namespace Milki.OsuPlayer.Utils
                 var chiUiText = string.Join("\r\n",
                     defUiStrings.Select(k => $@"    <sys:String x:Key=""{k.Key}"">{k.Value}</sys:String>"));
                 var nativeName = CultureInfo.CreateSpecificCulture("zh-CN").NativeName;
-                File.WriteAllText(Path.Combine(Domain.LangPath, "zh-CN.xaml"), GetXamlTemplate(chiUiText));
+                File.WriteAllText(Path.Combine(AppSettings.Directories.LanguageDir, "zh-CN.xaml"), GetXamlTemplate(chiUiText));
 
                 AvailableLangDic.Add(nativeName, "zh-CN");
             }
@@ -176,7 +175,7 @@ namespace Milki.OsuPlayer.Utils
             }
 
             ResourceDictionary langRd;
-            using (var s = new FileStream(Path.Combine(Domain.LangPath, $"{locale}.xaml"), FileMode.Open))
+            using (var s = new FileStream(Path.Combine(AppSettings.Directories.LanguageDir, $"{locale}.xaml"), FileMode.Open))
             {
                 langRd = (ResourceDictionary)System.Windows.Markup.XamlReader.Load(s);
             }

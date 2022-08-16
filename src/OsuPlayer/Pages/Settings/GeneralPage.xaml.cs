@@ -5,10 +5,9 @@ using System.Windows.Controls;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Common.Instances;
-using Milki.OsuPlayer.Common.Scanning;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Dependency;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Windows;
@@ -59,7 +58,7 @@ namespace Milki.OsuPlayer.Pages.Settings
         {
             RunOnStartup.IsChecked = AppSettings.Default.GeneralSection.RunOnStartup;
             TbDbPath.Text = AppSettings.Default.GeneralSection.DbPath;
-            TbCustomPath.Text = AppSettings.Default.GeneralSection.CustomSongsPath;
+            TbCustomPath.Text = AppSettings.Default.GeneralSection.CustomSongDir;
 
             if (AppSettings.Default.GeneralSection.ExitWhenClosed.HasValue)
             {
@@ -133,7 +132,7 @@ namespace Milki.OsuPlayer.Pages.Settings
                     TbCustomPath.Text = path;
                     await Service.Get<OsuFileScanningService>().CancelTaskAsync();
                     await Service.Get<OsuFileScanningService>().NewScanAndAddAsync(path);
-                    AppSettings.Default.GeneralSection.CustomSongsPath = path;
+                    AppSettings.Default.GeneralSection.CustomSongDir = path;
                     AppSettings.SaveDefault();
                 }
                 catch (Exception ex)
@@ -172,7 +171,7 @@ namespace Milki.OsuPlayer.Pages.Settings
         private async void ScanNow_Click(object sender, RoutedEventArgs e)
         {
             await Service.Get<OsuFileScanningService>().CancelTaskAsync();
-            await Service.Get<OsuFileScanningService>().NewScanAndAddAsync(AppSettings.Default.GeneralSection.CustomSongsPath);
+            await Service.Get<OsuFileScanningService>().NewScanAndAddAsync(AppSettings.Default.GeneralSection.CustomSongDir);
         }
     }
 }

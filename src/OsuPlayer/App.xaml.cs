@@ -12,11 +12,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Milki.Extensions.Configuration;
 using Milki.OsuPlayer.Audio;
-using Milki.OsuPlayer.Common.Instances;
-using Milki.OsuPlayer.Common.Scanning;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
-using Milki.OsuPlayer.Instances;
+using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared;
 using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.Utils;
@@ -52,7 +50,7 @@ public partial class App : Application
 
         if (!LoadConfig())
         {
-            Shutdown(1);
+            Shutdown(2);
             return;
         }
 
@@ -115,9 +113,9 @@ public partial class App : Application
         logger.Fatal(e.Exception, "DispatcherUnhandledException");
 
         var exceptionWindow = new ExceptionWindow(e.Exception, true);
-        var val = exceptionWindow.ShowDialog();
-        e.Handled = val != true;
-        if (val == true)
+        var exit = exceptionWindow.ShowDialog();
+        e.Handled = exit != true;
+        if (!e.Handled)
         {
             Environment.Exit(1);
         }

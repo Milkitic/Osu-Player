@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using Coosu.Database.DataTypes;
 using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
@@ -17,6 +18,7 @@ using Milki.OsuPlayer.Shared.Dependency;
 using Milki.OsuPlayer.UiComponents.PanelComponent;
 using Milki.OsuPlayer.ViewModels;
 using Milki.OsuPlayer.Windows;
+using Milki.OsuPlayer.Wpf;
 
 namespace Milki.OsuPlayer.Pages
 {
@@ -146,7 +148,7 @@ namespace Milki.OsuPlayer.Pages
             try
             {
                 var fileName = await CommonUtils.GetThumbByBeatmapDbId(beatmap).ConfigureAwait(false);
-                var thumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg");
+                var thumbPath = Path.Combine(AppSettings.Directories.ThumbCacheDir, $"{fileName}.jpg");
                 if (beatmap.BeatmapThumb == null)
                 {
                     Execute.OnUiThread(() =>

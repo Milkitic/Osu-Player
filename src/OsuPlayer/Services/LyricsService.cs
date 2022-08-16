@@ -7,7 +7,7 @@ using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.LyricsFinder;
 using Milki.OsuPlayer.Shared.Models;
 
-namespace Milki.OsuPlayer.Instances;
+namespace Milki.OsuPlayer.Services;
 
 public class LyricsService
 {

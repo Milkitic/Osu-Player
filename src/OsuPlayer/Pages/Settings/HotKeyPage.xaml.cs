@@ -41,12 +41,12 @@ namespace Milki.OsuPlayer.Pages.Settings
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             var type = (HotKeyType)((TextBox)sender).Tag;
-            _mainWindow.OverallKeyHook.ConfigType = type;
+            _mainWindow.KeyHookService.ConfigType = type;
         }
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            _mainWindow.OverallKeyHook.ConfigType = null;
+            _mainWindow.KeyHookService.ConfigType = null;
             TextBox_KeyUp(sender, null);
         }
 

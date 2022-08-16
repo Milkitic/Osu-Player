@@ -84,7 +84,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OsuPlayer.Audio\OsuPlayer.Audio.csproj" />
-    <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj" />
+    <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj" />
     <ProjectReference Include="..\OsuPlayer.Sentry\OsuPlayer.Sentry.csproj" />
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
     <ProjectReference Include="..\OsuPlayer.Wpf\OsuPlayer.Wpf.csproj" />

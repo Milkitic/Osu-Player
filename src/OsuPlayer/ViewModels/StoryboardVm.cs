@@ -1,8 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Milki.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Annotations;
+using Coosu.Database.DataTypes;
+using JetBrains.Annotations;
 
 namespace Milki.OsuPlayer.ViewModels
 {

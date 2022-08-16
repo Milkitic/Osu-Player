@@ -18,8 +18,8 @@ namespace Milki.OsuPlayer.Pages.Settings
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            LblMp3Path.Text = AppSettings.Default.ExportSection.MusicPath;
-            LblBgPath.Text = AppSettings.Default.ExportSection.BgPath;
+            LblMp3Path.Text = AppSettings.Default.ExportSection.MusicDir;
+            LblBgPath.Text = AppSettings.Default.ExportSection.BackgroundDir;
             if (AppSettings.Default.ExportSection.ExportNamingStyle == ExportNamingStyle.Title)
                 RadioT.IsChecked = true;
             else if (AppSettings.Default.ExportSection.ExportNamingStyle == ExportNamingStyle.ArtistTitle)
@@ -46,8 +46,8 @@ namespace Milki.OsuPlayer.Pages.Settings
             {
                 var result = dialog.ShowDialog();
                 if (result != CommonFileDialogResult.Ok) return;
-                AppSettings.Default.ExportSection.MusicPath = dialog.FileName;
-                LblMp3Path.Text = AppSettings.Default.ExportSection.MusicPath;
+                AppSettings.Default.ExportSection.MusicDir = dialog.FileName;
+                LblMp3Path.Text = AppSettings.Default.ExportSection.MusicDir;
                 AppSettings.SaveDefault();
             }
         }
@@ -62,8 +62,8 @@ namespace Milki.OsuPlayer.Pages.Settings
             {
                 var result = dialog.ShowDialog();
                 if (result != CommonFileDialogResult.Ok) return;
-                AppSettings.Default.ExportSection.BgPath = dialog.FileName;
-                LblBgPath.Text = AppSettings.Default.ExportSection.BgPath;
+                AppSettings.Default.ExportSection.BackgroundDir = dialog.FileName;
+                LblBgPath.Text = AppSettings.Default.ExportSection.BackgroundDir;
                 AppSettings.SaveDefault();
             }
         }

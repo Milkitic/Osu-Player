@@ -5,9 +5,10 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Milki.OsuPlayer.Shared.Models;
 using Newtonsoft.Json;
 
-namespace Milki.OsuPlayer.Common.Instances;
+namespace Milki.OsuPlayer.Services;
 
 public class UpdateService
 {

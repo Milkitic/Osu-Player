@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using Coosu.Beatmap;
 using Microsoft.EntityFrameworkCore;
-using Milki.OsuPlayer.Common.Instances;
-using Milki.OsuPlayer.Common.Scanning;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
-using Milki.OsuPlayer.Instances;
+using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.UiComponents.NotificationComponent;
@@ -30,7 +28,7 @@ namespace Milki.OsuPlayer.Windows
 
         public readonly LyricWindow LyricWindow;
         public ConfigWindow ConfigWindow;
-        public readonly OverallKeyHook OverallKeyHook;
+        public readonly KeyHookService KeyHookService;
         private bool _forceExit = false;
 
         private WindowState _lastState;
@@ -51,7 +49,7 @@ namespace Milki.OsuPlayer.Windows
             if (AppSettings.Default.LyricSection.EnableLyric)
                 LyricWindow.Show();
 
-            OverallKeyHook = new OverallKeyHook(this);
+            KeyHookService = new KeyHookService(this);
             Animation.Loaded += Animation_Loaded;
             PlayController.LikeClicked += Controller_LikeClicked;
             PlayController.ThumbClicked += Controller_ThumbClicked;
@@ -73,25 +71,25 @@ namespace Milki.OsuPlayer.Windows
 
         private void TryBindHotKeys()
         {
-            OverallKeyHook.AddKeyHook(HotKeyType.TogglePlay, () => _controller.PlayList.CurrentInfo?.TogglePlayHandle());
-            OverallKeyHook.AddKeyHook(HotKeyType.PrevSong, async () => await _controller.PlayPrevAsync());
-            OverallKeyHook.AddKeyHook(HotKeyType.NextSong, async () => await _controller.PlayNextAsync());
-            OverallKeyHook.AddKeyHook(HotKeyType.VolumeUp, () =>
+            KeyHookService.AddKeyHook(HotKeyType.TogglePlay, () => _controller.PlayList.CurrentInfo?.TogglePlayHandle());
+            KeyHookService.AddKeyHook(HotKeyType.PrevSong, async () => await _controller.PlayPrevAsync());
+            KeyHookService.AddKeyHook(HotKeyType.NextSong, async () => await _controller.PlayNextAsync());
+            KeyHookService.AddKeyHook(HotKeyType.VolumeUp, () =>
             {
                 AppSettings.Default.VolumeSection.Main += 0.05f;
                 AppSettings.SaveDefault();
             });
-            OverallKeyHook.AddKeyHook(HotKeyType.VolumeDown, () =>
+            KeyHookService.AddKeyHook(HotKeyType.VolumeDown, () =>
             {
                 AppSettings.Default.VolumeSection.Main -= 0.05f;
                 AppSettings.SaveDefault();
             });
-            OverallKeyHook.AddKeyHook(HotKeyType.SwitchFullMiniMode, () => { TriggerMiniWindow(); });
-            OverallKeyHook.AddKeyHook(HotKeyType.AddCurrentToFav, () =>
+            KeyHookService.AddKeyHook(HotKeyType.SwitchFullMiniMode, () => { TriggerMiniWindow(); });
+            KeyHookService.AddKeyHook(HotKeyType.AddCurrentToFav, () =>
             {
                 //TODO
             });
-            OverallKeyHook.AddKeyHook(HotKeyType.SwitchLyricWindow, () =>
+            KeyHookService.AddKeyHook(HotKeyType.SwitchLyricWindow, () =>
             {
                 if (LyricWindow.IsShown)
                     LyricWindow.Hide();
@@ -184,12 +182,12 @@ namespace Milki.OsuPlayer.Windows
 
                 try
                 {
-                    await Service.Get<OsuFileScanningService>().NewScanAndAddAsync(AppSettings.Default.GeneralSection.CustomSongsPath);
+                    await Service.Get<OsuFileScanningService>().NewScanAndAddAsync(AppSettings.Default.GeneralSection.CustomSongDir);
                 }
                 catch (Exception ex)
                 {
                     Logger.Error(ex, "Error while scanning custom folder: {0}",
-                        AppSettings.Default.GeneralSection.CustomSongsPath);
+                        AppSettings.Default.GeneralSection.CustomSongDir);
                     Notification.Push(I18NUtil.GetString("err-custom-scan"), Title);
                 }
             }

@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Coosu.Beatmap;
+using Coosu.Database.DataTypes;
 using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Data;
-using Milki.OsuPlayer.Data.Models;
-using Milki.OsuPlayer.Presentation;
-using Milki.OsuPlayer.Shared.Dependency;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.ViewModels;
 using Milki.OsuPlayer.Windows;
-using Milky.OsuPlayer.Presentation.Annotations;
+using Milki.OsuPlayer.Wpf;
 
 namespace Milki.OsuPlayer.UserControls
 {

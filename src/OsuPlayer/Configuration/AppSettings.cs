@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using Milki.Extensions.Configuration;
 
@@ -13,7 +12,7 @@ public sealed class AppSettings : IConfigurationBase
     private PlaySection _play = new();
     private LyricSection _lyric = new();
     private ExportSection _export = new();
-    private List<HotKey> _hotKeys = new();
+    private BindKeySection _hotKeys = new();
 
     public GeneralSection GeneralSection
     {
@@ -45,9 +44,9 @@ public sealed class AppSettings : IConfigurationBase
         set => _export = value;
     }
 
-    public List<HotKey> HotKeys
+    public BindKeySection HotKeys
     {
-        get => _hotKeys ??= new List<HotKey>();
+        get => _hotKeys ??= new BindKeySection();
         set => _hotKeys = value;
     }
 
@@ -81,6 +80,9 @@ public sealed class AppSettings : IConfigurationBase
         }
 
         public static string CacheDir => Path.Combine(Environment.CurrentDirectory, "caches");
+        public static string LyricCacheDir => Path.Combine(CacheDir, "lyrics");
+        public static string ThumbCacheDir => Path.Combine(CacheDir, "thumbs");
+
         public static string LanguageDir => Path.Combine(Environment.CurrentDirectory, "languages");
         public static string ResourceDir => Path.Combine(Environment.CurrentDirectory, "resources");
         public static string ToolDir => Path.Combine(Environment.CurrentDirectory, "tools");

@@ -4,13 +4,30 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Coosu.Database.DataTypes;
-using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Shared.Observable;
 
-namespace Milki.OsuPlayer.Common.Scanning;
+namespace Milki.OsuPlayer.Services;
 
 public class OsuFileScanningService
 {
+    public class FileScannerViewModel : VmBase
+    {
+        private bool _isScanning;
+        private bool _isCanceling;
+
+        public bool IsScanning
+        {
+            get => _isScanning;
+            internal set => this.RaiseAndSetIfChanged(ref _isScanning, value);
+        }
+
+        public bool IsCanceling
+        {
+            get => _isCanceling;
+            set => this.RaiseAndSetIfChanged(ref _isCanceling, value);
+        }
+    }
+
     private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
     public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();

@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using Milki.OsuPlayer.Common.Instances;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Dependency;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Windows;

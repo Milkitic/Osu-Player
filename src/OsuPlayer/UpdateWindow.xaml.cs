@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using Milki.OsuPlayer.Common;
+using Milki.OsuPlayer.Shared.Models;
 using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.Windows;
-using Path = System.IO.Path;
 
 namespace Milki.OsuPlayer
 {
@@ -20,7 +20,7 @@ namespace Milki.OsuPlayer
         private readonly GithubRelease _release;
         private readonly MainWindow _mainWindow;
         private Downloader _downloader;
-        private readonly string _savePath = Path.Combine(Domain.CurrentPath, "update.zip");
+        private readonly string _savePath = Path.Combine(Environment.CurrentDirectory, "update.zip");
 
         public UpdateWindow(GithubRelease release, MainWindow mainWindow)
         {

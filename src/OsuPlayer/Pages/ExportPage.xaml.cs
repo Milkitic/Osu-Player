@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Coosu.Beatmap;
+using Coosu.Database.DataTypes;
 using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
@@ -46,6 +47,9 @@ namespace Milki.OsuPlayer.Pages
             private set => _hasTaskSuccess = value;
         }
 
+        public static string MusicDir => AppSettings.Default.ExportSection.MusicDir;
+        public static string BackgroundDir => AppSettings.Default.ExportSection.BackgroundDir;
+
         public static bool IsTaskBusy =>
             ExportTask != null && !ExportTask.IsCanceled && !ExportTask.IsCompleted && !ExportTask.IsFaulted;
 
@@ -54,7 +58,7 @@ namespace Milki.OsuPlayer.Pages
             InitializeComponent();
             _mainWindow = (MainWindow)Application.Current.MainWindow;
             ViewModel = (ExportPageViewModel)DataContext;
-            ViewModel.ExportPath = AppSettings.Default.ExportSection.MusicPath;
+            ViewModel.ExportPath = AppSettings.Default.ExportSection.MusicDir;
         }
 
         public static void QueueBeatmaps(IEnumerable<Beatmap> beatmaps)
@@ -123,8 +127,8 @@ namespace Milki.OsuPlayer.Pages
                 GetExportFolder(out var exportMp3Folder, out var exportBgFolder,
                     new MetaString(artistAsc, artistUtf), creator, source);
 
-                string exportMp3Name = ValidateFilename(escapedMp3, Domain.MusicPath, mp3FileInfo.Extension);
-                string exportBgName = ValidateFilename(escapedBg, Domain.BackgroundPath, bgFileInfo.Extension);
+                string exportMp3Name = ValidateFilename(escapedMp3, MusicDir, mp3FileInfo.Extension);
+                string exportBgName = ValidateFilename(escapedBg, BackgroundDir, bgFileInfo.Extension);
 
                 if (mp3FileInfo.Exists)
                     Export(mp3FileInfo, exportMp3Folder, exportMp3Name);
@@ -156,8 +160,8 @@ namespace Milki.OsuPlayer.Pages
             switch (AppSettings.Default.ExportSection.ExportGroupStyle)
             {
                 case ExportGroupStyle.None:
-                    exportMp3Folder = Domain.MusicPath;
-                    exportBgFolder = Domain.BackgroundPath;
+                    exportMp3Folder = MusicDir;
+                    exportBgFolder = BackgroundDir;
                     break;
                 case ExportGroupStyle.Artist:
                     {
@@ -168,14 +172,14 @@ namespace Milki.OsuPlayer.Pages
                         if (string.IsNullOrEmpty(escArtistUtf))
                             escArtistUtf = "未知艺术家";
 
-                        if (Directory.Exists(Path.Combine(Domain.MusicPath, escArtistUtf)))
-                            exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistUtf);
-                        else if (Directory.Exists(Path.Combine(Domain.MusicPath, escArtistAsc)))
-                            exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistAsc);
+                        if (Directory.Exists(Path.Combine(MusicDir, escArtistUtf)))
+                            exportMp3Folder = Path.Combine(MusicDir, escArtistUtf);
+                        else if (Directory.Exists(Path.Combine(MusicDir, escArtistAsc)))
+                            exportMp3Folder = Path.Combine(MusicDir, escArtistAsc);
                         else
-                            exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistUtf);
+                            exportMp3Folder = Path.Combine(MusicDir, escArtistUtf);
 
-                        exportBgFolder = Path.Combine(Domain.BackgroundPath, escArtistUtf);
+                        exportBgFolder = Path.Combine(BackgroundDir, escArtistUtf);
                         break;
                     }
                 case ExportGroupStyle.Mapper:
@@ -184,8 +188,8 @@ namespace Milki.OsuPlayer.Pages
                         if (string.IsNullOrEmpty(escCreator))
                             escCreator = "未知作者";
 
-                        exportMp3Folder = Path.Combine(Domain.MusicPath, escCreator);
-                        exportBgFolder = Path.Combine(Domain.BackgroundPath, escCreator);
+                        exportMp3Folder = Path.Combine(MusicDir, escCreator);
+                        exportBgFolder = Path.Combine(BackgroundDir, escCreator);
                         break;
                     }
                 case ExportGroupStyle.Source:
@@ -194,8 +198,8 @@ namespace Milki.OsuPlayer.Pages
                         if (string.IsNullOrEmpty(escSource))
                             escSource = "未知来源";
 
-                        exportMp3Folder = Path.Combine(Domain.MusicPath, escSource);
-                        exportBgFolder = Path.Combine(Domain.BackgroundPath, escSource);
+                        exportMp3Folder = Path.Combine(MusicDir, escSource);
+                        exportBgFolder = Path.Combine(BackgroundDir, escSource);
                         break;
                     }
                 default:

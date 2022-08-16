@@ -48,7 +48,7 @@ namespace Milki.OsuPlayer.UserControls
         {
             _viewModel = (AnimationControlVm)DataContext;
 
-            var path = Path.Combine(Domain.ResourcePath, "official", "registration.jpg");
+            var path = Path.Combine(AppSettings.Directories.ResourceDir, "official", "registration.jpg");
             if (File.Exists(path))
             {
                 BackImage.Source = new BitmapImage(new Uri(path));

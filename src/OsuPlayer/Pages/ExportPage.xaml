@@ -7,7 +7,7 @@
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:Milky.OsuPlayer"
+    xmlns:models="clr-namespace:Milki.OsuPlayer"
     xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
     xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
     Title="ExportPage"

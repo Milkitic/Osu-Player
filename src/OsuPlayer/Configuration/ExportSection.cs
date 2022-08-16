@@ -1,4 +1,5 @@
-﻿using Milki.OsuPlayer.Common;
+﻿using System;
+using System.IO;
 using Milki.OsuPlayer.Shared.Models;
 using Newtonsoft.Json;
 
@@ -6,8 +7,8 @@ namespace Milki.OsuPlayer.Configuration;
 
 public class ExportSection
 {
-    public string MusicPath { get; set; } = Domain.MusicPath;
-    public string BgPath { get; set; } = Domain.BackgroundPath;
+    public string MusicDir { get; set; } = Path.Combine(Environment.CurrentDirectory, "exports", "music");
+    public string BackgroundDir { get; set; } = Path.Combine(Environment.CurrentDirectory, "exports", "background");
     [JsonProperty("NamingStyle")]
     public ExportNamingStyle ExportNamingStyle { get; set; } = ExportNamingStyle.ArtistTitle;
     [JsonProperty("SortStyle")]

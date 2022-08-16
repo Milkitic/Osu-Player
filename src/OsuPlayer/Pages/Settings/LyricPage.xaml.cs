@@ -1,9 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Instances;
 using Milki.OsuPlayer.Media.Lyric;
 using Milki.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Dependency;
 using Milki.OsuPlayer.Windows;
 

@@ -2,7 +2,6 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Common.Instances;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Presentation.Interaction;
 using Milki.OsuPlayer.Shared.Dependency;
