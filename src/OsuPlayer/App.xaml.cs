@@ -42,6 +42,93 @@ public partial class App : Application
     public new static App Current { get; private set; }
     public ServiceProvider ServiceProvider { get; private set; }
 
+    private async void Application_Startup(object sender, StartupEventArgs e)
+    {
+        DispatcherUnhandledException += Application_DispatcherUnhandledException;
+
+        I18NUtil.LoadI18N();
+        ConfigurationItemFactory.Default.LayoutRenderers.RegisterDefinition("InvariantCulture",
+            typeof(InvariantCultureLayoutRendererWrapper));
+
+        if (!LoadConfig())
+        {
+            Shutdown(1);
+            return;
+        }
+
+        StyleUtilities.SetAlignment();
+        Unosquare.FFME.Library.FFmpegDirectory = Path.Combine(AppSettings.Directories.ToolDir, "ffmpeg");
+
+        BuildServices();
+        await InitializeServicesAsync();
+
+        MainWindow = new MainWindow();
+        MainWindow.Show();
+    }
+
+    private bool LoadConfig()
+    {
+        try
+        {
+            _ = AppSettings.Default;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            var ok = MsgDialog.WarnOkCancel("Error occurs while loading configuration. " +
+                                            "Click 'OK' to override current configuration.",
+                instruction: "Invalid configuration",
+                title: "Osu Player",
+                detail: "Exception message: " + ex.Message);
+            if (!ok) return false;
+            File.Delete("./AppSettings.yaml");
+            _ = AppSettings.Default;
+            return true;
+        }
+    }
+
+    private void BuildServices()
+    {
+        var services = new ServiceCollection();
+        services.AddDbContext<ApplicationDbContext>();
+        services.AddScoped<BeatmapSyncService>();
+        services.AddSingleton<UpdateService>();
+        services.AddSingleton<LyricsService>();
+        services.AddSingleton<OsuFileScanningService>();
+        services.AddSingleton<OsuPlayList>();
+
+        ServiceProvider = services.BuildServiceProvider();
+    }
+
+    private async ValueTask InitializeServicesAsync()
+    {
+        ServiceProvider.GetService<LyricsService>()!.ReloadLyricProvider();
+        ServiceProvider.GetService<OsuPlayList>()!.Mode = AppSettings.Default.PlaySection.PlayListMode;
+
+        await using var dbContext = ServiceProvider.GetService<ApplicationDbContext>()!;
+        await dbContext.Database.MigrateAsync();
+    }
+
+    private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+    {
+        var logger = LogManager.GetCurrentClassLogger();
+        logger.Fatal(e.Exception, "DispatcherUnhandledException");
+
+        var exceptionWindow = new ExceptionWindow(e.Exception, true);
+        var val = exceptionWindow.ShowDialog();
+        e.Handled = val != true;
+        if (val == true)
+        {
+            Environment.Exit(1);
+        }
+    }
+
+    private void Application_Exit(object sender, ExitEventArgs e)
+    {
+        AppSettings.Default?.Save();
+        LogManager.Shutdown();
+    }
+
     private static void CreateApplication()
     {
         var mutex = new Mutex(true, "Milki.OsuPlayer", out bool createNew);
@@ -78,73 +165,6 @@ public partial class App : Application
         }
     }
 
-    private async void Application_Startup(object sender, StartupEventArgs e)
-    {
-        DispatcherUnhandledException += Application_DispatcherUnhandledException;
-
-        I18NUtil.LoadI18N();
-        ConfigurationItemFactory.Default.LayoutRenderers.RegisterDefinition("InvariantCulture",
-            typeof(InvariantCultureLayoutRendererWrapper));
-
-        if (!LoadConfig())
-        {
-            Shutdown(1);
-            return;
-        }
-
-        StyleUtilities.SetAlignment();
-        Unosquare.FFME.Library.FFmpegDirectory = Path.Combine(AppSettings.Directories.ToolDir, "ffmpeg");
-
-        BuildServices();
-        await InitializeServicesAsync();
-
-        MainWindow = new MainWindow();
-        MainWindow.Show();
-    }
-
-    private void BuildServices()
-    {
-        var services = new ServiceCollection();
-        services.AddDbContext<ApplicationDbContext>();
-        services.AddScoped<BeatmapSyncService>();
-        services.AddSingleton<UpdateService>();
-        services.AddSingleton<LyricsService>();
-        services.AddSingleton<OsuFileScanningService>();
-        services.AddSingleton<OsuPlayList>();
-
-        ServiceProvider = services.BuildServiceProvider();
-    }
-
-    private async ValueTask InitializeServicesAsync()
-    {
-        ServiceProvider.GetService<LyricsService>()!.ReloadLyricProvider();
-        ServiceProvider.GetService<OsuPlayList>()!.Mode = AppSettings.Default.PlaySection.PlayListMode;
-
-        await using var dbContext = ServiceProvider.GetService<ApplicationDbContext>()!;
-        await dbContext.Database.MigrateAsync();
-    }
-
-    private static bool LoadConfig()
-    {
-        try
-        {
-            _ = AppSettings.Default;
-            return true;
-        }
-        catch (Exception ex)
-        {
-            var ok = MsgDialog.WarnOkCancel("Error occurs while loading configuration. " +
-                                            "Click 'OK' to override current configuration.",
-                instruction: "Invalid configuration",
-                title: "Osu Player",
-                detail: "Exception message: " + ex.Message);
-            if (!ok) return false;
-            File.Delete("./AppSettings.yaml");
-            _ = AppSettings.Default;
-            return true;
-        }
-    }
-
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
         if (e.ExceptionObject is Exception ex)
@@ -162,25 +182,5 @@ public partial class App : Application
         }
 
         Environment.Exit(1);
-    }
-
-    private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-    {
-        var logger = LogManager.GetCurrentClassLogger();
-        logger.Fatal(e.Exception, "DispatcherUnhandledException");
-
-        var exceptionWindow = new ExceptionWindow(e.Exception, true);
-        var val = exceptionWindow.ShowDialog();
-        e.Handled = val != true;
-        if (val == true)
-        {
-            Environment.Exit(1);
-        }
-    }
-
-    private void Application_Exit(object sender, ExitEventArgs e)
-    {
-        AppSettings.Default?.Save();
-        LogManager.Shutdown();
     }
 }
