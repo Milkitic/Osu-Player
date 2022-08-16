@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using Milki.OsuPlayer.Shared;
 using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.Shared.Models;
 
 namespace Milki.OsuPlayer.UserControls
 {

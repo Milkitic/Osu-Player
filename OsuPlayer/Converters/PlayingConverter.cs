@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Milki.OsuPlayer.Shared;
+using Milki.OsuPlayer.Shared.Models;
 using Milki.OsuPlayer.UiComponents.ButtonComponent;
 using Milki.OsuPlayer.Windows;
 

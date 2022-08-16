@@ -15,7 +15,7 @@ using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milki.OsuPlayer.Audio.Mixing;
 using Milki.OsuPlayer.Audio.Tracks;
-using Milki.OsuPlayer.Shared;
+using Milki.OsuPlayer.Shared.Models;
 using NAudio.Wave;
 
 namespace Milki.OsuPlayer.Audio;

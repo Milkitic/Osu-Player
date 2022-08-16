@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Shared;
+using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.Windows;
 using Path = System.IO.Path;
 

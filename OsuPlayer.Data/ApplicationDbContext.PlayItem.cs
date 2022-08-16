@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Milki.OsuPlayer.Data.Models;
-using Milki.OsuPlayer.Shared;
+using Milki.OsuPlayer.Shared.Utils;
 
 namespace Milki.OsuPlayer.Data;
 
@@ -44,7 +44,7 @@ public sealed partial class ApplicationDbContext
             return playItem;
         }
 
-        var folder = PathUtilities.GetFolder(standardizedPath);
+        var folder = PathUtils.GetFolder(standardizedPath);
         var entity = new PlayItem
         {
             Path = standardizedPath,

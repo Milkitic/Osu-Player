@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Milki.OsuPlayer.Shared;
+using Milki.OsuPlayer.Shared.Models;
 
 namespace Milki.OsuPlayer.Audio;
 

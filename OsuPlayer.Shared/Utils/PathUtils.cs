@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-namespace Milki.OsuPlayer.Shared;
+namespace Milki.OsuPlayer.Shared.Utils;
 
-public static class PathUtilities
+public static class PathUtils
 {
     public static string GetFolder(string path)
     {
@@ -16,7 +16,7 @@ public static class PathUtilities
         throw new Exception("The path does not have a folder");
     }
 
-    public static string StandardizePath(string path, string? baseFolder)
+    public static string StandardizePath(string path, string baseFolder)
     {
         if (baseFolder == null) return path.Replace('\\', '/');
         if (path.StartsWith('.')) return path.Replace('\\', '/');

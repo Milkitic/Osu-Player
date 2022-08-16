@@ -9,6 +9,4 @@ public static class Constants
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Milki.OsuPlayer");
     public static string ConfigDir { get; } =
         Path.Combine(ApplicationDir, "configs");
-    public static string DefaultHitsoundDir { get; } =
-        Path.Combine(ApplicationDir, "default");
 }

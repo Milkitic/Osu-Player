@@ -9,7 +9,7 @@ using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Milki.OsuPlayer.Data.Internal;
 using Milki.OsuPlayer.Data.Models;
-using Milki.OsuPlayer.Shared;
+using Milki.OsuPlayer.Shared.Utils;
 
 namespace Milki.OsuPlayer.Data;
 
@@ -109,7 +109,7 @@ public class BeatmapSyncService
                 //oldDetial.GameMode = newDetail.GameMode;
                 oldDetial.Source = newDetail.Source;
                 oldDetial.Tags = newDetail.Tags;
-                oldDetial.FolderName = PathUtilities.GetFolder(k.Key);
+                oldDetial.FolderName = PathUtils.GetFolder(k.Key);
                 oldDetial.AudioFileName = newDetail.AudioFileName;
                 return newDetail;
             })
@@ -135,7 +135,7 @@ public class BeatmapSyncService
             listDetail.Add(playItemDetail.Value);
 
             var path = playItemDetail.Key;
-            var folder = PathUtilities.GetFolder(path);
+            var folder = PathUtils.GetFolder(path);
             playItemDetail.Value.FolderName = folder;
             listItem.Add(new PlayItem
             {
