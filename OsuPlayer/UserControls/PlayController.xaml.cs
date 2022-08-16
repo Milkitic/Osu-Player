@@ -7,7 +7,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using Milki.Extensions.MixPlayer;
-using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Audio.Playlist;
 using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Presentation.Interaction;

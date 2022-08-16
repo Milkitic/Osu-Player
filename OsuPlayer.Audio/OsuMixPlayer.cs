@@ -15,11 +15,12 @@ using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milki.OsuPlayer.Audio.Mixing;
 using Milki.OsuPlayer.Audio.Tracks;
+using Milki.OsuPlayer.Shared;
 using NAudio.Wave;
 
 namespace Milki.OsuPlayer.Audio;
 
-public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
+public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
 {
     public const string SkinSoundFlag = "UserSkin";
 
@@ -41,7 +42,7 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
     private List<HitsoundNode>? _hitsoundNodes;
     private int _nextCachingTime;
 
-    public EsuPlayer(LocalOsuFile osuFile, AudioPlaybackEngine engine) : base(engine)
+    public OsuMixPlayer(LocalOsuFile osuFile, AudioPlaybackEngine engine) : base(engine)
     {
         _osuFile = osuFile;
         _folder = Path.GetDirectoryName(osuFile.OriginalPath)!;
@@ -320,7 +321,7 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
                 LogTo.Warn($"Filename is null, add null cache.");
             }
 
-            CacheManager.Instance.AddCachedSound(hitsoundNode, null);
+            AudioCacheManager.Instance.AddCachedSound(hitsoundNode, null);
             return;
         }
 
@@ -338,8 +339,8 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
 
         var result =
             await CachedSoundFactory.GetOrCreateCacheSound(waveFormat, path, identifier, checkFileExist: false);
-        CacheManager.Instance.AddCachedSound(hitsoundNode, result);
-        CacheManager.Instance.AddCachedSound(Path.GetFileNameWithoutExtension(path), result);
+        AudioCacheManager.Instance.AddCachedSound(hitsoundNode, result);
+        AudioCacheManager.Instance.AddCachedSound(Path.GetFileNameWithoutExtension(path), result);
     }
 
     #region INotifyPropertyChanged

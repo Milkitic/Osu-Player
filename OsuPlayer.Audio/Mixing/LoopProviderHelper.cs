@@ -10,7 +10,7 @@ using NAudio.Wave.SampleProviders;
 
 namespace Milki.OsuPlayer.Audio.Mixing;
 
-internal class LoopProviders
+internal class LoopProviderHelper
 {
     private readonly Dictionary<SlideChannel, LoopProvider> _dictionary = new();
 

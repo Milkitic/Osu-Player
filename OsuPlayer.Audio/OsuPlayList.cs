@@ -5,7 +5,7 @@ using Milki.OsuPlayer.Shared;
 
 namespace Milki.OsuPlayer.Audio;
 
-public class MemoryPlayList
+public class OsuPlayList
 {
     private readonly Random _random = new();
     private PlaylistMode _mode;

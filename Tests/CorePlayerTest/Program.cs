@@ -38,7 +38,7 @@ namespace CorePlayerTest
                 IsExclusive = false,
                 Latency = 1
             });
-            var player = new EsuPlayer(osuFile, engine)
+            var player = new OsuMixPlayer(osuFile, engine)
             {
                 Volume = 0.05f,
                 Offset = 35

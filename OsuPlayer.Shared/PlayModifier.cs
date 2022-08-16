@@ -1,4 +1,4 @@
-﻿namespace Milki.OsuPlayer.Audio;
+﻿namespace Milki.OsuPlayer.Shared;
 
 public enum PlayModifier
 {

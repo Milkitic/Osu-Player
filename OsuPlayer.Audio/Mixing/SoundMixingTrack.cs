@@ -13,7 +13,7 @@ namespace Milki.OsuPlayer.Audio.Mixing;
 public class SoundMixingTrack : Track
 {
     private readonly WaveFormat _waveFormat;
-    private readonly LoopProviders _loopProviders;
+    private readonly LoopProviderHelper _loopProviderHelper;
 
     private MixingSampleProvider? _mixingSampleProvider;
     private EnhancedVolumeSampleProvider? _volumeProvider;
@@ -27,7 +27,7 @@ public class SoundMixingTrack : Track
     {
         HitsoundNodes = hitsoundNodes ?? new List<HitsoundNode>();
         _waveFormat = waveFormat;
-        _loopProviders = new LoopProviders();
+        _loopProviderHelper = new LoopProviderHelper();
     }
 
     public float BalanceRatio { get; set; } = 0.3f;
@@ -41,7 +41,7 @@ public class SoundMixingTrack : Track
 
     public override ValueTask DisposeAsync()
     {
-        _loopProviders.RemoveAll(_mixingSampleProvider);
+        _loopProviderHelper.RemoveAll(_mixingSampleProvider);
         return ValueTask.CompletedTask;
     }
 
@@ -128,7 +128,7 @@ public class SoundMixingTrack : Track
     {
         if (hitsoundNode is PlayableNode playableNode)
         {
-            if (!CacheManager.Instance.TryGetAudioByNode(playableNode, out var cachedSound))
+            if (!AudioCacheManager.Instance.TryGetAudioByNode(playableNode, out var cachedSound))
             {
                 LogTo.Warn("Failed to find CachedSound to play PlayableNode:" + DebuggerDisplay(hitsoundNode));
                 return;
@@ -151,30 +151,30 @@ public class SoundMixingTrack : Track
             var balance = controlNode.Balance;
             if (controlNode.ControlType == ControlType.StartSliding)
             {
-                if (_loopProviders.ShouldRemoveAll(controlNode.SlideChannel))
+                if (_loopProviderHelper.ShouldRemoveAll(controlNode.SlideChannel))
                 {
-                    _loopProviders.RemoveAll(rootMixer);
+                    _loopProviderHelper.RemoveAll(rootMixer);
                 }
 
-                if (!CacheManager.Instance.TryGetAudioByNode(controlNode, out var cachedSound))
+                if (!AudioCacheManager.Instance.TryGetAudioByNode(controlNode, out var cachedSound))
                 {
                     LogTo.Warn("Failed to find CachedSound to play ControlNode:" + DebuggerDisplay(hitsoundNode));
                     return;
                 }
 
-                _loopProviders.Create(controlNode, cachedSound!, rootMixer, volume, balance);
+                _loopProviderHelper.Create(controlNode, cachedSound!, rootMixer, volume, balance);
             }
             else if (controlNode.ControlType == ControlType.StopSliding)
             {
-                _loopProviders.Remove(controlNode.SlideChannel, rootMixer);
+                _loopProviderHelper.Remove(controlNode.SlideChannel, rootMixer);
             }
             else if (controlNode.ControlType == ControlType.ChangeVolume)
             {
-                _loopProviders.ChangeAllVolumes(volume);
+                _loopProviderHelper.ChangeAllVolumes(volume);
             }
             else if (controlNode.ControlType == ControlType.ChangeBalance)
             {
-                _loopProviders.ChangeAllBalances(balance);
+                _loopProviderHelper.ChangeAllBalances(balance);
             }
         }
     }

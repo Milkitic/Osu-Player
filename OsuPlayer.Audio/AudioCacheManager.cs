@@ -4,13 +4,13 @@ using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 
 namespace Milki.OsuPlayer.Audio;
 
-public class CacheManager
+public class AudioCacheManager
 {
-    private CacheManager()
+    private AudioCacheManager()
     {
     }
 
-    public static CacheManager Instance { get; } = new();
+    public static AudioCacheManager Instance { get; } = new();
 
     private readonly ConcurrentDictionary<HitsoundNode, CachedSound?> _hitsoundNodeToCachedSoundMapping = new();
     private readonly ConcurrentDictionary<string, CachedSound?> _filenameToCachedSoundMapping = new();
