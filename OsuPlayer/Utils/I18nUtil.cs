@@ -6,7 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Xaml;
 using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Shared.Utils;
 
 namespace Milki.OsuPlayer.Utils

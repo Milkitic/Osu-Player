@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 using Milki.Extensions.MixPlayer;
 using Milki.OsuPlayer.Audio.Playlist;
 using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Presentation.Interaction;
 using Milki.OsuPlayer.Shared.Dependency;
 using Milki.OsuPlayer.UiComponents.NotificationComponent;
@@ -63,7 +63,7 @@ namespace Milki.OsuPlayer.UserControls
             _controller.LoadError += Controller_LoadError;
 
             SharedVm.Default.PropertyChanged += Shared_PropertyChanged;
-            AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
+            AppSettings.Default.PlaySection.PropertyChanged += Play_PropertyChanged;
         }
 
         private void Controller_LoadError(BeatmapContext arg1, Exception arg2)
@@ -103,7 +103,7 @@ namespace Milki.OsuPlayer.UserControls
                 BlendBorder.Visibility = Visibility.Collapsed;
             });
 
-            AppSettings.Default.Play.PropertyChanged -= Play_PropertyChanged;
+            AppSettings.Default.PlaySection.PropertyChanged -= Play_PropertyChanged;
         }
 
         private void Controller_BackgroundInfoLoaded(BeatmapContext beatmapCtx, CancellationToken ct)
@@ -145,8 +145,8 @@ namespace Milki.OsuPlayer.UserControls
 
         private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(AppSettings.Play.PlaybackRate))
-                VideoElement.SpeedRatio = AppSettings.Default.Play.PlaybackRate;
+            if (e.PropertyName == nameof(AppSettings.PlaySection.PlaybackRate))
+                VideoElement.SpeedRatio = AppSettings.Default.PlaySection.PlaybackRate;
         }
 
         public bool IsBlur
@@ -213,7 +213,7 @@ namespace Milki.OsuPlayer.UserControls
             Execute.OnUiThread(() =>
             {
                 VideoElementBorder.Visibility = Visibility.Hidden;
-                VideoElement.SpeedRatio = AppSettings.Default.Play.PlaybackRate;
+                VideoElement.SpeedRatio = AppSettings.Default.PlaySection.PlaybackRate;
             });
         }
         private async Task InitVideoAsync(BeatmapContext beatmapCtx)

@@ -2,8 +2,8 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Common.Configuration;
 using Milki.OsuPlayer.Common.Instances;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Presentation.Interaction;
 using Milki.OsuPlayer.Shared.Dependency;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
@@ -59,7 +59,7 @@ namespace Milki.OsuPlayer.UserControls
                     {
                         GuideSyncing = true;
                         await Service.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
-                        AppSettings.Default.General.DbPath = path;
+                        AppSettings.Default.GeneralSection.DbPath = path;
                         AppSettings.SaveDefault();
                         GuideSyncing = false;
                         GuideSelectedDb = true;
@@ -74,7 +74,7 @@ namespace Milki.OsuPlayer.UserControls
 
                     if (isSuccess)
                     {
-                        AppSettings.Default.General.FirstOpen = false;
+                        AppSettings.Default.GeneralSection.FirstOpen = false;
                         AppSettings.SaveDefault();
                         FrontDialogOverlay.Default.RaiseOk();
                     }
@@ -92,7 +92,7 @@ namespace Milki.OsuPlayer.UserControls
                 {
                     //ShowWelcome = false;
                     FrontDialogOverlay.Default.RaiseCancel();
-                    AppSettings.Default.General.FirstOpen = false;
+                    AppSettings.Default.GeneralSection.FirstOpen = false;
                     AppSettings.SaveDefault();
                 });
             }

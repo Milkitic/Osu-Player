@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Instances;
 using Milki.OsuPlayer.Media.Lyric;
 using Milki.OsuPlayer.Presentation;
@@ -24,23 +24,23 @@ namespace Milki.OsuPlayer.Pages.Settings
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            EnableLyric.IsChecked = AppSettings.Default.Lyric.EnableLyric;
-            if (AppSettings.Default.Lyric.LyricSource == LyricSource.Auto)
+            EnableLyric.IsChecked = AppSettings.Default.LyricSection.EnableLyric;
+            if (AppSettings.Default.LyricSection.LyricSource == LyricSource.Auto)
                 SourceAuto.IsChecked = true;
-            else if (AppSettings.Default.Lyric.LyricSource == LyricSource.Netease)
+            else if (AppSettings.Default.LyricSection.LyricSource == LyricSource.Netease)
                 SourceNetease.IsChecked = true;
-            else if (AppSettings.Default.Lyric.LyricSource == LyricSource.Kugou)
+            else if (AppSettings.Default.LyricSection.LyricSource == LyricSource.Kugou)
                 SourceKugou.IsChecked = true;
-            else if (AppSettings.Default.Lyric.LyricSource == LyricSource.QqMusic)
+            else if (AppSettings.Default.LyricSection.LyricSource == LyricSource.QqMusic)
                 SourceQqMusic.IsChecked = true;
-            if (AppSettings.Default.Lyric.ProvideType == LyricProvideType.PreferBoth)
+            if (AppSettings.Default.LyricSection.ProvideType == LyricProvideType.PreferBoth)
                 ShowAll.IsChecked = true;
-            else if (AppSettings.Default.Lyric.ProvideType == LyricProvideType.Original)
+            else if (AppSettings.Default.LyricSection.ProvideType == LyricProvideType.Original)
                 ShowOrigin.IsChecked = true;
-            else if (AppSettings.Default.Lyric.ProvideType == LyricProvideType.PreferTranslated)
+            else if (AppSettings.Default.LyricSection.ProvideType == LyricProvideType.PreferTranslated)
                 ShowTrans.IsChecked = true;
-            StrictMode.IsChecked = AppSettings.Default.Lyric.StrictMode;
-            EnableCache.IsChecked = AppSettings.Default.Lyric.EnableCache;
+            StrictMode.IsChecked = AppSettings.Default.LyricSection.StrictMode;
+            EnableCache.IsChecked = AppSettings.Default.LyricSection.EnableCache;
             _loaded = true;
         }
 
@@ -61,13 +61,13 @@ namespace Milki.OsuPlayer.Pages.Settings
         {
             if (!_loaded) return;
             if (SourceAuto.IsChecked.HasValue && SourceAuto.IsChecked.Value)
-                AppSettings.Default.Lyric.LyricSource = LyricSource.Auto;
+                AppSettings.Default.LyricSection.LyricSource = LyricSource.Auto;
             else if (SourceNetease.IsChecked.HasValue && SourceNetease.IsChecked.Value)
-                AppSettings.Default.Lyric.LyricSource = LyricSource.Netease;
+                AppSettings.Default.LyricSection.LyricSource = LyricSource.Netease;
             else if (SourceKugou.IsChecked.HasValue && SourceKugou.IsChecked.Value)
-                AppSettings.Default.Lyric.LyricSource = LyricSource.Kugou;
+                AppSettings.Default.LyricSection.LyricSource = LyricSource.Kugou;
             else if (SourceQqMusic.IsChecked.HasValue && SourceQqMusic.IsChecked.Value)
-                AppSettings.Default.Lyric.LyricSource = LyricSource.QqMusic;
+                AppSettings.Default.LyricSection.LyricSource = LyricSource.QqMusic;
             ReloadLyric();
             AppSettings.SaveDefault();
         }
@@ -76,11 +76,11 @@ namespace Milki.OsuPlayer.Pages.Settings
         {
             if (!_loaded) return;
             if (ShowAll.IsChecked.HasValue && ShowAll.IsChecked.Value)
-                AppSettings.Default.Lyric.ProvideType = LyricProvideType.PreferBoth;
+                AppSettings.Default.LyricSection.ProvideType = LyricProvideType.PreferBoth;
             else if (ShowOrigin.IsChecked.HasValue && ShowOrigin.IsChecked.Value)
-                AppSettings.Default.Lyric.ProvideType = LyricProvideType.Original;
+                AppSettings.Default.LyricSection.ProvideType = LyricProvideType.Original;
             else if (ShowTrans.IsChecked.HasValue && ShowTrans.IsChecked.Value)
-                AppSettings.Default.Lyric.ProvideType = LyricProvideType.PreferTranslated;
+                AppSettings.Default.LyricSection.ProvideType = LyricProvideType.PreferTranslated;
             ReloadLyric();
             AppSettings.SaveDefault();
         }
@@ -89,9 +89,9 @@ namespace Milki.OsuPlayer.Pages.Settings
         {
             if (!_loaded) return;
             if (StrictMode.IsChecked.HasValue && StrictMode.IsChecked.Value)
-                AppSettings.Default.Lyric.StrictMode = true;
+                AppSettings.Default.LyricSection.StrictMode = true;
             else
-                AppSettings.Default.Lyric.StrictMode = false;
+                AppSettings.Default.LyricSection.StrictMode = false;
             ReloadLyric();
             AppSettings.SaveDefault();
         }
@@ -100,9 +100,9 @@ namespace Milki.OsuPlayer.Pages.Settings
         {
             if (!_loaded) return;
             if (EnableCache.IsChecked.HasValue && EnableCache.IsChecked.Value)
-                AppSettings.Default.Lyric.EnableCache = true;
+                AppSettings.Default.LyricSection.EnableCache = true;
             else
-                AppSettings.Default.Lyric.EnableCache = false;
+                AppSettings.Default.LyricSection.EnableCache = false;
             ReloadLyric();
             AppSettings.SaveDefault();
         }

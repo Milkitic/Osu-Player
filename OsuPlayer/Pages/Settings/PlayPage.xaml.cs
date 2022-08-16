@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Milki.Extensions.MixPlayer.Devices;
-using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Configuration;
 
 namespace Milki.OsuPlayer.Pages.Settings
 {
@@ -18,8 +18,8 @@ namespace Milki.OsuPlayer.Pages.Settings
 
         private void SliderOffset_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            AppSettings.Default.Play.GeneralOffset = (int)SliderOffset.Value;
-            BoxOffset.Text = AppSettings.Default.Play.GeneralOffset.ToString();
+            AppSettings.Default.PlaySection.GeneralOffset = (int)SliderOffset.Value;
+            BoxOffset.Text = AppSettings.Default.PlaySection.GeneralOffset.ToString();
             AppSettings.SaveDefault();
         }
 
@@ -30,30 +30,30 @@ namespace Milki.OsuPlayer.Pages.Settings
             if (num > SliderOffset.Maximum)
             {
                 num = (int)SliderOffset.Maximum;
-                AppSettings.Default.Play.GeneralOffset = num;
-                BoxOffset.Text = AppSettings.Default.Play.GeneralOffset.ToString();
+                AppSettings.Default.PlaySection.GeneralOffset = num;
+                BoxOffset.Text = AppSettings.Default.PlaySection.GeneralOffset.ToString();
             }
             else if (num < SliderOffset.Minimum)
             {
                 num = (int)SliderOffset.Minimum;
-                AppSettings.Default.Play.GeneralOffset = num;
-                BoxOffset.Text = AppSettings.Default.Play.GeneralOffset.ToString();
+                AppSettings.Default.PlaySection.GeneralOffset = num;
+                BoxOffset.Text = AppSettings.Default.PlaySection.GeneralOffset.ToString();
             }
 
-            AppSettings.Default.Play.GeneralOffset = num;
-            SliderOffset.Value = AppSettings.Default.Play.GeneralOffset;
+            AppSettings.Default.PlaySection.GeneralOffset = num;
+            SliderOffset.Value = AppSettings.Default.PlaySection.GeneralOffset;
             AppSettings.SaveDefault();
         }
 
         private void RadioReplace_Checked(object sender, RoutedEventArgs e)
         {
-            AppSettings.Default.Play.ReplacePlayList = true;
+            AppSettings.Default.PlaySection.ReplacePlayList = true;
             AppSettings.SaveDefault();
         }
 
         private void RadioInsert_Checked(object sender, RoutedEventArgs e)
         {
-            AppSettings.Default.Play.ReplacePlayList = false;
+            AppSettings.Default.PlaySection.ReplacePlayList = false;
             AppSettings.SaveDefault();
         }
 
@@ -61,7 +61,7 @@ namespace Milki.OsuPlayer.Pages.Settings
         {
             if (!ChkAutoPlay.IsChecked.HasValue)
                 return;
-            AppSettings.Default.Play.AutoPlay = ChkAutoPlay.IsChecked.Value;
+            AppSettings.Default.PlaySection.AutoPlay = ChkAutoPlay.IsChecked.Value;
             AppSettings.SaveDefault();
         }
 
@@ -69,27 +69,27 @@ namespace Milki.OsuPlayer.Pages.Settings
         {
             if (!ChkMemory.IsChecked.HasValue)
                 return;
-            AppSettings.Default.Play.Memory = ChkMemory.IsChecked.Value;
+            AppSettings.Default.PlaySection.Memory = ChkMemory.IsChecked.Value;
             AppSettings.SaveDefault();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            SliderOffset.Value = AppSettings.Default.Play.GeneralOffset;
-            BoxOffset.Text = AppSettings.Default.Play.GeneralOffset.ToString();
-            if (AppSettings.Default.Play.ReplacePlayList)
+            SliderOffset.Value = AppSettings.Default.PlaySection.GeneralOffset;
+            BoxOffset.Text = AppSettings.Default.PlaySection.GeneralOffset.ToString();
+            if (AppSettings.Default.PlaySection.ReplacePlayList)
                 RadioReplace.IsChecked = true;
             else
                 RadioInsert.IsChecked = true;
-            ChkAutoPlay.IsChecked = AppSettings.Default.Play.AutoPlay;
-            ChkMemory.IsChecked = AppSettings.Default.Play.Memory;
-            SliderLatency.Value = AppSettings.Default.Play.DesiredLatency;
-            BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
+            ChkAutoPlay.IsChecked = AppSettings.Default.PlaySection.AutoPlay;
+            ChkMemory.IsChecked = AppSettings.Default.PlaySection.Memory;
+            SliderLatency.Value = AppSettings.Default.PlaySection.DesiredLatency;
+            BoxLatency.Text = AppSettings.Default.PlaySection.DesiredLatency.ToString();
             var itemsSource = DeviceCreationHelper.GetCachedAvailableDevices();
             DeviceInfoCombo.ItemsSource = itemsSource;
-            if (itemsSource.Contains(AppSettings.Default.Play.DeviceInfo))
+            if (itemsSource.Contains(AppSettings.Default.PlaySection.DeviceInfo))
             {
-                DeviceInfoCombo.SelectedItem = AppSettings.Default.Play.DeviceInfo;
+                DeviceInfoCombo.SelectedItem = AppSettings.Default.PlaySection.DeviceInfo;
             }
             else
             {
@@ -107,25 +107,25 @@ namespace Milki.OsuPlayer.Pages.Settings
             if (num > SliderLatency.Maximum)
             {
                 num = (int)SliderLatency.Maximum;
-                AppSettings.Default.Play.DesiredLatency = num;
-                BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
+                AppSettings.Default.PlaySection.DesiredLatency = num;
+                BoxLatency.Text = AppSettings.Default.PlaySection.DesiredLatency.ToString();
             }
             else if (num < SliderLatency.Minimum)
             {
                 num = (int)SliderLatency.Minimum;
-                AppSettings.Default.Play.DesiredLatency = num;
-                BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
+                AppSettings.Default.PlaySection.DesiredLatency = num;
+                BoxLatency.Text = AppSettings.Default.PlaySection.DesiredLatency.ToString();
             }
 
-            AppSettings.Default.Play.DesiredLatency = num;
-            SliderLatency.Value = AppSettings.Default.Play.DesiredLatency;
+            AppSettings.Default.PlaySection.DesiredLatency = num;
+            SliderLatency.Value = AppSettings.Default.PlaySection.DesiredLatency;
             AppSettings.SaveDefault();
         }
 
         private void SliderLatency_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            AppSettings.Default.Play.DesiredLatency = (int)SliderLatency.Value;
-            BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
+            AppSettings.Default.PlaySection.DesiredLatency = (int)SliderLatency.Value;
+            BoxLatency.Text = AppSettings.Default.PlaySection.DesiredLatency.ToString();
             AppSettings.SaveDefault();
         }
 
@@ -133,7 +133,7 @@ namespace Milki.OsuPlayer.Pages.Settings
         {
             var newVal = (DeviceDescription)e.AddedItems[0];
             SliderLatency.IsEnabled = newVal!.WavePlayerType != WavePlayerType.ASIO;
-            AppSettings.Default.Play.DeviceInfo = newVal;
+            AppSettings.Default.PlaySection.DeviceInfo = newVal;
             AppSettings.SaveDefault();
         }
     }

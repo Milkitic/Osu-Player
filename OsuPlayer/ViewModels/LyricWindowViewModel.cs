@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Presentation.Interaction;
 using Milki.OsuPlayer.Shared.Dependency;
 using Milki.OsuPlayer.Utils;
@@ -50,7 +50,7 @@ namespace Milki.OsuPlayer.ViewModels
             {
                 if (Equals(value, _fontFamily)) return;
                 _fontFamily = value;
-                AppSettings.Default.Lyric.FontFamily = _fontFamily?.ToString();
+                AppSettings.Default.LyricSection.FontFamily = _fontFamily?.ToString();
                 AppSettings.SaveDefault();
                 OnPropertyChanged();
             }

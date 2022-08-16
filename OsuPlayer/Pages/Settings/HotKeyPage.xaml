@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:textboxComponent="clr-namespace:Milki.OsuPlayer.UiComponents.TextBoxComponent"
-    xmlns:configuration="clr-namespace:Milki.OsuPlayer.Common.Configuration;assembly=OsuPlayer.Common"
     Title="HotKeyPage"
     d:DesignHeight="450"
     d:DesignWidth="800"

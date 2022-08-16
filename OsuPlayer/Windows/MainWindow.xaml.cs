@@ -8,9 +8,9 @@ using Coosu.Beatmap;
 using Microsoft.EntityFrameworkCore;
 using Milki.OsuPlayer.Audio.Playlist;
 using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Common.Configuration;
 using Milki.OsuPlayer.Common.Instances;
 using Milki.OsuPlayer.Common.Scanning;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Instances;
@@ -51,9 +51,9 @@ namespace Milki.OsuPlayer.Windows
         {
             InitializeComponent();
             ViewModel = (MainWindowViewModel)DataContext;
-            ViewModel.IsNavigationCollapsed = AppSettings.Default.General.IsNavigationCollapsed;
+            ViewModel.IsNavigationCollapsed = AppSettings.Default.GeneralSection.IsNavigationCollapsed;
             LyricWindow = new LyricWindow(this);
-            if (AppSettings.Default.Lyric.EnableLyric)
+            if (AppSettings.Default.LyricSection.EnableLyric)
                 LyricWindow.Show();
 
             OverallKeyHook = new OverallKeyHook(this);
@@ -62,7 +62,7 @@ namespace Milki.OsuPlayer.Windows
             PlayController.ThumbClicked += Controller_ThumbClicked;
             MiniPlayController.CloseButtonClicked += () =>
             {
-                if (AppSettings.Default.General.ExitWhenClosed == null) Show();
+                if (AppSettings.Default.GeneralSection.ExitWhenClosed == null) Show();
                 Close();
             };
             MiniPlayController.MaxButtonClicked += () =>
@@ -83,12 +83,12 @@ namespace Milki.OsuPlayer.Windows
             OverallKeyHook.AddKeyHook(HotKeyType.NextSong, async () => await _controller.PlayNextAsync());
             OverallKeyHook.AddKeyHook(HotKeyType.VolumeUp, () =>
             {
-                AppSettings.Default.Volume.Main += 0.05f;
+                AppSettings.Default.VolumeSection.Main += 0.05f;
                 AppSettings.SaveDefault();
             });
             OverallKeyHook.AddKeyHook(HotKeyType.VolumeDown, () =>
             {
-                AppSettings.Default.Volume.Main -= 0.05f;
+                AppSettings.Default.VolumeSection.Main -= 0.05f;
                 AppSettings.SaveDefault();
             });
             OverallKeyHook.AddKeyHook(HotKeyType.SwitchFullMiniMode, () => { TriggerMiniWindow(); });
@@ -165,7 +165,7 @@ namespace Milki.OsuPlayer.Windows
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             NotificationOverlay.ItemsSource = Notification.NotificationList;
-            if (AppSettings.Default.General.FirstOpen)
+            if (AppSettings.Default.GeneralSection.FirstOpen)
             {
                 FrontDialogOverlay.ShowContent(new WelcomeControl(), new FrontDialogOverlay.ShowContentOptions
                 {
@@ -189,12 +189,12 @@ namespace Milki.OsuPlayer.Windows
 
                 try
                 {
-                    await Service.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Default.General.CustomSongsPath);
+                    await Service.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Default.GeneralSection.CustomSongsPath);
                 }
                 catch (Exception ex)
                 {
                     Logger.Error(ex, "Error while scanning custom folder: {0}",
-                        AppSettings.Default.General.CustomSongsPath);
+                        AppSettings.Default.GeneralSection.CustomSongsPath);
                     Notification.Push(I18NUtil.GetString("err-custom-scan"), Title);
                 }
             }
@@ -204,13 +204,13 @@ namespace Milki.OsuPlayer.Windows
                 {
                     try
                     {
-                        await Service.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, true);
+                        await Service.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.GeneralSection.DbPath, true);
                         AppSettings.Default.LastTimeScanOsuDb = DateTime.Now;
                         AppSettings.SaveDefault();
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error(ex, "Error while syncing osu!db: {0}", AppSettings.Default.General.DbPath);
+                        Logger.Error(ex, "Error while syncing osu!db: {0}", AppSettings.Default.GeneralSection.DbPath);
                         Notification.Push(I18NUtil.GetString("err-osudb-sync"), Title);
                     }
                 }
@@ -242,7 +242,7 @@ namespace Milki.OsuPlayer.Windows
         /// </summary>
         private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (AppSettings.Default.General.ExitWhenClosed == null && !_forceExit)
+            if (AppSettings.Default.GeneralSection.ExitWhenClosed == null && !_forceExit)
             {
                 e.Cancel = true;
                 var closingControl = new ClosingControl();
@@ -250,7 +250,7 @@ namespace Milki.OsuPlayer.Windows
                 {
                     if (closingControl.AsDefault.IsChecked == true)
                     {
-                        AppSettings.Default.General.ExitWhenClosed = closingControl.RadioMinimum.IsChecked != true;
+                        AppSettings.Default.GeneralSection.ExitWhenClosed = closingControl.RadioMinimum.IsChecked != true;
                         AppSettings.SaveDefault();
                     }
 
@@ -265,7 +265,7 @@ namespace Milki.OsuPlayer.Windows
                 return;
             }
 
-            if (AppSettings.Default.General.ExitWhenClosed == false && !_forceExit)
+            if (AppSettings.Default.GeneralSection.ExitWhenClosed == false && !_forceExit)
             {
                 WindowState = WindowState.Minimized;
                 GetCurrentFirst<MiniWindow>()?.Close();
@@ -307,7 +307,7 @@ namespace Milki.OsuPlayer.Windows
         {
             await using var appDbContext = new ApplicationDbContext();
             var lastPlay = await appDbContext.RecentList.OrderByDescending(k => k.PlayTime).FirstOrDefaultAsync();
-            if (lastPlay == null || !AppSettings.Default.Play.Memory)
+            if (lastPlay == null || !AppSettings.Default.PlaySection.Memory)
                 return;
 
             // 加至播放列表
@@ -325,7 +325,7 @@ namespace Milki.OsuPlayer.Windows
 
             await _controller.PlayList.SetSongListAsync(beatmaps, true, false, false);
 
-            bool play = AppSettings.Default.Play.AutoPlay;
+            bool play = AppSettings.Default.PlaySection.AutoPlay;
             if (lastBeatmap.IsTemporary)
             {
                 await _controller.PlayNewAsync(lastBeatmap.FolderNameOrPath, play);

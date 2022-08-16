@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
-using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Pages.Settings;
 using Milki.OsuPlayer.Windows;
 

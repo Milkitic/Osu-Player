@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Shared.Models;
 
 namespace Milki.OsuPlayer.Pages.Settings
@@ -18,21 +18,21 @@ namespace Milki.OsuPlayer.Pages.Settings
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            LblMp3Path.Text = AppSettings.Default.Export.MusicPath;
-            LblBgPath.Text = AppSettings.Default.Export.BgPath;
-            if (AppSettings.Default.Export.ExportNamingStyle == ExportNamingStyle.Title)
+            LblMp3Path.Text = AppSettings.Default.ExportSection.MusicPath;
+            LblBgPath.Text = AppSettings.Default.ExportSection.BgPath;
+            if (AppSettings.Default.ExportSection.ExportNamingStyle == ExportNamingStyle.Title)
                 RadioT.IsChecked = true;
-            else if (AppSettings.Default.Export.ExportNamingStyle == ExportNamingStyle.ArtistTitle)
+            else if (AppSettings.Default.ExportSection.ExportNamingStyle == ExportNamingStyle.ArtistTitle)
                 RadioAt.IsChecked = true;
-            else if (AppSettings.Default.Export.ExportNamingStyle == ExportNamingStyle.TitleArtist)
+            else if (AppSettings.Default.ExportSection.ExportNamingStyle == ExportNamingStyle.TitleArtist)
                 RadioTa.IsChecked = true;
-            if (AppSettings.Default.Export.ExportGroupStyle == ExportGroupStyle.None)
+            if (AppSettings.Default.ExportSection.ExportGroupStyle == ExportGroupStyle.None)
                 SortNone.IsChecked = true;
-            else if (AppSettings.Default.Export.ExportGroupStyle == ExportGroupStyle.Artist)
+            else if (AppSettings.Default.ExportSection.ExportGroupStyle == ExportGroupStyle.Artist)
                 SortArtist.IsChecked = true;
-            else if (AppSettings.Default.Export.ExportGroupStyle == ExportGroupStyle.Mapper)
+            else if (AppSettings.Default.ExportSection.ExportGroupStyle == ExportGroupStyle.Mapper)
                 SortMapper.IsChecked = true;
-            else if (AppSettings.Default.Export.ExportGroupStyle == ExportGroupStyle.Source)
+            else if (AppSettings.Default.ExportSection.ExportGroupStyle == ExportGroupStyle.Source)
                 SortSource.IsChecked = true;
         }
 
@@ -46,8 +46,8 @@ namespace Milki.OsuPlayer.Pages.Settings
             {
                 var result = dialog.ShowDialog();
                 if (result != CommonFileDialogResult.Ok) return;
-                AppSettings.Default.Export.MusicPath = dialog.FileName;
-                LblMp3Path.Text = AppSettings.Default.Export.MusicPath;
+                AppSettings.Default.ExportSection.MusicPath = dialog.FileName;
+                LblMp3Path.Text = AppSettings.Default.ExportSection.MusicPath;
                 AppSettings.SaveDefault();
             }
         }
@@ -62,15 +62,15 @@ namespace Milki.OsuPlayer.Pages.Settings
             {
                 var result = dialog.ShowDialog();
                 if (result != CommonFileDialogResult.Ok) return;
-                AppSettings.Default.Export.BgPath = dialog.FileName;
-                LblBgPath.Text = AppSettings.Default.Export.BgPath;
+                AppSettings.Default.ExportSection.BgPath = dialog.FileName;
+                LblBgPath.Text = AppSettings.Default.ExportSection.BgPath;
                 AppSettings.SaveDefault();
             }
         }
 
         private void Naming_CheckChanged(object sender, RoutedEventArgs e)
         {
-            var exportSection = AppSettings.Default.Export;
+            var exportSection = AppSettings.Default.ExportSection;
             if (RadioT.IsChecked.HasValue && RadioT.IsChecked.Value)
                 exportSection.ExportNamingStyle = ExportNamingStyle.Title;
             else if (RadioAt.IsChecked.HasValue && RadioAt.IsChecked.Value)
@@ -82,7 +82,7 @@ namespace Milki.OsuPlayer.Pages.Settings
 
         private void Sort_CheckChanged(object sender, RoutedEventArgs e)
         {
-            var exportSection = AppSettings.Default.Export;
+            var exportSection = AppSettings.Default.ExportSection;
             if (SortNone.IsChecked.HasValue && SortNone.IsChecked.Value)
                 exportSection.ExportGroupStyle = ExportGroupStyle.None;
             else if (SortArtist.IsChecked.HasValue && SortArtist.IsChecked.Value)

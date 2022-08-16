@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Threading;
-using Milki.OsuPlayer.Common.Configuration;
 using Milki.OsuPlayer.Common.Instances;
 using Milki.OsuPlayer.Common.Scanning;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Instances;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Windows;
@@ -35,7 +35,7 @@ public partial class App : Application
         await EntryStartup.StartupAsync();
 
         var controller = new ObservablePlayController();
-        controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
+        controller.PlayList.Mode = AppSettings.Default.PlaySection.PlayListMode;
 
         Service.TryAddInstance(controller);
         Service.TryAddInstance(new OsuDbInst());

@@ -1,5 +1,5 @@
 ﻿using System;
-using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Media.Lyric;
 using Milki.OsuPlayer.Media.Lyric.SourceProvider;
 using Milki.OsuPlayer.Media.Lyric.SourceProvider.Auto;
@@ -15,10 +15,10 @@ namespace Milki.OsuPlayer.Instances
 
         public void ReloadLyricProvider(bool useStrict = true)
         {
-            AppSettings.Default.Lyric.StrictMode = useStrict;
+            AppSettings.Default.LyricSection.StrictMode = useStrict;
             Settings.StrictMatch = useStrict;
             SourceProviderBase provider;
-            switch (AppSettings.Default.Lyric.LyricSource)
+            switch (AppSettings.Default.LyricSection.LyricSource)
             {
                 case LyricSource.Auto:
                     provider = new AutoSourceProvider(new SourceProviderBase[]
@@ -38,8 +38,8 @@ namespace Milki.OsuPlayer.Instances
                     provider = new QQMusicSourceProvider();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(AppSettings.Default.Lyric.LyricSource),
-                        AppSettings.Default.Lyric.LyricSource, null);
+                    throw new ArgumentOutOfRangeException(nameof(AppSettings.Default.LyricSection.LyricSource),
+                        AppSettings.Default.LyricSection.LyricSource, null);
             }
 
             LyricProvider = new LyricProvider(provider, LyricProvideType.Original);

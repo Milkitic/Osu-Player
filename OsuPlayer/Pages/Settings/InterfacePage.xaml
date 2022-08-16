@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:configuration="clr-namespace:Milki.OsuPlayer.Common.Configuration;assembly=OsuPlayer.Common"
     Title="InterfacePage"
     d:DataContext="{d:DesignInstance configuration:InterfaceSection,
                                      IsDesignTimeCreatable=True}"

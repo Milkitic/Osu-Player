@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Coosu.Beatmap;
 using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Models;
@@ -54,7 +54,7 @@ namespace Milki.OsuPlayer.Pages
             InitializeComponent();
             _mainWindow = (MainWindow)Application.Current.MainWindow;
             ViewModel = (ExportPageViewModel)DataContext;
-            ViewModel.ExportPath = AppSettings.Default.Export.MusicPath;
+            ViewModel.ExportPath = AppSettings.Default.ExportSection.MusicPath;
         }
 
         public static void QueueBeatmaps(IEnumerable<Beatmap> beatmaps)
@@ -153,7 +153,7 @@ namespace Milki.OsuPlayer.Pages
         private static void GetExportFolder(out string exportMp3Folder, out string exportBgFolder,
             MetaString artist, string creator, string source)
         {
-            switch (AppSettings.Default.Export.ExportGroupStyle)
+            switch (AppSettings.Default.ExportSection.ExportGroupStyle)
             {
                 case ExportGroupStyle.None:
                     exportMp3Folder = Domain.MusicPath;
@@ -199,15 +199,15 @@ namespace Milki.OsuPlayer.Pages
                         break;
                     }
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(AppSettings.Default.Export.ExportGroupStyle),
-                        AppSettings.Default.Export.ExportGroupStyle, null);
+                    throw new ArgumentOutOfRangeException(nameof(AppSettings.Default.ExportSection.ExportGroupStyle),
+                        AppSettings.Default.ExportSection.ExportGroupStyle, null);
             }
         }
 
         private static void ConstructNameWithEscaping(out string originAudio, out string originBack,
             string title, string artist, string creator, string version)
         {
-            switch (AppSettings.Default.Export.ExportNamingStyle)
+            switch (AppSettings.Default.ExportSection.ExportNamingStyle)
             {
                 case ExportNamingStyle.Title:
                     originAudio = Escape($"{title}");
@@ -222,8 +222,8 @@ namespace Milki.OsuPlayer.Pages
                     originBack = Escape($"{title} - {artist}({creator})[{version}]");
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(AppSettings.Default.Export.ExportNamingStyle),
-                        AppSettings.Default.Export.ExportNamingStyle, null);
+                    throw new ArgumentOutOfRangeException(nameof(AppSettings.Default.ExportSection.ExportNamingStyle),
+                        AppSettings.Default.ExportSection.ExportNamingStyle, null);
             }
         }
 

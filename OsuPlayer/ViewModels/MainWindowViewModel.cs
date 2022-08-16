@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
-using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Presentation.Interaction;
 
@@ -70,7 +70,7 @@ namespace Milki.OsuPlayer.ViewModels
                     Execute.OnUiThread(() =>
                     {
                         IsNavigationCollapsed = !IsNavigationCollapsed;
-                        AppSettings.Default.General.IsNavigationCollapsed = IsNavigationCollapsed;
+                        AppSettings.Default.GeneralSection.IsNavigationCollapsed = IsNavigationCollapsed;
                         AppSettings.SaveDefault();
                     });
                 });

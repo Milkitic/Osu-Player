@@ -7,7 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Presentation;
 using Milki.OsuPlayer.Presentation.Interaction;
 using Timer = System.Threading.Timer;
@@ -79,7 +79,7 @@ namespace Milki.OsuPlayer.Windows
             _equivalentScreenWidth = SystemParameters.PrimaryScreenWidth / dpiScaling;
             _equivalentScreenHeight = SystemParameters.PrimaryScreenHeight / dpiScaling;
 
-            var point = AppSettings.Default.General.MiniLastPosition;
+            var point = AppSettings.Default.GeneralSection.MiniLastPosition;
             if (point != null)
             {
                 Left = point.Value.X;
@@ -95,7 +95,7 @@ namespace Milki.OsuPlayer.Windows
                 Top = _equivalentScreenHeight - ActualHeight - 100;
             }
 
-            var area = AppSettings.Default.General.MiniWorkingArea;
+            var area = AppSettings.Default.GeneralSection.MiniWorkingArea;
             if (area != null)
             {
                 _currentArea = area.Value;
@@ -211,8 +211,8 @@ namespace Milki.OsuPlayer.Windows
 
         private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            AppSettings.Default.General.MiniLastPosition = new System.Windows.Point(Left, Top);
-            AppSettings.Default.General.MiniWorkingArea = new Rectangle(
+            AppSettings.Default.GeneralSection.MiniLastPosition = new System.Windows.Point(Left, Top);
+            AppSettings.Default.GeneralSection.MiniWorkingArea = new Rectangle(
                 _currentArea.X, _currentArea.Y, _currentArea.Width, _currentArea.Height
             );
             AppSettings.SaveDefault();

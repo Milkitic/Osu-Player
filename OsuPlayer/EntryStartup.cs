@@ -5,7 +5,7 @@ using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using Milki.Extensions.MixPlayer;
 using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Shared;
 using Milki.OsuPlayer.Wpf;
@@ -41,20 +41,20 @@ namespace Milki.OsuPlayer
 
         private static void InitMixPlayerConfig()
         {
-            var playSection = AppSettings.Default.Play;
+            var playSection = AppSettings.Default.PlaySection;
             var configuration = Configuration.Instance;
             configuration.CacheDir = Domain.CachePath;
             configuration.DefaultDir = Domain.DefaultPath;
             configuration.PlaybackRate = playSection.PlaybackRate;
             configuration.KeepTune = playSection.PlayUseTempo;
             configuration.GeneralOffset = (uint)playSection.GeneralOffset;
-            AppSettings.Default.Play.PropertyChanged += (sender, e) =>
+            AppSettings.Default.PlaySection.PropertyChanged += (sender, e) =>
             {
-                if (e.PropertyName == nameof(AppSettings.Play.PlaybackRate))
+                if (e.PropertyName == nameof(AppSettings.PlaySection.PlaybackRate))
                     configuration.PlaybackRate = playSection.PlaybackRate;
-                else if (e.PropertyName == nameof(AppSettings.Play.PlayUseTempo))
+                else if (e.PropertyName == nameof(AppSettings.PlaySection.PlayUseTempo))
                     configuration.KeepTune = playSection.PlayUseTempo;
-                else if (e.PropertyName == nameof(AppSettings.Play.GeneralOffset))
+                else if (e.PropertyName == nameof(AppSettings.PlaySection.GeneralOffset))
                     configuration.GeneralOffset = (uint)playSection.GeneralOffset;
             };
         }

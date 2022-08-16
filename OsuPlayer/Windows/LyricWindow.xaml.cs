@@ -10,7 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Coosu.Beatmap;
-using Milki.OsuPlayer.Common.Configuration;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Media.Lyric.Models;
 using Milki.OsuPlayer.Shared.Dependency;
 using Milki.OsuPlayer.ViewModels;
@@ -75,11 +75,11 @@ namespace Milki.OsuPlayer.Windows
 
         private void LyricWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var lyricFont = AppSettings.Default.Lyric.FontFamily ??
+            var lyricFont = AppSettings.Default.LyricSection.FontFamily ??
                             Application.Current.FindResource("SspRegular");
             ViewModel.FontFamily = lyricFont;
-            ViewModel.Hue = AppSettings.Default.Lyric.Hue;
-            ViewModel.Saturation = AppSettings.Default.Lyric.Saturation;
+            ViewModel.Hue = AppSettings.Default.LyricSection.Hue;
+            ViewModel.Saturation = AppSettings.Default.LyricSection.Saturation;
         }
 
         private void LyricWindow_MouseMove(object sender, MouseEventArgs e)
@@ -337,7 +337,7 @@ namespace Milki.OsuPlayer.Windows
             MetaString metaArtist = meta?.ArtistMeta ?? default;
             MetaString metaTitle = meta?.TitleMeta ?? default;
             SetNewLyric(null, metaArtist, metaTitle);
-            AppSettings.Default.Lyric.EnableLyric = true;
+            AppSettings.Default.LyricSection.EnableLyric = true;
             AppSettings.SaveDefault();
             ViewModel.IsLyricWindowShown = true;
             _mainWindow.SetLyricSynchronously();
@@ -346,7 +346,7 @@ namespace Milki.OsuPlayer.Windows
 
         public new void Hide()
         {
-            AppSettings.Default.Lyric.EnableLyric = false;
+            AppSettings.Default.LyricSection.EnableLyric = false;
             AppSettings.SaveDefault();
             ViewModel.IsLyricWindowShown = false;
             CancelTask();
@@ -396,19 +396,19 @@ namespace Milki.OsuPlayer.Windows
 
         private void sldHue_OnDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            AppSettings.Default.Lyric.Hue = ViewModel.Hue;
+            AppSettings.Default.LyricSection.Hue = ViewModel.Hue;
             AppSettings.SaveDefault();
         }
 
         private void sldSaturation_OnDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            AppSettings.Default.Lyric.Saturation = ViewModel.Saturation;
+            AppSettings.Default.LyricSection.Saturation = ViewModel.Saturation;
             AppSettings.SaveDefault();
         }
 
         private void sldLightness_OnDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            AppSettings.Default.Lyric.Lightness = ViewModel.Lightness;
+            AppSettings.Default.LyricSection.Lightness = ViewModel.Lightness;
             AppSettings.SaveDefault();
         }
     }
