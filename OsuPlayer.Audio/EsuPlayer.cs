@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -15,6 +14,7 @@ using JetBrains.Annotations;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milki.OsuPlayer.Audio.Mixing;
+using Milki.OsuPlayer.Audio.Tracks;
 using NAudio.Wave;
 
 namespace Milki.OsuPlayer.Audio;
@@ -30,14 +30,13 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
     private readonly LocalOsuFile _osuFile;
 
     private readonly SoundSeekingTrack _musicTrack;
-    private readonly EsuMixingTrack _hitsoundTrack;
-    private readonly EsuMixingTrack _sampleTrack;
+    private readonly HitsoundTrack _hitsoundTrack;
+    private readonly SampleTrack _sampleTrack;
 
     private readonly EnhancedVolumeSampleProvider _musicVsp;
     private readonly EnhancedVolumeSampleProvider _hitsoundVsp;
     private readonly EnhancedVolumeSampleProvider _sampleVsp;
 
-    private NightcoreTilingProvider? _nightcoreTilingProvider;
     private PlayModifier _playModifier;
     private List<HitsoundNode>? _hitsoundNodes;
     private int _nextCachingTime;
@@ -50,8 +49,8 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
 
         var waveFormat = engine.WaveFormat;
         _musicTrack = new SoundSeekingTrack(TimerSource, waveFormat);
-        _hitsoundTrack = new EsuMixingTrack(TimerSource, waveFormat);
-        _sampleTrack = new EsuMixingTrack(TimerSource, waveFormat);
+        _hitsoundTrack = new HitsoundTrack(TimerSource, waveFormat);
+        _sampleTrack = new SampleTrack(osuFile, TimerSource, waveFormat);
 
         _musicVsp = new EnhancedVolumeSampleProvider(null!) { Volume = 1f };
         _hitsoundVsp = new EnhancedVolumeSampleProvider(null!) { Volume = 1f };
@@ -172,9 +171,6 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
 
         await InitializeMusicTrack();
         await InitializeHitsoundTrack(_hitsoundNodes);
-
-        var folder = "res://OsuPlayer.Audio/Milki.OsuPlayer.Audio.resources.default";
-        _nightcoreTilingProvider = new NightcoreTilingProvider(folder, _osuFile, _musicTrack.Duration);
         await InitializeSampleTrack(_hitsoundNodes);
 
         if (CachedSoundFactory.GetCount(SkinSoundFlag) == 0)
@@ -235,6 +231,7 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
         {
             PlayablePriority: PlayablePriority.Sampling
         }).ToList();
+        _sampleTrack.MusicTrackDuration = TimeSpan.FromMilliseconds(_musicTrack.Duration);
         await _sampleTrack.InitializeAsync();
     }
 
@@ -286,25 +283,24 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
         Engine.RemoveMixerInput(_musicVsp);
     }
 
-    private async void AddAudioCacheInBackground(int startTime, int endTime, IEnumerable<HitsoundNode> hitsoundNodes)
+    private async void AddAudioCacheInBackground(int startTime, int endTime, IReadOnlyCollection<HitsoundNode> hitsoundNodes)
     {
         await AddAudioCacheAsync(startTime, endTime, hitsoundNodes);
     }
 
-    private async Task AddAudioCacheAsync(int startTime, int endTime, IEnumerable<HitsoundNode> hitsoundNodes)
+    private async Task AddAudioCacheAsync(int startTime, int endTime, IReadOnlyCollection<HitsoundNode> hitsoundNodes)
     {
-        if (hitsoundNodes is IList { Count: 0 })
+        if (hitsoundNodes.Count == 0)
         {
             LogTo.Warn($"No hitsounds in list, stop adding cache.");
             return;
         }
 
-        var hitsoundList = hitsoundNodes;
         var folder = _folder;
         var waveFormat = Engine.WaveFormat;
         await Task.Run(() =>
         {
-            hitsoundList
+            hitsoundNodes
                 .Where(k => k.Offset >= startTime && k.Offset < endTime)
                 .AsParallel()
                 .WithDegreeOfParallelism(1)
@@ -313,7 +309,7 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
         });
     }
 
-    private async Task AddHitsoundCache(HitsoundNode hitsoundNode,
+    private static async Task AddHitsoundCache(HitsoundNode hitsoundNode,
         string beatmapFolder,
         WaveFormat waveFormat)
     {
@@ -332,7 +328,7 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
         string? identifier = null;
         if (hitsoundNode.UseUserSkin)
         {
-            identifier = "internal";
+            identifier = SkinSoundFlag;
             path = $"res://OsuPlayer.Audio/Milki.OsuPlayer.Audio.resources.default.{hitsoundNode.Filename}.ogg";
         }
         else
@@ -340,18 +336,8 @@ public class EsuPlayer : TrackPlayer, INotifyPropertyChanged
             path = Path.Combine(beatmapFolder, hitsoundNode.Filename);
         }
 
-        var (result, status) = await CachedSoundFactory
-            .GetOrCreateCacheSoundStatus(waveFormat, path, identifier, checkFileExist: false);
-
-        if (result == null)
-        {
-            LogTo.Warn("Caching sound failed: " + (File.Exists(path) ? path : "FileNotFound"));
-        }
-        else if (status == true)
-        {
-            LogTo.Info("Cached sound: " + path);
-        }
-
+        var result =
+            await CachedSoundFactory.GetOrCreateCacheSound(waveFormat, path, identifier, checkFileExist: false);
         CacheManager.Instance.AddCachedSound(hitsoundNode, result);
         CacheManager.Instance.AddCachedSound(Path.GetFileNameWithoutExtension(path), result);
     }

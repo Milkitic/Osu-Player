@@ -46,7 +46,7 @@ public class SoundSeekingTrack : Track
             : value;
     }
 
-    public bool KeepTune
+    public override bool KeepTune
     {
         get => _keepTune;
         set

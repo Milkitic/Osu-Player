@@ -7,13 +7,13 @@ using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milki.OsuPlayer.Audio.Mixing;
 using NAudio.Wave;
 
-namespace Milki.OsuPlayer.Audio;
+namespace Milki.OsuPlayer.Audio.Tracks;
 
-public class EsuMixingTrack : SoundMixingTrack
+public class HitsoundTrack : SoundMixingTrack
 {
     private readonly WaveFormat _waveFormat;
 
-    public EsuMixingTrack(TimerSource timerSource, WaveFormat waveFormat, List<HitsoundNode>? hitsoundNodes = null)
+    public HitsoundTrack(TimerSource timerSource, WaveFormat waveFormat, List<HitsoundNode>? hitsoundNodes = null)
         : base(timerSource, waveFormat, hitsoundNodes)
     {
         _waveFormat = waveFormat;

@@ -135,12 +135,12 @@ public class TrackPlayer : IAsyncDisposable
 
     public void SetRate(float rate, bool keepTune)
     {
-        foreach (var track in Tracks.Where(k => k is SoundSeekingTrack).Cast<SoundSeekingTrack>())
+        TimerSource.Rate = rate;
+
+        foreach (var track in Tracks)
         {
             track.KeepTune = keepTune;
         }
-
-        TimerSource.Rate = rate;
     }
 
     public virtual async ValueTask InitializeAsync()

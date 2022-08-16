@@ -24,8 +24,8 @@ public abstract class Track : ITrack
     public ISampleProvider? RootSampleProvider { get; protected set; }
 
     public double Offset { get; set; }
-
     public double Duration { get; protected set; }
+    public virtual bool KeepTune { get; set; }
 
     public async ValueTask InitializeAsync()
     {

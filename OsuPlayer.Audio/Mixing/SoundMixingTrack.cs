@@ -33,17 +33,9 @@ public class SoundMixingTrack : Track
     public float BalanceRatio { get; set; } = 0.3f;
     public List<HitsoundNode> HitsoundNodes { get; set; }
 
-    public void RebuildSoundElementQueue()
+    public void RebuildNodeQueue()
     {
-        var currentTime = TimerSource.ElapsedMilliseconds - Offset;
-        var queue = new Queue<HitsoundNode>();
-        foreach (var hitsoundNode in HitsoundNodes.OrderBy(k => k.Offset))
-        {
-            if (hitsoundNode.Offset < currentTime)
-                continue;
-            queue.Enqueue(hitsoundNode);
-        }
-
+        var queue = RebuildNodeQueueCore();
         _hitsoundQueue = queue;
     }
 
@@ -60,11 +52,11 @@ public class SoundMixingTrack : Track
         if (_rebuildRequested)
         {
             _rebuildRequested = false;
-            RebuildSoundElementQueue();
+            RebuildNodeQueue();
         }
         else if (current < previous || current - previous > 1000) // Force to rebuild queue
         {
-            RebuildSoundElementQueue();
+            RebuildNodeQueue();
         }
 
         var hitsoundQueue = _hitsoundQueue;
@@ -95,6 +87,20 @@ public class SoundMixingTrack : Track
         }
     }
 
+    protected virtual Queue<HitsoundNode> RebuildNodeQueueCore()
+    {
+        var currentTime = TimerSource.ElapsedMilliseconds - Offset;
+        var queue = new Queue<HitsoundNode>();
+        foreach (var hitsoundNode in HitsoundNodes.OrderBy(k => k.Offset))
+        {
+            if (hitsoundNode.Offset < currentTime)
+                continue;
+            queue.Enqueue(hitsoundNode);
+        }
+
+        return queue;
+    }
+
     protected override async ValueTask InitializeCoreAsync()
     {
         _mixingSampleProvider = new MixingSampleProvider(_waveFormat)
@@ -109,7 +115,7 @@ public class SoundMixingTrack : Track
     private async Task InitializeHitsoundAsync()
     {
         Duration = HitsoundNodes is { Count: not 0 } ? HitsoundNodes.Max(k => k.Offset) : 0;
-        RebuildSoundElementQueue();
+        RebuildNodeQueue();
         await InitializeActualDurationAsync();
     }
 

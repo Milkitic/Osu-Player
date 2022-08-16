@@ -11,6 +11,7 @@ public class CacheManager
     }
 
     public static CacheManager Instance { get; } = new();
+
     private readonly ConcurrentDictionary<HitsoundNode, CachedSound?> _hitsoundNodeToCachedSoundMapping = new();
     private readonly ConcurrentDictionary<string, CachedSound?> _filenameToCachedSoundMapping = new();
 
