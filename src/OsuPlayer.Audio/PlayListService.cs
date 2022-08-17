@@ -115,7 +115,7 @@ public class PlayListService
         return _pointer == null ? null : _pathList[_pathIndexList[_pointer.Value]];
     }
 
-    public string? GetNextPath(PlayDirection playDirection, bool forceLoop)
+    public string? GetAndSetNextPath(PlayDirection playDirection, bool forceLoop)
     {
         if (_pointer == null && _pathList.Count > 0)
         {

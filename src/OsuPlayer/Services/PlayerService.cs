@@ -18,32 +18,33 @@ using Milki.OsuPlayer.Wpf;
 
 namespace Milki.OsuPlayer.Services;
 
-public class PlayItemLoadingContext
-{
-    private readonly CancellationTokenSource _cancellationTokenSource;
-
-    public PlayItemLoadingContext(CancellationTokenSource cancellationTokenSource)
-    {
-        _cancellationTokenSource = cancellationTokenSource;
-    }
-
-    public CancellationToken CancellationToken => _cancellationTokenSource.Token;
-    public LocalOsuFile? OsuFile { get; set; }
-    public bool PlayInstant { get; set; }
-
-    public PlayItem? PlayItem { get; set; }
-    public bool IsPlayItemFavorite { get; set; }
-
-    public string? BackgroundPath { get; set; }
-    public string? MusicPath { get; set; }
-    public string? VideoPath { get; set; }
-
-    public bool IsLoaded { get; set; }
-}
-
+[Fody.ConfigureAwait(false)]
 public class PlayerService : VmBase, IDisposable
 {
-    public event Func<PlayItemLoadingContext, ValueTask>? PreLoadStarted;
+    public class PlayItemLoadingContext
+    {
+        private readonly CancellationTokenSource _cancellationTokenSource;
+
+        public PlayItemLoadingContext(CancellationTokenSource cancellationTokenSource)
+        {
+            _cancellationTokenSource = cancellationTokenSource;
+        }
+
+        public CancellationToken CancellationToken => _cancellationTokenSource.Token;
+        public LocalOsuFile? OsuFile { get; set; }
+        public bool PlayInstant { get; set; }
+
+        public PlayItem? PlayItem { get; set; }
+        public bool IsPlayItemFavorite { get; set; }
+
+        public string? BackgroundPath { get; set; }
+        public string? MusicPath { get; set; }
+        public string? VideoPath { get; set; }
+
+        public bool IsLoaded { get; set; }
+    }
+
+    public event Func<PlayItemLoadingContext, ValueTask>? LoadPreStarted;
     public event Func<PlayItemLoadingContext, ValueTask>? LoadStarted;
     public event Func<PlayItemLoadingContext, ValueTask>? LoadMetaFinished;
     public event Func<PlayItemLoadingContext, ValueTask>? LoadBackgroundInfoFinished;
@@ -55,14 +56,21 @@ public class PlayerService : VmBase, IDisposable
     public event Func<OsuMixPlayer, ValueTask>? PlayerStarted;
     public event Func<OsuMixPlayer, ValueTask>? PlayerPaused;
     public event Func<OsuMixPlayer, ValueTask>? PlayerStopped;
-    public event Func<OsuMixPlayer, ValueTask>? PlayerSeeked;
+    public event Func<OsuMixPlayer, TimeSpan, ValueTask>? PlayerSeek;
+
+    public event Action<PlayerStatus>? PlayerStatusChanged;
+    public event Action<TimeSpan>? PlayTimeChanged;
 
     private readonly PlayListService _playListService;
     private readonly AsyncLock _initializationLock = new();
 
     private AudioPlaybackEngine _audioPlaybackEngine;
     private bool _isInitializing;
-    private string? _preStandardizedFolder;
+    private string? _lastStandardizedFolder;
+    private CancellationTokenSource? _lastInitCts;
+
+    private TimeSpan _currentTime;
+    private TimeSpan _totalTime;
 
     public PlayerService(PlayListService playListService, AppSettings appSettings)
     {
@@ -79,20 +87,79 @@ public class PlayerService : VmBase, IDisposable
 
     public OsuMixPlayer? ActiveMixPlayer { get; private set; }
 
+    public TimeSpan CurrentTime
+    {
+        get => _currentTime;
+        set => this.RaiseAndSetIfChanged(ref _currentTime, value);
+    }
+
+    public TimeSpan TotalTime
+    {
+        get => _totalTime;
+        set => this.RaiseAndSetIfChanged(ref _totalTime, value);
+    }
+
+    public async ValueTask PlayAsync()
+    {
+        var activeMixPlayer = ActiveMixPlayer;
+        if (activeMixPlayer == null) return;
+        if (activeMixPlayer.PlayerStatus == PlayerStatus.Playing) return;
+        activeMixPlayer.Play();
+        if (PlayerStarted != null) await PlayerStarted.Invoke(activeMixPlayer);
+    }
+
+    public async ValueTask StopAsync()
+    {
+        var activeMixPlayer = ActiveMixPlayer;
+        if (activeMixPlayer == null) return;
+        if (activeMixPlayer.PlayerStatus == PlayerStatus.Ready) return;
+        activeMixPlayer.Stop();
+        if (PlayerStopped != null) await PlayerStopped.Invoke(activeMixPlayer);
+    }
+
+    public async ValueTask PauseAsync()
+    {
+        var activeMixPlayer = ActiveMixPlayer;
+        if (activeMixPlayer == null) return;
+        if (activeMixPlayer.PlayerStatus == PlayerStatus.Paused) return;
+        activeMixPlayer.Pause();
+        if (PlayerPaused != null) await PlayerPaused.Invoke(activeMixPlayer);
+    }
+
+    public async ValueTask SeekAsync(TimeSpan time)
+    {
+        var activeMixPlayer = ActiveMixPlayer;
+        if (activeMixPlayer == null) return;
+        activeMixPlayer.Seek(time);
+        if (PlayerSeek != null) await PlayerSeek.Invoke(activeMixPlayer, time);
+    }
+
+    public async ValueTask PlayPreviousAsync()
+    {
+        await PlayByControl(PlayDirection.Previous, true);
+    }
+
+    public async ValueTask PlayNextAsync()
+    {
+        await PlayByControl(PlayDirection.Next, true);
+    }
+
     public async ValueTask InitializeNewAsync(string path, bool playInstant)
     {
-        using var disposable = await _initializationLock.LockAsync().ConfigureAwait(false);
+        CancelPreviousInitialization();
+
+        using var disposable = await _initializationLock.LockAsync();
         IsInitializing = true;
-        using var cts = new CancellationTokenSource();
-        var context = new PlayItemLoadingContext(cts);
+        _lastInitCts ??= new CancellationTokenSource();
+        var context = new PlayItemLoadingContext(_lastInitCts);
 
         try
         {
-            await UninitializeCurrent().ConfigureAwait(false);
+            await DisposeActiveMixPlayer();
 
 
             LogTo.Info("Start load new song from path: {0}", path);
-            PreLoadStarted?.Invoke(context);
+            if (LoadPreStarted != null) await LoadPreStarted.Invoke(context);
 
             var osuFile = await OsuFile.ReadFromFileAsync(path, options =>
             {
@@ -110,7 +177,7 @@ public class PlayerService : VmBase, IDisposable
             context.PlayInstant = playInstant;
             context.PlayItem = playItem;
 
-            LoadStarted?.Invoke(context);
+            if (LoadStarted != null) await LoadStarted.Invoke(context);
 
             var folder = Path.GetDirectoryName(path)!;
             var standardizedFolder = PathUtils.GetFolder(standardizedPath);
@@ -129,7 +196,7 @@ public class PlayerService : VmBase, IDisposable
             playItem.PlayItemDetail.Source = osuFile.Metadata?.Source ?? "";
             var tagList = osuFile.Metadata?.TagList ?? (IReadOnlyList<string>)Array.Empty<string>();
             playItem.PlayItemDetail.Tags = string.Join(' ', tagList);
-            LoadMetaFinished?.Invoke(context);
+            if (LoadMetaFinished != null) await LoadMetaFinished.Invoke(context);
 
             if (osuFile.Events?.BackgroundInfo != null)
             {
@@ -150,15 +217,15 @@ public class PlayerService : VmBase, IDisposable
                 context.BackgroundPath = defaultPath;
             }
 
-            LoadBackgroundInfoFinished?.Invoke(context);
+            if (LoadBackgroundInfoFinished != null) await LoadBackgroundInfoFinished.Invoke(context);
 
             // music
             context.MusicPath = Path.Combine(folder, osuFile.General?.AudioFilename ?? "audio.mp3");
 
-            if (standardizedFolder != _preStandardizedFolder)
+            if (standardizedFolder != _lastStandardizedFolder)
             {
                 CachedSoundFactory.ClearCacheSounds();
-                _preStandardizedFolder = standardizedFolder;
+                _lastStandardizedFolder = standardizedFolder;
             }
 
             ActiveMixPlayer = new OsuMixPlayer(osuFile, _audioPlaybackEngine)
@@ -166,10 +233,11 @@ public class PlayerService : VmBase, IDisposable
                 Offset = playItem.PlayItemConfig?.Offset ?? 0
             };
 
-            ActiveMixPlayer.PlayStatusChanged += Player_PlayStatusChanged;
-            ActiveMixPlayer.PositionUpdated += Player_PositionUpdated;
-            await ActiveMixPlayer.InitializeAsync().ConfigureAwait(false);
-            LoadMusicFinished?.Invoke(context);
+            ActiveMixPlayer.PlayerStatusChanged += Player_PlayerStatusChanged;
+            ActiveMixPlayer.PositionChanged += Player_PositionChanged;
+            await ActiveMixPlayer.InitializeAsync();
+            Execute.OnUiThread(() => TotalTime = ActiveMixPlayer.TotalTime);
+            if (LoadMusicFinished != null) await LoadMusicFinished.Invoke(context);
 
             // video
             var videoName = osuFile.Events?.VideoInfo?.Filename;
@@ -180,24 +248,21 @@ public class PlayerService : VmBase, IDisposable
                 if (File.Exists(videoPath))
                 {
                     context.VideoPath = videoPath;
-                    LoadVideoRequested?.Invoke(context);
+                    if (LoadVideoRequested != null) await LoadVideoRequested.Invoke(context);
                 }
             }
 
             // storyboard
-            if (!string.IsNullOrWhiteSpace(osuFile.Events?.StoryboardText))
+            if (!string.IsNullOrWhiteSpace(osuFile.Events?.StoryboardText) ||
+                await osuFile.OsuFileHasOsbStoryboard())
             {
-                LoadStoryboardRequested?.Invoke(context);
-            }
-            else if (await osuFile.OsuFileHasOsbStoryboard().ConfigureAwait(false))
-            {
-                LoadStoryboardRequested?.Invoke(context);
+                if (LoadStoryboardRequested != null) await LoadStoryboardRequested.Invoke(context);
             }
 
             context.IsLoaded = true;
-            LoadFinished?.Invoke(context);
+            if (LoadFinished != null) await LoadFinished.Invoke(context);
 
-            await dbContext.SaveChangesAsync(cts.Token);
+            await dbContext.SaveChangesAsync(_lastInitCts.Token);
             await dbContext.AddOrUpdateBeatmapToRecentPlayAsync(playItem, DateTime.Now);
         }
         catch (Exception ex)
@@ -209,7 +274,7 @@ public class PlayerService : VmBase, IDisposable
 
             if (ActiveMixPlayer?.PlayerStatus != PlayerStatus.Playing)
             {
-                await PlayByControl(PlayDirection.Next, false).ConfigureAwait(false);
+                await PlayByControl(PlayDirection.Next, false);
             }
         }
         finally
@@ -223,59 +288,39 @@ public class PlayerService : VmBase, IDisposable
         _initializationLock.Dispose();
     }
 
-    private async Task PlayByControl(PlayDirection direction, bool auto)
+    private async void Player_PlayerStatusChanged(TrackPlayer trackPlayer, PlayerStatus oldStatus, PlayerStatus newStatus)
+    {
+        PlayerStatusChanged?.Invoke(newStatus);
+        if (newStatus == PlayerStatus.Ready && trackPlayer.Position.Equals(trackPlayer.Duration))
+        {
+            await PlayByControl(PlayDirection.Next, false);
+        }
+    }
+
+    private void Player_PositionChanged(TrackPlayer trackPlayer, double oldPosition, double newPosition)
+    {
+        Execute.OnUiThread(() => CurrentTime = TimeSpan.FromMilliseconds(newPosition));
+        PlayTimeChanged?.Invoke(CurrentTime);
+    }
+
+    private async ValueTask PlayByControl(PlayDirection direction, bool isManual)
     {
         try
         {
-            if (!auto)
-            {
-                InterruptPrevOperation();
-            }
-
             var currentPath = _playListService.GetCurrentPath();
-            var controlResult = auto
-                    ? await PlayList.InvokeAutoNext().ConfigureAwait(false)
-                    : await PlayList.SwitchByControl(direction).ConfigureAwait(false);
-            if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default &&
-                controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play)
+            var nextPath = _playListService.GetAndSetNextPath(direction, isManual);
+            if (nextPath == null)
             {
-                if (_playListService.GetCurrentPath() == null)
-                {
-                    await ClearPlayer().ConfigureAwait(false);
-                    Execute.OnUiThread(() => InterfaceClearRequest?.Invoke());
-                    return;
-                }
-
-                if (currentPath == PlayList.CurrentInfo)
-                {
-                    await PlayList.CurrentInfo.StopHandle().ConfigureAwait(false);
-                    await PlayList.CurrentInfo.PlayHandle().ConfigureAwait(false);
-                    return;
-                }
-
-                InitializeContextHandle(PlayList.CurrentInfo);
-                if (await LoadAsync(false, true).ConfigureAwait(false))
-                {
-                    await PlayList.CurrentInfo.PlayHandle.Invoke().ConfigureAwait(false);
-                }
+                await StopAsync();
             }
-            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
+            else if (nextPath == currentPath)
             {
-                switch (controlResult.PlayStatus)
-                {
-                    case PlayControlResult.PlayControlStatus.Play:
-                        await PlayList.CurrentInfo.RestartHandle.Invoke().ConfigureAwait(false);
-                        break;
-                    case PlayControlResult.PlayControlStatus.Stop:
-                        await PlayList.CurrentInfo.StopHandle.Invoke().ConfigureAwait(false);
-                        break;
-                }
+                await StopAsync();
+                await PlayAsync();
             }
-            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
+            else if (nextPath != currentPath)
             {
-                await ClearPlayer().ConfigureAwait(false);
-                Execute.OnUiThread(() => InterfaceClearRequest?.Invoke());
-                return;
+                await InitializeNewAsync(nextPath, true);
             }
         }
         catch (Exception ex)
@@ -284,6 +329,16 @@ public class PlayerService : VmBase, IDisposable
         }
     }
 
+    private void CancelPreviousInitialization()
+    {
+        if (_lastInitCts != null)
+        {
+            _lastInitCts.Cancel();
+            _lastInitCts.Dispose();
+        }
+
+        _lastInitCts = new CancellationTokenSource();
+    }
 
     private static string? GetDefaultPath()
     {
@@ -294,18 +349,14 @@ public class PlayerService : VmBase, IDisposable
         return defaultPath;
     }
 
-
-    private async Task UninitializeCurrent()
+    private async ValueTask DisposeActiveMixPlayer()
     {
         if (ActiveMixPlayer == null) return;
-        if (PlayerStopped != null)
-        {
-            await PlayerStopped.Invoke(ActiveMixPlayer).ConfigureAwait(false);
-        }
+        if (PlayerStopped != null) await PlayerStopped.Invoke(ActiveMixPlayer);
 
-        ActiveMixPlayer.PlayStatusChanged -= Player_PlayStatusChanged;
-        ActiveMixPlayer.PositionUpdated -= Player_PositionUpdated;
-        await ActiveMixPlayer.DisposeAsync().ConfigureAwait(false);
+        ActiveMixPlayer.PlayerStatusChanged -= Player_PlayerStatusChanged;
+        ActiveMixPlayer.PositionChanged -= Player_PositionChanged;
+        await ActiveMixPlayer.DisposeAsync();
         ActiveMixPlayer = null;
     }
 }

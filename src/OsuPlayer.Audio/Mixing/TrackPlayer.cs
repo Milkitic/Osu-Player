@@ -5,14 +5,19 @@ namespace Milki.OsuPlayer.Audio.Mixing;
 
 public class TrackPlayer : IAsyncDisposable
 {
+    public event Action<TrackPlayer, PlayerStatus, PlayerStatus>? PlayerStatusChanged;
+    public event Action<TrackPlayer, double, double>? PositionChanged;
+
     protected readonly TimerSource TimerSource;
     protected readonly AudioPlaybackEngine Engine;
 
     private readonly HashSet<ISampleProvider?> _trackHashSet;
 
-    private double _previous;
+    private PlayerStatus _playerStatus;
     private TimerStatus _previousStatus = TimerStatus.Stop;
     private float _previousRate;
+    private double _previousPosition;
+    private double _position;
 
     public TrackPlayer(AudioPlaybackEngine engine)
     {
@@ -25,8 +30,40 @@ public class TrackPlayer : IAsyncDisposable
         TimerSource.RateChanged += TimerSource_RateChanged;
     }
 
-    public PlayerStatus PlayerStatus { get; protected set; }
+    public double PreInsertDuration
+    {
+        get => -TimerSource.StartTime;
+        set => TimerSource.StartTime = -value;
+    }
+
+    public double PostInsertDuration { get; set; }
+
+    public PlayerStatus PlayerStatus
+    {
+        get => _playerStatus;
+        protected set
+        {
+            if (_playerStatus == value) return;
+            var oldValue = _playerStatus;
+            _playerStatus = value;
+            PlayerStatusChanged?.Invoke(this, oldValue, value);
+        }
+    }
+
+    public double Position
+    {
+        get => _position;
+        protected set
+        {
+            if (Equals(_position, value)) return;
+            var oldValue = _position;
+            _position = value;
+            PositionChanged?.Invoke(this, oldValue, value);
+        }
+    }
+
     public List<Track> Tracks { get; }
+
     public double Duration { get; protected set; }
 
     public async void Play()
@@ -146,7 +183,7 @@ public class TrackPlayer : IAsyncDisposable
             await track.InitializeAsync();
         }
 
-        Duration = Tracks.Max(k => k.Duration);
+        Duration = Tracks.Max(k => k.Duration) + PostInsertDuration;
         foreach (var track in Tracks)
         {
             if (track is SoundSeekingTrack)
@@ -203,7 +240,6 @@ public class TrackPlayer : IAsyncDisposable
 
     public virtual void OnRateChanged(float previousRate, float currentRate) { }
 
-
     protected virtual ValueTask PlayCoreAsync()
     {
         if (!TimerSource.IsRunning)
@@ -252,8 +288,21 @@ public class TrackPlayer : IAsyncDisposable
 
     private void TimerSource_TimeUpdated(double current)
     {
-        OnUpdated(_previous, current);
-        _previous = current;
+        OnUpdated(_previousPosition, current);
+        _previousPosition = current;
+        if (current >= Duration)
+        {
+            Position = Duration;
+            if (TimerSource.IsRunning && PlayerStatus == PlayerStatus.Playing)
+            {
+                StopCore();
+                PlayerStatus = PlayerStatus.Ready;
+            }
+        }
+        else
+        {
+            Position = current;
+        }
     }
 
     private void TimerSource_StatusChanged(TimerStatus currentStatus)

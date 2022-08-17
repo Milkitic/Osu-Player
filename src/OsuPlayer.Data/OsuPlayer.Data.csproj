@@ -11,6 +11,9 @@
     <PackageReference Include="Anotar.NLog.Fody" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="ConfigureAwait.Fody" Version="3.3.1">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Coosu.Beatmap" Version="2.3.12" />
     <PackageReference Include="Coosu.Database" Version="2.3.12" />
     <PackageReference Include="EFCore.BulkExtensions" Version="6.5.6" />

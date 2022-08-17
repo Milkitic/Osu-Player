@@ -53,7 +53,7 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
         _sampleVsp = new EnhancedVolumeSampleProvider(null!) { Volume = 1f };
     }
 
-    public TimeSpan PlayTime => TimerSource.Elapsed;
+    public TimeSpan PlayTime => TimeSpan.FromMilliseconds(Position);
     public TimeSpan TotalTime => TimeSpan.FromMilliseconds(Duration);
 
     public float Volume
@@ -200,7 +200,7 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
         Tracks.Add(_hitsoundTrack);
         Tracks.Add(_sampleTrack);
 
-        Duration = Tracks.Max(k => k.Duration);
+        Duration = Tracks.Max(k => k.Duration) + PostInsertDuration;
         PlayerStatus = PlayerStatus.Ready;
     }
 
@@ -210,7 +210,7 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
         {
             await track.DisposeAsync();
         }
-        
+
         Engine.RootMixer.RemoveMixerInput(_musicVsp);
         Engine.RootMixer.RemoveMixerInput(_hitsoundVsp);
         Engine.RootMixer.RemoveMixerInput(_sampleVsp);

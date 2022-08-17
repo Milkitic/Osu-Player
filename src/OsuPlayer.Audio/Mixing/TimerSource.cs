@@ -12,6 +12,7 @@ public class TimerSource
     private double _offset;
     private CancellationTokenSource? _cts;
     private float _rate = 1;
+    private double _startTime;
 
     public TimerSource(double notifyIntervalMillisecond = 1)
     {
@@ -26,6 +27,20 @@ public class TimerSource
         TimeSpan.FromMilliseconds(_stopwatch.Elapsed.TotalMilliseconds * Rate + _offset);
 
     public bool IsRunning => _stopwatch.IsRunning;
+
+    public double StartTime
+    {
+        get => _startTime;
+        set
+        {
+            if (!IsRunning && _stopwatch.ElapsedMilliseconds == 0)
+            {
+                _offset = _startTime;
+            }
+
+            _startTime = value;
+        }
+    }
 
     public float Rate
     {
@@ -65,7 +80,7 @@ public class TimerSource
 
     public void Restart()
     {
-        _offset = 0;
+        _offset = StartTime;
         _stopwatch.Stop();
         if (_cts != null)
         {
@@ -82,7 +97,7 @@ public class TimerSource
 
     public void Reset()
     {
-        _offset = 0;
+        _offset = StartTime;
         _stopwatch.Reset();
         if (_cts != null)
         {
