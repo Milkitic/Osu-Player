@@ -42,6 +42,7 @@ public class PlayerService : VmBase, IDisposable
         public string? VideoPath { get; set; }
 
         public bool IsLoaded { get; set; }
+        public OsuMixPlayer? Player { get; set; }
     }
 
     public event Func<PlayItemLoadingContext, ValueTask>? LoadPreStarted;
@@ -237,6 +238,7 @@ public class PlayerService : VmBase, IDisposable
             ActiveMixPlayer.PositionChanged += Player_PositionChanged;
             await ActiveMixPlayer.InitializeAsync();
             Execute.OnUiThread(() => TotalTime = ActiveMixPlayer.TotalTime);
+            context.Player = ActiveMixPlayer;
             if (LoadMusicFinished != null) await LoadMusicFinished.Invoke(context);
 
             // video
