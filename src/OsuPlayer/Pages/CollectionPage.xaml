@@ -2,14 +2,14 @@
     x:Class="Milki.OsuPlayer.Pages.CollectionPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
+    xmlns:converters="clr-namespace:Milki.OsuPlayer.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:system="clr-namespace:System;assembly=mscorlib"
-    xmlns:converters="clr-namespace:Milki.OsuPlayer.Converters"
-    xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
-    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
-    xmlns:textBoxComponent="clr-namespace:Milki.OsuPlayer.UiComponents.TextBoxComponent"
     xmlns:panelComponent="clr-namespace:Milki.OsuPlayer.UiComponents.PanelComponent"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:textBoxComponent="clr-namespace:Milki.OsuPlayer.UiComponents.TextBoxComponent"
+    xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
     Title="CollectionPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -100,12 +100,6 @@
                 </MenuItem.Header>
             </MenuItem>
         </ContextMenu>
-        <Style
-            x:Key="EventGridViewItem"
-            BasedOn="{StaticResource GridView}"
-            TargetType="ListViewItem">
-            <EventSetter Event="MouseDoubleClick" Handler="MapListItem_MouseDoubleClick" />
-        </Style>
     </Page.Resources>
     <Page.DataContext>
         <viewModels:CollectionPageViewModel />
@@ -152,7 +146,7 @@
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     RenderOptions.BitmapScalingMode="HighQuality"
-                                    Source="{Binding Path=Collection.ImagePath}"
+                                    Source="{Binding Path=PlayList.ImagePath}"
                                     Stretch="UniformToFill" />
                             </Grid>
                             <StackPanel Grid.Column="1" Margin="10">
@@ -163,7 +157,7 @@
                                         FontSize="22"
                                         FontWeight="Regular"
                                         Foreground="#303030">
-                                        <TextBlock Text="{Binding Path=Collection.Name}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding Path=PlayList.Name}" TextWrapping="Wrap" />
                                     </Label>
                                     <buttonComponent:CommonButton
                                         Width="28"
@@ -203,7 +197,7 @@
                                         MouseDownForeground="#e8e8e8"
                                         MouseOverBackground="#ff6d70"
                                         MouseOverForeground="White"
-                                        Visibility="{Binding Collection.IsDefault, Converter={StaticResource BoolFalseToVisibleConverter}}" />
+                                        Visibility="{Binding PlayList.IsDefault, Converter={StaticResource BoolFalseToVisibleConverter}}" />
                                 </WrapPanel>
                                 <StackPanel
                                     Margin="5"
@@ -215,7 +209,7 @@
                                         FontWeight="Regular"
                                         Foreground="#303030" />
                                     <Label
-                                        Content="{Binding Path=Collection.CreateTime, Converter={StaticResource CvtDate}}"
+                                        Content="{Binding Path=PlayList.CreateTime, Converter={StaticResource CvtDate}}"
                                         FontWeight="Light"
                                         Foreground="#303030" />
                                 </StackPanel>
@@ -249,15 +243,15 @@
                                         Foreground="#303030" />
                                     <Label
                                         x:Name="LblDescription"
-                                        Content="{Binding Path=Collection.Description}"
+                                        Content="{Binding Path=PlayList.Description}"
                                         FontWeight="Light">
                                         <Label.Style>
                                             <Style TargetType="{x:Type Label}">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Path=Collection.Description}" Value="">
+                                                    <DataTrigger Binding="{Binding Path=PlayList.Description}" Value="">
                                                         <Setter Property="Visibility" Value="Collapsed" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Path=Collection.Description}" Value="{x:Null}">
+                                                    <DataTrigger Binding="{Binding Path=PlayList.Description}" Value="{x:Null}">
                                                         <Setter Property="Visibility" Value="Collapsed" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -273,10 +267,10 @@
                                             <Style TargetType="{x:Type Label}">
                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Path=Collection.Description}" Value="">
+                                                    <DataTrigger Binding="{Binding Path=PlayList.Description}" Value="">
                                                         <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Path=Collection.Description}" Value="{x:Null}">
+                                                    <DataTrigger Binding="{Binding Path=PlayList.Description}" Value="{x:Null}">
                                                         <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -326,67 +320,12 @@
                                     CornerRadius="13"
                                     Hint="{DynamicResource ui-hint-searchCollectionMusic3Dot}"
                                     TextChanged="SearchBox_TextChanged" />
-                                <ListView
-                                    x:Name="MapList"
-                                    Background="{StaticResource WhiteBrush40}"
-                                    BorderThickness="0"
-                                    ItemContainerStyle="{StaticResource EventGridViewItem}"
-                                    Visibility="Collapsed">
-                                    <ListView.Resources>
-                                        <DataTemplate x:Key="IdDt">
-                                            <Label
-                                                Margin="0,3,0,3"
-                                                VerticalAlignment="Center"
-                                                Content="{Binding Index, Mode=OneWay, Converter={StaticResource IndexToStringConverter}}"
-                                                Foreground="#FF9C9C9C" />
-                                        </DataTemplate>
-                                        <DataTemplate x:Key="TitleDt">
-                                            <Label VerticalAlignment="Center" Content="{Binding AutoTitle, Mode=OneWay}" />
-                                        </DataTemplate>
-                                        <DataTemplate x:Key="ArtistDt">
-                                            <Label
-                                                VerticalAlignment="Center"
-                                                Content="{Binding AutoArtist, Mode=OneWay}"
-                                                Foreground="#FF9C9C9C" />
-                                        </DataTemplate>
-                                        <DataTemplate x:Key="CreatorDt">
-                                            <Label VerticalAlignment="Center" Content="{Binding AutoCreator, Mode=OneWay}" />
-                                        </DataTemplate>
-                                        <DataTemplate x:Key="VersionDt">
-                                            <Label
-                                                VerticalAlignment="Center"
-                                                Content="{Binding AutoVersion}"
-                                                Foreground="#FF9C9C9C" />
-                                        </DataTemplate>
-                                    </ListView.Resources>
-                                    <ListView.View>
-                                        <GridView ColumnHeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle}">
-                                            <GridViewColumn Width="40" CellTemplate="{StaticResource IdDt}" />
-                                            <GridViewColumn
-                                                Width="300"
-                                                CellTemplate="{StaticResource TitleDt}"
-                                                Header="{StaticResource ui-title}" />
-                                            <GridViewColumn
-                                                Width="200"
-                                                CellTemplate="{StaticResource ArtistDt}"
-                                                Header="{StaticResource ui-artist}" />
-                                            <GridViewColumn
-                                                Width="100"
-                                                CellTemplate="{StaticResource CreatorDt}"
-                                                Header="{StaticResource ui-creator}" />
-                                            <GridViewColumn
-                                                Width="150"
-                                                CellTemplate="{StaticResource VersionDt}"
-                                                Header="{StaticResource ui-mapDifficulty}" />
-                                        </GridView>
-                                    </ListView.View>
-                                </ListView>
                                 <ListBox
                                     x:Name="MapCardList"
                                     Padding="3,0"
                                     Background="Transparent"
                                     BorderThickness="0"
-                                    ItemsSource="{Binding DisplayedBeatmaps, Mode=OneWay}">
+                                    ItemsSource="{Binding DataList, Mode=OneWay}">
                                     <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <panelComponent:VirtualizingGalleryWrapPanel

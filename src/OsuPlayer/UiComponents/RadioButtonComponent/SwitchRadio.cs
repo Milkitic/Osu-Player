@@ -405,7 +405,7 @@ namespace Milki.OsuPlayer.UiComponents.RadioButtonComponent
                 To = 1,
                 EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,
-                Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300))
+                Duration = CommonUtils.GetAnimationDuration(TimeSpan.FromMilliseconds(300))
             };
             Storyboard.SetTargetProperty(Da1, new PropertyPath(OpacityProperty));
 
@@ -415,7 +415,7 @@ namespace Milki.OsuPlayer.UiComponents.RadioButtonComponent
                 To = 1,
                 EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,
-                Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300))
+                Duration = CommonUtils.GetAnimationDuration(TimeSpan.FromMilliseconds(300))
             };
             Ta1Clone = Ta1.Clone();
             Storyboard.SetTargetProperty(Ta1, new PropertyPath("RenderTransform.ScaleX"));
@@ -432,7 +432,7 @@ namespace Milki.OsuPlayer.UiComponents.RadioButtonComponent
                 To = 0,
                 EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,
-                Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(100))
+                Duration = CommonUtils.GetAnimationDuration(TimeSpan.FromMilliseconds(100))
             };
             FadeoutSb.Children.Add(Da2);
             Storyboard.SetTargetProperty(Da2, new PropertyPath(OpacityProperty));

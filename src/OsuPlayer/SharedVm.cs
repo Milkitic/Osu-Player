@@ -1,4 +1,5 @@
 ﻿using Milki.OsuPlayer.Configuration;
+using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Observable;
 
 namespace Milki.OsuPlayer;
@@ -7,6 +8,7 @@ public class SharedVm : VmBase
 {
     private bool _enableVideo = true;
     private bool _isPlaying = false;
+    private List<PlayList> _playLists;
 
     public bool EnableVideo
     {
@@ -18,6 +20,12 @@ public class SharedVm : VmBase
     {
         get => _isPlaying;
         set => this.RaiseAndSetIfChanged(ref _isPlaying, value);
+    }
+
+    public List<PlayList> PlayLists
+    {
+        get => _playLists;
+        set => this.RaiseAndSetIfChanged(ref _playLists, value);
     }
 
     public AppSettings AppSettings => AppSettings.Default;

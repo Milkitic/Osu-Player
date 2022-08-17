@@ -253,7 +253,7 @@ namespace Milki.OsuPlayer.Windows
         {
             _sb?.Stop();
             _sb = new Storyboard();
-            var da = new DoubleAnimation(toValue, CommonUtils.GetDuration(TimeSpan.FromMilliseconds(800)))
+            var da = new DoubleAnimation(toValue, CommonUtils.GetAnimationDuration(TimeSpan.FromMilliseconds(800)))
             {
                 EasingFunction = new QuarticEase { EasingMode = easingMode }
             };

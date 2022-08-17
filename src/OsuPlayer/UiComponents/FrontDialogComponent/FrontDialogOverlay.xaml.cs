@@ -248,7 +248,7 @@ namespace Milki.OsuPlayer.UiComponents.FrontDialogComponent
             var circ = new CircleEase { EasingMode = EasingMode.EaseIn };
 
             var dialogTs = TimeSpan.FromMilliseconds(300);
-            var dialogDuration = CommonUtils.GetDuration(dialogTs);
+            var dialogDuration = CommonUtils.GetAnimationDuration(dialogTs);
             var da2 = new DoubleAnimation()
             {
                 From = 1,
@@ -278,7 +278,7 @@ namespace Milki.OsuPlayer.UiComponents.FrontDialogComponent
                 From = 1,
                 To = 0,
                 BeginTime = TimeSpan.FromMilliseconds(dialogTs.TotalMilliseconds / 2f),
-                Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(150)),
+                Duration = CommonUtils.GetAnimationDuration(TimeSpan.FromMilliseconds(150)),
                 EasingFunction = sine
             };
             Storyboard.SetTarget(da, MainCanvas);
@@ -313,7 +313,7 @@ namespace Milki.OsuPlayer.UiComponents.FrontDialogComponent
             {
                 From = 0,
                 To = 1,
-                Duration = CommonUtils.GetDuration(canvasTs),
+                Duration = CommonUtils.GetAnimationDuration(canvasTs),
                 EasingFunction = sine
             };
             Storyboard.SetTarget(da, MainCanvas);
@@ -322,7 +322,7 @@ namespace Milki.OsuPlayer.UiComponents.FrontDialogComponent
             var back = new BackEase { EasingMode = EasingMode.EaseOut, Amplitude = 0.3 };
             var circ = new CircleEase { EasingMode = EasingMode.EaseOut };
 
-            var dialogDuration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300));
+            var dialogDuration = CommonUtils.GetAnimationDuration(TimeSpan.FromMilliseconds(300));
             var da2 = new DoubleAnimation
             {
                 From = 0.7,

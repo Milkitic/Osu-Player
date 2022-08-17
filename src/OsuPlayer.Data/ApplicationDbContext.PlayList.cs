@@ -38,7 +38,7 @@ public sealed partial class ApplicationDbContext
                 })
             .Select(k => new PlayGroupQuery
             {
-                Folder = k.PlayItem.Folder,
+                Folder = k.PlayItem.StandardizedFolder,
                 IsAutoManaged = k.PlayItem.IsAutoManaged,
                 Artist = k.PlayItemDetail.Artist,
                 ArtistUnicode = k.PlayItemDetail.ArtistUnicode,

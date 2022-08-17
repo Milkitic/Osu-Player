@@ -1,4 +1,5 @@
-﻿using Coosu.Database;
+﻿using Coosu.Beatmap.Sections.GamePlay;
+using Coosu.Database;
 using Coosu.Database.DataTypes;
 using Milki.OsuPlayer.Data.Models;
 
@@ -51,7 +52,7 @@ public static class OsuDbReaderExtensions
         //else if (nodeId == 42) playItemDetail.AudioPreviewTime = TimeSpan.FromMilliseconds(reader.GetInt32());
         else if (nodeId == 46) playItemDetail.BeatmapId = reader.GetInt32();
         else if (nodeId == 47) playItemDetail.BeatmapSetId = reader.GetInt32();
-        //else if (nodeId == 55) playItemDetail.GameMode = (DbGameMode)reader.GetByte();
+        else if (nodeId == 55) playItemDetail.GameMode = (GameMode)reader.GetByte();
         else if (nodeId == 56) playItemDetail.Source = reader.GetString();
         else if (nodeId == 57) playItemDetail.Tags = reader.GetString();
         else if (nodeId == 63) playItemDetail.FolderName = reader.GetString();

@@ -13,14 +13,14 @@ namespace Milki.OsuPlayer.UserControls
     /// </summary>
     public partial class EditCollectionControl : UserControl
     {
-        private readonly Collection _collection;
-        private EditCollectionPageViewModel _viewModel;
+        private readonly PlayList _collection;
+        private readonly EditCollectionPageViewModel _viewModel;
 
-        public EditCollectionControl(Collection collection)
+        public EditCollectionControl(PlayList collection)
         {
             _collection = collection;
             InitializeComponent();
-            _viewModel = (EditCollectionPageViewModel)DataContext;
+            DataContext = _viewModel = new EditCollectionPageViewModel();
             _viewModel.Name = _collection.Name;
             _viewModel.Description = _collection.Description;
             _viewModel.CoverPath = _collection.ImagePath;

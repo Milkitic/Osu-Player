@@ -145,7 +145,7 @@ public class PlayerService : VmBase, IDisposable
         await PlayByControl(PlayDirection.Next, true);
     }
 
-    public async ValueTask InitializeNewAsync(string path, bool playInstant)
+    public async ValueTask InitializeNewAsync(string standardizedPath, bool playInstant)
     {
         CancelPreviousInitialization();
 
@@ -158,10 +158,9 @@ public class PlayerService : VmBase, IDisposable
         {
             await DisposeActiveMixPlayer();
 
-
-            LogTo.Info("Start load new song from path: {0}", path);
+            LogTo.Info("Start load new song from path: {0}", standardizedPath);
             if (LoadPreStarted != null) await LoadPreStarted.Invoke(context);
-
+            var path = PathUtils.GetFullPath(standardizedPath, AppSettings.Default.GeneralSection.OsuSongDir);
             var osuFile = await OsuFile.ReadFromFileAsync(path, options =>
             {
                 options.ExcludeSection("Editor");
@@ -169,8 +168,6 @@ public class PlayerService : VmBase, IDisposable
             });
 
             context.OsuFile = osuFile;
-            var standardizedPath = PathUtils.StandardizePath(path, AppSettings.Default.GeneralSection.OsuSongDir);
-
             await using var dbContext = App.Current.ServiceProvider.GetService<ApplicationDbContext>()!;
             var playItem = await dbContext.GetOrAddPlayItem(standardizedPath);
 
@@ -180,7 +177,7 @@ public class PlayerService : VmBase, IDisposable
 
             if (LoadStarted != null) await LoadStarted.Invoke(context);
 
-            var folder = Path.GetDirectoryName(path)!;
+            var folder = Path.GetDirectoryName(standardizedPath)!;
             var standardizedFolder = PathUtils.GetFolder(standardizedPath);
 
             bool isFavorite = playItem.PlayLists.Any(k => k.IsDefault);
@@ -269,9 +266,9 @@ public class PlayerService : VmBase, IDisposable
         }
         catch (Exception ex)
         {
-            var errorMessage = context.PlayItem?.Path == null
+            var errorMessage = context.PlayItem?.StandardizedPath == null
                 ? $"Error while loading new beatmap."
-                : $"Error while loading new beatmap. Beatmap file: {context.PlayItem?.Path}";
+                : $"Error while loading new beatmap. Beatmap file: {context.PlayItem?.StandardizedPath}";
             LogTo.ErrorException(errorMessage, ex);
 
             if (ActiveMixPlayer?.PlayerStatus != PlayerStatus.Playing)

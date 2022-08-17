@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Configuration;
+using Anotar.NLog;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.UiComponents.PanelComponent;
 using Milki.OsuPlayer.UserControls;
@@ -17,207 +15,151 @@ using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.ViewModels;
 using Milki.OsuPlayer.Windows;
 using Milki.OsuPlayer.Wpf;
-using Beatmap = Milki.OsuPlayer.Data.Models.Beatmap;
 
-namespace Milki.OsuPlayer.Pages
+namespace Milki.OsuPlayer.Pages;
+
+/// <summary>
+/// CollectionPage.xaml 的交互逻辑
+/// </summary>
+public partial class CollectionPage : Page
 {
-    /// <summary>
-    /// CollectionPage.xaml 的交互逻辑
-    /// </summary>
-    public partial class CollectionPage : Page
+    private readonly MainWindow _mainWindow;
+    private readonly PlayerService _playerService;
+    private readonly PlayListService _playListService;
+
+    private List<PlayItem> _playItems;
+
+    public CollectionPageViewModel ViewModel { get; set; }
+    public string Id { get; set; }
+
+    public CollectionPage()
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly MainWindow _mainWindow;
-        private IEnumerable<Beatmap> _beatmaps;
-        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+        InitializeComponent();
+        _mainWindow = (MainWindow)Application.Current.MainWindow;
+        _playerService = App.Current.ServiceProvider.GetService<PlayerService>();
+        _playListService = App.Current.ServiceProvider.GetService<PlayListService>();
+        ViewModel = (CollectionPageViewModel)this.DataContext;
+    }
 
-        private static Binding _sourceBinding = new Binding(nameof(CollectionPageViewModel.DataList))
+    public async ValueTask UpdateView(PlayList playList)
+    {
+        ViewModel.PlayList = playList;
+        await UpdateList();
+    }
+
+    public async Task UpdateList()
+    {
+        await using var dbContext = new ApplicationDbContext();
+        var playListDetail = await dbContext.PlayLists
+            .Include(k => k.PlayListRelations)
+            .ThenInclude(k => k.PlayItem)
+            .FirstOrDefaultAsync(k => k.Id == ViewModel.PlayList.Id);
+        if (playListDetail == null)
         {
-            Mode = BindingMode.OneWay
-        };
-
-        private bool _minimal = false;
-
-        public CollectionPageViewModel ViewModel { get; set; }
-        public string Id { get; set; }
-
-        public CollectionPage()
-        {
-            InitializeComponent();
-            _mainWindow = (MainWindow)Application.Current.MainWindow;
-
-            ViewModel = (CollectionPageViewModel)this.DataContext;
+            ViewModel.DataList = null;
+            return;
         }
 
-        public CollectionPage(Guid colId) : this()
+        _playItems = playListDetail.PlayListRelations
+            .OrderByDescending(k => k.CreateTime)
+            .Select(k => k.PlayItem).ToList();
+
+        ViewModel.DataList = new ObservableCollection<PlayItem>(_playItems);
+        ListCount.Content = ViewModel.DataList.Count;
+    }
+
+    private void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        var item = ViewModel.DataList?.FirstOrDefault(k => k.StandardizedPath == _playListService.GetCurrentPath());
+        if (item != null)
         {
-            UpdateView(colId);
+            MapCardList.SelectedItem = item;
+        }
+    }
+
+    private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        var keyword = SearchBox.Text.Trim();
+        ViewModel.DataList = string.IsNullOrWhiteSpace(keyword)
+            ? ViewModel.DataList
+            : new ObservableCollection<PlayItem>(ViewModel.DataList); // todo: search
+    }
+
+    private void Page_Unloaded(object sender, RoutedEventArgs e)
+    {
+    }
+
+    private async void BtnDelCol_Click(object sender, RoutedEventArgs e)
+    {
+        var result = MessageBox.Show(_mainWindow, I18NUtil.GetString("ui-ensureRemoveCollection"), _mainWindow.Title, MessageBoxButton.OKCancel,
+            MessageBoxImage.Exclamation);
+        if (result != MessageBoxResult.OK) return;
+        await using var dbContext = new ApplicationDbContext();
+
+        dbContext.Remove(ViewModel.PlayList);
+        await dbContext.SaveChangesAsync();
+
+        _mainWindow.SwitchRecent.IsChecked = true;
+        await _mainWindow.UpdatePlayLists();
+    }
+
+    private void BtnExportAll_Click(object sender, RoutedEventArgs e)
+    {
+        ExportPage.QueueBeatmaps(_playItems);
+    }
+
+    private async Task PlaySelected()
+    {
+        var map = await GetSelected();
+        if (map == null) return;
+        await _playerService.InitializeNewAsync(map.StandardizedPath, true);
+    }
+
+    private async Task<PlayItem> GetSelected()
+    {
+        if (MapCardList.SelectedItem == null)
+        {
+            return null;
         }
 
-        public async Task UpdateView(Guid colId)
+        var selectedItem = (PlayItem)MapCardList.SelectedItem;
+        await using var dbContext = new ApplicationDbContext();
+        var beatmaps = await dbContext.GetPlayItemsByFolderAsync(selectedItem.StandardizedFolder);
+        return beatmaps.FirstOrDefault(k => k.PlayItemDetail.Version == selectedItem.PlayItemDetail.Version);
+    }
+
+    private void BtnEdit_Click(object sender, RoutedEventArgs e)
+    {
+        FrontDialogOverlay.Default.ShowContent(new EditCollectionControl(ViewModel.PlayList),
+            DialogOptionFactory.EditCollectionOptions);
+    }
+
+    private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
+    {
+        var playItems = _playItems.ToList();
+        if (playItems.Count <= 0) return;
+
+        _playListService.SetPathList(playItems.Select(k => k.StandardizedPath), false);
+        await _playerService.PlayNextAsync();
+    }
+
+    private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
+    {
+        var playItem = ViewModel.DataList[e.Index];
+        try
         {
-            await Task.Delay(1);
-            await using var dbContext = new ApplicationDbContext();
-            var collectionInfo = await dbContext.GetCollection(colId);
-            if (collectionInfo == null) return;
-            ViewModel.Collection = collectionInfo;
-            await UpdateList();
+            var fileName = await CommonUtils.GetThumbByBeatmapDbId(playItem).ConfigureAwait(false);
+            Execute.OnUiThread(() => playItem.PlayItemAsset!.FullThumbPath = fileName);
+        }
+        catch (Exception ex)
+        {
+            LogTo.ErrorException("Error while loading panel item.", ex);
         }
 
-        public async Task UpdateList()
-        {
-            await using var dbContext = new ApplicationDbContext();
-            _beatmaps = (await dbContext.GetBeatmapsFromCollection(ViewModel.Collection, 0, int.MaxValue))
-                .Collection; // todo: pagination
-            ViewModel.DataList = new ObservableCollection<OrderedModel<Beatmap>>(_beatmaps.AsOrdered());
-            ListCount.Content = ViewModel.DataList.Count;
-        }
+        LogTo.Debug(() => $"VirtualizingGalleryWrapPanel: {e.Index}");
+    }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            var minimal = AppSettings.Default.Interface.MinimalMode;
-            if (minimal != _minimal)
-            {
-                if (minimal)
-                {
-                    MapCardList.ItemsSource = null;
-                    MapList.SetBinding(ItemsControl.ItemsSourceProperty, _sourceBinding);
-                    MapCardList.Visibility = Visibility.Collapsed;
-                    MapList.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    MapList.ItemsSource = null;
-                    MapCardList.SetBinding(ItemsControl.ItemsSourceProperty, _sourceBinding);
-                    MapList.Visibility = Visibility.Collapsed;
-                    MapCardList.Visibility = Visibility.Visible;
-                }
-
-                _minimal = minimal;
-            }
-
-            var item = ViewModel.DataList?.FirstOrDefault(k =>
-                k.Model.Id.Equals(_controller.PlayList.CurrentInfo?.Beatmap?.Id)
-            );
-            if (item != null)
-                MapList.SelectedItem = item;
-        }
-
-        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var keyword = SearchBox.Text.Trim();
-            ViewModel.DataList = string.IsNullOrWhiteSpace(keyword)
-                ? ViewModel.DataList
-                : new ObservableCollection<OrderedModel<Beatmap>>(ViewModel.DataList); // todo: search
-        }
-
-        private void Page_Unloaded(object sender, RoutedEventArgs e)
-        {
-            Dispose();
-        }
-
-        private void Dispose()
-        {
-            // todo
-        }
-
-        private async void MapListItem_MouseDoubleClick(object sender, RoutedEventArgs e)
-        {
-            await PlaySelected();
-        }
-
-        private async void ItemPlay_Click(object sender, RoutedEventArgs e)
-        {
-            await PlaySelected();
-        }
-
-        private async void ItemDelete_Click(object sender, RoutedEventArgs e)
-        {
-            if (MapList.SelectedItem == null)
-                return;
-            var selected = MapList.SelectedItems;
-            var beatmaps = selected.Cast<Beatmap>().ToList();
-
-            await using var dbContext = new ApplicationDbContext();
-            await dbContext.DeleteBeatmapsFromCollection(beatmaps, ViewModel.Collection);
-            var currentInfo = _controller.PlayList.CurrentInfo;
-            if (ViewModel.Collection.IsDefault &&
-                beatmaps.Any(k => k.Id == currentInfo.Beatmap.Id))
-            {
-                currentInfo.BeatmapDetail.Metadata.IsFavorite = false;
-            }
-
-        }
-
-        private async void BtnDelCol_Click(object sender, RoutedEventArgs e)
-        {
-            var result = MessageBox.Show(_mainWindow, I18NUtil.GetString("ui-ensureRemoveCollection"), _mainWindow.Title, MessageBoxButton.OKCancel,
-                MessageBoxImage.Exclamation);
-            if (result != MessageBoxResult.OK) return;
-            await using var dbContext = new ApplicationDbContext();
-
-            await dbContext.DeleteCollection(ViewModel.Collection);
-            _mainWindow.SwitchRecent.IsChecked = true;
-            await _mainWindow.UpdatePlayLists();
-        }
-
-        private void BtnExportAll_Click(object sender, RoutedEventArgs e)
-        {
-            ExportPage.QueueBeatmaps(_beatmaps);
-        }
-
-        private async Task PlaySelected()
-        {
-            var map = await GetSelected();
-            if (map == null) return;
-            await _controller.PlayNewAsync(map);
-        }
-
-        private async Task<Beatmap> GetSelected()
-        {
-            if (MapList.SelectedItem == null)
-                return null;
-            var selectedItem = (Beatmap)MapList.SelectedItem;
-            await using var dbContext = new ApplicationDbContext();
-            var beatmaps = await dbContext.GetBeatmapsFromFolder(selectedItem.FolderNameOrPath, selectedItem.InOwnDb);
-            return beatmaps.FirstOrDefault(k => k.Version == selectedItem.Version);
-        }
-
-        private void BtnEdit_Click(object sender, RoutedEventArgs e)
-        {
-            FrontDialogOverlay.Default.ShowContent(new EditCollectionControl(ViewModel.Collection),
-                DialogOptionFactory.EditCollectionOptions);
-        }
-
-        private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
-        {
-            var beatmaps = _beatmaps.ToList();
-            if (beatmaps.Count <= 0) return;
-
-            await _controller.PlayList.SetSongListAsync(beatmaps, true);
-        }
-
-        private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
-        {
-            var orderedModel = ViewModel.DataList[e.Index];
-            var beatmap = orderedModel.Model;
-            try
-            {
-                var fileName = await CommonUtils.GetThumbByBeatmapDbId(orderedModel).ConfigureAwait(false);
-                Execute.OnUiThread(() => beatmap.BeatmapThumb.ThumbPath =
-                    Path.Combine(AppSettings.Directories.ThumbCacheDir, $"{fileName}.jpg")
-                );
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error while loading panel item.");
-            }
-
-            Logger.Debug("VirtualizingGalleryWrapPanel: {0}", e.Index);
-        }
-
-        private void Panel_Loaded(object sender, RoutedEventArgs e)
-        {
-        }
+    private void Panel_Loaded(object sender, RoutedEventArgs e)
+    {
     }
 }

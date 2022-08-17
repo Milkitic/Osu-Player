@@ -28,14 +28,14 @@ public class PlayListService
         }
     }
 
-    public void SetPathList(IEnumerable<string> paths)
+    public void SetPathList(IEnumerable<string> paths, bool resetToCurrentPath)
     {
         var currentPath = GetCurrentPath();
 
         _pathList = new List<string>(paths);
         RebuildPathIndexes();
 
-        if (currentPath != null)
+        if (resetToCurrentPath && currentPath != null)
         {
             SetPointerByPath(currentPath, false);
         }

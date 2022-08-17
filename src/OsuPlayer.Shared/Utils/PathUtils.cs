@@ -2,6 +2,16 @@
 
 public static class PathUtils
 {
+    public static string GetFullPath(string standardizedPath, string songDir)
+    {
+        if (standardizedPath.StartsWith("./"))
+        {
+            return Path.GetFullPath(Path.Combine(songDir, standardizedPath.Substring(2)));
+        }
+
+        return Path.GetFullPath(standardizedPath);
+    }
+
     public static string GetFolder(string path)
     {
         var lastSeparator = path.LastIndexOf('/');

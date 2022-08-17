@@ -1,38 +1,21 @@
-﻿using System;
+﻿#nullable enable
+
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media.Imaging;
+using Anotar.NLog;
 using Coosu.Beatmap;
-using Coosu.Database.DataTypes;
 using Microsoft.Win32;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Shared.Utils;
 
 namespace Milki.OsuPlayer;
 
+[Fody.ConfigureAwait(false)]
 public static class CommonUtils
 {
-    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-    private static readonly SemaphoreSlim Lock = new SemaphoreSlim(5);
-    ///// <summary>
-    ///// Copy resource to folder
-    ///// </summary>
-    ///// <param name="filename">File name in resource.</param>
-    ///// <param name="path">Path to save.</param>
-    //public static void ExportResource(string filename, string path)
-    //{
-    //    System.Resources.ResourceManager rm = Properties.Resources.ResourceManager;
-    //    byte[] obj = (byte[])rm.GetObject(filename, null);
-    //    if (obj == null)
-    //        return;
-    //    using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
-    //    {
-    //        fs.Write(obj, 0, obj.Length);
-    //        fs.Close();
-    //    }
-    //}
+    private static readonly SemaphoreSlim ConcurrentLimit = new(5);
 
     public static bool? BrowseDb(out string path)
     {
@@ -46,89 +29,84 @@ public static class CommonUtils
         return result;
     }
 
-    public static async Task<string> GetThumbByBeatmapDbId(Beatmap beatmap)
+    public static async Task<string?> GetThumbByBeatmapDbId(PlayItem playItem)
     {
-        return await Task.Run(async () =>
+        if (playItem.PlayItemAsset?.ThumbPath != null && File.Exists(playItem.PlayItemAsset.ThumbPath))
         {
-            await Lock.WaitAsync();
+            return Path.Combine(AppSettings.Directories.ThumbCacheDir, playItem.PlayItemAsset.ThumbPath);
+        }
+
+        var osuFilePath = PathUtils.GetFullPath(playItem.StandardizedPath, AppSettings.Default.GeneralSection.OsuSongDir);
+
+        if (!File.Exists(osuFilePath))
+        {
+            return null;
+        }
+
+        await ConcurrentLimit.WaitAsync();
+        try
+        {
+            LocalOsuFile osuFile;
             try
             {
-                await using var dbContext = new ApplicationDbContext();
-                var thumb = await dbContext.GetThumb(beatmap);
-                if (thumb != null)
+                osuFile = await OsuFile.ReadFromFileAsync(osuFilePath, options =>
                 {
-                    if (File.Exists(thumb.ThumbPath)) return thumb.ThumbPath;
-                }
-
-                var folder = beatmap.GetFolder(out var isFromDb, out var freePath);
-                var osuFilePath = isFromDb ? Path.Combine(folder, beatmap.BeatmapFileName) : freePath;
-
-                if (!File.Exists(osuFilePath))
-                {
-                    return null;
-                }
-
-                LocalOsuFile osuFile;
-                try
-                {
-                    osuFile = await OsuFile.ReadFromFileAsync(osuFilePath, options =>
-                        {
-                            options.IncludeSection("Events");
-                            options.IgnoreSample();
-                            options.IgnoreStoryboard();
-                        })
-                        .ConfigureAwait(false);
-                }
-                catch (Exception e)
-                {
-                    return null;
-                }
-
-                var guidStr = Guid.NewGuid().ToString();
-
-                var sourceBgFile = osuFile.Events?.BackgroundInfo?.Filename;
-                if (string.IsNullOrWhiteSpace(sourceBgFile))
-                {
-                    await dbContext.AddOrUpdateThumbPath(beatmap, null);
-                    return null;
-                }
-
-                var sourceBgPath = Path.Combine(folder, sourceBgFile);
-
-                if (!File.Exists(sourceBgPath))
-                {
-                    //_appDbOperator.SetMapThumb(dataModel.BeatmapDbId, null);
-                    return null;
-                }
-
-                ResizeImageAndSave(sourceBgPath, guidStr, height: 200);
-                await dbContext.AddOrUpdateThumbPath(beatmap, guidStr);
-                return guidStr;
+                    options.IncludeSection("Events");
+                    options.IgnoreSample();
+                    options.IgnoreStoryboard();
+                });
             }
             catch (Exception ex)
             {
-                Logger.Error("Error while creating beatmap thumb cache: {0}", beatmap.ToString());
-                return default;
+                LogTo.WarnException(
+                    $"Error while creating beatmap thumb cache caused by reading osu file: {playItem.StandardizedPath}", ex);
+                return null;
             }
-            finally
-            {
-                Lock.Release();
-            }
-        });
-    }
 
-    public static Duration GetDuration(TimeSpan ts)
-    {
-        if (AppSettings.Default == null) return TimeSpan.Zero;
-        if (AppSettings.Default.Interface.MinimalMode)
-            return new Duration(TimeSpan.Zero);
-        return new Duration(ts);
+            var guidStr = Guid.NewGuid().ToString("N");
+
+            var bgFilename = osuFile.Events?.BackgroundInfo?.Filename;
+            if (string.IsNullOrWhiteSpace(bgFilename))
+            {
+                return null;
+            }
+
+            var folder = Path.GetDirectoryName(osuFilePath)!;
+            var sourceBgPath = Path.Combine(folder, bgFilename);
+
+            if (!File.Exists(sourceBgPath))
+            {
+                return null;
+            }
+
+            ResizeImageAndSave(sourceBgPath, guidStr, height: 200);
+            await using var dbContext = new ApplicationDbContext();
+            var asset = await dbContext.PlayItemAssets.FindAsync(playItem.PlayItemAsset?.Id);
+            if (asset == null)
+            {
+                return null;
+            }
+
+            asset.ThumbPath = $"{guidStr}.jpg";
+            await dbContext.SaveChangesAsync();
+            return Path.Combine(AppSettings.Directories.ThumbCacheDir, asset.ThumbPath);
+        }
+        catch (Exception ex)
+        {
+            LogTo.WarnException(
+                $"Error while creating beatmap thumb cache: {playItem.StandardizedPath}", ex);
+            return null;
+        }
+        finally
+        {
+            ConcurrentLimit.Release();
+        }
     }
 
     private static void ResizeImageAndSave(string sourcePath, string targetName, int width = 0, int height = 0)
     {
-        byte[] imageBytes = LoadImageData(sourcePath);
-        BitmapSource bitmapSource = CreateImage(imageBytes, width, height);
+        var imageBytes = LoadImageData(sourcePath);
+        var bitmapSource = CreateImage(imageBytes, width, height);
         imageBytes = GetEncodedImageData(bitmapSource, ".jpg");
         var filePath = Path.Combine(AppSettings.Directories.ThumbCacheDir, $"{targetName}.jpg");
         SaveImageData(imageBytes, filePath);
@@ -136,29 +114,12 @@ public static class CommonUtils
 
     private static byte[] LoadImageData(string filePath)
     {
-        byte[] imageBytes;
-        using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-        using (var br = new BinaryReader(fs))
-        {
-            imageBytes = br.ReadBytes((int)fs.Length);
-        }
-
-        return imageBytes;
-    }
-
-    private static void SaveImageData(byte[] imageData, string filePath)
-    {
-        using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-        using (var bw = new BinaryWriter(fs))
-        {
-            bw.Write(imageData);
-        }
+        return File.ReadAllBytes(filePath);
     }
 
     private static BitmapSource CreateImage(byte[] imageData, int decodePixelWidth, int decodePixelHeight)
     {
-        if (imageData == null) return null;
-        BitmapImage result = new BitmapImage();
+        var result = new BitmapImage();
         result.BeginInit();
         if (decodePixelWidth > 0)
         {
@@ -170,16 +131,21 @@ public static class CommonUtils
             result.DecodePixelHeight = decodePixelHeight;
         }
 
-        result.StreamSource = new MemoryStream(imageData);
+        using var memoryStream = new MemoryStream(imageData);
+        result.StreamSource = memoryStream;
         result.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
         result.CacheOption = BitmapCacheOption.Default;
         result.EndInit();
         return result;
     }
 
+    private static void SaveImageData(byte[] imageData, string filePath)
+    {
+        File.WriteAllBytes(filePath, imageData);
+    }
+
     private static byte[] GetEncodedImageData(BitmapSource source, string preferredFormat)
     {
-        byte[] result = null;
         BitmapEncoder encoder;
         switch (preferredFormat.ToLower())
         {
@@ -209,17 +175,8 @@ public static class CommonUtils
 
         encoder.Frames.Add(BitmapFrame.Create(source));
 
-        using (var stream = new MemoryStream())
-        {
-            encoder.Save(stream);
-            stream.Seek(0, SeekOrigin.Begin);
-            result = new byte[stream.Length];
-            using (var br = new BinaryReader(stream))
-            {
-                br.Read(result, 0, (int)stream.Length);
-            }
-        }
-
-        return result;
+        using var stream = new MemoryStream();
+        encoder.Save(stream);
+        return stream.ToArray();
     }
 }

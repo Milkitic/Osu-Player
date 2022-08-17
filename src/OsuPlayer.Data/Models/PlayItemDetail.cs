@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Coosu.Beatmap.Sections.GamePlay;
 using Microsoft.EntityFrameworkCore;
 
 namespace Milki.OsuPlayer.Data.Models;
@@ -24,6 +25,7 @@ public sealed class PlayItemDetail
     [MaxLength(64)] public string Creator { get; set; } = null!;
     [MaxLength(128)] public string Version { get; set; } = null!;
     [MaxLength(128)] public string BeatmapFileName { get; set; } = null!;
+    [MaxLength(128)] public GameMode GameMode { get; set; }
     //public DateTime LastModified { get; set; }
 
     /// <summary>

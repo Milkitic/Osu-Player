@@ -19,10 +19,10 @@ public class TrackPlayer : IAsyncDisposable
     private double _previousPosition;
     private double _position;
 
-    public TrackPlayer(AudioPlaybackEngine engine)
+    public TrackPlayer(AudioPlaybackEngine engine, TimerSource? timerSource = null)
     {
         Engine = engine;
-        TimerSource = new TimerSource(3);
+        TimerSource = timerSource ?? new TimerSource(3);
         Tracks = new List<Track>();
         _trackHashSet = new HashSet<ISampleProvider?>();
         TimerSource.TimeUpdated += TimerSource_TimeUpdated;

@@ -37,7 +37,8 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
     private List<HitsoundNode>? _hitsoundNodes;
     private int _nextCachingTime;
 
-    public OsuMixPlayer(LocalOsuFile osuFile, AudioPlaybackEngine engine) : base(engine)
+    public OsuMixPlayer(LocalOsuFile osuFile, AudioPlaybackEngine engine, TimerSource? timerSource = null)
+        : base(engine, timerSource)
     {
         _osuFile = osuFile;
         _folder = Path.GetDirectoryName(osuFile.OriginalPath)!;

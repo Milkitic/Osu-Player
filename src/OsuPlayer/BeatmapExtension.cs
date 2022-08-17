@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Coosu.Beatmap.Sections.GamePlay;
-using Coosu.Database.DataTypes;
-using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Configuration;
+﻿using Coosu.Beatmap.Sections.GamePlay;
+using Milki.OsuPlayer.Data.Models;
 
 namespace Milki.OsuPlayer;
 
@@ -13,49 +7,34 @@ public static class BeatmapExtension
 {
     private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-    public static string GetFolder(this Beatmap map, out bool isFromDb, out string freePath)
-    {
-        if (map.IsTemporary)
-        {
-            var folder = Path.GetDirectoryName(map.FolderNameOrPath);
-            isFromDb = false;
-            freePath = map.FolderNameOrPath;
-            return folder;
-        }
-
-        isFromDb = true;
-        freePath = null;
-        return map.InOwnDb
-            ? Path.Combine(AppSettings.Default.GeneralSection.CustomSongDir, map.FolderNameOrPath)
-            : Path.Combine(AppSettings.Default.GeneralSection.OsuSongDir, map.FolderNameOrPath);
-    }
-
-    public static Beatmap GetHighestDiff(this IEnumerable<Beatmap> enumerable)
+    public static PlayItem GetHighestDiff(this IEnumerable<PlayItem> enumerable)
     {
         var random = new Random(DateTime.Now.Ticks.GetHashCode());
-        var dictionary = enumerable.GroupBy(k => k.GameMode).ToDictionary(k => k.Key, k => k.ToList());
-        if (dictionary.ContainsKey(GameMode.Circle))
+        var dictionary = enumerable
+            .GroupBy(k => k.PlayItemDetail.GameMode)
+            .ToDictionary(k => k.Key, k => k.ToList());
+        if (dictionary.TryGetValue(GameMode.Circle, out var value))
         {
-            return dictionary[GameMode.Circle]
-                .Aggregate((i1, i2) => i1.DiffSrNoneStandard > i2.DiffSrNoneStandard ? i1 : i2);
+            return value.Aggregate((item1, item2) =>
+                item1.PlayItemDetail.DefaultStarRatingStd > item2.PlayItemDetail.DefaultStarRatingStd ? item1 : item2);
         }
 
-        if (dictionary.ContainsKey(GameMode.Mania))
+        if (dictionary.TryGetValue(GameMode.Mania, out value))
         {
-            return dictionary[GameMode.Mania]
-                .Aggregate((i1, i2) => i1.DiffSrNoneMania > i2.DiffSrNoneMania ? i1 : i2);
+            return value.Aggregate((item1, item2) =>
+                item1.PlayItemDetail.DefaultStarRatingMania > item2.PlayItemDetail.DefaultStarRatingMania ? item1 : item2);
         }
 
-        if (dictionary.ContainsKey(GameMode.Catch))
+        if (dictionary.TryGetValue(GameMode.Catch, out value))
         {
-            return dictionary[GameMode.Catch]
-                .Aggregate((i1, i2) => i1.DiffSrNoneCtB > i2.DiffSrNoneCtB ? i1 : i2);
+            return value.Aggregate((item1, item2) =>
+                item1.PlayItemDetail.DefaultStarRatingCtB > item2.PlayItemDetail.DefaultStarRatingCtB ? item1 : item2);
         }
 
-        if (dictionary.ContainsKey(GameMode.Taiko))
+        if (dictionary.TryGetValue(GameMode.Taiko, out value))
         {
-            return dictionary[GameMode.Taiko]
-                .Aggregate((i1, i2) => i1.DiffSrNoneTaiko > i2.DiffSrNoneTaiko ? i1 : i2);
+            return value.Aggregate((item1, item2) =>
+                item1.PlayItemDetail.DefaultStarRatingTaiko > item2.PlayItemDetail.DefaultStarRatingTaiko ? item1 : item2);
         }
 
         Logger.Warn(@"Get highest difficulty failed.");

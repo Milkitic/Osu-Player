@@ -23,7 +23,7 @@ public class BeatmapSyncService
         var dbItems = await _dbContext.PlayItems
             .Include(k => k.PlayItemDetail)
             .Where(k => k.IsAutoManaged)
-            .ToDictionaryAsync(k => k.Path, k => k);
+            .ToDictionaryAsync(k => k.StandardizedPath, k => k);
 
         var maxDetailId = dbItems.Values.Count == 0 ? 0 : dbItems.Values.Max(k => k.PlayItemDetail.Id);
         maxDetailId++;
@@ -101,7 +101,7 @@ public class BeatmapSyncService
                 //oldDetial.AudioPreviewTime = newDetail.AudioPreviewTime;
                 oldDetial.BeatmapId = newDetail.BeatmapId;
                 oldDetial.BeatmapSetId = newDetail.BeatmapSetId;
-                //oldDetial.GameMode = newDetail.GameMode;
+                oldDetial.GameMode = newDetail.GameMode;
                 oldDetial.Source = newDetail.Source;
                 oldDetial.Tags = newDetail.Tags;
                 oldDetial.FolderName = PathUtils.GetFolder(k.Key);
@@ -135,8 +135,8 @@ public class BeatmapSyncService
             listItem.Add(new PlayItem
             {
                 IsAutoManaged = true,
-                Path = path,
-                Folder = folder,
+                StandardizedPath = path,
+                StandardizedFolder = folder,
                 PlayItemDetailId = playItemDetail.Value.Id
             });
         }

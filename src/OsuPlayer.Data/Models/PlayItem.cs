@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Milki.OsuPlayer.Data.Models;
 
-[Index(nameof(Path), IsUnique = true)]
-[Index(nameof(Folder))]
+[Index(nameof(StandardizedPath), IsUnique = true)]
+[Index(nameof(StandardizedFolder))]
 public sealed class PlayItem
 {
     public int Id { get; set; }
@@ -13,9 +13,9 @@ public sealed class PlayItem
     /// IsAutoManaged==false: FullPath
     /// </summary>
     [MaxLength(512)]
-    public string Path { get; set; } = null!;
+    public string StandardizedPath { get; set; } = null!;
     [MaxLength(512)]
-    public string Folder { get; set; } = null!;
+    public string StandardizedFolder { get; set; } = null!;
     public bool IsAutoManaged { get; set; }
     public PlayItemDetail PlayItemDetail { get; set; } = null!;
     public int PlayItemDetailId { get; set; }

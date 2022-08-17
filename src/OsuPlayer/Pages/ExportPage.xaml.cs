@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Coosu.Beatmap;
-using Coosu.Database.DataTypes;
-using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Models;
+using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.UiComponents.NotificationComponent;
 using Milki.OsuPlayer.ViewModels;
 using Milki.OsuPlayer.Windows;
-using Path = System.IO.Path;
 
 namespace Milki.OsuPlayer.Pages
 {
@@ -32,7 +27,7 @@ namespace Milki.OsuPlayer.Pages
         private readonly MainWindow _mainWindow;
 
         public ExportPageViewModel ViewModel { get; }
-        public static readonly ConcurrentQueue<Beatmap> TaskQueue = new ConcurrentQueue<Beatmap>();
+        public static readonly ConcurrentQueue<PlayItem> TaskQueue = new();
         public static Task ExportTask;
         public static bool Overlap = true;
 
@@ -61,7 +56,7 @@ namespace Milki.OsuPlayer.Pages
             ViewModel.ExportPath = AppSettings.Default.ExportSection.MusicDir;
         }
 
-        public static void QueueBeatmaps(IEnumerable<Beatmap> beatmaps)
+        public static void QueueBeatmaps(IEnumerable<PlayItem> beatmaps)
         {
             foreach (var beatmap in beatmaps)
                 TaskQueue.Enqueue(beatmap);
@@ -69,7 +64,7 @@ namespace Milki.OsuPlayer.Pages
             StartTask();
         }
 
-        public static void QueueBeatmap(Beatmap beatmap)
+        public static void QueueBeatmap(PlayItem beatmap)
         {
             TaskQueue.Enqueue(beatmap);
             StartTask();
@@ -91,16 +86,18 @@ namespace Milki.OsuPlayer.Pages
             });
         }
 
-        private static async Task CopyFileAsync(Beatmap beatmap)
+        private static async Task CopyFileAsync(PlayItem playItem)
         {
+            var playItemDetail = playItem.PlayItemDetail;
+            var folder = PathUtils.GetFullPath(playItem.StandardizedFolder,
+                AppSettings.Default.GeneralSection.OsuSongDir);
             try
             {
-                var folder = beatmap.GetFolder(out _, out _);
-                var mp3FileInfo = new FileInfo(Path.Combine(folder, beatmap.AudioFileName));
+                var mp3FileInfo = new FileInfo(Path.Combine(folder, playItemDetail.AudioFileName));
                 LocalOsuFile osuFile;
                 try
                 {
-                    osuFile = await OsuFile.ReadFromFileAsync(Path.Combine(folder, beatmap.BeatmapFileName), options =>
+                    osuFile = await OsuFile.ReadFromFileAsync(Path.Combine(folder, playItemDetail.BeatmapFileName), options =>
                     {
                         options.IncludeSection("Events");
                         options.IgnoreSample();
@@ -114,12 +111,12 @@ namespace Milki.OsuPlayer.Pages
 
                 var bgFileInfo = new FileInfo(Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename));
 
-                var artistUtf = MetaString.GetUnicode(beatmap.Artist, beatmap.ArtistUnicode);
-                var titleUtf = MetaString.GetUnicode(beatmap.Title, beatmap.TitleUnicode);
-                var artistAsc = MetaString.GetOriginal(beatmap.Artist, beatmap.ArtistUnicode);
-                var creator = beatmap.Creator;
-                var version = beatmap.Version;
-                var source = beatmap.SongSource;
+                var artistUtf = MetaString.GetUnicode(playItemDetail.Artist, playItemDetail.ArtistUnicode);
+                var titleUtf = MetaString.GetUnicode(playItemDetail.Title, playItemDetail.TitleUnicode);
+                var artistAsc = MetaString.GetOriginal(playItemDetail.Artist, playItemDetail.ArtistUnicode);
+                var creator = playItemDetail.Creator;
+                var version = playItemDetail.Version;
+                var source = playItemDetail.Source;
 
                 ConstructNameWithEscaping(out var escapedMp3, out var escapedBg,
                     titleUtf, artistUtf, creator, version);
@@ -139,8 +136,8 @@ namespace Milki.OsuPlayer.Pages
                     await using var appDbContext = new ApplicationDbContext();
                     await appDbContext.AddOrUpdateExport(new ExportItem
                     {
-                        Beatmap = beatmap,
-                        BeatmapId = beatmap.Id,
+                        Beatmap = playItemDetail,
+                        BeatmapId = playItemDetail.Id,
                         ExportPath = Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension),
                         IsValid = true,
                         Id = Guid.NewGuid()
@@ -149,8 +146,8 @@ namespace Milki.OsuPlayer.Pages
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Error while exporting beatmap: {0}", beatmap.ToString());
-                Notification.Push($"Error while exporting beatmap: {beatmap.ToString()}\r\n{ex.Message}");
+                Logger.Error(ex, "Error while exporting beatmap: {0}", playItemDetail.ToString());
+                Notification.Push($"Error while exporting beatmap: {playItemDetail}\r\n{ex.Message}");
             }
         }
 

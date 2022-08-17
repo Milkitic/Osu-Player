@@ -15,7 +15,7 @@ public sealed partial class ApplicationDbContext
             .Include(k => k.PlayItemAsset)
             .Include(k => k.PlayLists)
             .Include(k => k.PlayListRelations)
-            .FirstOrDefaultAsync(k => k.Path == standardizedPath);
+            .FirstOrDefaultAsync(k => k.StandardizedPath == standardizedPath);
 
         if (playItem != null)
         {
@@ -44,9 +44,9 @@ public sealed partial class ApplicationDbContext
         var folder = PathUtils.GetFolder(standardizedPath);
         var entity = new PlayItem
         {
-            Path = standardizedPath,
+            StandardizedPath = standardizedPath,
             IsAutoManaged = false,
-            Folder = folder,
+            StandardizedFolder = folder,
             PlayLists = new List<PlayList>(),
             PlayItemAsset = new PlayItemAsset(),
             PlayItemConfig = new PlayItemConfig(),
@@ -116,6 +116,19 @@ public sealed partial class ApplicationDbContext
         return playItem;
     }
 
+    public async Task<IReadOnlyList<PlayItem>> GetPlayItemsByFolderAsync(string standardizedFolder)
+    {
+        return await PlayItems
+            .AsNoTracking()
+            .Where(k => k.StandardizedFolder == standardizedFolder)
+            .Include(k => k.PlayItemDetail)
+            .Include(k => k.PlayItemConfig)
+            .Include(k => k.PlayItemAsset)
+            .Include(k => k.PlayLists)
+            .Include(k => k.PlayListRelations)
+            .ToArrayAsync();
+    }
+
     public async Task<IReadOnlyList<PlayItemDetail>> GetPlayItemDetailsByFolderAsync(string standardizedFolder)
     {
         return await PlayItemDetails
@@ -126,7 +139,7 @@ public sealed partial class ApplicationDbContext
 
     public async Task UpdateThumbPath(PlayItem playItem, string path)
     {
-        var item = await GetOrAddPlayItem(playItem.Path);
+        var item = await GetOrAddPlayItem(playItem.StandardizedPath);
         item.PlayItemAsset!.ThumbPath = path;
         Update(item.PlayItemAsset);
         await SaveChangesAsync();
@@ -134,7 +147,7 @@ public sealed partial class ApplicationDbContext
 
     public async Task UpdateVideoPath(PlayItem playItem, string path)
     {
-        var item = await GetOrAddPlayItem(playItem.Path);
+        var item = await GetOrAddPlayItem(playItem.StandardizedPath);
         item.PlayItemAsset!.VideoPath = path;
         Update(item.PlayItemAsset);
         await SaveChangesAsync();
@@ -142,7 +155,7 @@ public sealed partial class ApplicationDbContext
 
     public async Task UpdateStoryboardVideoPath(PlayItem playItem, string path)
     {
-        var item = await GetOrAddPlayItem(playItem.Path);
+        var item = await GetOrAddPlayItem(playItem.StandardizedPath);
         item.PlayItemAsset!.StoryboardVideoPath = path;
         Update(item.PlayItemAsset);
         await SaveChangesAsync();

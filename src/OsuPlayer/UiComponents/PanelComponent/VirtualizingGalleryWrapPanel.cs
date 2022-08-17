@@ -396,7 +396,7 @@ namespace Milki.OsuPlayer.UiComponents.PanelComponent
                 To = -offset,
                 EasingFunction = new CircleEase() { EasingMode = EasingMode.EaseOut },
                 BeginTime = TimeSpan.Zero,
-                Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(150))
+                Duration = CommonUtils.GetAnimationDuration(TimeSpan.FromMilliseconds(150))
             };
 
             Storyboard.SetTarget(da, this);
