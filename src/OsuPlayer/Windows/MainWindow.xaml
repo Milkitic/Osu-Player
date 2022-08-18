@@ -28,7 +28,6 @@
     FontFamily="{StaticResource SspRegular}"
     FontSize="13"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
-    Initialized="Window_Initialized"
     Loaded="Window_Loaded"
     SizeChanged="Window_SizeChanged"
     WindowStartupLocation="CenterScreen"
@@ -463,12 +462,12 @@
                 <!--<Button Content="循环模式" Style="{DynamicResource DefaultMenuItem}"/>-->
                 <MenuItem
                     Click="MenuOpenHideLyric_Click"
-                    Header="{Binding LyricWindowViewModel.IsLyricWindowShown, Converter={StaticResource CvtLyricWindowShown}, ConverterParameter=string}"
+                    Header="{Binding LyricWindowViewModel.IsLyricWindowEnabled, Converter={StaticResource CvtLyricWindowShown}, ConverterParameter=string}"
                     Style="{DynamicResource DefaultMenuItem}" />
                 <MenuItem
                     Click="MenuLockLyric_Click"
                     Header="{Binding IsLyricWindowLocked, Converter={StaticResource CvtLyricWindowLocked}}"
-                    IsEnabled="{Binding LyricWindowViewModel.IsLyricWindowShown, Converter={StaticResource CvtLyricWindowShown}, ConverterParameter=bool}"
+                    IsEnabled="{Binding LyricWindowViewModel.IsLyricWindowEnabled, Converter={StaticResource CvtLyricWindowShown}, ConverterParameter=bool}"
                     Style="{DynamicResource DefaultMenuItem}" />
                 <Separator />
                 <MenuItem

@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using Milki.OsuPlayer.Configuration;
+﻿using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Observable;
@@ -12,6 +11,8 @@ public class SharedVm : SingletonVm<SharedVm>
     private bool _isPlaying = false;
     private List<PlayList> _playLists;
     private NavigationType _checkedNavigationType;
+    private bool _isLyricEnabled;
+    private bool _isLyricWindowLocked;
 
     public bool EnableVideo
     {
@@ -35,6 +36,18 @@ public class SharedVm : SingletonVm<SharedVm>
     {
         get => _checkedNavigationType;
         set => this.RaiseAndSetIfChanged(ref _checkedNavigationType, value);
+    }
+
+    public bool IsLyricWindowEnabled
+    {
+        get => _isLyricEnabled;
+        set => this.RaiseAndSetIfChanged(ref _isLyricEnabled, value);
+    }
+
+    public bool IsLyricWindowLocked
+    {
+        get => _isLyricWindowLocked;
+        set => this.RaiseAndSetIfChanged(ref _isLyricWindowLocked, value);
     }
 
     public AppSettings AppSettings => AppSettings.Default;

@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Presentation;
+using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Utils;
-using Milki.OsuPlayer.Windows;
 
 namespace Milki.OsuPlayer.Pages.Settings
 {
@@ -16,7 +14,7 @@ namespace Milki.OsuPlayer.Pages.Settings
     /// </summary>
     public partial class HotKeyPage : Page
     {
-        private readonly MainWindow _mainWindow;
+        //private readonly MainWindow _mainWindow;
         private bool _holdingCtrl, _holdingAlt, _holdingShift;
 
         private readonly Key[] _exceptKeys =
@@ -27,9 +25,11 @@ namespace Milki.OsuPlayer.Pages.Settings
             Key.LeftAlt, Key.RightAlt
         };
 
+        private readonly KeyHookService _keyHookService;
+
         public HotKeyPage()
         {
-            _mainWindow = WindowEx.GetCurrentFirst<MainWindow>();
+            _keyHookService = ServiceProviders.Default.GetService<KeyHookService>();
             InitializeComponent();
         }
 
@@ -40,14 +40,14 @@ namespace Milki.OsuPlayer.Pages.Settings
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            var type = (HotKeyType)((TextBox)sender).Tag;
-            _mainWindow.KeyHookService.ConfigType = type;
+            //var type = (HotKeyType)((TextBox)sender).Tag;
+            //_keyHookService.ConfigType = type;
         }
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            _mainWindow.KeyHookService.ConfigType = null;
-            TextBox_KeyUp(sender, null);
+            //_keyHookService.ConfigType = null;
+            //TextBox_KeyUp(sender, null);
         }
 
         private void TextBox_Keydown(object sender, KeyEventArgs e)
@@ -121,18 +121,18 @@ namespace Milki.OsuPlayer.Pages.Settings
 
         private static void GetHotKeyValue(TextBox textBox)
         {
-            var hotKey = AppSettings.Default.HotKeys.First(k => k.Type == (HotKeyType)textBox.Tag);
-            var strList = new List<string>();
+            //var hotKey = AppSettings.Default.HotKeys.First(k => k.Type == (HotKeyType)textBox.Tag);
+            //var strList = new List<string>();
 
-            if (hotKey.UseControlKey)
-                strList.Add("Ctrl");
-            if (hotKey.UseShiftKey)
-                strList.Add("Shift");
-            if (hotKey.UseAltKey)
-                strList.Add("Alt");
-            strList.Add(hotKey.Key.ConvertToString());
+            //if (hotKey.UseControlKey)
+            //    strList.Add("Ctrl");
+            //if (hotKey.UseShiftKey)
+            //    strList.Add("Shift");
+            //if (hotKey.UseAltKey)
+            //    strList.Add("Alt");
+            //strList.Add(hotKey.Key.ConvertToString());
 
-            textBox.Text = string.Join(" + ", strList);
+            //textBox.Text = string.Join(" + ", strList);
         }
 
         private static void GetAllHotKeyValue(DependencyObject obj)

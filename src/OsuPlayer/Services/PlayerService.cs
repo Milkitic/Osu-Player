@@ -100,6 +100,8 @@ public class PlayerService : VmBase, IDisposable
         set => this.RaiseAndSetIfChanged(ref _totalTime, value);
     }
 
+    public PlayerStatus PlayerStatus => ActiveMixPlayer?.PlayerStatus ?? PlayerStatus.Uninitialized;
+
     public async ValueTask PlayAsync()
     {
         var activeMixPlayer = ActiveMixPlayer;

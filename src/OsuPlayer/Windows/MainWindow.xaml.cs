@@ -1,7 +1,9 @@
 ﻿using System.Windows;
-using Coosu.Beatmap;
+using Anotar.NLog;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Milki.OsuPlayer.Audio;
+using Milki.OsuPlayer.Audio.Mixing;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Services;
@@ -20,26 +22,24 @@ namespace Milki.OsuPlayer.Windows;
 /// </summary>
 public partial class MainWindow : WindowEx
 {
-    public readonly LyricWindow LyricWindow;
-    public ConfigWindow ConfigWindow;
+    private readonly PlayerService _playerService;
+    private readonly PlayListService _playListService;
+
+    private ConfigWindow _configWindow;
+    private MiniWindow _miniWindow;
     private bool _forceExit = false;
 
     private WindowState _lastState;
-
-    private Task _searchLyricTask;
-
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
-    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
     private bool _disposed;
     private readonly MainWindowViewModel _viewModel;
 
     public MainWindow()
     {
+        _playerService = App.Current.ServiceProvider.GetService<PlayerService>();
+        _playListService = App.Current.ServiceProvider.GetService<PlayListService>();
         InitializeComponent();
         DataContext = _viewModel = new MainWindowViewModel();
-        LyricWindow = new LyricWindow(this);
-
         Animation.Loaded += Animation_Loaded;
         PlayController.LikeClicked += Controller_LikeClicked;
         PlayController.ThumbClicked += Controller_ThumbClicked;
@@ -51,40 +51,24 @@ public partial class MainWindow : WindowEx
         Close();
     }
 
-    private void Window_Initialized(object sender, EventArgs e)
-    {
-        _viewModel.IsNavigationCollapsed = AppSettings.Default.GeneralSection.IsNavigationCollapsed;
-        if (AppSettings.Default.LyricSection.IsDesktopLyricEnabled)
-        {
-            LyricWindow.Show();
-        }
-
-        MiniPlayController.CloseButtonClicked += () =>
-        {
-            if (AppSettings.Default.GeneralSection.ExitWhenClosed == null) Show();
-            Close();
-        };
-
-        MiniPlayController.MaxButtonClicked += () =>
-        {
-            Topmost = true;
-            Show();
-            SharedVm.Default.EnableVideo = true;
-            GetCurrentFirst<MiniWindow>()?.Close();
-            Topmost = false;
-        };
-
-        BindHotKeyActions();
-    }
-
     private void BindHotKeyActions()
     {
         var keyHookService = App.Current.ServiceProvider.GetService<KeyHookService>()!;
         keyHookService.InitializeAndActivateHotKeys();
 
-        keyHookService.TogglePlayAction = () => _controller.PlayList.CurrentInfo?.TogglePlayHandle();
-        keyHookService.PrevSongAction = async () => await _controller.PlayPrevAsync();
-        keyHookService.NextSongAction = async () => await _controller.PlayNextAsync();
+        keyHookService.TogglePlayAction = async () =>
+        {
+            if (_playerService.PlayerStatus == PlayerStatus.Playing)
+            {
+                await _playerService.PauseAsync();
+            }
+            else if (_playerService.PlayerStatus is PlayerStatus.Paused or PlayerStatus.Ready)
+            {
+                await _playerService.PlayAsync();
+            }
+        };
+        keyHookService.PrevSongAction = async () => await _playerService.PlayPreviousAsync();
+        keyHookService.NextSongAction = async () => await _playerService.PlayNextAsync();
         keyHookService.VolumeUpAction = () =>
         {
             AppSettings.Default.VolumeSection.Main += 0.05f;
@@ -105,55 +89,23 @@ public partial class MainWindow : WindowEx
         };
         keyHookService.SwitchLyricWindowAction = () =>
         {
-            if (LyricWindow.IsShown)
-                LyricWindow.Hide();
-            else
-                LyricWindow.Show();
+            SharedVm.Default.IsLyricWindowEnabled = !SharedVm.Default.IsLyricWindowEnabled;
         };
-    }
-
-    /// <summary>
-    /// Call lyric provider to check lyric
-    /// </summary>
-    public void SetLyricSynchronously()
-    {
-        if (!LyricWindow.IsVisible)
-            return;
-
-        Task.Run(async () =>
-        {
-            if (_searchLyricTask?.IsTaskBusy() == true)
-            {
-                await _searchLyricTask;
-            }
-
-            _searchLyricTask = Task.Run(async () =>
-            {
-                if (!_controller.IsPlayerReady) return;
-
-                var lyricInst = Service.Get<LyricsService>();
-                var meta = _controller.PlayList.CurrentInfo.OsuFile.Metadata;
-                MetaString metaArtist = meta.ArtistMeta;
-                MetaString metaTitle = meta.TitleMeta;
-                var lyric = await lyricInst.LyricProvider.GetLyricAsync(metaArtist.ToUnicodeString(),
-                    metaTitle.ToUnicodeString(), (int)_controller.Player.Duration.TotalMilliseconds);
-                LyricWindow.SetNewLyric(lyric, metaArtist, metaTitle);
-                LyricWindow.StartWork();
-            });
-        });
     }
 
     private void TriggerMiniWindow()
     {
-        var mini = GetCurrentFirst<MiniWindow>();
-        if (mini != null && !mini.IsClosed)
+        if (_miniWindow is { IsClosed: false })
         {
-            mini.Focus();
+            ProcessUtils.ShowWindow(_miniWindow.Handle, ProcessUtils.SW_SHOW);
+            ProcessUtils.SwitchToThisWindow(_miniWindow.Handle, true);
+            _miniWindow.Activate();
+            _miniWindow.Focus();
         }
         else
         {
-            mini = new MiniWindow();
-            mini.Show();
+            _miniWindow = new MiniWindow();
+            _miniWindow.Show();
             Hide();
             SharedVm.Default.EnableVideo = false;
         }
@@ -163,8 +115,30 @@ public partial class MainWindow : WindowEx
 
     private async void Window_Loaded(object sender, RoutedEventArgs e)
     {
+        await using var dbContext = App.Current.ServiceProvider.GetService<ApplicationDbContext>()!;
+        var softwareState = await dbContext.GetSoftwareState();
+
+        _viewModel.IsNavigationCollapsed = !softwareState.ShowFullNavigation;
+
+        MiniPlayController.CloseButtonClicked += () =>
+        {
+            if (AppSettings.Default.GeneralSection.ExitWhenClosed == null) Show();
+            Close();
+        };
+
+        MiniPlayController.MaxButtonClicked += () =>
+        {
+            Topmost = true;
+            Show();
+            SharedVm.Default.EnableVideo = true;
+            _miniWindow?.Close();
+            Topmost = false;
+        };
+
+        BindHotKeyActions();
+
         NotificationOverlay.ItemsSource = Notification.NotificationList;
-        if (AppSettings.Default.GeneralSection.FirstOpen)
+        if (softwareState.ShowWelcome)
         {
             FrontDialogOverlay.ShowContent(new WelcomeControl(), new FrontDialogOverlay.ShowContentOptions
             {
@@ -176,48 +150,40 @@ public partial class MainWindow : WindowEx
             {
                 SwitchSearch.IsChecked = true;
             });
-            //WelcomeControl.Show();
-            //try
-            //{
-            //    await Service.Get<OsuDbInst>().LoadLocalDbAsync();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Notification.Push(I18NUtil.GetString("err-mapNotInDb"), Title);
-            //}
 
+            var customSongDir = AppSettings.Default.GeneralSection.CustomSongDir;
             try
             {
-                await Service.Get<OsuFileScanningService>().NewScanAndAddAsync(AppSettings.Default.GeneralSection.CustomSongDir);
+                await Service.Get<OsuFileScanningService>().NewScanAndAddAsync(customSongDir);
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Error while scanning custom folder: {0}",
-                    AppSettings.Default.GeneralSection.CustomSongDir);
+                LogTo.ErrorException($"Error while scanning custom folder: {customSongDir}", ex);
                 Notification.Push(I18NUtil.GetString("err-custom-scan"), Title);
             }
         }
         else
         {
-            if (DateTime.Now - AppSettings.Default.LastTimeScanOsuDb > TimeSpan.FromDays(1))
+            if (DateTime.Now - softwareState.LastSync > TimeSpan.FromDays(1))
             {
+                var dbPath = AppSettings.Default.GeneralSection.DbPath;
                 try
                 {
-                    await Service.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.GeneralSection.DbPath, true);
-                    AppSettings.Default.LastTimeScanOsuDb = DateTime.Now;
-                    AppSettings.SaveDefault();
+                    await Service.Get<OsuDbInst>().SyncOsuDbAsync(dbPath, true);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex, "Error while syncing osu!db: {0}", AppSettings.Default.GeneralSection.DbPath);
+                    LogTo.ErrorException($"Error while syncing osu!db: {dbPath}", ex);
                     Notification.Push(I18NUtil.GetString("err-osudb-sync"), Title);
+                    return;
                 }
+
+                softwareState.LastSync = DateTime.Now;
+                await dbContext.UpdateAndSaveChangesAsync(softwareState, k => k.LastSync);
             }
         }
 
-        await UpdatePlayLists();
-
-        _controller.LoadFinished += Controller_LoadFinished;
+        await SharedVm.Default.UpdatePlayLists();
 
         try
         {
@@ -231,7 +197,7 @@ public partial class MainWindow : WindowEx
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while checking for update");
+            LogTo.ErrorException("Error while checking for update", ex);
             Notification.Push(I18NUtil.GetString("err-update-check") + $": {ex.Message}", Title);
         }
     }
@@ -254,7 +220,9 @@ public partial class MainWindow : WindowEx
                 }
 
                 if (closingControl.RadioMinimum.IsChecked == true)
+                {
                     Hide();
+                }
                 else
                 {
                     ForceClose();
@@ -267,7 +235,7 @@ public partial class MainWindow : WindowEx
         if (AppSettings.Default.GeneralSection.ExitWhenClosed == false && !_forceExit)
         {
             WindowState = WindowState.Minimized;
-            GetCurrentFirst<MiniWindow>()?.Close();
+            _miniWindow?.Close();
             Hide();
             e.Cancel = true;
             return;
@@ -280,13 +248,13 @@ public partial class MainWindow : WindowEx
         }
 
         e.Cancel = true;
-        GetCurrentFirst<MiniWindow>()?.Close();
+        _miniWindow?.Close();
         LyricWindow.Dispose();
         NotifyIcon.Dispose();
 
-        if (ConfigWindow != null && !ConfigWindow.IsClosed && ConfigWindow.IsInitialized)
+        if (_configWindow != null && !_configWindow.IsClosed && _configWindow.IsInitialized)
         {
-            ConfigWindow.Close();
+            _configWindow.Close();
         }
 
         if (_controller != null) await _controller.DisposeAsync().ConfigureAwait(false);
@@ -348,15 +316,15 @@ public partial class MainWindow : WindowEx
 
     private void BtnSettings_Click(object sender, RoutedEventArgs e)
     {
-        if (ConfigWindow == null || ConfigWindow.IsClosed)
+        if (_configWindow == null || _configWindow.IsClosed)
         {
-            ConfigWindow = new ConfigWindow();
-            ConfigWindow.Show();
+            _configWindow = new ConfigWindow();
+            _configWindow.Show();
         }
         else
         {
-            if (ConfigWindow.IsInitialized)
-                ConfigWindow.Focus();
+            if (_configWindow.IsInitialized)
+                _configWindow.Focus();
         }
     }
 
@@ -406,15 +374,6 @@ public partial class MainWindow : WindowEx
     private void MenuLockLyric_Click(object sender, RoutedEventArgs e)
     {
         LyricWindow.IsLocked = !LyricWindow.IsLocked;
-    }
-
-    private void Controller_LoadFinished(BeatmapContext arg1, CancellationToken arg2)
-    {
-        Execute.OnUiThread(() =>
-        {
-            /* Set Lyric */
-            SetLyricSynchronously();
-        });
     }
 
     private void Controller_ThumbClicked(object sender, RoutedEventArgs e)

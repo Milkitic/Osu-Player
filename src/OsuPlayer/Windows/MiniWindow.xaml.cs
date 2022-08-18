@@ -1,15 +1,12 @@
-﻿using System;
-using System.Drawing;
-using System.Threading;
+﻿using System.Drawing;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Milki.OsuPlayer.Common;
+using Anotar.NLog;
 using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Presentation;
-using Milki.OsuPlayer.Presentation.Interaction;
+using Milki.OsuPlayer.Wpf;
 using Timer = System.Threading.Timer;
 
 namespace Milki.OsuPlayer.Windows
@@ -19,8 +16,6 @@ namespace Milki.OsuPlayer.Windows
     /// </summary>
     public partial class MiniWindow : WindowEx
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
         private event Action<bool> StickChanged;
 
         private double _equivalentScreenWidth;
@@ -58,7 +53,7 @@ namespace Milki.OsuPlayer.Windows
                 if (Equals(_isStickEnabled, value)) return;
                 _isStickEnabled = value;
                 StickChanged?.Invoke(value);
-                Logger.Debug("StickChanged Invoked: {0}", value);
+                LogTo.Debug(() => $"StickChanged Invoked: {value}");
             }
         }
 
@@ -73,7 +68,7 @@ namespace Milki.OsuPlayer.Windows
             if (stick) DelayToHide();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var dpiScaling = GetDpiScaling();
             _equivalentScreenWidth = SystemParameters.PrimaryScreenWidth / dpiScaling;
@@ -142,7 +137,7 @@ namespace Milki.OsuPlayer.Windows
                 (int)(workingArea.Height / dpiScaling)); // converted value
 
             if (oldArea != _currentArea)
-                Logger.Debug(_currentArea.ToString());
+                LogTo.Debug(() => _currentArea.ToString());
 
             _sb?.Stop();
             if (Right >= _currentArea.Right + WindowMargin - _stickAutoWidth &&
@@ -150,14 +145,14 @@ namespace Milki.OsuPlayer.Windows
             {
                 Right = _currentArea.Right + WindowMargin;
                 IsStickEnabled = true;
-                Logger.Debug("Auto Changed Location");
+                LogTo.Debug(() => "Auto Changed Location");
             }
             else if (Left <= _currentArea.Left - WindowMargin + _stickAutoWidth &&
                      Left >= _currentArea.Left - WindowMargin - _stickAutoWidth)
             {
                 Left = _currentArea.Left - WindowMargin;
                 IsStickEnabled = true;
-                Logger.Debug("Auto Changed Location");
+                LogTo.Debug(() => "Auto Changed Location");
             }
             else
             {
@@ -168,13 +163,13 @@ namespace Milki.OsuPlayer.Windows
                 Bottom <= _currentArea.Bottom + WindowMargin + _stickAutoWidth)
             {
                 Top = _currentArea.Bottom - ActualHeight + WindowMargin;
-                Logger.Debug("Auto Changed Location");
+                LogTo.Debug(() => "Auto Changed Location");
             }
             else if (Top <= _currentArea.Top - WindowMargin + _stickAutoWidth &&
                      Top >= _currentArea.Top - WindowMargin - _stickAutoWidth)
             {
                 Top = _currentArea.Top - WindowMargin;
-                Logger.Debug("Auto Changed Location");
+                LogTo.Debug(() => "Auto Changed Location");
             }
         }
 
@@ -183,7 +178,7 @@ namespace Milki.OsuPlayer.Windows
             if (!IsStickEnabled) return;
             if (_isShowing) return;
 
-            Logger.Debug("Called Control_MouseMove()");
+            LogTo.Debug(() => "Called Control_MouseMove()");
             _isShowing = true;
             StopHiding();
             ShowFromBound();
@@ -197,14 +192,14 @@ namespace Milki.OsuPlayer.Windows
             if (!_isShowing) return;
             _isShowing = false;
 
-            Logger.Debug("Called Control_MouseLeave()");
+            LogTo.Debug(() => "Called Control_MouseLeave()");
             DelayToHide();
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _mouseDown = true;
-            Logger.Debug("_mouseDown is TRUE");
+            LogTo.Debug(() => "_mouseDown is TRUE");
             DragMove();
             e.Handled = true;
         }
@@ -218,13 +213,13 @@ namespace Milki.OsuPlayer.Windows
             AppSettings.SaveDefault();
 
             _mouseDown = false;
-            Logger.Debug("_mouseDown is FALSE");
+            LogTo.Debug(() => "_mouseDown is FALSE");
             e.Handled = true;
         }
 
         private void ShowFromBound()
         {
-            Logger.Debug("Called ShowFromBound()");
+            LogTo.Debug(() => "Called ShowFromBound()");
             if (Right >= _currentArea.Right)
             {
                 CreateStoryboard(_currentArea.Right - ActualWidth + WindowMargin, EasingMode.EaseOut, false);
@@ -237,7 +232,7 @@ namespace Milki.OsuPlayer.Windows
 
         private void HideToBound()
         {
-            Logger.Debug("Called HideToBound()");
+            LogTo.Debug(() => "Called HideToBound()");
             if (Math.Round(Right) >= _currentArea.Right)
             {
                 CreateStoryboard(_currentArea.Right - _stickWidth - WindowMargin, EasingMode.EaseInOut, true);
@@ -253,7 +248,7 @@ namespace Milki.OsuPlayer.Windows
         {
             _sb?.Stop();
             _sb = new Storyboard();
-            var da = new DoubleAnimation(toValue, CommonUtils.GetAnimationDuration(TimeSpan.FromMilliseconds(800)))
+            var da = new DoubleAnimation(toValue, (TimeSpan.FromMilliseconds(800)))
             {
                 EasingFunction = new QuarticEase { EasingMode = easingMode }
             };
@@ -272,13 +267,13 @@ namespace Milki.OsuPlayer.Windows
 
         private void StopHiding()
         {
-            Logger.Debug("Called StopHiding()");
+            LogTo.Debug(() => "Called StopHiding()");
             _frameTimer?.Dispose();
         }
 
         private void DelayToHide()
         {
-            Logger.Debug("Called DelayToHide()");
+            LogTo.Debug(() => "Called DelayToHide()");
             StopHiding();
             _frameTimer = new Timer(state => Execute.OnUiThread(HideToBound),
                 null, 1500, Timeout.Infinite);

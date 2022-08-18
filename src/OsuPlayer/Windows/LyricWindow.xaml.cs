@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Coosu.Beatmap;
+using LyricsFinder;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Media.Lyric.Models;
 using Milki.OsuPlayer.Shared.Dependency;
@@ -37,7 +38,6 @@ namespace Milki.OsuPlayer.Windows
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public LyricWindowViewModel ViewModel { get; }
-        public bool IsShown => ViewModel.IsLyricWindowShown;
 
         private List<Sentence> _lyricList;
         private CancellationTokenSource _cts;
@@ -339,7 +339,7 @@ namespace Milki.OsuPlayer.Windows
             SetNewLyric(null, metaArtist, metaTitle);
             AppSettings.Default.LyricSection.IsDesktopLyricEnabled = true;
             AppSettings.SaveDefault();
-            ViewModel.IsLyricWindowShown = true;
+            ViewModel.IsLyricWindowEnabled = true;
             _mainWindow.SetLyricSynchronously();
             base.Show();
         }
@@ -348,7 +348,7 @@ namespace Milki.OsuPlayer.Windows
         {
             AppSettings.Default.LyricSection.IsDesktopLyricEnabled = false;
             AppSettings.SaveDefault();
-            ViewModel.IsLyricWindowShown = false;
+            ViewModel.IsLyricWindowEnabled = false;
             CancelTask();
             base.Hide();
         }

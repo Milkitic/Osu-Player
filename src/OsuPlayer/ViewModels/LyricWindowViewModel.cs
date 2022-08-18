@@ -6,6 +6,7 @@ using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Presentation.Interaction;
 using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.Utils;
 
 namespace Milki.OsuPlayer.ViewModels
@@ -13,7 +14,6 @@ namespace Milki.OsuPlayer.ViewModels
     public class LyricWindowViewModel : VmBase
     {
         private bool _showFrame;
-        private bool _isLyricEnabled;
         private object _fontFamily;
         private double _hue;
         private double _saturation;
@@ -28,28 +28,6 @@ namespace Milki.OsuPlayer.ViewModels
             set
             {
                 _showFrame = value;
-                OnPropertyChanged();
-            }
-        }
-
-
-        public bool IsLyricWindowShown
-        {
-            get => _isLyricEnabled;
-            set
-            {
-                _isLyricEnabled = value;
-                OnPropertyChanged();
-            }
-        }
-        
-        private bool _isLyricWindowLocked;
-        public bool IsLyricWindowLocked
-        {
-            get => _isLyricWindowLocked;
-            set
-            {
-                _isLyricWindowLocked = value;
                 OnPropertyChanged();
             }
         }

@@ -11,7 +11,6 @@ public sealed partial class ApplicationDbContext : DbContext
 #nullable disable
     public DbSet<SoftwareState> SoftwareStates { get; set; }
 
-
     public DbSet<PlayList> PlayLists { get; set; }
     public DbSet<PlayListPlayItemRelation> PlayListRelations { get; set; }
 
@@ -77,6 +76,12 @@ public sealed partial class ApplicationDbContext : DbContext
             IsDefault = true,
             Name = "Favorite"
         });
+        modelBuilder.Entity<SoftwareState>().HasData(new SoftwareState
+        {
+            Id = 1,
+            ShowWelcome = true,
+            ShowFullNavigation = true
+        });
         modelBuilder.Entity<PlayItem>()
             .HasMany(p => p.PlayLists)
             .WithMany(p => p.PlayItems)
@@ -107,5 +112,27 @@ public sealed partial class ApplicationDbContext : DbContext
         }
 
         return base.SaveChanges();
+    }
+
+    public async ValueTask<SoftwareState> GetSoftwareState()
+    {
+        var softwareState = await SoftwareStates.AsNoTracking().FirstOrDefaultAsync();
+        if (softwareState != null) return softwareState;
+        softwareState = new SoftwareState
+        {
+            Id = 1,
+            ShowWelcome = true,
+            ShowFullNavigation = true
+        };
+        SoftwareStates.Add(softwareState);
+        await SaveChangesAsync();
+
+        var entityEntry = Entry(softwareState);
+        if (entityEntry.State != EntityState.Detached)
+        {
+            entityEntry.State = EntityState.Detached;
+        }
+
+        return softwareState;
     }
 }

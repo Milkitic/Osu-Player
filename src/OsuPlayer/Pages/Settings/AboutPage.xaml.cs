@@ -1,11 +1,10 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Presentation;
 using Milki.OsuPlayer.Services;
-using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.Shared;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Windows;
 
@@ -18,13 +17,16 @@ namespace Milki.OsuPlayer.Pages.Settings
     {
         private readonly MainWindow _mainWindow;
         private readonly ConfigWindow _configWindow;
-        private readonly string _dtFormat = "g";
         private NewVersionWindow _newVersionWindow;
+
+        private readonly UpdateService _updateService;
 
         public AboutPage()
         {
-            _mainWindow = WindowEx.GetCurrentFirst<MainWindow>();
-            _configWindow = WindowEx.GetCurrentFirst<ConfigWindow>();
+            _mainWindow = App.Current.Windows.OfType<MainWindow>().First();
+            _configWindow = App.Current.Windows.OfType<ConfigWindow>().First();
+            _updateService = App.Current.ServiceProvider.GetService<UpdateService>();
+
             InitializeComponent();
         }
 
@@ -38,19 +40,29 @@ namespace Milki.OsuPlayer.Pages.Settings
             Process.Start("https://github.com/Milkitic/Osu-Player/issues/new");
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            CurrentVer.Content = Service.Get<UpdateService>().CurrentVersionString;
-            if (Service.Get<UpdateService>().NewRelease != null)
+            CurrentVer.Content = _updateService.CurrentVersionString;
+            if (_updateService.NewRelease != null)
+            {
                 NewVersion.Visibility = Visibility.Visible;
-            GetLastUpdate();
+            }
+
+            await GetLastUpdate();
         }
 
-        private void GetLastUpdate()
+        private async ValueTask GetLastUpdate()
         {
-            LastUpdate.Content = AppSettings.Default.LastUpdateCheck == null
-                ? I18NUtil.GetString("ui-sets-content-never")
-                : AppSettings.Default.LastUpdateCheck.Value.ToString(_dtFormat);
+            await using var dbContext = ServiceProviders.GetApplicationDbContext();
+            var softwareState = await dbContext.GetSoftwareState();
+            if (softwareState.LastUpdateCheck == null)
+            {
+                LastUpdate.Content = I18NUtil.GetString("ui-sets-content-never");
+            }
+            else
+            {
+                LastUpdate.Content = softwareState.LastUpdateCheck.Value.ToString(Conventions.DateTimeFormat);
+            }
         }
 
         private async void CheckUpdate_Click(object sender, RoutedEventArgs e)
@@ -60,7 +72,7 @@ namespace Milki.OsuPlayer.Pages.Settings
             bool? hasNew;
             try
             {
-                hasNew = await Service.Get<UpdateService>().CheckUpdateAsync();
+                hasNew = await _updateService.CheckUpdateAsync();
             }
             catch (Exception ex)
             {
@@ -72,8 +84,10 @@ namespace Milki.OsuPlayer.Pages.Settings
 
             CheckUpdate.IsEnabled = true;
 
-            AppSettings.Default.LastUpdateCheck = DateTime.Now;
-            GetLastUpdate();
+            await using var dbContext = ServiceProviders.GetApplicationDbContext();
+            var softwareState = await dbContext.GetSoftwareState();
+            softwareState.LastUpdateCheck = DateTime.Now;
+            await GetLastUpdate();
             AppSettings.SaveDefault();
             if (hasNew == true)
             {
@@ -89,9 +103,12 @@ namespace Milki.OsuPlayer.Pages.Settings
 
         private void NewVersion_Click(object sender, RoutedEventArgs e)
         {
-            if (_newVersionWindow != null && !_newVersionWindow.IsClosed)
+            if (_newVersionWindow is { IsClosed: false })
+            {
                 _newVersionWindow.Close();
-            _newVersionWindow = new NewVersionWindow(Service.Get<UpdateService>().NewRelease, _mainWindow);
+            }
+
+            _newVersionWindow = new NewVersionWindow(_updateService.NewRelease, _mainWindow);
             _newVersionWindow.ShowDialog();
         }
 

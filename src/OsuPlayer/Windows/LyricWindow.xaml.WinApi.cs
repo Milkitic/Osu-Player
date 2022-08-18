@@ -32,7 +32,7 @@ namespace Milki.OsuPlayer.Windows
             set
             {
                 _isLocked = value;
-                _mainWindow.ViewModel.IsLyricWindowLocked = value;
+                SharedVm.Default.IsLyricWindowLocked = value;
                 if (_isLocked)
                 {
                     SetPenetrate();

@@ -76,7 +76,7 @@ namespace Milki.OsuPlayer.UiComponents.NotificationComponent
                 From = 0,
                 To = height,
                 EasingFunction = easing,
-                Duration = CommonUtils.GetAnimationDuration(timing)
+                Duration = (timing)
             };
 
             Storyboard.SetTargetName(vector, NotifyBorder.Name);
@@ -88,7 +88,7 @@ namespace Milki.OsuPlayer.UiComponents.NotificationComponent
                 From = 0,
                 To = 0,
                 EasingFunction = easing,
-                Duration = CommonUtils.GetAnimationDuration(timing)
+                Duration = (timing)
             };
             Storyboard.SetTargetName(fade, NotifyBorder.Name);
             Storyboard.SetTargetProperty(fade,
@@ -114,7 +114,7 @@ namespace Milki.OsuPlayer.UiComponents.NotificationComponent
                 From = 0,
                 To = 1,
                 EasingFunction = easing,
-                Duration = CommonUtils.GetAnimationDuration(timing)
+                Duration = (timing)
             };
             Storyboard.SetTargetName(fade, NotifyBorder.Name);
             Storyboard.SetTargetProperty(fade,
@@ -125,7 +125,7 @@ namespace Milki.OsuPlayer.UiComponents.NotificationComponent
                 From = new Thickness(width, 0, -width, 0),
                 To = new Thickness(0),
                 EasingFunction = easing,
-                Duration = CommonUtils.GetAnimationDuration(timing)
+                Duration = (timing)
             };
             Storyboard.SetTargetName(vector, NotifyBorder.Name);
             Storyboard.SetTargetProperty(vector,
@@ -153,7 +153,7 @@ namespace Milki.OsuPlayer.UiComponents.NotificationComponent
                 From = 1,
                 To = 0,
                 EasingFunction = easing,
-                Duration = CommonUtils.GetAnimationDuration(timing)
+                Duration = (timing)
             };
             Storyboard.SetTargetName(fade, NotifyBorder.Name);
             Storyboard.SetTargetProperty(fade,
@@ -164,7 +164,7 @@ namespace Milki.OsuPlayer.UiComponents.NotificationComponent
                 From = new Thickness(0),
                 To = new Thickness(width, 0, -width, 0),
                 EasingFunction = easing,
-                Duration = CommonUtils.GetAnimationDuration(timing)
+                Duration = (timing)
             };
             Storyboard.SetTargetName(vector, NotifyBorder.Name);
             Storyboard.SetTargetProperty(vector,
@@ -192,7 +192,7 @@ namespace Milki.OsuPlayer.UiComponents.NotificationComponent
                 From = height,
                 To = 0,
                 EasingFunction = easing,
-                Duration = CommonUtils.GetAnimationDuration(timing)
+                Duration = (timing)
             };
 
             Storyboard.SetTargetName(vector, NotifyBorder.Name);
@@ -203,7 +203,7 @@ namespace Milki.OsuPlayer.UiComponents.NotificationComponent
                 From = 0,
                 To = 0,
                 EasingFunction = easing,
-                Duration = CommonUtils.GetAnimationDuration(timing)
+                Duration = (timing)
             };
             Storyboard.SetTargetName(fade, NotifyBorder.Name);
             Storyboard.SetTargetProperty(fade,

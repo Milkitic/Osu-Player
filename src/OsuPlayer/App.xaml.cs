@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Anotar.NLog;
+using Coosu.Beatmap;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Milki.Extensions.Configuration;
@@ -39,6 +40,7 @@ public partial class App : Application
 
     public new static App Current { get; private set; }
     public ServiceProvider ServiceProvider { get; private set; }
+    public LyricWindow LyricWindow { get; } = new LyricWindow();
 
     private async void Application_Startup(object sender, StartupEventArgs e)
     {
@@ -104,14 +106,55 @@ public partial class App : Application
     private async ValueTask InitializeServicesAsync()
     {
         ServiceProvider.GetService<LyricsService>()!.ReloadLyricProvider();
-        var osuPlayList = ServiceProvider.GetService<PlayListService>()!;
-        osuPlayList.Mode = AppSettings.Default.PlaySection.PlayListMode;
-       
+        var playListService = ServiceProvider.GetService<PlayListService>()!;
+        playListService.Mode = AppSettings.Default.PlaySection.PlayListMode;
 
         await using var dbContext = ServiceProvider.GetService<ApplicationDbContext>()!;
         await dbContext.Database.MigrateAsync();
 
+        var playerService = ServiceProvider.GetService<PlayerService>()!;
+        playerService.LoadMetaFinished += PlayerService_LoadMetaFinished;
 
+        var keyHookService = ServiceProvider.GetService<KeyHookService>()!;
+        SharedVm.Default.IsLyricWindowEnabled = AppSettings.Default.LyricSection.IsDesktopLyricEnabled;
+    }
+
+    private Task _searchLyricTask;
+
+    /// <summary>
+    /// Call lyric provider to check lyric
+    /// </summary>
+    public void SetLyricSynchronously()
+    {
+        if (!LyricWindow.IsVisible)
+            return;
+
+        Task.Run(async () =>
+        {
+            if (_searchLyricTask?.IsTaskBusy() == true)
+            {
+                await _searchLyricTask;
+            }
+
+            _searchLyricTask = Task.Run(async () =>
+            {
+                if (!_controller.IsPlayerReady) return;
+
+                var lyricInst = Service.Get<LyricsService>();
+                var meta = _controller.PlayList.CurrentInfo.OsuFile.Metadata;
+                MetaString metaArtist = meta.ArtistMeta;
+                MetaString metaTitle = meta.TitleMeta;
+                var lyric = await lyricInst.LyricProvider.GetLyricAsync(metaArtist.ToUnicodeString(),
+                    metaTitle.ToUnicodeString(), (int)_controller.Player.Duration.TotalMilliseconds);
+                LyricWindow.SetNewLyric(lyric, metaArtist, metaTitle);
+                LyricWindow.StartWork();
+            });
+        });
+    }
+
+    private ValueTask PlayerService_LoadMetaFinished(PlayerService.PlayItemLoadingContext arg)
+    {
+        throw new NotImplementedException();
     }
 
     private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

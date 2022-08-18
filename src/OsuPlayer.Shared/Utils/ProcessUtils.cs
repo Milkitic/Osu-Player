@@ -2,7 +2,7 @@
 
 namespace Milki.OsuPlayer.Shared.Utils;
 
-public class ProcessUtils
+public static class ProcessUtils
 {
     public const int SW_HIDE = 0;
     public const int SW_SHOW = 5;
@@ -13,4 +13,7 @@ public class ProcessUtils
 
     [DllImport("user32.dll")]
     public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
 }
