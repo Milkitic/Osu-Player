@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Anotar.NLog;
 using Coosu.Beatmap;
-using Coosu.Database.DataTypes;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Observable;
@@ -90,7 +89,7 @@ public class OsuFileScanningService
 
     private async Task ScanPrivateFolderAsync(DirectoryInfo privateFolder)
     {
-        var beatmaps = new List<Beatmap>();
+        var beatmaps = new List<PlayItemDetail>();
         foreach (var fileInfo in privateFolder.EnumerateFiles("*.osu", SearchOption.TopDirectoryOnly))
         {
             if (_scanCts.IsCancellationRequested)

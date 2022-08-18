@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Milki.OsuPlayer.Audio;
-using Milki.OsuPlayer.Data.Models;
+﻿using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Services;
 
 namespace Milki.OsuPlayer.Utils

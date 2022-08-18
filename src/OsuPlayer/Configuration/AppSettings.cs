@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Milki.Extensions.Configuration;
 
 namespace Milki.OsuPlayer.Configuration;

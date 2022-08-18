@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using ManagedBass;
 using NAudio.FileFormats.Mp3;
 using NAudio.Wave;

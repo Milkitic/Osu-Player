@@ -1,14 +1,9 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Anotar.NLog;
-using Coosu.Beatmap;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Milki.Extensions.Configuration;

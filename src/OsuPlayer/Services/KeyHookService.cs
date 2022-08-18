@@ -1,6 +1,4 @@
 ﻿#nullable enable
-using System;
-using System.Collections.Generic;
 using Milki.Extensions.MouseKeyHook;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Shared.Models;

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using Milki.Extensions.MixPlayer.Devices;
 using Milki.OsuPlayer.Configuration;

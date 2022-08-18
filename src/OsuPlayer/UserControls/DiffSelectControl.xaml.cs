@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milki.OsuPlayer.Data.Models;
-using Milki.OsuPlayer.Presentation.Interaction;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 
 namespace Milki.OsuPlayer.UserControls

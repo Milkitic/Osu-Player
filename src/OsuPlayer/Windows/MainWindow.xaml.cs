@@ -3,7 +3,6 @@ using Anotar.NLog;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Audio;
-using Milki.OsuPlayer.Audio.Mixing;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Services;

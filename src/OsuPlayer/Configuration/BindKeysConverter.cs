@@ -1,5 +1,4 @@
-﻿using System;
-using Milki.OsuPlayer.Shared.Models;
+﻿using Milki.OsuPlayer.Shared.Models;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;

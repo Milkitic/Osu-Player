@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Milki.OsuPlayer.Audio.Playlist;
-using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Pages;
-using Milki.OsuPlayer.Presentation;
-using Milki.OsuPlayer.Presentation.Interaction;
-using Milki.OsuPlayer.Shared.Dependency;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.Windows;
 

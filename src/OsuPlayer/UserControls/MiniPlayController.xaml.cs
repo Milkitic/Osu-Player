@@ -1,13 +1,8 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
-using Milki.OsuPlayer.Audio.Playlist;
-using Milki.OsuPlayer.Common;
 using Milki.OsuPlayer.Data;
-using Milki.OsuPlayer.Presentation.Interaction;
-using Milki.OsuPlayer.Shared.Dependency;
 
 namespace Milki.OsuPlayer.UserControls
 {

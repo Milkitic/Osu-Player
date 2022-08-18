@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Threading;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using Milki.OsuPlayer.Common;
 
 namespace Milki.OsuPlayer.UiComponents.NotificationComponent
 {

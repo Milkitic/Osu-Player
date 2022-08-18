@@ -12,7 +12,7 @@ public class AsyncLock : IDisposable
     private readonly AsyncLockImpl _asyncLockImpl;
     private readonly SemaphoreSlim _semaphoreSlim;
     private readonly Task<IDisposable> _completeTask;
-    
+
     public AsyncLock()
     {
         _semaphoreSlim = new SemaphoreSlim(1, 1);

@@ -14,7 +14,7 @@ namespace Milki.OsuPlayer.Pages
         public FindPage()
         {
             InitializeComponent();
-            _mainWindow = (MainWindow)Application.Current.MainWindow; 
+            _mainWindow = (MainWindow)Application.Current.MainWindow;
         }
     }
 }

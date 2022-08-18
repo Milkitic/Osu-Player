@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
-using Milki.Extensions.MixPlayer.Devices;
+﻿using Milki.Extensions.MixPlayer.Devices;
 using Milki.OsuPlayer.Shared.Models;
 
 namespace Milki.OsuPlayer.Configuration;

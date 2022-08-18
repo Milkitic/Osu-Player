@@ -8,7 +8,6 @@ using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.Devices;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.OsuPlayer.Audio;
-using Milki.OsuPlayer.Audio.Mixing;
 
 namespace CorePlayerTest
 {

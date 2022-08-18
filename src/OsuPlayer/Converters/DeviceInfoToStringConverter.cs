@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows.Data;
 using Milki.Extensions.MixPlayer.Devices;
 using Milki.OsuPlayer.Utils;
