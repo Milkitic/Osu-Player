@@ -11,6 +11,8 @@
     xmlns:textBoxComponent="clr-namespace:Milki.OsuPlayer.UiComponents.TextBoxComponent"
     xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
     Title="CollectionPage"
+    d:DataContext="{d:DesignInstance Type=viewModels:CollectionPageViewModel,
+                                     IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     Focusable="False"
@@ -101,9 +103,6 @@
             </MenuItem>
         </ContextMenu>
     </Page.Resources>
-    <Page.DataContext>
-        <viewModels:CollectionPageViewModel />
-    </Page.DataContext>
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem
@@ -288,7 +287,7 @@
                                     x:Name="ListCount"
                                     Margin="0,-5,0,0"
                                     HorizontalAlignment="Right"
-                                    Content="{Binding DataList.Count}"
+                                    Content="{Binding PlayItems.Count}"
                                     FontWeight="Bold"
                                     Foreground="#7A7A7A" />
                             </StackPanel>
@@ -325,7 +324,7 @@
                                     Padding="3,0"
                                     Background="Transparent"
                                     BorderThickness="0"
-                                    ItemsSource="{Binding DataList, Mode=OneWay}">
+                                    ItemsSource="{Binding PlayItems, Mode=OneWay}">
                                     <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <panelComponent:VirtualizingGalleryWrapPanel

@@ -148,7 +148,7 @@
                         Grid.Row="1"
                         BorderThickness="0"
                         ItemContainerStyle="{StaticResource EventGridViewItem}"
-                        ItemsSource="{Binding Beatmaps, Mode=OneWay}">
+                        ItemsSource="{Binding PlayItems, Mode=OneWay}">
                         <!--<ListView.ContextMenu>
                             <ContextMenu Style="{DynamicResource DefaultContextMenu}">
                                 <MenuItem

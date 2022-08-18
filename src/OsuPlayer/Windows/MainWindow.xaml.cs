@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using Coosu.Beatmap;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
-using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
@@ -444,14 +438,4 @@ public partial class MainWindow : WindowEx
     }
 
     #endregion Events
-
-    /// <summary>
-    /// Update collections in the navigation bar.
-    /// </summary>
-    private async ValueTask UpdatePlayLists()
-    {
-        await using var dbContext = new ApplicationDbContext();
-        var list = await dbContext.GetPlayListsAsync();
-        _viewModel.PlayLists = new ObservableCollection<PlayList>(list);
-    }
 }

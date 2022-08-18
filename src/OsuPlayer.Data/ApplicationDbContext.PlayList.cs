@@ -149,6 +149,44 @@ public sealed partial class ApplicationDbContext
         await this.BulkSaveChangesAsync();
     }
 
+    public async Task<PaginationQueryResult<LoosePlayItem>> GetRecentListFull(
+        int page = 0,
+        int countPerPage = 50)
+    {
+        var query =
+            from looseItem in RecentPlay
+            join playItem in PlayItems on looseItem.PlayItemId equals playItem.Id into newCollection
+            from playItem in newCollection.DefaultIfEmpty()
+            select new
+            {
+                looseItem,
+                playItem,
+            };
+        //var asyncEnumerable = RecentPlay
+        //    .AsNoTracking()
+        //    .OrderByDescending(k => k.LastPlay)
+        //    .Join(PlayItems, k => k.PlayItemId, k => k.Id, (looseItem, playItem) => new
+        //    {
+        //        looseItem,
+        //        playItem
+        //    })
+        //    .AsAsyncEnumerable();
+        var buffer = new List<LoosePlayItem>();
+        await foreach (var item in query.AsAsyncEnumerable())
+        {
+            item.looseItem.PlayItem = item.playItem;
+            buffer.Add(item.looseItem);
+        }
+
+        var count = buffer.Count;
+        var result = buffer
+            .Skip(page * countPerPage)
+            .Take(countPerPage)
+            .ToArray();
+
+        return new PaginationQueryResult<LoosePlayItem>(result, count);
+    }
+
     public async Task<PaginationQueryResult<LoosePlayItem>> GetRecentList(
         int page = 0,
         int countPerPage = 50)
@@ -165,6 +203,12 @@ public sealed partial class ApplicationDbContext
             .ToArray();
 
         return new PaginationQueryResult<LoosePlayItem>(result, count);
+    }
+
+    public async Task ClearRecentList()
+    {
+        RecentPlay.RemoveRange(RecentPlay);
+        await SaveChangesAsync();
     }
 
     public async ValueTask AddOrUpdateBeatmapToRecentPlayAsync(PlayItem playItem, DateTime playTime)

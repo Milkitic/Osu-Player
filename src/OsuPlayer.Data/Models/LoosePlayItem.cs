@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace Milki.OsuPlayer.Data.Models;
@@ -21,6 +22,12 @@ public sealed class LoosePlayItem
     public string Version { get; set; } = null!;
 
     public int? PlayItemId { get; set; }
+
+    [NotMapped]
+    public PlayItem? PlayItem { get; set; }
+
+    [NotMapped]
+    public bool IsItemLost => PlayItem == null;
 
     public void UpdateFromPlayItem(PlayItem playItem, DateTime playTime)
     {

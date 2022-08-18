@@ -6,13 +6,13 @@ namespace Milki.OsuPlayer.ViewModels;
 
 public class CollectionPageViewModel : VmBase
 {
-    private ObservableCollection<PlayItem> _dataList;
+    private ObservableCollection<PlayItem> _playItems;
     private PlayList _playList;
 
-    public ObservableCollection<PlayItem> DataList
+    public ObservableCollection<PlayItem> PlayItems
     {
-        get => _dataList;
-        set => this.RaiseAndSetIfChanged(ref _dataList, value);
+        get => _playItems;
+        set => this.RaiseAndSetIfChanged(ref _playItems, value);
     }
 
     public PlayList PlayList

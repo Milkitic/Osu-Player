@@ -1,210 +1,205 @@
 ﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using Milki.OsuPlayer.Common;
+using Microsoft.Extensions.DependencyInjection;
+using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
-using Milki.OsuPlayer.Presentation;
-using Milki.OsuPlayer.Presentation.Interaction;
-using Milki.OsuPlayer.Presentation.ObjectModel;
-using Milki.OsuPlayer.Shared.Dependency;
-using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milki.OsuPlayer.UiComponents.NotificationComponent;
-using Milki.OsuPlayer.UserControls;
+using Milki.OsuPlayer.Services;
+using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.Utils;
-using Milki.OsuPlayer.Windows;
+using Milki.OsuPlayer.Wpf;
 
-namespace Milki.OsuPlayer.Pages
+namespace Milki.OsuPlayer.Pages;
+
+public class RecentPlayPageVm : VmBase
 {
-    public class RecentPlayPageVm : VmBase
+    private ObservableCollection<LoosePlayItem> _playItems;
+
+    public ObservableCollection<LoosePlayItem> PlayItems
     {
-        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
-        private ObservableCollection<OrderedModel<Beatmap>> _beatmaps;
+        get => _playItems;
+        set => this.RaiseAndSetIfChanged(ref _playItems, value);
+    }
 
-        public ObservableCollection<OrderedModel<Beatmap>> Beatmaps
+    //public ICommand SearchByConditionCommand
+    //{
+    //    get
+    //    {
+    //        return new DelegateCommand<string>(keyword =>
+    //        {
+    //            WindowEx.GetCurrentFirst<MainWindow>()
+    //                .SwitchSearch
+    //                .CheckAndAction(page => ((SearchPage)page).Search(keyword));
+    //        });
+    //    }
+    //}
+
+    //public ICommand OpenSourceFolderCommand
+    //{
+    //    get
+    //    {
+    //        return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
+    //        {
+    //            var folder = orderedModel.Model.GetFolder(out _, out _);
+    //            if (!Directory.Exists(folder))
+    //            {
+    //                Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
+    //                return;
+    //            }
+
+    //            Process.Start(folder);
+    //        });
+    //    }
+    //}
+
+    //public ICommand OpenScorePageCommand
+    //{
+    //    get
+    //    {
+    //        return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
+    //        {
+    //            Process.Start($"https://osu.ppy.sh/s/{orderedModel.Model.BeatmapSetId}");
+    //        });
+    //    }
+    //}
+
+    //public ICommand SaveCollectionCommand
+    //{
+    //    get
+    //    {
+    //        return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
+    //        {
+    //            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(orderedModel),
+    //                DialogOptionFactory.SelectCollectionOptions);
+    //        });
+    //    }
+    //}
+
+    //public ICommand ExportCommand
+    //{
+    //    get
+    //    {
+    //        return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
+    //        {
+    //            if (orderedModel == null) return;
+    //            ExportPage.QueueBeatmap(orderedModel);
+    //        });
+    //    }
+    //}
+
+    //public ICommand DirectPlayCommand
+    //{
+    //    get
+    //    {
+    //        return new DelegateCommand<OrderedModel<Beatmap>>(async orderedModel =>
+    //        {
+    //            if (orderedModel == null) return;
+    //            await _controller.PlayNewAsync(orderedModel);
+    //        });
+    //    }
+    //}
+
+    //public ICommand PlayCommand
+    //{
+    //    get
+    //    {
+    //        return new DelegateCommand<OrderedModel<Beatmap>>(async orderedModel =>
+    //        {
+    //            if (orderedModel == null) return;
+    //            await _controller.PlayNewAsync(orderedModel);
+    //        });
+    //    }
+    //}
+
+    //public ICommand RemoveCommand
+    //{
+    //    get
+    //    {
+    //        return new DelegateCommand<OrderedModel<Beatmap>>(async map =>
+    //        {
+    //            await using var appDbContext = new ApplicationDbContext();
+    //            await appDbContext.RemoveBeatmapFromRecent(map);
+    //            {
+    //                Beatmaps.Remove(map);
+    //            }
+    //            //await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
+    //        });
+    //    }
+    //}
+}
+
+/// <summary>
+/// RecentPlayPage.xaml 的交互逻辑
+/// </summary>
+public partial class RecentPlayPage : Page
+{
+    private readonly PlayerService _playerService;
+    private readonly PlayListService _playListService;
+    private readonly RecentPlayPageVm _viewModel;
+
+    public RecentPlayPage()
+    {
+        InitializeComponent();
+        _playerService = App.Current.ServiceProvider.GetService<PlayerService>();
+        _playListService = App.Current.ServiceProvider.GetService<PlayListService>();
+        DataContext = _viewModel = new RecentPlayPageVm();
+    }
+
+    private async void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        await UpdateList();
+
+        var item = _viewModel.PlayItems?.FirstOrDefault(k =>
+            k.PlayItem?.StandardizedPath == _playListService.GetCurrentPath());
+        if (item != null)
         {
-            get => _beatmaps;
-            set
-            {
-                _beatmaps = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public ICommand SearchByConditionCommand
-        {
-            get
-            {
-                return new DelegateCommand<string>(keyword =>
-                {
-                    WindowEx.GetCurrentFirst<MainWindow>()
-                        .SwitchSearch
-                        .CheckAndAction(page => ((SearchPage)page).Search(keyword));
-                });
-            }
-        }
-
-        public ICommand OpenSourceFolderCommand
-        {
-            get
-            {
-                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
-                {
-                    var folder = orderedModel.Model.GetFolder(out _, out _);
-                    if (!Directory.Exists(folder))
-                    {
-                        Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
-                        return;
-                    }
-
-                    Process.Start(folder);
-                });
-            }
-        }
-
-        public ICommand OpenScorePageCommand
-        {
-            get
-            {
-                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
-                {
-                    Process.Start($"https://osu.ppy.sh/s/{orderedModel.Model.BeatmapSetId}");
-                });
-            }
-        }
-
-        public ICommand SaveCollectionCommand
-        {
-            get
-            {
-                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
-                {
-                    FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(orderedModel),
-                        DialogOptionFactory.SelectCollectionOptions);
-                });
-            }
-        }
-
-        public ICommand ExportCommand
-        {
-            get
-            {
-                return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
-                {
-                    if (orderedModel == null) return;
-                    ExportPage.QueueBeatmap(orderedModel);
-                });
-            }
-        }
-
-        public ICommand DirectPlayCommand
-        {
-            get
-            {
-                return new DelegateCommand<OrderedModel<Beatmap>>(async orderedModel =>
-                {
-                    if (orderedModel == null) return;
-                    await _controller.PlayNewAsync(orderedModel);
-                });
-            }
-        }
-
-        public ICommand PlayCommand
-        {
-            get
-            {
-                return new DelegateCommand<OrderedModel<Beatmap>>(async orderedModel =>
-                {
-                    if (orderedModel == null) return;
-                    await _controller.PlayNewAsync(orderedModel);
-                });
-            }
-        }
-
-        public ICommand RemoveCommand
-        {
-            get
-            {
-                return new DelegateCommand<OrderedModel<Beatmap>>(async map =>
-                {
-                    await using var appDbContext = new ApplicationDbContext();
-                    await appDbContext.RemoveBeatmapFromRecent(map);
-                    {
-                        Beatmaps.Remove(map);
-                    }
-                    //await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
-                });
-            }
+            RecentList.SelectedItem = item;
         }
     }
 
-    /// <summary>
-    /// RecentPlayPage.xaml 的交互逻辑
-    /// </summary>
-    public partial class RecentPlayPage : Page
+    private void RecentListItem_MouseDoubleClick(object sender, RoutedEventArgs e)
     {
-        private readonly MainWindow _mainWindow;
-        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
-        private RecentPlayPageVm _viewModel;
+        PlaySelected();
+    }
 
-        public RecentPlayPage()
-        {
-            InitializeComponent();
-            _mainWindow = (MainWindow)Application.Current.MainWindow;
-            _viewModel = (RecentPlayPageVm)DataContext;
-        }
+    private async void BtnDelAll_Click(object sender, RoutedEventArgs e)
+    {
+        var result = MsgDialog.WarnOkCancel(I18NUtil.GetString("ui-ensureRemoveAll"),
+            App.Current.MainWindow?.Title);
+        if (!result) return;
 
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            await UpdateList();
-            var item = _viewModel.Beatmaps.FirstOrDefault(k =>
-                k.Model.Equals(_controller.PlayList.CurrentInfo?.Beatmap)
-            );
-            RecentList.SelectedItem = item;
-        }
+        await using var appDbContext = new ApplicationDbContext();
+        await appDbContext.ClearRecentList();
+        _viewModel.PlayItems.Clear();
+    }
 
-        private void RecentListItem_MouseDoubleClick(object sender, RoutedEventArgs e)
-        {
-            PlaySelected();
-        }
+    private async Task UpdateList()
+    {
+        await using var appDbContext = new ApplicationDbContext();
+        var queryResult = await appDbContext.GetRecentListFull();
+        // todo: pagination
+        _viewModel.PlayItems = new ObservableCollection<LoosePlayItem>(queryResult.Results);
+    }
 
-        private async void BtnDelAll_Click(object sender, RoutedEventArgs e)
-        {
-            var result = MessageBox.Show(_mainWindow, I18NUtil.GetString("ui-ensureRemoveAll"), _mainWindow.Title, MessageBoxButton.OKCancel,
-                MessageBoxImage.Exclamation);
-            if (result != MessageBoxResult.OK) return;
+    private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
+    {
+        await using var appDbContext = new ApplicationDbContext();
+        var paginationQueryResult = await appDbContext.GetRecentListFull(0, int.MaxValue);
+        if (paginationQueryResult.Results.Count == 0) return;
 
-            await using var appDbContext = new ApplicationDbContext();
-            await appDbContext.ClearRecent();
-            _viewModel.Beatmaps.Clear();
-        }
+        await FormUtils.ReplacePlayListAndPlayAll(
+            paginationQueryResult.Results.Where(k => !k.IsItemLost).Select(k => k.PlayItem!.StandardizedPath),
+            _playListService, _playerService);
+    }
 
-        private async Task UpdateList()
-        {
-            await using var appDbContext = new ApplicationDbContext();
-            var queryResult = await appDbContext.GetRecentList();
-            // todo: pagination
-            _viewModel.Beatmaps = new ObservableCollection<OrderedModel<Beatmap>>(queryResult.Collection.AsOrdered());
-        }
+    private async void PlaySelected()
+    {
+        var loosePlayItem = (LoosePlayItem)RecentList.SelectedItem;
+        if (loosePlayItem == null) return;
+        if (loosePlayItem.IsItemLost) return;
 
-        private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
-        {
-            await using var appDbContext = new ApplicationDbContext();
-            var paginationQueryResult = await appDbContext.GetRecentList(0, int.MaxValue);
-            await _controller.PlayList.SetSongListAsync(paginationQueryResult.Collection, true);
-        }
-
-        private async void PlaySelected()
-        {
-            var map = (Beatmap)RecentList.SelectedItem;
-            if (map == null) return;
-
-            await _controller.PlayNewAsync(map);
-        }
+        var standardizedPath = loosePlayItem.PlayItem!.StandardizedPath;
+        await _playerService.InitializeNewAsync(standardizedPath, true);
     }
 }
