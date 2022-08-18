@@ -3,6 +3,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
 using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Shared.Observable;
+using Milki.OsuPlayer.Wpf.Command;
 
 namespace Milki.OsuPlayer.UserControls
 {

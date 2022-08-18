@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Milki.OsuPlayer.Configuration;
+using Milki.OsuPlayer.Wpf.Dependency;
 
 namespace Milki.OsuPlayer.UiComponents.RadioButtonComponent
 {
@@ -54,7 +54,7 @@ namespace Milki.OsuPlayer.UiComponents.RadioButtonComponent
                     if (ui != null)
                     {
                         Storyboard.SetTarget(Da2, ui);
-                        if (AppSettings.Default.Interface.MinimalMode)
+                        if (SharedVm.Default.IsMinimalMode)
                         {
                             OnSbOnCompleted(null, null);
                         }

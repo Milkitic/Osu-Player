@@ -13,6 +13,7 @@ public class SharedVm : SingletonVm<SharedVm>
     private NavigationType _checkedNavigationType;
     private bool _isLyricEnabled;
     private bool _isLyricWindowLocked;
+    private bool _isMinimalMode;
 
     public bool EnableVideo
     {
@@ -48,6 +49,12 @@ public class SharedVm : SingletonVm<SharedVm>
     {
         get => _isLyricWindowLocked;
         set => this.RaiseAndSetIfChanged(ref _isLyricWindowLocked, value);
+    }
+
+    public bool IsMinimalMode
+    {
+        get => _isMinimalMode;
+        set => this.RaiseAndSetIfChanged(ref _isMinimalMode, value);
     }
 
     public AppSettings AppSettings => AppSettings.Default;
