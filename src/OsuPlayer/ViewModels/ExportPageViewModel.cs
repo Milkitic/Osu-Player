@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
 using Anotar.NLog;
-using Coosu.Database.DataTypes;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Pages;
@@ -17,10 +16,10 @@ namespace Milki.OsuPlayer.ViewModels;
 public class ExportPageViewModel : VmBase
 {
     private string _exportPath;
-    private ObservableCollection<OrderedModel<ExportItem>> _exportList;
-    private List<OrderedModel<ExportItem>> _selectedItems;
+    private ObservableCollection<ExportItem> _exportList;
+    private List<ExportItem> _selectedItems;
 
-    public ObservableCollection<OrderedModel<ExportItem>> ExportList
+    public ObservableCollection<ExportItem> ExportList
     {
         get => _exportList;
         set
@@ -30,7 +29,7 @@ public class ExportPageViewModel : VmBase
         }
     }
 
-    public List<OrderedModel<ExportItem>> SelectedItems
+    public List<ExportItem> SelectedItems
     {
         get => _selectedItems;
         set
@@ -80,8 +79,8 @@ public class ExportPageViewModel : VmBase
                             Notification.Push(I18NUtil.GetString("err-dirNotFound"), I18NUtil.GetString("text-error"));
                         }
                         break;
-                    case OrderedModel<Beatmap> orderedModel:
-                        Process.Start("Explorer", "/select," + orderedModel.Model.ExportItem?.ExportPath);
+                    case ExportItem orderedModel:
+                        Process.Start("Explorer", "/select," + orderedModel?.ExportPath);
                         // todo: include
                         break;
                     default:
@@ -98,9 +97,9 @@ public class ExportPageViewModel : VmBase
             return new DelegateCommand(async obj =>
             {
                 if (SelectedItems == null) return;
-                foreach (var orderedModel in SelectedItems)
+                foreach (var exportItem in SelectedItems)
                 {
-                    ExportPage.QueueBeatmap(orderedModel.Model.Beatmap);
+                    ExportPage.QueueBeatmap(exportItem.Beatmap);
                 }
 
                 while (ExportPage.IsTaskBusy)
@@ -123,9 +122,9 @@ public class ExportPageViewModel : VmBase
                 if (SelectedItems == null) return;
                 await using var dbContext = new ApplicationDbContext();
 
-                foreach (var orderedModel in SelectedItems)
+                foreach (var exportItem in SelectedItems)
                 {
-                    var export = orderedModel.Model;
+                    var export = exportItem;
                     if (File.Exists(export.ExportPath))
                     {
                         File.Delete(export.ExportPath);
@@ -145,7 +144,7 @@ public class ExportPageViewModel : VmBase
     {
         await using var dbContext = new ApplicationDbContext();
         var paginationQueryResult = await dbContext.GetExportList();
-        var exports = paginationQueryResult.Collection;
+        var exports = paginationQueryResult.Results;
         foreach (var export in exports)
         {
             var map = export.Beatmap;
@@ -169,6 +168,6 @@ public class ExportPageViewModel : VmBase
             }
         }
 
-        ExportList = new ObservableCollection<OrderedModel<ExportItem>>(exports.AsOrdered());
+        ExportList = new ObservableCollection<ExportItem>(exports);
     }
 }

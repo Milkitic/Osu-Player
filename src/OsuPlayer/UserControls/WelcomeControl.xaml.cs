@@ -1,16 +1,20 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using Anotar.NLog;
+using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Configuration;
+using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.UiComponents.NotificationComponent;
+using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Wpf.Command;
 
 namespace Milki.OsuPlayer.UserControls;
 
 public class WelcomeControlVm : VmBase
 {
-
     private bool _guideSyncing;
     private bool _guideSelectedDb;
     private bool _showWelcome;
@@ -43,6 +47,7 @@ public class WelcomeControlVm : VmBase
         {
             return new DelegateCommand(async arg =>
             {
+                var syncService = ServiceProviders.Default.GetService<BeatmapSyncService>()!;
                 var result = CommonUtils.BrowseDb(out var path);
                 if (!result.HasValue || !result.Value)
                 {
@@ -51,6 +56,24 @@ public class WelcomeControlVm : VmBase
                 }
 
                 bool isSuccess = false;
+                GuideSyncing = true;
+                try
+                {
+                    await syncService.SyncOsuDbAsync(path);
+                    GuideSelectedDb = true;
+                    isSuccess = true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(App.Current.MainWindow!,
+                        $"{I18NUtil.GetString("err-osudb-sync")}: {path}\r\n{ex.Message}",
+                        App.Current.MainWindow!.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    GuideSyncing = false;
+                }
+
                 try
                 {
                     GuideSyncing = true;
@@ -63,7 +86,7 @@ public class WelcomeControlVm : VmBase
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex, "Error while syncing osu!db: {0}", path);
+                    LogTo.ErrorException($"Error while syncing osu!db: {path}", ex);
                     Notification.Push("Error while syncing osu!db: " + path + "\r\n" + ex.Message);
                     GuideSelectedDb = false;
                 }

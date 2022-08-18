@@ -148,20 +148,10 @@ public partial class GeneralPage : Page
     {
         try
         {
-            await _syncService.SynchronizeManaged(_syncService.EnumeratePlayItemDetailsFormDb(path));
-
-            AppSettings.Default.GeneralSection.DbPath = path;
-            AppSettings.SaveDefault();
-
-            await using var dbContext = new ApplicationDbContext();
-            var softwareState = await dbContext.GetSoftwareState();
-
-            softwareState.LastSync = DateTime.Now;
-            await dbContext.UpdateAndSaveChangesAsync(softwareState, k => k.LastSync);
+            await _syncService.SyncOsuDbAsync(path);
         }
         catch (Exception ex)
         {
-            LogTo.ErrorException($"Error while syncing osu!db: {path}", ex);
             MessageBox.Show(_configWindow, $"{I18NUtil.GetString("err-osudb-sync")}: {path}\r\n{ex.Message}",
                 _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
         }

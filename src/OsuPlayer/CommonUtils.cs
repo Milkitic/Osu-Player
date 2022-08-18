@@ -29,6 +29,28 @@ public static class CommonUtils
         return result;
     }
 
+    public static async Task SyncOsuDbAsync(this BeatmapSyncService syncService, string path)
+    {
+        try
+        {
+            await syncService.SynchronizeManaged(syncService.EnumeratePlayItemDetailsFormDb(path));
+
+            AppSettings.Default.GeneralSection.DbPath = path;
+            AppSettings.SaveDefault();
+
+            await using var dbContext = new ApplicationDbContext();
+            var softwareState = await dbContext.GetSoftwareState();
+
+            softwareState.LastSync = DateTime.Now;
+            await dbContext.UpdateAndSaveChangesAsync(softwareState, k => k.LastSync);
+        }
+        catch (Exception ex)
+        {
+            LogTo.ErrorException($"Error while syncing osu!db: {path}", ex);
+            throw;
+        }
+    }
+
     public static async Task<string?> GetThumbByBeatmapDbId(PlayItem playItem)
     {
         if (playItem.PlayItemAsset?.ThumbPath != null && File.Exists(playItem.PlayItemAsset.ThumbPath))
