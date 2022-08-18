@@ -1,15 +1,14 @@
-﻿using Milki.OsuPlayer.Presentation.Interaction;
+﻿using Milki.OsuPlayer.Shared.Observable;
 
-namespace Milki.OsuPlayer.ViewModels
+namespace Milki.OsuPlayer.ViewModels;
+
+public class ListPageViewModel : VmBase
 {
-    public class ListPageViewModel : VmBase
+    public ListPageViewModel(int index)
     {
-        public ListPageViewModel(int index)
-        {
-            Index = index;
-        }
-
-        public int Index { get; set; }
-        public bool IsActivated { get; set; }
+        Index = index;
     }
+
+    public int Index { get; set; }
+    public bool IsActivated { get; set; }
 }

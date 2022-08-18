@@ -1,20 +1,19 @@
-﻿using Milki.OsuPlayer.Presentation;
+﻿using Milki.OsuPlayer.Wpf;
 
-namespace Milki.OsuPlayer.Windows
+namespace Milki.OsuPlayer.Windows;
+
+/// <summary>
+/// ConfigWindow.xaml 的交互逻辑
+/// </summary>
+public partial class ConfigWindow : WindowEx
 {
-    /// <summary>
-    /// ConfigWindow.xaml 的交互逻辑
-    /// </summary>
-    public partial class ConfigWindow : WindowEx
+    public ConfigWindow()
     {
-        public ConfigWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void Window_Shown(object sender, System.EventArgs e)
-        {
-            SwitchGeneral.IsChecked = true;
-        }
+    private void Window_Shown(object sender, System.EventArgs e)
+    {
+        SwitchGeneral.IsChecked = true;
     }
 }

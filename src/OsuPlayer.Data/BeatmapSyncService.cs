@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Anotar.NLog;
+using Coosu.Database;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Milki.OsuPlayer.Data.Internal;
@@ -15,6 +16,13 @@ public class BeatmapSyncService
     public BeatmapSyncService(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
+    }
+
+    public IEnumerable<PlayItemDetail> EnumeratePlayItemDetailsFormDb(string path)
+    {
+        using var reader = new OsuDbReader(path);
+        var beatmaps = reader.EnumerateDbModels();
+        return beatmaps;
     }
 
     public async ValueTask SynchronizeManaged(IEnumerable<PlayItemDetail> fromOsuDb)

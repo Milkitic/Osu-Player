@@ -1,31 +1,31 @@
 ﻿using System.Diagnostics;
 using System.Windows;
-using Milki.OsuPlayer.Audio.Playlist;
+using Milki.OsuPlayer.Data.Models;
 
-namespace Milki.OsuPlayer.Windows
+namespace Milki.OsuPlayer.Windows;
+
+/// <summary>
+/// BeatmapInfoWindow.xaml 的交互逻辑
+/// </summary>
+public partial class BeatmapInfoWindow : Window
 {
-    /// <summary>
-    /// BeatmapInfoWindow.xaml 的交互逻辑
-    /// </summary>
-    public partial class BeatmapInfoWindow : Window
+    private readonly PlayItemDetail _info;
+
+    public BeatmapInfoWindow(PlayItemDetail info)
     {
-        private BeatmapContext _info;
+        _info = info;
 
-        public BeatmapInfoWindow(BeatmapContext info)
-        {
-            InitializeComponent();
-            DataContext = info;
-            _info = info;
-        }
+        InitializeComponent();
+        DataContext = info;
+    }
 
-        private void SLink_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://osu.ppy.sh/s/" + _info.BeatmapDetail.Metadata.BeatmapsetId);
-        }
+    private void SLink_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start("https://osu.ppy.sh/s/" + _info.BeatmapSetId);
+    }
 
-        private void BLink_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://osu.ppy.sh/b/" + _info.BeatmapDetail.Metadata.BeatmapId);
-        }
+    private void BLink_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start("https://osu.ppy.sh/b/" + _info.BeatmapId);
     }
 }

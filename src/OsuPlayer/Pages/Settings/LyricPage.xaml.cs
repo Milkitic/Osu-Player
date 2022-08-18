@@ -1,10 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Media.Lyric;
-using Milki.OsuPlayer.Presentation;
 using Milki.OsuPlayer.Services;
-using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.Shared.Models;
 using Milki.OsuPlayer.Windows;
 
 namespace Milki.OsuPlayer.Pages.Settings
@@ -18,7 +16,7 @@ namespace Milki.OsuPlayer.Pages.Settings
         private bool _loaded;
         public LyricPage()
         {
-            _mainWindow = WindowEx.GetCurrentFirst<MainWindow>();
+            _mainWindow = (MainWindow)App.Current.MainWindow;
             InitializeComponent();
         }
 
@@ -49,11 +47,11 @@ namespace Milki.OsuPlayer.Pages.Settings
             if (!_loaded) return;
             if (EnableLyric.IsChecked.HasValue && EnableLyric.IsChecked.Value)
             {
-                _mainWindow.LyricWindow.Show();
+                SharedVm.Default.IsLyricWindowEnabled = true;
             }
             else
             {
-                _mainWindow.LyricWindow.Hide();
+                SharedVm.Default.IsLyricWindowEnabled = false;
             }
         }
 

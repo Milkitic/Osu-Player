@@ -1,41 +1,28 @@
-﻿using Milki.OsuPlayer.Presentation.Interaction;
+﻿using Milki.OsuPlayer.Shared.Observable;
 
-namespace Milki.OsuPlayer.ViewModels
+namespace Milki.OsuPlayer.ViewModels;
+
+public class EditCollectionPageViewModel : VmBase
 {
-    public class EditCollectionPageViewModel : VmBase
+    private string _name;
+    private string _description;
+    private string _coverPath;
+
+    public string Name
     {
-        private string _name;
-        private string _description;
-        private string _coverPath;
+        get => _name;
+        set => this.RaiseAndSetIfChanged(ref _name, value);
+    }
 
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                _name = value;
-                OnPropertyChanged();
-            }
-        }
+    public string Description
+    {
+        get => _description;
+        set => this.RaiseAndSetIfChanged(ref _description, value);
+    }
 
-        public string Description
-        {
-            get => _description;
-            set
-            {
-                _description = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string CoverPath
-        {
-            get => _coverPath;
-            set
-            {
-                _coverPath = value;
-                OnPropertyChanged();
-            }
-        }
+    public string CoverPath
+    {
+        get => _coverPath;
+        set => this.RaiseAndSetIfChanged(ref _coverPath, value);
     }
 }

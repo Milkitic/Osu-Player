@@ -160,4 +160,11 @@ public sealed partial class ApplicationDbContext
         Update(item.PlayItemAsset);
         await SaveChangesAsync();
     }
+
+
+    public async Task RemoveFolderAll()
+    {
+        PlayItems.RemoveRange(PlayItems.Where(k => !k.StandardizedPath.StartsWith("./")));
+        await SaveChangesAsync();
+    }
 }

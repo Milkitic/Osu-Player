@@ -2,15 +2,17 @@
     x:Class="Milki.OsuPlayer.Windows.BeatmapInfoWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:Milki.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
-    xmlns:playlist="clr-namespace:Milki.OsuPlayer.Media.Audio.Playlist;assembly=OsuPlayer.Media.Audio"
-    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
     Title="当前歌曲信息"
     Width="400"
     Height="340"
     MaxWidth="400"
+    d:DataContext="{d:DesignInstance models:PlayItemDetail,
+                                     IsDesignTimeCreatable=False}"
     Background="#323232"
     FontFamily="{StaticResource SspRegular}"
     FontSize="13"
@@ -27,9 +29,6 @@
             ResizeBorderThickness="1"
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
-    <d:Object.DataContext>
-        <playlist:BeatmapContext />
-    </d:Object.DataContext>
     <Window.Resources>
         <system:Double x:Key="LabelWidth">110</system:Double>
         <Style x:Key="ReadOnlyTextBox" TargetType="TextBox">

@@ -1,16 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Threading;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using Milki.Extensions.MixPlayer;
-using Milki.OsuPlayer.Audio.Playlist;
-using Milki.OsuPlayer.Common;
-using Milki.OsuPlayer.Presentation.Interaction;
-using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.Audio;
+using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.UiComponents.NotificationComponent;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Windows;
@@ -60,8 +56,6 @@ namespace Milki.OsuPlayer.UserControls
         private bool _scrollLock;
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
         private IWavePlayer _device;
-
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public PlayController()
         {

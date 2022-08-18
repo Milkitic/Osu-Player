@@ -38,7 +38,7 @@ namespace Milki.OsuPlayer.UserControls
         private async void SelectCollectionControl_OnInitialized(object? sender, EventArgs e)
         {
             _viewModel = (SelectCollectionPageViewModel)DataContext;
-            _viewModel.DataList = _beatmaps;
+            _viewModel.PlayItems = _beatmaps;
             await RefreshList();
             _overlay = FrontDialogOverlay.Default.GetOrCreateSubOverlay();
         }
@@ -64,7 +64,7 @@ namespace Milki.OsuPlayer.UserControls
         private async Task RefreshList()
         {
             await using var dbContext = new ApplicationDbContext();
-            _viewModel.Collections = new ObservableCollection<Collection>(await dbContext.GetCollections());
+            _viewModel.PlayLists = new ObservableCollection<Collection>(await dbContext.GetCollections());
         }
 
         public static async Task<bool> AddToCollectionAsync([NotNull] Collection col, IList<Beatmap> beatmaps)

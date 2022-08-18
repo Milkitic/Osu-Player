@@ -62,7 +62,7 @@
             Margin="0,0,1,0"
             Background="Transparent"
             BorderThickness="0"
-            ItemsSource="{Binding Collections, Mode=OneWay}">
+            ItemsSource="{Binding PlayLists, Mode=OneWay}">
             <ListView.Resources>
                 <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListViewItem}">
                     <StackPanel Orientation="Vertical">
@@ -75,7 +75,7 @@
                             BorderThickness="0"
                             Click="BtnClose_Click"
                             Command="{Binding SelectCommand}"
-                            CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.DataList}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.PlayItems}"
                             CornerRadius="0">
                             <Grid HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>

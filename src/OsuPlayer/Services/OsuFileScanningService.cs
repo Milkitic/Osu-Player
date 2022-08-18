@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.IO;
+using Anotar.NLog;
 using Coosu.Beatmap;
+using Coosu.Database.DataTypes;
+using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Observable;
 
 namespace Milki.OsuPlayer.Services;
@@ -28,8 +28,6 @@ public class OsuFileScanningService
         }
     }
 
-    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
     public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();
     private CancellationTokenSource _scanCts;
 
@@ -47,7 +45,7 @@ public class OsuFileScanningService
 
         _scanCts = new CancellationTokenSource();
         await using var dbContext = new ApplicationDbContext();
-        await dbContext.RemoveLocalAll();
+        await dbContext.RemoveFolderAll();
         var dirInfo = new DirectoryInfo(path);
         if (dirInfo.Exists)
         {
@@ -117,12 +115,12 @@ public class OsuFileScanningService
                 //    continue;
                 //}
 
-                var beatmap = GetBeatmapObj(osuFile, fileInfo);
+                var beatmap = GetPlayItemByOsuFile(osuFile, fileInfo);
                 beatmaps.Add(beatmap);
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Error during scanning file, ignored {0}", fileInfo.FullName);
+                LogTo.ErrorException($"Error during scanning file, ignored {fileInfo.FullName}", ex);
             }
         }
 
@@ -133,18 +131,18 @@ public class OsuFileScanningService
         }
         catch (Exception ex)
         {
-            Logger.Error(ex);
+            LogTo.ErrorException("", ex);
             throw;
         }
     }
 
-    private Beatmap GetBeatmapObj(LocalOsuFile osuFile, FileInfo fileInfo)
+    private static PlayItemDetail GetPlayItemByOsuFile(LocalOsuFile osuFile, FileInfo fileInfo)
     {
-        var beatmap = BeatmapConvertExtension.ParseFromOSharp(osuFile);
-        beatmap.BeatmapFileName = fileInfo.Name;
-        beatmap.LastModifiedTime = fileInfo.LastWriteTime;
-        beatmap.FolderNameOrPath = fileInfo.Directory?.Name;
-        beatmap.InOwnDb = true;
-        return beatmap;
+        var playItem = BeatmapConvertExtension.ParseFromOSharp(osuFile);
+        playItem.BeatmapFileName = fileInfo.Name;
+        playItem.LastModifiedTime = fileInfo.LastWriteTime;
+        playItem.FolderNameOrPath = fileInfo.Directory?.Name;
+        playItem.InOwnDb = true;
+        return playItem;
     }
 }

@@ -20,18 +20,17 @@ public partial class GeneralPage : Page
 {
     private readonly ConfigWindow _configWindow;
     private readonly BeatmapSyncService _syncService;
+    private readonly OsuFileScanningService _osuFileScanningService;
 
     public GeneralPage()
     {
         _configWindow = App.Current.Windows.OfType<ConfigWindow>().First();
         _syncService = ServiceProviders.Default.GetService<BeatmapSyncService>();
+        _osuFileScanningService = ServiceProviders.Default.GetService<OsuFileScanningService>()!;
         InitializeComponent();
 
-        ScannerViewModel = ServiceProviders.Default.GetService<OsuFileScanningService>()!.ViewModel;
-        DataContext = ScannerViewModel;
+        DataContext = _osuFileScanningService.ViewModel;
     }
-
-    private OsuFileScanningService.FileScannerViewModel ScannerViewModel { get; }
 
     private void RunOnStartup_CheckChanged(object sender, RoutedEventArgs e)
     {
@@ -77,9 +76,13 @@ public partial class GeneralPage : Page
     private void Radio_CheckChanged(object sender, RoutedEventArgs e)
     {
         if (RadioExit.IsChecked.HasValue && RadioExit.IsChecked.Value)
+        {
             AppSettings.Default.GeneralSection.ExitWhenClosed = true;
+        }
         else if (RadioMinimum.IsChecked.HasValue && RadioMinimum.IsChecked.Value)
+        {
             AppSettings.Default.GeneralSection.ExitWhenClosed = false;
+        }
 
         AsDefault.IsChecked = true;
         AppSettings.SaveDefault();
@@ -93,21 +96,8 @@ public partial class GeneralPage : Page
             return;
         }
 
-        try
-        {
-
-
-            await _syncService.SyncOsuDbAsync(path, false);
-            TbDbPath.Text = path;
-            AppSettings.Default.GeneralSection.DbPath = path;
-            AppSettings.SaveDefault();
-        }
-        catch (Exception ex)
-        {
-            LogTo.ErrorException($"Error while syncing osu!db: {path}", ex);
-            MessageBox.Show(_configWindow, $"{I18NUtil.GetString("err-osudb-sync")}: {path}\r\n{ex.Message}",
-                _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
-        }
+        TbDbPath.Text = path;
+        await SyncOsuDbAsync(path);
     }
 
     private void AsDefault_CheckChanged(object sender, RoutedEventArgs e)
@@ -121,60 +111,77 @@ public partial class GeneralPage : Page
 
     private async void BrowseCustom_Click(object sender, RoutedEventArgs e)
     {
-        using (var openFileDialog = new CommonOpenFileDialog
-               {
-                   IsFolderPicker = true,
-                   Title = "Select Folder"
-               })
+        using var openFileDialog = new CommonOpenFileDialog
         {
-            var result = openFileDialog.ShowDialog();
-            if (result != CommonFileDialogResult.Ok)
-                return;
-            var path = openFileDialog.FileName;
-            try
-            {
-                TbCustomPath.Text = path;
-                await Service.Get<OsuFileScanningService>().CancelTaskAsync();
-                await Service.Get<OsuFileScanningService>().NewScanAndAddAsync(path);
-                AppSettings.Default.GeneralSection.CustomSongDir = path;
-                AppSettings.SaveDefault();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error while scanning custom folder: {0}", path);
-                MessageBox.Show(_configWindow, string.Format("{0}: {1}\r\n{2}",
-                        I18NUtil.GetString("err-custom-scan"), path, ex.Message),
-                    _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            IsFolderPicker = true,
+            Title = "Select Folder"
+        };
+
+        var result = openFileDialog.ShowDialog();
+        if (result != CommonFileDialogResult.Ok)
+        {
+            return;
         }
+
+        var path = openFileDialog.FileName;
+        TbCustomPath.Text = path;
+        await SyncCustomFolderAsync(path);
     }
 
     private async void CancelScan_Click(object sender, RoutedEventArgs e)
     {
-        await Service.Get<OsuFileScanningService>().CancelTaskAsync();
+        await _osuFileScanningService.CancelTaskAsync();
     }
 
     private async void SyncNow_Click(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            await Service.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.GeneralSection.DbPath, false);
-            AppSettings.Default.LastTimeScanOsuDb = DateTime.Now;
-            AppSettings.SaveDefault();
-        }
-        catch (Exception ex)
-        {
-            var path = AppSettings.Default.GeneralSection.DbPath;
-            Logger.Error(ex, "Error while scanning custom folder: {0}", path);
-            MessageBox.Show(_configWindow, string.Format("{0}: {1}\r\n{2}",
-                    I18NUtil.GetString("err-custom-scan"), path, ex.Message),
-                _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
-        }
+        await SyncOsuDbAsync(AppSettings.Default.GeneralSection.DbPath);
     }
 
     private async void ScanNow_Click(object sender, RoutedEventArgs e)
     {
-        await Service.Get<OsuFileScanningService>().CancelTaskAsync();
-        await Service.Get<OsuFileScanningService>().NewScanAndAddAsync(AppSettings.Default.GeneralSection.CustomSongDir);
+        await _osuFileScanningService.CancelTaskAsync();
+        await SyncCustomFolderAsync(AppSettings.Default.GeneralSection.CustomSongDir);
+    }
+
+    private async Task SyncOsuDbAsync(string path)
+    {
+        try
+        {
+            await _syncService.SynchronizeManaged(_syncService.EnumeratePlayItemDetailsFormDb(path));
+
+            AppSettings.Default.GeneralSection.DbPath = path;
+            AppSettings.SaveDefault();
+
+            await using var dbContext = new ApplicationDbContext();
+            var softwareState = await dbContext.GetSoftwareState();
+
+            softwareState.LastSync = DateTime.Now;
+            await dbContext.UpdateAndSaveChangesAsync(softwareState, k => k.LastSync);
+        }
+        catch (Exception ex)
+        {
+            LogTo.ErrorException($"Error while syncing osu!db: {path}", ex);
+            MessageBox.Show(_configWindow, $"{I18NUtil.GetString("err-osudb-sync")}: {path}\r\n{ex.Message}",
+                _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private async Task SyncCustomFolderAsync(string path)
+    {
+        try
+        {
+            await _osuFileScanningService.CancelTaskAsync();
+            await _osuFileScanningService.NewScanAndAddAsync(path);
+
+            AppSettings.Default.GeneralSection.CustomSongDir = path;
+            AppSettings.SaveDefault();
+        }
+        catch (Exception ex)
+        {
+            LogTo.ErrorException($"Error while scanning custom folder: {path}", ex);
+            MessageBox.Show(_configWindow, $"{I18NUtil.GetString("err-custom-scan")}: {path}\r\n{ex.Message}",
+                _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 }

@@ -56,17 +56,7 @@ public partial class MainWindow : WindowEx
         var keyHookService = App.Current.ServiceProvider.GetService<KeyHookService>()!;
         keyHookService.InitializeAndActivateHotKeys();
 
-        keyHookService.TogglePlayAction = async () =>
-        {
-            if (_playerService.PlayerStatus == PlayerStatus.Playing)
-            {
-                await _playerService.PauseAsync();
-            }
-            else if (_playerService.PlayerStatus is PlayerStatus.Paused or PlayerStatus.Ready)
-            {
-                await _playerService.PlayAsync();
-            }
-        };
+        keyHookService.TogglePlayAction = async () => await _playerService.TogglePlayAsync();
         keyHookService.PrevSongAction = async () => await _playerService.PlayPreviousAsync();
         keyHookService.NextSongAction = async () => await _playerService.PlayNextAsync();
         keyHookService.VolumeUpAction = () =>

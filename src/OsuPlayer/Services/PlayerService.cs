@@ -70,7 +70,7 @@ public class PlayerService : VmBase, IDisposable
     private string? _lastStandardizedFolder;
     private CancellationTokenSource? _lastInitCts;
 
-    private TimeSpan _currentTime;
+    private TimeSpan _playTime;
     private TimeSpan _totalTime;
 
     public PlayerService(PlayListService playListService, AppSettings appSettings)
@@ -88,10 +88,12 @@ public class PlayerService : VmBase, IDisposable
 
     public OsuMixPlayer? ActiveMixPlayer { get; private set; }
 
-    public TimeSpan CurrentTime
+    public PlayItemLoadingContext? LastLoadContext { get; private set; }
+
+    public TimeSpan PlayTime
     {
-        get => _currentTime;
-        set => this.RaiseAndSetIfChanged(ref _currentTime, value);
+        get => _playTime;
+        set => this.RaiseAndSetIfChanged(ref _playTime, value);
     }
 
     public TimeSpan TotalTime
@@ -118,6 +120,18 @@ public class PlayerService : VmBase, IDisposable
         if (activeMixPlayer.PlayerStatus == PlayerStatus.Ready) return;
         activeMixPlayer.Stop();
         if (PlayerStopped != null) await PlayerStopped.Invoke(activeMixPlayer);
+    }
+
+    public async ValueTask TogglePlayAsync()
+    {
+        if (PlayerStatus == PlayerStatus.Playing)
+        {
+            await PauseAsync();
+        }
+        else if (PlayerStatus is PlayerStatus.Paused or PlayerStatus.Ready)
+        {
+            await PlayAsync();
+        }
     }
 
     public async ValueTask PauseAsync()
@@ -261,6 +275,7 @@ public class PlayerService : VmBase, IDisposable
             }
 
             context.IsLoaded = true;
+            LastLoadContext = context;
             if (LoadFinished != null) await LoadFinished.Invoke(context);
 
             await dbContext.SaveChangesAsync(_lastInitCts.Token);
@@ -300,8 +315,8 @@ public class PlayerService : VmBase, IDisposable
 
     private void Player_PositionChanged(TrackPlayer trackPlayer, double oldPosition, double newPosition)
     {
-        Execute.OnUiThread(() => CurrentTime = TimeSpan.FromMilliseconds(newPosition));
-        PlayTimeChanged?.Invoke(CurrentTime);
+        Execute.OnUiThread(() => PlayTime = TimeSpan.FromMilliseconds(newPosition));
+        PlayTimeChanged?.Invoke(PlayTime);
     }
 
     private async ValueTask PlayByControl(PlayDirection direction, bool isManual)

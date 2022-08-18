@@ -25,10 +25,6 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
     private readonly string _fileName;
     private readonly LocalOsuFile _osuFile;
 
-    private readonly SoundSeekingTrack _musicTrack;
-    private readonly HitsoundTrack _hitsoundTrack;
-    private readonly SampleTrack _sampleTrack;
-
     private readonly EnhancedVolumeSampleProvider _musicVsp;
     private readonly EnhancedVolumeSampleProvider _hitsoundVsp;
     private readonly EnhancedVolumeSampleProvider _sampleVsp;
@@ -45,14 +41,18 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
         _fileName = Path.GetFileName(osuFile.OriginalPath)!;
 
         var waveFormat = engine.WaveFormat;
-        _musicTrack = new SoundSeekingTrack(TimerSource, waveFormat);
-        _hitsoundTrack = new HitsoundTrack(TimerSource, waveFormat);
-        _sampleTrack = new SampleTrack(osuFile, TimerSource, waveFormat);
+        MusicTrack = new SoundSeekingTrack(TimerSource, waveFormat);
+        HitsoundTrack = new HitsoundTrack(TimerSource, waveFormat);
+        SampleTrack = new SampleTrack(osuFile, TimerSource, waveFormat);
 
         _musicVsp = new EnhancedVolumeSampleProvider(null!) { Volume = 1f };
         _hitsoundVsp = new EnhancedVolumeSampleProvider(null!) { Volume = 1f };
         _sampleVsp = new EnhancedVolumeSampleProvider(null!) { Volume = 1f };
     }
+
+    public SoundSeekingTrack MusicTrack { get; }
+    public HitsoundTrack HitsoundTrack { get; }
+    public SampleTrack SampleTrack { get; }
 
     public TimeSpan PlayTime => TimeSpan.FromMilliseconds(Position);
     public TimeSpan TotalTime => TimeSpan.FromMilliseconds(Duration);
@@ -92,11 +92,11 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
 
     public float HitsoundBalanceRatio
     {
-        get => _hitsoundTrack.BalanceRatio;
+        get => HitsoundTrack.BalanceRatio;
         set
         {
-            if (Equals(value, _hitsoundTrack.BalanceRatio)) return;
-            _hitsoundTrack.BalanceRatio = value;
+            if (Equals(value, HitsoundTrack.BalanceRatio)) return;
+            HitsoundTrack.BalanceRatio = value;
             OnPropertyChanged();
         }
     }
@@ -114,12 +114,12 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
 
     public double Offset
     {
-        get => _hitsoundTrack.Offset;
+        get => HitsoundTrack.Offset;
         set
         {
-            if (Equals(value, _hitsoundTrack.Offset)) return;
-            _hitsoundTrack.Offset = value;
-            _sampleTrack.Offset = value;
+            if (Equals(value, HitsoundTrack.Offset)) return;
+            HitsoundTrack.Offset = value;
+            SampleTrack.Offset = value;
             OnPropertyChanged();
         }
     }
@@ -189,17 +189,17 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
             });
         }
 
-        _musicVsp.Source = _musicTrack.RootSampleProvider;
-        _hitsoundVsp.Source = _hitsoundTrack.RootSampleProvider;
-        _sampleVsp.Source = _sampleTrack.RootSampleProvider;
+        _musicVsp.Source = MusicTrack.RootSampleProvider;
+        _hitsoundVsp.Source = HitsoundTrack.RootSampleProvider;
+        _sampleVsp.Source = SampleTrack.RootSampleProvider;
 
         Engine.RootMixer.AddMixerInput(_musicVsp);
         Engine.RootMixer.AddMixerInput(_hitsoundVsp);
         Engine.RootMixer.AddMixerInput(_sampleVsp);
 
-        Tracks.Add(_musicTrack);
-        Tracks.Add(_hitsoundTrack);
-        Tracks.Add(_sampleTrack);
+        Tracks.Add(MusicTrack);
+        Tracks.Add(HitsoundTrack);
+        Tracks.Add(SampleTrack);
 
         Duration = Tracks.Max(k => k.Duration) + PostInsertDuration;
         PlayerStatus = PlayerStatus.Ready;
@@ -222,27 +222,27 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
     {
         var audioFile = Path.Combine(_folder, _osuFile.General?.AudioFilename ?? "audio.mp3");
 
-        _musicTrack.Path = audioFile;
-        await _musicTrack.InitializeAsync();
+        MusicTrack.Path = audioFile;
+        await MusicTrack.InitializeAsync();
     }
 
     private async ValueTask InitializeHitsoundTrack(List<HitsoundNode> hitsoundNodes)
     {
-        _hitsoundTrack.HitsoundNodes = hitsoundNodes.Where(k => k is not PlayableNode
+        HitsoundTrack.HitsoundNodes = hitsoundNodes.Where(k => k is not PlayableNode
         {
             PlayablePriority: PlayablePriority.Sampling
         }).ToList();
-        await _hitsoundTrack.InitializeAsync();
+        await HitsoundTrack.InitializeAsync();
     }
 
     private async ValueTask InitializeSampleTrack(List<HitsoundNode> hitsoundNodes)
     {
-        _sampleTrack.HitsoundNodes = hitsoundNodes.Where(k => k is PlayableNode
+        SampleTrack.HitsoundNodes = hitsoundNodes.Where(k => k is PlayableNode
         {
             PlayablePriority: PlayablePriority.Sampling
         }).ToList();
-        _sampleTrack.MusicTrackDuration = TimeSpan.FromMilliseconds(_musicTrack.Duration);
-        await _sampleTrack.InitializeAsync();
+        SampleTrack.MusicTrackDuration = TimeSpan.FromMilliseconds(MusicTrack.Duration);
+        await SampleTrack.InitializeAsync();
     }
 
     public override void OnStatusChanged(TimerStatus previousStatus, TimerStatus currentStatus)

@@ -1,90 +1,96 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using Milki.OsuPlayer.Audio.Playlist;
-using Milki.OsuPlayer.Common;
+using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
-using Milki.OsuPlayer.Presentation.Interaction;
-using Milki.OsuPlayer.Shared.Dependency;
+using Milki.OsuPlayer.Services;
+using Milki.OsuPlayer.Shared.Models;
+using Milki.OsuPlayer.Shared.Observable;
 
-namespace Milki.OsuPlayer.UserControls
+namespace Milki.OsuPlayer.UserControls;
+
+public class VolumeControlVm : VmBase
 {
-    public class VolumeControlVm : VmBase
+    public SharedVm Shared => SharedVm.Default;
+}
+
+/// <summary>
+/// VolumeControl.xaml 的交互逻辑
+/// </summary>
+public partial class VolumeControl : UserControl
+{
+    private readonly PlayerService _playerService;
+
+    public VolumeControl()
     {
-        public SharedVm Shared { get; } = SharedVm.Default;
+        _playerService = ServiceProviders.Default.GetService<PlayerService>()!;
+        _playerService.LoadFinished += PlayerService_LoadFinished;
+        InitializeComponent();
     }
 
-    /// <summary>
-    /// VolumeControl.xaml 的交互逻辑
-    /// </summary>
-    public partial class VolumeControl : UserControl
+    private ValueTask PlayerService_LoadFinished(PlayerService.PlayItemLoadingContext arg)
     {
-        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+        Offset.Value = arg.PlayItem?.PlayItemConfig?.Offset ?? 0;
+        return ValueTask.CompletedTask;
+    }
 
-        public VolumeControl()
+    private void VolumeControl_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        Offset.Value = _playerService.LastLoadContext?.PlayItem?.PlayItemConfig?.Offset ?? 0;
+    }
+
+    private void MasterVolume_DragComplete(object sender, DragCompletedEventArgs e)
+    {
+        AppSettings.SaveDefault();
+    }
+
+    private void MusicVolume_DragComplete(object sender, DragCompletedEventArgs e)
+    {
+        AppSettings.SaveDefault();
+    }
+
+    private void HitsoundVolume_DragComplete(object sender, DragCompletedEventArgs e)
+    {
+        AppSettings.SaveDefault();
+    }
+
+    private void SampleVolume_DragComplete(object sender, DragCompletedEventArgs e)
+    {
+        AppSettings.SaveDefault();
+    }
+
+    private void Balance_DragComplete(object sender, DragCompletedEventArgs e)
+    {
+        AppSettings.SaveDefault();
+    }
+
+    private void Offset_DragDelta(object sender, DragDeltaEventArgs e)
+    {
+        if (_playerService.ActiveMixPlayer == null)
         {
-            InitializeComponent();
+            return;
         }
 
-        private void VolumeControl_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            if (_controller != null)
-            {
-                Offset.Value = _controller.PlayList.CurrentInfo?.BeatmapConfig?.Offset ?? 0;
-                _controller.LoadFinished += Controller_LoadFinished;
-            }
-        }
+        _playerService.ActiveMixPlayer.Offset = (int)Offset.Value;
+    }
 
-        private void Controller_LoadFinished(BeatmapContext bc, System.Threading.CancellationToken arg2)
-        {
-            Offset.Value = bc.BeatmapConfig.Offset ?? 0;
-        }
+    private async void Offset_DragComplete(object sender, DragCompletedEventArgs e)
+    {
+        if (_playerService.LastLoadContext?.PlayItem?.PlayItemConfig == null) return;
+        await using var dbContext = new ApplicationDbContext();
+        _playerService.LastLoadContext.PlayItem.PlayItemConfig.Offset =
+            (int)(_playerService.ActiveMixPlayer?.Offset ?? 0d);
 
-        private void MasterVolume_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            AppSettings.SaveDefault();
-        }
+        await dbContext.UpdateAndSaveChangesAsync(_playerService.LastLoadContext.PlayItem.PlayItemConfig,
+            k => k.Offset);
+    }
 
-        private void MusicVolume_DragComplete(object sender, DragCompletedEventArgs e)
+    private void BtnPlayMod_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_playerService.ActiveMixPlayer != null)
         {
-            AppSettings.SaveDefault();
-        }
-
-        private void HitsoundVolume_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            AppSettings.SaveDefault();
-        }
-
-        private void SampleVolume_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            AppSettings.SaveDefault();
-        }
-
-        private void Balance_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            AppSettings.SaveDefault();
-        }
-
-        private void Offset_DragDelta(object sender, DragDeltaEventArgs e)
-        {
-            if (_controller.Player == null)
-                return;
-            _controller.Player.ManualOffset = (int)Offset.Value;
-        }
-
-        private async void Offset_DragComplete(object sender, DragCompletedEventArgs e)
-        {
-            if (_controller.PlayList.CurrentInfo == null) return;
-            await using var dbContext = new ApplicationDbContext();
-            _controller.PlayList.CurrentInfo.BeatmapConfig.Offset = _controller.Player.ManualOffset;
-            await dbContext.AddOrUpdateBeatmapConfig(_controller.PlayList.CurrentInfo.BeatmapConfig);
-        }
-
-        private async void BtnPlayMod_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (_controller.Player != null)
-                await _controller.Player.SetPlayMod((PlayModifier)((Button)sender).Tag);
+            _playerService.ActiveMixPlayer.PlayModifier = (PlayModifier)((Button)sender).Tag;
         }
     }
 }

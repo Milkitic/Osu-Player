@@ -1,12 +1,11 @@
-﻿using Coosu.Beatmap.Sections.GamePlay;
+﻿using Anotar.NLog;
+using Coosu.Beatmap.Sections.GamePlay;
 using Milki.OsuPlayer.Data.Models;
 
 namespace Milki.OsuPlayer;
 
 public static class BeatmapExtension
 {
-    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
     public static PlayItem GetHighestDiff(this IEnumerable<PlayItem> enumerable)
     {
         var random = new Random(DateTime.Now.Ticks.GetHashCode());
@@ -37,7 +36,7 @@ public static class BeatmapExtension
                 item1.PlayItemDetail.DefaultStarRatingTaiko > item2.PlayItemDetail.DefaultStarRatingTaiko ? item1 : item2);
         }
 
-        Logger.Warn(@"Get highest difficulty failed.");
+        LogTo.Warn(@"Get highest difficulty failed.");
         var randKey = dictionary.Keys.ToList()[random.Next(dictionary.Keys.Count)];
         return dictionary[randKey][dictionary[randKey].Count];
     }

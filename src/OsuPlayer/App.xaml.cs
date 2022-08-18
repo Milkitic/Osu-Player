@@ -40,7 +40,6 @@ public partial class App : Application
 
     public new static App Current { get; private set; }
     public ServiceProvider ServiceProvider { get; private set; }
-    public LyricWindow LyricWindow { get; } = new LyricWindow();
 
     private async void Application_Startup(object sender, StartupEventArgs e)
     {
@@ -119,38 +118,6 @@ public partial class App : Application
         SharedVm.Default.IsLyricWindowEnabled = AppSettings.Default.LyricSection.IsDesktopLyricEnabled;
     }
 
-    private Task _searchLyricTask;
-
-    /// <summary>
-    /// Call lyric provider to check lyric
-    /// </summary>
-    public void SetLyricSynchronously()
-    {
-        if (!LyricWindow.IsVisible)
-            return;
-
-        Task.Run(async () =>
-        {
-            if (_searchLyricTask?.IsTaskBusy() == true)
-            {
-                await _searchLyricTask;
-            }
-
-            _searchLyricTask = Task.Run(async () =>
-            {
-                if (!_controller.IsPlayerReady) return;
-
-                var lyricInst = Service.Get<LyricsService>();
-                var meta = _controller.PlayList.CurrentInfo.OsuFile.Metadata;
-                MetaString metaArtist = meta.ArtistMeta;
-                MetaString metaTitle = meta.TitleMeta;
-                var lyric = await lyricInst.LyricProvider.GetLyricAsync(metaArtist.ToUnicodeString(),
-                    metaTitle.ToUnicodeString(), (int)_controller.Player.Duration.TotalMilliseconds);
-                LyricWindow.SetNewLyric(lyric, metaArtist, metaTitle);
-                LyricWindow.StartWork();
-            });
-        });
-    }
 
     private ValueTask PlayerService_LoadMetaFinished(PlayerService.PlayItemLoadingContext arg)
     {

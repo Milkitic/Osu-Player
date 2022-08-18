@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
+using Anotar.NLog;
 using Milki.OsuPlayer.Shared.Models;
 using Newtonsoft.Json;
 
@@ -12,8 +8,6 @@ namespace Milki.OsuPlayer.Services;
 
 public class UpdateService
 {
-    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
     private const int Timeout = 10000;
     private const int RetryCount = 3;
     private static readonly HttpClient HttpClient;
@@ -37,7 +31,7 @@ public class UpdateService
 
             if (json.Contains("API rate limit"))
             {
-                Logger.Error("Error while checking for updates: API rate limit");
+                LogTo.Error("Error while checking for updates: API rate limit");
                 throw new Exception("Github API rate limit exceeded.");
             }
 
@@ -56,7 +50,7 @@ public class UpdateService
             var latestVerObj = new Version(latestVer);
             var nowVerObj = CurrentVersion;
 
-            Logger.Info("Current version: {nowVer}; Got version info: {latestVer}", nowVerObj, latestVerObj);
+            LogTo.Info($"Current version: {nowVerObj}; Got version info: {latestVerObj}");
 
             if (latestVerObj <= nowVerObj)
             {
@@ -70,7 +64,7 @@ public class UpdateService
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while checking for updates.");
+            LogTo.ErrorException("Error while checking for updates.", ex);
             throw;
         }
 
