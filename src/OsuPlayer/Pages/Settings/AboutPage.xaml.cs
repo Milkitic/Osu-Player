@@ -61,7 +61,7 @@ public partial class AboutPage : Page
         }
         else
         {
-            LastUpdate.Content = softwareState.LastUpdateCheck.Value.ToString(Conventions.DateTimeFormat);
+            LastUpdate.Content = softwareState.LastUpdateCheck.Value.ToString(Constants.DateTimeFormat);
         }
     }
 

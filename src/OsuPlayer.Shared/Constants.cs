@@ -6,4 +6,6 @@ public static class Constants
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Milki.OsuPlayer");
     public static string ConfigDir { get; } =
         Path.Combine(ApplicationDir, "configs");
+
+    public const string DateTimeFormat = "g";
 }

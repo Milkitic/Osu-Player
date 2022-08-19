@@ -91,7 +91,7 @@ public sealed partial class ApplicationDbContext
             .ToArrayAsync();
     }
 
-    public async ValueTask<PaginationQueryResult<PlayItem>> GetBeatmapsFromCollectionAsync(PlayList playList,
+    public async ValueTask<PaginationQueryResult<PlayItem>> GetPlayItemsFromPlayListAsync(PlayList playList,
         int page = 0,
         int countPerPage = 50,
         BeatmapOrderOptions options = BeatmapOrderOptions.CreateTime)
@@ -137,7 +137,7 @@ public sealed partial class ApplicationDbContext
         await SaveChangesAsync();
     }
 
-    public async Task AddPlayItemsToPlayList(IList<PlayItem> beatmaps, PlayList collection)
+    public async ValueTask AddPlayItemsToPlayList(IList<PlayItem> beatmaps, PlayList collection)
     {
         if (beatmaps.Count < 1) return;
         var findAsync = await PlayLists.FindAsync(collection.Id);
@@ -149,10 +149,10 @@ public sealed partial class ApplicationDbContext
         await SaveChangesAsync();
     }
 
-    public async ValueTask DeleteBeatmapsFromCollectionAsync(IEnumerable<PlayItem> beatmaps, PlayList collection)
+    public async ValueTask DeletePlayItemsFromPlayListAsync(IEnumerable<PlayItem> playItems, PlayList playList)
     {
-        var relations = beatmaps
-            .Join(PlayListRelations.Where(k => k.PlayListId == collection.Id), k => k.Id,
+        var relations = playItems
+            .Join(PlayListRelations.Where(k => k.PlayListId == playList.Id), k => k.Id,
                 k => k.PlayItemId,
                 (_, k) => k)
             .ToArray();
@@ -161,7 +161,7 @@ public sealed partial class ApplicationDbContext
         await this.BulkSaveChangesAsync();
     }
 
-    public async Task<List<LoosePlayItem>> GetCurrentListFull()
+    public async ValueTask<List<LoosePlayItem>> GetCurrentListFull()
     {
         var query =
             from looseItem in CurrentPlay
@@ -183,7 +183,7 @@ public sealed partial class ApplicationDbContext
         return buffer;
     }
 
-    public async Task<PaginationQueryResult<LoosePlayItem>> GetRecentListFull(
+    public async ValueTask<PaginationQueryResult<LoosePlayItem>> GetRecentListFull(
         int page = 0,
         int countPerPage = 50)
     {
@@ -222,7 +222,7 @@ public sealed partial class ApplicationDbContext
         return new PaginationQueryResult<LoosePlayItem>(result, count);
     }
 
-    public async Task<PaginationQueryResult<LoosePlayItem>> GetRecentList(
+    public async ValueTask<PaginationQueryResult<LoosePlayItem>> GetRecentList(
         int page = 0,
         int countPerPage = 50)
     {
@@ -240,18 +240,18 @@ public sealed partial class ApplicationDbContext
         return new PaginationQueryResult<LoosePlayItem>(result, count);
     }
 
-    public async Task ClearRecentList()
+    public async ValueTask ClearRecentList()
     {
         RecentPlay.RemoveRange(RecentPlay);
         await SaveChangesAsync();
     }
 
-    public async ValueTask AddOrUpdateBeatmapToRecentPlayAsync(PlayItem playItem, DateTime playTime)
+    public async ValueTask AddOrUpdatePlayItemToRecentPlayAsync(PlayItem playItem, DateTime playTime)
     {
         await AddOrUpdateLoosePlayItemCore(playItem, playTime, RecentPlay);
     }
 
-    public async ValueTask AddOrUpdateBeatmapToCurrentPlayAsync(PlayItem playItem, DateTime playTime)
+    public async ValueTask AddOrUpdatePlayItemToCurrentPlayAsync(PlayItem playItem, DateTime playTime)
     {
         await AddOrUpdateLoosePlayItemCore(playItem, playTime, CurrentPlay);
     }

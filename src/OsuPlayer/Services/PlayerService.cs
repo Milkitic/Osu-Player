@@ -279,7 +279,7 @@ public class PlayerService : VmBase, IAsyncDisposable
             if (LoadFinished != null) await LoadFinished.Invoke(context);
 
             await dbContext.SaveChangesAsync(_lastInitCts.Token);
-            await dbContext.AddOrUpdateBeatmapToRecentPlayAsync(playItem, DateTime.Now);
+            await dbContext.AddOrUpdatePlayItemToRecentPlayAsync(playItem, DateTime.Now);
         }
         catch (Exception ex)
         {
