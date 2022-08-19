@@ -11,7 +11,7 @@ using Milki.OsuPlayer.Data;
 namespace Milki.OsuPlayer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220819090844_init")]
+    [Migration("20220819091138_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
