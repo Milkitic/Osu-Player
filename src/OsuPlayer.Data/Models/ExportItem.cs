@@ -27,5 +27,5 @@ public sealed class ExportItem
     [NotMapped]
     public PlayItem? PlayItem { get; set; }
     [MaxLength(512)]
-    public string? PlayItemPath { get; set; }
+    public string? PlayItemStandardizedPath { get; set; }
 }

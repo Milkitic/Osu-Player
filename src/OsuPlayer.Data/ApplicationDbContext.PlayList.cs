@@ -51,6 +51,9 @@ public sealed partial class ApplicationDbContext
                 ThumbPath = k.PlayItemAssets == null ? null : k.PlayItemAssets.ThumbPath,
                 StoryboardVideoPath = k.PlayItemAssets == null ? null : k.PlayItemAssets.StoryboardVideoPath,
                 VideoPath = k.PlayItemAssets == null ? null : k.PlayItemAssets.VideoPath,
+                StarRating = k.PlayItemDetail.StarRating,
+                PlayItem = k.PlayItem,
+                PlayItemDetail = k.PlayItemDetail,
             });
 
         var sqlStr = query.ToQueryString();
@@ -60,7 +63,7 @@ public sealed partial class ApplicationDbContext
             .GroupBy(k => k.Folder, StringComparer.Ordinal)
             .SelectMany(k => k
                 .GroupBy(o => o, MetaComparer.Instance)
-                .Select(o => o.First())
+                .Select(o => o.OrderByDescending(x => x.StarRating).First())
             );
 
         enumerable = beatmapOrderOptions switch
@@ -378,6 +381,29 @@ public sealed partial class ApplicationDbContext
             .ToArray();
 
         return new PaginationQueryResult<ExportItem>(result, count);
+    }
+
+    public async Task AddOrUpdateExportAsync(ExportItem export)
+    {
+        var exist = await Exports.FindAsync(export.Id);
+        if (exist != null)
+        {
+            exist.Size = exist.Size;
+            exist.ExportPath = export.ExportPath;
+            exist.ExportTime = export.ExportTime;
+            exist.Title = export.Title;
+            exist.Artist = export.Artist;
+            exist.Creator = export.Creator;
+            exist.Version = export.Version;
+            exist.PlayItemStandardizedPath = export.PlayItemStandardizedPath;
+            exist.PlayItemId = export.PlayItemId;
+        }
+        else
+        {
+            Exports.Add(export);
+        }
+
+        await SaveChangesAsync();
     }
 
     public async Task<PaginationQueryResult<ExportItem>> GetExportList(

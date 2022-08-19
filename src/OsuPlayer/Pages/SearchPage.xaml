@@ -2,16 +2,18 @@
     x:Class="Milki.OsuPlayer.Pages.SearchPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
+    xmlns:converters="clr-namespace:Milki.OsuPlayer.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:Milki.OsuPlayer"
-    xmlns:system="clr-namespace:System;assembly=mscorlib"
-    xmlns:converters="clr-namespace:Milki.OsuPlayer.Converters"
-    xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
-    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
+    xmlns:models="clr-namespace:Milki.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
     xmlns:panelComponent="clr-namespace:Milki.OsuPlayer.UiComponents.PanelComponent"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
     x:Name="CurrentPage"
     Title="SearchPage"
+    d:DataContext="{d:DesignInstance Type=viewModels:SearchPageViewModel,
+                                     IsDesignTimeCreatable=True}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     FontFamily="{StaticResource SspRegular}"
@@ -26,10 +28,11 @@
         <system:Double x:Key="GalleryWidth">160</system:Double>
         <system:Double x:Key="GalleryHeight">220</system:Double>
         <QuinticEase x:Key="QuinticEaseOut" EasingMode="EaseOut" />
-        <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
-            <d:Object.DataContext>
-                <objectModel:OrderedModel  />
-            </d:Object.DataContext>
+        <ContextMenu
+            x:Key="DataModelListContextMenu"
+            d:DataContext="{d:DesignInstance Type=models:PlayGroupQuery,
+                                             IsDesignTimeCreatable=False}"
+            Style="{StaticResource DefaultContextMenu}">
             <MenuItem
                 Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                 CommandParameter="{Binding}"
@@ -94,17 +97,7 @@
                 Header="{DynamicResource ui-ctxMenu-export}"
                 Style="{StaticResource DefaultMenuItem}" />
         </ContextMenu>
-
-        <Style
-            x:Key="EventGridViewItem"
-            BasedOn="{StaticResource GridView}"
-            TargetType="ListViewItem">
-            <EventSetter Event="MouseDoubleClick" Handler="ResultListItem_MouseDoubleClick" />
-        </Style>
     </Page.Resources>
-    <Page.DataContext>
-        <viewModels:SearchPageViewModel />
-    </Page.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -169,73 +162,6 @@
                 IconTemplate="{StaticResource FolderTempl}"
                 Style="{StaticResource SettingsButton}" />
         </StackPanel>
-        <ListView
-            x:Name="ResultList"
-            Grid.Row="2"
-            Margin="0,20,0,2"
-            Background="Transparent"
-            BorderThickness="0"
-            ItemContainerStyle="{StaticResource EventGridViewItem}"
-            Visibility="Collapsed">
-            <ListView.Resources>
-                <DataTemplate x:Key="TitleSourceDt">
-                    <StackPanel Background="Transparent">
-                        <Label
-                            Margin="15,7,0,7"
-                            VerticalAlignment="Center"
-                            Content="{Binding AutoTitle}" />
-                        <Label
-                            x:Name="LblSource"
-                            Margin="25,-11,0,7"
-                            VerticalAlignment="Center"
-                            Content="{Binding SongSource}"
-                            FontStyle="Italic"
-                            Foreground="#FF9C9C9C">
-                            <Label.Style>
-                                <Style TargetType="{x:Type Label}">
-                                    <Style.Triggers>
-                                        <Trigger Property="Content" Value="{x:Null}">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </Trigger>
-                                        <Trigger Property="Content" Value="">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Label.Style>
-                        </Label>
-                    </StackPanel>
-                </DataTemplate>
-                <DataTemplate x:Key="ArtistDt">
-                    <Label
-                        VerticalAlignment="Center"
-                        Content="{Binding AutoArtist}"
-                        Foreground="#FF9C9C9C" />
-                </DataTemplate>
-                <DataTemplate x:Key="CreatorDt">
-                    <Label
-                        x:Name="LblCreator"
-                        VerticalAlignment="Center"
-                        Content="{Binding AutoCreator}" />
-                </DataTemplate>
-            </ListView.Resources>
-            <ListView.View>
-                <GridView ColumnHeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle}">
-                    <GridViewColumn
-                        Width="300"
-                        CellTemplate="{StaticResource TitleSourceDt}"
-                        Header="{DynamicResource ui-title}" />
-                    <GridViewColumn
-                        Width="200"
-                        CellTemplate="{StaticResource ArtistDt}"
-                        Header="{DynamicResource ui-artist}" />
-                    <GridViewColumn
-                        Width="100"
-                        CellTemplate="{StaticResource CreatorDt}"
-                        Header="{DynamicResource ui-creator}" />
-                </GridView>
-            </ListView.View>
-        </ListView>
         <ListBox
             x:Name="ResultCardList"
             Grid.Row="2"

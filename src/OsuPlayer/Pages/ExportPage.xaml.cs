@@ -133,12 +133,17 @@ public partial class ExportPage : Page
             if (mp3FileInfo.Exists || bgFileInfo.Exists)
             {
                 await using var appDbContext = new ApplicationDbContext();
-                await appDbContext.AddOrUpdateExport(new ExportItem
+                await appDbContext.AddOrUpdateExportAsync(new ExportItem
                 {
-                    Beatmap = playItemDetail,
-                    BeatmapId = playItemDetail.Id,
+                    Size = mp3FileInfo.Exists ? mp3FileInfo.Length : bgFileInfo.Length,
                     ExportPath = Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension),
-                    IsValid = true,
+                    ExportTime = mp3FileInfo.Exists ? mp3FileInfo.LastAccessTime : bgFileInfo.LastAccessTime,
+                    Title = playItem.PlayItemDetail.AutoTitle,
+                    Artist = playItem.PlayItemDetail.AutoArtist,
+                    Creator = playItem.PlayItemDetail.Creator,
+                    Version = playItem.PlayItemDetail.Version,
+                    PlayItemStandardizedPath = playItem.StandardizedPath,
+                    PlayItemId = playItem.Id,
                 });
             }
         }

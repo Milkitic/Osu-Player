@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Coosu.Beatmap.Sections.GamePlay;
 using Microsoft.EntityFrameworkCore;
 
@@ -60,4 +61,16 @@ public sealed class PlayItemDetail
     [MaxLength(128)] public string AudioFileName { get; set; } = null!;
     public DateTime UpdateTime { get; set; }
     //public int PlayItemId { get; set; }
+    [NotMapped]
+    public double StarRating => GameMode switch
+    {
+        GameMode.Circle => DefaultStarRatingStd,
+        GameMode.Taiko => DefaultStarRatingTaiko,
+        GameMode.Catch => DefaultStarRatingCtB,
+        GameMode.Mania => DefaultStarRatingMania,
+        _ => throw new ArgumentOutOfRangeException()
+    };
+    
+    public string AutoArtist => string.IsNullOrWhiteSpace(ArtistUnicode) ? Artist : ArtistUnicode;
+    public string AutoTitle => string.IsNullOrWhiteSpace(TitleUnicode) ? Title : TitleUnicode;
 }
