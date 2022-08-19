@@ -131,7 +131,7 @@ public partial class ExportPage : Page
                 Export(bgFileInfo, exportBgFolder, exportBgName);
             if (mp3FileInfo.Exists || bgFileInfo.Exists)
             {
-                await using var appDbContext = ServiceProviders.GetApplicationDbContext();
+                var appDbContext = ServiceProviders.GetApplicationDbContext();
                 await appDbContext.AddOrUpdateExportAsync(new ExportItem
                 {
                     Size = mp3FileInfo.Exists ? mp3FileInfo.Length : bgFileInfo.Length,

@@ -5,6 +5,7 @@ using Anotar.NLog;
 using Coosu.Beatmap;
 using Coosu.Beatmap.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Milki.Extensions.MixPlayer.Devices;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milki.OsuPlayer.Audio;
@@ -76,8 +77,13 @@ public class PlayerService : VmBase, IAsyncDisposable
     public PlayerService(PlayListService playListService, AppSettings appSettings)
     {
         _playListService = playListService;
-        _audioPlaybackEngine =
-            new AudioPlaybackEngine(appSettings.PlaySection.DeviceInfo, 48000, notifyProgress: false);
+        var playSectionDeviceInfo = appSettings.PlaySection.DeviceInfo ?? DeviceDescription.WasapiDefault;
+        if (playSectionDeviceInfo.Latency == 0)
+        {
+            playSectionDeviceInfo.Latency = 1;
+        }
+
+        _audioPlaybackEngine = new AudioPlaybackEngine(playSectionDeviceInfo, 48000, notifyProgress: false);
     }
 
     public bool IsInitializing
@@ -185,7 +191,7 @@ public class PlayerService : VmBase, IAsyncDisposable
             });
 
             context.OsuFile = osuFile;
-            await using var dbContext = App.Current.ServiceProvider.GetService<ApplicationDbContext>()!;
+            var dbContext = App.Current.ServiceProvider.GetService<ApplicationDbContext>()!;
             var playItem = await dbContext.GetOrAddPlayItem(standardizedPath);
 
             var index = _playListService.SetPointerByPath(standardizedPath, true);

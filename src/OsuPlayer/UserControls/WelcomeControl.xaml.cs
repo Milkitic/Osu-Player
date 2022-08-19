@@ -64,7 +64,7 @@ public class WelcomeControlVm : VmBase
 
                 if (isSuccess)
                 {
-                    await using var dbContext = ServiceProviders.GetApplicationDbContext();
+                    var dbContext = ServiceProviders.GetApplicationDbContext();
                     var softwareState = await dbContext.GetSoftwareState();
                     softwareState.ShowWelcome = false;
                     await dbContext.UpdateAndSaveChangesAsync(softwareState, k => k.ShowWelcome);
@@ -84,7 +84,7 @@ public class WelcomeControlVm : VmBase
             {
                 FrontDialogOverlay.Default.RaiseCancel();
 
-                await using var dbContext = ServiceProviders.GetApplicationDbContext();
+                var dbContext = ServiceProviders.GetApplicationDbContext();
                 var softwareState = await dbContext.GetSoftwareState();
                 softwareState.ShowWelcome = false;
                 await dbContext.UpdateAndSaveChangesAsync(softwareState, k => k.ShowWelcome);

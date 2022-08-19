@@ -1,0 +1,48 @@
+﻿GeneralSection:
+  RunOnStartup: false
+  DbPath: 
+  CustomSongDir: D:\GitHub\Osu-Player\src\Songs
+  ExitWhenClosed: 
+  Locale: 
+  OsuSongDir: D:\GitHub\Osu-Player\src\Songs
+VolumeSection:
+  Main: 0.8
+  Music: 1
+  Hitsound: 0.9
+  Sample: 0.85
+  BalanceFactor: 35
+PlaySection:
+  GeneralOffset: 0
+  ReplacePlayList: true
+  PlaybackRate: 1
+  PlayUseTempo: false
+  AutoPlay: false
+  DeviceInfo: 
+  DesiredLatency: 5
+  IsExclusive: false
+  PlayListMode: Normal
+LyricSection:
+  IsDesktopLyricEnabled: true
+  IsDesktopLyricLocked: true
+  LyricSource: Auto
+  ProvideType: Original
+  StrictMode: true
+  EnableCache: true
+  FontFamily: 
+  Hue: 0
+  Saturation: 0
+  Lightness: 0
+ExportSection:
+  MusicDir: D:\GitHub\Osu-Player\src\exports\music
+  BackgroundDir: D:\GitHub\Osu-Player\src\exports\background
+  ExportNamingStyle: ArtistTitle
+  ExportGroupStyle: Artist
+HotKeys:
+  TogglePlay: ''
+  PrevSong: ''
+  NextSong: ''
+  VolumeUp: ''
+  VolumeDown: ''
+  SwitchFullMiniMode: ''
+  AddCurrentToFav: ''
+  SwitchLyricWindow: ''

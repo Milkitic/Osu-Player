@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
@@ -7,7 +8,6 @@ using Microsoft.Win32;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.Windows;
-using NAudio.Wave;
 
 namespace Milki.OsuPlayer.UserControls;
 
@@ -52,17 +52,17 @@ public partial class PlayController : UserControl
 
     private bool _scrollLock;
     private readonly PlayerService _controller;
-    private IWavePlayer _device;
 
     public PlayController()
     {
-        _controller = ServiceProviders.Default.GetService<PlayerService>()!;
-
-        _controller.LoadStarted += Controller_LoadStarted;
-        _controller.LoadBackgroundInfoFinished += Controller_BackgroundInfoLoaded;
-        _controller.LoadMusicFinished += Controller_MusicLoaded;
-
-        _controller.PlayTimeChanged += Controller_PlayTimeChanged;
+        if (!DesignerProperties.GetIsInDesignMode(this))
+        {
+            _controller = ServiceProviders.Default.GetService<PlayerService>()!;
+            _controller.LoadStarted += Controller_LoadStarted;
+            _controller.LoadBackgroundInfoFinished += Controller_BackgroundInfoLoaded;
+            _controller.LoadMusicFinished += Controller_MusicLoaded;
+            _controller.PlayTimeChanged += Controller_PlayTimeChanged;
+        }
 
         InitializeComponent();
     }
@@ -187,14 +187,6 @@ public partial class PlayController : UserControl
         {
             var win = new BeatmapInfoWindow(detail);
             win.ShowDialog();
-        }
-    }
-
-    private void BtnAsio_OnClick(object sender, RoutedEventArgs e)
-    {
-        if (_device is AsioOut asio)
-        {
-            asio.ShowControlPanel();
         }
     }
 }

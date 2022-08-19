@@ -90,7 +90,7 @@ public partial class CollectionPage : Page
             MessageBoxButton.OKCancel,
             MessageBoxImage.Exclamation);
         if (result != MessageBoxResult.OK) return;
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var dbContext = ServiceProviders.GetApplicationDbContext();
 
         dbContext.Remove(_viewModel.PlayList);
         await dbContext.SaveChangesAsync();
@@ -119,7 +119,7 @@ public partial class CollectionPage : Page
         }
 
         var selectedItem = (PlayItem)MapCardList.SelectedItem;
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var dbContext = ServiceProviders.GetApplicationDbContext();
         var beatmaps = await dbContext.GetPlayItemsByFolderAsync(selectedItem.StandardizedFolder);
         return beatmaps.FirstOrDefault(k => k.PlayItemDetail.Version == selectedItem.PlayItemDetail.Version);
     }

@@ -70,7 +70,7 @@ public partial class MiniWindow : WindowEx
 
     private async void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var dbContext = ServiceProviders.GetApplicationDbContext();
         var softwareState = await dbContext.GetSoftwareState();
 
         var dpiScaling = GetDpiScaling();
@@ -209,7 +209,7 @@ public partial class MiniWindow : WindowEx
 
     private async void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var dbContext = ServiceProviders.GetApplicationDbContext();
         var softwareState = await dbContext.GetSoftwareState();
 
         softwareState.MinimalWindowPosition = new System.Drawing.Point((int)Left, (int)Top);

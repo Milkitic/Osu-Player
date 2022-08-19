@@ -6,14 +6,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:player="clr-namespace:Milki.OsuPlayer.Shared.Models;assembly=OsuPlayer.Shared"
     xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
+    d:DataContext="{d:DesignInstance Type=userControls:VolumeControlVm,
+                                     IsDesignTimeCreatable=True}"
     d:DesignHeight="241"
     d:DesignWidth="170"
     FontFamily="{StaticResource SspRegular}"
     Loaded="VolumeControl_OnLoaded"
     mc:Ignorable="d">
-    <UserControl.DataContext>
-        <userControls:VolumeControlVm />
-    </UserControl.DataContext>
     <Grid>
         <Border Margin="10" RenderOptions.BitmapScalingMode="LowQuality">
             <Border.Background>

@@ -94,7 +94,7 @@ public partial class MiniPlayController : UserControl
         var loadContext = _controller.LastLoadContext;
         if (loadContext is not { PlayItem: { } playItem }) return;
 
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var dbContext = ServiceProviders.GetApplicationDbContext();
         var playList = await dbContext.PlayLists.FirstOrDefaultAsync(k => k.IsDefault);
         if (playList == null) return;
 

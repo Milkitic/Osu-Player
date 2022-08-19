@@ -45,9 +45,10 @@ public partial class MainWindow : WindowEx
         _syncService = ServiceProviders.Default.GetService<BeatmapSyncService>();
         _osuFileScanningService = ServiceProviders.Default.GetService<OsuFileScanningService>()!;
         _lyricsService = ServiceProviders.Default.GetService<LyricsService>()!;
+        _updateService = ServiceProviders.Default.GetService<UpdateService>()!;
+        DataContext = _viewModel = new MainWindowViewModel();
 
         InitializeComponent();
-        DataContext = _viewModel = new MainWindowViewModel();
         Animation.Loaded += Animation_Loaded;
         PlayController.LikeClicked += Controller_LikeClicked;
         PlayController.ThumbClicked += Controller_ThumbClicked;
@@ -182,7 +183,7 @@ public partial class MainWindow : WindowEx
         try
         {
             bool? hasUpdate = await _updateService.CheckUpdateAsync();
-            if (hasUpdate == true && _updateService.NewRelease.NewVerString != softwareState.IgnoredVersion)
+            if (hasUpdate == true && _updateService.NewRelease!.NewVerString != softwareState.IgnoredVersion)
             {
                 var newVersionWindow = new NewVersionWindow(_updateService.NewRelease, this);
                 newVersionWindow.ShowDialog();

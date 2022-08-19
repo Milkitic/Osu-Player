@@ -24,9 +24,6 @@
     </PackageReference>
     <PackageReference Include="Coosu.Beatmap" Version="2.3.12" />
     <PackageReference Include="Milki.Extensions.MixPlayer" Version="0.0.30" />
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>13.0.1</Version>
-    </PackageReference>
     <PackageReference Include="System.Memory">
       <Version>4.5.5</Version>
     </PackageReference>

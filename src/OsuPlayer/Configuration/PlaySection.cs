@@ -1,4 +1,6 @@
-﻿using Milki.Extensions.MixPlayer.Devices;
+﻿#nullable enable
+
+using Milki.Extensions.MixPlayer.Devices;
 using Milki.OsuPlayer.Shared.Models;
 
 namespace Milki.OsuPlayer.Configuration;
@@ -11,7 +13,7 @@ public class PlaySection
     public bool PlayUseTempo { get; set; }
     public bool AutoPlay { get; set; } = false;
     //public bool Memory { get; set; } = true;
-    public DeviceDescription DeviceInfo { get; set; } = null;
+    public DeviceDescription? DeviceInfo { get; set; }
     public int DesiredLatency { get; set; } = 5;
     public bool IsExclusive { get; set; } = false;
     public PlaylistMode PlayListMode { get; set; } = PlaylistMode.Normal;

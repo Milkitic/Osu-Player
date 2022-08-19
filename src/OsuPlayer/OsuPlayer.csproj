@@ -57,7 +57,7 @@
     <PackageReference Include="FFME.Windows">
       <Version>4.4.350</Version>
     </PackageReference>
-    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.60" />
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.63" />
     <PackageReference Include="LyricsFinder" Version="1.1.4" />
     <PackageReference Include="Markdig.Wpf">
       <Version>0.5.0.1</Version>
@@ -71,6 +71,7 @@
     <PackageReference Include="NLog.Schema">
       <Version>5.0.2</Version>
     </PackageReference>
+    <PackageReference Include="Semver" Version="2.2.0" />
     <PackageReference Include="Sentry.NLog">
       <Version>3.20.1</Version>
     </PackageReference>

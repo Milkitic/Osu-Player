@@ -42,7 +42,7 @@ public partial class AboutPage : Page
 
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        CurrentVer.Content = _updateService.CurrentVersionString;
+        CurrentVer.Content = _updateService.GetVersion();
         if (_updateService.NewRelease != null)
         {
             NewVersion.Visibility = Visibility.Visible;
@@ -53,7 +53,7 @@ public partial class AboutPage : Page
 
     private async ValueTask GetLastUpdate()
     {
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var dbContext = ServiceProviders.GetApplicationDbContext();
         var softwareState = await dbContext.GetSoftwareState();
         if (softwareState.LastUpdateCheck == null)
         {
@@ -84,7 +84,7 @@ public partial class AboutPage : Page
 
         CheckUpdate.IsEnabled = true;
 
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var dbContext = ServiceProviders.GetApplicationDbContext();
         var softwareState = await dbContext.GetSoftwareState();
         softwareState.LastUpdateCheck = DateTime.Now;
         await GetLastUpdate();

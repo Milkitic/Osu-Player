@@ -18,7 +18,6 @@ namespace Milki.OsuPlayer.UserControls;
 
 public class AnimationControlVm : VmBase
 {
-    public SharedVm Player { get; } = SharedVm.Default;
 }
 
 /// <summary>
@@ -37,19 +36,26 @@ public partial class AnimationControl : UserControl
 
     public AnimationControl()
     {
-        _playerService = App.Current.ServiceProvider.GetService<PlayerService>()!;
+        if (!DesignerProperties.GetIsInDesignMode(this))
+        {
+            _playerService = App.Current.ServiceProvider.GetService<PlayerService>()!;
 
-        _playerService.LoadStarted += PlayerService_LoadStarted;
-        _playerService.LoadBackgroundInfoFinished += PlayerService_LoadBackgroundInfoFinished;
-        _playerService.LoadVideoRequested += PlayerService_LoadVideoRequested;
-        _playerService.PlayerStarted += PlayerService_PlayerStarted;
-        _playerService.PlayerPaused += PlayerService_PlayerPaused;
-        _playerService.PlayerStopped += PlayerService_PlayerStopped;
-        _playerService.PlayerSeek += PlayerService_PlayerSeek;
-        SharedVm.Default.PropertyChanged += Shared_PropertyChanged;
+            _playerService.LoadStarted += PlayerService_LoadStarted;
+            _playerService.LoadBackgroundInfoFinished += PlayerService_LoadBackgroundInfoFinished;
+            _playerService.LoadVideoRequested += PlayerService_LoadVideoRequested;
+            _playerService.PlayerStarted += PlayerService_PlayerStarted;
+            _playerService.PlayerPaused += PlayerService_PlayerPaused;
+            _playerService.PlayerStopped += PlayerService_PlayerStopped;
+            _playerService.PlayerSeek += PlayerService_PlayerSeek;
+            SharedVm.Default.PropertyChanged += Shared_PropertyChanged;
+        }
 
-        InitializeComponent();
         DataContext = _viewModel = new AnimationControlVm();
+        InitializeComponent();
+        if (!DesignerProperties.GetIsInDesignMode(this))
+        {
+            VideoElement.IsMuted = true;
+        }
 
         var path = Path.Combine(AppSettings.Directories.ResourceDir, "official", "registration.jpg");
         if (File.Exists(path))

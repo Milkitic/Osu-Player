@@ -319,7 +319,8 @@
         <frontDialogComponent:FrontDialogOverlay
             x:Name="FrontDialogOverlay"
             Grid.Row="0"
-            Grid.RowSpan="2" />
+            Grid.RowSpan="2"
+            d:IsHidden="True" />
         <DockPanel
             x:Name="TitleBarArea"
             Grid.Row="0"

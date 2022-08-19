@@ -79,7 +79,6 @@
                 BorderThickness="1">
                 <ffme:MediaElement
                     x:Name="VideoElement"
-                    IsMuted="True"
                     LoadedBehavior="Manual"
                     MediaFailed="OnMediaFailed"
                     MediaOpened="OnMediaOpened"

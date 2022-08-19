@@ -46,7 +46,7 @@ public partial class SelectCollectionControl : UserControl
         var addCollectionControl = new AddCollectionControl();
         _overlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, async (obj, args) =>
         {
-            await using var dbContext = ServiceProviders.GetApplicationDbContext();
+            var dbContext = ServiceProviders.GetApplicationDbContext();
             await dbContext.AddPlayListAsync(addCollectionControl.CollectionName.Text);
             await SharedVm.Default.UpdatePlayListsAsync();
 
@@ -61,7 +61,7 @@ public partial class SelectCollectionControl : UserControl
 
     private async Task RefreshList()
     {
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var dbContext = ServiceProviders.GetApplicationDbContext();
         _viewModel.PlayLists = new ObservableCollection<PlayList>(await dbContext.GetPlayListsAsync());
     }
 
@@ -69,7 +69,7 @@ public partial class SelectCollectionControl : UserControl
     {
         if (beatmaps.Count <= 0) return false;
 
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var dbContext = ServiceProviders.GetApplicationDbContext();
         if (string.IsNullOrEmpty(playList.ImagePath))
         {
             var osuSongDir = AppSettings.Default.GeneralSection.OsuSongDir;

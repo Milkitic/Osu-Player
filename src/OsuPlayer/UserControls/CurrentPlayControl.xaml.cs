@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -180,20 +181,19 @@ public partial class CurrentPlayControl : UserControl
         remove => RemoveHandler(CloseRequestedEvent, value);
     }
 
-    private bool _signed;
+    private bool _signed = false;
     private readonly PlayerService _playerService;
     private readonly CurrentPlayControlVm _viewModel;
 
     public CurrentPlayControl()
     {
-        _playerService = ServiceProviders.Default.GetService<PlayerService>();
-        _signed = false;
-        DataContext = _viewModel = new CurrentPlayControlVm();
-        InitializeComponent();
-    }
+        if (!DesignerProperties.GetIsInDesignMode(this))
+        {
+            _playerService = ServiceProviders.Default.GetService<PlayerService>();
+            DataContext = _viewModel = new CurrentPlayControlVm();
+        }
 
-    private void UserControl_Initialized(object sender, EventArgs e)
-    {
+        InitializeComponent();
     }
 
     private void PlayListItem_MouseDoubleClick(object sender, RoutedEventArgs e)

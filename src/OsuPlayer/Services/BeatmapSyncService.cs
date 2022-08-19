@@ -22,7 +22,7 @@ public class BeatmapSyncService
 
     public async ValueTask SynchronizeManaged(IEnumerable<PlayItemDetail> fromOsuDb)
     {
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var dbContext = ServiceProviders.GetApplicationDbContext();
 
         var sw = Stopwatch.StartNew();
         var dbItems = await dbContext.PlayItems

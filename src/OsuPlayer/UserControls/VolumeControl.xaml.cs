@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,23 +22,32 @@ public class VolumeControlVm : VmBase
 public partial class VolumeControl : UserControl
 {
     private readonly PlayerService _playerService;
+    private readonly VolumeControlVm _viewModel;
 
     public VolumeControl()
     {
-        _playerService = ServiceProviders.Default.GetService<PlayerService>()!;
-        _playerService.LoadFinished += PlayerService_LoadFinished;
+        if (!DesignerProperties.GetIsInDesignMode(this))
+        {
+            _playerService = ServiceProviders.Default.GetService<PlayerService>()!;
+            _playerService.LoadFinished += PlayerService_LoadFinished;
+        }
+
+        DataContext = _viewModel = new VolumeControlVm();
         InitializeComponent();
+    }
+
+    private void VolumeControl_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        if (_playerService != null)
+        {
+            Offset.Value = _playerService.LastLoadContext?.PlayItem?.PlayItemConfig?.Offset ?? 0;
+        }
     }
 
     private ValueTask PlayerService_LoadFinished(PlayerService.PlayItemLoadContext arg)
     {
         Offset.Value = arg.PlayItem?.PlayItemConfig?.Offset ?? 0;
         return ValueTask.CompletedTask;
-    }
-
-    private void VolumeControl_OnLoaded(object sender, RoutedEventArgs e)
-    {
-        Offset.Value = _playerService.LastLoadContext?.PlayItem?.PlayItemConfig?.Offset ?? 0;
     }
 
     private void MasterVolume_DragComplete(object sender, DragCompletedEventArgs e)
@@ -78,7 +88,7 @@ public partial class VolumeControl : UserControl
     private async void Offset_DragComplete(object sender, DragCompletedEventArgs e)
     {
         if (_playerService.LastLoadContext?.PlayItem?.PlayItemConfig == null) return;
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var dbContext = ServiceProviders.GetApplicationDbContext();
         _playerService.LastLoadContext.PlayItem.PlayItemConfig.Offset =
             (int)(_playerService.ActiveMixPlayer?.Offset ?? 0d);
 
