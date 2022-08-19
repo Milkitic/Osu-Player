@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using Anotar.NLog;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -157,20 +156,15 @@ public partial class GeneralPage : Page
         }
     }
 
-    private async Task SyncCustomFolderAsync(string path)
+    private async Task SyncCustomFolderAsync(string songDir)
     {
         try
         {
-            await _osuFileScanningService.CancelTaskAsync();
-            await _osuFileScanningService.NewScanAndAddAsync(path);
-
-            AppSettings.Default.GeneralSection.CustomSongDir = path;
-            AppSettings.SaveDefault();
+            await _osuFileScanningService.SyncCustomFolderAsync(songDir);
         }
         catch (Exception ex)
         {
-            LogTo.ErrorException($"Error while scanning custom folder: {path}", ex);
-            MessageBox.Show(_configWindow, $"{I18NUtil.GetString("err-custom-scan")}: {path}\r\n{ex.Message}",
+            MessageBox.Show(_configWindow, $"{I18NUtil.GetString("err-custom-scan")}: {songDir}\r\n{ex.Message}",
                 _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }

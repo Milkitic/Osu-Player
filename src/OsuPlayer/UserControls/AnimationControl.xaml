@@ -8,13 +8,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:shaderEffects="clr-namespace:MDS.ShaderEffects;assembly=ShaderEffects"
     xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
+    d:DataContext="{d:DesignInstance Type=userControls:AnimationControlVm,
+                                     IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Initialized="UserControl_Initialized"
     mc:Ignorable="d">
-    <UserControl.DataContext>
-        <userControls:AnimationControlVm />
-    </UserControl.DataContext>
     <Border
         BorderBrush="#40FFFFFF"
         BorderThickness="1"

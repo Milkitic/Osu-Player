@@ -62,7 +62,7 @@ public class SharedVm : SingletonVm<SharedVm>
     /// <summary>
     /// Update collections in the navigation bar.
     /// </summary>
-    public async ValueTask UpdatePlayLists()
+    public async ValueTask UpdatePlayListsAsync()
     {
         await using var dbContext = new ApplicationDbContext();
         var list = await dbContext.GetPlayListsAsync();

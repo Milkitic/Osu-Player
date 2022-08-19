@@ -8,6 +8,7 @@ using Microsoft.Win32;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Utils;
 
 namespace Milki.OsuPlayer;
@@ -47,6 +48,23 @@ public static class CommonUtils
         catch (Exception ex)
         {
             LogTo.ErrorException($"Error while syncing osu!db: {path}", ex);
+            throw;
+        }
+    }
+
+    public static async Task SyncCustomFolderAsync(this OsuFileScanningService osuFileScanningService, string path)
+    {
+        try
+        {
+            await osuFileScanningService.CancelTaskAsync();
+            await osuFileScanningService.NewScanAndAddAsync(path);
+
+            AppSettings.Default.GeneralSection.CustomSongDir = path;
+            AppSettings.SaveDefault();
+        }
+        catch (Exception ex)
+        {
+            LogTo.ErrorException($"Error while scanning custom folder: {path}", ex);
             throw;
         }
     }

@@ -120,7 +120,7 @@ public sealed partial class ApplicationDbContext
         return new PaginationQueryResult<PlayItem>(result, count);
     }
 
-    public async ValueTask AddCollectionAsync(string name, bool locked = false)
+    public async ValueTask AddPlayListAsync(string name, bool locked = false)
     {
         var maxIndex = await PlayLists
             .OrderByDescending(k => k.Index)
@@ -149,12 +149,35 @@ public sealed partial class ApplicationDbContext
         await this.BulkSaveChangesAsync();
     }
 
+    public async Task<List<LoosePlayItem>> GetCurrentListFull()
+    {
+        var query =
+            from looseItem in CurrentPlay
+            join playItem in PlayItems on looseItem.PlayItemId equals playItem.Id into newCollection
+            from playItem in newCollection.DefaultIfEmpty()
+            select new
+            {
+                looseItem,
+                playItem,
+            };
+
+        var buffer = new List<LoosePlayItem>();
+        await foreach (var item in query.AsAsyncEnumerable())
+        {
+            item.looseItem.PlayItem = item.playItem;
+            buffer.Add(item.looseItem);
+        }
+
+        return buffer;
+    }
+
     public async Task<PaginationQueryResult<LoosePlayItem>> GetRecentListFull(
         int page = 0,
         int countPerPage = 50)
     {
         var query =
             from looseItem in RecentPlay
+            orderby looseItem.LastPlay descending
             join playItem in PlayItems on looseItem.PlayItemId equals playItem.Id into newCollection
             from playItem in newCollection.DefaultIfEmpty()
             select new

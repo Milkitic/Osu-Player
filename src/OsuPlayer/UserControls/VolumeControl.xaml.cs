@@ -29,7 +29,7 @@ public partial class VolumeControl : UserControl
         InitializeComponent();
     }
 
-    private ValueTask PlayerService_LoadFinished(PlayerService.PlayItemLoadingContext arg)
+    private ValueTask PlayerService_LoadFinished(PlayerService.PlayItemLoadContext arg)
     {
         Offset.Value = arg.PlayItem?.PlayItemConfig?.Offset ?? 0;
         return ValueTask.CompletedTask;

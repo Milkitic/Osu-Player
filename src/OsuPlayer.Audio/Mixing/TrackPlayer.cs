@@ -66,7 +66,7 @@ public class TrackPlayer : IAsyncDisposable
 
     public double Duration { get; protected set; }
 
-    public async void Play()
+    public async ValueTask Play()
     {
         if (PlayerStatus is PlayerStatus.Uninitialized)
         {
@@ -83,7 +83,7 @@ public class TrackPlayer : IAsyncDisposable
         PlayerStatus = PlayerStatus.Playing;
     }
 
-    public async void Pause()
+    public async ValueTask Pause()
     {
         if (PlayerStatus is PlayerStatus.Uninitialized)
         {
@@ -112,7 +112,7 @@ public class TrackPlayer : IAsyncDisposable
         }
     }
 
-    public async void Stop()
+    public async ValueTask Stop()
     {
         if (PlayerStatus is PlayerStatus.Uninitialized)
         {
@@ -129,7 +129,7 @@ public class TrackPlayer : IAsyncDisposable
         PlayerStatus = PlayerStatus.Ready;
     }
 
-    public async void Restart()
+    public async ValueTask Restart()
     {
         if (PlayerStatus is PlayerStatus.Uninitialized)
         {
@@ -147,7 +147,7 @@ public class TrackPlayer : IAsyncDisposable
         PlayerStatus = PlayerStatus.Playing;
     }
 
-    public async void Seek(TimeSpan time)
+    public async ValueTask Seek(TimeSpan time)
     {
         if (PlayerStatus is PlayerStatus.Uninitialized)
         {
@@ -162,7 +162,7 @@ public class TrackPlayer : IAsyncDisposable
         PlayerStatus = PlayerStatus.Seeking;
         StopCore();
         await SeekCore(time);
-        await PlayCoreAsync();
+        await PlayCoreAsync(); // todo: don't force to play
         PlayerStatus = PlayerStatus.Playing;
     }
 

@@ -10,7 +10,7 @@ public class PlaySection
     public float PlaybackRate { get; set; } = 1;
     public bool PlayUseTempo { get; set; }
     public bool AutoPlay { get; set; } = false;
-    public bool Memory { get; set; } = true;
+    //public bool Memory { get; set; } = true;
     public DeviceDescription DeviceInfo { get; set; } = null;
     public int DesiredLatency { get; set; } = 5;
     public bool IsExclusive { get; set; } = false;

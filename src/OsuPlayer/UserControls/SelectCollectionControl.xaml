@@ -2,18 +2,17 @@
     x:Class="Milki.OsuPlayer.UserControls.SelectCollectionControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
-    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
+    d:DataContext="{d:DesignInstance Type=viewModels:SelectCollectionPageViewModel,
+                                     IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     FontFamily="{StaticResource SspRegular}"
     Initialized="SelectCollectionControl_OnInitialized"
     mc:Ignorable="d">
-    <UserControl.DataContext>
-        <viewModels:SelectCollectionPageViewModel />
-    </UserControl.DataContext>
     <Grid Margin="-10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

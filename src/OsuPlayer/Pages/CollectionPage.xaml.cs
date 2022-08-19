@@ -96,7 +96,7 @@ public partial class CollectionPage : Page
         dbContext.Remove(_viewModel.PlayList);
         await dbContext.SaveChangesAsync();
 
-        await SharedVm.Default.UpdatePlayLists();
+        await SharedVm.Default.UpdatePlayListsAsync();
         SharedVm.Default.CheckedNavigationType = NavigationType.Recent;
     }
 

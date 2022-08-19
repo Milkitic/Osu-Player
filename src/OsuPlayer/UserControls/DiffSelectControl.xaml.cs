@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Coosu.Database.DataTypes;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
@@ -19,7 +18,7 @@ public class DiffSelectPageViewModel : VmBase
         set => this.RaiseAndSetIfChanged(ref _dataList, value);
     }
 
-    public Action<Beatmap, CallbackObj> Callback { get; set; }
+    public Action<PlayItem, CallbackObj> Callback { get; set; }
 
     public ICommand SelectCommand
     {
@@ -27,7 +26,7 @@ public class DiffSelectPageViewModel : VmBase
         {
             return new DelegateCommand(obj =>
             {
-                var selectedMap = DataList.FirstOrDefault(k => k.Version == (string)obj);
+                var selectedMap = DataList.FirstOrDefault(k => k.PlayItemDetail.Version == (string)obj);
                 var callbackObj = new CallbackObj();
                 Callback?.Invoke(selectedMap, callbackObj);
                 if (!callbackObj.Handled)
@@ -48,12 +47,12 @@ public class CallbackObj
 public partial class DiffSelectControl : UserControl
 {
     private readonly DiffSelectPageViewModel _viewModel;
-    public DiffSelectControl(IEnumerable<Beatmap> beatmaps, Action<Beatmap, CallbackObj> onSelect)
+    public DiffSelectControl(IEnumerable<PlayItem> beatmaps, Action<PlayItem, CallbackObj> onSelect)
     {
         InitializeComponent();
 
-        _viewModel = (DiffSelectPageViewModel)DataContext;
-        _viewModel.DataList = new ObservableCollection<Beatmap>(beatmaps.OrderBy(k => k.GameMode));
+        DataContext = _viewModel = new DiffSelectPageViewModel();
+        _viewModel.DataList = new ObservableCollection<PlayItem>(beatmaps.OrderBy(k => k.PlayItemDetail.GameMode));
         _viewModel.Callback = onSelect;
     }
 }

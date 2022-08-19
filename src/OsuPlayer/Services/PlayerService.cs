@@ -19,13 +19,13 @@ using Milki.OsuPlayer.Wpf;
 namespace Milki.OsuPlayer.Services;
 
 [Fody.ConfigureAwait(false)]
-public class PlayerService : VmBase, IDisposable
+public class PlayerService : VmBase, IAsyncDisposable
 {
-    public class PlayItemLoadingContext
+    public class PlayItemLoadContext
     {
         private readonly CancellationTokenSource _cancellationTokenSource;
 
-        public PlayItemLoadingContext(CancellationTokenSource cancellationTokenSource)
+        public PlayItemLoadContext(CancellationTokenSource cancellationTokenSource)
         {
             _cancellationTokenSource = cancellationTokenSource;
         }
@@ -45,14 +45,14 @@ public class PlayerService : VmBase, IDisposable
         public OsuMixPlayer? Player { get; set; }
     }
 
-    public event Func<PlayItemLoadingContext, ValueTask>? LoadPreStarted;
-    public event Func<PlayItemLoadingContext, ValueTask>? LoadStarted;
-    public event Func<PlayItemLoadingContext, ValueTask>? LoadMetaFinished;
-    public event Func<PlayItemLoadingContext, ValueTask>? LoadBackgroundInfoFinished;
-    public event Func<PlayItemLoadingContext, ValueTask>? LoadMusicFinished;
-    public event Func<PlayItemLoadingContext, ValueTask>? LoadVideoRequested;
-    public event Func<PlayItemLoadingContext, ValueTask>? LoadStoryboardRequested;
-    public event Func<PlayItemLoadingContext, ValueTask>? LoadFinished;
+    public event Func<PlayItemLoadContext, ValueTask>? LoadPreStarted;
+    public event Func<PlayItemLoadContext, ValueTask>? LoadStarted;
+    public event Func<PlayItemLoadContext, ValueTask>? LoadMetaFinished;
+    public event Func<PlayItemLoadContext, ValueTask>? LoadBackgroundInfoFinished;
+    public event Func<PlayItemLoadContext, ValueTask>? LoadMusicFinished;
+    public event Func<PlayItemLoadContext, ValueTask>? LoadVideoRequested;
+    public event Func<PlayItemLoadContext, ValueTask>? LoadStoryboardRequested;
+    public event Func<PlayItemLoadContext, ValueTask>? LoadFinished;
 
     public event Func<OsuMixPlayer, ValueTask>? PlayerStarted;
     public event Func<OsuMixPlayer, ValueTask>? PlayerPaused;
@@ -88,7 +88,7 @@ public class PlayerService : VmBase, IDisposable
 
     public OsuMixPlayer? ActiveMixPlayer { get; private set; }
 
-    public PlayItemLoadingContext? LastLoadContext { get; private set; }
+    public PlayItemLoadContext? LastLoadContext { get; private set; }
 
     public TimeSpan PlayTime
     {
@@ -109,7 +109,7 @@ public class PlayerService : VmBase, IDisposable
         var activeMixPlayer = ActiveMixPlayer;
         if (activeMixPlayer == null) return;
         if (activeMixPlayer.PlayerStatus == PlayerStatus.Playing) return;
-        activeMixPlayer.Play();
+        await activeMixPlayer.Play();
         if (PlayerStarted != null) await PlayerStarted.Invoke(activeMixPlayer);
     }
 
@@ -118,7 +118,7 @@ public class PlayerService : VmBase, IDisposable
         var activeMixPlayer = ActiveMixPlayer;
         if (activeMixPlayer == null) return;
         if (activeMixPlayer.PlayerStatus == PlayerStatus.Ready) return;
-        activeMixPlayer.Stop();
+        await activeMixPlayer.Stop();
         if (PlayerStopped != null) await PlayerStopped.Invoke(activeMixPlayer);
     }
 
@@ -139,7 +139,7 @@ public class PlayerService : VmBase, IDisposable
         var activeMixPlayer = ActiveMixPlayer;
         if (activeMixPlayer == null) return;
         if (activeMixPlayer.PlayerStatus == PlayerStatus.Paused) return;
-        activeMixPlayer.Pause();
+        await activeMixPlayer.Pause();
         if (PlayerPaused != null) await PlayerPaused.Invoke(activeMixPlayer);
     }
 
@@ -147,7 +147,7 @@ public class PlayerService : VmBase, IDisposable
     {
         var activeMixPlayer = ActiveMixPlayer;
         if (activeMixPlayer == null) return;
-        activeMixPlayer.Seek(time);
+        await activeMixPlayer.Seek(time);
         if (PlayerSeek != null) await PlayerSeek.Invoke(activeMixPlayer, time);
     }
 
@@ -168,7 +168,7 @@ public class PlayerService : VmBase, IDisposable
         using var disposable = await _initializationLock.LockAsync();
         IsInitializing = true;
         _lastInitCts ??= new CancellationTokenSource();
-        var context = new PlayItemLoadingContext(_lastInitCts);
+        var context = new PlayItemLoadContext(_lastInitCts);
 
         try
         {
@@ -299,11 +299,6 @@ public class PlayerService : VmBase, IDisposable
         }
     }
 
-    public void Dispose()
-    {
-        _initializationLock.Dispose();
-    }
-
     private async void Player_PlayerStatusChanged(TrackPlayer trackPlayer, PlayerStatus oldStatus, PlayerStatus newStatus)
     {
         PlayerStatusChanged?.Invoke(newStatus);
@@ -374,5 +369,13 @@ public class PlayerService : VmBase, IDisposable
         ActiveMixPlayer.PositionChanged -= Player_PositionChanged;
         await ActiveMixPlayer.DisposeAsync();
         ActiveMixPlayer = null;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        CancelPreviousInitialization();
+        await DisposeActiveMixPlayer();
+        _initializationLock.Dispose();
+        _lastInitCts?.Dispose();
     }
 }

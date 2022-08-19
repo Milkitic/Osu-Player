@@ -14,7 +14,7 @@ using Milki.OsuPlayer.Windows;
 
 namespace Milki.OsuPlayer.Services;
 
-public class LyricsService
+public class LyricsService : IDisposable
 {
     private readonly LyricWindow _lyricWindow;
     private readonly PlayerService _playerService;
@@ -91,5 +91,10 @@ public class LyricsService
                 _lyricWindow.StartWork();
             });
         });
+    }
+
+    public void Dispose()
+    {
+        _lyricWindow?.Dispose();
     }
 }

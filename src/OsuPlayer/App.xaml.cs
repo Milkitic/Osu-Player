@@ -114,7 +114,7 @@ public partial class App : Application
     }
 
 
-    private ValueTask PlayerService_LoadMetaFinished(PlayerService.PlayItemLoadingContext arg)
+    private ValueTask PlayerService_LoadMetaFinished(PlayerService.PlayItemLoadContext arg)
     {
         throw new NotImplementedException();
     }

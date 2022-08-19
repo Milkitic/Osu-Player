@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using Anotar.NLog;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Configuration;
@@ -21,8 +20,12 @@ namespace Milki.OsuPlayer.Windows;
 /// </summary>
 public partial class MainWindow : WindowEx
 {
+    private readonly UpdateService _updateService;
     private readonly PlayerService _playerService;
     private readonly PlayListService _playListService;
+    private readonly BeatmapSyncService _syncService;
+    private readonly OsuFileScanningService _osuFileScanningService;
+    private readonly LyricsService _lyricsService;
 
     private ConfigWindow _configWindow;
     private MiniWindow _miniWindow;
@@ -37,6 +40,10 @@ public partial class MainWindow : WindowEx
     {
         _playerService = App.Current.ServiceProvider.GetService<PlayerService>();
         _playListService = App.Current.ServiceProvider.GetService<PlayListService>();
+        _syncService = ServiceProviders.Default.GetService<BeatmapSyncService>();
+        _osuFileScanningService = ServiceProviders.Default.GetService<OsuFileScanningService>()!;
+        _lyricsService = ServiceProviders.Default.GetService<LyricsService>()!;
+
         InitializeComponent();
         DataContext = _viewModel = new MainWindowViewModel();
         Animation.Loaded += Animation_Loaded;
@@ -140,15 +147,14 @@ public partial class MainWindow : WindowEx
                 SwitchSearch.IsChecked = true;
             });
 
-            var customSongDir = AppSettings.Default.GeneralSection.CustomSongDir;
+            var songDir = AppSettings.Default.GeneralSection.CustomSongDir;
             try
             {
-                await Service.Get<OsuFileScanningService>().NewScanAndAddAsync(customSongDir);
+                await _osuFileScanningService.SyncCustomFolderAsync(songDir);
             }
             catch (Exception ex)
             {
-                LogTo.ErrorException($"Error while scanning custom folder: {customSongDir}", ex);
-                Notification.Push(I18NUtil.GetString("err-custom-scan"), Title);
+                Notification.Push($"{I18NUtil.GetString("err-custom-scan")}: {songDir}\r\n{ex.Message}", Title);
             }
         }
         else
@@ -156,31 +162,28 @@ public partial class MainWindow : WindowEx
             if (DateTime.Now - softwareState.LastSync > TimeSpan.FromDays(1))
             {
                 var dbPath = AppSettings.Default.GeneralSection.DbPath;
-                try
+                if (dbPath != null)
                 {
-                    await Service.Get<OsuDbInst>().SyncOsuDbAsync(dbPath, true);
+                    try
+                    {
+                        await _syncService.SyncOsuDbAsync(dbPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Notification.Push(I18NUtil.GetString("err-osudb-sync"), Title);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    LogTo.ErrorException($"Error while syncing osu!db: {dbPath}", ex);
-                    Notification.Push(I18NUtil.GetString("err-osudb-sync"), Title);
-                    return;
-                }
-
-                softwareState.LastSync = DateTime.Now;
-                await dbContext.UpdateAndSaveChangesAsync(softwareState, k => k.LastSync);
             }
         }
 
-        await SharedVm.Default.UpdatePlayLists();
+        await SharedVm.Default.UpdatePlayListsAsync();
 
         try
         {
-            var updater = Service.Get<UpdateService>();
-            bool? hasUpdate = await updater.CheckUpdateAsync();
-            if (hasUpdate == true && updater.NewRelease.NewVerString != AppSettings.Default.IgnoredVer)
+            bool? hasUpdate = await _updateService.CheckUpdateAsync();
+            if (hasUpdate == true && _updateService.NewRelease.NewVerString != softwareState.IgnoredVersion)
             {
-                var newVersionWindow = new NewVersionWindow(updater.NewRelease, this);
+                var newVersionWindow = new NewVersionWindow(_updateService.NewRelease, this);
                 newVersionWindow.ShowDialog();
             }
         }
@@ -238,7 +241,7 @@ public partial class MainWindow : WindowEx
 
         e.Cancel = true;
         _miniWindow?.Close();
-        LyricWindow.Dispose();
+        _lyricsService.Dispose();
         NotifyIcon.Dispose();
 
         if (_configWindow != null && !_configWindow.IsClosed && _configWindow.IsInitialized)
@@ -246,10 +249,14 @@ public partial class MainWindow : WindowEx
             _configWindow.Close();
         }
 
-        if (_controller != null) await _controller.DisposeAsync().ConfigureAwait(false);
+        if (_playerService != null)
+        {
+            await _playerService.DisposeAsync();
+        }
+
         _disposed = true;
-        await Task.CompletedTask.ConfigureAwait(false);
-        Execute.ToUiThread(ForceClose);
+        await Task.CompletedTask;
+        ForceClose();
     }
 
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -262,33 +269,26 @@ public partial class MainWindow : WindowEx
     private async void Animation_Loaded(object sender, RoutedEventArgs e)
     {
         await using var appDbContext = new ApplicationDbContext();
-        var lastPlay = await appDbContext.RecentList.OrderByDescending(k => k.PlayTime).FirstOrDefaultAsync();
-        if (lastPlay == null || !AppSettings.Default.PlaySection.Memory)
-            return;
-
-        // 加至播放列表
-        var beatmaps = await appDbContext.Playlist
-            .OrderBy(k => k.Id)
-            .Include(k => k.Beatmap)
-            .Select(k => k.Beatmap)
-            .ToListAsync();
-
-        var lastBeatmap = await appDbContext.Playlist
-            .OrderByDescending(k => k.PlayTime)
-            .Include(k => k.Beatmap)
-            .Select(k => k.Beatmap)
-            .FirstOrDefaultAsync();
-
-        await _controller.PlayList.SetSongListAsync(beatmaps, true, false, false);
-
-        bool play = AppSettings.Default.PlaySection.AutoPlay;
-        if (lastBeatmap.IsTemporary)
+        var lastPlay = (await appDbContext.GetRecentListFull(0, 1)).Results.FirstOrDefault();
+        var currentPlays = await appDbContext.GetCurrentListFull();
+        if (lastPlay?.IsItemLost == false)
         {
-            await _controller.PlayNewAsync(lastBeatmap.FolderNameOrPath, play);
+            lastPlay = currentPlays.LastOrDefault(k => !k.IsItemLost && k.PlayItemId == lastPlay.PlayItemId) ??
+                       currentPlays.LastOrDefault(k => !k.IsItemLost) ??
+                       lastPlay;
         }
         else
         {
-            await _controller.PlayNewAsync(lastBeatmap, play);
+            lastPlay = currentPlays.LastOrDefault(k => !k.IsItemLost);
+        }
+
+        _playListService.SetPathList(
+            currentPlays.Where(k => k.PlayItem != null).Select(k => k.PlayItem.StandardizedPath), false);
+
+        if (lastPlay != null)
+        {
+            await _playerService.InitializeNewAsync(lastPlay.PlayItem!.StandardizedPath,
+                AppSettings.Default.PlaySection.AutoPlay);
         }
     }
 
@@ -298,8 +298,8 @@ public partial class MainWindow : WindowEx
         FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, async (obj, args) =>
         {
             await using var dbContext = new ApplicationDbContext();
-            await dbContext.AddCollection(addCollectionControl.CollectionName.Text); //todo: exists
-            await UpdatePlayLists();
+            await dbContext.AddPlayListAsync(addCollectionControl.CollectionName.Text); //todo: exists
+            await SharedVm.Default.UpdatePlayListsAsync();
         });
     }
 
@@ -324,10 +324,10 @@ public partial class MainWindow : WindowEx
 
     private void NotifyIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
     {
-        var mini = GetCurrentFirst<MiniWindow>();
-        if (mini != null)
+        var miniWindow = App.Current.Windows.OfType<MiniWindow>().FirstOrDefault();
+        if (miniWindow != null)
         {
-            mini.Focus();
+            miniWindow.Focus();
             return;
         }
 
@@ -350,19 +350,12 @@ public partial class MainWindow : WindowEx
 
     private void MenuOpenHideLyric_Click(object sender, RoutedEventArgs e)
     {
-        if (LyricWindow.IsShown)
-        {
-            LyricWindow.Hide();
-        }
-        else
-        {
-            LyricWindow.Show();
-        }
+        SharedVm.Default.IsLyricWindowEnabled = !SharedVm.Default.IsLyricWindowEnabled;
     }
 
     private void MenuLockLyric_Click(object sender, RoutedEventArgs e)
     {
-        LyricWindow.IsLocked = !LyricWindow.IsLocked;
+        SharedVm.Default.IsLyricWindowLocked = !SharedVm.Default.IsLyricWindowLocked;
     }
 
     private void Controller_ThumbClicked(object sender, RoutedEventArgs e)
@@ -372,10 +365,9 @@ public partial class MainWindow : WindowEx
 
     private void Controller_LikeClicked(object sender, RoutedEventArgs e)
     {
-        if (_controller.PlayList.CurrentInfo == null) return;
-        var beatmap = _controller.PlayList.CurrentInfo.Beatmap;
+        if (_playerService.LastLoadContext is { PlayItem: { } playItem }) return;
 
-        FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(beatmap),
+        FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(playItem),
             DialogOptionFactory.SelectCollectionOptions);
     }
 

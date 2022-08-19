@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using Coosu.Beatmap;
 using Coosu.Database.DataTypes;
 using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.ViewModels;
 using Milki.OsuPlayer.Windows;
@@ -17,15 +18,15 @@ namespace Milki.OsuPlayer.UserControls
     /// </summary>
     public partial class SelectCollectionControl : UserControl
     {
-        private readonly IList<Beatmap> _beatmaps;
+        private readonly IList<PlayItem> _beatmaps;
         private SelectCollectionPageViewModel _viewModel;
         private FrontDialogOverlay _overlay;
 
-        public SelectCollectionControl(Beatmap beatmap) : this(new[] { beatmap })
+        public SelectCollectionControl(PlayItem beatmap) : this(new[] { beatmap })
         {
         }
 
-        public SelectCollectionControl(IList<Beatmap> beatmaps)
+        public SelectCollectionControl(IList<PlayItem> beatmaps)
         {
             _beatmaps = beatmaps;
             InitializeComponent();
@@ -33,7 +34,7 @@ namespace Milki.OsuPlayer.UserControls
 
         private async void SelectCollectionControl_OnInitialized(object? sender, EventArgs e)
         {
-            _viewModel = (SelectCollectionPageViewModel)DataContext;
+            DataContext = _viewModel = new SelectCollectionPageViewModel();
             _viewModel.PlayItems = _beatmaps;
             await RefreshList();
             _overlay = FrontDialogOverlay.Default.GetOrCreateSubOverlay();
