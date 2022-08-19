@@ -6,49 +6,48 @@ using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.ViewModels;
 
-namespace Milki.OsuPlayer.UserControls
+namespace Milki.OsuPlayer.UserControls;
+
+/// <summary>
+/// EditCollectionControl.xaml 的交互逻辑
+/// </summary>
+public partial class EditCollectionControl : UserControl
 {
-    /// <summary>
-    /// EditCollectionControl.xaml 的交互逻辑
-    /// </summary>
-    public partial class EditCollectionControl : UserControl
+    private readonly PlayList _collection;
+    private readonly EditCollectionPageViewModel _viewModel;
+
+    public EditCollectionControl(PlayList collection)
     {
-        private readonly PlayList _collection;
-        private readonly EditCollectionPageViewModel _viewModel;
+        _collection = collection;
+        InitializeComponent();
+        DataContext = _viewModel = new EditCollectionPageViewModel();
+        _viewModel.Name = _collection.Name;
+        _viewModel.Description = _collection.Description;
+        _viewModel.CoverPath = _collection.ImagePath;
+    }
 
-        public EditCollectionControl(PlayList collection)
+    private async void BtnSave_Click(object sender, RoutedEventArgs e)
+    {
+        _collection.Name = _viewModel.Name;
+        _collection.Description = _viewModel.Description;
+        _collection.ImagePath = _viewModel.CoverPath;
+
+        await using var appDbContext = new ApplicationDbContext();
+        await appDbContext.AddOrUpdateCollection(_collection);
+        FrontDialogOverlay.Default.RaiseOk();
+    }
+
+    private void BtnChooseImg_Click(object sender, RoutedEventArgs e)
+    {
+        var fbd = new OpenFileDialog
         {
-            _collection = collection;
-            InitializeComponent();
-            DataContext = _viewModel = new EditCollectionPageViewModel();
-            _viewModel.Name = _collection.Name;
-            _viewModel.Description = _collection.Description;
-            _viewModel.CoverPath = _collection.ImagePath;
-        }
-
-        private async void BtnSave_Click(object sender, RoutedEventArgs e)
+            Title = @"请选择一个图片",
+            Filter = @"所有支持的图片类型|*.jpg;*.png;*.jpeg"
+        };
+        var result = fbd.ShowDialog();
+        if (result == true)
         {
-            _collection.Name = _viewModel.Name;
-            _collection.Description = _viewModel.Description;
-            _collection.ImagePath = _viewModel.CoverPath;
-
-            await using var appDbContext = new ApplicationDbContext();
-            await appDbContext.AddOrUpdateCollection(_collection);
-            FrontDialogOverlay.Default.RaiseOk();
-        }
-
-        private void BtnChooseImg_Click(object sender, RoutedEventArgs e)
-        {
-            var fbd = new OpenFileDialog
-            {
-                Title = @"请选择一个图片",
-                Filter = @"所有支持的图片类型|*.jpg;*.png;*.jpeg"
-            };
-            var result = fbd.ShowDialog();
-            if (result == true)
-            {
-                _viewModel.CoverPath = fbd.FileName;
-            }
+            _viewModel.CoverPath = fbd.FileName;
         }
     }
 }

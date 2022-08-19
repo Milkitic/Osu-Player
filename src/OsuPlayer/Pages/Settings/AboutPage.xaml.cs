@@ -8,118 +8,117 @@ using Milki.OsuPlayer.Shared;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Windows;
 
-namespace Milki.OsuPlayer.Pages.Settings
+namespace Milki.OsuPlayer.Pages.Settings;
+
+/// <summary>
+/// AboutPage.xaml 的交互逻辑
+/// </summary>
+public partial class AboutPage : Page
 {
-    /// <summary>
-    /// AboutPage.xaml 的交互逻辑
-    /// </summary>
-    public partial class AboutPage : Page
+    private readonly MainWindow _mainWindow;
+    private readonly ConfigWindow _configWindow;
+    private NewVersionWindow _newVersionWindow;
+
+    private readonly UpdateService _updateService;
+
+    public AboutPage()
     {
-        private readonly MainWindow _mainWindow;
-        private readonly ConfigWindow _configWindow;
-        private NewVersionWindow _newVersionWindow;
+        _mainWindow = App.Current.Windows.OfType<MainWindow>().First();
+        _configWindow = App.Current.Windows.OfType<ConfigWindow>().First();
+        _updateService = App.Current.ServiceProvider.GetService<UpdateService>();
 
-        private readonly UpdateService _updateService;
+        InitializeComponent();
+    }
 
-        public AboutPage()
+    private void LinkGithub_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start("https://github.com/Milkitic/Osu-Player");
+    }
+
+    private void LinkFeedback_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start("https://github.com/Milkitic/Osu-Player/issues/new");
+    }
+
+    private async void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        CurrentVer.Content = _updateService.CurrentVersionString;
+        if (_updateService.NewRelease != null)
         {
-            _mainWindow = App.Current.Windows.OfType<MainWindow>().First();
-            _configWindow = App.Current.Windows.OfType<ConfigWindow>().First();
-            _updateService = App.Current.ServiceProvider.GetService<UpdateService>();
-
-            InitializeComponent();
+            NewVersion.Visibility = Visibility.Visible;
         }
 
-        private void LinkGithub_Click(object sender, RoutedEventArgs e)
+        await GetLastUpdate();
+    }
+
+    private async ValueTask GetLastUpdate()
+    {
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var softwareState = await dbContext.GetSoftwareState();
+        if (softwareState.LastUpdateCheck == null)
         {
-            Process.Start("https://github.com/Milkitic/Osu-Player");
+            LastUpdate.Content = I18NUtil.GetString("ui-sets-content-never");
+        }
+        else
+        {
+            LastUpdate.Content = softwareState.LastUpdateCheck.Value.ToString(Conventions.DateTimeFormat);
+        }
+    }
+
+    private async void CheckUpdate_Click(object sender, RoutedEventArgs e)
+    {
+        //todo: action
+        CheckUpdate.IsEnabled = false;
+        bool? hasNew;
+        try
+        {
+            hasNew = await _updateService.CheckUpdateAsync();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(_configWindow, I18NUtil.GetString("ui-sets-content-errorWhileCheckingUpdate") + Environment.NewLine +
+                                           (ex.InnerException?.Message ?? ex.Message),
+                _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
         }
 
-        private void LinkFeedback_Click(object sender, RoutedEventArgs e)
+        CheckUpdate.IsEnabled = true;
+
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var softwareState = await dbContext.GetSoftwareState();
+        softwareState.LastUpdateCheck = DateTime.Now;
+        await GetLastUpdate();
+        AppSettings.SaveDefault();
+        if (hasNew == true)
         {
-            Process.Start("https://github.com/Milkitic/Osu-Player/issues/new");
+            NewVersion.Visibility = Visibility.Visible;
+            NewVersion_Click(sender, e);
+        }
+        else
+        {
+            MessageBox.Show(_configWindow, I18NUtil.GetString("ui-sets-content-alreadyNewest"), _configWindow.Title,
+                MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    private void NewVersion_Click(object sender, RoutedEventArgs e)
+    {
+        if (_newVersionWindow is { IsClosed: false })
+        {
+            _newVersionWindow.Close();
         }
 
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            CurrentVer.Content = _updateService.CurrentVersionString;
-            if (_updateService.NewRelease != null)
-            {
-                NewVersion.Visibility = Visibility.Visible;
-            }
+        _newVersionWindow = new NewVersionWindow(_updateService.NewRelease, _mainWindow);
+        _newVersionWindow.ShowDialog();
+    }
 
-            await GetLastUpdate();
-        }
+    private void LinkLicense_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start("https://github.com/Milkitic/Osu-Player/blob/master/LICENSE");
+    }
 
-        private async ValueTask GetLastUpdate()
-        {
-            await using var dbContext = ServiceProviders.GetApplicationDbContext();
-            var softwareState = await dbContext.GetSoftwareState();
-            if (softwareState.LastUpdateCheck == null)
-            {
-                LastUpdate.Content = I18NUtil.GetString("ui-sets-content-never");
-            }
-            else
-            {
-                LastUpdate.Content = softwareState.LastUpdateCheck.Value.ToString(Conventions.DateTimeFormat);
-            }
-        }
-
-        private async void CheckUpdate_Click(object sender, RoutedEventArgs e)
-        {
-            //todo: action
-            CheckUpdate.IsEnabled = false;
-            bool? hasNew;
-            try
-            {
-                hasNew = await _updateService.CheckUpdateAsync();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(_configWindow, I18NUtil.GetString("ui-sets-content-errorWhileCheckingUpdate") + Environment.NewLine +
-                    (ex.InnerException?.Message ?? ex.Message),
-                    _configWindow.Title, MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            CheckUpdate.IsEnabled = true;
-
-            await using var dbContext = ServiceProviders.GetApplicationDbContext();
-            var softwareState = await dbContext.GetSoftwareState();
-            softwareState.LastUpdateCheck = DateTime.Now;
-            await GetLastUpdate();
-            AppSettings.SaveDefault();
-            if (hasNew == true)
-            {
-                NewVersion.Visibility = Visibility.Visible;
-                NewVersion_Click(sender, e);
-            }
-            else
-            {
-                MessageBox.Show(_configWindow, I18NUtil.GetString("ui-sets-content-alreadyNewest"), _configWindow.Title,
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
-
-        private void NewVersion_Click(object sender, RoutedEventArgs e)
-        {
-            if (_newVersionWindow is { IsClosed: false })
-            {
-                _newVersionWindow.Close();
-            }
-
-            _newVersionWindow = new NewVersionWindow(_updateService.NewRelease, _mainWindow);
-            _newVersionWindow.ShowDialog();
-        }
-
-        private void LinkLicense_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://github.com/Milkitic/Osu-Player/blob/master/LICENSE");
-        }
-
-        private void LinkPrivacy_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("This software will NOT collect any user information.");
-        }
+    private void LinkPrivacy_Click(object sender, RoutedEventArgs e)
+    {
+        MessageBox.Show("This software will NOT collect any user information.");
     }
 }

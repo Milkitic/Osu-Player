@@ -4,58 +4,57 @@ using System.Runtime.CompilerServices;
 using Coosu.Database.DataTypes;
 using JetBrains.Annotations;
 
-namespace Milki.OsuPlayer.ViewModels
+namespace Milki.OsuPlayer.ViewModels;
+
+internal class StoryboardVm : INotifyPropertyChanged
 {
-    internal class StoryboardVm : INotifyPropertyChanged
+    private bool _isScanned;
+    private ObservableCollection<Beatmap> _beatmapModels;
+
+    public bool IsScanned
     {
-        private bool _isScanned;
-        private ObservableCollection<Beatmap> _beatmapModels;
-
-        public bool IsScanned
+        get => _isScanned;
+        set
         {
-            get => _isScanned;
-            set
+            if (value == _isScanned) return;
+            _isScanned = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<Beatmap> BeatmapModels
+    {
+        get => _beatmapModels;
+        set
+        {
+            if (Equals(value, _beatmapModels)) return;
+            _beatmapModels = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public static StoryboardVm Default
+    {
+        get
+        {
+            lock (_defaultLock)
             {
-                if (value == _isScanned) return;
-                _isScanned = value;
-                OnPropertyChanged();
+                return _default ?? (_default = new StoryboardVm());
             }
         }
+    }
 
-        public ObservableCollection<Beatmap> BeatmapModels
-        {
-            get => _beatmapModels;
-            set
-            {
-                if (Equals(value, _beatmapModels)) return;
-                _beatmapModels = value;
-                OnPropertyChanged();
-            }
-        }
+    public event PropertyChangedEventHandler PropertyChanged;
 
-        public static StoryboardVm Default
-        {
-            get
-            {
-                lock (_defaultLock)
-                {
-                    return _default ?? (_default = new StoryboardVm());
-                }
-            }
-        }
+    [NotifyPropertyChangedInvocator]
+    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private static StoryboardVm _default;
-        private static object _defaultLock = new object();
-        private StoryboardVm()
-        {
-        }
+    private static StoryboardVm _default;
+    private static object _defaultLock = new object();
+    private StoryboardVm()
+    {
     }
 }

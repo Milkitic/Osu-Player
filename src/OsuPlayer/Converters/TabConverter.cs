@@ -1,36 +1,35 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
 
-namespace Milki.OsuPlayer.Converters
+namespace Milki.OsuPlayer.Converters;
+
+public static class HeaderParams
 {
-    public static class HeaderParams
+    public static double Multiplier { get; set; } = 0.7;
+}
+
+public class TabHeaderLineX1Converter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        public static double Multiplier { get; set; } = 0.7;
+        return (double?)value * (1 - HeaderParams.Multiplier) / 2;
     }
 
-    public class TabHeaderLineX1Converter : IValueConverter
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (double?)value * (1 - HeaderParams.Multiplier) / 2;
-        }
+        throw new NotImplementedException();
+    }
+}
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+public class TabHeaderLineX2Converter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        return (double?)value * (1 - HeaderParams.Multiplier) / 2 + (double?)value * HeaderParams.Multiplier;
     }
 
-    public class TabHeaderLineX2Converter : IValueConverter
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (double?)value * (1 - HeaderParams.Multiplier) / 2 + (double?)value * HeaderParams.Multiplier;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
     }
 }

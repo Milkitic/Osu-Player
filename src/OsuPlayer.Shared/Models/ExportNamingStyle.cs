@@ -1,7 +1,6 @@
-﻿namespace Milki.OsuPlayer.Shared.Models
+﻿namespace Milki.OsuPlayer.Shared.Models;
+
+public enum ExportNamingStyle
 {
-    public enum ExportNamingStyle
-    {
-        Title, ArtistTitle, TitleArtist
-    }
+    Title, ArtistTitle, TitleArtist
 }

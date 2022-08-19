@@ -2,32 +2,31 @@
 using System.Windows.Data;
 using Coosu.Beatmap.Sections.GamePlay;
 
-namespace Milki.OsuPlayer.Converters
-{
-    class VersionToStringConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            var sb = (GameMode?)value;
-            if (sb == null) return "";
-            switch (sb)
-            {
-                case GameMode.Circle:
-                    return "圈";
-                case GameMode.Taiko:
-                    return "鼓";
-                case GameMode.Catch:
-                    return "果";
-                case GameMode.Mania:
-                    return "键";
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+namespace Milki.OsuPlayer.Converters;
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+class VersionToStringConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        var sb = (GameMode?)value;
+        if (sb == null) return "";
+        switch (sb)
         {
-            throw new NotImplementedException();
+            case GameMode.Circle:
+                return "圈";
+            case GameMode.Taiko:
+                return "鼓";
+            case GameMode.Catch:
+                return "果";
+            case GameMode.Mania:
+                return "键";
+            default:
+                throw new ArgumentOutOfRangeException();
         }
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
     }
 }
