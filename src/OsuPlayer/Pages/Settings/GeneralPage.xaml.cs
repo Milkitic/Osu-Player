@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Windows;

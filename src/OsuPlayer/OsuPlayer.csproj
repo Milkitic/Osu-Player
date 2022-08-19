@@ -137,6 +137,29 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Remove="languages\*.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="languages\*.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="languages\default.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="languages\default.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="languages\*.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
   <!--<Target Condition=" '$(Configuration)'!='Debug'" Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File &quot;$(SolutionDir)post-build.ps1&quot; $(OutDir)" />
   </Target>-->

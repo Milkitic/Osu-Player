@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Xaml;
-using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Models;
 using Milki.OsuPlayer.Shared.Observable;
@@ -115,7 +114,7 @@ public class SearchPageViewModel : VmBase
                 _querySw.Stop();
             });
 
-            await using var dbContext = new ApplicationDbContext();
+            await using var dbContext = ServiceProviders.GetApplicationDbContext();
             var paginationQueryResult = await dbContext
                 .SearchPlayItemsAsync(SearchText,
                     sortMode,
@@ -278,7 +277,7 @@ public class SearchPageViewModel : VmBase
     //        {
     //            var beatmap = (Beatmap)param;
 
-    //            await using var dbContext = new ApplicationDbContext();
+    //            await using var dbContext = ServiceProviders.GetApplicationDbContext();
     //            var beatmaps = await dbContext.GetBeatmapsFromFolder(beatmap.FolderNameOrPath, beatmap.InOwnDb);
 
     //            var control = new DiffSelectControl(
@@ -331,7 +330,7 @@ public class SearchPageViewModel : VmBase
     //        return new DelegateCommand(async param =>
     //        {
     //            var beatmap = (Beatmap)param;
-    //            await using var dbContext = new ApplicationDbContext();
+    //            await using var dbContext = ServiceProviders.GetApplicationDbContext();
     //            var beatmaps = await dbContext.GetBeatmapsFromFolder(beatmap.FolderNameOrPath, beatmap.InOwnDb);
 
     //            var control = new DiffSelectControl(
@@ -349,7 +348,7 @@ public class SearchPageViewModel : VmBase
     //{
     //    if (beatmap == null) return null;
 
-    //    await using var dbContext = new ApplicationDbContext();
+    //    await using var dbContext = ServiceProviders.GetApplicationDbContext();
     //    var map = (await dbContext.GetBeatmapsFromFolder(beatmap.FolderNameOrPath, beatmap.InOwnDb))
     //        .GetHighestDiff();
     //    return map;

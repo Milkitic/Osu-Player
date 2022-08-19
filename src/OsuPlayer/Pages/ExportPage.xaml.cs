@@ -6,7 +6,6 @@ using System.Windows.Input;
 using Anotar.NLog;
 using Coosu.Beatmap;
 using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Models;
 using Milki.OsuPlayer.Shared.Utils;
@@ -132,7 +131,7 @@ public partial class ExportPage : Page
                 Export(bgFileInfo, exportBgFolder, exportBgName);
             if (mp3FileInfo.Exists || bgFileInfo.Exists)
             {
-                await using var appDbContext = new ApplicationDbContext();
+                await using var appDbContext = ServiceProviders.GetApplicationDbContext();
                 await appDbContext.AddOrUpdateExportAsync(new ExportItem
                 {
                     Size = mp3FileInfo.Exists ? mp3FileInfo.Length : bgFileInfo.Length,

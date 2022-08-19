@@ -99,7 +99,9 @@ public partial class App : Application
 
     private async ValueTask InitializeServicesAsync()
     {
-        ServiceProvider.GetService<LyricsService>()!.ReloadLyricProvider();
+        var lyricsService = ServiceProvider.GetService<LyricsService>()!;
+        await lyricsService.CreateWindowAsync();
+        lyricsService!.ReloadLyricProvider();
         var playListService = ServiceProvider.GetService<PlayListService>()!;
         playListService.PlaylistMode = AppSettings.Default.PlaySection.PlayListMode;
 

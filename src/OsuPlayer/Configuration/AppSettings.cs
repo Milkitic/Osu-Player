@@ -3,7 +3,7 @@ using Milki.Extensions.Configuration;
 
 namespace Milki.OsuPlayer.Configuration;
 
-[Encoding("utf8")]
+[Encoding("utf-8")]
 public sealed class AppSettings : IConfigurationBase
 {
     private GeneralSection _general = new();

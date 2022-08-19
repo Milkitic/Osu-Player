@@ -16,7 +16,7 @@ namespace Milki.OsuPlayer.Services;
 
 public class LyricsService : IDisposable
 {
-    private readonly LyricWindow _lyricWindow;
+    private LyricWindow _lyricWindow = null!;
     private readonly PlayerService _playerService;
     private LyricProvider? _lyricProvider;
     private Task? _searchLyricTask;
@@ -24,9 +24,15 @@ public class LyricsService : IDisposable
     public LyricsService(PlayerService playerService)
     {
         _playerService = playerService;
-        _lyricWindow = App.Current.Dispatcher.Invoke(() => new LyricWindow());
     }
 
+    public async Task CreateWindowAsync()
+    {
+        await App.Current.Dispatcher.InvokeAsync(() =>
+        {
+            _lyricWindow = new LyricWindow();
+        });
+    }
 
     public void ReloadLyricProvider(bool useStrict = true)
     {

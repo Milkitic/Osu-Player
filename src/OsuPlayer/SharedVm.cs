@@ -1,5 +1,4 @@
 ﻿using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Observable;
 
@@ -64,7 +63,7 @@ public class SharedVm : SingletonVm<SharedVm>
     /// </summary>
     public async ValueTask UpdatePlayListsAsync()
     {
-        await using var dbContext = new ApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var list = await dbContext.GetPlayListsAsync();
         PlayLists = new List<PlayList>(list);
     }

@@ -268,7 +268,7 @@ public partial class MainWindow : WindowEx
 
     private async void Animation_Loaded(object sender, RoutedEventArgs e)
     {
-        await using var appDbContext = new ApplicationDbContext();
+        await using var appDbContext = ServiceProviders.GetApplicationDbContext();
         var lastPlay = (await appDbContext.GetRecentListFull(0, 1)).Results.FirstOrDefault();
         var currentPlays = await appDbContext.GetCurrentListFull();
         if (lastPlay?.IsItemLost == false)
@@ -297,7 +297,7 @@ public partial class MainWindow : WindowEx
         var addCollectionControl = new AddCollectionControl();
         FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, async (obj, args) =>
         {
-            await using var dbContext = new ApplicationDbContext();
+            await using var dbContext = ServiceProviders.GetApplicationDbContext();
             await dbContext.AddPlayListAsync(addCollectionControl.CollectionName.Text); //todo: exists
             await SharedVm.Default.UpdatePlayListsAsync();
         });

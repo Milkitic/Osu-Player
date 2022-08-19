@@ -70,7 +70,7 @@ public sealed class PlayItemDetail
         GameMode.Mania => DefaultStarRatingMania,
         _ => throw new ArgumentOutOfRangeException()
     };
-    
+
     public string AutoArtist => string.IsNullOrWhiteSpace(ArtistUnicode) ? Artist : ArtistUnicode;
     public string AutoTitle => string.IsNullOrWhiteSpace(TitleUnicode) ? Title : TitleUnicode;
 }

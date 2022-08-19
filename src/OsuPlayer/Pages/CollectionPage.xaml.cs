@@ -5,7 +5,6 @@ using Anotar.NLog;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Audio;
-using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
@@ -44,7 +43,7 @@ public partial class CollectionPage : Page
 
     public async Task UpdateList()
     {
-        await using var dbContext = new ApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var playListDetail = await dbContext.PlayLists
             .Include(k => k.PlayListRelations)
             .ThenInclude(k => k.PlayItem)
@@ -91,7 +90,7 @@ public partial class CollectionPage : Page
             MessageBoxButton.OKCancel,
             MessageBoxImage.Exclamation);
         if (result != MessageBoxResult.OK) return;
-        await using var dbContext = new ApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
 
         dbContext.Remove(_viewModel.PlayList);
         await dbContext.SaveChangesAsync();
@@ -120,7 +119,7 @@ public partial class CollectionPage : Page
         }
 
         var selectedItem = (PlayItem)MapCardList.SelectedItem;
-        await using var dbContext = new ApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var beatmaps = await dbContext.GetPlayItemsByFolderAsync(selectedItem.StandardizedFolder);
         return beatmaps.FirstOrDefault(k => k.PlayItemDetail.Version == selectedItem.PlayItemDetail.Version);
     }

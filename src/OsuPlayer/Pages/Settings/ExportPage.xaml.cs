@@ -39,10 +39,10 @@ public partial class ExportPage : Page
     private void BtnMp3Path_Click(object sender, RoutedEventArgs e)
     {
         using (var dialog = new CommonOpenFileDialog
-               {
-                   IsFolderPicker = true,
-                   Title = "选择音乐导出目录",
-               })
+        {
+            IsFolderPicker = true,
+            Title = "选择音乐导出目录",
+        })
         {
             var result = dialog.ShowDialog();
             if (result != CommonFileDialogResult.Ok) return;
@@ -55,10 +55,10 @@ public partial class ExportPage : Page
     private void BtnBgPath_Click(object sender, RoutedEventArgs e)
     {
         using (var dialog = new CommonOpenFileDialog()
-               {
-                   IsFolderPicker = true,
-                   Title = "选择背景导出目录"
-               })
+        {
+            IsFolderPicker = true,
+            Title = "选择背景导出目录"
+        })
         {
             var result = dialog.ShowDialog();
             if (result != CommonFileDialogResult.Ok) return;

@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
-using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.ViewModels;
@@ -32,7 +31,7 @@ public partial class EditCollectionControl : UserControl
         _collection.Description = _viewModel.Description;
         _collection.ImagePath = _viewModel.CoverPath;
 
-        await using var appDbContext = new ApplicationDbContext();
+        await using var appDbContext = ServiceProviders.GetApplicationDbContext();
         await appDbContext.AddOrUpdatePlayListAsync(_collection);
         FrontDialogOverlay.Default.RaiseOk();
     }

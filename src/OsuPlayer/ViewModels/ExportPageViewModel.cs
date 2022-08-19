@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
-using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Pages;
 using Milki.OsuPlayer.Shared.Observable;
@@ -126,7 +125,7 @@ public class ExportPageViewModel : VmBase
             return new DelegateCommand(async obj =>
             {
                 if (SelectedItems == null) return;
-                await using var dbContext = new ApplicationDbContext();
+                await using var dbContext = ServiceProviders.GetApplicationDbContext();
 
                 foreach (var exportItem in SelectedItems)
                 {
@@ -149,7 +148,7 @@ public class ExportPageViewModel : VmBase
 
     private async Task UpdateCollection()
     {
-        await using var dbContext = new ApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var paginationQueryResult = await dbContext.GetExportListFull();
         var exports = paginationQueryResult.Results;
         //foreach (var export in exports)

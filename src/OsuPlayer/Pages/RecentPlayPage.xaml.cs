@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Audio;
-using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
@@ -118,7 +117,7 @@ public class RecentPlayPageVm : VmBase
     //    {
     //        return new DelegateCommand<OrderedModel<Beatmap>>(async map =>
     //        {
-    //            await using var appDbContext = new ApplicationDbContext();
+    //            await using var appDbContext = ServiceProviders.GetApplicationDbContext();
     //            await appDbContext.RemoveBeatmapFromRecent(map);
     //            {
     //                Beatmaps.Remove(map);
@@ -169,14 +168,14 @@ public partial class RecentPlayPage : Page
             App.Current.MainWindow?.Title);
         if (!result) return;
 
-        await using var appDbContext = new ApplicationDbContext();
+        await using var appDbContext = ServiceProviders.GetApplicationDbContext();
         await appDbContext.ClearRecentList();
         _viewModel.PlayItems.Clear();
     }
 
     private async Task UpdateList()
     {
-        await using var appDbContext = new ApplicationDbContext();
+        await using var appDbContext = ServiceProviders.GetApplicationDbContext();
         var queryResult = await appDbContext.GetRecentListFull();
         // todo: pagination
         _viewModel.PlayItems = new ObservableCollection<LoosePlayItem>(queryResult.Results);
@@ -184,7 +183,7 @@ public partial class RecentPlayPage : Page
 
     private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
     {
-        await using var appDbContext = new ApplicationDbContext();
+        await using var appDbContext = ServiceProviders.GetApplicationDbContext();
         var paginationQueryResult = await appDbContext.GetRecentListFull(0, int.MaxValue);
         if (paginationQueryResult.Results.Count == 0) return;
 

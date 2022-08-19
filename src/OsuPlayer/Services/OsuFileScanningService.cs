@@ -7,7 +7,6 @@ using Coosu.Beatmap.Sections.GamePlay;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.Shared.Utils;
@@ -57,7 +56,7 @@ public class OsuFileScanningService
         }
 
         _scanCts = new CancellationTokenSource();
-        await using var dbContext = new ApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         await dbContext.RemoveFolderAll();
         var dirInfo = new DirectoryInfo(path);
         var concurrentBag = new ConcurrentDictionary<string, PlayItemDetail>();
