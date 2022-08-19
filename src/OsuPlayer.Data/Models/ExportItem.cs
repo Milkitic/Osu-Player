@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Milki.OsuPlayer.Data.Models;
 
@@ -19,7 +20,12 @@ public sealed class ExportItem
     [MaxLength(128)]
     public string Version { get; set; } = null!;
 
+    [NotMapped]
+    public bool IsItemLost => PlayItem == null;
+
     public int? PlayItemId { get; set; }
+    [NotMapped]
+    public PlayItem? PlayItem { get; set; }
     [MaxLength(512)]
     public string? PlayItemPath { get; set; }
 }

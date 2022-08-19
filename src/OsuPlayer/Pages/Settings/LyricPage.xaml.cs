@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Models;
@@ -107,7 +108,7 @@ public partial class LyricPage : Page
 
     private void ReloadLyric()
     {
-        Service.Get<LyricsService>().ReloadLyricProvider();
-        _mainWindow.SetLyricSynchronously();
+        var lyricService = ServiceProviders.Default.GetService<LyricsService>()!;
+        lyricService.SetLyricSynchronously(null);
     }
 }

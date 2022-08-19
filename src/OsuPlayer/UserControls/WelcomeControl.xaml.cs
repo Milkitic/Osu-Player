@@ -1,13 +1,11 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Anotar.NLog;
 using Microsoft.Extensions.DependencyInjection;
-using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milki.OsuPlayer.UiComponents.NotificationComponent;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Wpf.Command;
 
@@ -17,28 +15,17 @@ public class WelcomeControlVm : VmBase
 {
     private bool _guideSyncing;
     private bool _guideSelectedDb;
-    private bool _showWelcome;
 
     public bool GuideSyncing
     {
         get => _guideSyncing;
-        set
-        {
-            if (_guideSyncing == value) return;
-            _guideSyncing = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _guideSyncing, value);
     }
 
     public bool GuideSelectedDb
     {
         get => _guideSelectedDb;
-        set
-        {
-            if (_guideSelectedDb == value) return;
-            _guideSelectedDb = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _guideSelectedDb, value);
     }
 
     public ICommand SelectDbCommand
@@ -48,6 +35,7 @@ public class WelcomeControlVm : VmBase
             return new DelegateCommand(async arg =>
             {
                 var syncService = ServiceProviders.Default.GetService<BeatmapSyncService>()!;
+
                 var result = CommonUtils.BrowseDb(out var path);
                 if (!result.HasValue || !result.Value)
                 {
@@ -74,31 +62,16 @@ public class WelcomeControlVm : VmBase
                     GuideSyncing = false;
                 }
 
-                try
-                {
-                    GuideSyncing = true;
-                    await Service.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
-                    AppSettings.Default.GeneralSection.DbPath = path;
-                    AppSettings.SaveDefault();
-                    GuideSyncing = false;
-                    GuideSelectedDb = true;
-                    isSuccess = true;
-                }
-                catch (Exception ex)
-                {
-                    LogTo.ErrorException($"Error while syncing osu!db: {path}", ex);
-                    Notification.Push("Error while syncing osu!db: " + path + "\r\n" + ex.Message);
-                    GuideSelectedDb = false;
-                }
-
                 if (isSuccess)
                 {
-                    AppSettings.Default.GeneralSection.FirstOpen = false;
-                    AppSettings.SaveDefault();
+                    await using var dbContext = ServiceProviders.GetApplicationDbContext();
+                    var softwareState = await dbContext.GetSoftwareState();
+                    softwareState.ShowWelcome = false;
+                    await dbContext.UpdateAndSaveChangesAsync(softwareState, k => k.ShowWelcome);
+
                     FrontDialogOverlay.Default.RaiseOk();
                 }
 
-                GuideSyncing = false;
             });
         }
     }
@@ -107,12 +80,14 @@ public class WelcomeControlVm : VmBase
     {
         get
         {
-            return new DelegateCommand(arg =>
+            return new DelegateCommand(async arg =>
             {
-                //ShowWelcome = false;
                 FrontDialogOverlay.Default.RaiseCancel();
-                AppSettings.Default.GeneralSection.FirstOpen = false;
-                AppSettings.SaveDefault();
+
+                await using var dbContext = ServiceProviders.GetApplicationDbContext();
+                var softwareState = await dbContext.GetSoftwareState();
+                softwareState.ShowWelcome = false;
+                await dbContext.UpdateAndSaveChangesAsync(softwareState, k => k.ShowWelcome);
             });
         }
     }
@@ -123,11 +98,11 @@ public class WelcomeControlVm : VmBase
 /// </summary>
 public partial class WelcomeControl : UserControl
 {
-    public WelcomeControlVm ViewModel { get; }
+    private readonly WelcomeControlVm _viewModel;
 
     public WelcomeControl()
     {
         InitializeComponent();
-        ViewModel = (WelcomeControlVm)WelcomeArea.DataContext;
+        DataContext = _viewModel = new WelcomeControlVm();
     }
 }

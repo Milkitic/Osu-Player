@@ -7,9 +7,10 @@
     xmlns:loaderComponent="clr-namespace:Milki.OsuPlayer.UiComponents.LoaderComponent"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:osuPlayer="clr-namespace:Milki.OsuPlayer"
+    xmlns:services="clr-namespace:Milki.OsuPlayer.Services"
     xmlns:textBoxComponent="clr-namespace:Milki.OsuPlayer.UiComponents.TextBoxComponent"
     Title="GeneralPage"
-    d:DataContext="{d:DesignInstance Type=osuPlayer:FileScannerViewModel,
+    d:DataContext="{d:DesignInstance Type=services:FileScannerViewModel,
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="450"
     d:DesignWidth="800"

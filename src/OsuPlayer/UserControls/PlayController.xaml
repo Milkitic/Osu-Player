@@ -202,9 +202,9 @@
                     Click="TitleArtist_Click"
                     Style="{StaticResource InvisibleButton}">
                     <TextBlock>
-                        <Run Foreground="#777" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.TitleAuto, Mode=OneWay}" />
+                        <Run Foreground="#777" Text="{Binding PlayerService.PlayList.CurrentInfo.BeatmapDetail.Metadata.TitleAuto, Mode=OneWay}" />
                         <Run Text="-" />
-                        <Run Foreground="#AAA" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.ArtistAuto, Mode=OneWay}" />
+                        <Run Foreground="#AAA" Text="{Binding PlayerService.PlayList.CurrentInfo.BeatmapDetail.Metadata.ArtistAuto, Mode=OneWay}" />
                     </TextBlock>
                 </buttonComponent:CommonButton>
                 <buttonComponent:CommonButton
@@ -267,7 +267,7 @@
                         Click="ModeButton_Click"
                         IconMargin="0"
                         IconSize="25"
-                        IconTemplate="{Binding Controller.PlayList.Mode, Converter={StaticResource PlayModeConverter}}"
+                        IconTemplate="{Binding PlayerService.PlayList.Mode, Converter={StaticResource PlayModeConverter}}"
                         MouseOverBackground="Transparent"
                         WindowChrome.IsHitTestVisibleInChrome="True" />
                     <buttonComponent:CommonButton
@@ -280,7 +280,7 @@
                         Click="LikeButton_Click"
                         IconMargin="0"
                         IconSize="24"
-                        IconTemplate="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}"
+                        IconTemplate="{Binding PlayerService.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}"
                         MouseOverBackground="Transparent" />
                     <buttonComponent:CommonButton
                         x:Name="VolumeButton"
@@ -332,7 +332,7 @@
             PlacementTarget="{Binding ElementName=PlayListButton}"
             PopupAnimation="Fade"
             StaysOpen="False">
-            <userControls:PlayListControl CloseRequested="PlayListControl_CloseRequested" />
+            <userControls:CurrentPlayControl CloseRequested="PlayListControl_CloseRequested" />
         </Popup>
         <Popup
             x:Name="Pop"

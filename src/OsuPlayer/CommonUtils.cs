@@ -57,7 +57,7 @@ public static class CommonUtils
         try
         {
             await osuFileScanningService.CancelTaskAsync();
-            await osuFileScanningService.NewScanAndAddAsync(path);
+            await osuFileScanningService.ScanAndSyncAsync(path);
 
             AppSettings.Default.GeneralSection.CustomSongDir = path;
             AppSettings.SaveDefault();

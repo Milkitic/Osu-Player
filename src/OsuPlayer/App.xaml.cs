@@ -101,7 +101,7 @@ public partial class App : Application
     {
         ServiceProvider.GetService<LyricsService>()!.ReloadLyricProvider();
         var playListService = ServiceProvider.GetService<PlayListService>()!;
-        playListService.Mode = AppSettings.Default.PlaySection.PlayListMode;
+        playListService.PlaylistMode = AppSettings.Default.PlaySection.PlayListMode;
 
         await using var dbContext = ServiceProvider.GetService<ApplicationDbContext>()!;
         await dbContext.Database.MigrateAsync();

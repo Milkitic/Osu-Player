@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Xaml;
-using Coosu.Database.DataTypes;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Models;
@@ -16,7 +15,7 @@ public class SearchPageViewModel : VmBase
 {
     private const int MaxListCount = 100;
 
-    private ObservableCollection<PlayItem> _playItems;
+    private ObservableCollection<PlayGroupQuery> _playItems;
     private List<ListPageViewModel> _pages;
     private ListPageViewModel _lastPage;
     private ListPageViewModel _firstPage;
@@ -34,7 +33,7 @@ public class SearchPageViewModel : VmBase
         }
     }
 
-    public ObservableCollection<PlayItem> PlayItems
+    public ObservableCollection<PlayGroupQuery> PlayItems
     {
         get => _playItems;
         private set
@@ -124,9 +123,8 @@ public class SearchPageViewModel : VmBase
                     countPerPage: MaxListCount
                 );
 
-            var result = await dbContext.FillBeatmapThumbs(paginationQueryResult.Collection);
-            PlayItems = new ObservableCollection<OrderedModel<Beatmap>>(result.AsOrdered());
-            SetPage(paginationQueryResult.Count, page);
+            PlayItems = new ObservableCollection<PlayGroupQuery>(paginationQueryResult.Results);
+            SetPage(paginationQueryResult.TotalCount, page);
         }
         finally
         {

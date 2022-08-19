@@ -1,30 +1,42 @@
-﻿using Milki.OsuPlayer.Shared.Models;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using Milki.OsuPlayer.Shared.Models;
 
 namespace Milki.OsuPlayer.Audio;
 
-public class PlayListService
+public class PlayListService : INotifyPropertyChanged
 {
     private readonly Random _random = new();
-    private PlaylistMode _mode;
+    private PlaylistMode _playlistMode;
 
     private int? _pointer;
     private int[] _pathIndexList = Array.Empty<int>(); // [3,0,2,1,4]
     private List<string> _pathList = new(); // ["a","b","c","d","e"]
 
-    public PlaylistMode Mode
+    public PlayListService()
     {
-        get => _mode;
+        PathList = new ReadOnlyCollection<string>(_pathList);
+    }
+
+    public IReadOnlyList<string> PathList { get; }
+
+    public PlaylistMode PlaylistMode
+    {
+        get => _playlistMode;
         set
         {
-            if (_mode == value) return;
+            if (_playlistMode == value) return;
 
-            var preIsRandom = _mode is PlaylistMode.Random or PlaylistMode.LoopRandom;
-            _mode = value;
+            var preIsRandom = _playlistMode is PlaylistMode.Random or PlaylistMode.LoopRandom;
+            _playlistMode = value;
             var isRandom = value is PlaylistMode.Random or PlaylistMode.LoopRandom;
             if (preIsRandom != isRandom)
             {
                 RebuildPathIndexes();
             }
+
+            OnPropertyChanged();
         }
     }
 
@@ -69,11 +81,17 @@ public class PlayListService
 
     public void RemovePaths(params string[] paths)
     {
+        RemovePaths((IEnumerable<string>)paths);
+    }
+
+    public void RemovePaths(IEnumerable<string> paths)
+    {
         var currentPath = GetCurrentPath();
 
-        if (paths.Length <= 0) return;
+        var array = paths as string[] ?? paths.ToArray();
+        if (array.Length == 0) return;
 
-        foreach (var path in paths)
+        foreach (var path in array)
         {
             var success = _pathList.Remove(path);
             if (success && path.Equals(currentPath, StringComparison.Ordinal))
@@ -124,7 +142,7 @@ public class PlayListService
 
         var currentPath = GetCurrentPath();
 
-        if (forceLoop || Mode is PlaylistMode.Loop or PlaylistMode.LoopRandom)
+        if (forceLoop || PlaylistMode is PlaylistMode.Loop or PlaylistMode.LoopRandom)
         {
             if (playDirection == PlayDirection.Next)
             {
@@ -134,7 +152,7 @@ public class PlayListService
             return SetPathByPointer(_pointer == 0 ? _pathIndexList.Length - 1 : _pointer - 1);
         }
 
-        if (Mode is PlaylistMode.Normal or PlaylistMode.Random)
+        if (PlaylistMode is PlaylistMode.Normal or PlaylistMode.Random)
         {
             if (playDirection == PlayDirection.Next)
             {
@@ -146,17 +164,17 @@ public class PlayListService
             return SetPathByPointer(_pointer - 1);
         }
 
-        if (Mode == PlaylistMode.SingleLoop) return currentPath;
-        if (Mode == PlaylistMode.Single) return null;
+        if (PlaylistMode == PlaylistMode.SingleLoop) return currentPath;
+        if (PlaylistMode == PlaylistMode.Single) return null;
 
-        throw new ArgumentOutOfRangeException(nameof(Mode), Mode, null);
+        throw new ArgumentOutOfRangeException(nameof(PlaylistMode), PlaylistMode, null);
     }
 
     private void RebuildPathIndexes()
     {
         if (_pathList.Count == 0) return;
         var array = Enumerable.Range(0, _pathList.Count).ToArray();
-        if (Mode is PlaylistMode.LoopRandom or PlaylistMode.Random)
+        if (PlaylistMode is PlaylistMode.LoopRandom or PlaylistMode.Random)
         {
             Shuffle(array);
         }
@@ -190,5 +208,12 @@ public class PlayListService
             var k = _random.Next(n + 1);
             (list[k], list[n]) = (list[n], list[k]);
         }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

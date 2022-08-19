@@ -69,18 +69,6 @@
                     Unchecked="ChkAutoPlay_CheckChanged" />
                 <Label
                     HorizontalAlignment="Left"
-                    Content="{DynamicResource ui-sets-title-playProgress}"
-                    Style="{StaticResource ConfigTitleStyle}" />
-                <CheckBox
-                    x:Name="ChkMemory"
-                    Margin="8,0"
-                    HorizontalAlignment="Left"
-                    Checked="ChkMemory_CheckChanged"
-                    Content="{DynamicResource ui-sets-content-resumePlaylistOnProgramStartup}"
-                    Style="{StaticResource CommonCheckBox}"
-                    Unchecked="ChkMemory_CheckChanged" />
-                <Label
-                    HorizontalAlignment="Left"
                     Content="{DynamicResource ui-sets-title-audioPlayDevice}"
                     Style="{StaticResource ConfigTitleStyle}" />
                 <ComboBox
@@ -88,10 +76,10 @@
                     Width="320"
                     Margin="8,0"
                     HorizontalAlignment="Left"
-                    SelectionChanged="DeviceInfoCombo_OnSelectionChanged" >
+                    SelectionChanged="DeviceInfoCombo_OnSelectionChanged">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Converter={StaticResource DeviceInfoToStringConverter}}"/> 
+                            <TextBlock Text="{Binding Converter={StaticResource DeviceInfoToStringConverter}}" />
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>

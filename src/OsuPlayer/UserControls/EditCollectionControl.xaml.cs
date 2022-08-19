@@ -33,7 +33,7 @@ public partial class EditCollectionControl : UserControl
         _collection.ImagePath = _viewModel.CoverPath;
 
         await using var appDbContext = new ApplicationDbContext();
-        await appDbContext.AddOrUpdateCollection(_collection);
+        await appDbContext.AddOrUpdatePlayListAsync(_collection);
         FrontDialogOverlay.Default.RaiseOk();
     }
 

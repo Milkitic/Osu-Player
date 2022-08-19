@@ -145,6 +145,7 @@ public class PlayerService : VmBase, IAsyncDisposable
 
     public async ValueTask SeekAsync(TimeSpan time)
     {
+        var playAfterSeek = PlayerStatus == PlayerStatus.Playing;
         var activeMixPlayer = ActiveMixPlayer;
         if (activeMixPlayer == null) return;
         await activeMixPlayer.Seek(time);

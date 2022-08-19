@@ -1,5 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Extensions.DependencyInjection;
+using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Shared.Models;
 
 namespace Milki.OsuPlayer.UserControls;
@@ -21,25 +23,25 @@ public partial class PlayModeControl : UserControl
         remove => RemoveHandler(CloseRequestedEvent, value);
     }
 
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
-
     public PlayModeControl()
     {
+        PlayListService = ServiceProviders.Default.GetService<PlayListService>();
         InitializeComponent();
     }
 
+    public PlayListService PlayListService { get; }
+
     private void UserControl_Loaded(object sender, RoutedEventArgs e)
     {
-        if (_controller == null) return;
-        _controller.PlayList.PropertyChanged += Player_PropertyChanged;
-        SwitchOption(_controller.PlayList.Mode);
+        PlayListService.PropertyChanged += Player_PropertyChanged;
+        SwitchOption(PlayListService.PlaylistMode);
     }
 
     private void Player_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(_controller.PlayList.Mode))
+        if (e.PropertyName == nameof(PlayListService.PlaylistMode))
         {
-            SwitchOption(_controller.PlayList.Mode);
+            SwitchOption(PlayListService.PlaylistMode);
         }
     }
 
@@ -74,7 +76,7 @@ public partial class PlayModeControl : UserControl
     {
         if (e.OriginalSource is RadioButton radio)
         {
-            _controller.PlayList.Mode = (PlaylistMode)radio.Tag;
+            PlayListService.PlaylistMode = (PlaylistMode)radio.Tag;
             RaiseEvent(new RoutedEventArgs(CloseRequestedEvent, this));
         }
     }

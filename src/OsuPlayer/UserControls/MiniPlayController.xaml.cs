@@ -2,43 +2,29 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
-using Milki.OsuPlayer.Wpf.Command;
 
 namespace Milki.OsuPlayer.UserControls;
 
 public class MiniPlayListControlVm : VmBase
 {
-    private ObservablePlayController _controller;
     private double _positionPercent;
-
-    public ObservablePlayController Controller
-    {
-        get => _controller;
-        set
-        {
-            _controller = value;
-            OnPropertyChanged();
-        }
-    }
 
     public SharedVm Shared { get; } = SharedVm.Default;
 
-    public ICommand PlayPrevCommand => new DelegateCommand(async param => await _controller.PlayPrevAsync());
+    //public ICommand PlayPrevCommand => new DelegateCommand(async param => await _controller.PlayPrevAsync());
 
-    public ICommand PlayNextCommand => new DelegateCommand(async param => await _controller.PlayNextAsync());
+    //public ICommand PlayNextCommand => new DelegateCommand(async param => await _controller.PlayNextAsync());
 
-    public ICommand PlayPauseCommand => new DelegateCommand(param => _controller.Player.TogglePlay());
+    //public ICommand PlayPauseCommand => new DelegateCommand(param => _controller.Player.TogglePlay());
 
     public double PositionPercent
     {
         get => _positionPercent;
-        set
-        {
-            _positionPercent = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _positionPercent, value);
     }
 }
 
@@ -47,41 +33,31 @@ public class MiniPlayListControlVm : VmBase
 /// </summary>
 public partial class MiniPlayController : UserControl
 {
-    private MiniPlayListControlVm _viewModel;
-
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+    private readonly MiniPlayListControlVm _viewModel;
+    private readonly PlayerService _controller;
 
     public static event Action MaxButtonClicked;
     public static event Action CloseButtonClicked;
 
     public MiniPlayController()
     {
+        _controller = ServiceProviders.Default.GetService<PlayerService>();
+        DataContext = _viewModel = new MiniPlayListControlVm();
         InitializeComponent();
-        _viewModel = (MiniPlayListControlVm)DataContext;
-        _viewModel.Controller = Service.Get<ObservablePlayController>();
-        Default = this;
     }
 
     private void UserControl_Loaded(object sender, RoutedEventArgs e)
     {
         PlayModeControl.CloseRequested += (obj, args) => PopMode.IsOpen = false;
         if (_controller != null)
-            _controller.PositionUpdated += AudioPlayer_PositionChanged;
+        {
+            _controller.PlayTimeChanged += AudioPlayer_PlayTimeChanged;
+        }
     }
 
-    private void UserControl_Initialized(object sender, EventArgs e)
+    private void AudioPlayer_PlayTimeChanged(TimeSpan time)
     {
-        //if (_controller != null) _controller.LoadFinished += Controller_LoadFinished;
-    }
-
-    private void Controller_LoadFinished(BeatmapContext arg1, System.Threading.CancellationToken arg2)
-    {
-        //_controller.PositionUpdated += AudioPlayer_PositionChanged;
-    }
-
-    private void AudioPlayer_PositionChanged(TimeSpan time)
-    {
-        _viewModel.PositionPercent = time.TotalMilliseconds / _controller.Player.Duration.TotalMilliseconds;
+        _viewModel.PositionPercent = time.TotalMilliseconds / _controller.TotalTime.TotalMilliseconds;
     }
 
     private void MaxButton_Click(object sender, RoutedEventArgs e)
@@ -93,8 +69,6 @@ public partial class MiniPlayController : UserControl
     {
         CloseButtonClicked?.Invoke();
     }
-
-    public static MiniPlayController Default { get; private set; }
 
     private void VolumeButton_Click(object sender, RoutedEventArgs e)
     {
@@ -118,23 +92,24 @@ public partial class MiniPlayController : UserControl
 
     private async void ButtonLike_Click(object sender, RoutedEventArgs e)
     {
-        await using var dbContext = new ApplicationDbContext();
+        var loadContext = _controller.LastLoadContext;
+        if (loadContext is not { PlayItem: { } playItem }) return;
 
-        var collection = await dbContext.Collections.FirstOrDefaultAsync(k => k.IsDefault);
-        var metadata = _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata;
-        if (metadata.IsFavorite)
+        await using var dbContext = new ApplicationDbContext();
+        var playList = await dbContext.PlayLists.FirstOrDefaultAsync(k => k.IsDefault);
+        if (playList == null) return;
+
+        if (loadContext.IsPlayItemFavorite)
         {
-            await dbContext.DeleteBeatmapFromCollection(_controller.PlayList.CurrentInfo.Beatmap, collection);
-            metadata.IsFavorite = false;
+            await dbContext.DeletePlayItemsFromPlayListAsync(new[] { playItem }, playList);
+            loadContext.IsPlayItemFavorite = false;
         }
         else
         {
-            if (await SelectCollectionControl.AddToCollectionAsync(collection,
-                    new[]
-                    {
-                        _controller.PlayList.CurrentInfo.Beatmap
-                    }))
-                metadata.IsFavorite = true;
+            if (await SelectCollectionControl.AddToCollectionAsync(playList, new[] { playItem }))
+            {
+                loadContext.IsPlayItemFavorite = true;
+            }
         }
     }
 

@@ -71,9 +71,6 @@
     <PackageReference Include="NLog.Schema">
       <Version>5.0.2</Version>
     </PackageReference>
-    <PackageReference Include="osu.Shared">
-      <Version>1.0.3</Version>
-    </PackageReference>
     <PackageReference Include="Sentry.NLog">
       <Version>3.20.1</Version>
     </PackageReference>

@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
-using Anotar.NLog;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Pages;
@@ -99,7 +98,14 @@ public class ExportPageViewModel : VmBase
                 if (SelectedItems == null) return;
                 foreach (var exportItem in SelectedItems)
                 {
-                    ExportPage.QueueBeatmap(exportItem.Beatmap);
+                    if (exportItem.PlayItem != null)
+                    {
+                        ExportPage.QueueBeatmap(exportItem.PlayItem);
+                    }
+                    else
+                    {
+                        // todo: Not valid...
+                    }
                 }
 
                 while (ExportPage.IsTaskBusy)
@@ -134,7 +140,8 @@ public class ExportPageViewModel : VmBase
                     }
                 }
 
-                await dbContext.RemoveExports(SelectedItems.Select(k => k.Model));
+                dbContext.Exports.RemoveRange(SelectedItems);
+                await dbContext.SaveChangesAsync();
                 await UpdateCollection();
             });
         }
@@ -143,30 +150,30 @@ public class ExportPageViewModel : VmBase
     private async Task UpdateCollection()
     {
         await using var dbContext = new ApplicationDbContext();
-        var paginationQueryResult = await dbContext.GetExportList();
+        var paginationQueryResult = await dbContext.GetExportListFull();
         var exports = paginationQueryResult.Results;
-        foreach (var export in exports)
-        {
-            var map = export.Beatmap;
-            try
-            {
-                var fi = new FileInfo(export.ExportPath);
-                if (fi.Exists)
-                {
-                    export.IsValid = true;
-                    export.Size = fi.Length;
-                    export.CreationTime = fi.CreationTime;
-                }
-                else
-                {
-                    export.IsValid = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                LogTo.ErrorException($"Error while updating view item: {map}", ex);
-            }
-        }
+        //foreach (var export in exports)
+        //{
+        //    var map = export.PlayItem;
+        //    try
+        //    {
+        //        var fi = new FileInfo(export.ExportPath);
+        //        if (fi.Exists)
+        //        {
+        //            export.IsValid = true;
+        //            export.IsItemLost = fi.Length;
+        //            export.CreationTime = fi.CreationTime;
+        //        }
+        //        else
+        //        {
+        //            export.IsValid = true;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        LogTo.ErrorException($"Error while updating view item: {map}", ex);
+        //    }
+        //}
 
         ExportList = new ObservableCollection<ExportItem>(exports);
     }

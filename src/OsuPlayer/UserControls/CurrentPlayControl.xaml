@@ -1,11 +1,13 @@
 ﻿<UserControl
-    x:Class="Milki.OsuPlayer.UserControls.PlayListControl"
+    x:Class="Milki.OsuPlayer.UserControls.CurrentPlayControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
-    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
+    d:DataContext="{d:DesignInstance Type=userControls:CurrentPlayControlVm,
+                                     IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     FontFamily="{StaticResource SspRegular}"
@@ -68,9 +70,6 @@
             <EventSetter Event="MouseDoubleClick" Handler="PlayListItem_MouseDoubleClick" />
         </Style>
     </UserControl.Resources>
-    <UserControl.DataContext>
-        <userControls:PlayListControlVm />
-    </UserControl.DataContext>
     <Grid>
         <Border Margin="10" RenderOptions.BitmapScalingMode="LowQuality">
             <Border.Background>
@@ -186,7 +185,7 @@
                             <Border.Visibility>
                                 <MultiBinding Converter="{StaticResource Multi_EqualityToVisibilityConverter}">
                                     <Binding />
-                                    <Binding Path="DataContext.Controller.PlayList.CurrentInfo.Beatmap" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type userControls:PlayListControl}}" />
+                                    <Binding Path="DataContext.Controller.PlayList.CurrentInfo.Beatmap" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type userControls:CurrentPlayControl}}" />
                                 </MultiBinding>
                             </Border.Visibility>
                             <Viewbox Width="22" Height="22">
@@ -240,7 +239,7 @@
                             Mode="OneWay"
                             Path="DataContext.Controller.CurrentInfo.Beatmap"
                             RelativeSource="{RelativeSource FindAncestor,
-                                                            AncestorType={x:Type userControls:PlayListControl}}" />
+                                                            AncestorType={x:Type userControls:CurrentPlayControl}}" />
                     </MultiBinding>
                 </ListView.SelectedItem>
             </ListView>

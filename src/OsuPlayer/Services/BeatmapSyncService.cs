@@ -1,23 +1,18 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using Anotar.NLog;
 using Coosu.Database;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Internal;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Utils;
 
-namespace Milki.OsuPlayer.Data;
+namespace Milki.OsuPlayer.Services;
 
 public class BeatmapSyncService
 {
-    private readonly ApplicationDbContext _dbContext;
-
-    public BeatmapSyncService(ApplicationDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public IEnumerable<PlayItemDetail> EnumeratePlayItemDetailsFormDb(string path)
     {
         using var reader = new OsuDbReader(path);
@@ -27,10 +22,12 @@ public class BeatmapSyncService
 
     public async ValueTask SynchronizeManaged(IEnumerable<PlayItemDetail> fromOsuDb)
     {
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+
         var sw = Stopwatch.StartNew();
-        var dbItems = await _dbContext.PlayItems
+        var dbItems = await dbContext.PlayItems
             .Include(k => k.PlayItemDetail)
-            .Where(k => k.IsAutoManaged)
+            .Where(k => k.IsAutoManaged && k.StandardizedPath.StartsWith("./"))
             .ToDictionaryAsync(k => k.StandardizedPath, k => k);
 
         var maxDetailId = dbItems.Values.Count == 0 ? 0 : dbItems.Values.Max(k => k.PlayItemDetail.Id);
@@ -77,8 +74,8 @@ public class BeatmapSyncService
         sw.Restart();
         if (obsoleteNeedDel.Count > 0)
         {
-            await _dbContext.BulkDeleteAsync(obsoleteNeedDel);
-            await _dbContext.BulkSaveChangesAsync();
+            await dbContext.BulkDeleteAsync(obsoleteNeedDel);
+            await dbContext.BulkSaveChangesAsync();
 
             LogTo.Debug(() => $"Delete {dbItems.Count} items in {sw.ElapsedMilliseconds}ms.");
             sw.Restart();
@@ -124,7 +121,7 @@ public class BeatmapSyncService
 
         if (existNeedUpdate.Length > 0)
         {
-            var actualUpdated = await _dbContext.SaveChangesAsync();
+            var actualUpdated = await dbContext.SaveChangesAsync();
             LogTo.Debug(() => $"Update {actualUpdated} items in {sw.ElapsedMilliseconds}ms.");
             sw.Restart();
         }
@@ -154,10 +151,10 @@ public class BeatmapSyncService
 
         if (listItem.Count > 0)
         {
-            await _dbContext.BulkInsertAsync(listDetail);
-            await _dbContext.BulkSaveChangesAsync();
-            await _dbContext.BulkInsertAsync(listItem);
-            await _dbContext.BulkSaveChangesAsync();
+            await dbContext.BulkInsertAsync(listDetail);
+            await dbContext.BulkSaveChangesAsync();
+            await dbContext.BulkInsertAsync(listItem);
+            await dbContext.BulkSaveChangesAsync();
 
             LogTo.Debug(() => $"Add {listItem.Count} items in {sw.ElapsedMilliseconds}ms.");
             sw.Restart();

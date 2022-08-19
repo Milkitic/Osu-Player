@@ -120,6 +120,21 @@ public sealed partial class ApplicationDbContext
         return new PaginationQueryResult<PlayItem>(result, count);
     }
 
+
+    public async Task AddOrUpdatePlayListAsync(PlayList playList)
+    {
+        var result = await PlayLists.FindAsync(playList.Id);
+        if (result == null)
+        {
+            await AddPlayListAsync(playList.Name);
+        }
+        else
+        {
+            PlayLists.Update(playList);
+            await SaveChangesAsync();
+        }
+    }
+
     public async ValueTask AddPlayListAsync(string name, bool locked = false)
     {
         var maxIndex = await PlayLists
@@ -137,14 +152,14 @@ public sealed partial class ApplicationDbContext
         await SaveChangesAsync();
     }
 
-    public async ValueTask AddPlayItemsToPlayList(IList<PlayItem> beatmaps, PlayList collection)
+    public async ValueTask AddPlayItemsToPlayList(IList<PlayItem> playItems, PlayList collection)
     {
-        if (beatmaps.Count < 1) return;
+        if (playItems.Count < 1) return;
         var findAsync = await PlayLists.FindAsync(collection.Id);
         if (findAsync == null) return;
 
         collection = findAsync;
-        collection.PlayItems.AddRange(beatmaps);
+        collection.PlayItems.AddRange(playItems);
 
         await SaveChangesAsync();
     }
@@ -332,6 +347,37 @@ public sealed partial class ApplicationDbContext
             LogTo.Debug(() => $"Add {listItem.Count} LooseItems in {sw.ElapsedMilliseconds}ms.");
             sw.Restart();
         }
+    }
+
+    public async Task<PaginationQueryResult<ExportItem>> GetExportListFull(
+        int page = 0,
+        int countPerPage = 50)
+    {
+        var query =
+            from exportItem in Exports
+            orderby exportItem.ExportTime descending
+            join playItem in PlayItems on exportItem.PlayItemId equals playItem.Id into newCollection
+            from playItem in newCollection.DefaultIfEmpty()
+            select new
+            {
+                exportItem,
+                playItem,
+            };
+
+        var buffer = new List<ExportItem>();
+        await foreach (var item in query.AsAsyncEnumerable())
+        {
+            item.exportItem.PlayItem = item.playItem;
+            buffer.Add(item.exportItem);
+        }
+
+        var count = buffer.Count;
+        var result = buffer
+            .Skip(page * countPerPage)
+            .Take(countPerPage)
+            .ToArray();
+
+        return new PaginationQueryResult<ExportItem>(result, count);
     }
 
     public async Task<PaginationQueryResult<ExportItem>> GetExportList(

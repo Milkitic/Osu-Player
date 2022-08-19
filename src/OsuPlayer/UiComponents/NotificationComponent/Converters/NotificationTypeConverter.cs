@@ -34,7 +34,7 @@ internal class NotificationTypeConverter : IValueConverter
         }
         catch (Exception ex)
         {
-            LogTo.Error(ex);
+            LogTo.ErrorException("NotificationTypeConverter error", ex);
             return Visibility.Visible;
         }
     }

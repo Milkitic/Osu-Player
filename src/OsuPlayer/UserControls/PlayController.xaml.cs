@@ -1,14 +1,11 @@
-﻿using System.IO;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
-using Milki.Extensions.MixPlayer;
-using Milki.OsuPlayer.Audio;
+using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
-using Milki.OsuPlayer.UiComponents.NotificationComponent;
-using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Windows;
 using NAudio.Wave;
 
@@ -16,7 +13,7 @@ namespace Milki.OsuPlayer.UserControls;
 
 public class PlayControllerVm : VmBase
 {
-    public ObservablePlayController Controller { get; } = Service.Get<ObservablePlayController>();
+    public PlayerService PlayerService { get; } = ServiceProviders.Default.GetService<PlayerService>();
     public SharedVm Shared { get; } = SharedVm.Default;
 }
 
@@ -54,87 +51,56 @@ public partial class PlayController : UserControl
     #endregion
 
     private bool _scrollLock;
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+    private readonly PlayerService _controller;
     private IWavePlayer _device;
 
     public PlayController()
     {
+        _controller = ServiceProviders.Default.GetService<PlayerService>()!;
+
+        _controller.LoadStarted += Controller_LoadStarted;
+        _controller.LoadBackgroundInfoFinished += Controller_BackgroundInfoLoaded;
+        _controller.LoadMusicFinished += Controller_MusicLoaded;
+
+        _controller.PlayTimeChanged += Controller_PlayTimeChanged;
+
         InitializeComponent();
     }
 
     private void UserControl_Initialized(object sender, EventArgs e)
     {
         PlayModeControl.CloseRequested += (obj, args) => { PopMode.IsOpen = false; };
-        if (_controller == null) return;
-        _controller.PreLoadStarted += Controller_PreLoadStarted;
-        _controller.LoadStarted += Controller_LoadStarted;
-        _controller.BackgroundInfoLoaded += Controller_BackgroundInfoLoaded;
-        _controller.MusicLoaded += Controller_MusicLoaded;
-        _controller.LoadFinished += Controller_LoadFinished;
-
-        _controller.PositionUpdated += Controller_PositionUpdated;
-        _controller.LoadError += Controller_LoadError;
     }
 
-    private void Controller_LoadError(BeatmapContext ctx, Exception ex)
-    {
-        if (ctx.BeatmapDetail != null)
-        {
-            var path = Path.Combine(ctx.BeatmapDetail.BaseFolder ?? "", ctx.BeatmapDetail.MapPath ?? "");
-            Notification.Push($"{I18NUtil.GetString("err-beatmap-load")}: {path}");
-        }
-        else
-        {
-            Notification.Push(I18NUtil.GetString("err-beatmap-load"));
-        }
-    }
-
-    private void Controller_PositionUpdated(TimeSpan time)
-    {
-        if (_scrollLock) return;
-        PlayProgress.Value = time.TotalMilliseconds;
-        LblNow.Content = time.ToString(@"mm\:ss");
-    }
-
-    private void Controller_PreLoadStarted(string path, CancellationToken ct)
-    {
-    }
-
-    private void Controller_LoadStarted(BeatmapContext beatmapCtx, CancellationToken ct)
+    private ValueTask Controller_LoadStarted(PlayerService.PlayItemLoadContext loadContext)
     {
         var zero = TimeSpan.Zero.ToString(@"mm\:ss");
         LblNow.Content = zero;
         LblTotal.Content = zero;
         PlayProgress.Maximum = 1;
         PlayProgress.Value = 0;
+        return ValueTask.CompletedTask;
     }
 
-    private void Controller_BackgroundInfoLoaded(BeatmapContext beatmapCtx, CancellationToken ct)
+    private void Controller_PlayTimeChanged(TimeSpan time)
     {
-        Thumb.Source = beatmapCtx.BeatmapDetail.BackgroundPath == null
-            ? null
-            : new BitmapImage(new Uri(beatmapCtx.BeatmapDetail.BackgroundPath));
+        if (_scrollLock) return;
+        PlayProgress.Value = time.TotalMilliseconds;
+        LblNow.Content = time.ToString(@"mm\:ss");
     }
 
-    private void Controller_MusicLoaded(BeatmapContext beatmapCtx, CancellationToken ct)
+    private ValueTask Controller_BackgroundInfoLoaded(PlayerService.PlayItemLoadContext loadContext)
+    {
+        Thumb.Source = loadContext.BackgroundPath == null ? null : new BitmapImage(new Uri(loadContext.BackgroundPath));
+        return ValueTask.CompletedTask;
+    }
+
+    private ValueTask Controller_MusicLoaded(PlayerService.PlayItemLoadContext loadContext)
     {
         PlayProgress.Value = 0;
-        PlayProgress.Maximum = _controller.Player.Duration.TotalMilliseconds;
-        LblTotal.Content = _controller.Player.Duration.ToString(@"mm\:ss");
-
-        _device = OsuMixPlayer.Current.Device;
-        if (_device is AsioOut asio)
-        {
-            BtnAsio.Visibility = Visibility.Visible;
-        }
-        else
-        {
-            BtnAsio.Visibility = Visibility.Collapsed;
-        }
-    }
-
-    private void Controller_LoadFinished(BeatmapContext beatmapCtx, CancellationToken ct)
-    {
+        PlayProgress.Maximum = loadContext.Player!.Duration;
+        LblTotal.Content = TimeSpan.FromMilliseconds(loadContext.Player!.Duration).ToString(@"mm\:ss");
+        return ValueTask.CompletedTask;
     }
 
     private void ThumbButton_Click(object sender, RoutedEventArgs e)
@@ -144,18 +110,19 @@ public partial class PlayController : UserControl
 
     private async void PrevButton_Click(object sender, RoutedEventArgs e)
     {
-        await _controller.PlayPrevAsync();
+        await _controller.PlayPreviousAsync();
     }
 
-    private void BtnPlay_Click(object sender, RoutedEventArgs e)
+    private async void BtnPlay_Click(object sender, RoutedEventArgs e)
     {
-        _controller.PlayList.CurrentInfo?.TogglePlayHandle();
+        await _controller.TogglePlayAsync();
     }
 
     private async void NextButton_Click(object sender, RoutedEventArgs e)
     {
         await _controller.PlayNextAsync();
     }
+
     private async void OpenButton_Click(object sender, RoutedEventArgs e)
     {
         var openFileDialog = new OpenFileDialog
@@ -167,7 +134,7 @@ public partial class PlayController : UserControl
         var path = result == true ? openFileDialog.FileName : null;
         if (path == null) return;
 
-        await _controller.PlayNewAsync(path);
+        await _controller.InitializeNewAsync(path, true);
     }
 
     /// <summary>
@@ -183,14 +150,9 @@ public partial class PlayController : UserControl
     /// Play progress control.
     /// While drag ended, slider's updating should be recovered.
     /// </summary>
-    private void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
+    private async void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
     {
-        if (_controller.PlayList?.CurrentInfo != null)
-        {
-            _controller.PlayList.CurrentInfo.SetTimeHandle(PlayProgress.Value,
-                _controller.Player.PlayStatus == PlayStatus.Playing);
-        }
-
+        await _controller.SeekAsync(TimeSpan.FromMilliseconds(PlayProgress.Value));
         _scrollLock = false;
     }
 
@@ -221,8 +183,11 @@ public partial class PlayController : UserControl
 
     private void TitleArtist_Click(object sender, RoutedEventArgs e)
     {
-        var win = new BeatmapInfoWindow(_controller.PlayList.CurrentInfo);
-        win.ShowDialog();
+        if (_controller.LastLoadContext?.PlayItem is { PlayItemDetail: { } detail })
+        {
+            var win = new BeatmapInfoWindow(detail);
+            win.ShowDialog();
+        }
     }
 
     private void BtnAsio_OnClick(object sender, RoutedEventArgs e)

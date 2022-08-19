@@ -2,45 +2,52 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
+using Milki.OsuPlayer.Audio;
+using Milki.OsuPlayer.Configuration;
+using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Pages;
+using Milki.OsuPlayer.Services;
+using Milki.OsuPlayer.Shared.Observable;
+using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milki.OsuPlayer.Windows;
+using Milki.OsuPlayer.Wpf.Command;
 
 namespace Milki.OsuPlayer.UserControls;
 
-public class PlayListControlVm : VmBase
+public class CurrentPlayControlVm : VmBase
 {
-    private Beatmap _selectedMap;
-    private List<Beatmap> _selectedMaps;
+    private readonly PlayerService _playerService;
+    private readonly PlayListService _playListService;
 
-    public ObservablePlayController Controller { get; } = Service.Get<ObservablePlayController>();
+    private PlayItem _selectedMap;
+    private List<PlayItem> _selectedMaps;
 
-    public Beatmap SelectedMap
+    public CurrentPlayControlVm()
+    {
+        _playerService = ServiceProviders.Default.GetService<PlayerService>();
+        _playListService = ServiceProviders.Default.GetService<PlayListService>();
+    }
+
+    public PlayItem SelectedMap
     {
         get => _selectedMap;
-        set
-        {
-            _selectedMap = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _selectedMap, value);
     }
 
-    public List<Beatmap> SelectedMaps
+    public List<PlayItem> SelectedMaps
     {
         get => _selectedMaps;
-        set
-        {
-            _selectedMaps = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _selectedMaps, value);
     }
+
     public ICommand ClearPlayListCommand
     {
         get
         {
-            return new DelegateCommand(async param =>
+            return new DelegateCommand(param =>
             {
-                await Controller.PlayList.SetSongListAsync(Array.Empty<Beatmap>(), false);
+                _playListService.SetPathList(Array.Empty<string>(), false);
             });
         }
     }
@@ -51,7 +58,7 @@ public class PlayListControlVm : VmBase
         {
             return new DelegateCommand(async param =>
             {
-                await Controller.PlayNewAsync(SelectedMap);
+                await _playerService.InitializeNewAsync(SelectedMap.StandardizedPath, true);
             });
         }
     }
@@ -62,23 +69,23 @@ public class PlayListControlVm : VmBase
         {
             return new DelegateCommand(param =>
             {
-                var mw = WindowEx.GetCurrentFirst<MainWindow>();
-                var s = (string)param;
-                switch (s)
-                {
-                    case "0":
-                        mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.PreferredTitle));
-                        break;
-                    case "1":
-                        mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.PreferredArtist));
-                        break;
-                    case "2":
-                        mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.SongSource));
-                        break;
-                    case "3":
-                        mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.Creator));
-                        break;
-                }
+                //var mw = WindowEx.GetCurrentFirst<MainWindow>();
+                //var s = (string)param;
+                //switch (s)
+                //{
+                //    case "0":
+                //        mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.PreferredTitle));
+                //        break;
+                //    case "1":
+                //        mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.PreferredArtist));
+                //        break;
+                //    case "2":
+                //        mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.SongSource));
+                //        break;
+                //    case "3":
+                //        mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.Creator));
+                //        break;
+                //}
             });
         }
     }
@@ -89,7 +96,8 @@ public class PlayListControlVm : VmBase
         {
             return new DelegateCommand(param =>
             {
-                Process.Start(SelectedMap.GetFolder(out _, out _));
+                Process.Start(PathUtils.GetFullPath(SelectedMap.StandardizedFolder,
+                    AppSettings.Default.GeneralSection.OsuSongDir));
             });
         }
     }
@@ -100,7 +108,7 @@ public class PlayListControlVm : VmBase
         {
             return new DelegateCommand(param =>
             {
-                Process.Start($"https://osu.ppy.sh/b/{SelectedMap.BeatmapId}");
+                Process.Start($"https://osu.ppy.sh/b/{SelectedMap.PlayItemDetail.BeatmapId}");
             });
         }
     }
@@ -119,16 +127,15 @@ public class PlayListControlVm : VmBase
         }
     }
 
-    public object SaveAllCollectionCommand
+    public ICommand SaveAllCollectionCommand
     {
         get
         {
             return new DelegateCommand(param =>
             {
-                if (Controller.PlayList.SongList.Count == 0) return;
-                var mw = WindowEx.GetCurrentFirst<MainWindow>();
-                FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(Controller.PlayList.SongList),
-                    DialogOptionFactory.SelectCollectionOptions);
+                if (_playListService.PathList.Count == 0) return;
+                //FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(Controller.PlayList.SongList),
+                //    DialogOptionFactory.SelectCollectionOptions);
             });
         }
     }
@@ -148,12 +155,9 @@ public class PlayListControlVm : VmBase
     {
         get
         {
-            return new DelegateCommand(async param =>
+            return new DelegateCommand(param =>
             {
-                foreach (var beatmap in SelectedMaps)
-                {
-                    Controller.PlayList.SongList.Remove(beatmap);
-                }
+                _playListService.RemovePaths(SelectedMaps.Select(k => k.StandardizedPath));
             });
         }
     }
@@ -162,13 +166,13 @@ public class PlayListControlVm : VmBase
 /// <summary>
 /// PlayListControl.xaml 的交互逻辑
 /// </summary>
-public partial class PlayListControl : UserControl
+public partial class CurrentPlayControl : UserControl
 {
     public static readonly RoutedEvent CloseRequestedEvent =
         EventManager.RegisterRoutedEvent("CloseRequested",
             RoutingStrategy.Bubble,
             typeof(RoutedEventHandler),
-            typeof(PlayListControl));
+            typeof(CurrentPlayControl));
 
     public event RoutedEventHandler CloseRequested
     {
@@ -177,18 +181,19 @@ public partial class PlayListControl : UserControl
     }
 
     private bool _signed;
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
-    private PlayListControlVm _viewModel;
+    private readonly PlayerService _playerService;
+    private readonly CurrentPlayControlVm _viewModel;
 
-    public PlayListControl()
+    public CurrentPlayControl()
     {
+        _playerService = ServiceProviders.Default.GetService<PlayerService>();
+        _signed = false;
+        DataContext = _viewModel = new CurrentPlayControlVm();
         InitializeComponent();
     }
 
     private void UserControl_Initialized(object sender, EventArgs e)
     {
-        _viewModel = (PlayListControlVm)DataContext;
-        _signed = false;
     }
 
     private void PlayListItem_MouseDoubleClick(object sender, RoutedEventArgs e)
@@ -215,9 +220,9 @@ public partial class PlayListControl : UserControl
     {
         if (e.AddedItems.Count == 0)
             return;
-        _viewModel.SelectedMap = (Beatmap)e.AddedItems[e.AddedItems.Count - 1];
+        _viewModel.SelectedMap = (PlayItem)e.AddedItems[e.AddedItems.Count - 1];
         var selected = e.AddedItems;
-        _viewModel.SelectedMaps = selected.Cast<Beatmap>().ToList();
+        _viewModel.SelectedMaps = selected.Cast<PlayItem>().ToList();
     }
 
     private void PlayList_ContextMenuOpening(object sender, ContextMenuEventArgs e)
@@ -228,21 +233,24 @@ public partial class PlayListControl : UserControl
             return;
         }
 
-        _viewModel.SelectedMap = (Beatmap)PlayList.SelectedItems[PlayList.SelectedItems.Count - 1];
-        _viewModel.SelectedMaps = PlayList.SelectedItems.Cast<Beatmap>().ToList();
+        _viewModel.SelectedMap = (PlayItem)PlayList.SelectedItems[PlayList.SelectedItems.Count - 1];
+        _viewModel.SelectedMaps = PlayList.SelectedItems.Cast<PlayItem>().ToList();
     }
 
     private void UserControl_Loaded(object sender, RoutedEventArgs e)
     {
         if (!_signed)
         {
-            if (_controller != null)
-                _controller.LoadStarted += Controller_LoadStarted;
+            if (_playerService != null)
+                _playerService.LoadStarted += PlayerService_LoadStarted;
             _signed = true;
         }
 
-        if (_controller != null)
-            PlayList.SelectedItem = _controller.PlayList.CurrentInfo?.Beatmap;
+        if (_playerService != null)
+        {
+            PlayList.SelectedItem = _playerService.LastLoadContext?.PlayItem;
+        }
+
         if (PlayList.SelectedItem != null)
         {
             PlayList.ScrollIntoView(PlayList.SelectedItem);
@@ -252,9 +260,10 @@ public partial class PlayListControl : UserControl
         }
     }
 
-    private void Controller_LoadStarted(BeatmapContext beatmapCtx, System.Threading.CancellationToken ct)
+    private ValueTask PlayerService_LoadStarted(PlayerService.PlayItemLoadContext arg)
     {
-        var info = _controller.PlayList.CurrentInfo?.Beatmap;
-        if (info != null) PlayList.ScrollIntoView(info);
+        var playItem = arg.PlayItem;
+        if (playItem != null) PlayList.ScrollIntoView(playItem);
+        return ValueTask.CompletedTask;
     }
 }

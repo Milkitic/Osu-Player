@@ -64,14 +64,6 @@ public partial class PlayPage : Page
         AppSettings.SaveDefault();
     }
 
-    private void ChkMemory_CheckChanged(object sender, RoutedEventArgs e)
-    {
-        if (!ChkMemory.IsChecked.HasValue)
-            return;
-        AppSettings.Default.PlaySection.Memory = ChkMemory.IsChecked.Value;
-        AppSettings.SaveDefault();
-    }
-
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
         SliderOffset.Value = AppSettings.Default.PlaySection.GeneralOffset;
@@ -81,7 +73,6 @@ public partial class PlayPage : Page
         else
             RadioInsert.IsChecked = true;
         ChkAutoPlay.IsChecked = AppSettings.Default.PlaySection.AutoPlay;
-        ChkMemory.IsChecked = AppSettings.Default.PlaySection.Memory;
         SliderLatency.Value = AppSettings.Default.PlaySection.DesiredLatency;
         BoxLatency.Text = AppSettings.Default.PlaySection.DesiredLatency.ToString();
         var itemsSource = DeviceCreationHelper.GetCachedAvailableDevices();
