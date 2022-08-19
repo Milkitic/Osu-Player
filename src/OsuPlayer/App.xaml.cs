@@ -85,7 +85,19 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
         services.AddTransient(_ => AppSettings.Default);
-        services.AddDbContext<ApplicationDbContext>();
+        services.AddDbContext<ApplicationDbContext>(optionsBuilder =>
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+            var dataBases = Path.Combine(Constants.ApplicationDir, "databases");
+            if (!Directory.Exists(dataBases))
+            {
+                Directory.CreateDirectory(dataBases);
+            }
+
+            var db = Path.Combine(dataBases, "application.db");
+            optionsBuilder.UseSqlite("data source=" + db);
+        });
+
         services.AddScoped<BeatmapSyncService>();
         services.AddSingleton<KeyHookService>();
         services.AddSingleton<UpdateService>();

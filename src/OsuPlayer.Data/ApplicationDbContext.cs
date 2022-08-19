@@ -2,12 +2,15 @@
 using Microsoft.EntityFrameworkCore;
 using Milki.OsuPlayer.Data.Internal.Conversions;
 using Milki.OsuPlayer.Data.Models;
-using Milki.OsuPlayer.Shared;
 
 namespace Milki.OsuPlayer.Data;
 
 public sealed partial class ApplicationDbContext : DbContext
 {
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    {
+    }
+
 #nullable disable
     public DbSet<SoftwareState> SoftwareStates { get; set; }
 
@@ -25,20 +28,6 @@ public sealed partial class ApplicationDbContext : DbContext
     public DbSet<ExportItem> Exports { get; set; }
 
 #nullable restore
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (optionsBuilder.IsConfigured) return;
-        optionsBuilder.EnableSensitiveDataLogging();
-        var dataBases = Path.Combine(Constants.ApplicationDir, "databases");
-        if (!Directory.Exists(dataBases))
-        {
-            Directory.CreateDirectory(dataBases);
-        }
-
-        var db = Path.Combine(dataBases, "application.db");
-        optionsBuilder.UseSqlite("data source=" + db);
-    }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
