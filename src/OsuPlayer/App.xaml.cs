@@ -56,8 +56,8 @@ public partial class App : Application
         BuildServices();
         await InitializeServicesAsync();
 
-        MainWindow = new MainWindow();
-        MainWindow.Show();
+        MainWindow = ServiceProvider.GetService<MainWindow>();
+        MainWindow?.Show();
     }
 
     private bool LoadConfig()
@@ -99,6 +99,7 @@ public partial class App : Application
         });
 
         services.AddScoped<BeatmapSyncService>();
+        services.AddSingleton<MainWindow>();
         services.AddSingleton<KeyHookService>();
         services.AddSingleton<UpdateService>();
         services.AddSingleton<LyricsService>();
@@ -117,7 +118,7 @@ public partial class App : Application
         var playListService = ServiceProvider.GetService<PlayListService>()!;
         playListService.PlaylistMode = AppSettings.Default.PlaySection.PlayListMode;
 
-        await using var dbContext = ServiceProvider.GetService<ApplicationDbContext>()!;
+        var dbContext = ServiceProvider.GetService<ApplicationDbContext>()!;
         await dbContext.Database.MigrateAsync();
 
         var playerService = ServiceProvider.GetService<PlayerService>()!;

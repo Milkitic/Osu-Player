@@ -20,6 +20,7 @@ namespace Milki.OsuPlayer.Windows;
 /// </summary>
 public partial class MainWindow : WindowEx
 {
+    private readonly ApplicationDbContext _applicationDbContext;
     private readonly UpdateService _updateService;
     private readonly PlayerService _playerService;
     private readonly PlayListService _playListService;
@@ -36,8 +37,9 @@ public partial class MainWindow : WindowEx
     private bool _disposed;
     private readonly MainWindowViewModel _viewModel;
 
-    public MainWindow()
+    public MainWindow(ApplicationDbContext applicationDbContext)
     {
+        _applicationDbContext = applicationDbContext;
         _playerService = App.Current.ServiceProvider.GetService<PlayerService>();
         _playListService = App.Current.ServiceProvider.GetService<PlayListService>();
         _syncService = ServiceProviders.Default.GetService<BeatmapSyncService>();
@@ -111,8 +113,7 @@ public partial class MainWindow : WindowEx
 
     private async void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        await using var dbContext = App.Current.ServiceProvider.GetService<ApplicationDbContext>()!;
-        var softwareState = await dbContext.GetSoftwareState();
+        var softwareState = await _applicationDbContext.GetSoftwareState();
 
         _viewModel.IsNavigationCollapsed = !softwareState.ShowFullNavigation;
 
@@ -268,9 +269,8 @@ public partial class MainWindow : WindowEx
 
     private async void Animation_Loaded(object sender, RoutedEventArgs e)
     {
-        await using var appDbContext = ServiceProviders.GetApplicationDbContext();
-        var lastPlay = (await appDbContext.GetRecentListFull(0, 1)).Results.FirstOrDefault();
-        var currentPlays = await appDbContext.GetCurrentListFull();
+        var lastPlay = (await _applicationDbContext.GetRecentListFull(0, 1)).Results.FirstOrDefault();
+        var currentPlays = await _applicationDbContext.GetCurrentListFull();
         if (lastPlay?.IsItemLost == false)
         {
             lastPlay = currentPlays.LastOrDefault(k => !k.IsItemLost && k.PlayItemId == lastPlay.PlayItemId) ??
@@ -297,8 +297,7 @@ public partial class MainWindow : WindowEx
         var addCollectionControl = new AddCollectionControl();
         FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, async (obj, args) =>
         {
-            await using var dbContext = ServiceProviders.GetApplicationDbContext();
-            await dbContext.AddPlayListAsync(addCollectionControl.CollectionName.Text); //todo: exists
+            await _applicationDbContext.AddPlayListAsync(addCollectionControl.CollectionName.Text); //todo: exists
             await SharedVm.Default.UpdatePlayListsAsync();
         });
     }
