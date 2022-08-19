@@ -3,6 +3,7 @@
 namespace Milki.OsuPlayer.Data.Models;
 
 [Index(nameof(Index))]
+[Index(nameof(Name), IsUnique = true)]
 public sealed class PlayList : IAutoCreatable, IAutoUpdatable
 {
     public int Id { get; set; }

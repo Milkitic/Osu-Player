@@ -365,10 +365,11 @@ public partial class MainWindow : WindowEx
 
     private void Controller_LikeClicked(object sender, RoutedEventArgs e)
     {
-        if (_playerService.LastLoadContext is { PlayItem: { } playItem }) return;
-
-        FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(playItem),
-            DialogOptionFactory.SelectCollectionOptions);
+        if (_playerService.LastLoadContext is { PlayItem: { } playItem })
+        {
+            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(playItem),
+                DialogOptionFactory.SelectCollectionOptions);
+        }
     }
 
     private void BtnNavigationTrigger_Click(object sender, RoutedEventArgs e)

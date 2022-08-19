@@ -137,6 +137,18 @@ public sealed partial class ApplicationDbContext
         await SaveChangesAsync();
     }
 
+    public async Task AddPlayItemsToPlayList(IList<PlayItem> beatmaps, PlayList collection)
+    {
+        if (beatmaps.Count < 1) return;
+        var findAsync = await PlayLists.FindAsync(collection.Id);
+        if (findAsync == null) return;
+
+        collection = findAsync;
+        collection.PlayItems.AddRange(beatmaps);
+
+        await SaveChangesAsync();
+    }
+
     public async ValueTask DeleteBeatmapsFromCollectionAsync(IEnumerable<PlayItem> beatmaps, PlayList collection)
     {
         var relations = beatmaps
