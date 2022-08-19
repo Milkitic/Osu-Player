@@ -56,7 +56,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     .WithDegreeOfParallelism(/*Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 :*/ 1)
                     .ForAll(obj => { AddSingleHitObject(obj, waves, elements).Wait(); });
             }).ConfigureAwait(false);
-
+            var o = elements.Where(k => k.ControlType == SlideControlType.StartNew).ToArray();
             return new List<SoundElement>(elements);
         }
 
@@ -128,6 +128,10 @@ namespace Milky.OsuPlayer.Media.Audio
                     elements.Add(element);
                 }
 
+                if (Math.Abs(obj.Offset - 2074) < 3)
+                {
+
+                }
                 // sliding
                 {
                     var slideElements = new List<SoundElement>();
@@ -269,12 +273,12 @@ namespace Milky.OsuPlayer.Media.Audio
 
             if (hitObject.ObjectType == HitObjectType.Slider && hitObject.SliderInfo.EdgeHitsounds == null)
             {
-                var hitsounds = GetHitsounds(itemHitsound, sampleStr, additionStr);
+                var hitsounds = GetHitsounds(itemHitsound, sampleStr, additionStr, hitObject);
                 tuples.AddRange(hitsounds);
             }
             else
             {
-                var hitsounds = GetHitsounds(itemHitsound, sampleStr, additionStr);
+                var hitsounds = GetHitsounds(itemHitsound, sampleStr, additionStr, hitObject);
                 tuples.AddRange(_osuFile.General.Mode == GameMode.Mania
                     ? hitsounds.Take(1)
                     : hitsounds);
@@ -321,7 +325,7 @@ namespace Milky.OsuPlayer.Media.Audio
         }
 
         private static IEnumerable<(string, HitsoundType)> GetHitsounds(HitsoundType type,
-            string sampleStr, string additionStr)
+            string sampleStr, string additionStr, RawHitObject rawHitObject)
         {
             if (type == HitsoundType.Tick)
             {
@@ -331,8 +335,8 @@ namespace Milky.OsuPlayer.Media.Audio
 
             if (type.HasFlag(HitsoundType.Slide))
                 yield return ($"{sampleStr}-sliderslide", type);
-            if (type.HasFlag(HitsoundType.SlideWhistle))
-                yield return ($"{additionStr}-sliderwhistle", type);
+            if (type.HasFlag(HitsoundType.Slide) && rawHitObject.Hitsound == HitsoundType.Whistle)
+                yield return ($"{additionStr}-sliderwhistle", HitsoundType.SlideWhistle);
 
             if (type.HasFlag(HitsoundType.Slide) || type.HasFlag(HitsoundType.SlideWhistle))
                 yield break;

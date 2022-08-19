@@ -22,9 +22,7 @@ namespace ExportTest
 
         private static async Task ExportOsu()
         {
-            var path = "F:\\milkitic\\Songs\\" +
-                       "1346316 Nekomata Master feat. Mimi Nyami - TWINKLING\\" +
-                       "Nekomata Master feat. Mimi Nyami - TWINKLING (yf_bmp) [Another].osu";
+            var path = @"E:\Games\osu!\Songs\cYsmix_-_triangles\cYsmix - triangles (yf_bmp) [Expert].osu";
 
             //var path = "E:\\Games\\osu!\\Songs\\3198 Rhapsody - Emerald Sword\\" +
             //           //"1376486 Risshuu feat. Choko - Take\\" +
@@ -42,22 +40,30 @@ namespace ExportTest
 
             var fileCache = new FileCache();
 
-            await using var directChannel = new DirectChannel(mp3Path, osuFile.General.AudioLeadIn, engine);
+            await using var directChannel = new DirectChannel(mp3Path, osuFile.General.AudioLeadIn, engine)
+            {
+                Volume = 1
+            };
             await using var hitsoundChannel = new HitsoundChannel(osuFile, engine, fileCache)
             {
-                ManualOffset = 50,
+                ManualOffset = 0,
+                Volume = 1f,
+                BalanceFactor = 0.3f
             };
             await using var sampleChannel = new SampleChannel(osuFile, engine, new Subchannel[]
             {
                 directChannel, hitsoundChannel
             }, fileCache)
             {
-                ManualOffset = 50,
+                ManualOffset = 0,
+                Volume = 1f,
+                BalanceFactor = 0.3f
             };
 
-            var exporter = new Mp3Exporter(new MultiElementsChannel[] { directChannel, hitsoundChannel, sampleChannel }, engine);
+            var exporter = new WavPcmExporter(new MultiElementsChannel[] { directChannel, hitsoundChannel, sampleChannel }
+                , engine);
             string pre = null;
-            await exporter.ExportAsync("test.mp3", progress =>
+            await exporter.ExportAsync("Crazy Thursday - Expert.wav", progress =>
             {
                 var p = $"Progress: {progress:P0}";
                 if (pre != p)
