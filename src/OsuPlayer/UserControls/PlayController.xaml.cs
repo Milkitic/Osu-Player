@@ -15,54 +15,26 @@ namespace Milki.OsuPlayer.UserControls;
 
 public class PlayControllerVm : VmBase
 {
-    private TimeSpan _maxTime;
-    private TimeSpan _minTime;
-    private TimeSpan _currentTime;
-    private double _maxTimeMs;
-    private double _minTimeMs;
-    private double _currentTimeMs;
-    private Visibility _minusVisibility = Visibility.Collapsed;
+    private double _maxTime;
+    private double _minTime;
+    private double _currentTime;
 
-    public TimeSpan MaxTime
+    public double MaxTime
     {
         get => _maxTime;
         set => this.RaiseAndSetIfChanged(ref _maxTime, value);
     }
 
-    public TimeSpan MinTime
+    public double MinTime
     {
         get => _minTime;
         set => this.RaiseAndSetIfChanged(ref _minTime, value);
     }
 
-    public TimeSpan CurrentTime
+    public double CurrentTime
     {
         get => _currentTime;
         set => this.RaiseAndSetIfChanged(ref _currentTime, value);
-    }
-
-    public Visibility MinusVisibility
-    {
-        get => _minusVisibility;
-        set => this.RaiseAndSetIfChanged(ref _minusVisibility, value);
-    }
-
-    public double MaxTimeMs
-    {
-        get => _maxTimeMs;
-        set => this.RaiseAndSetIfChanged(ref _maxTimeMs, value);
-    }
-
-    public double MinTimeMs
-    {
-        get => _minTimeMs;
-        set => this.RaiseAndSetIfChanged(ref _minTimeMs, value);
-    }
-
-    public double CurrentTimeMs
-    {
-        get => _currentTimeMs;
-        set => this.RaiseAndSetIfChanged(ref _currentTimeMs, value);
     }
 
     public PlayerService PlayerService { get; } = ServiceProviders.Default?.GetService<PlayerService>();
@@ -131,13 +103,9 @@ public partial class PlayController : UserControl
     {
         Execute.OnUiThread(() =>
         {
-            _viewModel.MaxTime = TimeSpan.Zero;
-            _viewModel.MaxTimeMs = 0;
-            _viewModel.MinTime = TimeSpan.Zero;
-            _viewModel.MinTimeMs = 0;
-            _viewModel.CurrentTime = TimeSpan.Zero;
-            _viewModel.CurrentTimeMs = 0;
-            _viewModel.MinusVisibility = Visibility.Collapsed;
+            _viewModel.MaxTime = 0;
+            _viewModel.MinTime = 0;
+            _viewModel.CurrentTime = 0;
         });
         return ValueTask.CompletedTask;
     }
@@ -147,9 +115,7 @@ public partial class PlayController : UserControl
         if (_scrollLock) return;
         Execute.OnUiThread(() =>
         {
-            _viewModel.CurrentTime = time;
-            _viewModel.CurrentTimeMs = time.TotalMilliseconds;
-            _viewModel.MinusVisibility = time.TotalMilliseconds < 0 ? Visibility.Visible : Visibility.Collapsed;
+            _viewModel.CurrentTime = time.TotalMilliseconds;
         });
     }
 
@@ -164,13 +130,9 @@ public partial class PlayController : UserControl
         var player = loadContext.Player!;
         Execute.OnUiThread(() =>
         {
-            _viewModel.MinTime = TimeSpan.FromMilliseconds(-player.PreInsertDuration);
-            _viewModel.MinTimeMs = -player.PreInsertDuration;
-            _viewModel.MaxTime = player.TotalTime;
-            _viewModel.MaxTimeMs = player.TotalTime.TotalMilliseconds;
-            _viewModel.CurrentTime = player.PlayTime;
-            _viewModel.CurrentTimeMs = player.PlayTime.TotalMilliseconds;
-            _viewModel.MinusVisibility = player.PlayTime.TotalMilliseconds < 0 ? Visibility.Visible : Visibility.Collapsed;
+            _viewModel.MinTime = -player.PreInsertDuration;
+            _viewModel.MaxTime = player.TotalTime.TotalMilliseconds;
+            _viewModel.CurrentTime = player.PlayTime.TotalMilliseconds;
         });
 
         return ValueTask.CompletedTask;

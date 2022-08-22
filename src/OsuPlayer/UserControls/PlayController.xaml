@@ -219,10 +219,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid
-                x:Name="LblMeta"
-                Grid.Row="0"
-                Margin="0,1,0,-3">
+            <Grid Margin="0,1,0,-3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
@@ -234,34 +231,26 @@
                     Click="TitleArtist_Click"
                     Style="{StaticResource InvisibleButton}">
                     <TextBlock>
-                        <Run Foreground="#777" Text="{Binding PlayerService.LastLoadContext.PlayItem.PlayItemDetail.AutoTitle, Mode=OneWay}" />
+                        <Run Foreground="#777777" Text="{Binding PlayerService.LastLoadContext.PlayItem.PlayItemDetail.AutoTitle, Mode=OneWay}" />
                         <Run Foreground="#858585" Text="-" />
-                        <Run Foreground="#AAA" Text="{Binding PlayerService.LastLoadContext.PlayItem.PlayItemDetail.AutoArtist, Mode=OneWay}" />
+                        <Run Foreground="#AAAAAA" Text="{Binding PlayerService.LastLoadContext.PlayItem.PlayItemDetail.AutoArtist, Mode=OneWay}" />
                     </TextBlock>
                 </buttonComponent:CommonButton>
-                <Border Grid.Column="2" Padding="3">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock
-                            Foreground="#777"
-                            Text="-"
-                            Visibility="{Binding MinusVisibility}" />
-                        <TextBlock>
-                            <Run Foreground="#777" Text="{Binding CurrentTime, Mode=OneWay, StringFormat='mm\\:ss'}" />
-                            <Run Foreground="#858585" Text="/" />
-                            <Run Foreground="#AAA" Text="{Binding MaxTime, Mode=OneWay, StringFormat='mm\\:ss'}" />
-                        </TextBlock>
-                    </StackPanel>
-                </Border>
+                <TextBlock Grid.Column="2" Margin="3">
+                    <Run Foreground="#777777" Text="{Binding CurrentTime, Mode=OneWay, Converter={StaticResource MsToStringConverter}}" />
+                    <Run Foreground="#858585" Text="/" />
+                    <Run Foreground="#AAAAAA" Text="{Binding MaxTime, Mode=OneWay, Converter={StaticResource MsToStringConverter}}" />
+                </TextBlock>
             </Grid>
             <Slider
                 Grid.Row="1"
                 Margin="3"
-                Maximum="{Binding MaxTimeMs}"
-                Minimum="{Binding MinTimeMs}"
+                Maximum="{Binding MaxTime}"
+                Minimum="{Binding MinTime}"
                 Style="{StaticResource HorizontalSliderPinkStyle}"
                 Thumb.DragCompleted="PlayProgress_DragCompleted"
                 Thumb.DragStarted="PlayProgress_DragStarted"
-                Value="{Binding CurrentTimeMs}" />
+                Value="{Binding CurrentTime}" />
         </Grid>
         <Grid Grid.Column="3">
             <StackPanel

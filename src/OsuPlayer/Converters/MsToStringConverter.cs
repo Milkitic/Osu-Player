@@ -7,9 +7,11 @@ public class MsToStringConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value == null)
-            value = 0;
-        return TimeSpan.FromMilliseconds((long)value).ToString(@"mm\:ss");
+        value ??= 0;
+        var timeSpan = TimeSpan.FromMilliseconds(System.Convert.ToDouble(value));
+        return timeSpan < TimeSpan.Zero
+            ? $"-{timeSpan:mm\\:ss}"
+            : $"{timeSpan:mm\\:ss}";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
