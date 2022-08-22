@@ -34,7 +34,7 @@ public sealed partial class ApplicationDbContext
                 {
                     PlayItem = playItem,
                     PlayItemDetail = playItemDetail,
-                    PlayItemAssets = playItem.PlayItemAsset
+                    PlayItemAssets = playItem.PlayItemAsset ?? new PlayItemAsset()
                 })
             .Select(k => new PlayGroupQuery
             {
@@ -48,9 +48,9 @@ public sealed partial class ApplicationDbContext
                 Source = k.PlayItemDetail.Source,
                 Creator = k.PlayItemDetail.Creator,
                 BeatmapSetId = k.PlayItemDetail.BeatmapSetId,
-                ThumbPath = k.PlayItemAssets == null ? null : k.PlayItemAssets.ThumbPath,
-                StoryboardVideoPath = k.PlayItemAssets == null ? null : k.PlayItemAssets.StoryboardVideoPath,
-                VideoPath = k.PlayItemAssets == null ? null : k.PlayItemAssets.VideoPath,
+                //ThumbPath = k.PlayItemAssets.ThumbPath,
+                //StoryboardVideoPath = k.PlayItemAssets.StoryboardVideoPath,
+                //VideoPath = k.PlayItemAssets.VideoPath,
                 StarRating = k.PlayItemDetail.StarRating,
                 PlayItem = k.PlayItem,
                 PlayItemDetail = k.PlayItemDetail,
@@ -63,7 +63,12 @@ public sealed partial class ApplicationDbContext
             .GroupBy(k => k.Folder, StringComparer.Ordinal)
             .SelectMany(k => k
                 .GroupBy(o => o, MetaComparer.Instance)
-                .Select(o => o.OrderByDescending(x => x.StarRating).First())
+                .Select(o =>
+                {
+                    var playGroupQuery = o.OrderByDescending(x => x.StarRating).First();
+                    playGroupQuery.PlayItem.PlayItemAsset ??= new PlayItemAsset();
+                    return playGroupQuery;
+                })
             );
 
         enumerable = beatmapOrderOptions switch

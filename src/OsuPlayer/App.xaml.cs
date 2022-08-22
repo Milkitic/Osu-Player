@@ -119,7 +119,7 @@ public partial class App : Application
         playListService.PlaylistMode = AppSettings.Default.PlaySection.PlayListMode;
 
         var version = ServiceProvider.GetService<UpdateService>()!.GetVersion();
-        if (AppSettings.Default.GeneralSection.LastMigrateVersion !=version)
+        if (AppSettings.Default.GeneralSection.LastMigrateVersion != version)
         {
             var dbContext = ServiceProviders.GetApplicationDbContext();
             await dbContext.Database.MigrateAsync();
@@ -144,7 +144,7 @@ public partial class App : Application
     {
         var logger = LogManager.GetCurrentClassLogger();
         logger.Fatal(e.Exception, "DispatcherUnhandledException");
-
+#if !DEBUG
         var exceptionWindow = new ExceptionWindow(e.Exception, true);
         var exit = exceptionWindow.ShowDialog();
         e.Handled = exit != true;
@@ -152,6 +152,9 @@ public partial class App : Application
         {
             Environment.Exit(1);
         }
+#else
+        e.Handled = true;
+#endif
     }
 
     private void Application_Exit(object sender, ExitEventArgs e)

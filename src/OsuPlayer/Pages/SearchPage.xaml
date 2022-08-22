@@ -9,8 +9,9 @@
     xmlns:models="clr-namespace:Milki.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
     xmlns:panelComponent="clr-namespace:Milki.OsuPlayer.UiComponents.PanelComponent"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:uiComponents="clr-namespace:Milki.OsuPlayer.UiComponents"
     xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
-    x:Name="CurrentPage"
+    x:Name="Self"
     Title="SearchPage"
     d:DataContext="{d:DesignInstance Type=viewModels:SearchPageViewModel,
                                      IsDesignTimeCreatable=True}"
@@ -22,8 +23,6 @@
     Loaded="SearchPage_Loaded"
     mc:Ignorable="d">
     <Page.Resources>
-        <converters:ButtonColorConverter x:Key="ButtonColorConverter" />
-        <converters:BooleanToCursorConverter x:Key="BooleanToCursorConverter" />
         <converters:TrueToVisibleConverter x:Key="TrueToVisibleConverter" />
         <system:Double x:Key="GalleryWidth">160</system:Double>
         <system:Double x:Key="GalleryHeight">220</system:Double>
@@ -168,106 +167,78 @@
             Padding="3,0"
             Background="Transparent"
             BorderThickness="0"
-            ItemsSource="{Binding DisplayedMaps, Mode=OneWay}">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <panelComponent:VirtualizingGalleryWrapPanel
-                        ChildHeight="{StaticResource GalleryHeight}"
-                        ChildWidth="{StaticResource GalleryWidth}"
-                        ItemLoaded="VirtualizingGalleryWrapPanel_OnItemLoaded"
-                        Loaded="Panel_Loaded"
-                        ScrollOffset="100" />
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.Resources>
-                <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
+            ItemsSource="{Binding PlayItems, Mode=OneWay}">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type models:PlayGroupQuery}">
                     <Button
+                        Padding="0"
                         Command="{Binding DataContext.DirectPlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
                         CommandParameter="{Binding}"
                         Cursor="Hand">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
-                                <Grid
+                                <uiComponents:DropShadowPanel
                                     x:Name="mainGrid"
-                                    Width="{StaticResource GalleryWidth}"
-                                    Height="{StaticResource GalleryHeight}"
+                                    BlurRadius="0"
                                     ContextMenu="{StaticResource DataModelListContextMenu}"
+                                    Direction="-90"
                                     RenderTransformOrigin="0.5,0.5"
-                                    ToolTip="{StaticResource DataModelListToolTip}">
-                                    <Grid.RenderTransform>
+                                    ShadowDepth="0"
+                                    ShadowOpacity="0.3"
+                                    ToolTip="{StaticResource DataModelListToolTip}"
+                                    Color="Black">
+                                    <uiComponents:DropShadowPanel.RenderTransform>
                                         <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </Grid.RenderTransform>
-                                    <Border
-                                        x:Name="dropDownBorder"
-                                        Grid.RowSpan="3"
-                                        Margin="3"
-                                        Background="#FBFBFB"
-                                        BorderThickness="1"
-                                        Visibility="Collapsed">
-                                        <Border.Effect>
-                                            <DropShadowEffect
-                                                BlurRadius="0"
-                                                Direction="-90"
-                                                Opacity="0.3"
-                                                ShadowDepth="0"
-                                                Color="Black" />
-                                        </Border.Effect>
-                                    </Border>
-                                    <Border
-                                        Margin="3"
-                                        BorderBrush="#20646464"
-                                        BorderThickness="1">
+                                    </uiComponents:DropShadowPanel.RenderTransform>
+                                    <Border BorderBrush="#20646464" BorderThickness="1">
                                         <Grid x:Name="cardGrid" Background="#FBFBFB">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="auto" />
+                                                <RowDefinition />
                                                 <RowDefinition Height="auto" />
                                                 <RowDefinition Height="auto" />
                                             </Grid.RowDefinitions>
-                                            <Border
-                                                Height="{StaticResource GalleryWidth}"
-                                                Margin="5"
-                                                Background="#F0F0F0">
+                                            <Border Margin="5" Background="#F0F0F0">
                                                 <Image
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
-                                                    Source="{Binding ThumbPath}"
+                                                    Source="{Binding PlayItem.PlayItemAsset.FullThumbPath}"
                                                     Stretch="UniformToFill" />
                                             </Border>
                                             <TextBlock
                                                 Grid.Row="1"
                                                 Margin="5,1"
-                                                Text="{Binding AutoArtist}" />
+                                                Text="{Binding ArtistAuto}" />
                                             <TextBlock
                                                 Grid.Row="2"
                                                 Margin="5,2"
-                                                Text="{Binding AutoTitle}" />
+                                                Text="{Binding TitleAuto}" />
                                         </Grid>
                                     </Border>
-                                </Grid>
+                                </uiComponents:DropShadowPanel>
                                 <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="False">
+                                        <Setter Property="Panel.ZIndex" Value="0" />
+                                        <Setter TargetName="mainGrid" Property="ShadowMode" Value="Outer" />
+                                    </Trigger>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="dropDownBorder" Property="Visibility" Value="Visible" />
+                                        <Setter Property="Panel.ZIndex" Value="1" />
+                                        <Setter TargetName="mainGrid" Property="ShadowMode" Value="Content" />
                                         <Trigger.EnterActions>
                                             <BeginStoryboard>
-                                                <Storyboard Storyboard.TargetName="dropDownBorder" Storyboard.TargetProperty="Effect.BlurRadius">
+                                                <Storyboard Storyboard.TargetName="mainGrid">
                                                     <DoubleAnimation
                                                         EasingFunction="{StaticResource QuinticEaseOut}"
+                                                        Storyboard.TargetProperty="BlurRadius"
                                                         To="10"
                                                         Duration="0:0:0.2" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                            <BeginStoryboard>
-                                                <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleX">
                                                     <DoubleAnimation
                                                         EasingFunction="{StaticResource QuinticEaseOut}"
+                                                        Storyboard.TargetProperty="RenderTransform.ScaleX"
                                                         To="1.05"
                                                         Duration="0:0:0.2" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                            <BeginStoryboard>
-                                                <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleY">
                                                     <DoubleAnimation
                                                         EasingFunction="{StaticResource QuinticEaseOut}"
+                                                        Storyboard.TargetProperty="RenderTransform.ScaleY"
                                                         To="1.05"
                                                         Duration="0:0:0.2" />
                                                 </Storyboard>
@@ -275,25 +246,20 @@
                                         </Trigger.EnterActions>
                                         <Trigger.ExitActions>
                                             <BeginStoryboard>
-                                                <Storyboard Storyboard.TargetName="dropDownBorder" Storyboard.TargetProperty="Effect.BlurRadius">
+                                                <Storyboard Storyboard.TargetName="mainGrid">
                                                     <DoubleAnimation
                                                         EasingFunction="{StaticResource QuinticEaseOut}"
+                                                        Storyboard.TargetProperty="BlurRadius"
                                                         To="0"
-                                                        Duration="0:0:0.4" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                            <BeginStoryboard>
-                                                <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleX">
+                                                        Duration="0:0:0.2" />
                                                     <DoubleAnimation
                                                         EasingFunction="{StaticResource QuinticEaseOut}"
+                                                        Storyboard.TargetProperty="RenderTransform.ScaleX"
                                                         To="1"
                                                         Duration="0:0:0.4" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                            <BeginStoryboard>
-                                                <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleY">
                                                     <DoubleAnimation
                                                         EasingFunction="{StaticResource QuinticEaseOut}"
+                                                        Storyboard.TargetProperty="RenderTransform.ScaleY"
                                                         To="1"
                                                         Duration="0:0:0.4" />
                                                 </Storyboard>
@@ -307,12 +273,36 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-                </ControlTemplate>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <panelComponent:VirtualizingGalleryWrapPanel
+                        ChildHeight="{StaticResource GalleryHeight}"
+                        ChildWidth="{StaticResource GalleryWidth}"
+                        ItemLoaded="VirtualizingGalleryWrapPanel_OnItemLoaded"
+                        Loaded="Panel_Loaded"
+                        ScrollOffset="100" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
+                    <Style.Resources>
+                        <!--  SelectedItem with focus  -->
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                        <!--  SelectedItem without focus  -->
+                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
+                        <!--  SelectedItem text foreground  -->
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                    </Style.Resources>
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                     <Setter Property="BorderThickness" Value="0" />
-                    <Setter Property="Template" Value="{StaticResource NormalButton}" />
+                    <Setter Property="Margin" Value="3" />
+                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="0" />
                 </Style>
-            </ListBox.Resources>
+            </ListBox.ItemContainerStyle>
         </ListBox>
         <StackPanel
             Grid.Row="3"
@@ -330,7 +320,7 @@
                     Padding="0"
                     Background="Transparent"
                     BorderThickness="0"
-                    Command="{Binding DataContext.SwitchCommand, ElementName=CurrentPage}"
+                    Command="{Binding DataContext.SwitchCommand, ElementName=Self}"
                     Style="{StaticResource FlatButtonStyle}">
                     <Button.CommandParameter>
                         <system:Boolean>False</system:Boolean>
@@ -340,61 +330,49 @@
                     </Viewbox>
                 </Button>
             </Border>
-            <ListBox
+            <ItemsControl
                 Margin="0,0,-1,0"
                 Background="Transparent"
                 BorderThickness="0"
                 ClipToBounds="False"
                 ItemsSource="{Binding Pages}">
-                <ListBox.ItemsPanel>
+                <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" />
                     </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.Resources>
-                    <ControlTemplate x:Key="PageTemplate">
-                        <Grid>
-                            <Border
-                                Width="26"
-                                Height="26"
-                                Margin="2"
-                                Background="{Binding IsActivated, Converter={StaticResource ButtonColorConverter}}"
-                                BorderBrush="#d0d0d0"
-                                BorderThickness="1"
-                                CornerRadius="1"
-                                Visibility="{Binding IsActivated, Converter={StaticResource TrueToVisibleConverter}}" />
-                            <Border
-                                Width="26"
-                                Height="26"
-                                Margin="2"
-                                BorderBrush="Transparent"
-                                BorderThickness="1"
-                                CornerRadius="1">
-                                <Button
-                                    x:Name="MainButton"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Command="{Binding DataContext.SwitchCommand, ElementName=CurrentPage}"
-                                    CommandParameter="{Binding Index}"
-                                    IsEnabled="{Binding IsActivated, Converter={StaticResource NegativeBooleanConverter}}"
-                                    Style="{StaticResource FlatButtonStyle}">
-                                    <!--<Button.Cursor>
-                                        <Binding Converter="{StaticResource BooleanToCursorConverter}" Path="IsActivated" />
-                                    </Button.Cursor>-->
-                                    <TextBlock
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Foreground="#646464"
-                                        Text="{Binding Index}" />
-                                </Button>
-                            </Border>
-                        </Grid>
-                    </ControlTemplate>
-                    <Style TargetType="{x:Type ListBoxItem}">
-                        <Setter Property="Template" Value="{StaticResource PageTemplate}" />
-                    </Style>
-                </ListBox.Resources>
-            </ListBox>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type viewModels:ListPageViewModel}">
+                        <buttonComponent:CommonButton
+                            x:Name="MainButton"
+                            Width="26"
+                            Height="26"
+                            Margin="2"
+                            BorderThickness="1"
+                            Command="{Binding DataContext.SwitchCommand, ElementName=Self}"
+                            CommandParameter="{Binding Index}"
+                            CornerRadius="1"
+                            IsEnabled="{Binding IsActivated, Converter={StaticResource NegativeBooleanConverter}}">
+                            <buttonComponent:CommonButton.Style>
+                                <Style BasedOn="{StaticResource {x:Type buttonComponent:CommonButton}}" TargetType="buttonComponent:CommonButton">
+                                    <Setter Property="Background" Value="{StaticResource GreyBrush}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsActivated}" Value="True">
+                                            <Setter Property="Background" Value="#D5D5D5" />
+                                            <Setter Property="BorderBrush" Value="#D0D0D0" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </buttonComponent:CommonButton.Style>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="#646464"
+                                Text="{Binding Index}" />
+                        </buttonComponent:CommonButton>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
             <Border
                 Width="26"
                 Height="26"
@@ -406,7 +384,7 @@
                     Padding="0"
                     Background="Transparent"
                     BorderThickness="0"
-                    Command="{Binding DataContext.SwitchCommand, ElementName=CurrentPage}"
+                    Command="{Binding DataContext.SwitchCommand, ElementName=Self}"
                     Style="{StaticResource FlatButtonStyle}">
                     <Button.CommandParameter>
                         <system:Boolean>True</system:Boolean>

@@ -57,9 +57,9 @@ public sealed class PlayGroupQuery
     public string Source { get; init; } = null!;
     public string Tags { get; init; } = null!;
 
-    public string? ThumbPath { get; init; }
-    public string? VideoPath { get; init; }
-    public string? StoryboardVideoPath { get; init; }
+    //public string? ThumbPath { get; init; }
+    //public string? VideoPath { get; init; }
+    //public string? StoryboardVideoPath { get; init; }
     public double StarRating { get; set; }
     public PlayItem PlayItem { get; set; } = null!;
     public PlayItemDetail PlayItemDetail { get; set; } = null!;

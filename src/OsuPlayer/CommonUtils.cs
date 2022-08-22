@@ -16,7 +16,7 @@ namespace Milki.OsuPlayer;
 [Fody.ConfigureAwait(false)]
 public static class CommonUtils
 {
-    private static readonly SemaphoreSlim ConcurrentLimit = new(5);
+    private static readonly SemaphoreSlim ConcurrentLimit = new(1);
 
     public static bool? BrowseDb(out string path)
     {
@@ -71,9 +71,13 @@ public static class CommonUtils
 
     public static async Task<string?> GetThumbByBeatmapDbId(PlayItem playItem)
     {
-        if (playItem.PlayItemAsset?.ThumbPath != null && File.Exists(playItem.PlayItemAsset.ThumbPath))
+        if (playItem.PlayItemAsset?.ThumbPath != null)
         {
-            return Path.Combine(AppSettings.Directories.ThumbCacheDir, playItem.PlayItemAsset.ThumbPath);
+            var fullPath = Path.Combine(AppSettings.Directories.ThumbCacheDir, playItem.PlayItemAsset.ThumbPath);
+            if (File.Exists(fullPath))
+            {
+                return fullPath;
+            }
         }
 
         var osuFilePath = PathUtils.GetFullPath(playItem.StandardizedPath, AppSettings.Default.GeneralSection.OsuSongDir);
@@ -124,7 +128,11 @@ public static class CommonUtils
             var asset = await dbContext.PlayItemAssets.FindAsync(playItem.PlayItemAsset?.Id);
             if (asset == null)
             {
-                return null;
+                playItem.PlayItemAsset = asset = new PlayItemAsset();
+                dbContext.PlayItemAssets.Add(asset);
+                await dbContext.SaveChangesAsync();
+                playItem.PlayItemAssetId = asset.Id;
+                dbContext.Update(playItem, k => k.PlayItemAssetId);
             }
 
             asset.ThumbPath = $"{guidStr}.jpg";
@@ -146,10 +154,13 @@ public static class CommonUtils
     private static void ResizeImageAndSave(string sourcePath, string targetName, int width = 0, int height = 0)
     {
         var imageBytes = LoadImageData(sourcePath);
-        var bitmapSource = CreateImage(imageBytes, width, height);
-        imageBytes = GetEncodedImageData(bitmapSource, ".jpg");
-        var filePath = Path.Combine(AppSettings.Directories.ThumbCacheDir, $"{targetName}.jpg");
-        SaveImageData(imageBytes, filePath);
+        var bitmapSource = CreateImage(imageBytes, width, height, out var memoryStream);
+        using (memoryStream)
+        {
+            imageBytes = GetEncodedImageData(bitmapSource, ".jpg");
+            var filePath = Path.Combine(AppSettings.Directories.ThumbCacheDir, $"{targetName}.jpg");
+            SaveImageData(imageBytes, filePath);
+        }
     }
 
     private static byte[] LoadImageData(string filePath)
@@ -157,7 +168,7 @@ public static class CommonUtils
         return File.ReadAllBytes(filePath);
     }
 
-    private static BitmapSource CreateImage(byte[] imageData, int decodePixelWidth, int decodePixelHeight)
+    private static BitmapSource CreateImage(byte[] imageData, int decodePixelWidth, int decodePixelHeight, out MemoryStream memoryStream)
     {
         var result = new BitmapImage();
         result.BeginInit();
@@ -171,10 +182,10 @@ public static class CommonUtils
             result.DecodePixelHeight = decodePixelHeight;
         }
 
-        using var memoryStream = new MemoryStream(imageData);
+        memoryStream = new MemoryStream(imageData);
         result.StreamSource = memoryStream;
         result.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
-        result.CacheOption = BitmapCacheOption.Default;
+        result.CacheOption = BitmapCacheOption.None;
         result.EndInit();
         return result;
     }

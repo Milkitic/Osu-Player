@@ -1,19 +1,14 @@
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Xaml;
 using Milki.OsuPlayer.Data.Models;
-using Milki.OsuPlayer.Shared.Models;
 using Milki.OsuPlayer.Shared.Observable;
-using Milki.OsuPlayer.UiComponents.PanelComponent;
 
 namespace Milki.OsuPlayer.ViewModels;
 
 public class SearchPageViewModel : VmBase
 {
-    private const int MaxListCount = 100;
-
     private ObservableCollection<PlayGroupQuery> _playItems;
     private List<ListPageViewModel> _pages;
     private ListPageViewModel _lastPage;
@@ -24,169 +19,40 @@ public class SearchPageViewModel : VmBase
     public string SearchText
     {
         get => _searchText;
-        set
-        {
-            if (Equals(value, _searchText)) return;
-            _searchText = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _searchText, value);
     }
 
     public ObservableCollection<PlayGroupQuery> PlayItems
     {
         get => _playItems;
-        private set
-        {
-            if (Equals(value, _playItems)) return;
-            _playItems = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _playItems, value);
     }
 
     public List<ListPageViewModel> Pages
     {
         get => _pages;
-        private set
-        {
-            if (Equals(value, _pages)) return;
-            _pages = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _pages, value);
     }
 
     public ListPageViewModel LastPage
     {
         get => _lastPage;
-        private set
-        {
-            if (Equals(value, _lastPage)) return;
-            _lastPage = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _lastPage, value);
     }
 
     public ListPageViewModel FirstPage
     {
         get => _firstPage;
-        private set
-        {
-            if (Equals(value, _firstPage)) return;
-            _firstPage = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _firstPage, value);
     }
 
     public ListPageViewModel CurrentPage
     {
         get => _currentPage;
-        private set
-        {
-            if (Equals(value, _currentPage)) return;
-            _currentPage = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _currentPage, value);
     }
 
-    public VirtualizingGalleryWrapPanel GalleryWrapPanel { get; set; }
-
-    private readonly Stopwatch _querySw = new Stopwatch();
-    private bool _isQuerying;
-    private static readonly object QueryLock = new object();
-
-    public async Task PlayListQueryAsync(int page = 0)
-    {
-        var sortMode = BeatmapOrderOptions.Artist;
-        _querySw.Restart();
-
-        lock (QueryLock)
-        {
-            if (_isQuerying)
-                return;
-            _isQuerying = true;
-        }
-
-        try
-        {
-            await Task.Run(() =>
-            {
-                while (_querySw.ElapsedMilliseconds < 300)
-                    Thread.Sleep(10);
-                _querySw.Stop();
-            });
-
-            await using var dbContext = ServiceProviders.GetApplicationDbContext();
-            var paginationQueryResult = await dbContext
-                .SearchPlayItemsAsync(SearchText ?? "",
-                    sortMode,
-                    page: page,
-                    countPerPage: MaxListCount
-                );
-
-            PlayItems = new ObservableCollection<PlayGroupQuery>(paginationQueryResult.Results);
-            SetPage(paginationQueryResult.TotalCount, page);
-        }
-        finally
-        {
-            lock (QueryLock)
-            {
-                _isQuerying = false;
-            }
-        }
-    }
-
-    private void SetPage(int totalCount, int nowPage)
-    {
-        var totalPageCount = (int)Math.Ceiling(totalCount / (float)MaxListCount);
-        int count, startIndex;
-        if (totalPageCount > 10)
-        {
-            if (nowPage > 5)
-            {
-                FirstPage = new ListPageViewModel(1);
-                if (nowPage >= totalPageCount - 5)
-                {
-                    startIndex = totalPageCount - 10;
-                }
-                else
-                {
-                    startIndex = nowPage - 5;
-                }
-            }
-            else
-            {
-                startIndex = 0;
-            }
-
-            count = 10;
-        }
-        else
-        {
-            count = totalPageCount;
-            startIndex = 0;
-        }
-
-        var pages = new List<ListPageViewModel>(totalPageCount);
-        for (int i = startIndex; i < startIndex + count; i++)
-        {
-            pages.Add(new ListPageViewModel(i + 1));
-        }
-
-        Pages = pages;
-        ListPageViewModel page = GetPage(nowPage + 1);
-
-        if (page != null)
-            page.IsActivated = true;
-
-        CurrentPage = page;
-        GalleryWrapPanel?.ClearNotificationCount();
-
-        //DisplayedMaps = SearchedMaps.Skip(nowIndex * MaxListCount).Take(MaxListCount).ToList();
-    }
-
-    private ListPageViewModel GetPage(int page)
-    {
-        return Pages.FirstOrDefault(k => k.Index == page);
-    }
+    //public VirtualizingGalleryWrapPanel GalleryWrapPanel { get; set; }
 
     //public ICommand SwitchCommand
     //{
