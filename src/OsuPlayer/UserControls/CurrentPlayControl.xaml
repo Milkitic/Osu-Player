@@ -49,7 +49,7 @@
             <Separator />
             <MenuItem
                 Command="{Binding SaveCollectionCommand}"
-                Header="收藏至...(Ctrl+S)"
+                Header="加至播放列表...(Ctrl+S)"
                 Style="{StaticResource DefaultMenuItem}" />
             <MenuItem
                 Command="{Binding ExportCommand}"

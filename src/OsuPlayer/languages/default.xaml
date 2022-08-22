@@ -24,9 +24,9 @@
     <sys:String x:Key="err-collectionNotInDb">The collection is not in database</sys:String>
 
     <sys:String x:Key="ui-win-sets">播放器设置</sys:String>
-    <sys:String x:Key="ui-win-editCollection">编辑收藏</sys:String>
-    <sys:String x:Key="ui-win-newCollection">新建收藏</sys:String>
-    <sys:String x:Key="ui-win-selectCollection">选择收藏</sys:String>
+    <sys:String x:Key="ui-win-editCollection">编辑播放列表</sys:String>
+    <sys:String x:Key="ui-win-newCollection">新建播放列表</sys:String>
+    <sys:String x:Key="ui-win-selectCollection">选择播放列表</sys:String>
     <sys:String x:Key="ui-win-selectDifficulty">选择难度</sys:String>
     <sys:String x:Key="ui-win-closing">关闭确认</sys:String>
 
@@ -53,8 +53,8 @@
     <sys:String x:Key="ui-none">暂无</sys:String>
     <sys:String x:Key="ui-musicCount">歌曲数</sys:String>
     <sys:String x:Key="ui-max30Char">30字符以内</sys:String>
-    <sys:String x:Key="ui-collectionName">收藏夹名</sys:String>
-    <sys:String x:Key="ui-addNewCollection">添加新的收藏夹</sys:String>
+    <sys:String x:Key="ui-collectionName">播放列表名称</sys:String>
+    <sys:String x:Key="ui-addNewCollection">添加新的播放列表</sys:String>
     <sys:String x:Key="ui-total">共</sys:String>
     <sys:String x:Key="ui-songsClassifier">首</sys:String>
     <sys:String x:Key="ui-volumeMaster">总体</sys:String>
@@ -71,7 +71,7 @@
     <sys:String x:Key="ui-exit">退出</sys:String>
     <sys:String x:Key="ui-switch">切换</sys:String>
 
-    <sys:String x:Key="ui-tab-myCollection">我的收藏</sys:String>
+    <sys:String x:Key="ui-tab-myCollection">播放列表</sys:String>
     <sys:String x:Key="ui-tab-musicList">音乐列表</sys:String>
 
     <sys:String x:Key="ui-auto">自动</sys:String>
@@ -80,7 +80,7 @@
     <sys:String x:Key="ui-qqMusic">QQ音乐</sys:String>
 
     <sys:String x:Key="ui-hint-searchPageBox">标题、艺术家、Mapper、来源、标签、收藏</sys:String>
-    <sys:String x:Key="ui-hint-searchCollectionMusic3Dot">搜索收藏夹音乐...</sys:String>
+    <sys:String x:Key="ui-hint-searchCollectionMusic3Dot">搜索播放列表内音乐...</sys:String>
 
     <sys:String x:Key="ui-btn-openDirectory">打开目录</sys:String>
     <sys:String x:Key="ui-btn-checkUpdate">检查更新</sys:String>
@@ -101,7 +101,7 @@
     <sys:String x:Key="ui-ctxMenu-searchSource">搜索来源</sys:String>
     <sys:String x:Key="ui-ctxMenu-searchCreator">搜索作者</sys:String>
     <sys:String x:Key="ui-ctxMenu-openSourceFolder">打开所在目录</sys:String>
-    <sys:String x:Key="ui-ctxMenu-saveTo">收藏至</sys:String>
+    <sys:String x:Key="ui-ctxMenu-saveTo">加至播放列表</sys:String>
     <sys:String x:Key="ui-ctxMenu-openScorePage">打开成绩页</sys:String>
     <sys:String x:Key="ui-ctxMenu-export">导出</sys:String>
     <sys:String x:Key="ui-ctxMenu-removeFromList">从列表中移除</sys:String>
@@ -174,7 +174,7 @@
 
     <sys:String x:Key="ui-nav-library">库</sys:String>
     <sys:String x:Key="ui-nav-mine">我的</sys:String>
-    <sys:String x:Key="ui-nav-collection">收藏夹</sys:String>
+    <sys:String x:Key="ui-nav-collection">播放列表</sys:String>
     <sys:String x:Key="ui-nav-search">搜索</sys:String>
     <sys:String x:Key="ui-nav-storyboard">故事版</sys:String>
     <sys:String x:Key="ui-nav-recent">最近播放</sys:String>
@@ -199,6 +199,6 @@
     <sys:String x:Key="ui-saturation">饱和度</sys:String>
     <sys:String x:Key="ui-lightness">亮度</sys:String>
 
-    <sys:String x:Key="ui-ensureRemoveCollection">确认删除收藏夹？</sys:String>
+    <sys:String x:Key="ui-ensureRemoveCollection">确认删除播放列表？</sys:String>
     <sys:String x:Key="ui-ensureRemoveAll">真的要删除全部吗？</sys:String>
 </ResourceDictionary>

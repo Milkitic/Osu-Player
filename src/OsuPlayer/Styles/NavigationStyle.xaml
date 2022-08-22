@@ -87,7 +87,7 @@
     <!-- Navigation label style -->
     <Style x:Key="NavigationLabelStyle" TargetType="{x:Type Label}">
         <Setter Property="FontSize" Value="16px" />
-        <Setter Property="Foreground" Value="#f8e0dfef" />
+        <Setter Property="Foreground" Value="#f8ffffff" />
         <Setter Property="Margin" Value="0,10,0,0" />
         <Setter Property="Background" >
             <Setter.Value>

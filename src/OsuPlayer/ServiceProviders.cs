@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Milki.OsuPlayer.Data;
+﻿using Milki.OsuPlayer.Data;
 
 namespace Milki.OsuPlayer;
 

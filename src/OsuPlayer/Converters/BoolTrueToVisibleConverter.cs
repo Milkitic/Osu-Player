@@ -1,18 +1,17 @@
 ﻿using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
 namespace Milki.OsuPlayer.Converters;
 
-public class ExceptionToStringConverter : IValueConverter
+public class BoolTrueToVisibleConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is Exception e)
-        {
-            return e.ToString();
-        }
-
-        return null;
+        var show = (bool)value;
+        if (parameter != null)
+            return show ? Visibility.Visible : Visibility.Collapsed;
+        return show ? Visibility.Visible : Visibility.Hidden;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

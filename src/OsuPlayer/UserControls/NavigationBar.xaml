@@ -10,21 +10,20 @@
     xmlns:osuPlayer="clr-namespace:Milki.OsuPlayer"
     xmlns:pages="clr-namespace:Milki.OsuPlayer.Pages"
     xmlns:radioButtonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.RadioButtonComponent"
-    xmlns:windows="clr-namespace:Milki.OsuPlayer.Windows"
+    x:Name="Self"
     d:DataContext="{d:DesignInstance Type=osuPlayer:SharedVm,
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     Loaded="NavigationBar_OnLoaded"
+    TextBlock.FontFamily="Segoe UI,微软雅黑"
+    TextOptions.TextFormattingMode="Display"
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:NavigationWidthConverter x:Key="CvtNavigationWidth" />
         <converters:TitleVisibleConverter x:Key="CvtTitleVisible" />
         <converters:SwitchRadioChangeConverter x:Key="SwitchRadioChangeConverter" />
-        <ControlTemplate x:Key="PlayListItemStyle" TargetType="{x:Type ListBoxItem}">
-            <d:Object.DataContext>
-                <d:DesignInstance IsDesignTimeCreatable="False" Type="models:PlayList" />
-            </d:Object.DataContext>
+        <DataTemplate x:Key="PlayListItemDataTempl" DataType="{x:Type models:PlayList}">
             <radioButtonComponent:SwitchRadio
                 Height="31"
                 Padding="14,0,0,0"
@@ -37,21 +36,18 @@
                 TargetPageType="{x:Type pages:CollectionPage}">
                 <radioButtonComponent:SwitchRadio.Tag>
                     <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}" ConverterParameter="0">
-                        <Binding Path="DataContext.IsNavigationCollapsed" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type windows:MainWindow}}" />
+                        <Binding ElementName="Self" Path="DataContext.IsNavigationCollapsed" />
                         <Binding RelativeSource="{RelativeSource Self}" />
                     </MultiBinding>
                 </radioButtonComponent:SwitchRadio.Tag>
                 <radioButtonComponent:SwitchRadio.Style>
                     <Style BasedOn="{StaticResource OsuSwitchRadio}" TargetType="radioButtonComponent:SwitchRadio">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=DataContext.IsNavigationCollapsed, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type windows:MainWindow}}}" Value="False">
+                            <DataTrigger Binding="{Binding Path=DataContext.IsNavigationCollapsed, ElementName=Self}" Value="False">
                                 <Setter Property="IconTemplate" Value="{StaticResource CollectionTempl}" />
                                 <Setter Property="IconSize" Value="18" />
                             </DataTrigger>
-                            <!--<Setter Property="MouseOverBackground" Value="White" />
-                                                    <Setter Property="MouseOverForeground" Value="#303030" />
-                                                    <Setter Property="MouseOverIconColor" Value="#DC498D" />-->
-                            <DataTrigger Binding="{Binding Path=DataContext.IsNavigationCollapsed, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type windows:MainWindow}}}" Value="True">
+                            <DataTrigger Binding="{Binding Path=DataContext.IsNavigationCollapsed, ElementName=Self}" Value="True">
                                 <Setter Property="IconTemplate">
                                     <Setter.Value>
                                         <ControlTemplate>
@@ -60,26 +56,25 @@
                                                 Height="40"
                                                 Background="{TemplateBinding Foreground}"
                                                 CornerRadius="20">
-                                                <Label
-                                                    Margin="1,0.5,0,0"
+                                                <TextBlock
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
-                                                    Content="{Binding Name, Converter={StaticResource GetOutlinedTextConverter}}"
                                                     FontSize="22"
                                                     FontWeight="Bold"
-                                                    Foreground="#303030" />
+                                                    Foreground="#303030"
+                                                    Text="{Binding Name, Converter={StaticResource GetOutlinedTextConverter}}" />
                                             </Border>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
-                                <Setter Property="Margin" Value="-2,0,0,1" />
+                                <Setter Property="Margin" Value="-1,0,0,0" />
                                 <Setter Property="IconSize" Value="20" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </radioButtonComponent:SwitchRadio.Style>
             </radioButtonComponent:SwitchRadio>
-        </ControlTemplate>
+        </DataTemplate>
     </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
@@ -99,10 +94,7 @@
                 IconSize="19"
                 IconTemplate="{StaticResource NavigationTempl}"
                 Style="{StaticResource NavButton}" />
-            <Label
-                Height="30"
-                FontWeight="SemiBold"
-                Style="{StaticResource NavigationLabelStyle}">
+            <Label Height="30" Style="{StaticResource NavigationLabelStyle}">
                 <Label.Tag>
                     <MultiBinding Converter="{StaticResource CvtTitleVisible}">
                         <Binding Path="IsNavigationCollapsed" />
@@ -141,10 +133,7 @@
                     </MultiBinding>
                 </radioButtonComponent:SwitchRadio.Tag>
             </radioButtonComponent:SwitchRadio>
-            <Label
-                Height="30"
-                FontWeight="SemiBold"
-                Style="{StaticResource NavigationLabelStyle}">
+            <Label Height="30" Style="{StaticResource NavigationLabelStyle}">
                 <Label.Tag>
                     <MultiBinding Converter="{StaticResource CvtTitleVisible}">
                         <Binding Path="IsNavigationCollapsed" />
@@ -182,6 +171,14 @@
                     </MultiBinding>
                 </radioButtonComponent:SwitchRadio.Tag>
             </radioButtonComponent:SwitchRadio>
+
+            <Rectangle
+                Height="1"
+                Margin="5,0,5,5"
+                Stroke="#6CCC"
+                StrokeThickness="0,1,0,0"
+                Visibility="{Binding IsNavigationCollapsed, Converter={StaticResource BoolTrueToVisibleConverter}, ConverterParameter=d}" />
+
             <DockPanel>
                 <DockPanel.Tag>
                     <MultiBinding Converter="{StaticResource CvtTitleVisible}" ConverterParameter="0">
@@ -189,10 +186,7 @@
                         <Binding RelativeSource="{RelativeSource Self}" />
                     </MultiBinding>
                 </DockPanel.Tag>
-                <Label
-                    Height="30"
-                    FontWeight="SemiBold"
-                    Style="{StaticResource NavigationLabelStyle}">
+                <Label Height="30" Style="{StaticResource NavigationLabelStyle}">
                     <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-collection}" />
                 </Label>
                 <buttonComponent:CommonButton
@@ -207,19 +201,14 @@
                     IconTemplate="{StaticResource NavAddCollectionTempl}"
                     Style="{StaticResource NavButton}" />
             </DockPanel>
-            <ListView
+
+            <ItemsControl
                 Margin="0,0,-1,0"
                 Background="Transparent"
                 BorderThickness="0"
+                ItemTemplate="{StaticResource PlayListItemDataTempl}"
                 ItemsSource="{Binding PlayLists, Mode=OneWay}"
-                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ListView.Resources>
-                    <Style TargetType="{x:Type ListViewItem}">
-                        <Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="Template" Value="{StaticResource PlayListItemStyle}" />
-                    </Style>
-                </ListView.Resources>
-            </ListView>
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
         </StackPanel>
     </ScrollViewer>
 </UserControl>

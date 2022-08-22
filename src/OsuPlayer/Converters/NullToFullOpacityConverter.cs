@@ -3,16 +3,11 @@ using System.Windows.Data;
 
 namespace Milki.OsuPlayer.Converters;
 
-public class ExceptionToStringConverter : IValueConverter
+public class NullToFullOpacityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is Exception e)
-        {
-            return e.ToString();
-        }
-
-        return null;
+        return value is null ? 1 : 0.15;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

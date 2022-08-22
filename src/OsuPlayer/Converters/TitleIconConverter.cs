@@ -1,18 +1,21 @@
 ﻿using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
 namespace Milki.OsuPlayer.Converters;
 
-public class ExceptionToStringConverter : IValueConverter
+public class TitleIconConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is Exception e)
+        if (value is bool isNavigationCollapsed)
         {
-            return e.ToString();
+            return !isNavigationCollapsed
+                ? App.Current.FindResource("TitleLogo")
+                : App.Current.FindResource("TitleLogoSmall");
         }
 
-        return null;
+        return new Thickness(0);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
