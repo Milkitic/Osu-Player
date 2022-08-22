@@ -7,6 +7,7 @@ namespace Milki.OsuPlayer;
 public class SharedVm : SingletonVm<SharedVm>
 {
     private bool _enableVideo = true;
+    private bool _isNavigationCollapsed;
     private List<PlayList> _playLists;
     private NavigationType _checkedNavigationType;
     private bool _isLyricEnabled;
@@ -17,6 +18,12 @@ public class SharedVm : SingletonVm<SharedVm>
     {
         get => _enableVideo;
         set => this.RaiseAndSetIfChanged(ref _enableVideo, value);
+    }
+
+    public bool IsNavigationCollapsed
+    {
+        get => _isNavigationCollapsed;
+        set => this.RaiseAndSetIfChanged(ref _isNavigationCollapsed, value);
     }
 
     public List<PlayList> PlayLists
@@ -56,7 +63,7 @@ public class SharedVm : SingletonVm<SharedVm>
     /// </summary>
     public async ValueTask UpdatePlayListsAsync()
     {
-        var dbContext = ServiceProviders.GetApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var list = await dbContext.GetPlayListsAsync();
         PlayLists = new List<PlayList>(list);
     }

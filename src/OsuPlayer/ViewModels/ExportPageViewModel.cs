@@ -125,7 +125,7 @@ public class ExportPageViewModel : VmBase
             return new DelegateCommand(async obj =>
             {
                 if (SelectedItems == null) return;
-                var dbContext = ServiceProviders.GetApplicationDbContext();
+                await using var dbContext = ServiceProviders.GetApplicationDbContext();
 
                 foreach (var exportItem in SelectedItems)
                 {
@@ -148,7 +148,7 @@ public class ExportPageViewModel : VmBase
 
     private async Task UpdateCollection()
     {
-        var dbContext = ServiceProviders.GetApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var paginationQueryResult = await dbContext.GetExportListFull();
         var exports = paginationQueryResult.Results;
         //foreach (var export in exports)

@@ -88,7 +88,7 @@ public partial class VolumeControl : UserControl
     private async void Offset_DragComplete(object sender, DragCompletedEventArgs e)
     {
         if (_playerService.LastLoadContext?.PlayItem?.PlayItemConfig == null) return;
-        var dbContext = ServiceProviders.GetApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         _playerService.LastLoadContext.PlayItem.PlayItemConfig.Offset =
             (int)(_playerService.ActiveMixPlayer?.Offset ?? 0d);
 

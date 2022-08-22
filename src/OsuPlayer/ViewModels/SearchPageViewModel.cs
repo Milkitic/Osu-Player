@@ -114,9 +114,9 @@ public class SearchPageViewModel : VmBase
                 _querySw.Stop();
             });
 
-            var dbContext = ServiceProviders.GetApplicationDbContext();
+            await using var dbContext = ServiceProviders.GetApplicationDbContext();
             var paginationQueryResult = await dbContext
-                .SearchPlayItemsAsync(SearchText,
+                .SearchPlayItemsAsync(SearchText ?? "",
                     sortMode,
                     page: page,
                     countPerPage: MaxListCount
@@ -277,7 +277,7 @@ public class SearchPageViewModel : VmBase
     //        {
     //            var beatmap = (Beatmap)param;
 
-    //            var dbContext = ServiceProviders.GetApplicationDbContext();
+    //            await using var dbContext = ServiceProviders.GetApplicationDbContext();
     //            var beatmaps = await dbContext.GetBeatmapsFromFolder(beatmap.FolderNameOrPath, beatmap.InOwnDb);
 
     //            var control = new DiffSelectControl(
@@ -330,7 +330,7 @@ public class SearchPageViewModel : VmBase
     //        return new DelegateCommand(async param =>
     //        {
     //            var beatmap = (Beatmap)param;
-    //            var dbContext = ServiceProviders.GetApplicationDbContext();
+    //            await using var dbContext = ServiceProviders.GetApplicationDbContext();
     //            var beatmaps = await dbContext.GetBeatmapsFromFolder(beatmap.FolderNameOrPath, beatmap.InOwnDb);
 
     //            var control = new DiffSelectControl(
@@ -348,7 +348,7 @@ public class SearchPageViewModel : VmBase
     //{
     //    if (beatmap == null) return null;
 
-    //    var dbContext = ServiceProviders.GetApplicationDbContext();
+    //    await using var dbContext = ServiceProviders.GetApplicationDbContext();
     //    var map = (await dbContext.GetBeatmapsFromFolder(beatmap.FolderNameOrPath, beatmap.InOwnDb))
     //        .GetHighestDiff();
     //    return map;

@@ -36,7 +36,7 @@ public partial class NewVersionWindow : WindowEx
 
     private async void Skip_Click(object sender, RoutedEventArgs e)
     {
-        var dbContext = ServiceProviders.GetApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var softwareState = await dbContext.GetSoftwareState();
         softwareState.IgnoredVersion = _release.NewVerString;
         AppSettings.SaveDefault();

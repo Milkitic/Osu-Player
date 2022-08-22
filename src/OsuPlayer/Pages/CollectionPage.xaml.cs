@@ -26,19 +26,15 @@ public partial class CollectionPage : Page
     private readonly CollectionPageViewModel _viewModel;
 
     private List<PlayItem> _playItems;
+    private bool _firstLoaded;
 
-    public CollectionPage()
+    public CollectionPage(PlayList playList)
     {
         InitializeComponent();
         _playerService = App.Current.ServiceProvider.GetService<PlayerService>();
         _playListService = App.Current.ServiceProvider.GetService<PlayListService>();
         DataContext = _viewModel = new CollectionPageViewModel();
-    }
-
-    public async ValueTask UpdateView(PlayList playList)
-    {
         _viewModel.PlayList = playList;
-        await UpdateList();
     }
 
     public async Task UpdateList()
@@ -62,8 +58,14 @@ public partial class CollectionPage : Page
         ListCount.Content = _viewModel.PlayItems.Count;
     }
 
-    private void Page_Loaded(object sender, RoutedEventArgs e)
+    private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
+        if (!_firstLoaded)
+        {
+            await UpdateList();
+            _firstLoaded = true;
+        }
+
         var item = _viewModel.PlayItems?.FirstOrDefault(k => k.StandardizedPath == _playListService.GetCurrentPath());
         if (item != null)
         {
@@ -90,7 +92,7 @@ public partial class CollectionPage : Page
             MessageBoxButton.OKCancel,
             MessageBoxImage.Exclamation);
         if (result != MessageBoxResult.OK) return;
-        var dbContext = ServiceProviders.GetApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
 
         dbContext.Remove(_viewModel.PlayList);
         await dbContext.SaveChangesAsync();
@@ -119,7 +121,7 @@ public partial class CollectionPage : Page
         }
 
         var selectedItem = (PlayItem)MapCardList.SelectedItem;
-        var dbContext = ServiceProviders.GetApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var beatmaps = await dbContext.GetPlayItemsByFolderAsync(selectedItem.StandardizedFolder);
         return beatmaps.FirstOrDefault(k => k.PlayItemDetail.Version == selectedItem.PlayItemDetail.Version);
     }

@@ -56,7 +56,7 @@ public class OsuFileScanningService
         }
 
         _scanCts = new CancellationTokenSource();
-        var dbContext = ServiceProviders.GetApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         await dbContext.RemoveFolderAll();
         var dirInfo = new DirectoryInfo(path);
         var concurrentBag = new ConcurrentDictionary<string, PlayItemDetail>();
@@ -156,7 +156,7 @@ public class OsuFileScanningService
 
     public async ValueTask SynchronizeManaged(ConcurrentDictionary<string, PlayItemDetail> fromCustomFolder)
     {
-        var dbContext = ServiceProviders.GetApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var sw = Stopwatch.StartNew();
         var dbItems = await dbContext.PlayItems
             .Include(k => k.PlayItemDetail)

@@ -39,7 +39,7 @@ public static class CommonUtils
             AppSettings.Default.GeneralSection.DbPath = path;
             AppSettings.SaveDefault();
 
-            var dbContext = ServiceProviders.GetApplicationDbContext();
+            await using var dbContext = ServiceProviders.GetApplicationDbContext();
             var softwareState = await dbContext.GetSoftwareState();
 
             softwareState.LastSync = DateTime.Now;
@@ -120,7 +120,7 @@ public static class CommonUtils
             }
 
             ResizeImageAndSave(sourceBgPath, guidStr, height: 200);
-            var dbContext = ServiceProviders.GetApplicationDbContext();
+            await using var dbContext = ServiceProviders.GetApplicationDbContext();
             var asset = await dbContext.PlayItemAssets.FindAsync(playItem.PlayItemAsset?.Id);
             if (asset == null)
             {

@@ -6,5 +6,5 @@ namespace Milki.OsuPlayer;
 public static class ServiceProviders
 {
     public static IServiceProvider Default => App.Current.ServiceProvider;
-    public static ApplicationDbContext GetApplicationDbContext() => Default.GetService<ApplicationDbContext>()!;
+    public static ApplicationDbContext GetApplicationDbContext() => new ApplicationDbContext();
 }

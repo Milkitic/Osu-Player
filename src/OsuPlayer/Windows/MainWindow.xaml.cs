@@ -19,7 +19,6 @@ namespace Milki.OsuPlayer.Windows;
 /// </summary>
 public partial class MainWindow : WindowBase
 {
-    private readonly ApplicationDbContext _applicationDbContext;
     private readonly UpdateService _updateService;
     private readonly PlayerService _playerService;
     private readonly PlayListService _playListService;
@@ -32,9 +31,8 @@ public partial class MainWindow : WindowBase
 
     private readonly MainWindowViewModel _viewModel;
 
-    public MainWindow(ApplicationDbContext applicationDbContext)
+    public MainWindow()
     {
-        _applicationDbContext = applicationDbContext;
         _playerService = App.Current.ServiceProvider.GetService<PlayerService>();
         _playListService = App.Current.ServiceProvider.GetService<PlayListService>();
         _syncService = ServiceProviders.Default.GetService<BeatmapSyncService>();
@@ -157,10 +155,10 @@ public partial class MainWindow : WindowBase
 
     private async void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        var softwareState = await _applicationDbContext.GetSoftwareState();
+        await using var applicationDbContext = ServiceProviders.GetApplicationDbContext();
+        var softwareState = await applicationDbContext.GetSoftwareState();
 
-        _viewModel.IsNavigationCollapsed = !softwareState.ShowFullNavigation;
-
+        SharedVm.Default.IsNavigationCollapsed = !softwareState.ShowFullNavigation;
         MiniPlayController.CloseButtonClicked += () =>
         {
             if (AppSettings.Default.GeneralSection.ExitWhenClosed == null) Show();
@@ -189,7 +187,6 @@ public partial class MainWindow : WindowBase
                 ShowTitleBar = false
             }, (obj, args) =>
             {
-                SwitchSearch.IsChecked = true;
             });
 
             var songDir = AppSettings.Default.GeneralSection.CustomSongDir;
@@ -241,8 +238,9 @@ public partial class MainWindow : WindowBase
 
     private async void Animation_Loaded(object sender, RoutedEventArgs e)
     {
-        var lastPlay = (await _applicationDbContext.GetRecentListFull(0, 1)).Results.FirstOrDefault();
-        var currentPlays = await _applicationDbContext.GetCurrentListFull();
+        await using var applicationDbContext = ServiceProviders.GetApplicationDbContext();
+        var lastPlay = (await applicationDbContext.GetRecentListFull(0, 1)).Results.FirstOrDefault();
+        var currentPlays = await applicationDbContext.GetCurrentListFull();
         if (lastPlay?.IsItemLost == false)
         {
             lastPlay = currentPlays.LastOrDefault(k => !k.IsItemLost && k.PlayItemId == lastPlay.PlayItemId) ??
@@ -262,16 +260,6 @@ public partial class MainWindow : WindowBase
             await _playerService.InitializeNewAsync(lastPlay.PlayItem!.StandardizedPath,
                 AppSettings.Default.PlaySection.AutoPlay);
         }
-    }
-
-    private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
-    {
-        var addCollectionControl = new AddCollectionControl();
-        FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, async (obj, args) =>
-        {
-            await _applicationDbContext.AddPlayListAsync(addCollectionControl.CollectionName.Text); //todo: exists
-            await SharedVm.Default.UpdatePlayListsAsync();
-        });
     }
 
     private void BtnSettings_Click(object sender, RoutedEventArgs e)
@@ -340,12 +328,6 @@ public partial class MainWindow : WindowBase
             FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(playItem),
                 DialogOptionFactory.SelectCollectionOptions);
         }
-    }
-
-    private void BtnNavigationTrigger_Click(object sender, RoutedEventArgs e)
-    {
-        _viewModel.IsNavigationCollapsed = !_viewModel.IsNavigationCollapsed;
-        // Todo: save to db
     }
 
     #endregion Events

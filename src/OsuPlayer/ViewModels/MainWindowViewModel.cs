@@ -6,15 +6,8 @@ namespace Milki.OsuPlayer.ViewModels;
 
 public class MainWindowViewModel : VmBase
 {
-    private bool _isNavigationCollapsed;
     private ObservableCollection<PlayList> _playLists;
     private LyricWindowViewModel _lyricWindowViewModel;
-
-    public bool IsNavigationCollapsed
-    {
-        get => _isNavigationCollapsed;
-        set => this.RaiseAndSetIfChanged(ref _isNavigationCollapsed, value);
-    }
 
     public ObservableCollection<PlayList> PlayLists
     {

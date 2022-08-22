@@ -4,14 +4,12 @@ using System.IO;
 using Anotar.NLog;
 using Coosu.Beatmap;
 using Coosu.Beatmap.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using Milki.Extensions.MixPlayer.Devices;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Audio.Mixing;
 using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.Shared.Utils;
@@ -191,8 +189,8 @@ public class PlayerService : VmBase, IAsyncDisposable
             });
 
             context.OsuFile = osuFile;
-            var dbContext = App.Current.ServiceProvider.GetService<ApplicationDbContext>()!;
-            var playItem = await dbContext.GetOrAddPlayItem(standardizedPath);
+            await using var applicationDbContext = ServiceProviders.GetApplicationDbContext();
+            var playItem = await applicationDbContext.GetOrAddPlayItem(standardizedPath);
 
             var index = _playListService.SetPointerByPath(standardizedPath, true);
             context.PlayInstant = playInstant;
@@ -285,8 +283,8 @@ public class PlayerService : VmBase, IAsyncDisposable
             LastLoadContext = context;
             if (LoadFinished != null) await LoadFinished.Invoke(context);
 
-            await dbContext.SaveChangesAsync(_lastInitCts.Token);
-            await dbContext.AddOrUpdatePlayItemToRecentPlayAsync(playItem, DateTime.Now);
+            await applicationDbContext.SaveChangesAsync(_lastInitCts.Token);
+            await applicationDbContext.AddOrUpdatePlayItemToRecentPlayAsync(playItem, DateTime.Now);
         }
         catch (Exception ex)
         {

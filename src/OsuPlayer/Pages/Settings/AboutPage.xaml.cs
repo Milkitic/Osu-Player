@@ -59,7 +59,7 @@ public partial class AboutPage : Page
 
     private async ValueTask GetLastUpdate()
     {
-        var dbContext = ServiceProviders.GetApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var softwareState = await dbContext.GetSoftwareState();
         if (softwareState.LastUpdateCheck == null)
         {
@@ -90,7 +90,7 @@ public partial class AboutPage : Page
 
         CheckUpdate.IsEnabled = true;
 
-        var dbContext = ServiceProviders.GetApplicationDbContext();
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var softwareState = await dbContext.GetSoftwareState();
         softwareState.LastUpdateCheck = DateTime.Now;
         await GetLastUpdate();
