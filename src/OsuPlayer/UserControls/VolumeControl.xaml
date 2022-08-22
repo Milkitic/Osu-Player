@@ -54,7 +54,7 @@
                             Orientation="Vertical"
                             Style="{StaticResource VerticalSliderWhiteStyle}"
                             Thumb.DragCompleted="MasterVolume_DragComplete"
-                            Value="{Binding Shared.AppSettings.Volume.Main, Mode=TwoWay}" />
+                            Value="{Binding AppSettings.VolumeSection.MainVolume, Mode=TwoWay}" />
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
@@ -71,7 +71,7 @@
                             Orientation="Vertical"
                             Style="{StaticResource VerticalSliderWhiteStyle}"
                             Thumb.DragCompleted="MusicVolume_DragComplete"
-                            Value="{Binding Shared.AppSettings.Volume.Music, Mode=TwoWay}" />
+                            Value="{Binding AppSettings.VolumeSection.MusicVolume, Mode=TwoWay}" />
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
@@ -88,7 +88,7 @@
                             Orientation="Vertical"
                             Style="{StaticResource VerticalSliderWhiteStyle}"
                             Thumb.DragCompleted="HitsoundVolume_DragComplete"
-                            Value="{Binding Shared.AppSettings.Volume.Hitsound, Mode=TwoWay}" />
+                            Value="{Binding AppSettings.VolumeSection.HitsoundVolume, Mode=TwoWay}" />
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
@@ -105,7 +105,7 @@
                             Orientation="Vertical"
                             Style="{StaticResource VerticalSliderWhiteStyle}"
                             Thumb.DragCompleted="SampleVolume_DragComplete"
-                            Value="{Binding Shared.AppSettings.Volume.Sample, Mode=TwoWay}" />
+                            Value="{Binding AppSettings.VolumeSection.SampleVolume, Mode=TwoWay}" />
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
@@ -126,7 +126,7 @@
                             Style="{StaticResource HorizontalSliderWhiteStyle}"
                             Thumb.DragCompleted="Balance_DragComplete"
                             TickFrequency="1"
-                            Value="{Binding Shared.AppSettings.Volume.BalanceFactor, Mode=TwoWay}" />
+                            Value="{Binding AppSettings.VolumeSection.BalanceFactor, Mode=TwoWay}" />
                         <Label
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"

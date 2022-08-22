@@ -13,7 +13,7 @@ namespace Milki.OsuPlayer.UserControls;
 
 public class VolumeControlVm : VmBase
 {
-    public SharedVm Shared => SharedVm.Default;
+    public AppSettings AppSettings => AppSettings.Default;
 }
 
 /// <summary>

@@ -57,12 +57,9 @@ public partial class AnimationControl : UserControl
             VideoElement.IsMuted = true;
         }
 
-        var path = Path.Combine(AppSettings.Directories.ResourceDir, "official", "registration.jpg");
-        if (File.Exists(path))
-        {
-            BackImage.Source = new BitmapImage(new Uri(path));
-            BackImage.Opacity = 1;
-        }
+        //BackImage.Source =
+        //    new BitmapImage(new Uri("pack://application:,,,/OsuPlayer;component/Resources/official/registration.jpg"));
+        BackImage.Opacity = 1;
     }
 
     private async void Shared_PropertyChanged(object sender, PropertyChangedEventArgs e)

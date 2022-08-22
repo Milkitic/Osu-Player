@@ -1,69 +1,76 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
+using Milki.OsuPlayer.Shared.Observable;
 
 namespace Milki.OsuPlayer.Configuration;
 
-public class VolumeSection : INotifyPropertyChanged
+public class VolumeSection : VmBase
 {
-    private float _main = 0.8f;
-    private float _bgm = 1;
-    private float _hs = 0.9f;
-    private float _sample = 0.85f;
-    private float _balanceFactor = 0.35f;
-    public float Main
+    private float _mainVolume = 1.0f;
+    private float _musicVolume = 0.5f;
+    private float _hitsoundVolume = 0.5f;
+    private float _sampleVolume = 0.5f;
+    private float _balanceFactor = 0.3f;
+
+    public float MainVolume
     {
-        get => _main;
+        get => _mainVolume;
         set
         {
-            SetValue(ref _main, value);
+            var val = _mainVolume;
+            SetValue(out _mainVolume, value);
+            if (_mainVolume.Equals(val)) return;
             OnPropertyChanged();
         }
     }
 
-    public float Music
+    public float MusicVolume
     {
-        get => _bgm;
+        get => _musicVolume;
         set
         {
-            SetValue(ref _bgm, value);
+            var val = _musicVolume;
+            SetValue(out _musicVolume, value);
+            if (_musicVolume.Equals(val)) return;
             OnPropertyChanged();
         }
     }
-    public float Hitsound
+    public float HitsoundVolume
     {
-        get => _hs;
+        get => _hitsoundVolume;
         set
         {
-            SetValue(ref _hs, value);
+            var val = _hitsoundVolume;
+            SetValue(out _hitsoundVolume, value);
+            if (_hitsoundVolume.Equals(val)) return;
             OnPropertyChanged();
         }
     }
 
-    public float Sample
+    public float SampleVolume
     {
-        get => _sample;
+        get => _sampleVolume;
         set
         {
-            SetValue(ref _sample, value);
+            var val = _sampleVolume;
+            SetValue(out _sampleVolume, value);
+            if (_sampleVolume.Equals(val)) return;
             OnPropertyChanged();
         }
     }
+
     public float BalanceFactor
     {
         get => _balanceFactor * 100;
         set
         {
-            SetValue(ref _balanceFactor, value / 100f);
+            var val = _balanceFactor;
+            SetValue(out _balanceFactor, value / 100f);
+            if (_balanceFactor.Equals(val)) return;
             OnPropertyChanged();
         }
     }
 
-    private static void SetValue(ref float source, float value) => source = value < 0 ? 0 : (value > 1 ? 1 : value);
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void SetValue(out float source, float value) =>
+        source = value switch { < 0 => 0, > 1 => 1, _ => value };
 }

@@ -113,12 +113,12 @@ public partial class MainWindow : WindowBase
         keyHookService.NextSongAction = async () => await _playerService.PlayNextAsync();
         keyHookService.VolumeUpAction = () =>
         {
-            AppSettings.Default.VolumeSection.Main += 0.05f;
+            AppSettings.Default.VolumeSection.MainVolume += 0.05f;
             AppSettings.SaveDefault();
         };
         keyHookService.VolumeDownAction = () =>
         {
-            AppSettings.Default.VolumeSection.Main -= 0.05f;
+            AppSettings.Default.VolumeSection.MainVolume -= 0.05f;
             AppSettings.SaveDefault();
         };
         keyHookService.SwitchFullMiniModeAction = () =>

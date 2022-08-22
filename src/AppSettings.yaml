@@ -7,11 +7,11 @@
   OsuSongDir: D:\GitHub\Osu-Player\src\Songs
   LastMigrateVersion: 
 VolumeSection:
-  Main: 0.8
-  Music: 1
-  Hitsound: 0.9
-  Sample: 0.85
-  BalanceFactor: 35
+  MainVolume: 1
+  MusicVolume: 0.5
+  HitsoundVolume: 0.5
+  SampleVolume: 0.5
+  BalanceFactor: 1
 PlaySection:
   GeneralOffset: 0
   ReplacePlayList: true
