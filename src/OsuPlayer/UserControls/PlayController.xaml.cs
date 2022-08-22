@@ -21,6 +21,7 @@ public class PlayControllerVm : VmBase
     private double _maxTimeMs;
     private double _minTimeMs;
     private double _currentTimeMs;
+    private Visibility _minusVisibility = Visibility.Collapsed;
 
     public TimeSpan MaxTime
     {
@@ -38,6 +39,12 @@ public class PlayControllerVm : VmBase
     {
         get => _currentTime;
         set => this.RaiseAndSetIfChanged(ref _currentTime, value);
+    }
+
+    public Visibility MinusVisibility
+    {
+        get => _minusVisibility;
+        set => this.RaiseAndSetIfChanged(ref _minusVisibility, value);
     }
 
     public double MaxTimeMs
@@ -58,8 +65,8 @@ public class PlayControllerVm : VmBase
         set => this.RaiseAndSetIfChanged(ref _currentTimeMs, value);
     }
 
-    public PlayerService PlayerService { get; } = ServiceProviders.Default.GetService<PlayerService>();
-    public PlayListService PlayListService { get; } = ServiceProviders.Default.GetService<PlayListService>();
+    public PlayerService PlayerService { get; } = ServiceProviders.Default?.GetService<PlayerService>();
+    public PlayListService PlayListService { get; } = ServiceProviders.Default?.GetService<PlayListService>();
 }
 
 /// <summary>
@@ -108,9 +115,10 @@ public partial class PlayController : UserControl
             _playerService.LoadBackgroundInfoFinished += PlayerService_BackgroundInfoLoaded;
             _playerService.LoadMusicFinished += PlayerService_MusicLoaded;
             _playerService.PlayTimeChanged += PlayerService_PlayTimeChanged;
+
+            DataContext = _viewModel = new PlayControllerVm();
         }
 
-        DataContext = _viewModel = new PlayControllerVm();
         InitializeComponent();
     }
 
@@ -129,6 +137,7 @@ public partial class PlayController : UserControl
             _viewModel.MinTimeMs = 0;
             _viewModel.CurrentTime = TimeSpan.Zero;
             _viewModel.CurrentTimeMs = 0;
+            _viewModel.MinusVisibility = Visibility.Collapsed;
         });
         return ValueTask.CompletedTask;
     }
@@ -140,6 +149,7 @@ public partial class PlayController : UserControl
         {
             _viewModel.CurrentTime = time;
             _viewModel.CurrentTimeMs = time.TotalMilliseconds;
+            _viewModel.MinusVisibility = time.TotalMilliseconds < 0 ? Visibility.Visible : Visibility.Collapsed;
         });
     }
 
@@ -160,6 +170,7 @@ public partial class PlayController : UserControl
             _viewModel.MaxTimeMs = player.TotalTime.TotalMilliseconds;
             _viewModel.CurrentTime = player.PlayTime;
             _viewModel.CurrentTimeMs = player.PlayTime.TotalMilliseconds;
+            _viewModel.MinusVisibility = player.PlayTime.TotalMilliseconds < 0 ? Visibility.Visible : Visibility.Collapsed;
         });
 
         return ValueTask.CompletedTask;

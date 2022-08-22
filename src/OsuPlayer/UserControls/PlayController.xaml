@@ -235,35 +235,23 @@
                     Style="{StaticResource InvisibleButton}">
                     <TextBlock>
                         <Run Foreground="#777" Text="{Binding PlayerService.LastLoadContext.PlayItem.PlayItemDetail.AutoTitle, Mode=OneWay}" />
-                        <Run Text="-" />
+                        <Run Foreground="#858585" Text="-" />
                         <Run Foreground="#AAA" Text="{Binding PlayerService.LastLoadContext.PlayItem.PlayItemDetail.AutoArtist, Mode=OneWay}" />
                     </TextBlock>
                 </buttonComponent:CommonButton>
-                <buttonComponent:CommonButton
-                    x:Name="BtnAsio"
-                    Grid.Column="1"
-                    Height="20"
-                    Margin="3,0"
-                    Padding="4,0"
-                    HorizontalAlignment="Right"
-                    IconSize="45"
-                    SnapsToDevicePixels="False"
-                    Style="{StaticResource InvisibleButton}"
-                    Visibility="Collapsed">
-                    <buttonComponent:CommonButton.Foreground>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                            <LinearGradientBrush.GradientStops>
-                                <GradientStop Offset="0" Color="#646464" />
-                                <GradientStop Offset="1" Color="#484848" />
-                            </LinearGradientBrush.GradientStops>
-                        </LinearGradientBrush>
-                    </buttonComponent:CommonButton.Foreground>
-                </buttonComponent:CommonButton>
-                <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <TextBlock Margin="3">
-                        <Run Foreground="#777" Text="{Binding CurrentTime}" /><Run Foreground="#858585" Text=" / " /><Run Foreground="#AAA" Text="{Binding MaxTime}" />
-                    </TextBlock>
-                </StackPanel>
+                <Border Grid.Column="2" Padding="3">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Foreground="#777"
+                            Text="-"
+                            Visibility="{Binding MinusVisibility}" />
+                        <TextBlock>
+                            <Run Foreground="#777" Text="{Binding CurrentTime, Mode=OneWay, StringFormat='mm\\:ss'}" />
+                            <Run Foreground="#858585" Text="/" />
+                            <Run Foreground="#AAA" Text="{Binding MaxTime, Mode=OneWay, StringFormat='mm\\:ss'}" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
             </Grid>
             <Slider
                 Grid.Row="1"
