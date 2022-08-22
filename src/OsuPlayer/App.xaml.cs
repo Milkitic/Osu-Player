@@ -118,8 +118,14 @@ public partial class App : Application
         var playListService = ServiceProvider.GetService<PlayListService>()!;
         playListService.PlaylistMode = AppSettings.Default.PlaySection.PlayListMode;
 
-        var dbContext = ServiceProvider.GetService<ApplicationDbContext>()!;
-        await dbContext.Database.MigrateAsync();
+        var version = ServiceProvider.GetService<UpdateService>()!.GetVersion();
+        if (AppSettings.Default.GeneralSection.LastMigrateVersion !=version)
+        {
+            var dbContext = ServiceProvider.GetService<ApplicationDbContext>()!;
+            await dbContext.Database.MigrateAsync();
+            AppSettings.Default.GeneralSection.LastMigrateVersion = version;
+            AppSettings.SaveDefault();
+        }
 
         var playerService = ServiceProvider.GetService<PlayerService>()!;
         playerService.LoadMetaFinished += PlayerService_LoadMetaFinished;

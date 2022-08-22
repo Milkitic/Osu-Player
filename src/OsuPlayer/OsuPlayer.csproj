@@ -38,6 +38,7 @@
     <None Remove="Resources\Fonts\SourceSansPro-Regular.ttf" />
     <None Remove="Resources\Fonts\SourceSansPro-Semibold.ttf" />
     <None Remove="Resources\icon.png" />
+    <None Remove="Resources\official\registration.jpg" />
     <None Remove="Resources\osuPlayer.ico" />
     <None Remove="Resources\osu_texture.png" />
     <None Remove="Resources\osu_texture2.png" />
@@ -117,6 +118,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\icon.png" />
+    <Resource Include="Resources\official\registration.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\osuPlayer.ico" />
     <Resource Include="Resources\osu_texture.png" />
     <Resource Include="Resources\osu_texture2.png" />
@@ -131,9 +135,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\official\LICENCE.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\official\registration.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -5,6 +5,7 @@
   ExitWhenClosed: 
   Locale: 
   OsuSongDir: D:\GitHub\Osu-Player\src\Songs
+  LastMigrateVersion: 
 VolumeSection:
   Main: 0.8
   Music: 1

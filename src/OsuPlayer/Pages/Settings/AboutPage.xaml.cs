@@ -32,12 +32,18 @@ public partial class AboutPage : Page
 
     private void LinkGithub_Click(object sender, RoutedEventArgs e)
     {
-        Process.Start("https://github.com/Milkitic/Osu-Player");
+        Process.Start(new ProcessStartInfo("https://github.com/Milkitic/Osu-Player")
+        {
+            UseShellExecute = true
+        });
     }
 
     private void LinkFeedback_Click(object sender, RoutedEventArgs e)
     {
-        Process.Start("https://github.com/Milkitic/Osu-Player/issues/new");
+        Process.Start(new ProcessStartInfo("https://github.com/Milkitic/Osu-Player/discussions")
+        {
+            UseShellExecute = true
+        });
     }
 
     private async void Page_Loaded(object sender, RoutedEventArgs e)

@@ -14,4 +14,6 @@ public class GeneralSection
 
     public string OsuSongDir =>
         Path.GetDirectoryName(DbPath) is { } osuDir ? Path.Combine(osuDir, "Songs") : CustomSongDir;
+
+    public string? LastMigrateVersion { get; set; }
 }

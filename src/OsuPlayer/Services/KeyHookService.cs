@@ -40,12 +40,8 @@ public sealed class KeyHookService : IDisposable
 
     private void RegisterKey(BindKeys? bindKeys, Func<Action?> getAction)
     {
-        if (bindKeys == null) return;
-        if (bindKeys.Keys == null) return;
-
+        if (bindKeys?.Keys is not { } keys) return;
         var modifier = bindKeys.ModifierKeys;
-        var keys = bindKeys.Keys.Value;
-
         if (modifier == HookModifierKeys.None)
         {
             _registerList.Add(_keyboardHook.RegisterKeyDown(keys, KeyboardCallback));

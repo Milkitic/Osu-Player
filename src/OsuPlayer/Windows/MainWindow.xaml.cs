@@ -11,14 +11,13 @@ using Milki.OsuPlayer.UiComponents.NotificationComponent;
 using Milki.OsuPlayer.UserControls;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.ViewModels;
-using Milki.OsuPlayer.Wpf;
 
 namespace Milki.OsuPlayer.Windows;
 
 /// <summary>
 /// MainWindow.xaml 的交互逻辑
 /// </summary>
-public partial class MainWindow : WindowEx
+public partial class MainWindow : WindowBase
 {
     private readonly ApplicationDbContext _applicationDbContext;
     private readonly UpdateService _updateService;
@@ -30,11 +29,7 @@ public partial class MainWindow : WindowEx
 
     private ConfigWindow _configWindow;
     private MiniWindow _miniWindow;
-    private bool _forceExit = false;
 
-    private WindowState _lastState;
-
-    private bool _disposed;
     private readonly MainWindowViewModel _viewModel;
 
     public MainWindow(ApplicationDbContext applicationDbContext)
@@ -54,10 +49,58 @@ public partial class MainWindow : WindowEx
         PlayController.ThumbClicked += Controller_ThumbClicked;
     }
 
-    public void ForceClose()
+    protected override async Task<bool> OnAsyncClosing()
     {
-        _forceExit = true;
-        Close();
+        var promptType = AppSettings.Default.GeneralSection.ExitWhenClosed;
+        if (IsForceExitState || promptType == true)
+        {
+            _miniWindow?.Close();
+            _lyricsService.Dispose();
+            NotifyIcon.Dispose();
+
+            if (_configWindow is { IsClosed: false, IsInitialized: true })
+            {
+                _configWindow.Close();
+            }
+
+            if (_playerService != null)
+            {
+                await _playerService.DisposeAsync();
+            }
+
+            Application.Current.Shutdown();
+            return true;
+        }
+
+        if (promptType == null)
+        {
+            var closingControl = new ClosingControl();
+            FrontDialogOverlay.ShowContent(closingControl, DialogOptionFactory.ClosingOptions, (obj, arg) =>
+            {
+                if (closingControl.AsDefault.IsChecked == true)
+                {
+                    AppSettings.Default.GeneralSection.ExitWhenClosed = closingControl.RadioMinimum.IsChecked != true;
+                    AppSettings.SaveDefault();
+                }
+
+                if (closingControl.RadioMinimum.IsChecked == true)
+                {
+                    Hide();
+                }
+                else
+                {
+                    ForceClose();
+                }
+            });
+
+            return false;
+        }
+
+        // promptType == false
+        WindowState = WindowState.Minimized;
+        _miniWindow?.Close();
+        Hide();
+        return false;
     }
 
     private void BindHotKeyActions()
@@ -196,78 +239,6 @@ public partial class MainWindow : WindowEx
         }
     }
 
-    /// <summary>
-    /// Clear things.
-    /// </summary>
-    private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-    {
-        if (AppSettings.Default.GeneralSection.ExitWhenClosed == null && !_forceExit)
-        {
-            e.Cancel = true;
-            var closingControl = new ClosingControl();
-            FrontDialogOverlay.ShowContent(closingControl, DialogOptionFactory.ClosingOptions, (obj, arg) =>
-            {
-                if (closingControl.AsDefault.IsChecked == true)
-                {
-                    AppSettings.Default.GeneralSection.ExitWhenClosed = closingControl.RadioMinimum.IsChecked != true;
-                    AppSettings.SaveDefault();
-                }
-
-                if (closingControl.RadioMinimum.IsChecked == true)
-                {
-                    Hide();
-                }
-                else
-                {
-                    ForceClose();
-                }
-            });
-
-            return;
-        }
-
-        if (AppSettings.Default.GeneralSection.ExitWhenClosed == false && !_forceExit)
-        {
-            WindowState = WindowState.Minimized;
-            _miniWindow?.Close();
-            Hide();
-            e.Cancel = true;
-            return;
-        }
-
-        if (_disposed)
-        {
-            Application.Current.Shutdown();
-            return;
-        }
-
-        e.Cancel = true;
-        _miniWindow?.Close();
-        _lyricsService.Dispose();
-        NotifyIcon.Dispose();
-
-        if (_configWindow != null && !_configWindow.IsClosed && _configWindow.IsInitialized)
-        {
-            _configWindow.Close();
-        }
-
-        if (_playerService != null)
-        {
-            await _playerService.DisposeAsync();
-        }
-
-        _disposed = true;
-        await Task.CompletedTask;
-        ForceClose();
-    }
-
-    private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        if (WindowState == WindowState.Minimized)
-            return;
-        _lastState = WindowState;
-    }
-
     private async void Animation_Loaded(object sender, RoutedEventArgs e)
     {
         var lastPlay = (await _applicationDbContext.GetRecentListFull(0, 1)).Results.FirstOrDefault();
@@ -334,13 +305,12 @@ public partial class MainWindow : WindowEx
         Topmost = true;
         Topmost = false;
         Show();
-        WindowState = _lastState;
+        WindowState = LastWindowsState;
     }
 
     private void MenuExit_Click(object sender, RoutedEventArgs e)
     {
-        _forceExit = true;
-        this.Close();
+        ForceClose();
     }
 
     private void MenuConfig_Click(object sender, RoutedEventArgs e)

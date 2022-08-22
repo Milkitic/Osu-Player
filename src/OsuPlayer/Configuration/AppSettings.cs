@@ -50,8 +50,8 @@ public sealed class AppSettings : IConfigurationBase
     }
 
     public static AppSettings Default => ConfigurationFactory.GetConfiguration<AppSettings>(
-        ".", "AppSettings.yaml", MyYamlConfigurationConverter.Instance);
-    public static void SaveDefault() => ConfigurationFactory.GetConfiguration<AppSettings>().Save();
+        ".", "appsettings.yaml", MyYamlConfigurationConverter.Instance);
+    public static void SaveDefault() => Default.Save();
 
     public static class Directories
     {
