@@ -34,7 +34,7 @@ public static class CommonUtils
     {
         try
         {
-            await syncService.SynchronizeManaged(syncService.EnumeratePlayItemDetailsFormDb(path));
+            await syncService.SynchronizeManaged(syncService.GetPlayItemDetailsFormDb(path));
 
             AppSettings.Default.GeneralSection.DbPath = path;
             AppSettings.SaveDefault();

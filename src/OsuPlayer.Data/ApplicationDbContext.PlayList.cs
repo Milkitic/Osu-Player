@@ -133,7 +133,10 @@ public sealed partial class ApplicationDbContext
         }
         else
         {
-            PlayLists.Update(playList);
+            result.Description = playList.Description;
+            result.ImagePath = playList.ImagePath;
+            result.Name = playList.Name;
+
             await SaveChangesAsync();
         }
     }

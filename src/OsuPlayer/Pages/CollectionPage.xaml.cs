@@ -129,7 +129,12 @@ public partial class CollectionPage : Page
     private void BtnEdit_Click(object sender, RoutedEventArgs e)
     {
         FrontDialogOverlay.Default.ShowContent(new EditCollectionControl(_viewModel.PlayList),
-            DialogOptionFactory.EditCollectionOptions);
+            DialogOptionFactory.EditCollectionOptions, (_, _) =>
+            {
+                var playList = _viewModel.PlayList;
+                _viewModel.PlayList = null;
+                _viewModel.PlayList = playList;
+            });
     }
 
     private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)

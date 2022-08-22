@@ -13,11 +13,11 @@ namespace Milki.OsuPlayer.Services;
 
 public class BeatmapSyncService
 {
-    public IEnumerable<PlayItemDetail> EnumeratePlayItemDetailsFormDb(string path)
+    public List<PlayItemDetail> GetPlayItemDetailsFormDb(string path)
     {
         using var reader = new OsuDbReader(path);
         var beatmaps = reader.EnumerateDbModels();
-        return beatmaps;
+        return beatmaps.ToList();
     }
 
     public async ValueTask SynchronizeManaged(IEnumerable<PlayItemDetail> fromOsuDb)

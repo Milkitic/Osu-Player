@@ -16,9 +16,10 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     Focusable="False"
-    FontFamily="{StaticResource SspRegular}"
     IsHitTestVisible="True"
     Loaded="Page_Loaded"
+    TextBlock.FontFamily="Segoe UI,微软雅黑"
+    TextOptions.TextFormattingMode="Display"
     Unloaded="Page_Unloaded"
     mc:Ignorable="d">
     <Page.Resources>
@@ -151,10 +152,8 @@
                             <StackPanel Grid.Column="1" Margin="10">
                                 <WrapPanel Orientation="Horizontal">
                                     <Label
-                                        x:Name="LblTitle"
                                         VerticalAlignment="Center"
                                         FontSize="22"
-                                        FontWeight="Regular"
                                         Foreground="#303030">
                                         <TextBlock Text="{Binding Path=PlayList.Name}" TextWrapping="Wrap" />
                                     </Label>
@@ -205,12 +204,8 @@
                                     <Label
                                         Margin="0,0,5,0"
                                         Content="{DynamicResource ui-createTime}"
-                                        FontWeight="Regular"
                                         Foreground="#303030" />
-                                    <Label
-                                        Content="{Binding Path=PlayList.CreateTime, Converter={StaticResource CvtDate}}"
-                                        FontWeight="Light"
-                                        Foreground="#303030" />
+                                    <Label Content="{Binding Path=PlayList.CreateTime, Converter={StaticResource CvtDate}}" Foreground="#303030" />
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <buttonComponent:CommonButton Click="BtnPlayAll_Click" Style="{StaticResource PlayButton}" />
@@ -240,37 +235,18 @@
                                         Margin="0,0,5,0"
                                         Content="{DynamicResource ui-briefIntroduction}"
                                         Foreground="#303030" />
-                                    <Label
-                                        x:Name="LblDescription"
-                                        Content="{Binding Path=PlayList.Description}"
-                                        FontWeight="Light">
+                                    <Label>
                                         <Label.Style>
                                             <Style TargetType="{x:Type Label}">
+                                                <Setter Property="Content" Value="{Binding Path=PlayList.Description}" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding Path=PlayList.Description}" Value="">
-                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Setter Property="Foreground" Value="#939393" />
+                                                        <Setter Property="Content" Value="{DynamicResource ui-none}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Path=PlayList.Description}" Value="{x:Null}">
-                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Label.Style>
-                                    </Label>
-                                    <Label
-                                        x:Name="LblAdd"
-                                        Content="{DynamicResource ui-none}"
-                                        FontWeight="Light"
-                                        Foreground="#939393">
-                                        <Label.Style>
-                                            <Style TargetType="{x:Type Label}">
-                                                <Setter Property="Visibility" Value="Collapsed" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Path=PlayList.Description}" Value="">
-                                                        <Setter Property="Visibility" Value="Visible" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Path=PlayList.Description}" Value="{x:Null}">
-                                                        <Setter Property="Visibility" Value="Visible" />
+                                                        <Setter Property="Foreground" Value="#939393" />
+                                                        <Setter Property="Content" Value="{DynamicResource ui-none}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -288,7 +264,6 @@
                                     Margin="0,-5,0,0"
                                     HorizontalAlignment="Right"
                                     Content="{Binding PlayItems.Count}"
-                                    FontWeight="Bold"
                                     Foreground="#7A7A7A" />
                             </StackPanel>
                         </Grid>
