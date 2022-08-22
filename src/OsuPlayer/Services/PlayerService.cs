@@ -308,6 +308,7 @@ public class PlayerService : VmBase, IAsyncDisposable
 
     private async void Player_PlayerStatusChanged(TrackPlayer trackPlayer, PlayerStatus oldStatus, PlayerStatus newStatus)
     {
+        Execute.OnUiThread(() => OnPropertyChanged(nameof(PlayerStatus)));
         PlayerStatusChanged?.Invoke(newStatus);
         if (newStatus == PlayerStatus.Ready && trackPlayer.Position.Equals(trackPlayer.Duration))
         {

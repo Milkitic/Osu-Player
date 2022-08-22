@@ -5,16 +5,61 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
+using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.Windows;
+using Milki.OsuPlayer.Wpf;
 
 namespace Milki.OsuPlayer.UserControls;
 
 public class PlayControllerVm : VmBase
 {
+    private TimeSpan _maxTime;
+    private TimeSpan _minTime;
+    private TimeSpan _currentTime;
+    private double _maxTimeMs;
+    private double _minTimeMs;
+    private double _currentTimeMs;
+
+    public TimeSpan MaxTime
+    {
+        get => _maxTime;
+        set => this.RaiseAndSetIfChanged(ref _maxTime, value);
+    }
+
+    public TimeSpan MinTime
+    {
+        get => _minTime;
+        set => this.RaiseAndSetIfChanged(ref _minTime, value);
+    }
+
+    public TimeSpan CurrentTime
+    {
+        get => _currentTime;
+        set => this.RaiseAndSetIfChanged(ref _currentTime, value);
+    }
+
+    public double MaxTimeMs
+    {
+        get => _maxTimeMs;
+        set => this.RaiseAndSetIfChanged(ref _maxTimeMs, value);
+    }
+
+    public double MinTimeMs
+    {
+        get => _minTimeMs;
+        set => this.RaiseAndSetIfChanged(ref _minTimeMs, value);
+    }
+
+    public double CurrentTimeMs
+    {
+        get => _currentTimeMs;
+        set => this.RaiseAndSetIfChanged(ref _currentTimeMs, value);
+    }
+
     public PlayerService PlayerService { get; } = ServiceProviders.Default.GetService<PlayerService>();
-    public SharedVm Shared { get; } = SharedVm.Default;
+    public PlayListService PlayListService { get; } = ServiceProviders.Default.GetService<PlayListService>();
 }
 
 /// <summary>
@@ -51,19 +96,21 @@ public partial class PlayController : UserControl
     #endregion
 
     private bool _scrollLock;
-    private readonly PlayerService _controller;
+    private readonly PlayerService _playerService;
+    private readonly PlayControllerVm _viewModel;
 
     public PlayController()
     {
         if (!DesignerProperties.GetIsInDesignMode(this))
         {
-            _controller = ServiceProviders.Default.GetService<PlayerService>()!;
-            _controller.LoadStarted += Controller_LoadStarted;
-            _controller.LoadBackgroundInfoFinished += Controller_BackgroundInfoLoaded;
-            _controller.LoadMusicFinished += Controller_MusicLoaded;
-            _controller.PlayTimeChanged += Controller_PlayTimeChanged;
+            _playerService = ServiceProviders.Default.GetService<PlayerService>()!;
+            _playerService.LoadStarted += PlayerService_LoadStarted;
+            _playerService.LoadBackgroundInfoFinished += PlayerService_BackgroundInfoLoaded;
+            _playerService.LoadMusicFinished += PlayerService_MusicLoaded;
+            _playerService.PlayTimeChanged += PlayerService_PlayTimeChanged;
         }
 
+        DataContext = _viewModel = new PlayControllerVm();
         InitializeComponent();
     }
 
@@ -72,34 +119,49 @@ public partial class PlayController : UserControl
         PlayModeControl.CloseRequested += (obj, args) => { PopMode.IsOpen = false; };
     }
 
-    private ValueTask Controller_LoadStarted(PlayerService.PlayItemLoadContext loadContext)
+    private ValueTask PlayerService_LoadStarted(PlayerService.PlayItemLoadContext loadContext)
     {
-        var zero = TimeSpan.Zero.ToString(@"mm\:ss");
-        LblNow.Content = zero;
-        LblTotal.Content = zero;
-        PlayProgress.Maximum = 1;
-        PlayProgress.Value = 0;
+        Execute.OnUiThread(() =>
+        {
+            _viewModel.MaxTime = TimeSpan.Zero;
+            _viewModel.MaxTimeMs = 0;
+            _viewModel.MinTime = TimeSpan.Zero;
+            _viewModel.MinTimeMs = 0;
+            _viewModel.CurrentTime = TimeSpan.Zero;
+            _viewModel.CurrentTimeMs = 0;
+        });
         return ValueTask.CompletedTask;
     }
 
-    private void Controller_PlayTimeChanged(TimeSpan time)
+    private void PlayerService_PlayTimeChanged(TimeSpan time)
     {
         if (_scrollLock) return;
-        PlayProgress.Value = time.TotalMilliseconds;
-        LblNow.Content = time.ToString(@"mm\:ss");
+        Execute.OnUiThread(() =>
+        {
+            _viewModel.CurrentTime = time;
+            _viewModel.CurrentTimeMs = time.TotalMilliseconds;
+        });
     }
 
-    private ValueTask Controller_BackgroundInfoLoaded(PlayerService.PlayItemLoadContext loadContext)
+    private ValueTask PlayerService_BackgroundInfoLoaded(PlayerService.PlayItemLoadContext loadContext)
     {
         Thumb.Source = loadContext.BackgroundPath == null ? null : new BitmapImage(new Uri(loadContext.BackgroundPath));
         return ValueTask.CompletedTask;
     }
 
-    private ValueTask Controller_MusicLoaded(PlayerService.PlayItemLoadContext loadContext)
+    private ValueTask PlayerService_MusicLoaded(PlayerService.PlayItemLoadContext loadContext)
     {
-        PlayProgress.Value = 0;
-        PlayProgress.Maximum = loadContext.Player!.Duration;
-        LblTotal.Content = TimeSpan.FromMilliseconds(loadContext.Player!.Duration).ToString(@"mm\:ss");
+        var player = loadContext.Player!;
+        Execute.OnUiThread(() =>
+        {
+            _viewModel.MinTime = TimeSpan.FromMilliseconds(-player.PreInsertDuration);
+            _viewModel.MinTimeMs = -player.PreInsertDuration;
+            _viewModel.MaxTime = player.TotalTime;
+            _viewModel.MaxTimeMs = player.TotalTime.TotalMilliseconds;
+            _viewModel.CurrentTime = player.PlayTime;
+            _viewModel.CurrentTimeMs = player.PlayTime.TotalMilliseconds;
+        });
+
         return ValueTask.CompletedTask;
     }
 
@@ -110,17 +172,17 @@ public partial class PlayController : UserControl
 
     private async void PrevButton_Click(object sender, RoutedEventArgs e)
     {
-        await _controller.PlayPreviousAsync();
+        await _playerService.PlayPreviousAsync();
     }
 
     private async void BtnPlay_Click(object sender, RoutedEventArgs e)
     {
-        await _controller.TogglePlayAsync();
+        await _playerService.TogglePlayAsync();
     }
 
     private async void NextButton_Click(object sender, RoutedEventArgs e)
     {
-        await _controller.PlayNextAsync();
+        await _playerService.PlayNextAsync();
     }
 
     private async void OpenButton_Click(object sender, RoutedEventArgs e)
@@ -134,7 +196,7 @@ public partial class PlayController : UserControl
         var path = result == true ? openFileDialog.FileName : null;
         if (path == null) return;
 
-        await _controller.InitializeNewAsync(path, true);
+        await _playerService.InitializeNewAsync(path, true);
     }
 
     /// <summary>
@@ -152,7 +214,8 @@ public partial class PlayController : UserControl
     /// </summary>
     private async void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
     {
-        await _controller.SeekAsync(TimeSpan.FromMilliseconds(PlayProgress.Value));
+        var slider = (Slider)e.OriginalSource;
+        await _playerService.SeekAsync(TimeSpan.FromMilliseconds(slider.Value));
         _scrollLock = false;
     }
 
@@ -183,7 +246,7 @@ public partial class PlayController : UserControl
 
     private void TitleArtist_Click(object sender, RoutedEventArgs e)
     {
-        if (_controller.LastLoadContext?.PlayItem is { PlayItemDetail: { } detail })
+        if (_playerService.LastLoadContext?.PlayItem is { PlayItemDetail: { } detail })
         {
             var win = new BeatmapInfoWindow(detail);
             win.ShowDialog();

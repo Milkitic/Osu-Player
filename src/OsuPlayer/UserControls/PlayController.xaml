@@ -6,6 +6,8 @@
     xmlns:converters="clr-namespace:Milki.OsuPlayer.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mixing="clr-namespace:Milki.OsuPlayer.Audio.Mixing;assembly=OsuPlayer.Audio"
+    xmlns:models="clr-namespace:Milki.OsuPlayer.Shared.Models;assembly=OsuPlayer.Shared"
     xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
     d:DataContext="{d:DesignInstance Type=userControls:PlayControllerVm,
                                      IsDesignTimeCreatable=False}"
@@ -100,6 +102,43 @@
             <Setter Property="MouseDownBackground" Value="#80E8E8E8" />
             <Setter Property="IconMargin" Value="0" />
         </Style>
+        <Style
+            x:Key="LikeButtonStyle"
+            BasedOn="{StaticResource {x:Type buttonComponent:CommonButton}}"
+            TargetType="buttonComponent:CommonButton">
+            <Setter Property="IconTemplate" Value="{StaticResource HeartDisabledTempl}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding PlayerService.LastLoadContext.IsPlayItemFavorite}" Value="True">
+                    <Setter Property="IconTemplate" Value="{StaticResource HeartEnabledTempl}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style
+            x:Key="PlayListButtonStyle"
+            BasedOn="{StaticResource {x:Type buttonComponent:CommonButton}}"
+            TargetType="buttonComponent:CommonButton">
+            <Setter Property="IconTemplate" Value="{StaticResource ModeNormalTempl}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding PlayListService.PlaylistMode}" Value="{x:Static models:PlaylistMode.Normal}">
+                    <Setter Property="IconTemplate" Value="{StaticResource ModeNormalTempl}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PlayListService.PlaylistMode}" Value="{x:Static models:PlaylistMode.Random}">
+                    <Setter Property="IconTemplate" Value="{StaticResource ModeRandomTempl}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PlayListService.PlaylistMode}" Value="{x:Static models:PlaylistMode.Loop}">
+                    <Setter Property="IconTemplate" Value="{StaticResource ModeLoopTempl}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PlayListService.PlaylistMode}" Value="{x:Static models:PlaylistMode.LoopRandom}">
+                    <Setter Property="IconTemplate" Value="{StaticResource ModeLoopRandomTempl}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PlayListService.PlaylistMode}" Value="{x:Static models:PlaylistMode.Single}">
+                    <Setter Property="IconTemplate" Value="{StaticResource ModeSingleTempl}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PlayListService.PlaylistMode}" Value="{x:Static models:PlaylistMode.SingleLoop}">
+                    <Setter Property="IconTemplate" Value="{StaticResource ModeSingleLoopTempl}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
     <Grid x:Name="ToolControl" Background="{StaticResource TextureBrush3}">
         <Grid.ColumnDefinitions>
@@ -136,21 +175,15 @@
                 Width="32"
                 Height="32"
                 Click="BtnPlay_Click">
-                <buttonComponent:CommonButton.IconTemplate>
-                    <MultiBinding Converter="{StaticResource PlayingConverter}">
-                        <Binding Path="Shared.IsPlaying" />
-                        <Binding RelativeSource="{RelativeSource Self}" />
-                    </MultiBinding>
-                </buttonComponent:CommonButton.IconTemplate>
                 <Button.Style>
                     <Style BasedOn="{StaticResource ControlButton}" TargetType="buttonComponent:CommonButton">
+                        <Setter Property="IconSize" Value="20" />
+                        <Setter Property="IconMargin" Value="2,0,0,0" />
+                        <Setter Property="IconTemplate" Value="{StaticResource PlayTempl}" />
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Shared.IsPlaying}" Value="True">
+                            <DataTrigger Binding="{Binding PlayerService.PlayerStatus}" Value="{x:Static mixing:PlayerStatus.Playing}">
                                 <Setter Property="IconSize" Value="16" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Shared.IsPlaying}" Value="False">
-                                <Setter Property="IconSize" Value="20" />
-                                <Setter Property="IconMargin" Value="2,0,0,0" />
+                                <Setter Property="IconTemplate" Value="{StaticResource PauseTempl}" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -201,9 +234,9 @@
                     Click="TitleArtist_Click"
                     Style="{StaticResource InvisibleButton}">
                     <TextBlock>
-                        <Run Foreground="#777" Text="{Binding PlayerService.PlayList.CurrentInfo.BeatmapDetail.Metadata.TitleAuto, Mode=OneWay}" />
+                        <Run Foreground="#777" Text="{Binding PlayerService.LastLoadContext.PlayItem.PlayItemDetail.AutoTitle, Mode=OneWay}" />
                         <Run Text="-" />
-                        <Run Foreground="#AAA" Text="{Binding PlayerService.PlayList.CurrentInfo.BeatmapDetail.Metadata.ArtistAuto, Mode=OneWay}" />
+                        <Run Foreground="#AAA" Text="{Binding PlayerService.LastLoadContext.PlayItem.PlayItemDetail.AutoArtist, Mode=OneWay}" />
                     </TextBlock>
                 </buttonComponent:CommonButton>
                 <buttonComponent:CommonButton
@@ -226,26 +259,21 @@
                         </LinearGradientBrush>
                     </buttonComponent:CommonButton.Foreground>
                 </buttonComponent:CommonButton>
-                <StackPanel
-                    x:Name="LblProgress"
-                    Grid.Column="2"
-                    Orientation="Horizontal">
-                    <Label x:Name="LblNow" Foreground="#777" />
-                    <Label
-                        Margin="-5,0,-5,0"
-                        Content="/"
-                        Foreground="#858585" />
-                    <Label x:Name="LblTotal" Foreground="#AAA" />
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <TextBlock Margin="3">
+                        <Run Foreground="#777" Text="{Binding CurrentTime}" /><Run Foreground="#858585" Text=" / " /><Run Foreground="#AAA" Text="{Binding MaxTime}" />
+                    </TextBlock>
                 </StackPanel>
             </Grid>
             <Slider
-                x:Name="PlayProgress"
                 Grid.Row="1"
                 Margin="3"
-                Minimum="0"
+                Maximum="{Binding MaxTimeMs}"
+                Minimum="{Binding MinTimeMs}"
                 Style="{StaticResource HorizontalSliderPinkStyle}"
                 Thumb.DragCompleted="PlayProgress_DragCompleted"
-                Thumb.DragStarted="PlayProgress_DragStarted" />
+                Thumb.DragStarted="PlayProgress_DragStarted"
+                Value="{Binding CurrentTimeMs}" />
         </Grid>
         <Grid Grid.Column="3">
             <StackPanel
@@ -264,8 +292,8 @@
                         Click="ModeButton_Click"
                         IconMargin="0"
                         IconSize="25"
-                        IconTemplate="{Binding PlayerService.PlayList.Mode, Converter={StaticResource PlayModeConverter}}"
                         MouseOverBackground="Transparent"
+                        Style="{StaticResource PlayListButtonStyle}"
                         WindowChrome.IsHitTestVisibleInChrome="True" />
                     <buttonComponent:CommonButton
                         Width="23"
@@ -277,8 +305,8 @@
                         Click="LikeButton_Click"
                         IconMargin="0"
                         IconSize="24"
-                        IconTemplate="{Binding PlayerService.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}"
-                        MouseOverBackground="Transparent" />
+                        MouseOverBackground="Transparent"
+                        Style="{StaticResource LikeButtonStyle}" />
                     <buttonComponent:CommonButton
                         x:Name="VolumeButton"
                         Width="23"

@@ -7,7 +7,6 @@ namespace Milki.OsuPlayer;
 public class SharedVm : SingletonVm<SharedVm>
 {
     private bool _enableVideo = true;
-    private bool _isPlaying = false;
     private List<PlayList> _playLists;
     private NavigationType _checkedNavigationType;
     private bool _isLyricEnabled;
@@ -18,12 +17,6 @@ public class SharedVm : SingletonVm<SharedVm>
     {
         get => _enableVideo;
         set => this.RaiseAndSetIfChanged(ref _enableVideo, value);
-    }
-
-    public bool IsPlaying
-    {
-        get => _isPlaying;
-        set => this.RaiseAndSetIfChanged(ref _isPlaying, value);
     }
 
     public List<PlayList> PlayLists

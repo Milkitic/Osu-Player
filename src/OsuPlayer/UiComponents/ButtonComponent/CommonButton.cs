@@ -141,9 +141,6 @@ public class CommonButton : Button
     public static readonly DependencyProperty CheckedBackgroundProperty = DependencyProperty.Register("CheckedBackground", typeof(Brush), typeof(CommonButton), new PropertyMetadata(default(Brush)));
     public static readonly DependencyProperty CheckedForegroundProperty = DependencyProperty.Register("CheckedForeground", typeof(Brush), typeof(CommonButton), new PropertyMetadata(default(Brush)));
 
-    private static Dictionary<string, List<CommonButton>> Scopes { get; } =
-        new Dictionary<string, List<CommonButton>>();
-
     static CommonButton()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(CommonButton), new FrameworkPropertyMetadata(typeof(CommonButton)));
