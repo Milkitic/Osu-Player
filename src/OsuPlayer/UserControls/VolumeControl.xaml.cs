@@ -8,6 +8,7 @@ using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Models;
 using Milki.OsuPlayer.Shared.Observable;
+using Milki.OsuPlayer.Wpf;
 
 namespace Milki.OsuPlayer.UserControls;
 
@@ -46,7 +47,10 @@ public partial class VolumeControl : UserControl
 
     private ValueTask PlayerService_LoadFinished(PlayerService.PlayItemLoadContext arg)
     {
-        Offset.Value = arg.PlayItem?.PlayItemConfig?.Offset ?? 0;
+        Execute.OnUiThread(() =>
+        {
+            Offset.Value = arg.PlayItem?.PlayItemConfig?.Offset ?? 0;
+        });
         return ValueTask.CompletedTask;
     }
 

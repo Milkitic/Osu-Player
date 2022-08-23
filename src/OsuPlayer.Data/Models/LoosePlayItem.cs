@@ -22,7 +22,7 @@ public sealed class LoosePlayItem
     public string Version { get; set; } = null!;
 
     public int? PlayItemId { get; set; }
-
+    public LooseItemType LooseItemType { get; set; }
     [NotMapped]
     public PlayItem? PlayItem { get; set; }
 
@@ -39,4 +39,9 @@ public sealed class LoosePlayItem
         //PlayItemPath = playItem.Path;
         Version = playItem.PlayItemDetail.Version;
     }
+}
+
+public enum LooseItemType
+{
+    RecentPlay,CurrentPlay
 }

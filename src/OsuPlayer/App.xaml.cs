@@ -137,7 +137,7 @@ public partial class App : Application
 
     private ValueTask PlayerService_LoadMetaFinished(PlayerService.PlayItemLoadContext arg)
     {
-        throw new NotImplementedException();
+        return ValueTask.CompletedTask;
     }
 
     private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

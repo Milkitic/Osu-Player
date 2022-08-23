@@ -16,7 +16,8 @@ namespace Milki.OsuPlayer;
 [Fody.ConfigureAwait(false)]
 public static class CommonUtils
 {
-    private static readonly SemaphoreSlim ConcurrentLimit = new(1);
+    private static readonly SemaphoreSlim ConcurrentLimit =
+        new(Environment.ProcessorCount == 1 ? Environment.ProcessorCount : Environment.ProcessorCount - 1);
 
     public static bool? BrowseDb(out string path)
     {

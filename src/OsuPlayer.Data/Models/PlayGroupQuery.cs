@@ -1,4 +1,6 @@
-﻿namespace Milki.OsuPlayer.Data.Models;
+﻿using Milki.OsuPlayer.Shared.Observable;
+
+namespace Milki.OsuPlayer.Data.Models;
 
 public sealed class MetaComparer : IEqualityComparer<PlayGroupQuery>
 {
@@ -33,8 +35,10 @@ public sealed class MetaComparer : IEqualityComparer<PlayGroupQuery>
     }
 }
 
-public sealed class PlayGroupQuery
+public sealed class PlayGroupQuery : VmBase
 {
+    private string? _thumbPath;
+
     //public int Id { get; init; }
     //public string Path { get; init; } = null!;
     public string Folder { get; init; } = null!;
@@ -63,4 +67,10 @@ public sealed class PlayGroupQuery
     public double StarRating { get; set; }
     public PlayItem PlayItem { get; set; } = null!;
     public PlayItemDetail PlayItemDetail { get; set; } = null!;
+
+    public string? ThumbPath
+    {
+        get => _thumbPath;
+        set => this.RaiseAndSetIfChanged(ref _thumbPath, value);
+    }
 }

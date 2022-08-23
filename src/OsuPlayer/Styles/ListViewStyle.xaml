@@ -184,4 +184,21 @@
     <Style x:Key="ListView" TargetType="{x:Type ListView}">
         <Setter Property="BorderThickness" Value="0" />
     </Style>
+
+    <Style x:Key="CardListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Style.Resources>
+            <!--  SelectedItem with focus  -->
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+            <!--  SelectedItem without focus  -->
+            <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
+            <!--  SelectedItem text foreground  -->
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+        </Style.Resources>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="3" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
 </ResourceDictionary>

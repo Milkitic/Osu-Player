@@ -1,10 +1,10 @@
 ﻿using Milki.OsuPlayer.Shared.Observable;
 
-namespace Milki.OsuPlayer.ViewModels;
+namespace Milki.OsuPlayer.UiComponents.PaginationComponent;
 
-public class ListPageViewModel : VmBase
+public sealed class PaginationPageVm : VmBase
 {
-    public ListPageViewModel(int index)
+    public PaginationPageVm(int index)
     {
         Index = index;
     }

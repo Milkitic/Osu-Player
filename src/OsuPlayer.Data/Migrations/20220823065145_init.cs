@@ -30,7 +30,7 @@ namespace Milki.OsuPlayer.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LoosePlayItem",
+                name: "LoosePlayItems",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -41,11 +41,12 @@ namespace Milki.OsuPlayer.Data.Migrations
                     Artist = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     Creator = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     Version = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    PlayItemId = table.Column<int>(type: "INTEGER", nullable: true)
+                    PlayItemId = table.Column<int>(type: "INTEGER", nullable: true),
+                    LooseItemType = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LoosePlayItem", x => x.Id);
+                    table.PrimaryKey("PK_LoosePlayItems", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -220,13 +221,13 @@ namespace Milki.OsuPlayer.Data.Migrations
                 values: new object[] { 1, null, null, null, null, null, true, false, true });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoosePlayItem_Index",
-                table: "LoosePlayItem",
+                name: "IX_LoosePlayItems_Index",
+                table: "LoosePlayItems",
                 column: "Index");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoosePlayItem_LastPlay",
-                table: "LoosePlayItem",
+                name: "IX_LoosePlayItems_LastPlay",
+                table: "LoosePlayItems",
                 column: "LastPlay");
 
             migrationBuilder.CreateIndex(
@@ -318,7 +319,7 @@ namespace Milki.OsuPlayer.Data.Migrations
                 name: "Exports");
 
             migrationBuilder.DropTable(
-                name: "LoosePlayItem");
+                name: "LoosePlayItems");
 
             migrationBuilder.DropTable(
                 name: "PlayListRelations");

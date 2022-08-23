@@ -11,7 +11,7 @@ using Milki.OsuPlayer.Data;
 namespace Milki.OsuPlayer.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220819091138_init")]
+    [Migration("20220823065145_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,6 +89,9 @@ namespace Milki.OsuPlayer.Data.Migrations
                     b.Property<long>("LastPlay")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("LooseItemType")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("PlayItemId")
                         .HasColumnType("INTEGER");
 
@@ -108,7 +111,7 @@ namespace Milki.OsuPlayer.Data.Migrations
 
                     b.HasIndex("LastPlay");
 
-                    b.ToTable("LoosePlayItem");
+                    b.ToTable("LoosePlayItems");
                 });
 
             modelBuilder.Entity("Milki.OsuPlayer.Data.Models.PlayItem", b =>

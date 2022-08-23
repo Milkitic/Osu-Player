@@ -94,14 +94,17 @@ public partial class AnimationControl : UserControl
 
     private ValueTask PlayerService_LoadBackgroundInfoFinished(PlayerService.PlayItemLoadContext loadContext)
     {
-        if (loadContext.BackgroundPath == null)
+        Execute.OnUiThread(() =>
         {
-            BackImage.Source = null;
-        }
-        else
-        {
-            BackImage.Source = new BitmapImage(new Uri(loadContext.BackgroundPath));
-        }
+            if (loadContext.BackgroundPath == null)
+            {
+                BackImage.Source = null;
+            }
+            else
+            {
+                BackImage.Source = new BitmapImage(new Uri(loadContext.BackgroundPath));
+            }
+        });
 
         return ValueTask.CompletedTask;
     }

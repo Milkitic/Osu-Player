@@ -121,7 +121,12 @@ public partial class PlayController : UserControl
 
     private ValueTask PlayerService_BackgroundInfoLoaded(PlayerService.PlayItemLoadContext loadContext)
     {
-        Thumb.Source = loadContext.BackgroundPath == null ? null : new BitmapImage(new Uri(loadContext.BackgroundPath));
+        Execute.OnUiThread(() =>
+        {
+            Thumb.Source = loadContext.BackgroundPath == null
+                ? null
+                : new BitmapImage(new Uri(loadContext.BackgroundPath));
+        });
         return ValueTask.CompletedTask;
     }
 
@@ -187,7 +192,7 @@ public partial class PlayController : UserControl
     /// </summary>
     private async void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
     {
-        var slider = (Slider)e.OriginalSource;
+        var slider = (Slider)sender;
         await _playerService.SeekAsync(TimeSpan.FromMilliseconds(slider.Value));
         _scrollLock = false;
     }

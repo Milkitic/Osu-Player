@@ -1,4 +1,5 @@
-﻿using Coosu.Beatmap;
+﻿using System.Collections.Concurrent;
+using Coosu.Beatmap;
 using Coosu.Beatmap.Extensions.Playback;
 using Milki.OsuPlayer.Audio.Internal;
 using Milki.OsuPlayer.Audio.Mixing;
@@ -45,19 +46,16 @@ public class SampleTrack : HitsoundTrack
         await base.InitializeCoreAsync();
     }
 
-    protected override Queue<HitsoundNode> RebuildNodeQueueCore()
+    protected override ConcurrentQueue<HitsoundNode> RebuildNodeQueueCore()
     {
         var currentTime = TimerSource.ElapsedMilliseconds - Offset;
-        var queue = new Queue<HitsoundNode>();
+        var queue = new ConcurrentQueue<HitsoundNode>();
         IEnumerable<HitsoundNode> hitsoundNodes = HitsoundNodes;
 
         if (KeepTune || Math.Abs(TimerSource.Rate - 1.5f) >= 0.001)
         {
-            hitsoundNodes = hitsoundNodes
-                .Where(k => k is PlayableNode
-                {
-                    PlayablePriority: PlayablePriority.Sampling
-                });
+            hitsoundNodes = hitsoundNodes.Where(k => k is PlayableNode playableNode &&
+                                                     playableNode.Filename?.StartsWith("nightcore") != true);
         }
 
         foreach (var hitsoundNode in hitsoundNodes.OrderBy(k => k.Offset))

@@ -193,7 +193,7 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
         _hitsoundVsp.Source = HitsoundTrack.RootSampleProvider;
         _sampleVsp.Source = SampleTrack.RootSampleProvider;
 
-        Engine.RootMixer.AddMixerInput(_musicVsp);
+        //Engine.RootMixer.AddMixerInput(_musicVsp);
         Engine.RootMixer.AddMixerInput(_hitsoundVsp);
         Engine.RootMixer.AddMixerInput(_sampleVsp);
 

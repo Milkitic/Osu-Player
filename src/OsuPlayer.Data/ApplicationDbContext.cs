@@ -27,8 +27,8 @@ public sealed partial class ApplicationDbContext : DbContext
     public DbSet<PlayItemConfig> PlayItemConfigs { get; set; }
     public DbSet<PlayItemAsset> PlayItemAssets { get; set; }
 
-    public DbSet<LoosePlayItem> CurrentPlay { get; set; }
-    public DbSet<LoosePlayItem> RecentPlay { get; set; }
+    //public DbSet<CurrentPlay> CurrentPlay { get; set; }
+    public DbSet<LoosePlayItem> LoosePlayItems { get; set; }
 
     public DbSet<ExportItem> Exports { get; set; }
 

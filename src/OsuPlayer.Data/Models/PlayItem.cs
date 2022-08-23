@@ -28,7 +28,7 @@ public sealed class PlayItem
     public List<PlayList> PlayLists { get; set; }
     public List<PlayListPlayItemRelation> PlayListRelations { get; set; }
 
-    public LoosePlayItem ToLoosePlayItem(DateTime playTime)
+    public LoosePlayItem ToLoosePlayItem(DateTime playTime, LooseItemType looseItemType)
     {
         return new LoosePlayItem
         {
@@ -42,6 +42,7 @@ public sealed class PlayItem
             LastPlay = playTime,
             PlayItemId = Id,
             Version = PlayItemDetail.Version,
+            LooseItemType = looseItemType
         };
     }
 }

@@ -198,7 +198,7 @@ public class PlayerService : VmBase, IAsyncDisposable
 
             if (LoadStarted != null) await LoadStarted.Invoke(context);
 
-            var folder = Path.GetDirectoryName(standardizedPath)!;
+            var folder = Path.GetDirectoryName(path)!;
             var standardizedFolder = PathUtils.GetFolder(standardizedPath);
 
             bool isFavorite = playItem.PlayLists.Any(k => k.IsDefault);

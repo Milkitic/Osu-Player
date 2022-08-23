@@ -1,0 +1,88 @@
+﻿<UserControl
+    x:Class="Milki.OsuPlayer.UiComponents.PaginationComponent.Pagination"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Milki.OsuPlayer.UiComponents.PaginationComponent"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+    x:Name="Self"
+    d:DataContext="{d:DesignInstance Type=local:PaginationViewModel,
+                                     IsDesignTimeCreatable=False}"
+    TextBlock.FontFamily="Segoe UI,微软雅黑"
+    TextOptions.TextFormattingMode="Display"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style
+            x:Key="PaginationButtonStyle"
+            BasedOn="{StaticResource {x:Type buttonComponent:CommonButton}}"
+            TargetType="buttonComponent:CommonButton">
+            <!--<d:Style.DataContext>
+                <d:DesignInstance IsDesignTimeCreatable="False" Type="local:PaginationPageVm" />
+            </d:Style.DataContext>-->
+            <Setter Property="Background" Value="{StaticResource LightGrayBrush}" />
+            <Setter Property="BorderBrush" Value="#F0F0F0F0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Content" Value="{Binding Index}" />
+            <Setter Property="CornerRadius" Value="1" />
+            <Setter Property="Foreground" Value="#646464" />
+            <Setter Property="Height" Value="26" />
+            <Setter Property="IsEnabled" Value="{Binding IsActivated, Converter={StaticResource NegativeBooleanConverter}}" />
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="MouseOverBackground" Value="{StaticResource LightBrush}" />
+            <Setter Property="MouseDownBackground" Value="{StaticResource LightGrayBrush}" />
+            <Setter Property="Width" Value="26" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsActivated}" Value="True">
+                    <Setter Property="Background" Value="#D5D5D5" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <StackPanel Orientation="Horizontal">
+        <buttonComponent:CommonButton Command="{Binding SwitchCommand, ElementName=Self}" Style="{StaticResource PaginationButtonStyle}">
+            <Button.CommandParameter>
+                <system:Boolean>False</system:Boolean>
+            </Button.CommandParameter>
+            <Button.Content>
+                <Viewbox Width="12" Height="12">
+                    <ContentControl Template="{StaticResource PageArrowLeftControl}" />
+                </Viewbox>
+            </Button.Content>
+        </buttonComponent:CommonButton>
+
+        <ItemsControl
+            Margin="0,0,-1,0"
+            Background="Transparent"
+            BorderThickness="0"
+            ClipToBounds="False"
+            ItemsSource="{Binding Pages}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:PaginationPageVm}">
+                    <buttonComponent:CommonButton
+                        Command="{Binding SwitchCommand, ElementName=Self}"
+                        CommandParameter="{Binding Index}"
+                        Style="{StaticResource PaginationButtonStyle}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <buttonComponent:CommonButton Command="{Binding SwitchCommand, ElementName=Self}" Style="{StaticResource PaginationButtonStyle}">
+            <Button.CommandParameter>
+                <system:Boolean>True</system:Boolean>
+            </Button.CommandParameter>
+            <Button.Content>
+                <Viewbox Width="12" Height="12">
+                    <ContentControl Template="{StaticResource PageArrowRightControl}" />
+                </Viewbox>
+            </Button.Content>
+        </buttonComponent:CommonButton>
+    </StackPanel>
+</UserControl>

@@ -9,11 +9,6 @@ namespace Milki.OsuPlayer.ViewModels;
 
 public class SearchPageViewModel : VmBase
 {
-    private ObservableCollection<PlayGroupQuery> _playItems;
-    private List<ListPageViewModel> _pages;
-    private ListPageViewModel _lastPage;
-    private ListPageViewModel _firstPage;
-    private ListPageViewModel _currentPage;
     private string _searchText;
 
     public string SearchText
@@ -22,37 +17,7 @@ public class SearchPageViewModel : VmBase
         set => this.RaiseAndSetIfChanged(ref _searchText, value);
     }
 
-    public ObservableCollection<PlayGroupQuery> PlayItems
-    {
-        get => _playItems;
-        set => this.RaiseAndSetIfChanged(ref _playItems, value);
-    }
-
-    public List<ListPageViewModel> Pages
-    {
-        get => _pages;
-        set => this.RaiseAndSetIfChanged(ref _pages, value);
-    }
-
-    public ListPageViewModel LastPage
-    {
-        get => _lastPage;
-        set => this.RaiseAndSetIfChanged(ref _lastPage, value);
-    }
-
-    public ListPageViewModel FirstPage
-    {
-        get => _firstPage;
-        set => this.RaiseAndSetIfChanged(ref _firstPage, value);
-    }
-
-    public ListPageViewModel CurrentPage
-    {
-        get => _currentPage;
-        set => this.RaiseAndSetIfChanged(ref _currentPage, value);
-    }
-
-    //public VirtualizingGalleryWrapPanel GalleryWrapPanel { get; set; }
+    public ObservableCollection<PlayGroupQuery> PlayItems { get; } = new();
 
     //public ICommand SwitchCommand
     //{

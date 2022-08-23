@@ -190,7 +190,8 @@ public sealed partial class ApplicationDbContext
     public async ValueTask<List<LoosePlayItem>> GetCurrentListFull()
     {
         var query =
-            from looseItem in CurrentPlay
+            from looseItem in LoosePlayItems
+            where looseItem.LooseItemType == LooseItemType.CurrentPlay
             join playItem in PlayItems on looseItem.PlayItemId equals playItem.Id into newCollection
             from playItem in newCollection.DefaultIfEmpty()
             select new
@@ -214,7 +215,8 @@ public sealed partial class ApplicationDbContext
         int countPerPage = 50)
     {
         var query =
-            from looseItem in RecentPlay
+            from looseItem in LoosePlayItems
+            where looseItem.LooseItemType == LooseItemType.RecentPlay
             orderby looseItem.LastPlay descending
             join playItem in PlayItems on looseItem.PlayItemId equals playItem.Id into newCollection
             from playItem in newCollection.DefaultIfEmpty()
@@ -252,7 +254,7 @@ public sealed partial class ApplicationDbContext
         int page = 0,
         int countPerPage = 50)
     {
-        var buffer = await RecentPlay
+        var buffer = await LoosePlayItems
             .AsNoTracking()
             .OrderByDescending(k => k.LastPlay)
             .ToArrayAsync();
@@ -268,31 +270,32 @@ public sealed partial class ApplicationDbContext
 
     public async ValueTask ClearRecentList()
     {
-        RecentPlay.RemoveRange(RecentPlay);
+        LoosePlayItems.RemoveRange(LoosePlayItems);
         await SaveChangesAsync();
     }
 
     public async ValueTask AddOrUpdatePlayItemToRecentPlayAsync(PlayItem playItem, DateTime playTime)
     {
-        await AddOrUpdateLoosePlayItemCore(playItem, playTime, RecentPlay);
+        await AddOrUpdateLoosePlayItemCore(playItem, playTime, LoosePlayItems, LooseItemType.RecentPlay);
     }
 
     public async ValueTask AddOrUpdatePlayItemToCurrentPlayAsync(PlayItem playItem, DateTime playTime)
     {
-        await AddOrUpdateLoosePlayItemCore(playItem, playTime, CurrentPlay);
+        await AddOrUpdateLoosePlayItemCore(playItem, playTime, LoosePlayItems, LooseItemType.CurrentPlay);
     }
 
     public async ValueTask RecreateCurrentPlayAsync(IEnumerable<PlayItem> playItems)
     {
         var sw = Stopwatch.StartNew();
-        var dbItems = await CurrentPlay
+        var dbItems = await LoosePlayItems
+            .Where(k => k.LooseItemType == LooseItemType.CurrentPlay)
             .ToDictionaryAsync(k => k.PlayItemId, k => k);
 
         LogTo.Debug(() => $"Found {dbItems.Count} LooseItems in {sw.ElapsedMilliseconds}ms.");
         sw.Restart();
 
         var newAllLooseItems = playItems
-            .Select(k => new KeyValuePair<int, LoosePlayItem>(k.Id, k.ToLoosePlayItem(DateTime.MinValue)))
+            .Select(k => new KeyValuePair<int, LoosePlayItem>(k.Id, k.ToLoosePlayItem(DateTime.MinValue, LooseItemType.CurrentPlay)))
             .ToDictionary(k => k.Key, k => k.Value);
 
         LogTo.Debug(() => $"Enumerate {dbItems.Count} newAllLooseItems in {sw.ElapsedMilliseconds}ms.");
@@ -352,7 +355,7 @@ public sealed partial class ApplicationDbContext
 
         if (listItem.Count > 0)
         {
-            await this.BulkInsertAsync(listItem, k => k.CustomDestinationTableName = nameof(CurrentPlay));
+            await this.BulkInsertAsync(listItem/*, k => k.CustomDestinationTableName = nameof(CurrentPlay)*/);
             await this.BulkSaveChangesAsync();
 
             LogTo.Debug(() => $"Add {listItem.Count} LooseItems in {sw.ElapsedMilliseconds}ms.");
@@ -434,13 +437,13 @@ public sealed partial class ApplicationDbContext
     }
 
     private async ValueTask AddOrUpdateLoosePlayItemCore(PlayItem playItem, DateTime playTime,
-        DbSet<LoosePlayItem> loosePlayItems)
+        DbSet<LoosePlayItem> loosePlayItems, LooseItemType looseItemType)
     {
         var loosePlayItem = await loosePlayItems
             .FirstOrDefaultAsync(k => k.PlayItemId == playItem.Id);
         if (loosePlayItem == null)
         {
-            loosePlayItems.Add(playItem.ToLoosePlayItem(playTime));
+            loosePlayItems.Add(playItem.ToLoosePlayItem(playTime, looseItemType));
         }
         else
         {

@@ -87,6 +87,9 @@ namespace Milki.OsuPlayer.Data.Migrations
                     b.Property<long>("LastPlay")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("LooseItemType")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("PlayItemId")
                         .HasColumnType("INTEGER");
 
@@ -106,7 +109,7 @@ namespace Milki.OsuPlayer.Data.Migrations
 
                     b.HasIndex("LastPlay");
 
-                    b.ToTable("LoosePlayItem");
+                    b.ToTable("LoosePlayItems");
                 });
 
             modelBuilder.Entity("Milki.OsuPlayer.Data.Models.PlayItem", b =>

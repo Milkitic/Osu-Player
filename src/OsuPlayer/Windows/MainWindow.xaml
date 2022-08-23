@@ -49,11 +49,14 @@
         <converters:MsToStringConverter x:Key="MsToStringConverter" />
         <converters:SwitchRadioChangeConverter x:Key="SwitchRadioChangeConverter" />
     </wpf:WindowEx.Resources>
+    <Grid Margin="{Binding WindowState, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource WindowMarginConverter}}" Background="Gray">
+        <!--<Grid.Background>
             <ImageBrush
                 ImageSource="{StaticResource TextureSource1}"
                 TileMode="Tile"
                 Viewport="0,0,500,500"
                 ViewportUnits="Absolute" />
+        </Grid.Background>-->
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition />

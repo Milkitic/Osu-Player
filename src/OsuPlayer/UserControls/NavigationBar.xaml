@@ -33,7 +33,7 @@
                 TargetFrameControl="MainFrame"
                 TargetPageData="{Binding}"
                 TargetPageSingleton="False"
-                TargetPageType="{x:Type pages:CollectionPage}">
+                TargetPageType="{x:Type pages:PlayListPage}">
                 <radioButtonComponent:SwitchRadio.Tag>
                     <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}" ConverterParameter="0">
                         <Binding ElementName="Self" Path="DataContext.IsNavigationCollapsed" />

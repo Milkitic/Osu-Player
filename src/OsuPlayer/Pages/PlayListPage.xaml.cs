@@ -19,7 +19,7 @@ namespace Milki.OsuPlayer.Pages;
 /// <summary>
 /// CollectionPage.xaml 的交互逻辑
 /// </summary>
-public partial class CollectionPage : Page
+public partial class PlayListPage : Page
 {
     private readonly PlayerService _playerService;
     private readonly PlayListService _playListService;
@@ -28,7 +28,7 @@ public partial class CollectionPage : Page
     private List<PlayItem> _playItems;
     private bool _firstLoaded;
 
-    public CollectionPage(PlayList playList)
+    public PlayListPage(PlayList playList)
     {
         InitializeComponent();
         _playerService = App.Current.ServiceProvider.GetService<PlayerService>();

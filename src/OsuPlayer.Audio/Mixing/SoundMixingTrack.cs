@@ -1,4 +1,5 @@
-﻿using Anotar.NLog;
+﻿using System.Collections.Concurrent;
+using Anotar.NLog;
 using Coosu.Beatmap.Extensions.Playback;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using NAudio.Wave;
@@ -13,7 +14,7 @@ public class SoundMixingTrack : Track
 
     private MixingSampleProvider? _mixingSampleProvider;
     private EnhancedVolumeSampleProvider? _volumeProvider;
-    private Queue<HitsoundNode>? _hitsoundQueue;
+    private ConcurrentQueue<HitsoundNode>? _hitsoundQueue;
     private bool _rebuildRequested;
     private bool _isPlayReady;
 
@@ -57,11 +58,12 @@ public class SoundMixingTrack : Track
 
         var hitsoundQueue = _hitsoundQueue;
         var rootMixer = _mixingSampleProvider;
-        if (rootMixer != null && hitsoundQueue != null)
+        if (rootMixer == null || hitsoundQueue == null) return;
+        while (hitsoundQueue.TryPeek(out var hitsoundNode) && hitsoundNode.Offset <= current)
         {
-            while (hitsoundQueue.TryPeek(out var hitsoundNode) && hitsoundNode.Offset <= current)
+            if (hitsoundQueue.TryDequeue(out hitsoundNode))
             {
-                PlayHitsoundNode(hitsoundQueue.Dequeue(), rootMixer);
+                PlayHitsoundNode(hitsoundNode, rootMixer);
             }
         }
     }
@@ -83,10 +85,10 @@ public class SoundMixingTrack : Track
         }
     }
 
-    protected virtual Queue<HitsoundNode> RebuildNodeQueueCore()
+    protected virtual ConcurrentQueue<HitsoundNode> RebuildNodeQueueCore()
     {
         var currentTime = TimerSource.ElapsedMilliseconds - Offset;
-        var queue = new Queue<HitsoundNode>();
+        var queue = new ConcurrentQueue<HitsoundNode>();
         foreach (var hitsoundNode in HitsoundNodes.OrderBy(k => k.Offset))
         {
             if (hitsoundNode.Offset < currentTime)

@@ -177,11 +177,12 @@
                 Click="BtnPlay_Click">
                 <Button.Style>
                     <Style BasedOn="{StaticResource ControlButton}" TargetType="buttonComponent:CommonButton">
-                        <Setter Property="IconSize" Value="20" />
                         <Setter Property="IconMargin" Value="2,0,0,0" />
+                        <Setter Property="IconSize" Value="20" />
                         <Setter Property="IconTemplate" Value="{StaticResource PlayTempl}" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding PlayerService.PlayerStatus}" Value="{x:Static mixing:PlayerStatus.Playing}">
+                                <Setter Property="IconMargin" Value="0" />
                                 <Setter Property="IconSize" Value="16" />
                                 <Setter Property="IconTemplate" Value="{StaticResource PauseTempl}" />
                             </DataTrigger>

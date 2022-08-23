@@ -114,7 +114,9 @@ public class VirtualizingGalleryWrapPanel : VirtualizingPanel, IScrollInfo
                     {
                         // 处理 正在显示的child被移除了这种情况
                         if (!child.Equals(children[childIndex]))
+                        {
                             RemoveInternalChildRange(childIndex, 1);
+                        }
                     }
 
                     itemIndex++;
