@@ -15,9 +15,11 @@ namespace Milki.OsuPlayer.UserControls;
 
 public class PlayControllerVm : VmBase
 {
-    private double _maxTime;
+    private double _maxTime = 0.001;
     private double _minTime;
     private double _currentTime;
+    private string _title;
+    private string _artist;
 
     public double MaxTime
     {
@@ -35,6 +37,18 @@ public class PlayControllerVm : VmBase
     {
         get => _currentTime;
         set => this.RaiseAndSetIfChanged(ref _currentTime, value);
+    }
+
+    public string Title
+    {
+        get => _title;
+        set => this.RaiseAndSetIfChanged(ref _title, value);
+    }
+
+    public string Artist
+    {
+        get => _artist;
+        set => this.RaiseAndSetIfChanged(ref _artist, value);
     }
 
     public PlayerService PlayerService { get; } = ServiceProviders.Default?.GetService<PlayerService>();
@@ -83,6 +97,7 @@ public partial class PlayController : UserControl
         if (!DesignerProperties.GetIsInDesignMode(this))
         {
             _playerService = ServiceProviders.Default.GetService<PlayerService>()!;
+            _playerService.LoadMetaFinished += PlayerService_LoadMetaFinished;
             _playerService.LoadStarted += PlayerService_LoadStarted;
             _playerService.LoadBackgroundInfoFinished += PlayerService_BackgroundInfoLoaded;
             _playerService.LoadMusicFinished += PlayerService_MusicLoaded;
@@ -94,6 +109,13 @@ public partial class PlayController : UserControl
         InitializeComponent();
     }
 
+    private ValueTask PlayerService_LoadMetaFinished(PlayerService.PlayItemLoadContext arg)
+    {
+        _viewModel.Artist = arg.PlayItem?.PlayItemDetail.AutoArtist;
+        _viewModel.Title = arg.PlayItem?.PlayItemDetail.AutoTitle;
+        return ValueTask.CompletedTask;
+    }
+
     private void UserControl_Initialized(object sender, EventArgs e)
     {
         PlayModeControl.CloseRequested += (obj, args) => { PopMode.IsOpen = false; };
@@ -103,9 +125,10 @@ public partial class PlayController : UserControl
     {
         Execute.OnUiThread(() =>
         {
-            _viewModel.MaxTime = 0;
+            _viewModel.MaxTime = 0.001;
             _viewModel.MinTime = 0;
             _viewModel.CurrentTime = 0;
+            ProgressSlider.IsEnabled = false;
         });
         return ValueTask.CompletedTask;
     }
@@ -138,6 +161,7 @@ public partial class PlayController : UserControl
             _viewModel.MinTime = -player.PreInsertDuration;
             _viewModel.MaxTime = player.TotalTime.TotalMilliseconds;
             _viewModel.CurrentTime = player.PlayTime.TotalMilliseconds;
+            ProgressSlider.IsEnabled = true;
         });
 
         return ValueTask.CompletedTask;

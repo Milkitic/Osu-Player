@@ -270,7 +270,7 @@ public sealed partial class ApplicationDbContext
 
     public async ValueTask ClearRecentList()
     {
-        LoosePlayItems.RemoveRange(LoosePlayItems);
+        LoosePlayItems.RemoveRange(LoosePlayItems.Where(k => k.LooseItemType == LooseItemType.RecentPlay));
         await SaveChangesAsync();
     }
 

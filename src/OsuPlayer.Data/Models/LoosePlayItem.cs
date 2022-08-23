@@ -43,5 +43,5 @@ public sealed class LoosePlayItem
 
 public enum LooseItemType
 {
-    RecentPlay,CurrentPlay
+    RecentPlay, CurrentPlay
 }

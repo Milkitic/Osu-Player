@@ -232,9 +232,9 @@
                     Click="TitleArtist_Click"
                     Style="{StaticResource InvisibleButton}">
                     <TextBlock>
-                        <Run Foreground="#777777" Text="{Binding PlayerService.LastLoadContext.PlayItem.PlayItemDetail.AutoTitle, Mode=OneWay}" />
+                        <Run Foreground="#777777" Text="{Binding Title, Mode=OneWay}" />
                         <Run Foreground="#858585" Text="-" />
-                        <Run Foreground="#AAAAAA" Text="{Binding PlayerService.LastLoadContext.PlayItem.PlayItemDetail.AutoArtist, Mode=OneWay}" />
+                        <Run Foreground="#AAAAAA" Text="{Binding Artist, Mode=OneWay}" />
                     </TextBlock>
                 </buttonComponent:CommonButton>
                 <TextBlock Grid.Column="2" Margin="3">
@@ -244,6 +244,7 @@
                 </TextBlock>
             </Grid>
             <Slider
+                x:Name="ProgressSlider"
                 Grid.Row="1"
                 Margin="3"
                 Maximum="{Binding MaxTime}"
