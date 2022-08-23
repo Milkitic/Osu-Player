@@ -1,4 +1,5 @@
-﻿using Milki.OsuPlayer.Shared.Observable;
+﻿using Coosu.Beatmap.Sections.GamePlay;
+using Milki.OsuPlayer.Shared.Observable;
 
 namespace Milki.OsuPlayer.Data.Models;
 
@@ -65,8 +66,9 @@ public sealed class PlayGroupQuery : VmBase
     //public string? VideoPath { get; init; }
     //public string? StoryboardVideoPath { get; init; }
     public double StarRating { get; set; }
-    public PlayItem PlayItem { get; set; } = null!;
-    public PlayItemDetail PlayItemDetail { get; set; } = null!;
+    public PlayItem DefaultPlayItem { get; set; } = null!;
+    public PlayItemDetail DefaultPlayItemDetail { get; set; } = null!;
+    public Dictionary<GameMode, PlayItem[]> GroupPlayItems { get; set; }
 
     public string? ThumbPath
     {

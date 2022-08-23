@@ -75,7 +75,7 @@ public partial class SearchPage : Page
     {
         if (sender is not FrameworkElement { Tag: PlayGroupQuery playGroupQuery }) return;
 
-        var defaultItem = playGroupQuery.PlayItem;
+        var defaultItem = playGroupQuery.DefaultPlayItem;
         await _playerService.InitializeNewAsync(defaultItem.StandardizedPath, true);
     }
 
@@ -106,7 +106,7 @@ public partial class SearchPage : Page
     private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
     {
         var groupQuery = _viewModel.PlayItems[e.Index];
-        var playItem = groupQuery.PlayItem;
+        var playItem = groupQuery.DefaultPlayItem;
         try
         {
             var fileName = await CommonUtils.GetThumbByBeatmapDbId(playItem).ConfigureAwait(false);

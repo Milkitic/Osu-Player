@@ -37,15 +37,10 @@
     <None Remove="Resources\Fonts\SourceSansPro-Light.ttf" />
     <None Remove="Resources\Fonts\SourceSansPro-Regular.ttf" />
     <None Remove="Resources\Fonts\SourceSansPro-Semibold.ttf" />
-    <None Remove="Resources\icon.png" />
     <None Remove="Resources\official\registration.jpg" />
     <None Remove="Resources\osuPlayer.ico" />
-    <None Remove="Resources\osu_texture.png" />
-    <None Remove="Resources\osu_texture2.png" />
-    <None Remove="Resources\osu_texture_blue.png" />
+    <None Remove="Resources\*.png" />
     <None Remove="Resources\store.jpg" />
-    <None Remove="Resources\title.png" />
-    <None Remove="Resources\title_sm.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -118,17 +113,12 @@
     <Resource Include="Resources\Fonts\SourceSansPro-Semibold.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\icon.png" />
     <Resource Include="Resources\official\registration.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\osuPlayer.ico" />
-    <Resource Include="Resources\osu_texture.png" />
-    <Resource Include="Resources\osu_texture2.png" />
-    <Resource Include="Resources\osu_texture_blue.png" />
+    <Resource Include="Resources\*.png" />
     <Resource Include="Resources\store.jpg" />
-    <Resource Include="Resources\title.png" />
-    <Resource Include="Resources\title_sm.png" />
   </ItemGroup>
 
   <ItemGroup>

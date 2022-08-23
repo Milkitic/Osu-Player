@@ -275,7 +275,7 @@ public partial class AnimationControl : UserControl
     {
         VideoElementBorder.Visibility = Visibility.Hidden;
         LogTo.ErrorException("Error while loading video", e.ErrorException);
-        Notification.Push("不支持的视频格式");
+        Notification.Push("加载视频时出错：" + e.ErrorException.Message);
         if (!SharedVm.Default.EnableVideo) return;
         await CloseVideoAsync();
         await _playerService.TogglePlayAsync();

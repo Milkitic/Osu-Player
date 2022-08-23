@@ -27,6 +27,7 @@ public sealed partial class ApplicationDbContext
         var query = PlayItems
             .AsNoTracking()
             .Include(k => k.PlayItemAsset)
+            .Include(k => k.PlayItemDetail)
             .Join(playItemDetails,
                 playItem => playItem.PlayItemDetailId,
                 playItemDetail => playItemDetail.Id,
@@ -52,8 +53,8 @@ public sealed partial class ApplicationDbContext
                 //StoryboardVideoPath = k.PlayItemAssets.StoryboardVideoPath,
                 //VideoPath = k.PlayItemAssets.VideoPath,
                 StarRating = k.PlayItemDetail.StarRating,
-                PlayItem = k.PlayItem,
-                PlayItemDetail = k.PlayItemDetail,
+                DefaultPlayItem = k.PlayItem,
+                DefaultPlayItemDetail = k.PlayItemDetail,
             });
 
         var sqlStr = query.ToQueryString();
@@ -63,10 +64,18 @@ public sealed partial class ApplicationDbContext
             .GroupBy(k => k.Folder, StringComparer.Ordinal)
             .SelectMany(k => k
                 .GroupBy(o => o, MetaComparer.Instance)
-                .Select(o =>
+                .Select(grouping =>
                 {
-                    var playGroupQuery = o.OrderByDescending(x => x.StarRating).First();
-                    playGroupQuery.PlayItem.PlayItemAsset ??= new PlayItemAsset();
+                    var playGroupQuery = grouping.OrderByDescending(groupQuery => groupQuery.StarRating).First();
+                    playGroupQuery.GroupPlayItems = grouping
+                        .GroupBy(groupQuery => groupQuery.DefaultPlayItem.PlayItemDetail.GameMode)
+                        .OrderBy(groupQuery => groupQuery.Key)
+                        .ToDictionary(modeGrouping => modeGrouping.Key, modeGrouping => modeGrouping
+                            .OrderBy(groupQuery => groupQuery.StarRating)
+                            .Select(groupQuery => groupQuery.DefaultPlayItem)
+                            .ToArray()
+                        );
+                    playGroupQuery.DefaultPlayItem.PlayItemAsset ??= new PlayItemAsset();
                     return playGroupQuery;
                 })
             );
