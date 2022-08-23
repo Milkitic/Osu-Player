@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using Anotar.NLog;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +23,12 @@ public class AnimationControlVm : VmBase
 /// </summary>
 public partial class AnimationControl : UserControl
 {
+    public static readonly DependencyProperty IsBlurProperty =
+        DependencyProperty.Register(nameof(IsBlur),
+            typeof(bool),
+            typeof(AnimationControl),
+            new PropertyMetadata(false));
+
     private readonly PlayerService _playerService;
     private readonly AnimationControlVm _viewModel;
 
@@ -60,6 +64,12 @@ public partial class AnimationControl : UserControl
         //BackImage.Source =
         //    new BitmapImage(new Uri("pack://application:,,,/OsuPlayer;component/Resources/official/registration.jpg"));
         BackImage.Opacity = 1;
+    }
+
+    public bool IsBlur
+    {
+        get => (bool)GetValue(IsBlurProperty);
+        set => SetValue(IsBlurProperty, value);
     }
 
     private async void Shared_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -212,25 +222,6 @@ public partial class AnimationControl : UserControl
     {
         if (e.PropertyName == nameof(AppSettings.PlaySection.PlaybackRate))
             VideoElement.SpeedRatio = AppSettings.Default.PlaySection.PlaybackRate;
-    }
-
-    public bool IsBlur
-    {
-        get => (bool)GetValue(IsBlurProperty);
-        set => SetValue(IsBlurProperty, value);
-    }
-
-    public static readonly DependencyProperty IsBlurProperty =
-        DependencyProperty.Register("IsBlur",
-            typeof(bool),
-            typeof(AnimationControl),
-            new PropertyMetadata(false, OnBlurChanged));
-
-    private static void OnBlurChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        if (!(d is AnimationControl @this && e.NewValue is bool useEffect)) return;
-        if (@this.Effect is BlurEffect effect) effect.Radius = 30;
-        else @this.Effect = new BlurEffect { Radius = 30 };
     }
 
     private async Task CloseVideoAsync()
