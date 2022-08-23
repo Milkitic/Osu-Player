@@ -20,6 +20,9 @@ public class PlayControllerVm : VmBase
     private double _currentTime;
     private string _title;
     private string _artist;
+    private bool _isPlayerEmpty = true;
+    private bool _isPlayerLoading;
+    private bool _isPlayerError;
 
     public double MaxTime
     {
@@ -49,6 +52,24 @@ public class PlayControllerVm : VmBase
     {
         get => _artist;
         set => this.RaiseAndSetIfChanged(ref _artist, value);
+    }
+
+    public bool IsPlayerEmpty
+    {
+        get => _isPlayerEmpty;
+        set => this.RaiseAndSetIfChanged(ref _isPlayerEmpty, value);
+    }
+
+    public bool IsPlayerLoading
+    {
+        get => _isPlayerLoading;
+        set => this.RaiseAndSetIfChanged(ref _isPlayerLoading, value);
+    }
+
+    public bool IsPlayerError
+    {
+        get => _isPlayerError;
+        set => this.RaiseAndSetIfChanged(ref _isPlayerError, value);
     }
 
     public PlayerService PlayerService { get; } = ServiceProviders.Default?.GetService<PlayerService>();
@@ -128,7 +149,8 @@ public partial class PlayController : UserControl
             _viewModel.MaxTime = 0.001;
             _viewModel.MinTime = 0;
             _viewModel.CurrentTime = 0;
-            ProgressSlider.IsEnabled = false;
+            _viewModel.IsPlayerLoading = true;
+            _viewModel.IsPlayerEmpty = false;
         });
         return ValueTask.CompletedTask;
     }
@@ -161,7 +183,7 @@ public partial class PlayController : UserControl
             _viewModel.MinTime = -player.PreInsertDuration;
             _viewModel.MaxTime = player.TotalTime.TotalMilliseconds;
             _viewModel.CurrentTime = player.PlayTime.TotalMilliseconds;
-            ProgressSlider.IsEnabled = true;
+            _viewModel.IsPlayerLoading = false;
         });
 
         return ValueTask.CompletedTask;

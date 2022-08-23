@@ -249,10 +249,26 @@
                 Margin="3"
                 Maximum="{Binding MaxTime}"
                 Minimum="{Binding MinTime}"
-                Style="{StaticResource HorizontalSliderPinkStyle}"
                 Thumb.DragCompleted="PlayProgress_DragCompleted"
                 Thumb.DragStarted="PlayProgress_DragStarted"
-                Value="{Binding CurrentTime}" />
+                Value="{Binding CurrentTime}">
+
+                <Slider.Style>
+                    <Style BasedOn="{StaticResource HorizontalSliderPinkStyle}" TargetType="Slider">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsPlayerLoading}" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsPlayerError}" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsPlayerEmpty}" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Slider.Style>
+            </Slider>
         </Grid>
         <Grid Grid.Column="3">
             <StackPanel
