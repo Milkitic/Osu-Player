@@ -8,13 +8,14 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Grid>
+    <Grid Margin="10">
         <textBoxComponent:CommonTextBox
             x:Name="CollectionName"
-            Width="260"
+            Width="Auto"
             Height="40"
-            Margin="5,10,5,0"
+            Margin="0"
             Padding="3"
+            HorizontalAlignment="Stretch"
             VerticalAlignment="Top"
             VerticalContentAlignment="Center"
             FontSize="15px"

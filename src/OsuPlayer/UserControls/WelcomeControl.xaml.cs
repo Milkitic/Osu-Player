@@ -53,9 +53,9 @@ public class WelcomeControlVm : VmBase
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(App.Current.MainWindow!,
+                    MessageBox.Show(App.CurrentMainWindow!,
                         $"{I18NUtil.GetString("err-osudb-sync")}: {path}\r\n{ex.Message}",
-                        App.Current.MainWindow!.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                        App.CurrentMainWindow!.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
                 {
@@ -69,7 +69,7 @@ public class WelcomeControlVm : VmBase
                     softwareState.ShowWelcome = false;
                     await dbContext.UpdateAndSaveChangesAsync(softwareState, k => k.ShowWelcome);
 
-                    App.Current.MainWindow.ContentDialog.RaiseOk();
+                    App.CurrentMainContentDialog.RaiseOk();
                 }
 
             });
@@ -82,7 +82,7 @@ public class WelcomeControlVm : VmBase
         {
             return new DelegateCommand(async arg =>
             {
-                App.Current.MainWindow.ContentDialog.RaiseCancel();
+                App.CurrentMainContentDialog.RaiseCancel();
 
                 await using var dbContext = ServiceProviders.GetApplicationDbContext();
                 var softwareState = await dbContext.GetSoftwareState();

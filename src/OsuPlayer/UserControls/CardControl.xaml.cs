@@ -97,30 +97,30 @@ public partial class CardControl : UserControl
         {
             await _playerService.InitializeNewAsync(selected.StandardizedPath, true);
         });
-       App.Current.MainWindow.ContentDialog.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
+       App.CurrentMainContentDialog.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
     }
 
     private void MiSearchTitle_OnClick(object sender, RoutedEventArgs e)
     {
-        App.Current.MainWindow.NavigationBar.SwitchSearch
+        App.CurrentMainWindow.NavigationBar.SwitchSearch
             .CheckAndAction(page => ((SearchPage)page).Search(Title));
     }
 
     private void MiSearchArtist_OnClick(object sender, RoutedEventArgs e)
     {
-        App.Current.MainWindow.NavigationBar.SwitchSearch
+        App.CurrentMainWindow.NavigationBar.SwitchSearch
             .CheckAndAction(page => ((SearchPage)page).Search(Artist));
     }
 
     private void MiSearchSource_OnClick(object sender, RoutedEventArgs e)
     {
-        App.Current.MainWindow.NavigationBar.SwitchSearch
+        App.CurrentMainWindow.NavigationBar.SwitchSearch
             .CheckAndAction(page => ((SearchPage)page).Search(Source));
     }
 
     private void MiSearchCreator_OnClick(object sender, RoutedEventArgs e)
     {
-        App.Current.MainWindow.NavigationBar.SwitchSearch
+        App.CurrentMainWindow.NavigationBar.SwitchSearch
             .CheckAndAction(page => ((SearchPage)page).Search(Creator));
     }
 

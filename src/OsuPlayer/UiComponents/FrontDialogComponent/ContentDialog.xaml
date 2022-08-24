@@ -223,9 +223,10 @@
                                 MouseOverForeground="White"
                                 Style="{StaticResource SettingsButton}" />
                         </DockPanel>
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+
+                        <uiComponents:AnimatedScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                             <ContentPresenter Content="{Binding ElementName=self, Path=DialogContent}" Style="{StaticResource BodyStyle}" />
-                        </ScrollViewer>
+                        </uiComponents:AnimatedScrollViewer>
                         <Border
                             x:Name="Fotter"
                             Grid.Row="2"

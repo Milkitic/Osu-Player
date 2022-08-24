@@ -32,7 +32,7 @@ public partial class EditCollectionControl : UserControl
 
         var appDbContext = ServiceProviders.GetApplicationDbContext();
         await appDbContext.AddOrUpdatePlayListAsync(_collection);
-        App.Current.MainWindow.ContentDialog.RaiseOk();
+        App.CurrentMainContentDialog.RaiseOk();
     }
 
     private void BtnChooseImg_Click(object sender, RoutedEventArgs e)

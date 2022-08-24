@@ -23,7 +23,7 @@ public partial class NavigationBar : UserControl
     private void NavigationBar_OnLoaded(object sender, RoutedEventArgs e)
     {
         SwitchSearch.IsChecked = true;
-        _mainWindow = App.Current?.MainWindow as MainWindow;
+        _mainWindow = App.CurrentMainWindow as MainWindow;
     }
 
     private void BtnAddCollection_Click(object sender, RoutedEventArgs e)

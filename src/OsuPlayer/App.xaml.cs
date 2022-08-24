@@ -9,10 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Milki.Extensions.Configuration;
 using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared;
 using Milki.OsuPlayer.Shared.Utils;
+using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Windows;
 using Milki.OsuPlayer.Wpf;
@@ -35,7 +35,8 @@ public partial class App : Application
 
     public new static App Current { get; private set; }
     public ServiceProvider ServiceProvider { get; private set; }
-    public new MainWindow MainWindow => (MainWindow)base.MainWindow;
+    public static MainWindow CurrentMainWindow => (MainWindow)Application.Current.MainWindow;
+    public static ContentDialog CurrentMainContentDialog => CurrentMainWindow.ContentDialog;
 
     private async void Application_Startup(object sender, StartupEventArgs e)
     {
@@ -58,7 +59,7 @@ public partial class App : Application
         await InitializeServicesAsync();
 
         base.MainWindow = ServiceProvider.GetService<MainWindow>();
-        MainWindow?.Show();
+        CurrentMainWindow?.Show();
     }
 
     private bool LoadConfig()

@@ -16,7 +16,7 @@
     TextBlock.FontFamily="Segoe UI,微软雅黑"
     mc:Ignorable="d">
     <uiComponents:AnimatedScrollViewer VerticalScrollBarVisibility="Auto">
-        <ItemsControl Margin="-5" ItemsSource="{Binding PlayItems, Mode=OneWay}">
+        <ItemsControl Margin="5" ItemsSource="{Binding PlayItems, Mode=OneWay}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:PlayItem}">
                     <buttonComponent:CommonButton

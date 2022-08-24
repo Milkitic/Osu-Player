@@ -116,7 +116,9 @@
             x:Name="ContentDialog"
             Grid.Row="0"
             Grid.RowSpan="2"
-            d:IsHidden="True" />
+            d:IsHidden="True"
+            DialogHeaderBackground="#F0F0F0F0"
+            DialogPadding="0" />
         <DockPanel
             x:Name="TitleBarArea"
             Grid.Row="0"

@@ -33,7 +33,7 @@ public partial class SelectCollectionControl : UserControl
         DataContext = _viewModel = new SelectCollectionPageViewModel();
         _viewModel.PlayItems = playItems;
         InitializeComponent();
-        _overlay = App.Current.MainWindow.ContentDialog.GetOrCreateSubOverlay();
+        _overlay = App.CurrentMainContentDialog.GetOrCreateSubOverlay();
     }
 
     private async void SelectCollectionControl_OnInitialized(object? sender, EventArgs e)
@@ -56,7 +56,7 @@ public partial class SelectCollectionControl : UserControl
 
     private void BtnClose_Click(object sender, RoutedEventArgs e)
     {
-        App.Current.MainWindow.ContentDialog.RaiseOk();
+        App.CurrentMainContentDialog.RaiseOk();
     }
 
     private async Task RefreshList()

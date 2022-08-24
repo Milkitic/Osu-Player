@@ -88,7 +88,7 @@ public partial class PlayListPage : Page
     private async void BtnDelCol_Click(object sender, RoutedEventArgs e)
     {
         var result = MessageBox.Show(I18NUtil.GetString("ui-ensureRemoveCollection"),
-            App.Current.MainWindow?.Title,
+            App.CurrentMainWindow?.Title,
             MessageBoxButton.OKCancel,
             MessageBoxImage.Exclamation);
         if (result != MessageBoxResult.OK) return;
@@ -128,7 +128,7 @@ public partial class PlayListPage : Page
 
     private void BtnEdit_Click(object sender, RoutedEventArgs e)
     {
-        App.Current.MainWindow.ContentDialog.ShowContent(new EditCollectionControl(_viewModel.PlayList),
+        App.CurrentMainContentDialog.ShowContent(new EditCollectionControl(_viewModel.PlayList),
             DialogOptionFactory.EditCollectionOptions, (_, _) =>
             {
                 var playList = _viewModel.PlayList;

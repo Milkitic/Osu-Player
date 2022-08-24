@@ -17,7 +17,7 @@ public partial class LyricPage : Page
     private bool _loaded;
     public LyricPage()
     {
-        _mainWindow = (MainWindow)App.Current.MainWindow;
+        _mainWindow = (MainWindow)App.CurrentMainWindow;
         InitializeComponent();
     }
 

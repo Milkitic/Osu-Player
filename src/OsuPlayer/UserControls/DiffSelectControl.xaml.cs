@@ -27,7 +27,7 @@ public class DiffSelectPageViewModel : VmBase
         Callback?.Invoke(selectedMap, callbackObj);
         if (!callbackObj.Handled)
         {
-            App.Current.MainWindow.ContentDialog.RaiseCancel();
+            App.CurrentMainContentDialog.RaiseCancel();
         }
     });
 }

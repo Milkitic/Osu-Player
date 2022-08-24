@@ -165,7 +165,7 @@ public partial class RecentPlayPage : Page
     private async void BtnDelAll_Click(object sender, RoutedEventArgs e)
     {
         var result = MsgDialog.WarnOkCancel(I18NUtil.GetString("ui-ensureRemoveAll"),
-            App.Current.MainWindow?.Title);
+            App.CurrentMainWindow?.Title);
         if (!result) return;
 
         var appDbContext = ServiceProviders.GetApplicationDbContext();
