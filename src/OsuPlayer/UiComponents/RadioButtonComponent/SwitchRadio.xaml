@@ -14,13 +14,13 @@
         <Setter Property="Height" Value="36" />
         <Setter Property="MouseOverBackground" Value="#A0F0F0F0" />
         <Setter Property="MouseOverForeground" Value="#484848" />
-        <Setter Property="MouseOverIconColor" Value="#484848" />
+        <Setter Property="MouseOverIconBrush" Value="#484848" />
         <Setter Property="CheckedBackground" Value="#90F0F0F0" />
         <Setter Property="CheckedForeground" Value="#282828" />
-        <Setter Property="CheckedIconColor" Value="#282828" />
+        <Setter Property="CheckedIconBrush" Value="#282828" />
         <Setter Property="MouseDownBackground" Value="#80F0F0F0" />
         <Setter Property="MouseDownForeground" Value="#323232" />
-        <Setter Property="MouseDownIconColor" Value="#484848" />
+        <Setter Property="MouseDownIconBrush" Value="#484848" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="CornerRadius" Value="0" />
@@ -82,7 +82,7 @@
                                 <Setter.Value>
                                     <MultiBinding Converter="{StaticResource IconColorConverter}">
                                         <Binding Path="MouseOverForeground" RelativeSource="{RelativeSource TemplatedParent}" />
-                                        <Binding Path="MouseOverIconColor" RelativeSource="{RelativeSource TemplatedParent}" />
+                                        <Binding Path="MouseOverIconBrush" RelativeSource="{RelativeSource TemplatedParent}" />
                                     </MultiBinding>
                                 </Setter.Value>
                             </Setter>
@@ -94,7 +94,7 @@
                                 <Setter.Value>
                                     <MultiBinding Converter="{StaticResource IconColorConverter}">
                                         <Binding Path="MouseDownForeground" RelativeSource="{RelativeSource TemplatedParent}" />
-                                        <Binding Path="MouseDownIconColor" RelativeSource="{RelativeSource TemplatedParent}" />
+                                        <Binding Path="MouseDownIconBrush" RelativeSource="{RelativeSource TemplatedParent}" />
                                     </MultiBinding>
                                 </Setter.Value>
                             </Setter>
@@ -106,7 +106,7 @@
                                 <Setter.Value>
                                     <MultiBinding Converter="{StaticResource IconColorConverter}">
                                         <Binding Path="CheckedForeground" RelativeSource="{RelativeSource TemplatedParent}" />
-                                        <Binding Path="CheckedIconColor" RelativeSource="{RelativeSource TemplatedParent}" />
+                                        <Binding Path="CheckedIconBrush" RelativeSource="{RelativeSource TemplatedParent}" />
                                     </MultiBinding>
                                 </Setter.Value>
                             </Setter>
@@ -129,15 +129,15 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="CheckedBackground" Value="#F8F8F8" />
         <Setter Property="CheckedForeground" Value="#303030" />
-        <Setter Property="CheckedIconColor" Value="#DC498D" />
+        <Setter Property="CheckedIconBrush" Value="#DC498D" />
         <Setter Property="Foreground" Value="White" />
         <Setter Property="IconSize" Value="20" />
         <Setter Property="MouseDownBackground" Value="{StaticResource ExtraLightBrush}" />
         <Setter Property="MouseDownForeground" Value="#303030" />
-        <Setter Property="MouseDownIconColor" Value="#DC498D" />
+        <Setter Property="MouseDownIconBrush" Value="#DC498D" />
         <Setter Property="MouseOverBackground" Value="White" />
         <Setter Property="MouseOverForeground" Value="#303030" />
-        <Setter Property="MouseOverIconColor" Value="#DC498D" />
+        <Setter Property="MouseOverIconBrush" Value="#DC498D" />
         <Setter Property="TargetPageSingleton" Value="True" />
         <Setter Property="Scope" Value="Nav" />
         <!--<Setter Property="UseLayoutRounding" Value="True" />-->

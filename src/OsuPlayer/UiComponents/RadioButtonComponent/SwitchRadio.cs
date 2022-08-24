@@ -1,98 +1,42 @@
-﻿using System.Windows;
+﻿#nullable enable
+
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
+using Anotar.NLog;
 using Milki.OsuPlayer.Wpf.Dependency;
 
 namespace Milki.OsuPlayer.UiComponents.RadioButtonComponent;
 
 public class SwitchRadio : RadioButton
 {
-    //protected Window HostWindow { get; private set; }
-    private static readonly Dictionary<Type, FrameworkElement> PageMapping = new Dictionary<Type, FrameworkElement>();
-    private Action<FrameworkElement> _loadedAction;
-
-    protected FrameworkElement HostWindow { get; private set; }
+    private Action<FrameworkElement>? _loadedAction;
+    private Page? _pageInstance;
+    protected FrameworkElement? HostContainer { get; private set; }
 
     public SwitchRadio()
     {
         Loaded += (sender, e) =>
         {
-            if (HostWindow != null)
+            if (HostContainer != null)
             {
                 return;
             }
 
-            //HostWindow = Window.GetWindow(this);
-            HostWindow = this.FindParentObjects(typeof(Page), typeof(Window));
+            HostContainer = this.FindParentObjects(typeof(Page), typeof(Window));
         };
 
-        Checked += (sender, e) =>
-        {
-            if (HostWindow == null)
-            {
-                return;
-            }
-
-            if (!string.IsNullOrWhiteSpace(Scope) && Scopes.ContainsKey(Scope))
-            {
-                var others = Scopes[Scope].Where(k => k != this);
-                foreach (var switchRadio in others)
-                {
-                    switchRadio.IsChecked = false;
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(TargetFrameControl))
-            {
-                return;
-            }
-
-            if (HostWindow.FindName(TargetFrameControl) is Frame frame)
-            {
-                var ui = (UIElement)frame.Content;
-                if (ui != null)
-                {
-                    Storyboard.SetTarget(Da2, ui);
-                    if (SharedVm.Default.IsMinimalMode)
-                    {
-                        OnSbOnCompleted(null, null);
-                    }
-                    else
-                    {
-                        FadeoutSb.Completed += OnSbOnCompleted;
-                    }
-
-                    FadeoutSb.Begin();
-
-                    void OnSbOnCompleted(object obj, EventArgs args)
-                    {
-                        Navigate(frame);
-                        //ui.BeginAnimation(OpacityProperty, null);
-                        //var removeSb = new RemoveStoryboard { BeginStoryboardName = FadeoutSb.Name };
-                        FadeoutSb.Completed -= OnSbOnCompleted;
-                    }
-                }
-                else
-                {
-                    Navigate(frame);
-                }
-                //var n = NavigationService.GetNavigationService(frame);
-                //frame.NavigationService.Navigate(new Uri($"{TargetPageType}?ExtraData={TargetPageData}", UriKind.Relative), TargetPageData);
-            }
-        };
+        Checked += (sender, e) => NavigateAction();
     }
 
     public void CheckAndAction(Action<FrameworkElement> action)
     {
         if (IsChecked == true)
         {
-            if (HostWindow.FindName(TargetFrameControl) is Frame frame)
+            if (HostContainer?.FindName(TargetFrameControlName) is Frame { Content: FrameworkElement content } frame)
             {
-                if (frame.Content != null)
-                {
-                    action.Invoke(frame.Content as FrameworkElement);
-                }
+                action.Invoke(content);
             }
         }
         else
@@ -102,50 +46,79 @@ public class SwitchRadio : RadioButton
         }
     }
 
-    private void Navigate(Frame frame)
+    public void SetSingletonPage(Page page)
     {
-        FrameworkElement page;
-        if (TargetPageSingleton && PageMapping.ContainsKey(TargetPageType))
-        {
-            page = PageMapping[TargetPageType];
-        }
-        else
-        {
-            page = (FrameworkElement)(TargetPageData == null
-                ? Activator.CreateInstance(TargetPageType)
-                : Activator.CreateInstance(TargetPageType, TargetPageData));
-            if (TargetPageSingleton)
-            {
-                PageMapping.Add(TargetPageType, page);
-            }
-        }
+        var type = page.GetType();
+        if (type != TargetPageType)
+            throw new NotSupportedException(type.AssemblyQualifiedName + " != " +
+                                            TargetPageType.AssemblyQualifiedName);
+        _pageInstance = page;
 
-        _loadedAction?.Invoke(page);
-        _loadedAction = null;
-        var endOpacity = page.Opacity;
-        var originTransform = page.RenderTransform;
-        page.RenderTransformOrigin = new Point(0.5, 0.5);
-        Storyboard.SetTarget(Da1, page);
-        Storyboard.SetTarget(Ta1, page);
-        Storyboard.SetTarget(Ta1Clone, page);
-        if (page.RenderTransform.GetType() != typeof(ScaleTransform))
-            page.RenderTransform = new ScaleTransform();
-        frame.NavigationService.Navigate(page);
-
-        FadeinSb.Completed += OnSbOnCompleted;
-        FadeinSb.Begin();
-
-        void OnSbOnCompleted(object sender, EventArgs e)
+        if (IsChecked == true)
         {
-            page.RenderTransform = originTransform;
-            //page.BeginAnimation(OpacityProperty, null);
-            //page.BeginAnimation(TranslateTransform.XProperty, null);
-            //var removeSb = new RemoveStoryboard { BeginStoryboardName = FadeinSb.Name };
-            FadeinSb.Completed -= OnSbOnCompleted;
+            NavigateAction();
         }
     }
 
-    public object TargetPageData
+    private void NavigateAction()
+    {
+        var frame = GetFrameControl();
+        if (frame == null) return;
+
+        InnerNavigate(frame);
+    }
+
+    private Frame? GetFrameControl()
+    {
+        if (TargetFrameControl != null)
+            return TargetFrameControl;
+        if (HostContainer == null)
+            return null;
+        if (string.IsNullOrWhiteSpace(TargetFrameControlName))
+            return null;
+        if (HostContainer.FindName(TargetFrameControlName) is Frame frame)
+            return frame;
+        return null;
+    }
+
+    private void InnerNavigate(Frame frame)
+    {
+        var sw = Stopwatch.StartNew();
+        Page page;
+        if (TargetPageSingleton && _pageInstance != null)
+        {
+            page = _pageInstance;
+        }
+        else
+        {
+            LogTo.Debug("Creating page instance...");
+            page = (Page)(TargetPageData == null
+                ? Activator.CreateInstance(TargetPageType)!
+                : Activator.CreateInstance(TargetPageType, TargetPageData))!;
+            if (TargetPageSingleton)
+            {
+                _pageInstance = page;
+            }
+
+            LogTo.Debug(() => $"Page creation elapsed by {sw.ElapsedMilliseconds}ms");
+        }
+
+        LogTo.Debug("Navigating...");
+        sw.Restart();
+        if (frame is AnimatedFrame animatedFrame)
+        {
+            animatedFrame.AnimateNavigate(page);
+        }
+        else
+        {
+            frame.Navigate(page);
+        }
+
+        LogTo.Debug(() => $"Navigation elapsed by {sw.ElapsedMilliseconds}ms");
+        sw.Stop();
+    }
+
+    public object? TargetPageData
     {
         get => GetValue(TargetPageDataProperty);
         set => SetValue(TargetPageDataProperty, value);
@@ -153,7 +126,7 @@ public class SwitchRadio : RadioButton
 
     public static readonly DependencyProperty TargetPageDataProperty =
         DependencyProperty.Register(
-            "TargetPageData",
+            nameof(TargetPageData),
             typeof(object),
             typeof(SwitchRadio)
         );
@@ -166,7 +139,7 @@ public class SwitchRadio : RadioButton
 
     public static readonly DependencyProperty ScopeProperty =
         DependencyProperty.Register(
-            "Scope",
+            nameof(Scope),
             typeof(string),
             typeof(SwitchRadio),
             new PropertyMetadata(null, OnScopeChanged)
@@ -174,30 +147,9 @@ public class SwitchRadio : RadioButton
 
     private static void OnScopeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        var oldVal = (string)e.OldValue;
+        var sr = (SwitchRadio)d;
         var newVal = (string)e.NewValue;
-        var obj = (SwitchRadio)d;
-        if (!string.IsNullOrWhiteSpace(oldVal))
-        {
-            if (Scopes.ContainsKey(oldVal))
-            {
-                Scopes[oldVal].Remove(obj);
-                if (Scopes[oldVal].Count == 0)
-                {
-                    Scopes.Remove(oldVal);
-                }
-            }
-        }
-
-        if (!string.IsNullOrWhiteSpace(newVal))
-        {
-            if (!Scopes.ContainsKey(newVal))
-            {
-                Scopes.Add(newVal, new List<SwitchRadio>());
-            }
-
-            Scopes[newVal].Add(obj);
-        }
+        sr.GroupName = newVal;
     }
 
     public ControlTemplate IconTemplate
@@ -208,24 +160,24 @@ public class SwitchRadio : RadioButton
 
     public static readonly DependencyProperty IconTemplateProperty =
         DependencyProperty.Register(
-            "IconTemplate",
+            nameof(IconTemplate),
             typeof(ControlTemplate),
             typeof(SwitchRadio),
             null
         );
 
-    public Thickness CornerRadius
+    public CornerRadius CornerRadius
     {
-        get => (Thickness)GetValue(CornerRadiusProperty);
+        get => (CornerRadius)GetValue(CornerRadiusProperty);
         set => SetValue(CornerRadiusProperty, value);
     }
 
     public static readonly DependencyProperty CornerRadiusProperty =
         DependencyProperty.Register(
-            "CornerRadius",
-            typeof(Thickness),
+            nameof(CornerRadius),
+            typeof(CornerRadius),
             typeof(SwitchRadio),
-            new PropertyMetadata(new Thickness(0))
+            new PropertyMetadata(new CornerRadius(0))
         );
 
     public Thickness IconMargin
@@ -236,7 +188,7 @@ public class SwitchRadio : RadioButton
 
     public static readonly DependencyProperty IconMarginProperty =
         DependencyProperty.Register(
-            "IconMargin",
+            nameof(IconMargin),
             typeof(Thickness),
             typeof(SwitchRadio),
             new PropertyMetadata(new Thickness(0, 0, 8, 0))
@@ -250,7 +202,7 @@ public class SwitchRadio : RadioButton
 
     public static readonly DependencyProperty IconOrientationProperty =
         DependencyProperty.Register(
-            "IconOrientation",
+            nameof(IconOrientation),
             typeof(Orientation),
             typeof(SwitchRadio),
             new PropertyMetadata(Orientation.Horizontal)
@@ -264,7 +216,7 @@ public class SwitchRadio : RadioButton
 
     public static readonly DependencyProperty IconSizeProperty =
         DependencyProperty.Register(
-            "IconSize",
+            nameof(IconSize),
             typeof(double),
             typeof(SwitchRadio),
             new PropertyMetadata(24d)
@@ -278,7 +230,7 @@ public class SwitchRadio : RadioButton
 
     public static readonly DependencyProperty IconColorProperty =
         DependencyProperty.Register(
-            "IconColor",
+            nameof(IconColor),
             typeof(Brush),
             typeof(SwitchRadio),
             new PropertyMetadata(null)
@@ -292,21 +244,34 @@ public class SwitchRadio : RadioButton
 
     public static readonly DependencyProperty TargetPageTypeProperty =
         DependencyProperty.Register(
-            "TargetPageType",
+            nameof(TargetPageType),
             typeof(Type),
             typeof(SwitchRadio)
         );
 
-    public string TargetFrameControl
+    public string TargetFrameControlName
     {
-        get => (string)GetValue(TargetFrameControlProperty);
+        get => (string)GetValue(TargetFrameControlNameProperty);
+        set => SetValue(TargetFrameControlNameProperty, value);
+    }
+
+    public static readonly DependencyProperty TargetFrameControlNameProperty =
+        DependencyProperty.Register(
+            nameof(TargetFrameControlName),
+            typeof(string),
+            typeof(SwitchRadio)
+        );
+
+    public Frame? TargetFrameControl
+    {
+        get => (Frame?)GetValue(TargetFrameControlProperty);
         set => SetValue(TargetFrameControlProperty, value);
     }
 
     public static readonly DependencyProperty TargetFrameControlProperty =
         DependencyProperty.Register(
-            "TargetFrameControl",
-            typeof(string),
+            nameof(TargetFrameControl),
+            typeof(Frame),
             typeof(SwitchRadio)
         );
 
@@ -318,7 +283,7 @@ public class SwitchRadio : RadioButton
 
     public static readonly DependencyProperty TargetPageSingletonProperty =
         DependencyProperty.Register(
-            "TargetPageSingleton",
+            nameof(TargetPageSingleton),
             typeof(bool),
             typeof(SwitchRadio)
         );
@@ -335,10 +300,10 @@ public class SwitchRadio : RadioButton
         set => SetValue(MouseOverForegroundProperty, value);
     }
 
-    public Brush MouseOverIconColor
+    public Brush MouseOverIconBrush
     {
-        get => (Brush)GetValue(MouseOverIconColorProperty);
-        set => SetValue(MouseOverIconColorProperty, value);
+        get => (Brush)GetValue(MouseOverIconBrushProperty);
+        set => SetValue(MouseOverIconBrushProperty, value);
     }
 
     public Brush MouseDownBackground
@@ -352,10 +317,11 @@ public class SwitchRadio : RadioButton
         get => (Brush)GetValue(MouseDownForegroundProperty);
         set => SetValue(MouseDownForegroundProperty, value);
     }
-    public Brush MouseDownIconColor
+
+    public Brush MouseDownIconBrush
     {
-        get => (Brush)GetValue(MouseDownIconColorProperty);
-        set => SetValue(MouseDownIconColorProperty, value);
+        get => (Brush)GetValue(MouseDownIconBrushProperty);
+        set => SetValue(MouseDownIconBrushProperty, value);
     }
 
     public Brush CheckedBackground
@@ -370,73 +336,33 @@ public class SwitchRadio : RadioButton
         set => SetValue(CheckedForegroundProperty, value);
     }
 
-    public Brush CheckedIconColor
+    public Brush CheckedIconBrush
     {
-        get => (Brush)GetValue(CheckedIconColorProperty);
-        set => SetValue(CheckedIconColorProperty, value);
+        get => (Brush)GetValue(CheckedIconBrushProperty);
+        set => SetValue(CheckedIconBrushProperty, value);
     }
 
-    public static readonly DependencyProperty MouseOverBackgroundProperty = DependencyProperty.Register("MouseOverBackground", typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
-    public static readonly DependencyProperty MouseOverForegroundProperty = DependencyProperty.Register("MouseOverForeground", typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
-    public static readonly DependencyProperty MouseDownBackgroundProperty = DependencyProperty.Register("MouseDownBackground", typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
-    public static readonly DependencyProperty MouseDownForegroundProperty = DependencyProperty.Register("MouseDownForeground", typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
-    public static readonly DependencyProperty MouseDownIconColorProperty = DependencyProperty.Register("MouseDownIconColor", typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
-    public static readonly DependencyProperty CheckedBackgroundProperty = DependencyProperty.Register("CheckedBackground", typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
-    public static readonly DependencyProperty CheckedForegroundProperty = DependencyProperty.Register("CheckedForeground", typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
-    public static readonly DependencyProperty MouseOverIconColorProperty = DependencyProperty.Register("MouseOverIconColor", typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
-    public static readonly DependencyProperty CheckedIconColorProperty = DependencyProperty.Register("CheckedIconColor", typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
-
-    private static Dictionary<string, List<SwitchRadio>> Scopes { get; } =
-        new Dictionary<string, List<SwitchRadio>>();
-
-    static SwitchRadio()
+    public Thickness CheckedBorderThickness
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(SwitchRadio), new FrameworkPropertyMetadata(typeof(SwitchRadio)));
-
-        FadeinSb = new Storyboard { Name = "FadeinSb" };
-        Da1 = new DoubleAnimation
-        {
-            From = 0,
-            To = 1,
-            EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
-            BeginTime = TimeSpan.Zero,
-            Duration = (TimeSpan.FromMilliseconds(300))
-        };
-        Storyboard.SetTargetProperty(Da1, new PropertyPath(OpacityProperty));
-
-        Ta1 = new DoubleAnimation
-        {
-            From = 0.95,
-            To = 1,
-            EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
-            BeginTime = TimeSpan.Zero,
-            Duration = (TimeSpan.FromMilliseconds(300))
-        };
-        Ta1Clone = Ta1.Clone();
-        Storyboard.SetTargetProperty(Ta1, new PropertyPath("RenderTransform.ScaleX"));
-        Storyboard.SetTargetProperty(Ta1Clone, new PropertyPath("RenderTransform.ScaleY"));
-
-        FadeinSb.Children.Add(Da1);
-        FadeinSb.Children.Add(Ta1);
-        FadeinSb.Children.Add(Ta1Clone);
-
-        FadeoutSb = new Storyboard { Name = "FadeoutSb" };
-        Da2 = new DoubleAnimation
-        {
-            From = 1,
-            To = 0,
-            EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
-            BeginTime = TimeSpan.Zero,
-            Duration = (TimeSpan.FromMilliseconds(100))
-        };
-        FadeoutSb.Children.Add(Da2);
-        Storyboard.SetTargetProperty(Da2, new PropertyPath(OpacityProperty));
+        get => (Thickness)GetValue(CheckedBorderThicknessProperty);
+        set => SetValue(CheckedBorderThicknessProperty, value);
     }
 
-    private static readonly DoubleAnimation Da1;
-    private static readonly DoubleAnimation Ta1;
-    private static readonly DoubleAnimation Ta1Clone;
-    private static readonly DoubleAnimation Da2;
-    private static readonly Storyboard FadeoutSb;
-    private static readonly Storyboard FadeinSb;
+    public Brush CheckedBorderBrush
+    {
+        get => (Brush)GetValue(CheckedBorderBrushProperty);
+        set => SetValue(CheckedBorderBrushProperty, value);
+    }
+
+    public static readonly DependencyProperty MouseOverBackgroundProperty = DependencyProperty.Register(nameof(MouseOverBackground), typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
+    public static readonly DependencyProperty MouseOverForegroundProperty = DependencyProperty.Register(nameof(MouseOverForeground), typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
+    public static readonly DependencyProperty MouseDownBackgroundProperty = DependencyProperty.Register(nameof(MouseDownBackground), typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
+    public static readonly DependencyProperty MouseDownForegroundProperty = DependencyProperty.Register(nameof(MouseDownForeground), typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
+    public static readonly DependencyProperty MouseDownIconBrushProperty = DependencyProperty.Register(nameof(MouseDownIconBrush), typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
+    public static readonly DependencyProperty CheckedBackgroundProperty = DependencyProperty.Register(nameof(CheckedBackground), typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
+    public static readonly DependencyProperty CheckedForegroundProperty = DependencyProperty.Register(nameof(CheckedForeground), typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
+    public static readonly DependencyProperty CheckedBorderThicknessProperty = DependencyProperty.Register(nameof(CheckedBorderThickness), typeof(Thickness), typeof(SwitchRadio), new PropertyMetadata(default(Thickness)));
+    public static readonly DependencyProperty CheckedBorderBrushProperty = DependencyProperty.Register(nameof(CheckedBorderBrush), typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
+    public static readonly DependencyProperty MouseOverIconBrushProperty = DependencyProperty.Register(nameof(MouseOverIconBrush), typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
+    public static readonly DependencyProperty CheckedIconBrushProperty = DependencyProperty.Register(nameof(CheckedIconBrush), typeof(Brush), typeof(SwitchRadio), new PropertyMetadata(default(Brush)));
 }

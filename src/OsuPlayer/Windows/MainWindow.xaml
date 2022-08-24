@@ -11,6 +11,7 @@
     xmlns:notificationComponent="clr-namespace:Milki.OsuPlayer.UiComponents.NotificationComponent"
     xmlns:osuPlayer="clr-namespace:Milki.OsuPlayer"
     xmlns:tb="http://www.hardcodet.net/taskbar"
+    xmlns:uiComponents="clr-namespace:Milki.OsuPlayer.UiComponents"
     xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
     xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
     xmlns:wpf="clr-namespace:Milki.OsuPlayer.Wpf;assembly=OsuPlayer.Wpf"
@@ -96,8 +97,8 @@
                         x:Name="Animation"
                         ClipToBounds="True"
                         IsBlur="{Binding Content, ElementName=MainFrame, Converter={StaticResource NullToBoolFalseConverter}}" />
-                    <Frame
-                        Name="MainFrame"
+                    <uiComponents:AnimatedFrame
+                        x:Name="MainFrame"
                         Background="#B0FFFFFF"
                         NavigationUIVisibility="Hidden"
                         Visibility="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource NullToHiddenConverter}}" />

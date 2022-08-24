@@ -65,32 +65,32 @@
                         x:Name="SwitchGeneral"
                         Content="{DynamicResource ui-sets-nav-common}"
                         Style="{StaticResource ConfigSwitchRadio}"
-                        TargetFrameControl="MainFrame"
+                        TargetFrameControlName="MainFrame"
                         TargetPageType="{x:Type settings:GeneralPage}" />
                     <radioButtonComponent:SwitchRadio
                         Content="{DynamicResource ui-sets-nav-playing}"
                         Style="{StaticResource ConfigSwitchRadio}"
-                        TargetFrameControl="MainFrame"
+                        TargetFrameControlName="MainFrame"
                         TargetPageType="{x:Type settings:PlayPage}" />
                     <radioButtonComponent:SwitchRadio
                         Content="{DynamicResource ui-sets-nav-hotKey}"
                         Style="{StaticResource ConfigSwitchRadio}"
-                        TargetFrameControl="MainFrame"
+                        TargetFrameControlName="MainFrame"
                         TargetPageType="{x:Type settings:HotKeyPage}" />
                     <radioButtonComponent:SwitchRadio
                         Content="{DynamicResource ui-sets-nav-lyric}"
                         Style="{StaticResource ConfigSwitchRadio}"
-                        TargetFrameControl="MainFrame"
+                        TargetFrameControlName="MainFrame"
                         TargetPageType="{x:Type settings:LyricPage}" />
                     <radioButtonComponent:SwitchRadio
                         Content="{DynamicResource ui-sets-nav-export}"
                         Style="{StaticResource ConfigSwitchRadio}"
-                        TargetFrameControl="MainFrame"
+                        TargetFrameControlName="MainFrame"
                         TargetPageType="{x:Type settings:ExportPage}" />
                     <radioButtonComponent:SwitchRadio
                         Content="{DynamicResource ui-sets-nav-about}"
                         Style="{StaticResource ConfigSwitchRadio}"
-                        TargetFrameControl="MainFrame"
+                        TargetFrameControlName="MainFrame"
                         TargetPageType="{x:Type settings:AboutPage}" />
                 </StackPanel>
             </ScrollViewer>

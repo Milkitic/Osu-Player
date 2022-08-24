@@ -28,9 +28,9 @@
                 Height="31"
                 Padding="14,0,0,0"
                 VerticalAlignment="Center"
-                CheckedIconColor="#4090A0"
+                CheckedIconBrush="#4090A0"
                 Content="{Binding Name}"
-                TargetFrameControl="MainFrame"
+                TargetFrameControlName="MainFrame"
                 TargetPageData="{Binding}"
                 TargetPageSingleton="False"
                 TargetPageType="{x:Type pages:PlayListPage}">
@@ -105,11 +105,11 @@
             </Label>
             <radioButtonComponent:SwitchRadio
                 x:Name="SwitchSearch"
-                CheckedIconColor="#4050A0"
+                CheckedIconBrush="#4050A0"
                 Content="{DynamicResource ui-nav-search}"
                 IconTemplate="{StaticResource NavSearchTempl}"
                 Style="{StaticResource OsuSwitchRadio}"
-                TargetFrameControl="MainFrame"
+                TargetFrameControlName="MainFrame"
                 TargetPageType="{x:Type pages:SearchPage}">
                 <radioButtonComponent:SwitchRadio.Tag>
                     <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
@@ -119,11 +119,11 @@
                 </radioButtonComponent:SwitchRadio.Tag>
             </radioButtonComponent:SwitchRadio>
             <radioButtonComponent:SwitchRadio
-                CheckedIconColor="#508030"
+                CheckedIconBrush="#508030"
                 Content="{DynamicResource ui-nav-storyboard}"
                 IconTemplate="{StaticResource NavStoryboardTempl}"
                 Style="{StaticResource OsuSwitchRadio}"
-                TargetFrameControl="MainFrame"
+                TargetFrameControlName="MainFrame"
                 TargetPageType="{x:Type pages:StoryboardPage}"
                 Visibility="Collapsed">
                 <radioButtonComponent:SwitchRadio.Tag>
@@ -144,11 +144,11 @@
             </Label>
             <radioButtonComponent:SwitchRadio
                 x:Name="SwitchRecent"
-                CheckedIconColor="#A04090"
+                CheckedIconBrush="#A04090"
                 Content="{DynamicResource ui-nav-recent}"
                 IconTemplate="{StaticResource NavHistoryTempl}"
                 Style="{StaticResource OsuSwitchRadio}"
-                TargetFrameControl="MainFrame"
+                TargetFrameControlName="MainFrame"
                 TargetPageType="{x:Type pages:RecentPlayPage}">
                 <radioButtonComponent:SwitchRadio.Tag>
                     <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
@@ -158,11 +158,12 @@
                 </radioButtonComponent:SwitchRadio.Tag>
             </radioButtonComponent:SwitchRadio>
             <radioButtonComponent:SwitchRadio
-                CheckedIconColor="#A09040"
+                CheckedIconBrush="#A09040"
                 Content="{DynamicResource ui-nav-export}"
                 IconTemplate="{StaticResource NavExportTempl}"
+                IsChecked="False"
                 Style="{StaticResource OsuSwitchRadio}"
-                TargetFrameControl="MainFrame"
+                TargetFrameControlName="MainFrame"
                 TargetPageType="{x:Type pages:ExportPage}">
                 <radioButtonComponent:SwitchRadio.Tag>
                     <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">

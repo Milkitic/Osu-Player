@@ -1,0 +1,67 @@
+﻿<wpf:FrameEx
+    x:Class="Milki.OsuPlayer.UiComponents.AnimatedFrame"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:wpf="clr-namespace:Milki.OsuPlayer.Wpf;assembly=OsuPlayer.Wpf"
+    x:Name="Self"
+    mc:Ignorable="d">
+    <wpf:FrameEx.Resources>
+        <ExponentialEase x:Key="ExponentialEaseIn" EasingMode="EaseIn" />
+        <ExponentialEase x:Key="ExponentialEaseOut" EasingMode="EaseOut" />
+        <Storyboard
+            x:Key="FadeInStoryboard"
+            x:Name="FadeInStoryboard"
+            Storyboard.Target="{Binding ElementName=Self, Path=Content}">
+            <!--  Opacity  -->
+            <DoubleAnimation
+                EasingFunction="{StaticResource ExponentialEaseOut}"
+                Storyboard.TargetProperty="Opacity"
+                From="0"
+                To="1"
+                Duration="00:00:00.300" />
+
+            <!--  ScaleX  -->
+            <DoubleAnimation
+                x:Name="FadeInScaleX"
+                EasingFunction="{StaticResource ExponentialEaseOut}"
+                Storyboard.TargetProperty="RenderTransform.ScaleX"
+                From="0.95"
+                To="1"
+                Duration="00:00:00.300" />
+
+            <!--  ScaleY  -->
+            <DoubleAnimation
+                x:Name="FadeInScaleY"
+                EasingFunction="{StaticResource ExponentialEaseOut}"
+                Storyboard.TargetProperty="RenderTransform.ScaleY"
+                From="0.95"
+                To="1"
+                Duration="00:00:00.300" />
+
+            <!--  Y  -->
+            <DoubleAnimation
+                x:Name="FadeInY"
+                Storyboard.TargetProperty="RenderTransform.Y"
+                From="0"
+                To="0"
+                Duration="00:00:00.300" />
+        </Storyboard>
+
+        <Storyboard
+            x:Key="FadeOutStoryboard"
+            x:Name="FadeOutStoryboard"
+            Storyboard.Target="{Binding ElementName=Self, Path=Content}">
+            <!--  Opacity  -->
+            <DoubleAnimation
+                EasingFunction="{StaticResource ExponentialEaseOut}"
+                Storyboard.TargetProperty="Opacity"
+                From="1"
+                To="0"
+                Duration="00:00:00.100" />
+
+        </Storyboard>
+    </wpf:FrameEx.Resources>
+</wpf:FrameEx>

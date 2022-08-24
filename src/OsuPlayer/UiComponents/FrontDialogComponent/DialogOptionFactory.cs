@@ -28,6 +28,7 @@ internal static class DialogOptionFactory
         Width = 290,
         Height = 135
     };
+
     public static DialogOptions EditCollectionOptions => new()
     {
         Title = I18NUtil.GetString("ui-win-editCollection"),
