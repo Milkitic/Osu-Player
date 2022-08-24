@@ -50,7 +50,7 @@
             VerticalContentAlignment="Center"
             FontSize="15"
             Foreground="#323232"
-            Hint="{DynamicResource ui-hint-searchPageBox}"
+            HintText="{DynamicResource ui-hint-searchPageBox}"
             TextChanged="SearchBox_TextChanged" />
         <StackPanel
             Grid.Row="1"

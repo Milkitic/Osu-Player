@@ -292,7 +292,7 @@
                                     BorderBrush="#DCDFE6"
                                     BorderThickness="1"
                                     CornerRadius="13"
-                                    Hint="{DynamicResource ui-hint-searchCollectionMusic3Dot}"
+                                    HintText="{DynamicResource ui-hint-searchCollectionMusic3Dot}"
                                     TextChanged="SearchBox_TextChanged" />
                                 <ListBox
                                     x:Name="MapCardList"

@@ -19,7 +19,7 @@
             VerticalAlignment="Top"
             VerticalContentAlignment="Center"
             FontSize="15px"
-            Hint="{DynamicResource ui-max30Char}"
+            HintText="{DynamicResource ui-max30Char}"
             MaxLength="30"
             TextWrapping="Wrap" />
     </Grid>

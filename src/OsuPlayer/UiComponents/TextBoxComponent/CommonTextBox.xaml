@@ -1,90 +1,125 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:textBoxComponent="clr-namespace:Milki.OsuPlayer.UiComponents.TextBoxComponent">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:textBoxComponent="clr-namespace:Milki.OsuPlayer.UiComponents.TextBoxComponent">
     <Style TargetType="{x:Type textBoxComponent:CommonTextBox}">
-        <Setter Property="ContextMenu" Value="{DynamicResource TextBoxContextMenu}" />
-        <Setter Property="CaretBrush" Value="#303030" />
-        <Setter Property="SelectionBrush" Value="#646464" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="MinHeight" Value="26" />
-        <Setter Property="Width" Value="100" />
-        <Setter Property="Background" Value="White" />
-        <Setter Property="Foreground" Value="#303030" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="BorderBrush" Value="#B0B0B0" />
+        <Setter Property="HintTextForeground" Value="#A0A0A0" />
+        <Setter Property="FocusBorderBrush" Value="#E8EC599D" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <!--  change SnapsToDevicePixels to True to view a better border and validation error  -->
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type textBoxComponent:CommonTextBox}">
-                    <Grid x:Name="PART_Root">
-                        <Border
-                            x:Name="Bg"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                        <Border
-                            x:Name="HintBorder"
-                            Margin="4,0"
-                            VerticalAlignment="Center"
-                            Opacity="0.5"
-                            Visibility="Collapsed">
-                            <Label x:Name="Message" Content="{TemplateBinding Hint}" />
-                        </Border>
-                        <Grid x:Name="PART_InnerGrid">
+                    <Border
+                        x:Name="MainBorder"
+                        MaxWidth="{TemplateBinding Width}"
+                        MaxHeight="{TemplateBinding Height}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        SnapsToDevicePixels="True">
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <ContentControl x:Name="Label" Margin="1" />
-                            <ScrollViewer
-                                x:Name="PART_ContentHost"
-                                Grid.Column="1"
-                                Margin="2"
-                                VerticalAlignment="Stretch"
-                                Background="{x:Null}"
-                                BorderThickness="0"
-                                IsTabStop="False" />
-                            <!--<TextBlock
-                                x:Name="Message"
-                                Margin="5,2,5,2"
-                                Padding="{TemplateBinding Padding}"
-                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                Foreground="{TemplateBinding Foreground}"
-                                IsHitTestVisible="False"
-                                Opacity="0.5"
-                                Visibility="Collapsed" />-->
-                            <Border
-                                x:Name="PART_AttachContent"
-                                Grid.Column="2"
-                                Margin="2"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center">
-                                <ContentControl VerticalAlignment="Center" VerticalContentAlignment="Center" />
+                            <Border x:Name="IconBorder" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                                <Viewbox
+                                    Width="{TemplateBinding IconSize}"
+                                    Height="{TemplateBinding IconSize}"
+                                    Margin="{TemplateBinding IconMargin}">
+                                    <ContentControl Template="{TemplateBinding IconTemplate}" />
+                                </Viewbox>
                             </Border>
+                            <Grid
+                                x:Name="TextBorder"
+                                Grid.Column="1"
+                                VerticalAlignment="Stretch"
+                                SnapsToDevicePixels="true">
+                                <Border Margin="2,0">
+                                    <TextBlock
+                                        x:Name="TbHint"
+                                        Margin="{TemplateBinding Padding}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        Foreground="{TemplateBinding HintTextForeground}"
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                        Text="{TemplateBinding HintText}"
+                                        Visibility="Collapsed" />
+                                </Border>
+                                <ScrollViewer
+                                    x:Name="PART_ContentHost"
+                                    VerticalAlignment="Stretch"
+                                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            </Grid>
+                            <Popup
+                                AllowsTransparency="True"
+                                IsOpen="{TemplateBinding IsPopupOpened}"
+                                Placement="Right"
+                                PlacementTarget="{Binding ElementName=MainBorder}"
+                                PopupAnimation="Fade"
+                                StaysOpen="True">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Viewbox Width="10" Margin="0,0,-14,8">
+                                        <Polygon
+                                            Fill="#f8d7da"
+                                            Points="0,1 1.73,0 1.73,2"
+                                            Stroke="#f5c6cb"
+                                            StrokeThickness="0.2" />
+                                    </Viewbox>
+                                    <Border
+                                        Grid.Column="1"
+                                        Margin="10"
+                                        Padding="6,3"
+                                        Background="#f8d7da"
+                                        BorderBrush="#f5c6cb"
+                                        BorderThickness="1"
+                                        CornerRadius="4"
+                                        UseLayoutRounding="True">
+                                        <Border.Effect>
+                                            <DropShadowEffect
+                                                BlurRadius="10"
+                                                Opacity="0.3"
+                                                ShadowDepth="0" />
+                                        </Border.Effect>
+                                    </Border>
+                                    <Border
+                                        Grid.Column="1"
+                                        Margin="10"
+                                        Padding="6,3"
+                                        Background="#f8d7da"
+                                        BorderBrush="#f5c6cb"
+                                        BorderThickness="1"
+                                        CornerRadius="4"
+                                        UseLayoutRounding="True">
+                                        <TextBlock Foreground="#721c24" Text="{TemplateBinding PopupText}" />
+                                    </Border>
+                                </Grid>
+                            </Popup>
                         </Grid>
-                    </Grid>
+                    </Border>
                     <ControlTemplate.Triggers>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Text}" Value="">
-                            <Setter TargetName="HintBorder" Property="Visibility" Value="Visible" />
-                        </DataTrigger>
-                        <Trigger Property="IsMouseOver" Value="True" />
-                        <Trigger Property="IsFocused" Value="True" />
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="PART_Root" Property="Opacity" Value="0.6" />
+                        <Trigger Property="IconTemplate" Value="{x:Null}">
+                            <Setter TargetName="IconBorder" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter TargetName="TbHint" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="TbHint" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="IsFocused" Value="True">
-                            <Setter Property="BorderBrush" Value="#E8EC599D" />
+                            <Setter TargetName="MainBorder" Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FocusBorderBrush}" />
                         </Trigger>
-                        <Trigger Property="IsReadOnly" Value="True">
-                            <Setter TargetName="PART_AttachContent" Property="IsEnabled" Value="False" />
-                            <Setter TargetName="Bg" Property="Opacity" Value="0.8" />
-                            <Setter TargetName="PART_ContentHost" Property="Opacity" Value="0.8" />
-                            <Setter TargetName="Label" Property="Opacity" Value="0.8" />
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="MainBorder" Property="Background" Value="#E8E8E8" />
+                            <Setter Property="TextBlock.Foreground" Value="#848484" />
+                            <Setter Property="Opacity" Value="0.9" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
