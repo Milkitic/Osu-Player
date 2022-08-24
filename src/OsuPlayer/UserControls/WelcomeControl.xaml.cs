@@ -69,7 +69,7 @@ public class WelcomeControlVm : VmBase
                     softwareState.ShowWelcome = false;
                     await dbContext.UpdateAndSaveChangesAsync(softwareState, k => k.ShowWelcome);
 
-                    FrontDialogOverlay.Default.RaiseOk();
+                    App.Current.MainWindow.ContentDialog.RaiseOk();
                 }
 
             });
@@ -82,7 +82,7 @@ public class WelcomeControlVm : VmBase
         {
             return new DelegateCommand(async arg =>
             {
-                FrontDialogOverlay.Default.RaiseCancel();
+                App.Current.MainWindow.ContentDialog.RaiseCancel();
 
                 await using var dbContext = ServiceProviders.GetApplicationDbContext();
                 var softwareState = await dbContext.GetSoftwareState();

@@ -2,7 +2,6 @@
 using System.Windows.Controls;
 using Microsoft.Win32;
 using Milki.OsuPlayer.Data.Models;
-using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.ViewModels;
 
 namespace Milki.OsuPlayer.UserControls;
@@ -33,7 +32,7 @@ public partial class EditCollectionControl : UserControl
 
         var appDbContext = ServiceProviders.GetApplicationDbContext();
         await appDbContext.AddOrUpdatePlayListAsync(_collection);
-        FrontDialogOverlay.Default.RaiseOk();
+        App.Current.MainWindow.ContentDialog.RaiseOk();
     }
 
     private void BtnChooseImg_Click(object sender, RoutedEventArgs e)

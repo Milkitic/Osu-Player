@@ -112,8 +112,8 @@
             Grid.Column="0"
             Background="{StaticResource WhiteBrush80}"
             Visibility="Hidden" />
-        <frontDialogComponent:FrontDialogOverlay
-            x:Name="FrontDialogOverlay"
+        <frontDialogComponent:ContentDialog
+            x:Name="ContentDialog"
             Grid.Row="0"
             Grid.RowSpan="2"
             d:IsHidden="True" />

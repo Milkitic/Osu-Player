@@ -97,7 +97,7 @@ public partial class CardControl : UserControl
         {
             await _playerService.InitializeNewAsync(selected.StandardizedPath, true);
         });
-        FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
+       App.Current.MainWindow.ContentDialog.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
     }
 
     private void MiSearchTitle_OnClick(object sender, RoutedEventArgs e)

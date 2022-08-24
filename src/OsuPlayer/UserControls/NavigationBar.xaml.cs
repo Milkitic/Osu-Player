@@ -29,7 +29,7 @@ public partial class NavigationBar : UserControl
     private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
     {
         var addCollectionControl = new AddCollectionControl();
-        _mainWindow.FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, async (obj, args) =>
+        _mainWindow.ContentDialog.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, async (obj, args) =>
         {
             await using var applicationDbContext = ServiceProviders.GetApplicationDbContext();
             await applicationDbContext.AddPlayListAsync(addCollectionControl.CollectionName.Text); //todo: exists

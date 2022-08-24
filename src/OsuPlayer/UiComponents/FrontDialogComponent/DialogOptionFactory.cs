@@ -1,10 +1,11 @@
 ﻿using Milki.OsuPlayer.Utils;
+using static Milki.OsuPlayer.UiComponents.FrontDialogComponent.ContentDialog;
 
 namespace Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 
 internal static class DialogOptionFactory
 {
-    public static FrontDialogOverlay.ShowContentOptions DiffSelectOptions => new()
+    public static DialogOptions DiffSelectOptions => new()
     {
         Title = I18NUtil.GetString("ui-win-selectDifficulty"),
         ShowDialogButtons = false,
@@ -12,7 +13,7 @@ internal static class DialogOptionFactory
         Height = 300
     };
 
-    public static FrontDialogOverlay.ShowContentOptions SelectCollectionOptions => new()
+    public static DialogOptions SelectCollectionOptions => new()
     {
         Title = I18NUtil.GetString("ui-win-selectCollection"),
         ShowDialogButtons = false,
@@ -20,14 +21,14 @@ internal static class DialogOptionFactory
         Height = 400
     };
 
-    public static FrontDialogOverlay.ShowContentOptions AddCollectionOptions => new()
+    public static DialogOptions AddCollectionOptions => new()
     {
         Title = I18NUtil.GetString("ui-win-newCollection"),
         ShowDialogButtons = true,
         Width = 290,
         Height = 155
     };
-    public static FrontDialogOverlay.ShowContentOptions EditCollectionOptions => new()
+    public static DialogOptions EditCollectionOptions => new()
     {
         Title = I18NUtil.GetString("ui-win-editCollection"),
         ShowDialogButtons = false,
@@ -35,7 +36,7 @@ internal static class DialogOptionFactory
         Height = 285
     };
 
-    public static FrontDialogOverlay.ShowContentOptions ClosingOptions => new()
+    public static DialogOptions ClosingOptions => new()
     {
         Width = 280,
         Height = 180,

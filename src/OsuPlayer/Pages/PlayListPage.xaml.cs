@@ -128,7 +128,7 @@ public partial class PlayListPage : Page
 
     private void BtnEdit_Click(object sender, RoutedEventArgs e)
     {
-        FrontDialogOverlay.Default.ShowContent(new EditCollectionControl(_viewModel.PlayList),
+        App.Current.MainWindow.ContentDialog.ShowContent(new EditCollectionControl(_viewModel.PlayList),
             DialogOptionFactory.EditCollectionOptions, (_, _) =>
             {
                 var playList = _viewModel.PlayList;

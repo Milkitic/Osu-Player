@@ -120,7 +120,7 @@ public class CurrentPlayControlVm : VmBase
         {
             return new DelegateCommand(param =>
             {
-                FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(SelectedMap),
+                App.Current.MainWindow.ContentDialog.ShowContent(new SelectCollectionControl(SelectedMap),
                     DialogOptionFactory.SelectCollectionOptions);
                 //var mw = WindowEx.GetCurrentFirst<MainWindow>();
                 //mw.FramePop.Navigate(new SelectCollectionPage(SelectedMap));

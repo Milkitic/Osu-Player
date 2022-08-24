@@ -1,0 +1,254 @@
+﻿<UserControl
+    x:Class="Milki.OsuPlayer.UiComponents.FrontDialogComponent.ContentDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:uiComponents="clr-namespace:Milki.OsuPlayer.UiComponents"
+    xmlns:wpf="clr-namespace:Milki.OsuPlayer.Wpf;assembly=OsuPlayer.Wpf"
+    x:Name="self"
+    d:DesignHeight="768"
+    d:DesignWidth="1366"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <CircleEase x:Key="CircIn" EasingMode="EaseIn" />
+        <SineEase x:Key="SineIn" EasingMode="EaseIn" />
+        <SineEase x:Key="SineOut" EasingMode="EaseOut" />
+        <PowerEase
+            x:Key="PowerOut"
+            EasingMode="EaseOut"
+            Power="8" />
+
+        <system:TimeSpan x:Key="DialogInDelay">00:00:00.150</system:TimeSpan>
+        <Duration x:Key="DialogIn">00:00:00.400</Duration>
+        <system:TimeSpan x:Key="DialogOutDelay">00:00:00.130</system:TimeSpan>
+        <Duration x:Key="DialogOut">00:00:00.260</Duration>
+
+        <Storyboard x:Key="ShowContentSb">
+            <BooleanAnimationUsingKeyFrames Storyboard.Target="{Binding ElementName=DialogBack}" Storyboard.TargetProperty="IsHitTestVisible">
+                <DiscreteBooleanKeyFrame KeyTime="00:00:00.000" Value="True" />
+            </BooleanAnimationUsingKeyFrames>
+            <BooleanAnimationUsingKeyFrames Storyboard.Target="{Binding ElementName=Dialog}" Storyboard.TargetProperty="IsHitTestVisible">
+                <DiscreteBooleanKeyFrame KeyTime="00:00:00.500" Value="True" />
+            </BooleanAnimationUsingKeyFrames>
+            <DoubleAnimation
+                x:Name="BackgroundFadeIn"
+                EasingFunction="{StaticResource SineOut}"
+                Storyboard.Target="{Binding ElementName=DialogBack}"
+                Storyboard.TargetProperty="Opacity"
+                From="0"
+                To="1"
+                Duration="{StaticResource DialogIn}" />
+            <DoubleAnimation
+                x:Name="DialogScaleXIn"
+                BeginTime="{StaticResource DialogInDelay}"
+                EasingFunction="{StaticResource PowerOut}"
+                Storyboard.Target="{Binding ElementName=Dialog}"
+                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                From="1.1"
+                To="1"
+                Duration="{StaticResource DialogIn}" />
+            <DoubleAnimation
+                x:Name="DialogScaleYIn"
+                BeginTime="{StaticResource DialogInDelay}"
+                EasingFunction="{StaticResource PowerOut}"
+                Storyboard.Target="{Binding ElementName=Dialog}"
+                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                From="1.1"
+                To="1"
+                Duration="{StaticResource DialogIn}" />
+            <DoubleAnimation
+                x:Name="DialogOpacityIn"
+                BeginTime="{StaticResource DialogInDelay}"
+                EasingFunction="{StaticResource PowerOut}"
+                Storyboard.Target="{Binding ElementName=Dialog}"
+                Storyboard.TargetProperty="Opacity"
+                From="0"
+                To="1"
+                Duration="{StaticResource DialogIn}" />
+        </Storyboard>
+        <Storyboard x:Key="ClearContentSb">
+            <BooleanAnimationUsingKeyFrames Storyboard.Target="{Binding ElementName=DialogBack}" Storyboard.TargetProperty="IsHitTestVisible">
+                <DiscreteBooleanKeyFrame KeyTime="00:00:00.260" Value="False" />
+            </BooleanAnimationUsingKeyFrames>
+            <BooleanAnimationUsingKeyFrames Storyboard.Target="{Binding ElementName=Dialog}" Storyboard.TargetProperty="IsHitTestVisible">
+                <DiscreteBooleanKeyFrame KeyTime="00:00:00.000" Value="False" />
+            </BooleanAnimationUsingKeyFrames>
+            <DoubleAnimation
+                x:Name="BackgroundFadeOut"
+                BeginTime="{StaticResource DialogOutDelay}"
+                EasingFunction="{StaticResource SineIn}"
+                Storyboard.Target="{Binding ElementName=DialogBack}"
+                Storyboard.TargetProperty="Opacity"
+                From="1"
+                To="0"
+                Duration="{StaticResource DialogOut}" />
+            <DoubleAnimation
+                x:Name="DialogScaleXOut"
+                EasingFunction="{StaticResource CircIn}"
+                Storyboard.Target="{Binding ElementName=Dialog}"
+                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                From="1"
+                To="1.1"
+                Duration="{StaticResource DialogOut}" />
+            <DoubleAnimation
+                x:Name="DialogScaleYOut"
+                EasingFunction="{StaticResource CircIn}"
+                Storyboard.Target="{Binding ElementName=Dialog}"
+                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                From="1"
+                To="1.1"
+                Duration="{StaticResource DialogOut}" />
+            <DoubleAnimation
+                x:Name="DialogOpacityOut"
+                EasingFunction="{StaticResource CircIn}"
+                Storyboard.Target="{Binding ElementName=Dialog}"
+                Storyboard.TargetProperty="Opacity"
+                From="1"
+                To="0"
+                Duration="{StaticResource DialogOut}" />
+        </Storyboard>
+        <Style x:Key="BodyStyle" TargetType="ContentPresenter">
+            <Setter Property="Margin" Value="{Binding ElementName=self, Path=DialogPadding}" />
+            <Style.Triggers>
+                <DataTrigger
+                    wpf:TriggerTracing.TraceEnabled="True"
+                    wpf:TriggerTracing.TriggerName="wow"
+                    Binding="{Binding ElementName=self, Path=IsDialogOpened}"
+                    Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource ShowContentSb}" />
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard Storyboard="{StaticResource ClearContentSb}" />
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <ControlTemplate x:Key="CloseTempl">
+            <Canvas Width="1024" Height="1024">
+                <Path Fill="{TemplateBinding Foreground}">
+                    <Path.Data>
+                        <PathGeometry Figures="M886.592 841.344L557.248 512l329.36-329.36a32 32 0 1 0-45.264-45.232L512 466.752 182.656 137.408a32 32 0 1 0-45.264 45.232L466.752 512 137.408 841.344a32 32 0 1 0 45.232 45.264L512 557.248l329.36 329.36a32 32 0 1 0 45.232-45.264z" FillRule="NonZero" />
+                    </Path.Data>
+                </Path>
+            </Canvas>
+        </ControlTemplate>
+        <Style
+            x:Key="SettingsButton"
+            BasedOn="{StaticResource {x:Type buttonComponent:CommonButton}}"
+            TargetType="{x:Type buttonComponent:CommonButton}">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="#DADADB" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Height" Value="28" />
+            <!--<Setter Property="Cursor" Value="Hand" />-->
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="IconSize" Value="15" />
+            <Setter Property="Background" Value="#FAFAFB" />
+            <Setter Property="MouseOverBackground" Value="#F0F0F0" />
+            <Setter Property="IconMargin" Value="0,0,5,0" />
+        </Style>
+    </UserControl.Resources>
+    <Grid x:Name="DialogContainer" SizeChanged="DialogContainer_OnSizeChanged">
+        <Canvas
+            x:Name="DialogBack"
+            Background="{Binding ElementName=self, Path=OverlayBackground}"
+            IsHitTestVisible="False"
+            Opacity="0">
+            <uiComponents:DropShadowPanel
+                x:Name="Dialog"
+                Canvas.Left="0"
+                Canvas.Top="0"
+                Width="{Binding ElementName=self, Path=DialogWidth}"
+                Height="{Binding ElementName=self, Path=DialogHeight}"
+                BlurRadius="15"
+                Direction="-60"
+                IsHitTestVisible="False"
+                Opacity="0"
+                RenderTransformOrigin="0.5,0.5"
+                ShadowDepth="4"
+                ShadowMode="Outer"
+                ShadowOpacity="0.2"
+                SnapsToDevicePixels="True"
+                UseLayoutRounding="True"
+                Visibility="{Binding ElementName=self, Path=DialogVisibility}">
+                <uiComponents:DropShadowPanel.RenderTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </uiComponents:DropShadowPanel.RenderTransform>
+                <Border
+                    Background="{Binding ElementName=self, Path=DialogBackground}"
+                    BorderBrush="{Binding ElementName=self, Path=DialogBorderBrush}"
+                    BorderThickness="{Binding ElementName=self, Path=DialogBorderThickness}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <DockPanel
+                            x:Name="Header"
+                            Height="34"
+                            Background="{Binding ElementName=self, Path=DialogHeaderBackground}"
+                            MouseLeftButtonDown="DockPanel_MouseLeftButtonDown"
+                            MouseLeftButtonUp="DockPanel_MouseLeftButtonUp"
+                            MouseMove="DockPanel_MouseMove"
+                            WindowChrome.IsHitTestVisibleInChrome="True">
+                            <Label
+                                Margin="10,0,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Content="{Binding ElementName=self, Path=Title}"
+                                Foreground="{Binding ElementName=self, Path=DialogHeaderForeground}"
+                                TextBlock.FontSize="{Binding ElementName=self, Path=UiFontSize}" />
+                            <buttonComponent:CommonButton
+                                Width="34"
+                                Height="34"
+                                Margin="0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Click="Cancel_Click"
+                                Foreground="{Binding ElementName=self, Path=DialogHeaderForeground}"
+                                IconMargin="0"
+                                IconSize="13"
+                                IconTemplate="{StaticResource CloseTempl}"
+                                MouseDownBackground="#A0FE3242"
+                                MouseDownForeground="White"
+                                MouseOverBackground="#FE3242"
+                                MouseOverForeground="White"
+                                Style="{StaticResource SettingsButton}" />
+                        </DockPanel>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <ContentPresenter Content="{Binding ElementName=self, Path=DialogContent}" Style="{StaticResource BodyStyle}" />
+                        </ScrollViewer>
+                        <Border
+                            x:Name="Fotter"
+                            Grid.Row="2"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Background="{Binding ElementName=self, Path=FooterBackground}">
+                            <StackPanel
+                                Margin="10,0,10,10"
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal">
+                                <buttonComponent:CommonButton
+                                    x:Name="BtnOk"
+                                    Margin="0"
+                                    Background="#F4F4F4"
+                                    Click="OK_Click"
+                                    Content="确定"
+                                    Style="{Binding ElementName=self, Path=CommonButtonStyle}"
+                                    TextBlock.FontSize="{Binding ElementName=self, Path=UiFontSize}" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </uiComponents:DropShadowPanel>
+        </Canvas>
+    </Grid>
+</UserControl>

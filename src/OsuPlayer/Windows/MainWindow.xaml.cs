@@ -73,7 +73,7 @@ public partial class MainWindow : WindowBase
         if (promptType == null)
         {
             var closingControl = new ClosingControl();
-            FrontDialogOverlay.ShowContent(closingControl, DialogOptionFactory.ClosingOptions, (obj, arg) =>
+            ContentDialog.ShowContent(closingControl, DialogOptionFactory.ClosingOptions, (obj, arg) =>
             {
                 if (closingControl.AsDefault.IsChecked == true)
                 {
@@ -179,7 +179,7 @@ public partial class MainWindow : WindowBase
         NotificationOverlay.ItemsSource = Notification.NotificationList;
         if (softwareState.ShowWelcome)
         {
-            FrontDialogOverlay.ShowContent(new WelcomeControl(), new FrontDialogOverlay.ShowContentOptions
+            ContentDialog.ShowContent(new WelcomeControl(), new ContentDialog.DialogOptions
             {
                 Height = 400,
                 Width = 350,
@@ -325,7 +325,7 @@ public partial class MainWindow : WindowBase
     {
         if (_playerService.LastLoadContext is { PlayItem: { } playItem })
         {
-            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(playItem),
+            ContentDialog.ShowContent(new SelectCollectionControl(playItem),
                 DialogOptionFactory.SelectCollectionOptions);
         }
     }

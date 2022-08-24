@@ -26,7 +26,9 @@ public class DiffSelectPageViewModel : VmBase
         var callbackObj = new CallbackObj();
         Callback?.Invoke(selectedMap, callbackObj);
         if (!callbackObj.Handled)
-            FrontDialogOverlay.Default.RaiseCancel();
+        {
+            App.Current.MainWindow.ContentDialog.RaiseCancel();
+        }
     });
 }
 

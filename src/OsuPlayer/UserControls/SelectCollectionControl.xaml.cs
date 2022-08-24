@@ -22,7 +22,7 @@ namespace Milki.OsuPlayer.UserControls;
 public partial class SelectCollectionControl : UserControl
 {
     private readonly SelectCollectionPageViewModel _viewModel;
-    private readonly FrontDialogOverlay _overlay;
+    private readonly ContentDialog _overlay;
 
     public SelectCollectionControl(PlayItem playItem) : this(new[] { playItem })
     {
@@ -33,7 +33,7 @@ public partial class SelectCollectionControl : UserControl
         DataContext = _viewModel = new SelectCollectionPageViewModel();
         _viewModel.PlayItems = playItems;
         InitializeComponent();
-        _overlay = FrontDialogOverlay.Default.GetOrCreateSubOverlay();
+        _overlay = App.Current.MainWindow.ContentDialog.GetOrCreateSubOverlay();
     }
 
     private async void SelectCollectionControl_OnInitialized(object? sender, EventArgs e)
@@ -56,7 +56,7 @@ public partial class SelectCollectionControl : UserControl
 
     private void BtnClose_Click(object sender, RoutedEventArgs e)
     {
-        FrontDialogOverlay.Default.RaiseOk();
+        App.Current.MainWindow.ContentDialog.RaiseOk();
     }
 
     private async Task RefreshList()
