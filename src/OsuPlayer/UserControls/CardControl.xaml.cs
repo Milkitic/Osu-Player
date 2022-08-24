@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using Coosu.Beatmap.Sections.GamePlay;
@@ -20,17 +19,25 @@ namespace Milki.OsuPlayer.UserControls;
 public partial class CardControl : UserControl
 {
     public static readonly DependencyProperty ThumbPathProperty = DependencyProperty.Register(
-        nameof(ThumbPath), typeof(string), typeof(CardControl), new PropertyMetadata("pack://application:,,,/OsuPlayer;component/Resources/official/registration.jpg"));
+        nameof(ThumbPath), typeof(string), typeof(CardControl),
+        new PropertyMetadata("pack://application:,,,/OsuPlayer;component/Resources/official/registration.jpg"));
+
     public static readonly DependencyProperty ArtistProperty = DependencyProperty.Register(
         nameof(Artist), typeof(string), typeof(CardControl), new PropertyMetadata("artist"));
+
     public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(
         nameof(Title), typeof(string), typeof(CardControl), new PropertyMetadata("title"));
+
     public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(
         nameof(Source), typeof(string), typeof(CardControl), new PropertyMetadata(default(string)));
+
     public static readonly DependencyProperty CreatorProperty = DependencyProperty.Register(
         nameof(Creator), typeof(string), typeof(CardControl), new PropertyMetadata("cretor"));
+
     public static readonly DependencyProperty GroupPlayItemsProperty = DependencyProperty.Register(
-        nameof(GroupPlayItems), typeof(Dictionary<GameMode, PlayItem[]>), typeof(CardControl), new PropertyMetadata(default(Dictionary<GameMode, PlayItem[]>)));
+        nameof(GroupPlayItems), typeof(Dictionary<GameMode, PlayItem[]>), typeof(CardControl),
+        new PropertyMetadata(default(Dictionary<GameMode, PlayItem[]>)));
+
     public static readonly DependencyProperty PlayItemProperty = DependencyProperty.Register(
         nameof(PlayItem), typeof(PlayItem), typeof(CardControl), new PropertyMetadata(default(PlayItem)));
 
@@ -97,7 +104,7 @@ public partial class CardControl : UserControl
         {
             await _playerService.InitializeNewAsync(selected.StandardizedPath, true);
         });
-       App.CurrentMainContentDialog.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
+        App.CurrentMainContentDialog.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
     }
 
     private void MiSearchTitle_OnClick(object sender, RoutedEventArgs e)
@@ -134,21 +141,45 @@ public partial class CardControl : UserControl
             return;
         }
 
-        Process.Start(new ProcessStartInfo(folder)
-        {
-            UseShellExecute = true
-        });
+        ProcessUtils.StartWithShellExecute(folder);
     }
 
     private void MiOpenScorePage_OnClick(object sender, RoutedEventArgs e)
     {
+        if (PlayItem == null) return;
+        ProcessUtils.StartWithShellExecute($"https://osu.ppy.sh/b/{PlayItem.PlayItemDetail.BeatmapId}");
     }
 
-    private void MiPlayList_OnClick(object sender, RoutedEventArgs e)
+    private async void MiPlayList_OnClick(object sender, RoutedEventArgs e)
     {
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        if (GroupPlayItems != null)
+        {
+            var playItems = GroupPlayItems.SelectMany(k => k.Value);
+
+            var control = new DiffSelectControl(
+                playItems, (selected, arg) =>
+                {
+                    arg.Handled = true;
+                    App.CurrentMainContentDialog.ShowContent(
+                        new SelectCollectionControl(selected),
+                        DialogOptionFactory.SelectCollectionOptions
+                    );
+                });
+            App.CurrentMainContentDialog.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
+        }
+        else
+        {
+            App.CurrentMainContentDialog.ShowContent(
+                new SelectCollectionControl(PlayItem),
+                DialogOptionFactory.SelectCollectionOptions
+            );
+        }
     }
 
     private void MiExport_OnClick(object sender, RoutedEventArgs e)
     {
+        if (PlayItem == null) return;
+        ExportPage.QueueBeatmap(PlayItem);
     }
 }

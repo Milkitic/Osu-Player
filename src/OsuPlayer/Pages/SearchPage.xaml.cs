@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Controls;
 using Anotar.NLog;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,12 +7,25 @@ using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Models;
+using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.UiComponents.PanelComponent;
 using Milki.OsuPlayer.Utils;
-using Milki.OsuPlayer.ViewModels;
 using Milki.OsuPlayer.Wpf;
 
 namespace Milki.OsuPlayer.Pages;
+
+public class SearchPageVm : VmBase
+{
+    private string _searchText;
+
+    public string SearchText
+    {
+        get => _searchText;
+        set => this.RaiseAndSetIfChanged(ref _searchText, value);
+    }
+
+    public ObservableCollection<PlayGroupQuery> PlayItems { get; } = new();
+}
 
 /// <summary>
 /// SearchPage.xaml 的交互逻辑
@@ -20,16 +34,17 @@ public partial class SearchPage : Page
 {
     private readonly PlayerService _playerService;
     private readonly PlayListService _playListService;
-    private readonly SearchPageViewModel _viewModel;
+    private readonly SearchPageVm _viewModel;
     private readonly InputDelayQueryHelper _inputDelayQueryHelper;
+    private BeatmapOrderOptions _sortMode = BeatmapOrderOptions.Artist;
 
     public SearchPage()
     {
-        DataContext = _viewModel = new SearchPageViewModel();
+        DataContext = _viewModel = new SearchPageVm();
         _playerService = App.Current.ServiceProvider.GetService<PlayerService>();
         _playListService = App.Current.ServiceProvider.GetService<PlayListService>();
 
-        _inputDelayQueryHelper = new InputDelayQueryHelper() { QueryAsync = PlayListQueryAsync };
+        _inputDelayQueryHelper = new InputDelayQueryHelper { QueryAsync = PlayListQueryAsync };
         InitializeComponent();
     }
 
@@ -41,11 +56,10 @@ public partial class SearchPage : Page
 
     private async ValueTask PlayListQueryAsync(int page = 0)
     {
-        var sortMode = BeatmapOrderOptions.Artist;
         await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var paginationQueryResult = await dbContext
             .SearchPlayItemsAsync(_viewModel.SearchText ?? "",
-                sortMode,
+                _sortMode,
                 page: page,
                 countPerPage: Pagination.ItemsCount
             );
@@ -79,23 +93,35 @@ public partial class SearchPage : Page
         await _playerService.InitializeNewAsync(defaultItem.StandardizedPath, true);
     }
 
-    private void BtnPlayAll_Click(object sender, RoutedEventArgs e)
+    private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
     {
-        //List<Beatmap> beatmaps = _viewModel.PlayItems.Select(k => k.Model).ToList();
-        //if (beatmaps.Count <= 0) return;
-        //var group = beatmaps.GroupBy(k => k.FolderNameOrPath);
-        //List<Beatmap> newBeatmaps = group
-        //    .Select(sb => sb.GetHighestDiff())
-        //    .ToList();
-
-        ////if (map == null) return;
-        ////await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
-        ////     map.BeatmapFileName));
-        //await _playerService.PlayList.SetSongListAsync(newBeatmaps, true);
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var paginationQueryResult = await dbContext
+            .SearchPlayItemsAsync(_viewModel.SearchText ?? "",
+                _sortMode,
+                page: 0,
+                countPerPage: int.MaxValue
+            );
+        var allPlayItems = paginationQueryResult.Results.Select(k => k.DefaultPlayItem).ToArray();
+        if (allPlayItems.Length == 0) return;
+        await dbContext.RecreateCurrentPlayAsync(allPlayItems);
+        _playListService.SetPathList(allPlayItems.Select(k => k.StandardizedPath), false);
+        await _playerService.InitializeNewAsync(allPlayItems.First().StandardizedPath, true);
     }
 
-    private void BtnQueueAll_Click(object sender, RoutedEventArgs e)
+    private async void BtnQueueAll_Click(object sender, RoutedEventArgs e)
     {
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var paginationQueryResult = await dbContext
+            .SearchPlayItemsAsync(_viewModel.SearchText ?? "",
+                _sortMode,
+                page: 0,
+                countPerPage: int.MaxValue
+            );
+        var allPlayItems = paginationQueryResult.Results.Select(k => k.DefaultPlayItem).ToArray();
+        if (allPlayItems.Length == 0) return;
+        await dbContext.RecreateCurrentPlayAsync(allPlayItems);
+        _playListService.SetPathList(allPlayItems.Select(k => k.StandardizedPath), false);
     }
 
     private async void Pagination_OnPageSelected(int page)

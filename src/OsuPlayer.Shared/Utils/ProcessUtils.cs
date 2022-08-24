@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Milki.OsuPlayer.Shared.Utils;
 
@@ -16,4 +17,9 @@ public static class ProcessUtils
 
     [DllImport("user32.dll")]
     public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
+
+    public static void StartWithShellExecute(string fileName)
+    {
+        Process.Start(new ProcessStartInfo(fileName) { UseShellExecute = true });
+    }
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared;
+using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Windows;
 
@@ -32,18 +33,12 @@ public partial class AboutPage : Page
 
     private void LinkGithub_Click(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo("https://github.com/Milkitic/Osu-Player")
-        {
-            UseShellExecute = true
-        });
+        ProcessUtils.StartWithShellExecute("https://github.com/Milkitic/Osu-Player");
     }
 
     private void LinkFeedback_Click(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo("https://github.com/Milkitic/Osu-Player/discussions")
-        {
-            UseShellExecute = true
-        });
+        ProcessUtils.StartWithShellExecute("https://github.com/Milkitic/Osu-Player/discussions");
     }
 
     private async void Page_Loaded(object sender, RoutedEventArgs e)
