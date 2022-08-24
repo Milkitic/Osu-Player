@@ -5,6 +5,7 @@ namespace Milki.OsuPlayer.UiComponents.ButtonComponent;
 public class MaxButton : SystemButton
 {
     private bool _isSigned;
+
     public MaxButton()
     {
         this.Click += OnClick;
@@ -49,6 +50,5 @@ public class MaxButton : SystemButton
     }
 
     public static readonly DependencyProperty IsWindowMaxProperty =
-        DependencyProperty.Register("IsWindowMax", typeof(bool), typeof(SystemButton), new PropertyMetadata(false));
-
+        DependencyProperty.Register(nameof(IsWindowMax), typeof(bool), typeof(SystemButton), new PropertyMetadata(false));
 }

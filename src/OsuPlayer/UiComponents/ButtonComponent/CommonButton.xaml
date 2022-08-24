@@ -12,6 +12,7 @@
             </Path>
         </Canvas>
     </ControlTemplate>
+
     <ControlTemplate x:Key="MinimizeTempl">
         <Canvas Width="1024" Height="1024">
             <Path Fill="{TemplateBinding Foreground}">
@@ -21,6 +22,7 @@
             </Path>
         </Canvas>
     </ControlTemplate>
+
     <ControlTemplate x:Key="MaximizeTempl">
         <Canvas Width="1024" Height="1024">
             <Path Fill="{TemplateBinding Foreground}">
@@ -30,6 +32,7 @@
             </Path>
         </Canvas>
     </ControlTemplate>
+
     <ControlTemplate x:Key="RecoverTempl">
         <Canvas Width="1024" Height="1024">
             <Path Fill="{TemplateBinding Foreground}">
@@ -44,132 +47,6 @@
             </Path>
         </Canvas>
     </ControlTemplate>
-    <Style TargetType="{x:Type local:SystemButton}">
-        <Setter Property="Width" Value="35" />
-        <Setter Property="Height" Value="30" />
-        <Setter Property="Foreground" Value="White" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:SystemButton}">
-                    <Border x:Name="MainBorder">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Viewbox
-                                x:Name="IconViewBox"
-                                Width="{TemplateBinding IconSize}"
-                                Height="{TemplateBinding IconSize}"
-                                Margin="{TemplateBinding IconMargin}"
-                                SnapsToDevicePixels="True"
-                                UseLayoutRounding="True">
-                                <ContentControl
-                                    x:Name="IconContent"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Template="{TemplateBinding IconTemplate}" />
-                            </Viewbox>
-                            <ContentPresenter
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Content="{TemplateBinding Content}" />
-                        </StackPanel>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=IconContent, Path=Template}" Value="{x:Null}">
-                            <Setter TargetName="IconViewBox" Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <Trigger Property="IsMouseOver" Value="False">
-                            <Setter TargetName="MainBorder" Property="Background" Value="Transparent" />
-                        </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsPressed" Value="False" />
-                                <Condition Property="IsMouseOver" Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="MainBorder" Property="Background" Value="{Binding MouseOverBackground, RelativeSource={RelativeSource TemplatedParent}}" />
-                        </MultiTrigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="MainBorder" Property="Background" Value="{Binding MouseDownBackground, RelativeSource={RelativeSource TemplatedParent}}" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="MainBorder" Property="Opacity" Value="0.5" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style BasedOn="{StaticResource {x:Type local:SystemButton}}" TargetType="{x:Type local:MaxButton}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:MaxButton}">
-                    <Border x:Name="MainBorder" Tag="{Binding IsWindowMax, RelativeSource={RelativeSource TemplatedParent}}">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Viewbox
-                                x:Name="IconViewBox"
-                                Width="{TemplateBinding IconSize}"
-                                Height="{TemplateBinding IconSize}"
-                                Margin="{TemplateBinding IconMargin}"
-                                SnapsToDevicePixels="True"
-                                UseLayoutRounding="True">
-                                <ContentControl
-                                    x:Name="IconContent"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center" />
-                            </Viewbox>
-                            <ContentPresenter
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Content="{TemplateBinding Content}" />
-                        </StackPanel>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=IconContent, Path=Template}" Value="{x:Null}">
-                            <Setter TargetName="IconViewBox" Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ElementName=MainBorder, Path=Tag}" Value="True">
-                            <Setter TargetName="IconContent" Property="Template" Value="{DynamicResource RecoverTempl}" />
-                            <Setter TargetName="IconViewBox" Property="Margin" Value="0,0,0,3" />
-                            <Setter TargetName="IconViewBox" Property="Width" Value="23" />
-                            <Setter TargetName="IconViewBox" Property="Height" Value="23" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ElementName=MainBorder, Path=Tag}" Value="False">
-                            <Setter TargetName="IconContent" Property="Template" Value="{DynamicResource MaximizeTempl}" />
-                            <Setter TargetName="IconViewBox" Property="Margin" Value="0" />
-                            <Setter TargetName="IconViewBox" Property="Width" Value="20" />
-                            <Setter TargetName="IconViewBox" Property="Height" Value="20" />
-                        </DataTrigger>
-                        <Trigger Property="IsMouseOver" Value="False">
-                            <Setter TargetName="MainBorder" Property="Background" Value="Transparent" />
-                        </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsPressed" Value="False" />
-                                <Condition Property="IsMouseOver" Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="MainBorder" Property="Background" Value="{Binding MouseOverBackground, RelativeSource={RelativeSource TemplatedParent}}" />
-                        </MultiTrigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="MainBorder" Property="Background" Value="{Binding MouseDownBackground, RelativeSource={RelativeSource TemplatedParent}}" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="MainBorder" Property="Opacity" Value="0.5" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style BasedOn="{StaticResource {x:Type local:SystemButton}}" TargetType="{x:Type local:MinButton}">
-        <Setter Property="IconMargin" Value="0,8,0,0" />
-        <Setter Property="IconTemplate" Value="{DynamicResource MinimizeTempl}" />
-    </Style>
-
-    <Style BasedOn="{StaticResource {x:Type local:SystemButton}}" TargetType="{x:Type local:CloseButton}">
-        <Setter Property="IconSize" Value="16" />
-        <Setter Property="IconTemplate" Value="{DynamicResource CloseTempl}" />
-        <Setter Property="MouseOverBackground" Value="#F0F72F2F" />
-    </Style>
 
     <Style TargetType="{x:Type local:CommonButton}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -259,6 +136,101 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style BasedOn="{StaticResource {x:Type local:CommonButton}}" TargetType="{x:Type local:SystemButton}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="IconMargin" Value="0" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="MouseOverBackground" Value="#50727272" />
+        <Setter Property="MouseOverForeground" Value="White" />
+        <Setter Property="MouseDownBackground" Value="#72727272" />
+        <Setter Property="MouseDownForeground" Value="White" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Width" Value="35" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+
+    <Style BasedOn="{StaticResource {x:Type local:SystemButton}}" TargetType="{x:Type local:MaxButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:MaxButton}">
+                    <Border x:Name="MainBorder" Tag="{Binding IsWindowMax, RelativeSource={RelativeSource TemplatedParent}}">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Viewbox
+                                x:Name="IconViewBox"
+                                Width="{TemplateBinding IconSize}"
+                                Height="{TemplateBinding IconSize}"
+                                Margin="{TemplateBinding IconMargin}"
+                                SnapsToDevicePixels="True"
+                                UseLayoutRounding="True">
+                                <ContentControl
+                                    x:Name="IconContent"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" />
+                            </Viewbox>
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding Content}" />
+                        </StackPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=IconContent, Path=Template}" Value="{x:Null}">
+                            <Setter TargetName="IconViewBox" Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ElementName=MainBorder, Path=Tag}" Value="True">
+                            <Setter TargetName="IconContent" Property="Template" Value="{DynamicResource RecoverTempl}" />
+                            <Setter TargetName="IconViewBox" Property="Margin" Value="0,0,0,3" />
+                            <Setter TargetName="IconViewBox" Property="Width" Value="23" />
+                            <Setter TargetName="IconViewBox" Property="Height" Value="23" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ElementName=MainBorder, Path=Tag}" Value="False">
+                            <Setter TargetName="IconContent" Property="Template" Value="{DynamicResource MaximizeTempl}" />
+                            <Setter TargetName="IconViewBox" Property="Margin" Value="0" />
+                            <Setter TargetName="IconViewBox" Property="Width" Value="20" />
+                            <Setter TargetName="IconViewBox" Property="Height" Value="20" />
+                        </DataTrigger>
+                        <Trigger Property="IsMouseOver" Value="False">
+                            <Setter TargetName="MainBorder" Property="Background" Value="Transparent" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsPressed" Value="False" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="MainBorder" Property="Background" Value="{Binding MouseOverBackground, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </MultiTrigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="MainBorder" Property="Background" Value="{Binding MouseDownBackground, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="MainBorder" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style BasedOn="{StaticResource {x:Type local:SystemButton}}" TargetType="{x:Type local:MinButton}">
+        <Setter Property="IconMargin" Value="0,8,0,0" />
+        <Setter Property="IconTemplate" Value="{DynamicResource MinimizeTempl}" />
+    </Style>
+
+    <Style BasedOn="{StaticResource {x:Type local:SystemButton}}" TargetType="{x:Type local:CloseButton}">
+        <Setter Property="IconSize" Value="16" />
+        <Setter Property="IconTemplate" Value="{DynamicResource CloseTempl}" />
+        <Setter Property="MouseOverBackground" Value="#F0F72F2F" />
+    </Style>
+
     <Style
         x:Key="NavButton"
         BasedOn="{StaticResource {x:Type local:CommonButton}}"
