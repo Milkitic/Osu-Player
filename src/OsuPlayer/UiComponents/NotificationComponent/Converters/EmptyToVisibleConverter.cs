@@ -4,7 +4,7 @@ using System.Windows.Data;
 
 namespace Milki.OsuPlayer.UiComponents.NotificationComponent.Converters;
 
-internal class EmptyToVisibleConverter : IValueConverter
+public class EmptyToVisibleConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {

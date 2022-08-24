@@ -4,11 +4,11 @@ using System.Windows.Input;
 
 namespace Milki.OsuPlayer.UiComponents.NotificationComponent.Converters;
 
-internal class NotificationTypeToCursorConverter : IValueConverter
+public class NotificationTypeToCursorConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return value is NotificationOption.NotificationLevel actualType && actualType == NotificationOption.NotificationLevel.Alert
+        return value is NotificationType actualType && actualType == NotificationType.Alert
             ? Cursors.Hand
             : Cursors.Arrow;
     }

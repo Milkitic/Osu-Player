@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 namespace Milki.OsuPlayer.UiComponents.NotificationComponent.Converters;
 
-internal class MixColorConverter : IValueConverter
+public class MixColorConverter : IValueConverter
 {
     private static readonly Dictionary<Color, Brush> Brushes = new Dictionary<Color, Brush>();
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

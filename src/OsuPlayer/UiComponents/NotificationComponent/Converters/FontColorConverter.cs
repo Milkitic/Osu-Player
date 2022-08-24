@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 namespace Milki.OsuPlayer.UiComponents.NotificationComponent.Converters;
 
-internal class FontColorConverter : IValueConverter
+public class FontColorConverter : IValueConverter
 {
     private static readonly Dictionary<Color, Brush> Brushes = new Dictionary<Color, Brush>();
 

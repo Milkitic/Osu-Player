@@ -1,11 +1,10 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
-using Anotar.NLog;
 
 namespace Milki.OsuPlayer.UiComponents.NotificationComponent.Converters;
 
-internal class NotificationTypeConverter : IValueConverter
+public class NotificationTypeConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
@@ -25,16 +24,15 @@ internal class NotificationTypeConverter : IValueConverter
             }
 
             var values = s[0].Split(',')
-                .Select(k => (NotificationOption.NotificationLevel)Enum.Parse(typeof(NotificationOption.NotificationLevel), k))
+                .Select(k => (NotificationType)Enum.Parse(typeof(NotificationType), k))
                 .ToArray();
 
-            return value is NotificationOption.NotificationLevel actualType && values.Contains(actualType)
+            return value is NotificationType actualType && values.Contains(actualType)
                 ? Visibility.Visible
                 : hidStyle;
         }
-        catch (Exception ex)
+        catch
         {
-            LogTo.ErrorException("NotificationTypeConverter error", ex);
             return Visibility.Visible;
         }
     }

@@ -15,10 +15,7 @@ public partial class NotifyOverlay : UserControl
     public NotifyOverlay()
     {
         InitializeComponent();
-        Default = this;
     }
-
-    public static NotifyOverlay Default { get; set; }
 
     public ObservableCollection<NotificationOption> ItemsSource
     {
@@ -33,6 +30,11 @@ public partial class NotifyOverlay : UserControl
             _itemsSource = value;
             _itemsSource.CollectionChanged += Oc_CollectionChanged;
         }
+    }
+
+    public void Show(NotificationOption option)
+    {
+        _itemsSource?.Add(option);
     }
 
     private void Oc_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

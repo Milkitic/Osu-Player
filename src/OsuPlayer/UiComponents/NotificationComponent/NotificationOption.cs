@@ -6,17 +6,14 @@ namespace Milki.OsuPlayer.UiComponents.NotificationComponent;
 
 public class NotificationOption : INotifyPropertyChanged
 {
-    public enum NotificationLevel
-    {
-        Alert, Confirm, Prompt
-    }
     #region Notify property
 
     private ControlTemplate _iconTemplate;
     private string _title = "Title";
     private string _content = "This is your content here";
     private TimeSpan _fadeoutTime;
-    private NotificationLevel _level;
+    private NotificationType _notificationType;
+    private NotificationLevel _notificationLevel;
 
     public ControlTemplate IconTemplate
     {
@@ -58,12 +55,22 @@ public class NotificationOption : INotifyPropertyChanged
         }
     }
 
-    public NotificationLevel Level
+    public NotificationType NotificationType
     {
-        get => _level;
+        get => _notificationType;
         set
         {
-            _level = value;
+            _notificationType = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public NotificationLevel NotificationLevel
+    {
+        get => _notificationLevel;
+        set
+        {
+            _notificationLevel = value;
             OnPropertyChanged();
         }
     }
@@ -77,7 +84,7 @@ public class NotificationOption : INotifyPropertyChanged
 
     #endregion
 
-    public string NotificationTypeString => Level.ToString();
+    public string NotificationTypeString => NotificationType.ToString();
 
     public bool IsEmpty => string.IsNullOrEmpty(Title) && string.IsNullOrEmpty(Content) && IconTemplate == null;
 

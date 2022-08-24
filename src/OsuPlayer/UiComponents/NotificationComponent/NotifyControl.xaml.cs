@@ -1,7 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Anotar.NLog;
 
 namespace Milki.OsuPlayer.UiComponents.NotificationComponent;
 
@@ -30,12 +32,34 @@ public partial class NotifyControl : UserControl
             return;
         }
 
-        if (notificationOption.Level == NotificationOption.NotificationLevel.Alert &&
+        switch (notificationOption.NotificationLevel)
+        {
+            case NotificationLevel.Normal:
+                BoxFlag.Fill = Brushes.Transparent;
+                break;
+            case NotificationLevel.Warn:
+                BoxFlag.Fill = (Brush)FindResource("OrangeBrush");
+                break;
+            case NotificationLevel.Error:
+                BoxFlag.Fill = (Brush)FindResource("RedBrush");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        if (notificationOption.NotificationType == NotificationType.Alert &&
             notificationOption.FadeoutTime > TimeSpan.FromSeconds(1))
         {
             _timer = new Timer(obj =>
             {
-                Dispatcher.Invoke(TriggerHide);
+                try
+                {
+                    Dispatcher.Invoke(TriggerHide);
+                }
+                catch (Exception e)
+                {
+                    LogTo.Error("HideTrigger Error: " + e.Message);
+                }
                 _timer?.Dispose();
             }, null, (int)notificationOption.FadeoutTime.TotalMilliseconds, Timeout.Infinite);
         }
@@ -49,7 +73,7 @@ public partial class NotifyControl : UserControl
 
     private void NotifyControl_Click(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.Level != NotificationOption.NotificationLevel.Alert)
+        if (ViewModel.NotificationType != NotificationType.Alert)
         {
             return;
         }
@@ -73,7 +97,7 @@ public partial class NotifyControl : UserControl
             From = 0,
             To = height,
             EasingFunction = easing,
-            Duration = (timing)
+            Duration = new Duration(timing)
         };
 
         Storyboard.SetTargetName(vector, NotifyBorder.Name);
@@ -85,7 +109,7 @@ public partial class NotifyControl : UserControl
             From = 0,
             To = 0,
             EasingFunction = easing,
-            Duration = (timing)
+            Duration = new Duration(timing)
         };
         Storyboard.SetTargetName(fade, NotifyBorder.Name);
         Storyboard.SetTargetProperty(fade,
@@ -111,7 +135,7 @@ public partial class NotifyControl : UserControl
             From = 0,
             To = 1,
             EasingFunction = easing,
-            Duration = (timing)
+            Duration = new Duration(timing)
         };
         Storyboard.SetTargetName(fade, NotifyBorder.Name);
         Storyboard.SetTargetProperty(fade,
@@ -122,7 +146,7 @@ public partial class NotifyControl : UserControl
             From = new Thickness(width, 0, -width, 0),
             To = new Thickness(0),
             EasingFunction = easing,
-            Duration = (timing)
+            Duration = new Duration(timing)
         };
         Storyboard.SetTargetName(vector, NotifyBorder.Name);
         Storyboard.SetTargetProperty(vector,
@@ -150,7 +174,7 @@ public partial class NotifyControl : UserControl
             From = 1,
             To = 0,
             EasingFunction = easing,
-            Duration = (timing)
+            Duration = new Duration(timing)
         };
         Storyboard.SetTargetName(fade, NotifyBorder.Name);
         Storyboard.SetTargetProperty(fade,
@@ -161,7 +185,7 @@ public partial class NotifyControl : UserControl
             From = new Thickness(0),
             To = new Thickness(width, 0, -width, 0),
             EasingFunction = easing,
-            Duration = (timing)
+            Duration = new Duration(timing)
         };
         Storyboard.SetTargetName(vector, NotifyBorder.Name);
         Storyboard.SetTargetProperty(vector,
@@ -189,7 +213,7 @@ public partial class NotifyControl : UserControl
             From = height,
             To = 0,
             EasingFunction = easing,
-            Duration = (timing)
+            Duration = new Duration(timing)
         };
 
         Storyboard.SetTargetName(vector, NotifyBorder.Name);
@@ -200,7 +224,7 @@ public partial class NotifyControl : UserControl
             From = 0,
             To = 0,
             EasingFunction = easing,
-            Duration = (timing)
+            Duration = new Duration(timing)
         };
         Storyboard.SetTargetName(fade, NotifyBorder.Name);
         Storyboard.SetTargetProperty(fade,
