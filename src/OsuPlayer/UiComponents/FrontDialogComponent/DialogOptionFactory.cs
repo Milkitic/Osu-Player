@@ -2,14 +2,14 @@
 
 namespace Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 
-internal class DialogOptionFactory
+internal static class DialogOptionFactory
 {
     public static FrontDialogOverlay.ShowContentOptions DiffSelectOptions => new()
     {
         Title = I18NUtil.GetString("ui-win-selectDifficulty"),
         ShowDialogButtons = false,
         Width = 300,
-        Height = 200
+        Height = 300
     };
 
     public static FrontDialogOverlay.ShowContentOptions SelectCollectionOptions => new()

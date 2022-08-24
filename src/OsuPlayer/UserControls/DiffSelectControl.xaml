@@ -7,6 +7,7 @@
     xmlns:gamePlay="clr-namespace:Coosu.Beatmap.Sections.GamePlay;assembly=Coosu.Beatmap"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:Milki.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
+    xmlns:uiComponents="clr-namespace:Milki.OsuPlayer.UiComponents"
     xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
     d:DataContext="{d:DesignInstance Type=userControls:DiffSelectPageViewModel,
                                      IsDesignTimeCreatable=True}"
@@ -14,84 +15,86 @@
     d:DesignWidth="800"
     TextBlock.FontFamily="Segoe UI,微软雅黑"
     mc:Ignorable="d">
-    <ItemsControl Margin="-5" ItemsSource="{Binding PlayItems, Mode=OneWay}">
-        <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="{x:Type models:PlayItem}">
-                <buttonComponent:CommonButton
-                    x:Name="BtnCollection"
-                    Height="auto"
-                    Margin="0,0,0,2"
-                    Padding="5,3"
-                    HorizontalContentAlignment="Left"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.SelectCommand}"
-                    CommandParameter="{Binding Version}"
-                    Cursor="Hand"
-                    Foreground="#242424"
-                    MouseOverBackground="{StaticResource PinkBrushOsu}"
-                    MouseOverForeground="White">
-                    <Grid HorizontalAlignment="Left">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Image
-                            Width="15"
-                            Height="15"
-                            RenderOptions.BitmapScalingMode="LowQuality">
-                            <Image.Style>
-                                <Style TargetType="Image">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Circle}">
-                                            <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_circle.png" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Taiko}">
-                                            <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_taiko.png" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Catch}">
-                                            <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_fruit.png" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Mania}">
-                                            <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_mania.png" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Image.Style>
-                        </Image>
+    <uiComponents:AnimatedScrollViewer VerticalScrollBarVisibility="Auto">
+        <ItemsControl Margin="-5" ItemsSource="{Binding PlayItems, Mode=OneWay}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type models:PlayItem}">
+                    <buttonComponent:CommonButton
+                        x:Name="BtnCollection"
+                        Height="auto"
+                        Margin="0,0,0,2"
+                        Padding="5,3"
+                        HorizontalContentAlignment="Left"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.SelectCommand}"
+                        CommandParameter="{Binding Version}"
+                        Cursor="Hand"
+                        Foreground="#242424"
+                        MouseOverBackground="{StaticResource PinkBrushOsu}"
+                        MouseOverForeground="White">
+                        <Grid HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Image
+                                Width="15"
+                                Height="15"
+                                RenderOptions.BitmapScalingMode="LowQuality">
+                                <Image.Style>
+                                    <Style TargetType="Image">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Circle}">
+                                                <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_circle.png" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Taiko}">
+                                                <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_taiko.png" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Catch}">
+                                                <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_fruit.png" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Mania}">
+                                                <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_mania.png" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
 
-                        <Border
-                            Grid.Column="1"
-                            Height="18"
-                            Margin="5,0"
-                            Padding="5,0"
-                            CornerRadius="9">
-                            <Border.Background>
-                                <SolidColorBrush Color="{Binding PlayItemDetail.StarRating, Converter={StaticResource StarRating2ColorConverter}}" />
-                            </Border.Background>
+                            <Border
+                                Grid.Column="1"
+                                Height="18"
+                                Margin="5,0"
+                                Padding="5,0"
+                                CornerRadius="9">
+                                <Border.Background>
+                                    <SolidColorBrush Color="{Binding PlayItemDetail.StarRating, Converter={StaticResource StarRating2ColorConverter}}" />
+                                </Border.Background>
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="11"
+                                    FontWeight="Bold">
+                                    <TextBlock.Foreground>
+                                        <SolidColorBrush Color="{Binding PlayItemDetail.StarRating, Converter={StaticResource StarRating2ForeColorConverter}}" />
+                                    </TextBlock.Foreground>
+                                    <Run Text="★" />
+                                    <Run Text="{Binding PlayItemDetail.StarRating, Mode=OneWay, StringFormat=N2}" />
+                                </TextBlock>
+                            </Border>
+
                             <TextBlock
-                                VerticalAlignment="Center"
-                                FontSize="11"
-                                FontWeight="Bold">
-                                <TextBlock.Foreground>
-                                    <SolidColorBrush Color="{Binding PlayItemDetail.StarRating, Converter={StaticResource StarRating2ForeColorConverter}}" />
-                                </TextBlock.Foreground>
-                                <Run Text="★" />
-                                <Run Text="{Binding PlayItemDetail.StarRating, Mode=OneWay, StringFormat=N2}" />
-                            </TextBlock>
-                        </Border>
+                                Grid.Column="2"
+                                FontWeight="Bold"
+                                Foreground="{Binding ElementName=BtnCollection, Path=(TextBlock.Foreground)}"
+                                Text="{Binding PlayItemDetail.Version}"
+                                TextWrapping="Wrap" />
 
-                        <TextBlock
-                            Grid.Column="2"
-                            FontWeight="Bold"
-                            Foreground="{Binding ElementName=BtnCollection, Path=(TextBlock.Foreground)}"
-                            Text="{Binding PlayItemDetail.Version}"
-                            TextWrapping="Wrap" />
-
-                    </Grid>
-                </buttonComponent:CommonButton>
-            </DataTemplate>
-        </ItemsControl.ItemTemplate>
-    </ItemsControl>
+                        </Grid>
+                    </buttonComponent:CommonButton>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </uiComponents:AnimatedScrollViewer>
 </UserControl>
