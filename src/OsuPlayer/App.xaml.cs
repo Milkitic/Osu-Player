@@ -35,6 +35,7 @@ public partial class App : Application
 
     public new static App Current { get; private set; }
     public ServiceProvider ServiceProvider { get; private set; }
+    public new MainWindow MainWindow => (MainWindow)base.MainWindow;
 
     private async void Application_Startup(object sender, StartupEventArgs e)
     {
@@ -56,7 +57,7 @@ public partial class App : Application
         BuildServices();
         await InitializeServicesAsync();
 
-        MainWindow = ServiceProvider.GetService<MainWindow>();
+        base.MainWindow = ServiceProvider.GetService<MainWindow>();
         MainWindow?.Show();
     }
 

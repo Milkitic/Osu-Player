@@ -5,15 +5,11 @@
     xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
     xmlns:converters="clr-namespace:Milki.OsuPlayer.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:dataTypes="clr-namespace:Coosu.Database.DataTypes;assembly=Coosu.Database"
     xmlns:frontDialogComponent="clr-namespace:Milki.OsuPlayer.UiComponents.FrontDialogComponent"
     xmlns:local="clr-namespace:Milki.OsuPlayer.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:Milki.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
     xmlns:notificationComponent="clr-namespace:Milki.OsuPlayer.UiComponents.NotificationComponent"
     xmlns:osuPlayer="clr-namespace:Milki.OsuPlayer"
-    xmlns:pages="clr-namespace:Milki.OsuPlayer.Pages"
-    xmlns:radioButtonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.RadioButtonComponent"
     xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
     xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
@@ -25,10 +21,11 @@
     MinHeight="600"
     d:DataContext="{d:DesignInstance Type=viewModels:MainWindowViewModel,
                                      IsDesignTimeCreatable=False}"
-    FontFamily="{StaticResource SspRegular}"
     FontSize="13"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
     Loaded="Window_Loaded"
+    TextBlock.FontFamily="Segoe UI,微软雅黑"
+    TextOptions.TextFormattingMode="Display"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <WindowChrome.WindowChrome>
@@ -93,7 +90,7 @@
                 Width="Auto"
                 Height="Auto"
                 Margin="0,0,1,0">
-                <userControls:NavigationBar />
+                <userControls:NavigationBar x:Name="NavigationBar" />
                 <Grid>
                     <userControls:AnimationControl
                         x:Name="Animation"

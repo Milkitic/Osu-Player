@@ -13,6 +13,7 @@
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:textBoxComponent="clr-namespace:Milki.OsuPlayer.UiComponents.TextBoxComponent"
     xmlns:uiComponents="clr-namespace:Milki.OsuPlayer.UiComponents"
+    xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
     xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
     x:Name="Self"
     Title="SearchPage"
@@ -26,81 +27,8 @@
     TextOptions.TextFormattingMode="Display"
     mc:Ignorable="d">
     <Page.Resources>
-        <converters:TrueToVisibleConverter x:Key="TrueToVisibleConverter" />
         <system:Double x:Key="GalleryWidth">267</system:Double>
         <system:Double x:Key="GalleryHeight">220</system:Double>
-        <QuinticEase x:Key="QuinticEaseOut" EasingMode="EaseOut" />
-        <CircleEase x:Key="CircEaseOut" EasingMode="EaseOut" />
-        <CircleEase x:Key="CircEaseIn" EasingMode="EaseIn" />
-        <ContextMenu
-            x:Key="DataModelListContextMenu"
-            d:DataContext="{d:DesignInstance Type=models:PlayGroupQuery,
-                                             IsDesignTimeCreatable=False}"
-            Style="{StaticResource DefaultContextMenu}">
-            <MenuItem
-                Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding}"
-                Style="{StaticResource DefaultMenuItem}">
-                <MenuItem.Header>
-                    <TextBlock>
-                        <Run Text="{DynamicResource ui-play}" /><Run Text="... (Enter)" />
-                    </TextBlock>
-                </MenuItem.Header>
-            </MenuItem>
-            <Separator />
-            <MenuItem
-                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding AutoTitle}"
-                Header="{DynamicResource ui-ctxMenu-searchTitle}"
-                Style="{StaticResource DefaultMenuItem}" />
-            <MenuItem
-                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding AutoArtist}"
-                Header="{DynamicResource ui-ctxMenu-searchArtist}"
-                Style="{StaticResource DefaultMenuItem}" />
-            <MenuItem
-                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding SongSource}"
-                Header="{DynamicResource ui-ctxMenu-searchSource}"
-                Style="{StaticResource DefaultMenuItem}" />
-            <MenuItem
-                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding Creator}"
-                Header="{DynamicResource ui-ctxMenu-searchCreator}"
-                Style="{StaticResource DefaultMenuItem}" />
-            <Separator />
-            <MenuItem
-                Command="{Binding DataContext.OpenSourceFolderCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding}"
-                Style="{StaticResource DefaultMenuItem}">
-                <MenuItem.Header>
-                    <TextBlock>
-                        <Run Text="{DynamicResource ui-ctxMenu-openSourceFolder}" /><Run Text=" (Ctrl+O)" />
-                    </TextBlock>
-                </MenuItem.Header>
-            </MenuItem>
-            <MenuItem
-                Command="{Binding DataContext.OpenScorePageCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding}"
-                Header="{DynamicResource ui-ctxMenu-openScorePage}"
-                Style="{StaticResource DefaultMenuItem}" />
-            <Separator />
-            <MenuItem
-                Command="{Binding DataContext.SaveCollectionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding}"
-                Style="{StaticResource DefaultMenuItem}">
-                <MenuItem.Header>
-                    <TextBlock>
-                        <Run Text="{DynamicResource ui-ctxMenu-saveTo}" /><Run Text="... (Ctrl+S)" />
-                    </TextBlock>
-                </MenuItem.Header>
-            </MenuItem>
-            <MenuItem
-                Command="{Binding DataContext.ExportCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding}"
-                Header="{DynamicResource ui-ctxMenu-export}"
-                Style="{StaticResource DefaultMenuItem}" />
-        </ContextMenu>
     </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -152,154 +80,13 @@
             ItemsSource="{Binding PlayItems, Mode=OneWay}">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:PlayGroupQuery}">
-                    <Grid
-                        x:Name="mainGrid"
-                        ContextMenu="{StaticResource DataModelListContextMenu}"
-                        RenderTransformOrigin="0.5,0.5"
-                        ToolTip="{StaticResource DataModelListToolTip}">
-                        <Border
-                            Background="#FBFBFB"
-                            BorderBrush="#20646464"
-                            BorderThickness="1">
-                            <Grid Margin="5">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition Height="auto" />
-                                    <!--<RowDefinition Height="auto" />-->
-                                </Grid.RowDefinitions>
-
-                                <Button
-                                    Margin="0,0,0,5"
-                                    Padding="0"
-                                    Click="BtnPlayDefault_OnClick"
-                                    Cursor="Hand"
-                                    Tag="{Binding}">
-                                    <!--<Button.Command>
-                                        <Binding Path="DataContext.DirectPlayCommand" Mode="OneWay" ElementName="Self" />
-                                    </Button.Command>-->
-                                    <Button.Template>
-                                        <ControlTemplate TargetType="Button">
-                                            <Grid Background="#F0F0F0">
-                                                <Image
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    RenderOptions.BitmapScalingMode="LowQuality"
-                                                    Source="{Binding DefaultPlayItem.PlayItemAsset.FullThumbPath}"
-                                                    Stretch="UniformToFill" />
-                                                <Border
-                                                    x:Name="CoverBorder"
-                                                    Background="#50000000"
-                                                    Opacity="0">
-                                                    <Viewbox Width="48" Height="48">
-                                                        <Viewbox.Effect>
-                                                            <DropShadowEffect
-                                                                BlurRadius="15"
-                                                                Opacity="0.4"
-                                                                ShadowDepth="0" />
-                                                        </Viewbox.Effect>
-                                                        <ContentControl Foreground="#E0FFFFFF" Template="{StaticResource PlayTempl}" />
-                                                    </Viewbox>
-                                                </Border>
-                                            </Grid>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Trigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard Storyboard.TargetName="CoverBorder">
-                                                                <DoubleAnimation
-                                                                    EasingFunction="{StaticResource CircEaseOut}"
-                                                                    Storyboard.TargetProperty="Opacity"
-                                                                    To="1"
-                                                                    Duration="0:0:0.2" />
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </Trigger.EnterActions>
-                                                    <Trigger.ExitActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard Storyboard.TargetName="CoverBorder">
-                                                                <DoubleAnimation
-                                                                    EasingFunction="{StaticResource QuinticEaseOut}"
-                                                                    Storyboard.TargetProperty="Opacity"
-                                                                    To="0"
-                                                                    Duration="0:0:0.3" />
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </Trigger.ExitActions>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Button.Template>
-                                </Button>
-                                <StackPanel Grid.Row="1">
-                                    <TextBlock
-                                        Margin="0,0,0,2"
-                                        FontSize="14"
-                                        FontWeight="SemiBold"
-                                        Text="{Binding TitleAuto}" />
-                                    <TextBlock Margin="0,0,0,2">
-                                        <Run Text="by " /><Run Text="{Binding ArtistAuto, Mode=OneWay}" />
-                                    </TextBlock>
-                                    <TextBlock Margin="0,0,0,4">
-                                        <Run Text="mapped by " /><Run Text="{Binding Creator, Mode=OneWay}" />
-                                    </TextBlock>
-                                    <ItemsControl ItemsSource="{Binding GroupPlayItems}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <Image
-                                                        Width="13"
-                                                        Height="13"
-                                                        Margin="0,0,1,0"
-                                                        RenderOptions.BitmapScalingMode="LowQuality">
-                                                        <Image.Style>
-                                                            <Style TargetType="Image">
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding Key}" Value="{x:Static gamePlay:GameMode.Circle}">
-                                                                        <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_circle.png" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding Key}" Value="{x:Static gamePlay:GameMode.Taiko}">
-                                                                        <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_taiko.png" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding Key}" Value="{x:Static gamePlay:GameMode.Catch}">
-                                                                        <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_fruit.png" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding Key}" Value="{x:Static gamePlay:GameMode.Mania}">
-                                                                        <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_mania.png" />
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </Image.Style>
-                                                    </Image>
-                                                    <ItemsControl ItemsSource="{Binding Value}">
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <Border
-                                                                    Width="6"
-                                                                    Height="11"
-                                                                    Margin="0,0,1,0"
-                                                                    Background="LightGray"
-                                                                    CornerRadius="3" />
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                        <ItemsControl.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <StackPanel Orientation="Horizontal" />
-                                                            </ItemsPanelTemplate>
-                                                        </ItemsControl.ItemsPanel>
-                                                    </ItemsControl>
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <StackPanel Orientation="Horizontal" />
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                    </ItemsControl>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </Grid>
+                    <userControls:CardControl
+                        Title="{Binding TitleAuto, Mode=OneWay}"
+                        Artist="{Binding ArtistAuto, Mode=OneWay}"
+                        Creator="{Binding Creator, Mode=OneWay}"
+                        GroupPlayItems="{Binding GroupPlayItems, Mode=OneWay}"
+                        PlayItem="{Binding DefaultPlayItem, Mode=OneWay}"
+                        ThumbPath="{Binding DefaultPlayItem.PlayItemAsset.FullThumbPath, Mode=OneWay}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
 

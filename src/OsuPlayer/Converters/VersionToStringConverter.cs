@@ -8,21 +8,19 @@ class VersionToStringConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        var sb = (GameMode?)value;
-        if (sb == null) return "";
-        switch (sb)
+        if (value is GameMode sb)
         {
-            case GameMode.Circle:
-                return "圈";
-            case GameMode.Taiko:
-                return "鼓";
-            case GameMode.Catch:
-                return "果";
-            case GameMode.Mania:
-                return "键";
-            default:
-                throw new ArgumentOutOfRangeException();
+            return sb switch
+            {
+                GameMode.Circle => "圈",
+                GameMode.Taiko => "鼓",
+                GameMode.Catch => "果",
+                GameMode.Mania => "键",
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
+
+        return value;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

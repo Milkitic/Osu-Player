@@ -23,4 +23,6 @@
     <converters:LocalizedFontFamilyConverter x:Key="LocalizedFontFamilyConverter" />
     <converters:RoundedNumberConverter x:Key="RoundedNumberConverter" />
     <converters:GetOutlinedTextConverter x:Key="GetOutlinedTextConverter" />
+    <converters:StarRating2ColorConverter x:Key="StarRating2ColorConverter" />
+    <converters:StarRating2ForeColorConverter x:Key="StarRating2ForeColorConverter" />
 </ResourceDictionary>

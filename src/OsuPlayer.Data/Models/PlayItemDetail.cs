@@ -64,10 +64,10 @@ public sealed class PlayItemDetail
     [NotMapped]
     public double StarRating => GameMode switch
     {
-        GameMode.Circle => DefaultStarRatingStd,
-        GameMode.Taiko => DefaultStarRatingTaiko,
-        GameMode.Catch => DefaultStarRatingCtB,
-        GameMode.Mania => DefaultStarRatingMania,
+        GameMode.Circle => DefaultStarRatingStd / 1_000_000_000d,
+        GameMode.Taiko => DefaultStarRatingTaiko / 1_000_000_000d,
+        GameMode.Catch => DefaultStarRatingCtB / 1_000_000_000d,
+        GameMode.Mania => DefaultStarRatingMania / 1_000_000_000d,
         _ => throw new ArgumentOutOfRangeException()
     };
 

@@ -47,6 +47,7 @@
     <PackageReference Include="Anotar.NLog.Fody" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="ColorHelper" Version="1.8.0" />
     <PackageReference Include="ConfigureAwait.Fody" Version="3.3.1">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

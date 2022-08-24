@@ -9,7 +9,6 @@
     x:Name="Self"
     d:DesignHeight="236"
     d:DesignWidth="130"
-    FontFamily="{StaticResource SspRegular}"
     Loaded="UserControl_Loaded"
     mc:Ignorable="d">
     <Grid>
