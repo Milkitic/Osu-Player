@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using Coosu.Beatmap.Sections.GamePlay;
 using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Configuration;
@@ -10,6 +12,7 @@ using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.UiComponents.NotificationComponent;
+using Milki.OsuPlayer.Wpf.Dependency;
 
 namespace Milki.OsuPlayer.UserControls;
 
@@ -181,5 +184,23 @@ public partial class CardControl : UserControl
     {
         if (PlayItem == null) return;
         ExportPage.QueueBeatmap(PlayItem);
+    }
+
+    private void UIElement_OnMouseMove(object sender, MouseEventArgs e)
+    {
+        //var grid = (Grid)((FrameworkElement)sender).FindParentObjects(typeof(Grid));
+        //var popup = (Popup)grid.FindName("Popup");
+        //popup.sho
+        MoreInfoCanvas.Visibility = Visibility.Visible;
+    }
+
+    private void UIElement_OnMouseLeave(object sender, MouseEventArgs e)
+    {
+        MoreInfoCanvas.Visibility = Visibility.Hidden;
+    }
+
+    private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProcessUtils.StartWithShellExecute("https://osu.ppy.sh/users/" + Creator);
     }
 }

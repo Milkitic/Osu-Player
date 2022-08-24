@@ -2,12 +2,10 @@
     x:Class="Milki.OsuPlayer.UserControls.CardControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:gamePlay="clr-namespace:Coosu.Beatmap.Sections.GamePlay;assembly=Coosu.Beatmap"
-    xmlns:local="clr-namespace:Milki.OsuPlayer.UserControls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:Milki.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
-    xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
     x:Name="Self"
     d:DesignHeight="220"
     d:DesignWidth="267"
@@ -49,13 +47,16 @@
             </MenuItem>
             <MenuItem Click="MiExport_OnClick" Header="{DynamicResource ui-ctxMenu-export}" />
         </ContextMenu>
-
     </UserControl.Resources>
     <Grid
         ContextMenu="{StaticResource DataModelListContextMenu}"
-        RenderTransformOrigin="0.5,0.5"
-        ToolTip="{StaticResource DataModelListToolTip}">
+        MouseLeave="UIElement_OnMouseLeave"
+        RenderTransformOrigin="0.5,0.5">
+        <!--<Grid.ToolTip>
+            <StaticResource ResourceKey="DataModelListToolTip" />
+        </Grid.ToolTip>-->
         <Border
+            x:Name="BorderMain"
             Background="#FBFBFB"
             BorderBrush="#20646464"
             BorderThickness="1">
@@ -69,14 +70,7 @@
                     Margin="0,0,0,5"
                     Padding="0"
                     Click="BtnPlayDefault_OnClick"
-                    Cursor="Hand"
-                    Tag="{Binding}">
-                    <!--<Button.Command>
-                        <Binding
-                            ElementName="Self"
-                            Mode="OneWay"
-                            Path="DataContext.DirectPlayCommand" />
-                    </Button.Command>-->
+                    Cursor="Hand">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Grid Background="#F0F0F0">
@@ -134,15 +128,128 @@
                     <TextBlock
                         Margin="0,0,0,2"
                         FontSize="14"
-                        FontWeight="SemiBold"
+                        FontWeight="Bold"
                         Text="{Binding ElementName=Self, Path=Title}" />
-                    <TextBlock Margin="0,0,0,2">
-                        <Run Text="by " /><Run Text="{Binding ElementName=Self, Path=Artist}" />
-                    </TextBlock>
-                    <TextBlock Margin="0,0,0,4">
-                        <Run Text="mapped by " /><Run Text="{Binding ElementName=Self, Path=Creator}" />
-                    </TextBlock>
-                    <ItemsControl ItemsSource="{Binding ElementName=Self, Path=GroupPlayItems}">
+                    <StackPanel Margin="0,0,0,2" Orientation="Horizontal">
+                        <TextBlock FontWeight="SemiBold">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=Self, Path=Source}" Value="">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ElementName=Self, Path=Source}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                            <Run Text="from " /><Run Text="{Binding ElementName=Self, Path=Source}" /><Run Text=", " />
+                        </TextBlock>
+                        <TextBlock FontWeight="SemiBold">
+                            <Run Text="by " /><Run Text="{Binding ElementName=Self, Path=Artist}" />
+                        </TextBlock>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,4" Orientation="Horizontal">
+                        <TextBlock Text="mapped by " />
+                        <buttonComponent:CommonButton Content="{Binding ElementName=Self, Path=Creator}" Click="ButtonBase_OnClick" Style="{StaticResource LinkButton}" />
+                    </StackPanel>
+                    <Canvas
+                        x:Name="MoreInfoCanvas"
+                        Margin="-6,0"
+                        Panel.ZIndex="1"
+                        Visibility="Hidden">
+                        <Border
+                            Width="{Binding ElementName=BorderMain, Path=ActualWidth}"
+                            Padding="5,0,5,5"
+                            Background="#FBFBFB"
+                            BorderBrush="#20646464"
+                            BorderThickness="1,0,1,1">
+                            <ItemsControl
+                                Background="Transparent"
+                                ItemsSource="{Binding ElementName=Self, Path=GroupPlayItems}"
+                                MouseMove="UIElement_OnMouseMove">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Vertical">
+                                            <ItemsControl ItemsSource="{Binding Value}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Image
+                                                                Width="13"
+                                                                Height="13"
+                                                                Margin="0,0,1,0"
+                                                                RenderOptions.BitmapScalingMode="LowQuality">
+                                                                <Image.Style>
+                                                                    <Style TargetType="Image">
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Circle}">
+                                                                                <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_circle.png" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Taiko}">
+                                                                                <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_taiko.png" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Catch}">
+                                                                                <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_fruit.png" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Mania}">
+                                                                                <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_mania.png" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Image.Style>
+                                                            </Image>
+                                                            <Border
+                                                                Height="12"
+                                                                Margin="1,0"
+                                                                Padding="5,0"
+                                                                CornerRadius="6">
+                                                                <Border.Background>
+                                                                    <SolidColorBrush Color="{Binding PlayItemDetail.StarRating, Converter={StaticResource StarRating2ColorConverter}}" />
+                                                                </Border.Background>
+                                                                <TextBlock
+                                                                    VerticalAlignment="Center"
+                                                                    FontSize="11"
+                                                                    FontWeight="Bold">
+                                                                    <TextBlock.Foreground>
+                                                                        <SolidColorBrush Color="{Binding PlayItemDetail.StarRating, Converter={StaticResource StarRating2ForeColorConverter}}" />
+                                                                    </TextBlock.Foreground>
+                                                                    <Run Text="★" />
+                                                                    <Run Text="{Binding PlayItemDetail.StarRating, Mode=OneWay, StringFormat=N2}" />
+                                                                </TextBlock>
+                                                            </Border>
+                                                            <TextBlock
+                                                                FontSize="11"
+                                                                FontWeight="SemiBold"
+                                                                Foreground="{Binding ElementName=BtnCollection, Path=(TextBlock.Foreground)}"
+                                                                Text="{Binding PlayItemDetail.Version}"
+                                                                TextWrapping="Wrap" />
+                                                        </StackPanel>
+
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Vertical" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </Border>
+                    </Canvas>
+                    <ItemsControl
+                        Background="Transparent"
+                        ItemsSource="{Binding ElementName=Self, Path=GroupPlayItems}"
+                        MouseMove="UIElement_OnMouseMove">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">

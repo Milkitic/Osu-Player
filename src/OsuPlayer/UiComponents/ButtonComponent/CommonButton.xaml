@@ -287,10 +287,18 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="MouseDownBackground" Value="Transparent" />
         <Setter Property="MouseOverBackground" Value="Transparent" />
-        <Setter Property="Foreground" Value="#1E9FFF" />
+        <Setter Property="Foreground" Value="#197DC3" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="MouseDownForeground" Value="#929292" />
         <Setter Property="MouseOverForeground" Value="#646464" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="TextBlock.TextDecorations" Value="UnderLine" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="TextBlock.TextDecorations" Value="UnderLine" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <Style
         x:Key="LyricButton"
