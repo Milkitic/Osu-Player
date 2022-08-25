@@ -28,7 +28,7 @@ public partial class CardControl : UserControl
     public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(
         nameof(Source), typeof(string), typeof(CardControl), new PropertyMetadata(default(string)));
     public static readonly DependencyProperty CreatorProperty = DependencyProperty.Register(
-        nameof(Creator), typeof(string), typeof(CardControl), new PropertyMetadata("cretor"));
+        nameof(Creator), typeof(string), typeof(CardControl), new PropertyMetadata("creator"));
     public static readonly DependencyProperty GroupPlayItemsProperty = DependencyProperty.Register(
         nameof(GroupPlayItems), typeof(Dictionary<GameMode, PlayItem[]>), typeof(CardControl), new PropertyMetadata(default(Dictionary<GameMode, PlayItem[]>)));
     public static readonly DependencyProperty PlayItemProperty = DependencyProperty.Register(

@@ -1,20 +1,36 @@
-﻿#nullable enable
-
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.UiComponents.ContentDialogComponent;
-using Milki.OsuPlayer.ViewModels;
 
 namespace Milki.OsuPlayer.UserControls;
+
+public class SelectPlayListControlVm : VmBase
+{
+    private IList<PlayItem> _playItems;
+    private ObservableCollection<PlayList> _playLists;
+
+    public IList<PlayItem> PlayItems
+    {
+        get => _playItems;
+        set => this.RaiseAndSetIfChanged(ref _playItems, value);
+    }
+
+    public ObservableCollection<PlayList> PlayLists
+    {
+        get => _playLists;
+        set => this.RaiseAndSetIfChanged(ref _playLists, value);
+    }
+}
 
 /// <summary>
 /// SelectCollectionControl.xaml 的交互逻辑
 /// </summary>
 public partial class SelectPlayListControl : UserControl
 {
-    private readonly SelectCollectionPageViewModel _viewModel;
+    private readonly SelectPlayListControlVm _viewModel;
     private readonly ContentDialog _overlay;
 
     public SelectPlayListControl(PlayItem playItem) : this(new[] { playItem })
@@ -23,14 +39,14 @@ public partial class SelectPlayListControl : UserControl
 
     public SelectPlayListControl(IList<PlayItem> playItems)
     {
-        DataContext = _viewModel = new SelectCollectionPageViewModel();
+        DataContext = _viewModel = new SelectPlayListControlVm();
         _viewModel.PlayItems = playItems;
         InitializeComponent();
         _overlay = App.CurrentMainContentDialog.GetOrCreateSubOverlay();
         _overlay.DialogPadding = new Thickness();
     }
 
-    private async void SelectCollectionControl_OnInitialized(object? sender, EventArgs e)
+    private async void SelectCollectionControl_OnInitialized(object sender, EventArgs e)
     {
         await RefreshList();
     }

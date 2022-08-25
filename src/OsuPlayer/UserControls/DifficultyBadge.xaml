@@ -1,0 +1,63 @@
+﻿<UserControl
+    x:Class="Milki.OsuPlayer.UserControls.DifficultyBadge"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:gamePlay="clr-namespace:Coosu.Beatmap.Sections.GamePlay;assembly=Coosu.Beatmap"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="Self"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <StackPanel Orientation="Horizontal">
+        <Image
+            Width="13"
+            Height="13"
+            Margin="0,0,1,0"
+            RenderOptions.BitmapScalingMode="LowQuality">
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=Self, Path=GameMode}" Value="{x:Static gamePlay:GameMode.Circle}">
+                            <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_circle.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ElementName=Self, Path=GameMode}" Value="{x:Static gamePlay:GameMode.Taiko}">
+                            <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_taiko.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ElementName=Self, Path=GameMode}" Value="{x:Static gamePlay:GameMode.Catch}">
+                            <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_fruit.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ElementName=Self, Path=GameMode}" Value="{x:Static gamePlay:GameMode.Mania}">
+                            <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_mania.png" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
+        <Border
+            Height="12"
+            Margin="1,0"
+            Padding="5,0"
+            CornerRadius="6">
+            <Border.Background>
+                <SolidColorBrush Color="{Binding ElementName=Self, Path=StarRating, Converter={StaticResource StarRating2ColorConverter}}" />
+            </Border.Background>
+            <TextBlock
+                VerticalAlignment="Center"
+                FontSize="11"
+                FontWeight="Bold">
+                <TextBlock.Foreground>
+                    <SolidColorBrush Color="{Binding ElementName=Self, Path=StarRating, Converter={StaticResource StarRating2ForeColorConverter}}" />
+                </TextBlock.Foreground>
+                <Run Text="★" />
+                <Run Text="{Binding ElementName=Self, Path=StarRating, Mode=OneWay, StringFormat=N2}" />
+            </TextBlock>
+        </Border>
+        <TextBlock
+            FontSize="11"
+            FontWeight="SemiBold"
+            Foreground="{Binding ElementName=BtnCollection, Path=(TextBlock.Foreground)}"
+            Text="{Binding ElementName=Self, Path=Version}"
+            TextWrapping="Wrap" />
+    </StackPanel>
+</UserControl>

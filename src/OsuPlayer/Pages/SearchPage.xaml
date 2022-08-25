@@ -68,7 +68,6 @@
                 Style="{StaticResource SettingsButton}" />
         </StackPanel>
         <ListBox
-            x:Name="ResultCardList"
             Grid.Row="2"
             Padding="3,0"
             Background="Transparent"

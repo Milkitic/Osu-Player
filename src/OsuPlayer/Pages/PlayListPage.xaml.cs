@@ -44,7 +44,7 @@ public partial class PlayListPage : Page
     private readonly PlayListPageVm _viewModel;
 
     private List<PlayItem> _playItems;
-    private bool _firstLoaded;
+    private bool _isFirstLoaded;
 
     public PlayListPage(PlayList playList)
     {
@@ -60,7 +60,11 @@ public partial class PlayListPage : Page
         await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var playListDetail = await dbContext.PlayLists
             .Include(k => k.PlayListRelations)
-            .ThenInclude(k => k.PlayItem)
+                .ThenInclude(k => k.PlayItem)
+                    .ThenInclude(k => k.PlayItemDetail)
+            .Include(k => k.PlayListRelations)
+                .ThenInclude(k => k.PlayItem)
+                    .ThenInclude(k => k.PlayItemAsset)
             .FirstOrDefaultAsync(k => k.Id == _viewModel.PlayList.Id);
         if (playListDetail == null)
         {
@@ -78,16 +82,16 @@ public partial class PlayListPage : Page
 
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        if (!_firstLoaded)
+        if (!_isFirstLoaded)
         {
             await UpdateList();
-            _firstLoaded = true;
+            _isFirstLoaded = true;
         }
 
         var item = _viewModel.PlayItems?.FirstOrDefault(k => k.StandardizedPath == _playListService.GetCurrentPath());
         if (item != null)
         {
-            MapCardList.SelectedItem = item;
+            //MapCardList.SelectedItem = item;
         }
     }
 
@@ -122,26 +126,6 @@ public partial class PlayListPage : Page
     private void BtnExportAll_Click(object sender, RoutedEventArgs e)
     {
         ExportPage.QueueBeatmaps(_playItems);
-    }
-
-    private async Task PlaySelected()
-    {
-        var map = await GetSelected();
-        if (map == null) return;
-        await _playerService.InitializeNewAsync(map.StandardizedPath, true);
-    }
-
-    private async Task<PlayItem> GetSelected()
-    {
-        if (MapCardList.SelectedItem == null)
-        {
-            return null;
-        }
-
-        var selectedItem = (PlayItem)MapCardList.SelectedItem;
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
-        var beatmaps = await dbContext.GetPlayItemsByFolderAsync(selectedItem.StandardizedFolder);
-        return beatmaps.FirstOrDefault(k => k.PlayItemDetail.Version == selectedItem.PlayItemDetail.Version);
     }
 
     private void BtnEdit_Click(object sender, RoutedEventArgs e)

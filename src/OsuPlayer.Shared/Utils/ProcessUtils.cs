@@ -18,8 +18,10 @@ public static class ProcessUtils
     [DllImport("user32.dll")]
     public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
 
-    public static void StartWithShellExecute(string fileName)
+    public static void StartWithShellExecute(string fileName, string? arguments = null)
     {
-        Process.Start(new ProcessStartInfo(fileName) { UseShellExecute = true });
+        Process.Start(arguments == null
+            ? new ProcessStartInfo(fileName) { UseShellExecute = true }
+            : new ProcessStartInfo(fileName, arguments) { UseShellExecute = true });
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,26 +9,168 @@ using Coosu.Beatmap;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Models;
+using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.UiComponents.NotificationComponent;
-using Milki.OsuPlayer.ViewModels;
+using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Windows;
+using Milki.OsuPlayer.Wpf.Command;
 
 namespace Milki.OsuPlayer.Pages;
 
+public class ExportPageVm : VmBase
+{
+    private ObservableCollection<ExportItem> _exportList;
+    private List<ExportItem> _selectedItems;
+    private string _exportPath;
+
+    public ObservableCollection<ExportItem> ExportList
+    {
+        get => _exportList;
+        set => this.RaiseAndSetIfChanged(ref _exportList, value);
+    }
+
+    public List<ExportItem> SelectedItems
+    {
+        get => _selectedItems;
+        set => this.RaiseAndSetIfChanged(ref _selectedItems, value);
+    }
+
+    public string ExportPath
+    {
+        get => _exportPath;
+        set => this.RaiseAndSetIfChanged(ref _exportPath, value);
+    }
+
+    public ICommand UpdateList
+    {
+        get
+        {
+            return new DelegateCommand(async obj =>
+            {
+                await UpdateCollection();
+            });
+        }
+    }
+
+    public ICommand ItemFolderCommand => new DelegateCommand(obj =>
+    {
+        if (obj is string path)
+        {
+            if (Directory.Exists(path))
+            {
+                ProcessUtils.StartWithShellExecute(path);
+            }
+            else
+            {
+                Notification.Push(I18NUtil.GetString("err-dirNotFound"), I18NUtil.GetString("text-error"));
+            }
+        }
+        else if (obj is ExportItem orderedModel)
+        {
+            ProcessUtils.StartWithShellExecute("Explorer", "/select," + orderedModel?.ExportPath);
+            // todo: include
+        }
+    });
+
+    public ICommand ItemReExportCommand => new DelegateCommand(async obj =>
+    {
+        if (SelectedItems == null) return;
+        foreach (var exportItem in SelectedItems)
+        {
+            if (exportItem.PlayItem != null)
+            {
+                ExportPage.QueueBeatmap(exportItem.PlayItem);
+            }
+            else
+            {
+                // todo: Not valid...
+            }
+        }
+
+        while (ExportPage.IsTaskBusy)
+        {
+            await Task.Delay(10);
+        }
+
+        if (ExportPage.HasTaskSuccess)
+        {
+            await UpdateCollection();
+        }
+    });
+
+    public ICommand ItemDeleteCommand => new DelegateCommand(async obj =>
+    {
+        if (SelectedItems == null) return;
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+
+        foreach (var exportItem in SelectedItems)
+        {
+            if (!File.Exists(exportItem.ExportPath)) continue;
+            File.Delete(exportItem.ExportPath);
+            var dir = new FileInfo(exportItem.ExportPath).Directory;
+            if (dir is { Exists: true } && !dir.EnumerateFiles().Any())
+            {
+                dir.Delete();
+            }
+        }
+
+        dbContext.Exports.RemoveRange(SelectedItems);
+        await dbContext.SaveChangesAsync();
+        await UpdateCollection();
+    });
+
+    private async Task UpdateCollection()
+    {
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var paginationQueryResult = await dbContext.GetExportListFull();
+        var exports = paginationQueryResult.Results;
+        //foreach (var export in exports)
+        //{
+        //    var map = export.PlayItem;
+        //    try
+        //    {
+        //        var fi = new FileInfo(export.ExportPath);
+        //        if (fi.Exists)
+        //        {
+        //            export.IsValid = true;
+        //            export.IsItemLost = fi.Length;
+        //            export.CreationTime = fi.CreationTime;
+        //        }
+        //        else
+        //        {
+        //            export.IsValid = false;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        LogTo.ErrorException($"Error while updating view item: {map}", ex);
+        //    }
+        //}
+
+        ExportList = new ObservableCollection<ExportItem>(exports);
+    }
+}
 /// <summary>
 /// ExportPage.xaml 的交互逻辑
 /// </summary>
 public partial class ExportPage : Page
 {
-    //Page view model
     private static bool _hasTaskSuccess;
     private readonly MainWindow _mainWindow;
+    private readonly ExportPageVm _viewModel;
 
-    public ExportPageViewModel ViewModel { get; }
-    public static readonly ConcurrentQueue<PlayItem> TaskQueue = new();
-    public static Task ExportTask;
-    public static bool Overlap = true;
+    private static Task _exportTask;
+    private static readonly ConcurrentQueue<PlayItem> TaskQueue = new();
+    private static readonly bool Overwrite = true;
+
+    public ExportPage()
+    {
+        DataContext = _viewModel = new ExportPageVm();
+        InitializeComponent();
+        _mainWindow = (MainWindow)Application.Current.MainWindow;
+        _viewModel.ExportPath = AppSettings.Default.ExportSection.MusicDir;
+    }
 
     public static bool HasTaskSuccess
     {
@@ -42,17 +185,7 @@ public partial class ExportPage : Page
 
     public static string MusicDir => AppSettings.Default.ExportSection.MusicDir;
     public static string BackgroundDir => AppSettings.Default.ExportSection.BackgroundDir;
-
-    public static bool IsTaskBusy =>
-        ExportTask != null && !ExportTask.IsCanceled && !ExportTask.IsCompleted && !ExportTask.IsFaulted;
-
-    public ExportPage()
-    {
-        InitializeComponent();
-        _mainWindow = (MainWindow)Application.Current.MainWindow;
-        ViewModel = (ExportPageViewModel)DataContext;
-        ViewModel.ExportPath = AppSettings.Default.ExportSection.MusicDir;
-    }
+    public static bool IsTaskBusy => _exportTask is { IsCanceled: false, IsCompleted: false, IsFaulted: false };
 
     public static void QueueBeatmaps(IEnumerable<PlayItem> beatmaps)
     {
@@ -70,9 +203,9 @@ public partial class ExportPage : Page
 
     private static void StartTask()
     {
-        if (ExportTask != null && !ExportTask.IsCanceled && !ExportTask.IsCompleted)
+        if (_exportTask != null && !_exportTask.IsCanceled && !_exportTask.IsCompleted)
             return;
-        ExportTask = Task.Run(async () =>
+        _exportTask = Task.Run(async () =>
         {
             while (!TaskQueue.IsEmpty)
             {
@@ -235,7 +368,7 @@ public partial class ExportPage : Page
         var path = Path.Combine(outputDir, outputFile + originFile.Extension);
         if (!Directory.Exists(outputDir))
             Directory.CreateDirectory(outputDir);
-        if (Overlap && File.Exists(path))
+        if (Overwrite && File.Exists(path))
             File.Delete(path);
         File.Copy(originFile.FullName, path);
         UpdateFileTime(path);
@@ -243,7 +376,7 @@ public partial class ExportPage : Page
 
     private static string ValidateFilename(string escaped, string dirPath, string ext)
     {
-        if (Overlap)
+        if (Overwrite)
             return escaped;
         var validName = escaped;
         int i = 1;
@@ -290,6 +423,6 @@ public partial class ExportPage : Page
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.UpdateList.Execute(null);
+        _viewModel.UpdateList.Execute(null);
     }
 }

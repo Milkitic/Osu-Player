@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:gamePlay="clr-namespace:Coosu.Beatmap.Sections.GamePlay;assembly=Coosu.Beatmap"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
     x:Name="Self"
     d:DesignHeight="220"
     d:DesignWidth="267"
@@ -183,6 +184,15 @@
                         Margin="-6,0"
                         Panel.ZIndex="1"
                         Opacity="0">
+                        <Canvas.Style>
+                            <Style TargetType="Canvas">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=Self, Path=GroupPlayItems}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Canvas.Style>
                         <Border
                             Width="{Binding ElementName=BorderMain, Path=ActualWidth}"
                             Padding="5,0,5,5"
@@ -199,58 +209,11 @@
                                             <ItemsControl ItemsSource="{Binding Value}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Image
-                                                                Width="13"
-                                                                Height="13"
-                                                                Margin="0,0,1,0"
-                                                                RenderOptions.BitmapScalingMode="LowQuality">
-                                                                <Image.Style>
-                                                                    <Style TargetType="Image">
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Circle}">
-                                                                                <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_circle.png" />
-                                                                            </DataTrigger>
-                                                                            <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Taiko}">
-                                                                                <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_taiko.png" />
-                                                                            </DataTrigger>
-                                                                            <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Catch}">
-                                                                                <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_fruit.png" />
-                                                                            </DataTrigger>
-                                                                            <DataTrigger Binding="{Binding PlayItemDetail.GameMode}" Value="{x:Static gamePlay:GameMode.Mania}">
-                                                                                <Setter Property="Source" Value="pack://application:,,,/OsuPlayer;component/Resources/mode_mania.png" />
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </Image.Style>
-                                                            </Image>
-                                                            <Border
-                                                                Height="12"
-                                                                Margin="1,0"
-                                                                Padding="5,0"
-                                                                CornerRadius="6">
-                                                                <Border.Background>
-                                                                    <SolidColorBrush Color="{Binding PlayItemDetail.StarRating, Converter={StaticResource StarRating2ColorConverter}}" />
-                                                                </Border.Background>
-                                                                <TextBlock
-                                                                    VerticalAlignment="Center"
-                                                                    FontSize="11"
-                                                                    FontWeight="Bold">
-                                                                    <TextBlock.Foreground>
-                                                                        <SolidColorBrush Color="{Binding PlayItemDetail.StarRating, Converter={StaticResource StarRating2ForeColorConverter}}" />
-                                                                    </TextBlock.Foreground>
-                                                                    <Run Text="★" />
-                                                                    <Run Text="{Binding PlayItemDetail.StarRating, Mode=OneWay, StringFormat=N2}" />
-                                                                </TextBlock>
-                                                            </Border>
-                                                            <TextBlock
-                                                                FontSize="11"
-                                                                FontWeight="SemiBold"
-                                                                Foreground="{Binding ElementName=BtnCollection, Path=(TextBlock.Foreground)}"
-                                                                Text="{Binding PlayItemDetail.Version}"
-                                                                TextWrapping="Wrap" />
-                                                        </StackPanel>
-
+                                                        <userControls:DifficultyBadge
+                                                            BadgeSize="Small"
+                                                            GameMode="{Binding PlayItemDetail.GameMode}"
+                                                            StarRating="{Binding PlayItemDetail.StarRating}"
+                                                            Version="{Binding PlayItemDetail.Version}" />
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                                 <ItemsControl.ItemsPanel>
@@ -274,6 +237,15 @@
                         Background="Transparent"
                         ItemsSource="{Binding ElementName=Self, Path=GroupPlayItems}"
                         MouseMove="UIElement_OnMouseMove">
+                        <ItemsControl.Style>
+                            <Style TargetType="ItemsControl">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=Self, Path=GroupPlayItems}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ItemsControl.Style>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -330,6 +302,23 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
+                    <Border>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=Self, Path=GroupPlayItems}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <userControls:DifficultyBadge
+                            BadgeSize="Small"
+                            GameMode="{Binding ElementName=Self, Path=PlayItem.PlayItemDetail.GameMode}"
+                            StarRating="{Binding ElementName=Self, Path=PlayItem.PlayItemDetail.StarRating}"
+                            Version="{Binding ElementName=Self, Path=PlayItem.PlayItemDetail.Version}" />
+                    </Border>
                 </StackPanel>
             </Grid>
         </Border>

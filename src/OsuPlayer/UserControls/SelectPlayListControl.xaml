@@ -5,8 +5,8 @@
     xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
-    d:DataContext="{d:DesignInstance Type=viewModels:SelectCollectionPageViewModel,
+    xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
+    d:DataContext="{d:DesignInstance Type=userControls:SelectPlayListControlVm,
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"

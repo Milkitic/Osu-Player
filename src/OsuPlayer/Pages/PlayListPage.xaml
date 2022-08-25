@@ -6,11 +6,12 @@
     xmlns:converters="clr-namespace:Milki.OsuPlayer.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:Milki.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
     xmlns:pages="clr-namespace:Milki.OsuPlayer.Pages"
     xmlns:panelComponent="clr-namespace:Milki.OsuPlayer.UiComponents.PanelComponent"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:textBoxComponent="clr-namespace:Milki.OsuPlayer.UiComponents.TextBoxComponent"
-    xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
+    xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
     Title="PlayListPage"
     d:DataContext="{d:DesignInstance Type=pages:PlayListPageVm,
                                      IsDesignTimeCreatable=False}"
@@ -26,84 +27,7 @@
     <Page.Resources>
         <system:Double x:Key="GalleryWidth">160</system:Double>
         <system:Double x:Key="GalleryHeight">220</system:Double>
-        <QuinticEase x:Key="QuinticEaseOut" EasingMode="EaseOut" />
         <converters:DateTimeConverter x:Key="CvtDate" />
-        <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
-            <MenuItem
-                Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding}"
-                Style="{StaticResource DefaultMenuItem}">
-                <MenuItem.Header>
-                    <TextBlock>
-                        <Run Text="{DynamicResource ui-play}" /><Run Text="... (Enter)" />
-                    </TextBlock>
-                </MenuItem.Header>
-            </MenuItem>
-            <Separator />
-            <MenuItem
-                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding AutoTitle}"
-                Header="{DynamicResource ui-ctxMenu-searchTitle}"
-                Style="{StaticResource DefaultMenuItem}" />
-            <MenuItem
-                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding AutoArtist}"
-                Header="{DynamicResource ui-ctxMenu-searchArtist}"
-                Style="{StaticResource DefaultMenuItem}" />
-            <MenuItem
-                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding SongSource}"
-                Header="{DynamicResource ui-ctxMenu-searchSource}"
-                Style="{StaticResource DefaultMenuItem}" />
-            <MenuItem
-                Command="{Binding DataContext.SearchByConditionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding Creator}"
-                Header="{DynamicResource ui-ctxMenu-searchCreator}"
-                Style="{StaticResource DefaultMenuItem}" />
-            <Separator />
-            <MenuItem
-                Command="{Binding DataContext.OpenSourceFolderCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding}"
-                Style="{StaticResource DefaultMenuItem}">
-                <MenuItem.Header>
-                    <TextBlock>
-                        <Run Text="{DynamicResource ui-ctxMenu-openSourceFolder}" /><Run Text=" (Ctrl+O)" />
-                    </TextBlock>
-                </MenuItem.Header>
-            </MenuItem>
-            <MenuItem
-                Command="{Binding DataContext.OpenScorePageCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding}"
-                Header="{DynamicResource ui-ctxMenu-openScorePage}"
-                Style="{StaticResource DefaultMenuItem}" />
-            <Separator />
-            <MenuItem
-                Command="{Binding DataContext.SaveCollectionCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding}"
-                Style="{StaticResource DefaultMenuItem}">
-                <MenuItem.Header>
-                    <TextBlock>
-                        <Run Text="{DynamicResource ui-ctxMenu-saveTo}" /><Run Text="... (Ctrl+S)" />
-                    </TextBlock>
-                </MenuItem.Header>
-            </MenuItem>
-            <MenuItem
-                Command="{Binding DataContext.ExportCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding}"
-                Header="{DynamicResource ui-ctxMenu-export}"
-                Style="{StaticResource DefaultMenuItem}" />
-            <Separator />
-            <MenuItem
-                Command="{Binding DataContext.RemoveCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                CommandParameter="{Binding}"
-                Style="{StaticResource DefaultMenuItem}">
-                <MenuItem.Header>
-                    <TextBlock>
-                        <Run Text="{DynamicResource ui-ctxMenu-removeFromList}" /><Run Text=" (Delete)" />
-                    </TextBlock>
-                </MenuItem.Header>
-            </MenuItem>
-        </ContextMenu>
     </Page.Resources>
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
@@ -282,184 +206,65 @@
                                     Text="{DynamicResource ui-tab-musicList}" />
                             </TabItem.Header>
                             <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
                                 <textBoxComponent:CommonTextBox
                                     x:Name="SearchBox"
                                     Width="180"
                                     Height="26"
                                     Margin="0,-30,40,0"
+                                    Padding="0"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Top"
                                     Background="White"
                                     BorderBrush="#DCDFE6"
                                     BorderThickness="1"
                                     CornerRadius="13"
+                                    Foreground="Gray"
                                     HintText="{DynamicResource ui-hint-searchCollectionMusic3Dot}"
+                                    IconMargin="7,0,5,0"
+                                    IconSize="13"
+                                    IconTemplate="{StaticResource NavSearchTempl}"
                                     TextChanged="SearchBox_TextChanged" />
                                 <ListBox
-                                    x:Name="MapCardList"
+                                    Grid.Row="0"
                                     Padding="3,0"
                                     Background="Transparent"
                                     BorderThickness="0"
+                                    ItemContainerStyle="{StaticResource CardListBoxItemStyle}"
                                     ItemsSource="{Binding PlayItems, Mode=OneWay}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type models:PlayItem}">
+                                            <userControls:CardControl
+                                                Title="{Binding PlayItemDetail.AutoTitle, Mode=OneWay}"
+                                                Artist="{Binding PlayItemDetail.AutoArtist, Mode=OneWay}"
+                                                Creator="{Binding PlayItemDetail.Creator, Mode=OneWay}"
+                                                PlayItem="{Binding Mode=OneWay}"
+                                                Source="{Binding PlayItemDetail.Source, Mode=OneWay}"
+                                                ThumbPath="{Binding PlayItemAsset.FullThumbPath, Mode=OneWay}" />
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+
                                     <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <panelComponent:VirtualizingGalleryWrapPanel
                                                 ChildHeight="{StaticResource GalleryHeight}"
                                                 ChildWidth="{StaticResource GalleryWidth}"
                                                 ItemLoaded="VirtualizingGalleryWrapPanel_OnItemLoaded"
-                                                Loaded="Panel_Loaded"
                                                 ScrollOffset="100" />
                                         </ItemsPanelTemplate>
                                     </ListBox.ItemsPanel>
-                                    <ListBox.Resources>
-                                        <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListBoxItem}">
-                                            <Button
-                                                Command="{Binding DataContext.DirectPlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"
-                                                CommandParameter="{Binding}"
-                                                Cursor="Hand">
-                                                <Button.Template>
-                                                    <ControlTemplate TargetType="Button">
-                                                        <Grid
-                                                            x:Name="mainGrid"
-                                                            Width="{StaticResource GalleryWidth}"
-                                                            Height="{StaticResource GalleryHeight}"
-                                                            ContextMenu="{StaticResource DataModelListContextMenu}"
-                                                            RenderTransformOrigin="0.5,0.5"
-                                                            ToolTip="{StaticResource DataModelListToolTip}">
-                                                            <Grid.RenderTransform>
-                                                                <ScaleTransform ScaleX="1" ScaleY="1" />
-                                                            </Grid.RenderTransform>
-                                                            <Border
-                                                                x:Name="dropDownBorder"
-                                                                Grid.RowSpan="3"
-                                                                Margin="3"
-                                                                Background="#FBFBFB"
-                                                                BorderThickness="1"
-                                                                Visibility="Collapsed">
-                                                                <Border.Effect>
-                                                                    <DropShadowEffect
-                                                                        BlurRadius="0"
-                                                                        Direction="-90"
-                                                                        Opacity="0.3"
-                                                                        ShadowDepth="0"
-                                                                        Color="Black" />
-                                                                </Border.Effect>
-                                                            </Border>
-                                                            <Border
-                                                                Margin="3"
-                                                                BorderBrush="#20646464"
-                                                                BorderThickness="1">
-                                                                <Grid x:Name="cardGrid" Background="#FBFBFB">
-                                                                    <Grid.RowDefinitions>
-                                                                        <RowDefinition Height="auto" />
-                                                                        <RowDefinition Height="auto" />
-                                                                        <RowDefinition Height="auto" />
-                                                                    </Grid.RowDefinitions>
-                                                                    <Grid
-                                                                        Height="{StaticResource GalleryWidth}"
-                                                                        Margin="5"
-                                                                        Background="#F0F0F0">
-                                                                        <Image
-                                                                            HorizontalAlignment="Center"
-                                                                            VerticalAlignment="Center"
-                                                                            Source="{Binding ThumbPath}"
-                                                                            Stretch="UniformToFill" />
-                                                                        <Rectangle>
-                                                                            <Rectangle.Fill>
-                                                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                                                    <GradientStop Offset="0.5" Color="#00000000" />
-                                                                                    <GradientStop Offset="1" Color="#B0000000" />
-                                                                                </LinearGradientBrush>
-                                                                            </Rectangle.Fill>
-                                                                        </Rectangle>
-                                                                        <Label
-                                                                            VerticalAlignment="Bottom"
-                                                                            Content="{Binding Version}"
-                                                                            FontSize="13"
-                                                                            FontWeight="Bold"
-                                                                            Foreground="#F0F0F0" />
-                                                                    </Grid>
-                                                                    <TextBlock
-                                                                        Grid.Row="1"
-                                                                        Margin="5,1"
-                                                                        Text="{Binding AutoArtist}" />
-                                                                    <TextBlock
-                                                                        Grid.Row="2"
-                                                                        Margin="5,2"
-                                                                        Text="{Binding AutoTitle}" />
-                                                                </Grid>
-                                                            </Border>
-                                                        </Grid>
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter TargetName="dropDownBorder" Property="Visibility" Value="Visible" />
-                                                                <Trigger.EnterActions>
-                                                                    <BeginStoryboard>
-                                                                        <Storyboard Storyboard.TargetName="dropDownBorder" Storyboard.TargetProperty="Effect.BlurRadius">
-                                                                            <DoubleAnimation
-                                                                                EasingFunction="{StaticResource QuinticEaseOut}"
-                                                                                To="10"
-                                                                                Duration="0:0:0.2" />
-                                                                        </Storyboard>
-                                                                    </BeginStoryboard>
-                                                                    <BeginStoryboard>
-                                                                        <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleX">
-                                                                            <DoubleAnimation
-                                                                                EasingFunction="{StaticResource QuinticEaseOut}"
-                                                                                To="1.05"
-                                                                                Duration="0:0:0.2" />
-                                                                        </Storyboard>
-                                                                    </BeginStoryboard>
-                                                                    <BeginStoryboard>
-                                                                        <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleY">
-                                                                            <DoubleAnimation
-                                                                                EasingFunction="{StaticResource QuinticEaseOut}"
-                                                                                To="1.05"
-                                                                                Duration="0:0:0.2" />
-                                                                        </Storyboard>
-                                                                    </BeginStoryboard>
-                                                                </Trigger.EnterActions>
-                                                                <Trigger.ExitActions>
-                                                                    <BeginStoryboard>
-                                                                        <Storyboard Storyboard.TargetName="dropDownBorder" Storyboard.TargetProperty="Effect.BlurRadius">
-                                                                            <DoubleAnimation
-                                                                                EasingFunction="{StaticResource QuinticEaseOut}"
-                                                                                To="0"
-                                                                                Duration="0:0:0.4" />
-                                                                        </Storyboard>
-                                                                    </BeginStoryboard>
-                                                                    <BeginStoryboard>
-                                                                        <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleX">
-                                                                            <DoubleAnimation
-                                                                                EasingFunction="{StaticResource QuinticEaseOut}"
-                                                                                To="1"
-                                                                                Duration="0:0:0.4" />
-                                                                        </Storyboard>
-                                                                    </BeginStoryboard>
-                                                                    <BeginStoryboard>
-                                                                        <Storyboard Storyboard.TargetName="mainGrid" Storyboard.TargetProperty="RenderTransform.ScaleY">
-                                                                            <DoubleAnimation
-                                                                                EasingFunction="{StaticResource QuinticEaseOut}"
-                                                                                To="1"
-                                                                                Duration="0:0:0.4" />
-                                                                        </Storyboard>
-                                                                    </BeginStoryboard>
-                                                                </Trigger.ExitActions>
-                                                            </Trigger>
-                                                            <Trigger Property="IsPressed" Value="True">
-                                                                <Setter TargetName="cardGrid" Property="Opacity" Value="0.7" />
-                                                            </Trigger>
-                                                        </ControlTemplate.Triggers>
-                                                    </ControlTemplate>
-                                                </Button.Template>
-                                            </Button>
-                                        </ControlTemplate>
-                                        <Style TargetType="{x:Type ListBoxItem}">
-                                            <Setter Property="BorderThickness" Value="0" />
-                                            <Setter Property="Template" Value="{StaticResource NormalButton}" />
-                                        </Style>
-                                    </ListBox.Resources>
+
                                 </ListBox>
+                                <!--<paginationComponent:Pagination
+                                    x:Name="Pagination"
+                                    Grid.Row="1"
+                                    Margin="10"
+                                    HorizontalAlignment="Center"
+                                    ItemsCount="20"
+                                    PageSelected="Pagination_OnPageSelected" />-->
                             </Grid>
                         </TabItem>
                         <TabItem

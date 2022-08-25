@@ -72,7 +72,7 @@
     <sys:String x:Key="ui-switch">切换</sys:String>
 
     <sys:String x:Key="ui-tab-myCollection">播放列表</sys:String>
-    <sys:String x:Key="ui-tab-musicList">音乐列表</sys:String>
+    <sys:String x:Key="ui-tab-musicList">谱面列表</sys:String>
 
     <sys:String x:Key="ui-auto">自动</sys:String>
     <sys:String x:Key="ui-neteaseMusic">网易云音乐</sys:String>

@@ -1,10 +1,13 @@
-﻿using System.Windows;
+﻿using System.Collections.ObjectModel;
+using System.Windows;
 using Anotar.NLog;
 using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
+using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Services;
+using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.UiComponents.ContentDialogComponent;
 using Milki.OsuPlayer.UiComponents.NotificationComponent;
@@ -13,6 +16,26 @@ using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.ViewModels;
 
 namespace Milki.OsuPlayer.Windows;
+
+public class MainWindowVm : VmBase
+{
+    private ObservableCollection<PlayList> _playLists;
+    private LyricWindowViewModel _lyricWindowViewModel;
+
+    public ObservableCollection<PlayList> PlayLists
+    {
+        get => _playLists;
+        set => this.RaiseAndSetIfChanged(ref _playLists, value);
+    }
+
+    public LyricWindowViewModel LyricWindowViewModel
+    {
+        get => _lyricWindowViewModel;
+        set => this.RaiseAndSetIfChanged(ref _lyricWindowViewModel, value);
+    }
+
+    public SharedVm SharedVm => SharedVm.Default;
+}
 
 /// <summary>
 /// MainWindow.xaml 的交互逻辑
@@ -29,7 +52,7 @@ public partial class MainWindow : WindowBase
     private ConfigWindow _configWindow;
     private MiniWindow _miniWindow;
 
-    private readonly MainWindowViewModel _viewModel;
+    private readonly MainWindowVm _viewModel;
 
     public MainWindow()
     {
@@ -39,7 +62,7 @@ public partial class MainWindow : WindowBase
         _osuFileScanningService = ServiceProviders.Default.GetService<OsuFileScanningService>()!;
         _lyricsService = ServiceProviders.Default.GetService<LyricsService>()!;
         _updateService = ServiceProviders.Default.GetService<UpdateService>()!;
-        DataContext = _viewModel = new MainWindowViewModel();
+        DataContext = _viewModel = new MainWindowVm();
 
         InitializeComponent();
         Animation.Loaded += Animation_Loaded;
