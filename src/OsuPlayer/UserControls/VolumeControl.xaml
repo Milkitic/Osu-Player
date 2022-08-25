@@ -10,7 +10,7 @@
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="241"
     d:DesignWidth="170"
-    FontFamily="{StaticResource SspRegular}"
+    FontFamily="{StaticResource GenericRegular}"
     Loaded="VolumeControl_OnLoaded"
     mc:Ignorable="d">
     <Grid>

@@ -49,7 +49,7 @@ public partial class LyricWindow : WindowEx
     private void LyricWindow_Loaded(object sender, RoutedEventArgs e)
     {
         var lyricFont = AppSettings.Default.LyricSection.FontFamily ??
-                        Application.Current.FindResource("SspRegular");
+                        Application.Current.FindResource("GenericRegular");
         _viewModel.FontFamily = lyricFont;
         _viewModel.Hue = AppSettings.Default.LyricSection.Hue;
         _viewModel.Saturation = AppSettings.Default.LyricSection.Saturation;

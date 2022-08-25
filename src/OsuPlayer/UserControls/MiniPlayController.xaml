@@ -11,7 +11,7 @@
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="80"
     d:DesignWidth="300"
-    FontFamily="{StaticResource SspRegular}"
+    FontFamily="{StaticResource GenericRegular}"
     Loaded="UserControl_Loaded"
     mc:Ignorable="d">
     <UserControl.Resources>

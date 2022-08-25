@@ -20,7 +20,7 @@
     d:DesignWidth="800"
     Initialized="SearchPage_Initialized"
     KeepAlive="True"
-    TextBlock.FontFamily="Segoe UI,微软雅黑"
+    TextBlock.FontFamily="{StaticResource GenericRegular}"
     TextOptions.TextFormattingMode="Display"
     mc:Ignorable="d">
     <Page.Resources>

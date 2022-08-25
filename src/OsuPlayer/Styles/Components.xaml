@@ -15,7 +15,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <ToolTip x:Key="DataModelListToolTip" TextBlock.FontFamily="Segoe UI,微软雅黑">
+    <ToolTip x:Key="DataModelListToolTip" TextBlock.FontFamily="{StaticResource GenericRegular}">
         <ToolTip.Resources>
             <Style x:Key="ToolTipPrefix" TargetType="{x:Type TextBlock}">
                 <Setter Property="FontWeight" Value="Bold" />

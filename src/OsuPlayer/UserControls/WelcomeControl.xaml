@@ -11,7 +11,7 @@
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    FontFamily="{StaticResource SspRegular}"
+    FontFamily="{StaticResource GenericRegular}"
     mc:Ignorable="d">
     <Border x:Name="WelcomeArea">
         <StackPanel

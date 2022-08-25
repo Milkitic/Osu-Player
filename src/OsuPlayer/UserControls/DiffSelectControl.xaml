@@ -13,7 +13,7 @@
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    TextBlock.FontFamily="Segoe UI,微软雅黑"
+    TextBlock.FontFamily="{StaticResource GenericRegular}"
     mc:Ignorable="d">
     <uiComponents:AnimatedScrollViewer VerticalScrollBarVisibility="Auto">
         <ItemsControl Margin="5" ItemsSource="{Binding PlayItems, Mode=OneWay}">

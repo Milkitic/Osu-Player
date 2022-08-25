@@ -12,7 +12,7 @@
     Title="有可用更新"
     Width="600"
     Height="450"
-    FontFamily="{StaticResource SspRegular}"
+    FontFamily="{StaticResource GenericRegular}"
     FontSize="13"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
     ResizeMode="NoResize"
@@ -28,12 +28,12 @@
             <Setter Property="LineHeight" Value="5" />
         </Style>
         <Style x:Key="{x:Static md:Styles.DocumentStyleKey}" TargetType="{x:Type FlowDocument}">
-            <Setter Property="FontFamily" Value="{StaticResource SspRegular}" />
+            <Setter Property="FontFamily" Value="{StaticResource GenericRegular}" />
             <Setter Property="TextAlignment" Value="Left" />
             <Setter Property="PagePadding" Value="0" />
         </Style>
         <Style x:Key="{x:Static md:Styles.Heading5StyleKey}" TargetType="{x:Type Paragraph}">
-            <Setter Property="FontFamily" Value="{StaticResource SspSemibold}" />
+            <Setter Property="FontFamily" Value="{StaticResource GenericRegular}" />
             <Setter Property="FontSize" Value="15" />
             <Setter Property="Foreground" Value="#ff000000" />
             <Setter Property="LineHeight" Value="10" />

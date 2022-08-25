@@ -1,7 +1,3 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <FontFamily x:Key="SspExtraLight">pack://application:,,,/OsuPlayer;component/Resources/Fonts/#Source Sans Pro ExtraLight,pack://application:,,,/OsuPlayer;component/Resources/Fonts/#思源屏显臻宋 CN</FontFamily>
-    <FontFamily x:Key="SspLight">pack://application:,,,/OsuPlayer;component/Resources/Fonts/#Source Sans Pro Light,pack://application:,,,/OsuPlayer;component/Resources/Fonts/#思源屏显臻宋 CN</FontFamily>
-    <FontFamily x:Key="SspRegular">pack://application:,,,/OsuPlayer;component/Resources/Fonts/#Source Sans Pro,pack://application:,,,/OsuPlayer;component/Resources/Fonts/#思源屏显臻宋 CN</FontFamily>
-    <FontFamily x:Key="SspSemibold">pack://application:,,,/OsuPlayer;component/Resources/Fonts/#Source Sans Pro Semibold,pack://application:,,,/OsuPlayer;component/Resources/Fonts/#思源屏显臻宋 CN</FontFamily>
-    <FontFamily x:Key="SspBlack">pack://application:,,,/OsuPlayer;component/Resources/Fonts/#Source Sans Pro Black,pack://application:,,,/OsuPlayer;component/Resources/Fonts/#思源屏显臻宋 CN</FontFamily>
+    <FontFamily x:Key="GenericRegular">Segoe UI,微软雅黑</FontFamily>
 </ResourceDictionary>

@@ -12,7 +12,7 @@
     Width="640"
     Height="440"
     MinWidth="580"
-    FontFamily="{StaticResource SspRegular}"
+    FontFamily="{StaticResource GenericRegular}"
     FontSize="13"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
     Shown="Window_Shown"

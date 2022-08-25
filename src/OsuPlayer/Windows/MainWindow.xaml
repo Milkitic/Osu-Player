@@ -25,7 +25,7 @@
     FontSize="13"
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
     Loaded="Window_Loaded"
-    TextBlock.FontFamily="Segoe UI,微软雅黑"
+    TextBlock.FontFamily="{StaticResource GenericRegular}"
     TextOptions.TextFormattingMode="Display"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -192,7 +192,7 @@
             <!--<Popup x:Key="TrayStatusPopup"></Popup>-->
             <ContextMenu
                 x:Key="TrayMenu"
-                FontFamily="{StaticResource SspRegular}"
+                FontFamily="{StaticResource GenericRegular}"
                 FontSize="13"
                 Style="{StaticResource DefaultContextMenu}">
                 <!--<ContextMenu x:Key="TrayMenu">-->

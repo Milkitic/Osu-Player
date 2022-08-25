@@ -106,7 +106,7 @@
         <Setter Property="BorderBrush" Value="#20303030" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Background" Value="#80FFFFFF" />
-        <Setter Property="FontFamily" Value="{StaticResource SspRegular}" />
+        <Setter Property="FontFamily" Value="{StaticResource GenericRegular}" />
         <Setter Property="TextBlock.FontSize" Value="13" />
         <Setter Property="ContextMenu" Value="{DynamicResource DataModelListContextMenu}" />
         <Setter Property="Template">

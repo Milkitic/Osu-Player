@@ -42,7 +42,7 @@ public class LyricWindowViewModel : VmBase
     public ICollection<FontFamily> AllFontFamilies { get; } =
         new SortedSet<FontFamily>(Fonts.SystemFontFamilies.Concat(new[]
         {
-            (FontFamily) Application.Current.FindResource("SspRegular")
+            (FontFamily) Application.Current.FindResource("GenericRegular")
         }), new FontFamilyComparer());
 
     public double Hue

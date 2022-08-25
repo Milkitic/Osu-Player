@@ -30,13 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\Fonts\SourceHanSerifCn.ttf" />
-    <None Remove="Resources\Fonts\SourceSansPro-Black.ttf" />
-    <None Remove="Resources\Fonts\SourceSansPro-Bold.ttf" />
-    <None Remove="Resources\Fonts\SourceSansPro-ExtraLight.ttf" />
-    <None Remove="Resources\Fonts\SourceSansPro-Light.ttf" />
-    <None Remove="Resources\Fonts\SourceSansPro-Regular.ttf" />
-    <None Remove="Resources\Fonts\SourceSansPro-Semibold.ttf" />
     <None Remove="Resources\official\registration.jpg" />
     <None Remove="Resources\osuPlayer.ico" />
     <None Remove="Resources\*.png" />
@@ -96,24 +89,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\Fonts\SourceHanSerifCn.ttf">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Fonts\SourceSansPro-Black.ttf">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Fonts\SourceSansPro-ExtraLight.ttf">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Fonts\SourceSansPro-Light.ttf">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Fonts\SourceSansPro-Regular.ttf">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Fonts\SourceSansPro-Semibold.ttf">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Resources\official\registration.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

@@ -14,7 +14,7 @@
     d:DataContext="{d:DesignInstance models:PlayItemDetail,
                                      IsDesignTimeCreatable=False}"
     Background="#323232"
-    FontFamily="{StaticResource SspRegular}"
+    FontFamily="{StaticResource GenericRegular}"
     FontSize="13"
     ResizeMode="NoResize"
     SizeToContent="Height"

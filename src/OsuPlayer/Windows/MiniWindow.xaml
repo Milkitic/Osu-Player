@@ -13,7 +13,7 @@
     Background="Transparent"
     Activated="Window_Activated"
     Closing="Window_Closing"
-    FontFamily="{StaticResource SspRegular}"
+    FontFamily="{StaticResource GenericRegular}"
     FontSize="13"
     Loaded="Window_Loaded"
     LocationChanged="Window_LocationChanged"

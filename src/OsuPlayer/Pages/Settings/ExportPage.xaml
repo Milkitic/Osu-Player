@@ -9,7 +9,7 @@
     Title="ExportPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    FontFamily="{StaticResource SspRegular}"
+    FontFamily="{StaticResource GenericRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
     <Grid>

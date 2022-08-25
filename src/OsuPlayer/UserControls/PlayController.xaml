@@ -14,7 +14,7 @@
     d:DesignHeight="46"
     d:DesignWidth="800"
     Initialized="UserControl_Initialized"
-    TextBlock.FontFamily="Segoe UI,微软雅黑"
+    TextBlock.FontFamily="{StaticResource GenericRegular}"
     TextOptions.TextFormattingMode="Display"
     mc:Ignorable="d">
     <UserControl.Resources>
