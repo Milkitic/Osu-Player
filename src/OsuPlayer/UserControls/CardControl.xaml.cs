@@ -181,12 +181,12 @@ public partial class CardControl : UserControl
         //var grid = (Grid)((FrameworkElement)sender).FindParentObjects(typeof(Grid));
         //var popup = (Popup)grid.FindName("Popup");
         //popup.sho
-        MoreInfoCanvas.Visibility = Visibility.Visible;
+        //MoreInfoCanvas.Visibility = Visibility.Visible;
     }
 
     private void UIElement_OnMouseLeave(object sender, MouseEventArgs e)
     {
-        MoreInfoCanvas.Visibility = Visibility.Hidden;
+        //MoreInfoCanvas.Visibility = Visibility.Hidden;
     }
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)

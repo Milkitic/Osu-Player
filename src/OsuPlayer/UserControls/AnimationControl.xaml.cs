@@ -74,17 +74,18 @@ public partial class AnimationControl : UserControl
 
     private async void Shared_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        switch (e.PropertyName)
+        if (e.PropertyName == nameof(SharedVm.EnableVideo))
         {
-            case nameof(SharedVm.EnableVideo):
-                if (_loadContext == null) return;
+            if (_loadContext == null) return;
 
-                if (SharedVm.Default.EnableVideo)
-                    await InitVideoAsync(_loadContext);
-                else
-                    await CloseVideoAsync();
-
-                break;
+            if (SharedVm.Default.EnableVideo)
+            {
+                await InitVideoAsync(_loadContext);
+            }
+            else
+            {
+                await CloseVideoAsync();
+            }
         }
     }
 

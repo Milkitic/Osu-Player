@@ -3,12 +3,11 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Observable;
-using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.Wpf.Command;
 
 namespace Milki.OsuPlayer.UserControls;
 
-public class DiffSelectPageViewModel : VmBase
+public class DiffSelectControlVm : VmBase
 {
     private ObservableCollection<PlayItem> _playItems;
 
@@ -22,9 +21,9 @@ public class DiffSelectPageViewModel : VmBase
 
     public ICommand SelectCommand => new DelegateCommand(obj =>
     {
-        var selectedMap = PlayItems.FirstOrDefault(k => k.PlayItemDetail.Version == (string)obj);
+        if (obj is not PlayItem playItem) return;
         var callbackObj = new CallbackObj();
-        Callback?.Invoke(selectedMap, callbackObj);
+        Callback?.Invoke(playItem, callbackObj);
         if (!callbackObj.Handled)
         {
             App.CurrentMainContentDialog.RaiseCancel();
@@ -42,14 +41,17 @@ public class CallbackObj
 /// </summary>
 public partial class DiffSelectControl : UserControl
 {
-    private readonly DiffSelectPageViewModel _viewModel;
+    private readonly DiffSelectControlVm _viewModel;
+
     public DiffSelectControl(IEnumerable<PlayItem> playItems, Action<PlayItem, CallbackObj> onSelect)
     {
         InitializeComponent();
 
-        DataContext = _viewModel = new DiffSelectPageViewModel();
-        _viewModel.PlayItems = new ObservableCollection<PlayItem>(playItems.OrderBy(k => k.PlayItemDetail.GameMode)
-            .ThenBy(k => k.PlayItemDetail.StarRating));
+        DataContext = _viewModel = new DiffSelectControlVm();
+        _viewModel.PlayItems = new ObservableCollection<PlayItem>(playItems
+            .OrderBy(k => k.PlayItemDetail.GameMode)
+            .ThenBy(k => k.PlayItemDetail.StarRating)
+        );
         _viewModel.Callback = onSelect;
     }
 }

@@ -52,9 +52,30 @@
         ContextMenu="{StaticResource DataModelListContextMenu}"
         MouseLeave="UIElement_OnMouseLeave"
         RenderTransformOrigin="0.5,0.5">
-        <!--<Grid.ToolTip>
-            <StaticResource ResourceKey="DataModelListToolTip" />
-        </Grid.ToolTip>-->
+        <Grid.Triggers>
+            <EventTrigger RoutedEvent="MouseLeave">
+                <BeginStoryboard>
+                    <Storyboard Storyboard.TargetName="MoreInfoCanvas">
+                        <DoubleAnimation
+                            EasingFunction="{StaticResource QuinticEaseOut}"
+                            Storyboard.TargetProperty="Opacity"
+                            To="0"
+                            Duration="0:0:0.3" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="MouseMove" SourceName="MoreInfoCanvas">
+                <BeginStoryboard>
+                    <Storyboard Storyboard.TargetName="MoreInfoCanvas">
+                        <DoubleAnimation
+                            EasingFunction="{StaticResource QuinticEaseOut}"
+                            Storyboard.TargetProperty="Opacity"
+                            To="1"
+                            Duration="0:0:0.2" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Grid.Triggers>
         <Border
             x:Name="BorderMain"
             Background="#FBFBFB"
@@ -152,13 +173,16 @@
                     </StackPanel>
                     <StackPanel Margin="0,0,0,4" Orientation="Horizontal">
                         <TextBlock Text="mapped by " />
-                        <buttonComponent:CommonButton Content="{Binding ElementName=Self, Path=Creator}" Click="ButtonBase_OnClick" Style="{StaticResource LinkButton}" />
+                        <buttonComponent:CommonButton
+                            Click="ButtonBase_OnClick"
+                            Content="{Binding ElementName=Self, Path=Creator}"
+                            Style="{StaticResource LinkButton}" />
                     </StackPanel>
                     <Canvas
                         x:Name="MoreInfoCanvas"
                         Margin="-6,0"
                         Panel.ZIndex="1"
-                        Visibility="Hidden">
+                        Opacity="0">
                         <Border
                             Width="{Binding ElementName=BorderMain, Path=ActualWidth}"
                             Padding="5,0,5,5"

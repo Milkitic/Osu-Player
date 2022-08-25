@@ -177,9 +177,8 @@ public sealed partial class ApplicationDbContext
         if (playItems.Count < 1) return;
         var findAsync = await PlayLists.FindAsync(collection.Id);
         if (findAsync == null) return;
-
-        collection = findAsync;
-        collection.PlayItems.AddRange(playItems);
+        await Entry(findAsync).Collection(p => p.PlayItems).LoadAsync(); 
+        findAsync.PlayItems.AddRange(playItems);
 
         await SaveChangesAsync();
     }

@@ -13,7 +13,7 @@
     FontFamily="{StaticResource GenericRegular}"
     Initialized="SelectCollectionControl_OnInitialized"
     mc:Ignorable="d">
-    <Grid Margin="-10">
+    <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
@@ -72,10 +72,9 @@
                             HorizontalContentAlignment="Left"
                             Background="#FAFAFB"
                             BorderThickness="0"
-                            Click="BtnClose_Click"
-                            Command="{Binding SelectCommand}"
-                            CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.PlayItems}"
-                            CornerRadius="0">
+                            Click="BtnSelect_Click"
+                            CornerRadius="0"
+                            Tag="{Binding}">
                             <Grid HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="58" />

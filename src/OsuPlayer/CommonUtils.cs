@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using Anotar.NLog;
 using Coosu.Beatmap;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
@@ -150,6 +151,57 @@ public static class CommonUtils
         {
             ConcurrentLimit.Release();
         }
+    }
+
+    public static async Task<bool> AddToCollectionAsync(PlayList playList, IList<PlayItem> beatmaps)
+    {
+        if (beatmaps.Count <= 0) return false;
+
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        if (string.IsNullOrEmpty(playList.ImagePath))
+        {
+            var osuSongDir = AppSettings.Default.GeneralSection.OsuSongDir;
+            foreach (var beatmap in beatmaps)
+            {
+                var folder = PathUtils.GetFullPath(beatmap.StandardizedFolder, osuSongDir);
+                var path = PathUtils.GetFullPath(beatmap.StandardizedPath, osuSongDir);
+                try
+                {
+                    var osuFile = await OsuFile.ReadFromFileAsync(path, options =>
+                    {
+                        options.IncludeSection("Events");
+                        options.IgnoreSample();
+                        options.IgnoreStoryboard();
+                    });
+                    if (osuFile.Events?.BackgroundInfo == null)
+                        continue;
+
+                    var imagePath = Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename);
+                    if (!File.Exists(imagePath)) continue;
+
+                    playList.ImagePath = imagePath;
+                    await dbContext.UpdateAndSaveChangesAsync(playList, k => k.ImagePath);
+                    break;
+                }
+                catch (Exception e)
+                {
+                    continue;
+                }
+            }
+        }
+
+        await dbContext.AddPlayItemsToPlayList(beatmaps, playList);
+        if (playList.IsDefault)
+        {
+            var playerService = App.Current.ServiceProvider.GetService<PlayerService>()!;
+            var loadContext = playerService.LastLoadContext;
+            if (loadContext?.PlayItem != null && beatmaps.Any(k => loadContext.PlayItem.Id.Equals(k.Id)))
+            {
+                loadContext.IsPlayItemFavorite = true;
+            }
+        }
+
+        return true;
     }
 
     private static void ResizeImageAndSave(string sourcePath, string targetName, int width = 0, int height = 0)

@@ -11,7 +11,7 @@ public static class DifficultyUtils
     public static Color GetColorByStarRating(double sr)
     {
         _brush ??= (LinearGradientBrush?)App.Current.FindResource("DifficultyBrush");
-        if (_brush == null) throw new Exception("Can not find brush resource.");
+        if (_brush == null) throw new Exception("Can not find DifficultyBrush resource.");
         return _brush.GradientStops.GetRelativeColor(sr / 10);
     }
 }

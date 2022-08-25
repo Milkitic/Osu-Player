@@ -1,16 +1,9 @@
 ﻿#nullable enable
 
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using Coosu.Beatmap;
-using Microsoft.Extensions.DependencyInjection;
-using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
-using Milki.OsuPlayer.Services;
-using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.ViewModels;
 
@@ -34,6 +27,7 @@ public partial class SelectCollectionControl : UserControl
         _viewModel.PlayItems = playItems;
         InitializeComponent();
         _overlay = App.CurrentMainContentDialog.GetOrCreateSubOverlay();
+        _overlay.DialogPadding = new Thickness();
     }
 
     private async void SelectCollectionControl_OnInitialized(object? sender, EventArgs e)
@@ -54,8 +48,10 @@ public partial class SelectCollectionControl : UserControl
         });
     }
 
-    private void BtnClose_Click(object sender, RoutedEventArgs e)
+    private async void BtnSelect_Click(object sender, RoutedEventArgs e)
     {
+        if (sender is not FrameworkElement { Tag: PlayList playList }) return;
+        await CommonUtils.AddToCollectionAsync(playList, _viewModel.PlayItems);
         App.CurrentMainContentDialog.RaiseOk();
     }
 
@@ -63,56 +59,5 @@ public partial class SelectCollectionControl : UserControl
     {
         await using var dbContext = ServiceProviders.GetApplicationDbContext();
         _viewModel.PlayLists = new ObservableCollection<PlayList>(await dbContext.GetPlayListsAsync());
-    }
-
-    public static async Task<bool> AddToCollectionAsync(PlayList playList, IList<PlayItem> beatmaps)
-    {
-        if (beatmaps.Count <= 0) return false;
-
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
-        if (string.IsNullOrEmpty(playList.ImagePath))
-        {
-            var osuSongDir = AppSettings.Default.GeneralSection.OsuSongDir;
-            foreach (var beatmap in beatmaps)
-            {
-                var folder = PathUtils.GetFullPath(beatmap.StandardizedFolder, osuSongDir);
-                var path = PathUtils.GetFullPath(beatmap.StandardizedPath, osuSongDir);
-                try
-                {
-                    var osuFile = await OsuFile.ReadFromFileAsync(path, options =>
-                    {
-                        options.IncludeSection("Events");
-                        options.IgnoreSample();
-                        options.IgnoreStoryboard();
-                    });
-                    if (osuFile.Events?.BackgroundInfo == null)
-                        continue;
-
-                    var imagePath = Path.Combine(folder, osuFile.Events.BackgroundInfo.Filename);
-                    if (!File.Exists(imagePath)) continue;
-
-                    playList.ImagePath = imagePath;
-                    await dbContext.UpdateAndSaveChangesAsync(playList, k => k.ImagePath);
-                    break;
-                }
-                catch (Exception e)
-                {
-                    continue;
-                }
-            }
-        }
-
-        await dbContext.AddPlayItemsToPlayList(beatmaps, playList);
-        if (playList.IsDefault)
-        {
-            var playerService = App.Current.ServiceProvider.GetService<PlayerService>()!;
-            var loadContext = playerService.LastLoadContext;
-            if (loadContext?.PlayItem != null && beatmaps.Any(k => loadContext.PlayItem.Id.Equals(k.Id)))
-            {
-                loadContext.IsPlayItemFavorite = true;
-            }
-        }
-
-        return true;
     }
 }

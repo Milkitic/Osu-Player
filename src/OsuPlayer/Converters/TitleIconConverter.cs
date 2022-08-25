@@ -10,9 +10,9 @@ public class TitleIconConverter : IValueConverter
     {
         if (value is bool isNavigationCollapsed)
         {
-            return !isNavigationCollapsed
-                ? App.Current.FindResource("TitleLogo")
-                : App.Current.FindResource("TitleLogoSmall");
+            return isNavigationCollapsed
+                ? App.Current.FindResource("TitleLogoSmall")
+                : App.Current.FindResource("TitleLogo");
         }
 
         return new Thickness(0);
