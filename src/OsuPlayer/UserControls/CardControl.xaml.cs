@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Coosu.Beatmap.Sections.GamePlay;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +11,6 @@ using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.UiComponents.NotificationComponent;
-using Milki.OsuPlayer.Wpf.Dependency;
 
 namespace Milki.OsuPlayer.UserControls;
 
@@ -22,25 +20,17 @@ namespace Milki.OsuPlayer.UserControls;
 public partial class CardControl : UserControl
 {
     public static readonly DependencyProperty ThumbPathProperty = DependencyProperty.Register(
-        nameof(ThumbPath), typeof(string), typeof(CardControl),
-        new PropertyMetadata("pack://application:,,,/OsuPlayer;component/Resources/official/registration.jpg"));
-
+        nameof(ThumbPath), typeof(string), typeof(CardControl), new PropertyMetadata(null));
     public static readonly DependencyProperty ArtistProperty = DependencyProperty.Register(
         nameof(Artist), typeof(string), typeof(CardControl), new PropertyMetadata("artist"));
-
     public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(
         nameof(Title), typeof(string), typeof(CardControl), new PropertyMetadata("title"));
-
     public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(
         nameof(Source), typeof(string), typeof(CardControl), new PropertyMetadata(default(string)));
-
     public static readonly DependencyProperty CreatorProperty = DependencyProperty.Register(
         nameof(Creator), typeof(string), typeof(CardControl), new PropertyMetadata("cretor"));
-
     public static readonly DependencyProperty GroupPlayItemsProperty = DependencyProperty.Register(
-        nameof(GroupPlayItems), typeof(Dictionary<GameMode, PlayItem[]>), typeof(CardControl),
-        new PropertyMetadata(default(Dictionary<GameMode, PlayItem[]>)));
-
+        nameof(GroupPlayItems), typeof(Dictionary<GameMode, PlayItem[]>), typeof(CardControl), new PropertyMetadata(default(Dictionary<GameMode, PlayItem[]>)));
     public static readonly DependencyProperty PlayItemProperty = DependencyProperty.Register(
         nameof(PlayItem), typeof(PlayItem), typeof(CardControl), new PropertyMetadata(default(PlayItem)));
 

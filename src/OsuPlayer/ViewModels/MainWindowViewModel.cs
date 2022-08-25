@@ -20,4 +20,6 @@ public class MainWindowViewModel : VmBase
         get => _lyricWindowViewModel;
         set => this.RaiseAndSetIfChanged(ref _lyricWindowViewModel, value);
     }
+
+    public SharedVm SharedVm => SharedVm.Default;
 }

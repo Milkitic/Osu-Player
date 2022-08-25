@@ -38,16 +38,11 @@
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
     <wpf:WindowEx.Resources>
-        <converters:NavigationWidthConverter x:Key="CvtNavigationWidth" />
-        <!--<converter:IconMarginConverter x:Key="CvtIconMargin" />-->
         <converters:TitleIconConverter x:Key="CvtTitleIcon" />
-        <converters:TitleVisibleConverter x:Key="CvtTitleVisible" />
         <converters:LyricWindowShownConverter x:Key="CvtLyricWindowShown" />
         <converters:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
-        <converters:MsToStringConverter x:Key="MsToStringConverter" />
-        <converters:SwitchRadioChangeConverter x:Key="SwitchRadioChangeConverter" />
     </wpf:WindowEx.Resources>
-    <Grid Margin="{Binding WindowState, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource WindowMarginConverter}}" Background="Gray">
+    <Grid Margin="{Binding WindowState, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource WindowMarginConverter}}">
         <!--<Grid.Background>
             <ImageBrush
                 ImageSource="{StaticResource TextureSource1}"
@@ -55,6 +50,7 @@
                 Viewport="0,0,500,500"
                 ViewportUnits="Absolute" />
         </Grid.Background>-->
+        <Grid.Background>Gray</Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition />
@@ -67,7 +63,7 @@
                 Height="28"
                 Margin="10,0,0,0"
                 HorizontalAlignment="Left"
-                Source="{Binding IsNavigationCollapsed, Converter={StaticResource CvtTitleIcon}}" />
+                Source="{Binding SharedVm.IsNavigationCollapsed, Converter={StaticResource CvtTitleIcon}}" />
         </DockPanel>
         <Grid x:Name="MainGrid" Grid.Row="1">
             <Grid.RowDefinitions>
@@ -262,12 +258,12 @@
                 <!--<Button Content="循环模式" Style="{DynamicResource DefaultMenuItem}"/>-->
                 <MenuItem
                     Click="MenuOpenHideLyric_Click"
-                    Header="{Binding LyricWindowViewModel.IsLyricWindowEnabled, Converter={StaticResource CvtLyricWindowShown}, ConverterParameter=string}"
+                    Header="{Binding SharedVm.IsLyricWindowEnabled, Converter={StaticResource CvtLyricWindowShown}, ConverterParameter=string}"
                     Style="{DynamicResource DefaultMenuItem}" />
                 <MenuItem
                     Click="MenuLockLyric_Click"
-                    Header="{Binding IsLyricWindowLocked, Converter={StaticResource CvtLyricWindowLocked}}"
-                    IsEnabled="{Binding LyricWindowViewModel.IsLyricWindowEnabled, Converter={StaticResource CvtLyricWindowShown}, ConverterParameter=bool}"
+                    Header="{Binding SharedVm.IsLyricWindowLocked, Converter={StaticResource CvtLyricWindowLocked}}"
+                    IsEnabled="{Binding SharedVm.IsLyricWindowEnabled, Converter={StaticResource CvtLyricWindowShown}, ConverterParameter=bool}"
                     Style="{DynamicResource DefaultMenuItem}" />
                 <Separator />
                 <MenuItem

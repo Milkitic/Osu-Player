@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\official\registration.jpg" />
     <None Remove="Resources\osuPlayer.ico" />
     <None Remove="Resources\*.png" />
     <None Remove="Resources\store.jpg" />
@@ -83,9 +82,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\official\registration.jpg">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Resources\osuPlayer.ico" />
     <Resource Include="Resources\*.png" />
     <Resource Include="Resources\store.jpg" />
@@ -97,6 +93,9 @@
     </None>
     <None Update="Resources\official\LICENCE.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\official\registration.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
