@@ -8,25 +8,25 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary x:Name="i18nXaml" Source="Styles/i18n.xaml" />
-                <ResourceDictionary Source="Styles/FontDictionary.xaml" />
-                <ResourceDictionary Source="Styles/ConverterDictionary.xaml" />
-                <ResourceDictionary Source="Styles/EasingFunction.xaml" />
-                <ResourceDictionary Source="Styles/GeneralStyle.xaml" />
-                <ResourceDictionary Source="Styles/BrushDictionary.xaml" />
-                <ResourceDictionary Source="Styles/SvgDictionary.xaml" />
-                <ResourceDictionary Source="Styles/ButtonStyle.xaml" />
-                <ResourceDictionary Source="Styles/ButtonDictionary.xaml" />
-                <ResourceDictionary Source="Styles/ConfigStyle.xaml" />
-                <ResourceDictionary Source="Styles/ContextMenuStyle.xaml" />
-                <ResourceDictionary Source="Styles/ListViewStyle.xaml" />
-                <ResourceDictionary Source="Styles/NavigationStyle.xaml" />
-                <ResourceDictionary Source="Styles/Radios.xaml" />
-                <ResourceDictionary Source="Styles/SliderStyle.xaml" />
-                <ResourceDictionary Source="Styles/StatusIconStyle.xaml" />
-                <ResourceDictionary Source="Styles/TabStyle.xaml" />
-                <ResourceDictionary Source="Styles/ScrollBarStyle.xaml" />
-                <ResourceDictionary Source="Styles/Components.xaml" />
+                <ResourceDictionary x:Name="I18NXaml" Source="ResourceDictionaries/i18n.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/FontDictionary.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/ConverterDictionary.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/EasingFunction.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/GeneralStyle.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/BrushDictionary.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/SvgDictionary.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/ButtonStyle.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/ButtonDictionary.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/ConfigStyle.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/ContextMenuStyle.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/ListViewStyle.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/NavigationStyle.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/Radios.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/SliderStyle.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/StatusIconStyle.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/TabStyle.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/ScrollBarStyle.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/Components.xaml" />
 
                 <ResourceDictionary Source="UiComponents/ButtonComponent/CommonButton.xaml" />
                 <ResourceDictionary Source="UiComponents/ButtonComponent/PlayerControlButton.xaml" />

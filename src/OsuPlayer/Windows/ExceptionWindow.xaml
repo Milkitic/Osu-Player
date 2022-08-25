@@ -15,7 +15,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary x:Name="i18nXaml" Source="/Styles/i18n.xaml" />
+                <ResourceDictionary x:Name="I18NXaml" Source="/ResourceDictionaries/i18n.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <SolidColorBrush x:Key="GreyBrush" Color="#646464" />
             <converters:TrueToVisibleConverter x:Key="TrueToVisibleConverter" />
