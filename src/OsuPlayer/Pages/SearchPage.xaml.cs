@@ -24,7 +24,7 @@ public class SearchPageVm : VmBase
         set => this.RaiseAndSetIfChanged(ref _searchText, value);
     }
 
-    public ObservableCollection<PlayGroupQuery> PlayItems { get; } = new();
+    public ObservableCollection<PlayGroupQuery> PlayGroupQueries { get; } = new();
 }
 
 /// <summary>
@@ -63,10 +63,10 @@ public partial class SearchPage : Page
                 page: page,
                 countPerPage: Pagination.ItemsCount
             );
-        _viewModel.PlayItems.Clear();
+        _viewModel.PlayGroupQueries.Clear();
         foreach (var playGroupQuery in paginationQueryResult.Results)
         {
-            _viewModel.PlayItems.Add(playGroupQuery);
+            _viewModel.PlayGroupQueries.Add(playGroupQuery);
         }
 
         Pagination.CurrentPageIndex = page < 1 ? 0 : page - 1;
@@ -131,7 +131,7 @@ public partial class SearchPage : Page
 
     private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
     {
-        var groupQuery = _viewModel.PlayItems[e.Index];
+        var groupQuery = _viewModel.PlayGroupQueries[e.Index];
         var playItem = groupQuery.DefaultPlayItem;
         try
         {

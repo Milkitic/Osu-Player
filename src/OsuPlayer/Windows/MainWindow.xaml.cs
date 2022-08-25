@@ -6,7 +6,7 @@ using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Utils;
-using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.UiComponents.ContentDialogComponent;
 using Milki.OsuPlayer.UiComponents.NotificationComponent;
 using Milki.OsuPlayer.UserControls;
 using Milki.OsuPlayer.Utils;
@@ -325,8 +325,8 @@ public partial class MainWindow : WindowBase
     {
         if (_playerService.LastLoadContext is { PlayItem: { } playItem })
         {
-            ContentDialog.ShowContent(new SelectCollectionControl(playItem),
-                DialogOptionFactory.SelectCollectionOptions);
+            ContentDialog.ShowContent(new SelectPlayListControl(playItem),
+                DialogOptionFactory.SelectPlayListOptions);
         }
     }
 

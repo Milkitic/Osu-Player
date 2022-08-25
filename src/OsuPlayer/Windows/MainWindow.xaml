@@ -5,7 +5,6 @@
     xmlns:buttonComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ButtonComponent"
     xmlns:converters="clr-namespace:Milki.OsuPlayer.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:frontDialogComponent="clr-namespace:Milki.OsuPlayer.UiComponents.FrontDialogComponent"
     xmlns:local="clr-namespace:Milki.OsuPlayer.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:notificationComponent="clr-namespace:Milki.OsuPlayer.UiComponents.NotificationComponent"
@@ -15,6 +14,7 @@
     xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
     xmlns:viewModels="clr-namespace:Milki.OsuPlayer.ViewModels"
     xmlns:wpf="clr-namespace:Milki.OsuPlayer.Wpf;assembly=OsuPlayer.Wpf"
+    xmlns:contentDialogComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ContentDialogComponent"
     Title="Osu Player"
     Width="998"
     Height="759"
@@ -109,7 +109,7 @@
             Grid.Column="0"
             Background="{StaticResource WhiteBrush80}"
             Visibility="Hidden" />
-        <frontDialogComponent:ContentDialog
+        <contentDialogComponent:ContentDialog
             x:Name="ContentDialog"
             Grid.Row="0"
             Grid.RowSpan="2"

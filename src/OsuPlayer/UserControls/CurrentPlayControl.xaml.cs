@@ -11,7 +11,7 @@ using Milki.OsuPlayer.Pages;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.Shared.Utils;
-using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.UiComponents.ContentDialogComponent;
 using Milki.OsuPlayer.Wpf.Command;
 
 namespace Milki.OsuPlayer.UserControls;
@@ -114,29 +114,29 @@ public class CurrentPlayControlVm : VmBase
         }
     }
 
-    public ICommand SaveCollectionCommand
+    public ICommand SavePlayListCommand
     {
         get
         {
             return new DelegateCommand(param =>
             {
-                App.CurrentMainContentDialog.ShowContent(new SelectCollectionControl(SelectedMap),
-                    DialogOptionFactory.SelectCollectionOptions);
+                App.CurrentMainContentDialog.ShowContent(new SelectPlayListControl(SelectedMap),
+                    DialogOptionFactory.SelectPlayListOptions);
                 //var mw = WindowEx.GetCurrentFirst<MainWindow>();
-                //mw.FramePop.Navigate(new SelectCollectionPage(SelectedMap));
+                //mw.FramePop.Navigate(new SelectPlayListPage(SelectedMap));
             });
         }
     }
 
-    public ICommand SaveAllCollectionCommand
+    public ICommand SaveAllPlayListCommand
     {
         get
         {
             return new DelegateCommand(param =>
             {
                 if (_playListService.PathList.Count == 0) return;
-                //FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(Controller.PlayList.SongList),
-                //    DialogOptionFactory.SelectCollectionOptions);
+                //FrontDialogOverlay.Default.ShowContent(new SelectPlayListControl(Controller.PlayList.SongList),
+                //    DialogOptionFactory.SelectPlayListOptions);
             });
         }
     }

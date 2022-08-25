@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
-using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Wpf.Command;
 

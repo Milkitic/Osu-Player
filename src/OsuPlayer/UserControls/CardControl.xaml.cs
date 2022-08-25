@@ -9,7 +9,7 @@ using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Pages;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Utils;
-using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.UiComponents.ContentDialogComponent;
 using Milki.OsuPlayer.UiComponents.NotificationComponent;
 
 namespace Milki.OsuPlayer.UserControls;
@@ -155,8 +155,8 @@ public partial class CardControl : UserControl
                 {
                     arg.Handled = true;
                     App.CurrentMainContentDialog.ShowContent(
-                        new SelectCollectionControl(selected),
-                        DialogOptionFactory.SelectCollectionOptions
+                        new SelectPlayListControl(selected),
+                        DialogOptionFactory.SelectPlayListOptions
                     );
                 });
             App.CurrentMainContentDialog.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
@@ -164,8 +164,8 @@ public partial class CardControl : UserControl
         else
         {
             App.CurrentMainContentDialog.ShowContent(
-                new SelectCollectionControl(PlayItem),
-                DialogOptionFactory.SelectCollectionOptions
+                new SelectPlayListControl(PlayItem),
+                DialogOptionFactory.SelectPlayListOptions
             );
         }
     }

@@ -7,23 +7,41 @@ using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Services;
-using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.Shared.Observable;
+using Milki.OsuPlayer.UiComponents.ContentDialogComponent;
 using Milki.OsuPlayer.UiComponents.PanelComponent;
 using Milki.OsuPlayer.UserControls;
 using Milki.OsuPlayer.Utils;
-using Milki.OsuPlayer.ViewModels;
 using Milki.OsuPlayer.Wpf;
 
 namespace Milki.OsuPlayer.Pages;
 
+public class PlayListPageVm : VmBase
+{
+    private ObservableCollection<PlayItem> _playItems;
+    private PlayList _playList;
+
+    public ObservableCollection<PlayItem> PlayItems
+    {
+        get => _playItems;
+        set => this.RaiseAndSetIfChanged(ref _playItems, value);
+    }
+
+    public PlayList PlayList
+    {
+        get => _playList;
+        set => this.RaiseAndSetIfChanged(ref _playList, value);
+    }
+}
+
 /// <summary>
-/// CollectionPage.xaml 的交互逻辑
+/// PlayListPage.xaml 的交互逻辑
 /// </summary>
 public partial class PlayListPage : Page
 {
     private readonly PlayerService _playerService;
     private readonly PlayListService _playListService;
-    private readonly CollectionPageViewModel _viewModel;
+    private readonly PlayListPageVm _viewModel;
 
     private List<PlayItem> _playItems;
     private bool _firstLoaded;
@@ -33,7 +51,7 @@ public partial class PlayListPage : Page
         InitializeComponent();
         _playerService = App.Current.ServiceProvider.GetService<PlayerService>();
         _playListService = App.Current.ServiceProvider.GetService<PlayListService>();
-        DataContext = _viewModel = new CollectionPageViewModel();
+        DataContext = _viewModel = new PlayListPageVm();
         _viewModel.PlayList = playList;
     }
 
@@ -128,8 +146,8 @@ public partial class PlayListPage : Page
 
     private void BtnEdit_Click(object sender, RoutedEventArgs e)
     {
-        App.CurrentMainContentDialog.ShowContent(new EditCollectionControl(_viewModel.PlayList),
-            DialogOptionFactory.EditCollectionOptions, (_, _) =>
+        App.CurrentMainContentDialog.ShowContent(new EditPlayListControl(_viewModel.PlayList),
+            DialogOptionFactory.EditPlayListOptions, (_, _) =>
             {
                 var playList = _viewModel.PlayList;
                 _viewModel.PlayList = null;

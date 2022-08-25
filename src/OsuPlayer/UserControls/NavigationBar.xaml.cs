@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Milki.OsuPlayer.Data;
-using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.UiComponents.ContentDialogComponent;
 using Milki.OsuPlayer.Windows;
 
 namespace Milki.OsuPlayer.UserControls;
@@ -26,13 +26,13 @@ public partial class NavigationBar : UserControl
         _mainWindow = App.CurrentMainWindow as MainWindow;
     }
 
-    private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
+    private void BtnAddPlayList_Click(object sender, RoutedEventArgs e)
     {
-        var addCollectionControl = new AddCollectionControl();
+        var addCollectionControl = new AddPlayListControl();
         _mainWindow.ContentDialog.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, async (obj, args) =>
         {
             await using var applicationDbContext = ServiceProviders.GetApplicationDbContext();
-            await applicationDbContext.AddPlayListAsync(addCollectionControl.CollectionName.Text); //todo: exists
+            await applicationDbContext.AddPlayListAsync(addCollectionControl.TbPlayListName.Text); //todo: exists
             await SharedVm.Default.UpdatePlayListsAsync();
         });
     }

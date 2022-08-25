@@ -105,7 +105,7 @@ public partial class MiniPlayController : UserControl
         }
         else
         {
-            if (await CommonUtils.AddToCollectionAsync(playList, new[] { playItem }))
+            if (await CommonUtils.AddToPlayListAsync(playList, new[] { playItem }))
             {
                 loadContext.IsPlayItemFavorite = true;
             }

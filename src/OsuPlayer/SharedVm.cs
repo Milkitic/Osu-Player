@@ -58,9 +58,6 @@ public class SharedVm : SingletonVm<SharedVm>
 
     public AppSettings AppSettings => AppSettings.Default;
 
-    /// <summary>
-    /// Update collections in the navigation bar.
-    /// </summary>
     public async ValueTask UpdatePlayListsAsync()
     {
         await using var dbContext = ServiceProviders.GetApplicationDbContext();

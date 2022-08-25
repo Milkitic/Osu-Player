@@ -3,11 +3,11 @@
 namespace Milki.OsuPlayer.UserControls;
 
 /// <summary>
-/// AddCollectionControl.xaml 的交互逻辑
+/// AddPlayListControl.xaml 的交互逻辑
 /// </summary>
-public partial class AddCollectionControl : UserControl
+public partial class AddPlayListControl : UserControl
 {
-    public AddCollectionControl()
+    public AddPlayListControl()
     {
         InitializeComponent();
     }

@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+namespace Milki.OsuPlayer.UiComponents.ContentDialogComponent;
 
 /// <summary>
 /// FrontDialogOverlay.xaml 的交互逻辑

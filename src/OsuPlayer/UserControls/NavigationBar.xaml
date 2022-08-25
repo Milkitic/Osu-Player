@@ -196,10 +196,10 @@
                     Margin="0,10,5,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                    Click="BtnAddCollection_Click"
+                    Click="BtnAddPlayList_Click"
                     Foreground="{StaticResource ExtraLightBrush}"
                     IconSize="16"
-                    IconTemplate="{StaticResource NavAddCollectionTempl}"
+                    IconTemplate="{StaticResource NavAddPlayListTempl}"
                     Style="{StaticResource NavButton}" />
             </DockPanel>
 

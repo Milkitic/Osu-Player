@@ -567,7 +567,7 @@
             </Path>
         </Canvas>
     </ControlTemplate>
-    <ControlTemplate x:Key="NavAddCollectionTempl">
+    <ControlTemplate x:Key="NavAddPlayListTempl">
         <Canvas Width="1000" Height="1000">
             <Canvas.RenderTransform>
                 <TransformGroup>

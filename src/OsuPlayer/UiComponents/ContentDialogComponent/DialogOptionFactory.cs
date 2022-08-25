@@ -1,7 +1,7 @@
 ﻿using Milki.OsuPlayer.Utils;
-using static Milki.OsuPlayer.UiComponents.FrontDialogComponent.ContentDialog;
+using static Milki.OsuPlayer.UiComponents.ContentDialogComponent.ContentDialog;
 
-namespace Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+namespace Milki.OsuPlayer.UiComponents.ContentDialogComponent;
 
 internal static class DialogOptionFactory
 {
@@ -13,7 +13,7 @@ internal static class DialogOptionFactory
         Height = 300
     };
 
-    public static DialogOptions SelectCollectionOptions => new()
+    public static DialogOptions SelectPlayListOptions => new()
     {
         Title = I18NUtil.GetString("ui-win-selectCollection"),
         ShowDialogButtons = false,
@@ -29,7 +29,7 @@ internal static class DialogOptionFactory
         Height = 135
     };
 
-    public static DialogOptions EditCollectionOptions => new()
+    public static DialogOptions EditPlayListOptions => new()
     {
         Title = I18NUtil.GetString("ui-win-editCollection"),
         ShowDialogButtons = false,

@@ -48,7 +48,7 @@
                 Style="{StaticResource DefaultMenuItem}" />
             <Separator />
             <MenuItem
-                Command="{Binding SaveCollectionCommand}"
+                Command="{Binding SavePlayListCommand}"
                 Header="加至播放列表...(Ctrl+S)"
                 Style="{StaticResource DefaultMenuItem}" />
             <MenuItem
@@ -117,7 +117,7 @@
                             Background="Transparent"
                             BorderThickness="0"
                             Click="CloseButton_Click"
-                            Command="{Binding SaveAllCollectionCommand}"
+                            Command="{Binding SaveAllPlayListCommand}"
                             Content="{DynamicResource ui-btn-saveAll}"
                             Cursor="Hand"
                             FontSize="11"

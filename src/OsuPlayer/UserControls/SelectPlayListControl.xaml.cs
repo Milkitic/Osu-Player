@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using Milki.OsuPlayer.Data.Models;
-using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.UiComponents.ContentDialogComponent;
 using Milki.OsuPlayer.ViewModels;
 
 namespace Milki.OsuPlayer.UserControls;
@@ -12,16 +12,16 @@ namespace Milki.OsuPlayer.UserControls;
 /// <summary>
 /// SelectCollectionControl.xaml 的交互逻辑
 /// </summary>
-public partial class SelectCollectionControl : UserControl
+public partial class SelectPlayListControl : UserControl
 {
     private readonly SelectCollectionPageViewModel _viewModel;
     private readonly ContentDialog _overlay;
 
-    public SelectCollectionControl(PlayItem playItem) : this(new[] { playItem })
+    public SelectPlayListControl(PlayItem playItem) : this(new[] { playItem })
     {
     }
 
-    public SelectCollectionControl(IList<PlayItem> playItems)
+    public SelectPlayListControl(IList<PlayItem> playItems)
     {
         DataContext = _viewModel = new SelectCollectionPageViewModel();
         _viewModel.PlayItems = playItems;
@@ -37,11 +37,11 @@ public partial class SelectCollectionControl : UserControl
 
     private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
     {
-        var addCollectionControl = new AddCollectionControl();
+        var addCollectionControl = new AddPlayListControl();
         _overlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, async (obj, args) =>
         {
             await using var dbContext = ServiceProviders.GetApplicationDbContext();
-            await dbContext.AddPlayListAsync(addCollectionControl.CollectionName.Text);
+            await dbContext.AddPlayListAsync(addCollectionControl.TbPlayListName.Text);
             await SharedVm.Default.UpdatePlayListsAsync();
 
             await RefreshList();
@@ -51,7 +51,7 @@ public partial class SelectCollectionControl : UserControl
     private async void BtnSelect_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement { Tag: PlayList playList }) return;
-        await CommonUtils.AddToCollectionAsync(playList, _viewModel.PlayItems);
+        await CommonUtils.AddToPlayListAsync(playList, _viewModel.PlayItems);
         App.CurrentMainContentDialog.RaiseOk();
     }
 

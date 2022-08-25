@@ -1,4 +1,4 @@
-﻿namespace Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+﻿namespace Milki.OsuPlayer.UiComponents.ContentDialogComponent;
 
 public class DialogClosingEventArgs : EventArgs
 {

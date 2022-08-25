@@ -153,7 +153,7 @@ public static class CommonUtils
         }
     }
 
-    public static async Task<bool> AddToCollectionAsync(PlayList playList, IList<PlayItem> beatmaps)
+    public static async Task<bool> AddToPlayListAsync(PlayList playList, IList<PlayItem> beatmaps)
     {
         if (beatmaps.Count <= 0) return false;
 

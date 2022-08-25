@@ -12,7 +12,7 @@ using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared;
 using Milki.OsuPlayer.Shared.Utils;
-using Milki.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milki.OsuPlayer.UiComponents.ContentDialogComponent;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Windows;
 using Milki.OsuPlayer.Wpf;

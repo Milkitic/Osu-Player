@@ -27,13 +27,13 @@ internal class OutlinedTextBlock : FrameworkElement
     }
 
     public static readonly DependencyProperty FillProperty = DependencyProperty.Register(
-        "Fill",
+        nameof(Fill),
         typeof(Brush),
         typeof(OutlinedTextBlock),
         new FrameworkPropertyMetadata(Brushes.Black, FrameworkPropertyMetadataOptions.AffectsRender));
 
     public static readonly DependencyProperty StrokeProperty = DependencyProperty.Register(
-        "Stroke",
+        nameof(Stroke),
         typeof(Brush),
         typeof(OutlinedTextBlock),
         new FrameworkPropertyMetadata(Brushes.Black, FrameworkPropertyMetadataOptions.AffectsRender,
@@ -46,7 +46,7 @@ internal class OutlinedTextBlock : FrameworkElement
     }
 
     public static readonly DependencyProperty StrokeThicknessProperty = DependencyProperty.Register(
-        "StrokeThickness",
+        nameof(StrokeThickness),
         typeof(double),
         typeof(OutlinedTextBlock),
         new FrameworkPropertyMetadata(1d, FrameworkPropertyMetadataOptions.AffectsRender,
@@ -73,31 +73,31 @@ internal class OutlinedTextBlock : FrameworkElement
         new FrameworkPropertyMetadata(OnFormattedTextUpdated));
 
     public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
-        "Text",
+        nameof(Text),
         typeof(string),
         typeof(OutlinedTextBlock),
         new FrameworkPropertyMetadata(OnFormattedTextInvalidated));
 
     public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register(
-        "TextAlignment",
+        nameof(TextAlignment),
         typeof(TextAlignment),
         typeof(OutlinedTextBlock),
         new FrameworkPropertyMetadata(OnFormattedTextUpdated));
 
     public static readonly DependencyProperty TextDecorationsProperty = DependencyProperty.Register(
-        "TextDecorations",
+        nameof(TextDecorations),
         typeof(TextDecorationCollection),
         typeof(OutlinedTextBlock),
         new FrameworkPropertyMetadata(OnFormattedTextUpdated));
 
     public static readonly DependencyProperty TextTrimmingProperty = DependencyProperty.Register(
-        "TextTrimming",
+        nameof(TextTrimming),
         typeof(TextTrimming),
         typeof(OutlinedTextBlock),
         new FrameworkPropertyMetadata(OnFormattedTextUpdated));
 
     public static readonly DependencyProperty TextWrappingProperty = DependencyProperty.Register(
-        "TextWrapping",
+        nameof(TextWrapping),
         typeof(TextWrapping),
         typeof(OutlinedTextBlock),
         new FrameworkPropertyMetadata(TextWrapping.NoWrap, OnFormattedTextUpdated));
