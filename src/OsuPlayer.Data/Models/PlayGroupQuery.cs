@@ -3,40 +3,7 @@ using Milki.OsuPlayer.Shared.Observable;
 
 namespace Milki.OsuPlayer.Data.Models;
 
-public sealed class MetaComparer : IEqualityComparer<PlayGroupQuery>
-{
-    private MetaComparer()
-    {
-    }
-
-    public static MetaComparer Instance { get; } = new();
-
-    public bool Equals(PlayGroupQuery? x, PlayGroupQuery? y)
-    {
-        if (ReferenceEquals(x, y)) return true;
-        if (ReferenceEquals(x, null)) return false;
-        if (ReferenceEquals(y, null)) return false;
-        if (x.GetType() != y.GetType()) return false;
-        return string.Equals(x.Artist, y.Artist, StringComparison.InvariantCulture) &&
-               string.Equals(x.ArtistUnicode, y.ArtistUnicode, StringComparison.InvariantCulture) &&
-               string.Equals(x.Title, y.Title, StringComparison.InvariantCulture) &&
-               string.Equals(x.TitleUnicode, y.TitleUnicode, StringComparison.InvariantCulture) &&
-               string.Equals(x.Source, y.Source, StringComparison.InvariantCulture);
-    }
-
-    public int GetHashCode(PlayGroupQuery obj)
-    {
-        var hashCode = new HashCode();
-        hashCode.Add(obj.Artist, StringComparer.InvariantCulture);
-        hashCode.Add(obj.ArtistUnicode, StringComparer.InvariantCulture);
-        hashCode.Add(obj.Title, StringComparer.InvariantCulture);
-        hashCode.Add(obj.TitleUnicode, StringComparer.InvariantCulture);
-        hashCode.Add(obj.Source, StringComparer.InvariantCulture);
-        return hashCode.ToHashCode();
-    }
-}
-
-public sealed class PlayGroupQuery : VmBase
+public sealed class PlayGroupQuery : VmBase, IDisplayablePlayItem
 {
     private string? _thumbPath;
 
@@ -66,9 +33,12 @@ public sealed class PlayGroupQuery : VmBase
     //public string? VideoPath { get; init; }
     //public string? StoryboardVideoPath { get; init; }
     public double StarRating { get; set; }
-    public PlayItem DefaultPlayItem { get; set; } = null!;
-    public PlayItemDetail DefaultPlayItemDetail { get; set; } = null!;
-    public Dictionary<GameMode, PlayItem[]> GroupPlayItems { get; set; }
+    public PlayItem CurrentPlayItem { get; set; } = null!;
+    public double CanvasLeft { get; set; }
+    public double CanvasTop { get; set; }
+    public int CanvasIndex { get; set; }
+    public PlayItemDetail CurrentPlayItemDetail { get; set; } = null!;
+    public Dictionary<GameMode, PlayItem[]>? GroupPlayItems { get; set; }
 
     public string? ThumbPath
     {

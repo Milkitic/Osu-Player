@@ -89,10 +89,10 @@
             </Border.Effect>-->
                 </Border>
             </Grid>
-            <Border
+            <!--<Border
                 Margin="0"
                 Background="{fluentWpf:AcrylicBrush BackImageBorder}"
-                Visibility="{Binding ElementName=Self, Path=IsBlur, Converter={StaticResource BoolTrueToVisibleConverter}}" />
+                Visibility="{Binding ElementName=Self, Path=IsBlur, Converter={StaticResource BoolTrueToVisibleConverter}}" />-->
         </Grid>
     </Border>
 </UserControl>

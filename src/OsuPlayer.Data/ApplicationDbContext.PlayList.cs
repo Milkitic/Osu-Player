@@ -53,8 +53,8 @@ public sealed partial class ApplicationDbContext
                 //StoryboardVideoPath = k.PlayItemAssets.StoryboardVideoPath,
                 //VideoPath = k.PlayItemAssets.VideoPath,
                 StarRating = k.PlayItemDetail.StarRating,
-                DefaultPlayItem = k.PlayItem,
-                DefaultPlayItemDetail = k.PlayItemDetail,
+                CurrentPlayItem = k.PlayItem,
+                CurrentPlayItemDetail = k.PlayItemDetail,
             });
 
         var sqlStr = query.ToQueryString();
@@ -68,14 +68,14 @@ public sealed partial class ApplicationDbContext
                 {
                     var playGroupQuery = grouping.OrderByDescending(groupQuery => groupQuery.StarRating).First();
                     playGroupQuery.GroupPlayItems = grouping
-                        .GroupBy(groupQuery => groupQuery.DefaultPlayItem.PlayItemDetail.GameMode)
+                        .GroupBy(groupQuery => groupQuery.CurrentPlayItem.PlayItemDetail.GameMode)
                         .OrderBy(groupQuery => groupQuery.Key)
                         .ToDictionary(modeGrouping => modeGrouping.Key, modeGrouping => modeGrouping
                             .OrderBy(groupQuery => groupQuery.StarRating)
-                            .Select(groupQuery => groupQuery.DefaultPlayItem)
+                            .Select(groupQuery => groupQuery.CurrentPlayItem)
                             .ToArray()
                         );
-                    playGroupQuery.DefaultPlayItem.PlayItemAsset ??= new PlayItemAsset();
+                    playGroupQuery.CurrentPlayItem.PlayItemAsset ??= new PlayItemAsset();
                     return playGroupQuery;
                 })
             );

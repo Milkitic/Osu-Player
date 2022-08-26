@@ -11,6 +11,7 @@
     xmlns:panelComponent="clr-namespace:Milki.OsuPlayer.UiComponents.PanelComponent"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:textBoxComponent="clr-namespace:Milki.OsuPlayer.UiComponents.TextBoxComponent"
+    xmlns:uiComponents="clr-namespace:Milki.OsuPlayer.UiComponents"
     xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
     x:Name="Self"
     Title="SearchPage"
@@ -20,11 +21,12 @@
     d:DesignWidth="800"
     Initialized="SearchPage_Initialized"
     KeepAlive="True"
+    Loaded="SearchPage_OnLoaded"
     TextBlock.FontFamily="{StaticResource GenericRegular}"
     TextOptions.TextFormattingMode="Display"
     mc:Ignorable="d">
     <Page.Resources>
-        <system:Double x:Key="GalleryWidth">267</system:Double>
+        <system:Double x:Key="GalleryWidth">265</system:Double>
         <system:Double x:Key="GalleryHeight">220</system:Double>
     </Page.Resources>
     <Grid>
@@ -67,7 +69,13 @@
                 IconTemplate="{StaticResource FolderTempl}"
                 Style="{StaticResource SettingsButton}" />
         </StackPanel>
-        <ListBox
+        <userControls:CardCollectionControl
+            x:Name="sb"
+            Grid.Row="2"
+            CardHeight="220"
+            CardWidth="265"
+            PlayItems="{Binding PlayGroupQueries}" />
+        <!--<ListBox
             Grid.Row="2"
             Padding="3,0"
             Background="Transparent"
@@ -81,9 +89,9 @@
                         Artist="{Binding ArtistAuto, Mode=OneWay}"
                         Creator="{Binding Creator, Mode=OneWay}"
                         GroupPlayItems="{Binding GroupPlayItems, Mode=OneWay}"
-                        PlayItem="{Binding DefaultPlayItem, Mode=OneWay}"
+                        PlayItem="{Binding CurrentPlayItem, Mode=OneWay}"
                         Source="{Binding Source, Mode=OneWay}"
-                        ThumbPath="{Binding DefaultPlayItem.PlayItemAsset.FullThumbPath, Mode=OneWay}" />
+                        ThumbPath="{Binding CurrentPlayItem.PlayItemAsset.FullThumbPath, Mode=OneWay}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
 
@@ -97,13 +105,13 @@
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
 
-        </ListBox>
+        </ListBox>-->
         <paginationComponent:Pagination
             x:Name="Pagination"
             Grid.Row="3"
             Margin="10"
             HorizontalAlignment="Center"
-            ItemsCount="20"
+            ItemsCount="50"
             PageSelected="Pagination_OnPageSelected" />
     </Grid>
 </Page>

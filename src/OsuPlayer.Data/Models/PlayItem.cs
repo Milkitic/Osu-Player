@@ -1,11 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
+using Coosu.Beatmap.Sections.GamePlay;
 using Microsoft.EntityFrameworkCore;
 
 namespace Milki.OsuPlayer.Data.Models;
 
 [Index(nameof(StandardizedPath), IsUnique = true)]
 [Index(nameof(StandardizedFolder))]
-public sealed class PlayItem
+public sealed class PlayItem : IDisplayablePlayItem
 {
     public int Id { get; set; }
     /// <summary>
@@ -44,5 +48,22 @@ public sealed class PlayItem
             Version = PlayItemDetail.Version,
             LooseItemType = looseItemType
         };
+    }
+
+    [NotMapped] public string Title => PlayItemDetail.AutoTitle;
+    [NotMapped] public string Artist => PlayItemDetail.AutoArtist;
+    [NotMapped] public string Creator => PlayItemDetail.Creator;
+    [NotMapped] public string Source => PlayItemDetail.Source;
+    [NotMapped] public string? ThumbPath => PlayItemAsset?.FullThumbPath;
+    [NotMapped] public Dictionary<GameMode, PlayItem[]>? GroupPlayItems => null;
+    [NotMapped] public PlayItem CurrentPlayItem => this;
+    [NotMapped] public double CanvasLeft { get; set; }
+    [NotMapped] public double CanvasTop { get; set; }
+    [NotMapped] public int CanvasIndex { get; set; }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+    public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

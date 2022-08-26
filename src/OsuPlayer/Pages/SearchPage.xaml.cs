@@ -1,16 +1,12 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using Anotar.NLog;
 using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Models;
 using Milki.OsuPlayer.Shared.Observable;
-using Milki.OsuPlayer.UiComponents.PanelComponent;
 using Milki.OsuPlayer.Utils;
-using Milki.OsuPlayer.Wpf;
 
 namespace Milki.OsuPlayer.Pages;
 
@@ -24,7 +20,7 @@ public class SearchPageVm : VmBase
         set => this.RaiseAndSetIfChanged(ref _searchText, value);
     }
 
-    public ObservableCollection<PlayGroupQuery> PlayGroupQueries { get; } = new();
+    //public ObservableCollection<PlayGroupQuery> PlayGroupQueries { get; set; } = new();
 }
 
 /// <summary>
@@ -37,6 +33,7 @@ public partial class SearchPage : Page
     private readonly SearchPageVm _viewModel;
     private readonly InputDelayQueryHelper _inputDelayQueryHelper;
     private BeatmapOrderOptions _sortMode = BeatmapOrderOptions.Artist;
+    private bool _isFirstLoaded;
 
     public SearchPage()
     {
@@ -63,19 +60,28 @@ public partial class SearchPage : Page
                 page: page,
                 countPerPage: Pagination.ItemsCount
             );
-        _viewModel.PlayGroupQueries.Clear();
-        foreach (var playGroupQuery in paginationQueryResult.Results)
-        {
-            _viewModel.PlayGroupQueries.Add(playGroupQuery);
-        }
-
+        //sb.PlayItems = _viewModel.PlayGroupQueries;
+        //_viewModel.PlayGroupQueries.Clear();
+        //foreach (var playGroupQuery in paginationQueryResult.Results)
+        //{
+        //    _viewModel.PlayGroupQueries.Add(playGroupQuery);
+        //}
+        sb.PlayItems = paginationQueryResult.Results;
         Pagination.CurrentPageIndex = page < 1 ? 0 : page - 1;
         Pagination.TotalCount = paginationQueryResult.TotalCount;
 
     }
 
-    private async void SearchPage_Initialized(object sender, EventArgs e)
+    private void SearchPage_Initialized(object sender, EventArgs e)
     {
+    }
+
+    private async void SearchPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        if (_isFirstLoaded) return;
+        _isFirstLoaded = true;
+
+        await Task.Delay(100);
         await PlayListQueryAsync();
     }
 
@@ -89,7 +95,7 @@ public partial class SearchPage : Page
     {
         if (sender is not FrameworkElement { Tag: PlayGroupQuery playGroupQuery }) return;
 
-        var defaultItem = playGroupQuery.DefaultPlayItem;
+        var defaultItem = playGroupQuery.CurrentPlayItem;
         await _playerService.InitializeNewAsync(defaultItem.StandardizedPath, true);
     }
 
@@ -102,7 +108,7 @@ public partial class SearchPage : Page
                 page: 0,
                 countPerPage: int.MaxValue
             );
-        var allPlayItems = paginationQueryResult.Results.Select(k => k.DefaultPlayItem).ToArray();
+        var allPlayItems = paginationQueryResult.Results.Select(k => k.CurrentPlayItem).ToArray();
         if (allPlayItems.Length == 0) return;
         await dbContext.RecreateCurrentPlayAsync(allPlayItems);
         _playListService.SetPathList(allPlayItems.Select(k => k.StandardizedPath), false);
@@ -118,7 +124,7 @@ public partial class SearchPage : Page
                 page: 0,
                 countPerPage: int.MaxValue
             );
-        var allPlayItems = paginationQueryResult.Results.Select(k => k.DefaultPlayItem).ToArray();
+        var allPlayItems = paginationQueryResult.Results.Select(k => k.CurrentPlayItem).ToArray();
         if (allPlayItems.Length == 0) return;
         await dbContext.RecreateCurrentPlayAsync(allPlayItems);
         _playListService.SetPathList(allPlayItems.Select(k => k.StandardizedPath), false);
@@ -129,24 +135,24 @@ public partial class SearchPage : Page
         await PlayListQueryAsync(page);
     }
 
-    private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
-    {
-        var groupQuery = _viewModel.PlayGroupQueries[e.Index];
-        var playItem = groupQuery.DefaultPlayItem;
-        try
-        {
-            var fileName = await CommonUtils.GetThumbByBeatmapDbId(playItem).ConfigureAwait(false);
-            Execute.OnUiThread(() =>
-            {
-                playItem.PlayItemAsset!.FullThumbPath = fileName;
-                groupQuery.ThumbPath = fileName;
-            });
-        }
-        catch (Exception ex)
-        {
-            LogTo.ErrorException("Error while loading panel item.", ex);
-        }
+    //private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
+    //{
+    //    var groupQuery = _viewModel.PlayGroupQueries[e.Index];
+    //    var playItem = groupQuery.CurrentPlayItem;
+    //    try
+    //    {
+    //        var fileName = await CommonUtils.GetThumbByBeatmapDbId(playItem).ConfigureAwait(false);
+    //        Execute.OnUiThread(() =>
+    //        {
+    //            playItem.PlayItemAsset!.FullThumbPath = fileName;
+    //            groupQuery.ThumbPath = fileName;
+    //        });
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        LogTo.ErrorException("Error while loading panel item.", ex);
+    //    }
 
-        LogTo.Debug(() => $"VirtualizingGalleryWrapPanel: {e.Index}");
-    }
+    //    LogTo.Debug(() => $"VirtualizingGalleryWrapPanel: {e.Index}");
+    //}
 }

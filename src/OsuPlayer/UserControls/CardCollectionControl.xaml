@@ -1,0 +1,59 @@
+﻿<UserControl
+    x:Class="Milki.OsuPlayer.UserControls.CardCollectionControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Milki.OsuPlayer.UserControls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:Milki.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
+    xmlns:osuPlayer="clr-namespace:Milki.OsuPlayer"
+    xmlns:uiComponents="clr-namespace:Milki.OsuPlayer.UiComponents"
+    x:Name="Self"
+    d:DataContext="{d:DesignInstance local:CardCollectionControlVm,
+                                     IsDesignTimeCreatable=True}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Loaded="CardCollectionControl_OnLoaded"
+    mc:Ignorable="d">
+    <uiComponents:AnimatedScrollViewer
+        x:Name="ScrollViewer"
+        Background="Transparent"
+        BorderThickness="0"
+        ClipToBounds="False"
+        ScrollChanged="ScrollViewer_OnScrollChanged"
+        SizeChanged="FrameworkElement_OnSizeChanged">
+        <osuPlayer:CachingItemsControl ClipToBounds="False" ItemsSource="{Binding VisiblePlayItems, Mode=OneWay}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type models:IDisplayablePlayItem}">
+                    <local:CardControl
+                        Title="{Binding Title, Mode=OneWay}"
+                        Artist="{Binding Artist, Mode=OneWay}"
+                        Creator="{Binding Creator, Mode=OneWay}"
+                        GroupPlayItems="{Binding GroupPlayItems, Mode=OneWay}"
+                        PlayItem="{Binding CurrentPlayItem, Mode=OneWay}"
+                        Source="{Binding Source, Mode=OneWay}"
+                        ThumbPath="{Binding CurrentPlayItem.PlayItemAsset.FullThumbPath, Mode=OneWay}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Width" Value="{Binding ElementName=Self, Path=CardWidth}" />
+                    <Setter Property="Height" Value="{Binding ElementName=Self, Path=CardHeight}" />
+                    <Setter Property="Canvas.Left" Value="{Binding CanvasLeft, Mode=OneWay}" />
+                    <Setter Property="Canvas.Top" Value="{Binding CanvasTop, Mode=OneWay}" />
+                    <!--<Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Panel.ZIndex" Value="3" />
+                        </Trigger>
+                    </Style.Triggers>-->
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <!--<WrapPanel />-->
+                    <Canvas Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </osuPlayer:CachingItemsControl>
+    </uiComponents:AnimatedScrollViewer>
+</UserControl>

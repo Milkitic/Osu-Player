@@ -10,10 +10,10 @@ namespace Milki.OsuPlayer.Shared.Observable;
 public abstract class VmBase : IInvokableVm, INotifyPropertyChanged, INotifyPropertyChanging
 {
     /// <inheritdoc />
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <inheritdoc />
-    public event PropertyChangingEventHandler PropertyChanging;
+    public event PropertyChangingEventHandler? PropertyChanging;
 
     /// <summary>
     /// 通知UI更新操作
