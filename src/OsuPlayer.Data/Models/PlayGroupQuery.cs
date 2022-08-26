@@ -13,10 +13,10 @@ public sealed class PlayGroupQuery : VmBase, IDisplayablePlayItem
     public bool IsAutoManaged { get; init; }
     public string Artist { get; init; } = null!;
     public string ArtistUnicode { get; init; } = null!;
-    public string ArtistAuto => string.IsNullOrEmpty(ArtistUnicode) ? Artist : ArtistUnicode;
+    public string AutoArtist => string.IsNullOrEmpty(ArtistUnicode) ? Artist : ArtistUnicode;
     public string Title { get; init; } = null!;
     public string TitleUnicode { get; init; } = null!;
-    public string TitleAuto => string.IsNullOrEmpty(TitleUnicode) ? Title : TitleUnicode;
+    public string AutoTitle => string.IsNullOrEmpty(TitleUnicode) ? Title : TitleUnicode;
     public string Creator { get; init; } = null!;
     //public string Version { get; init; } = null!;
     //public long DefaultStarRatingStd { get; init; }

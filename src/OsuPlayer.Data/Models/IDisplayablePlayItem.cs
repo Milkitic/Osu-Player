@@ -5,8 +5,8 @@ namespace Milki.OsuPlayer.Data.Models;
 
 public interface IDisplayablePlayItem : INotifyPropertyChanged
 {
-    string Title { get; }
-    string Artist { get; }
+    string AutoTitle { get; }
+    string AutoArtist { get; }
     string Creator { get; }
     string Source { get; }
     string? ThumbPath { get; set; }

@@ -25,8 +25,6 @@
     Unloaded="Page_Unloaded"
     mc:Ignorable="d">
     <Page.Resources>
-        <system:Double x:Key="GalleryWidth">160</system:Double>
-        <system:Double x:Key="GalleryHeight">220</system:Double>
         <converters:DateTimeConverter x:Key="CvtDate" />
     </Page.Resources>
     <Grid>
@@ -228,43 +226,12 @@
                                     IconSize="13"
                                     IconTemplate="{StaticResource NavSearchTempl}"
                                     TextChanged="SearchBox_TextChanged" />
-                                <ListBox
+
+                                <userControls:CardCollectionControl
+                                    x:Name="CardCollectionControl"
                                     Grid.Row="0"
-                                    Padding="3,0"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    ItemContainerStyle="{StaticResource CardListBoxItemStyle}"
-                                    ItemsSource="{Binding PlayItems, Mode=OneWay}">
-                                    <ListBox.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type models:PlayItem}">
-                                            <userControls:CardControl
-                                                Title="{Binding PlayItemDetail.AutoTitle, Mode=OneWay}"
-                                                Artist="{Binding PlayItemDetail.AutoArtist, Mode=OneWay}"
-                                                Creator="{Binding PlayItemDetail.Creator, Mode=OneWay}"
-                                                PlayItem="{Binding Mode=OneWay}"
-                                                Source="{Binding PlayItemDetail.Source, Mode=OneWay}"
-                                                ThumbPath="{Binding PlayItemAsset.FullThumbPath, Mode=OneWay}" />
-                                        </DataTemplate>
-                                    </ListBox.ItemTemplate>
-
-                                    <ListBox.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <panelComponent:VirtualizingGalleryWrapPanel
-                                                ChildHeight="{StaticResource GalleryHeight}"
-                                                ChildWidth="{StaticResource GalleryWidth}"
-                                                ItemLoaded="VirtualizingGalleryWrapPanel_OnItemLoaded"
-                                                ScrollOffset="100" />
-                                        </ItemsPanelTemplate>
-                                    </ListBox.ItemsPanel>
-
-                                </ListBox>
-                                <!--<paginationComponent:Pagination
-                                    x:Name="Pagination"
-                                    Grid.Row="1"
-                                    Margin="10"
-                                    HorizontalAlignment="Center"
-                                    ItemsCount="20"
-                                    PageSelected="Pagination_OnPageSelected" />-->
+                                    CardHeight="220"
+                                    CardWidth="160" />
                             </Grid>
                         </TabItem>
                         <TabItem

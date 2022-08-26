@@ -51,8 +51,8 @@ public sealed class PlayItem : IDisplayablePlayItem
         };
     }
 
-    [NotMapped] public string Title => PlayItemDetail.AutoTitle;
-    [NotMapped] public string Artist => PlayItemDetail.AutoArtist;
+    [NotMapped] public string AutoTitle => PlayItemDetail.AutoTitle;
+    [NotMapped] public string AutoArtist => PlayItemDetail.AutoArtist;
     [NotMapped] public string Creator => PlayItemDetail.Creator;
     [NotMapped] public string Source => PlayItemDetail.Source;
 
