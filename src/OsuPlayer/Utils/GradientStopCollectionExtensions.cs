@@ -1,23 +1,41 @@
-﻿using System.Windows.Media;
+﻿using System.Collections.Concurrent;
+using System.Windows.Media;
 
 namespace Milki.OsuPlayer.Utils;
 
 public static class GradientStopCollectionExtensions
 {
+    private static readonly ConcurrentDictionary<GradientStopCollection, GradientStopCollectionInfo> Cache = new();
     public static Color GetRelativeColor(this GradientStopCollection gsc, double offset)
     {
-        var point = gsc.SingleOrDefault(f => f.Offset.Equals(offset));
-        if (point != null) return point.Color;
+        var info = Cache.GetOrAdd(gsc, collection =>
+        {
+            var gradientStops = collection.OrderBy(k => k.Offset).ToArray();
+            var gradientStopCollectionInfo = new GradientStopCollectionInfo
+            {
+                Anchors = gradientStops
+                    .DistinctBy(k => k.Offset)
+                    .ToDictionary(k => k.Offset, k => k.Color),
+                FirstGradientStop = gradientStops[0],
+                LastGradientStop = gradientStops[^1]
+            };
+            return gradientStopCollectionInfo;
+        });
 
-        var before = gsc.First(w => w.Offset.Equals(gsc.Min(m => m.Offset)));
-        var after = gsc.First(w => w.Offset.Equals(gsc.Max(m => m.Offset)));
+        if (info.Anchors.TryGetValue(offset, out var anchorColor))
+        {
+            return anchorColor;
+        }
 
+        var before = info.FirstGradientStop;
+        var after = info.LastGradientStop;
         foreach (var gs in gsc)
         {
             if (gs.Offset < offset && gs.Offset > before.Offset)
             {
                 before = gs;
             }
+
             if (gs.Offset > offset && gs.Offset < after.Offset)
             {
                 after = gs;
@@ -38,4 +56,11 @@ public static class GradientStopCollectionExtensions
 
         return color;
     }
+}
+
+internal class GradientStopCollectionInfo
+{
+    public Dictionary<double, Color> Anchors { get; set; }
+    public GradientStop FirstGradientStop { get; set; }
+    public GradientStop LastGradientStop { get; set; }
 }

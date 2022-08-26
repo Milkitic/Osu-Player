@@ -42,16 +42,10 @@
                     <Setter Property="Panel.ZIndex" Value="{Binding CanvasIndex, Mode=OneWay}" />
                     <Setter Property="Canvas.Left" Value="{Binding CanvasLeft, Mode=OneWay}" />
                     <Setter Property="Canvas.Top" Value="{Binding CanvasTop, Mode=OneWay}" />
-                    <!--<Style.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Panel.ZIndex" Value="3" />
-                        </Trigger>
-                    </Style.Triggers>-->
                 </Style>
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <!--<WrapPanel />-->
                     <Canvas Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>

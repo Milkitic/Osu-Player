@@ -93,7 +93,6 @@ public class CardCollectionControlVm : VmBase
         }
 
         _existsObjHashSet = visibleItems;
-        //Console.WriteLine();
     }
 }
 
@@ -202,13 +201,14 @@ public partial class CardCollectionControl : UserControl
 
         var itemMargin = _viewModel.ItemMargin;
         var viewportWidth = _viewModel.ViewportWidth;
+        var viewportHeight = _viewModel.ViewportHeight;
         var cardWidth = _viewModel.CardWidth;
 
         var cols = (int)((viewportWidth - itemMargin * 2) / (cardWidth + itemMargin * 2));
         var rows = (int)Math.Ceiling(_viewModel.FullPlayItems.Length / (double)cols);
 
         _viewModel.CanvasWidth = viewportWidth;
-        _viewModel.CanvasHeight = rows * (_viewModel.CardHeight + itemMargin * 2) - itemMargin * 2;
+        _viewModel.CanvasHeight = Math.Max(rows * (_viewModel.CardHeight + itemMargin * 2) - itemMargin * 2, viewportHeight);
     }
 
     private void FrameworkElement_OnSizeChanged(object sender, SizeChangedEventArgs e)
