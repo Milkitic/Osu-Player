@@ -66,14 +66,12 @@ public class CardCollectionControlVm : VmBase
         var count = (endRow - startRow + 1) * cols;
         var visibleItems = new HashSet<IDisplayablePlayItem>(count);
 
-        int j = ushort.MaxValue;
         for (int i = startIndex; i < count + startIndex; i++)
         {
             if (i >= FullPlayItems.Length) break;
-            //FullPlayItems.Skip(startIndex).Take(count)
             var displayablePlayItem = FullPlayItems[i];
             visibleItems.Add(displayablePlayItem);
-            displayablePlayItem.CanvasIndex = j--;
+            displayablePlayItem.CanvasIndex = FullPlayItems.Length - 1 - i;
 
             var row = i / cols;
             var col = i % cols;

@@ -16,7 +16,7 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <QuinticEase x:Key="QuinticEaseOut" EasingMode="EaseOut" />
-        <CircleEase x:Key="CircEaseOut" EasingMode="EaseOut" /> 
+        <CircleEase x:Key="CircEaseOut" EasingMode="EaseOut" />
         <CircleEase x:Key="CircEaseIn" EasingMode="EaseIn" />
         <Style BasedOn="{StaticResource DefaultMenuItem}" TargetType="MenuItem" />
         <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
@@ -161,7 +161,7 @@
                     </Storyboard>
                 </BeginStoryboard>
             </EventTrigger>
-            <EventTrigger RoutedEvent="MouseMove" SourceName="MoreInfoCanvas">
+            <EventTrigger RoutedEvent="MouseMove">
                 <BeginStoryboard>
                     <Storyboard>
                         <DoubleAnimation
@@ -172,11 +172,12 @@
                             To="1"
                             Duration="0:0:0.3" />
                         <ObjectAnimationUsingKeyFrames
+                            BeginTime="0:0:0.3"
                             Storyboard.TargetName="MoreInfoBorder"
                             Storyboard.TargetProperty="Visibility"
                             Duration="0:0:0.3">
                             <ObjectAnimationUsingKeyFrames.KeyFrames>
-                                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="{x:Static Visibility.Visible}" />
                             </ObjectAnimationUsingKeyFrames.KeyFrames>
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
@@ -237,6 +238,7 @@
                         x:Name="MoreInfoCanvas"
                         Margin="-6,0"
                         Panel.ZIndex="1"
+                        Background="Transparent"
                         Opacity="0">
                         <Canvas.Style>
                             <Style TargetType="Canvas">

@@ -39,6 +39,7 @@
                 <Style TargetType="ContentPresenter">
                     <Setter Property="Width" Value="{Binding ElementName=Self, Path=CardWidth}" />
                     <Setter Property="Height" Value="{Binding ElementName=Self, Path=CardHeight}" />
+                    <Setter Property="Panel.ZIndex" Value="{Binding CanvasIndex, Mode=OneWay}" />
                     <Setter Property="Canvas.Left" Value="{Binding CanvasLeft, Mode=OneWay}" />
                     <Setter Property="Canvas.Top" Value="{Binding CanvasTop, Mode=OneWay}" />
                     <!--<Style.Triggers>
