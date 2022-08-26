@@ -301,7 +301,7 @@
                                 Header="{DynamicResource ui-artist}" />
                             <DataGridTextColumn
                                 Width="1*"
-                                Binding="{Binding Size}"
+                                Binding="{Binding Size, Converter={StaticResource Byte2SizeStringConverter}}"
                                 ElementStyle="{StaticResource GenericAlignmentStyle}"
                                 Foreground="#777777"
                                 Header="{DynamicResource ui-size}" />

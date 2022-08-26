@@ -2,19 +2,21 @@
 
 public static class SharedUtils
 {
-    public static string CountSize(long size)
+    private static readonly string[] SizeSuffixes = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+
+    public static string SizeSuffix(long value, int decimalPlaces = 1)
     {
-        string strSize = "";
-        long factSize = size;
-        if (factSize < 1024)
-            strSize = $"{factSize:F2} B";
-        else if (factSize >= 1024 && factSize < 1048576)
-            strSize = (factSize / 1024f).ToString("F2") + " KB";
-        else if (factSize >= 1048576 && factSize < 1073741824)
-            strSize = (factSize / 1024f / 1024f).ToString("F2") + " MB";
-        else if (factSize >= 1073741824)
-            strSize = (factSize / 1024f / 1024f / 1024f).ToString("F2") + " GB";
-        return strSize;
+        if (value < 0) { return "-" + SizeSuffix(-value, decimalPlaces); }
+
+        int i = 0;
+        double dValue = value;
+        while (Math.Round(dValue, decimalPlaces) >= 1000)
+        {
+            dValue /= 1024;
+            i++;
+        }
+
+        return string.Format("{0:n" + decimalPlaces + "} {1}", dValue, SizeSuffixes[i]);
     }
 
     public static IEnumerable<FileInfo> EnumerateFiles(string path, params string[] extName)

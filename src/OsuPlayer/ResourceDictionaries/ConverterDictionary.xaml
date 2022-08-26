@@ -26,4 +26,5 @@
     <converters:GetOutlinedTextConverter x:Key="GetOutlinedTextConverter" />
     <converters:StarRating2ColorConverter x:Key="StarRating2ColorConverter" />
     <converters:StarRating2ForeColorConverter x:Key="StarRating2ForeColorConverter" />
+    <converters:Byte2SizeStringConverter x:Key="Byte2SizeStringConverter" />
 </ResourceDictionary>

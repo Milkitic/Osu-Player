@@ -56,7 +56,7 @@ public partial class UpdateWindow : Window
         Dispatcher.BeginInvoke(new Action(() =>
         {
             DlProgress.Value = downloadedSize;
-            LblSpeed.Content = SharedUtils.CountSize(speed) + "/s";
+            LblSpeed.Content = SharedUtils.SizeSuffix(speed) + "/s";
             LblProgress.Content = $"{Math.Round(downloadedSize / (float)size * 100)} %";
         }));
     }
