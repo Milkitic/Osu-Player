@@ -66,7 +66,7 @@ public partial class SearchPage : Page
         //{
         //    _viewModel.PlayGroupQueries.Add(playGroupQuery);
         //}
-        sb.PlayItems = paginationQueryResult.Results;
+        CardCollectionControl.PlayItems = paginationQueryResult.Results;
         Pagination.CurrentPageIndex = page < 1 ? 0 : page - 1;
         Pagination.TotalCount = paginationQueryResult.TotalCount;
 
@@ -134,25 +134,4 @@ public partial class SearchPage : Page
     {
         await PlayListQueryAsync(page);
     }
-
-    //private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender, VirtualizingGalleryRoutedEventArgs e)
-    //{
-    //    var groupQuery = _viewModel.PlayGroupQueries[e.Index];
-    //    var playItem = groupQuery.CurrentPlayItem;
-    //    try
-    //    {
-    //        var fileName = await CommonUtils.GetThumbByBeatmapDbId(playItem).ConfigureAwait(false);
-    //        Execute.OnUiThread(() =>
-    //        {
-    //            playItem.PlayItemAsset!.FullThumbPath = fileName;
-    //            groupQuery.ThumbPath = fileName;
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        LogTo.ErrorException("Error while loading panel item.", ex);
-    //    }
-
-    //    LogTo.Debug(() => $"VirtualizingGalleryWrapPanel: {e.Index}");
-    //}
 }

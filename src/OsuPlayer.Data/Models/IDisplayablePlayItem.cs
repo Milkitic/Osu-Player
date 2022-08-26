@@ -9,7 +9,7 @@ public interface IDisplayablePlayItem : INotifyPropertyChanged
     string Artist { get; }
     string Creator { get; }
     string Source { get; }
-    string? ThumbPath { get; }
+    string? ThumbPath { get; set; }
     Dictionary<GameMode, PlayItem[]>? GroupPlayItems { get; }
     PlayItem CurrentPlayItem { get; }
     double CanvasLeft { get; set; }

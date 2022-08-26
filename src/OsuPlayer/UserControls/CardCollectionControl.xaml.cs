@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using Anotar.NLog;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Observable;
 
@@ -9,6 +10,7 @@ namespace Milki.OsuPlayer.UserControls;
 public class CardCollectionControlVm : VmBase
 {
     private HashSet<IDisplayablePlayItem> _existsObjHashSet = new();
+
     private ObservableCollection<IDisplayablePlayItem> _visiblePlayItems = new();
     private double _canvasWidth;
     private double _canvasHeight;
@@ -21,7 +23,8 @@ public class CardCollectionControlVm : VmBase
     public double CardHeight { get; set; }
 
     public double ScrollViewerVerticalOffset { get; set; }
-
+    
+    public HashSet<IDisplayablePlayItem> LoadedObjHashSet { get; } = new();
     public IDisplayablePlayItem[] FullPlayItems { get; set; } = Array.Empty<IDisplayablePlayItem>();
 
     public ObservableCollection<IDisplayablePlayItem> VisiblePlayItems
@@ -87,12 +90,32 @@ public class CardCollectionControlVm : VmBase
             VisiblePlayItems.Remove(displayablePlayItem);
         }
 
-        foreach (var objectBase in newObjs)
+        foreach (var displayablePlayItem in newObjs)
         {
-            VisiblePlayItems.Add(objectBase);
+            VisiblePlayItems.Add(displayablePlayItem);
+            if (LoadedObjHashSet.Add(displayablePlayItem))
+            {
+                DelayLoadPlayItem(displayablePlayItem);
+            }
         }
 
         _existsObjHashSet = visibleItems;
+    }
+
+    private static async void DelayLoadPlayItem(IDisplayablePlayItem displayablePlayItem)
+    {
+        var playItem = displayablePlayItem.CurrentPlayItem;
+        try
+        {
+            var fileName = await CommonUtils.GetThumbByBeatmapDbId(playItem);
+            //LogTo.Debug("Card collection thumb loaded: " + fileName);
+            playItem.PlayItemAsset!.FullThumbPath = fileName;
+            displayablePlayItem.ThumbPath = fileName;
+        }
+        catch (Exception ex)
+        {
+            LogTo.ErrorException("Error while loading panel item.", ex);
+        }
     }
 }
 
@@ -164,6 +187,7 @@ public partial class CardCollectionControl : UserControl
         ScrollViewer.ScrollToVerticalOffset(0);
         _viewModel.FullPlayItems = playItems as IDisplayablePlayItem[] ??
                                     playItems.ToArray();
+        _viewModel.LoadedObjHashSet.Clear();
         SetCanvasSize();
         _viewModel.SetVisibleObjects();
     }

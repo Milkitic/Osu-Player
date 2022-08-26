@@ -11,6 +11,7 @@ namespace Milki.OsuPlayer.Data.Models;
 [Index(nameof(StandardizedFolder))]
 public sealed class PlayItem : IDisplayablePlayItem
 {
+    private string? _thumbPath;
     public int Id { get; set; }
     /// <summary>
     /// IsAutoManaged==true: ./...
@@ -54,7 +55,14 @@ public sealed class PlayItem : IDisplayablePlayItem
     [NotMapped] public string Artist => PlayItemDetail.AutoArtist;
     [NotMapped] public string Creator => PlayItemDetail.Creator;
     [NotMapped] public string Source => PlayItemDetail.Source;
-    [NotMapped] public string? ThumbPath => PlayItemAsset?.FullThumbPath;
+
+    [NotMapped]
+    public string? ThumbPath
+    {
+        get => _thumbPath;
+        set => SetField(ref _thumbPath, value);
+    }
+
     [NotMapped] public Dictionary<GameMode, PlayItem[]>? GroupPlayItems => null;
     [NotMapped] public PlayItem CurrentPlayItem => this;
     [NotMapped] public double CanvasLeft { get; set; }
@@ -62,8 +70,17 @@ public sealed class PlayItem : IDisplayablePlayItem
     [NotMapped] public int CanvasIndex { get; set; }
 
     public event PropertyChangedEventHandler? PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
     }
 }

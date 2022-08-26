@@ -71,6 +71,9 @@
         </DataTemplate>
         <ControlTemplate x:Key="ThumbButtonTempl" TargetType="Button">
             <Grid Background="#F0F0F0">
+                <Grid.CacheMode>
+                    <BitmapCache RenderAtScale="1" />
+                </Grid.CacheMode>
                 <Image
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"

@@ -25,10 +25,6 @@
     TextBlock.FontFamily="{StaticResource GenericRegular}"
     TextOptions.TextFormattingMode="Display"
     mc:Ignorable="d">
-    <Page.Resources>
-        <system:Double x:Key="GalleryWidth">265</system:Double>
-        <system:Double x:Key="GalleryHeight">220</system:Double>
-    </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -70,48 +66,16 @@
                 Style="{StaticResource SettingsButton}" />
         </StackPanel>
         <userControls:CardCollectionControl
-            x:Name="sb"
+            x:Name="CardCollectionControl"
             Grid.Row="2"
             CardHeight="220"
-            CardWidth="265"
-            PlayItems="{Binding PlayGroupQueries}" />
-        <!--<ListBox
-            Grid.Row="2"
-            Padding="3,0"
-            Background="Transparent"
-            BorderThickness="0"
-            ItemContainerStyle="{StaticResource CardListBoxItemStyle}"
-            ItemsSource="{Binding PlayGroupQueries, Mode=OneWay}">
-            <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type models:PlayGroupQuery}">
-                    <userControls:CardControl
-                        Title="{Binding TitleAuto, Mode=OneWay}"
-                        Artist="{Binding ArtistAuto, Mode=OneWay}"
-                        Creator="{Binding Creator, Mode=OneWay}"
-                        GroupPlayItems="{Binding GroupPlayItems, Mode=OneWay}"
-                        PlayItem="{Binding CurrentPlayItem, Mode=OneWay}"
-                        Source="{Binding Source, Mode=OneWay}"
-                        ThumbPath="{Binding CurrentPlayItem.PlayItemAsset.FullThumbPath, Mode=OneWay}" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <panelComponent:VirtualizingGalleryWrapPanel
-                        ChildHeight="{StaticResource GalleryHeight}"
-                        ChildWidth="{StaticResource GalleryWidth}"
-                        ItemLoaded="VirtualizingGalleryWrapPanel_OnItemLoaded"
-                        ScrollOffset="100" />
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-
-        </ListBox>-->
+            CardWidth="265" />
         <paginationComponent:Pagination
             x:Name="Pagination"
             Grid.Row="3"
             Margin="10"
             HorizontalAlignment="Center"
-            ItemsCount="50"
+            ItemsCount="200"
             PageSelected="Pagination_OnPageSelected" />
     </Grid>
 </Page>
