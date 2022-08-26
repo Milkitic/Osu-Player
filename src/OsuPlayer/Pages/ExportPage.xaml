@@ -13,7 +13,192 @@
     d:DesignWidth="800"
     FontFamily="{StaticResource GenericRegular}"
     Loaded="Page_Loaded"
+    TextOptions.TextFormattingMode="Display"
     mc:Ignorable="d">
+    <Page.Resources>
+        <Style x:Key="GenericColumnHeaderGripperStyle" TargetType="{x:Type Thumb}">
+            <Setter Property="Width" Value="8" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Cursor" Value="SizeWE" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Grid>
+                            <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" />
+                            <Line
+                                x:Name="Line"
+                                Width="2"
+                                Margin="0"
+                                HorizontalAlignment="Center"
+                                IsHitTestVisible="False"
+                                SnapsToDevicePixels="True"
+                                Stroke="#F0303030"
+                                StrokeDashArray="1,1"
+                                StrokeThickness="3"
+                                Visibility="Hidden"
+                                X1="0.5"
+                                X2="0.5"
+                                Y1="0"
+                                Y2="25" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Line" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="GenericDataGridColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="TextBlock.FontSize" Value="13" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="0,4,0,4" />
+            <Setter Property="BorderBrush" Value="#D0D0D0" />
+            <Setter Property="BorderThickness" Value="2,0,0,0" />
+            <Setter Property="Foreground" Value="#484848" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+                        <Grid>
+                            <Border x:Name="BR" Background="{TemplateBinding Background}">
+                                <Border
+                                    x:Name="BRIN"
+                                    Margin="{TemplateBinding Padding}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                    <ContentPresenter
+                                        Margin="8,0,0,0"
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                </Border>
+
+                            </Border>
+                            <Path
+                                x:Name="SortArrow"
+                                Width="7"
+                                Height="4"
+                                Margin="0,1,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Top"
+                                Data="M0,0 L1,0 0.5,1 z"
+                                Fill="#B0B0B0"
+                                RenderTransformOrigin="0.5,0.5"
+                                Stretch="Fill"
+                                Visibility="Visible" />
+                            <Thumb
+                                x:Name="PART_LeftHeaderGripper"
+                                HorizontalAlignment="Left"
+                                Style="{StaticResource GenericColumnHeaderGripperStyle}" />
+                            <Thumb
+                                x:Name="PART_RightHeaderGripper"
+                                HorizontalAlignment="Right"
+                                Style="{StaticResource GenericColumnHeaderGripperStyle}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="SortDirection" Value="{x:Null}">
+                                <Setter TargetName="SortArrow" Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="SortDirection" Value="Ascending">
+                                <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="SortArrow" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleY="-1" />
+                                        </TransformGroup>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="BR" Property="Border.Background" Value="#ebeced" />
+                            </Trigger>
+                            <Trigger Property="SortDirection" Value="Descending">
+                                <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="BR" Property="Border.Background" Value="#ebeced" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BR" Property="Border.Background" Value="#90FFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="BR" Property="Border.Padding" Value="0,0,0,0" />
+                                <Setter TargetName="BRIN" Property="Border.Background" Value="#dbdcdd" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="GenericDataGridCellStyle" TargetType="DataGridCell">
+            <Setter Property="Height" Value="25" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="#242424" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F4F4F4" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Transparent" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="GenericDataGridRowStyle" TargetType="DataGridRow">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BorderBrush" Value="#20303030" />
+            <Setter Property="Margin" Value="0,1" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F4F4F4" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{StaticResource TextureBrush3}" />
+                    <Setter Property="Panel.ZIndex" Value="1" />
+                    <Setter Property="BorderThickness" Value="1,1" />
+                    <Setter Property="Margin" Value="-1,0" />
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect
+                                BlurRadius="15"
+                                Opacity="0.3"
+                                ShadowDepth="0"
+                                Color="Black" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="GenericDataGridStyle" TargetType="DataGrid">
+            <Setter Property="AlternationCount" Value="1" />
+            <Setter Property="AlternatingRowBackground" Value="#80F0F0F0" />
+            <Setter Property="AutoGenerateColumns" Value="False" />
+            <Setter Property="Background" Value="{StaticResource WhiteBrush80}" />
+            <Setter Property="BorderBrush" Value="#D0D0D0" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="ColumnHeaderStyle" Value="{StaticResource GenericDataGridColumnHeaderStyle}" />
+            <Setter Property="CellStyle" Value="{StaticResource GenericDataGridCellStyle}" />
+            <Setter Property="RowStyle" Value="{StaticResource GenericDataGridRowStyle}" />
+            <Setter Property="FontWeight" Value="Regular" />
+            <Setter Property="GridLinesVisibility" Value="None" />
+            <Setter Property="HeadersVisibility" Value="Column" />
+            <Setter Property="HorizontalGridLinesBrush" Value="#DCDCDC" />
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="RowDetailsVisibilityMode" Value="Collapsed" />
+            <Setter Property="RowHeaderWidth" Value="0" />
+            <Setter Property="SelectionMode" Value="Single" />
+            <Setter Property="SelectionUnit" Value="FullRow" />
+            <Setter Property="TextBlock.FontSize" Value="13" />
+            <Setter Property="VerticalGridLinesBrush" Value="#D0D0D0" />
+        </Style>
+        <Style x:Key="GenericAlignmentStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="8,0,0,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="FullAlignmentStyle" TargetType="TextBlock">
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </Page.Resources>
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem
@@ -28,14 +213,12 @@
                         <RowDefinition Height="auto" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <!--<Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="#10303030"/>-->
                     <Grid Grid.Row="0" Margin="10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <buttonComponent:CommonButton
-                            x:Name="BtnExportAll"
                             Grid.Column="0"
                             Command="{Binding ItemFolderCommand}"
                             CommandParameter="{Binding ExportPath}"
@@ -71,15 +254,11 @@
                             <Label Content="{Binding ExportPath}" Foreground="#303030" />
                         </StackPanel>
                     </Grid>
-                    <ListView
-                        x:Name="ExportList"
+                    <DataGrid
                         Grid.Row="1"
-                        Margin="0,0,0,0"
-                        Background="{StaticResource WhiteBrush80}"
-                        BorderThickness="0"
-                        ItemContainerStyle="{StaticResource GridView}"
-                        ItemsSource="{Binding ExportList, Mode=OneWay}">
-                        <ListView.ContextMenu>
+                        ItemsSource="{Binding ExportList, Mode=OneWay}"
+                        Style="{StaticResource GenericDataGridStyle}">
+                        <DataGrid.ContextMenu>
                             <ContextMenu x:Name="Menu" Style="{StaticResource DefaultContextMenu}">
                                 <MenuItem
                                     x:Name="ItemOpenFolder"
@@ -101,59 +280,38 @@
                                     Header="{DynamicResource ui-deleteExported}"
                                     Style="{DynamicResource DefaultMenuItem}" />
                             </ContextMenu>
-                        </ListView.ContextMenu>
-                        <ListView.Resources>
-                            <DataTemplate x:Key="IdDt">
-                                <Label
-                                    Margin="0,3,0,3"
-                                    VerticalAlignment="Center"
-                                    Content="{Binding Index, Mode=OneWay, Converter={StaticResource IndexToStringConverter}}"
-                                    Foreground="#FF9C9C9C" />
-                            </DataTemplate>
-                            <DataTemplate x:Key="TitleDt">
-                                <Label VerticalAlignment="Center" Content="{Binding AutoTitle}" />
-                            </DataTemplate>
-                            <DataTemplate x:Key="ArtistDt">
-                                <Label
-                                    VerticalAlignment="Center"
-                                    Content="{Binding AutoArtist, Mode=OneWay}"
-                                    Foreground="#FF9C9C9C" />
-                            </DataTemplate>
-                            <DataTemplate x:Key="SizeDt">
-                                <Label
-                                    VerticalAlignment="Center"
-                                    Content="{Binding FileSize, Mode=OneWay}"
-                                    Foreground="#FF9C9C9C" />
-                            </DataTemplate>
-                            <DataTemplate x:Key="TimeDt">
-                                <Label
-                                    x:Name="CheckBocHasJob"
-                                    VerticalAlignment="Center"
-                                    Content="{Binding ExportTime, Mode=OneWay}" />
-                            </DataTemplate>
-                        </ListView.Resources>
-                        <ListView.View>
-                            <GridView ColumnHeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle}">
-                                <GridViewColumn Width="40" CellTemplate="{StaticResource IdDt}" />
-                                <GridViewColumn
-                                    Width="300"
-                                    CellTemplate="{StaticResource TitleDt}"
-                                    Header="{DynamicResource ui-title}" />
-                                <GridViewColumn
-                                    Width="200"
-                                    CellTemplate="{StaticResource ArtistDt}"
-                                    Header="{DynamicResource ui-artist}" />
-                                <GridViewColumn
-                                    Width="100"
-                                    CellTemplate="{StaticResource SizeDt}"
-                                    Header="{DynamicResource ui-size}" />
-                                <GridViewColumn
-                                    Width="150"
-                                    CellTemplate="{StaticResource TimeDt}"
-                                    Header="{DynamicResource ui-exportTime}" />
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
+                        </DataGrid.ContextMenu>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="40"
+                                Binding="{Binding Index}"
+                                ElementStyle="{StaticResource FullAlignmentStyle}"
+                                Foreground="#777777"
+                                Header="" />
+                            <DataGridTextColumn
+                                Width="3*"
+                                Binding="{Binding Title}"
+                                ElementStyle="{StaticResource GenericAlignmentStyle}"
+                                Header="{DynamicResource ui-title}" />
+                            <DataGridTextColumn
+                                Width="2*"
+                                Binding="{Binding Artist}"
+                                ElementStyle="{StaticResource GenericAlignmentStyle}"
+                                Foreground="#777777"
+                                Header="{DynamicResource ui-artist}" />
+                            <DataGridTextColumn
+                                Width="1*"
+                                Binding="{Binding Size}"
+                                ElementStyle="{StaticResource GenericAlignmentStyle}"
+                                Foreground="#777777"
+                                Header="{DynamicResource ui-size}" />
+                            <DataGridTextColumn
+                                Width="1.5*"
+                                Binding="{Binding ExportTime, Converter={StaticResource DateTime2FormatStringConverter}}"
+                                ElementStyle="{StaticResource GenericAlignmentStyle}"
+                                Header="{DynamicResource ui-exportTime}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </Grid>
 
             </TabItem>

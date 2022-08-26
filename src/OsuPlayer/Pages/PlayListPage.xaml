@@ -24,9 +24,6 @@
     TextOptions.TextFormattingMode="Display"
     Unloaded="Page_Unloaded"
     mc:Ignorable="d">
-    <Page.Resources>
-        <converters:DateTimeConverter x:Key="CvtDate" />
-    </Page.Resources>
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">
             <TabItem
@@ -77,7 +74,7 @@
                                     <Label
                                         VerticalAlignment="Center"
                                         FontSize="22"
-                                        Foreground="#303030">
+                                        Foreground="#242424">
                                         <TextBlock Text="{Binding Path=PlayList.Name}" TextWrapping="Wrap" />
                                     </Label>
                                     <buttonComponent:CommonButton
@@ -95,8 +92,8 @@
                                             Margin="1,0,0,0"
                                             Stretch="Uniform">
                                             <Canvas Width="1000" Height="1000">
-                                                <Path Data="{StaticResource Edit1}" Fill="#303030" />
-                                                <Path Data="{StaticResource Edit2}" Fill="#303030" />
+                                                <Path Data="{StaticResource Edit1}" Fill="#242424" />
+                                                <Path Data="{StaticResource Edit2}" Fill="#242424" />
                                             </Canvas>
                                         </Viewbox>
                                     </buttonComponent:CommonButton>
@@ -124,11 +121,14 @@
                                     Margin="5"
                                     Orientation="Horizontal"
                                     TextBlock.FontSize="13">
-                                    <Label
-                                        Margin="0,0,5,0"
-                                        Content="{DynamicResource ui-createTime}"
-                                        Foreground="#303030" />
-                                    <Label Content="{Binding Path=PlayList.CreateTime, Converter={StaticResource CvtDate}}" Foreground="#303030" />
+                                    <TextBlock
+                                        Margin="0,5,5,5"
+                                        Foreground="#242424"
+                                        Text="{DynamicResource ui-createTime}" />
+                                    <TextBlock
+                                        Margin="5"
+                                        Foreground="#242424"
+                                        Text="{Binding Path=PlayList.CreateTime, Converter={StaticResource DateTime2FormatStringConverter}}" />
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <buttonComponent:CommonButton Click="BtnPlayAll_Click" Style="{StaticResource PlayButton}" />
@@ -142,8 +142,8 @@
                                                 Height="16"
                                                 Stretch="Uniform">
                                                 <Canvas Width="1000" Height="1000">
-                                                    <Path Data="{StaticResource Export1}" Fill="#303030" />
-                                                    <Path Data="{StaticResource Export2}" Fill="#303030" />
+                                                    <Path Data="{StaticResource Export1}" Fill="#242424" />
+                                                    <Path Data="{StaticResource Export2}" Fill="#242424" />
                                                 </Canvas>
                                             </Viewbox>
                                             <Label Content="{DynamicResource ui-btn-exportAll}" />
@@ -154,27 +154,28 @@
                                     Margin="5"
                                     Orientation="Horizontal"
                                     TextBlock.FontSize="13">
-                                    <Label
-                                        Margin="0,0,5,0"
-                                        Content="{DynamicResource ui-briefIntroduction}"
-                                        Foreground="#303030" />
-                                    <Label>
-                                        <Label.Style>
-                                            <Style TargetType="{x:Type Label}">
-                                                <Setter Property="Content" Value="{Binding Path=PlayList.Description}" />
+                                    <TextBlock
+                                        Margin="0,5,5,5"
+                                        Foreground="#242424"
+                                        Text="{DynamicResource ui-briefIntroduction}" />
+                                    <TextBlock Margin="5">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Foreground" Value="#181818" />
+                                                <Setter Property="Text" Value="{Binding Path=PlayList.Description}" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding Path=PlayList.Description}" Value="">
                                                         <Setter Property="Foreground" Value="#939393" />
-                                                        <Setter Property="Content" Value="{DynamicResource ui-none}" />
+                                                        <Setter Property="Text" Value="{DynamicResource ui-none}" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Path=PlayList.Description}" Value="{x:Null}">
                                                         <Setter Property="Foreground" Value="#939393" />
-                                                        <Setter Property="Content" Value="{DynamicResource ui-none}" />
+                                                        <Setter Property="Text" Value="{DynamicResource ui-none}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </Label.Style>
-                                    </Label>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Grid.Column="2" Margin="10,10,20,10">
