@@ -77,7 +77,7 @@ public class BeatmapSyncService
             await dbContext.BulkDeleteAsync(obsoleteNeedDel);
             await dbContext.BulkSaveChangesAsync();
 
-            LogTo.Debug(() => $"Delete {dbItems.Count} items in {sw.ElapsedMilliseconds}ms.");
+            LogTo.Debug(() => $"Delete {obsoleteNeedDel.Count} items in {sw.ElapsedMilliseconds}ms.");
             sw.Restart();
         }
 
