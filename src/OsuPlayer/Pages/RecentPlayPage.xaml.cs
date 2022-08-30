@@ -1,11 +1,17 @@
 ﻿using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Audio;
+using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
+using Milki.OsuPlayer.Shared.Utils;
+using Milki.OsuPlayer.UiComponents.ContentDialogComponent;
+using Milki.OsuPlayer.UiComponents.NotificationComponent;
+using Milki.OsuPlayer.UserControls;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Wpf;
 
@@ -14,6 +20,7 @@ namespace Milki.OsuPlayer.Pages;
 public class RecentPlayPageVm : VmBase
 {
     private ObservableCollection<LoosePlayItem> _playItems;
+    private LoosePlayItem _selectedPlayItem;
 
     public ObservableCollection<LoosePlayItem> PlayItems
     {
@@ -21,111 +28,11 @@ public class RecentPlayPageVm : VmBase
         set => this.RaiseAndSetIfChanged(ref _playItems, value);
     }
 
-    //public ICommand SearchByConditionCommand
-    //{
-    //    get
-    //    {
-    //        return new DelegateCommand<string>(keyword =>
-    //        {
-    //            WindowEx.GetCurrentFirst<MainWindow>()
-    //                .SwitchSearch
-    //                .CheckAndAction(page => ((SearchPage)page).Search(keyword));
-    //        });
-    //    }
-    //}
-
-    //public ICommand OpenSourceFolderCommand
-    //{
-    //    get
-    //    {
-    //        return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
-    //        {
-    //            var folder = orderedModel.Model.GetFolder(out _, out _);
-    //            if (!Directory.Exists(folder))
-    //            {
-    //                Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
-    //                return;
-    //            }
-
-    //            Process.Start(folder);
-    //        });
-    //    }
-    //}
-
-    //public ICommand OpenScorePageCommand
-    //{
-    //    get
-    //    {
-    //        return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
-    //        {
-    //            Process.Start($"https://osu.ppy.sh/s/{orderedModel.Model.BeatmapSetId}");
-    //        });
-    //    }
-    //}
-
-    //public ICommand SaveCollectionCommand
-    //{
-    //    get
-    //    {
-    //        return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
-    //        {
-    //            FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(orderedModel),
-    //                DialogOptionFactory.SelectCollectionOptions);
-    //        });
-    //    }
-    //}
-
-    //public ICommand ExportCommand
-    //{
-    //    get
-    //    {
-    //        return new DelegateCommand<OrderedModel<Beatmap>>(orderedModel =>
-    //        {
-    //            if (orderedModel == null) return;
-    //            ExportPage.QueueBeatmap(orderedModel);
-    //        });
-    //    }
-    //}
-
-    //public ICommand DirectPlayCommand
-    //{
-    //    get
-    //    {
-    //        return new DelegateCommand<OrderedModel<Beatmap>>(async orderedModel =>
-    //        {
-    //            if (orderedModel == null) return;
-    //            await _controller.PlayNewAsync(orderedModel);
-    //        });
-    //    }
-    //}
-
-    //public ICommand PlayCommand
-    //{
-    //    get
-    //    {
-    //        return new DelegateCommand<OrderedModel<Beatmap>>(async orderedModel =>
-    //        {
-    //            if (orderedModel == null) return;
-    //            await _controller.PlayNewAsync(orderedModel);
-    //        });
-    //    }
-    //}
-
-    //public ICommand RemoveCommand
-    //{
-    //    get
-    //    {
-    //        return new DelegateCommand<OrderedModel<Beatmap>>(async map =>
-    //        {
-    //            var appDbContext = ServiceProviders.GetApplicationDbContext();
-    //            await appDbContext.RemoveBeatmapFromRecent(map);
-    //            {
-    //                Beatmaps.Remove(map);
-    //            }
-    //            //await Services.Get<PlayerList>().RefreshPlayListAsync(PlayerList.FreshType.All, PlayListMode.Collection, _entries);
-    //        });
-    //    }
-    //}
+    public LoosePlayItem SelectedPlayItem
+    {
+        get => _selectedPlayItem;
+        set => this.RaiseAndSetIfChanged(ref _selectedPlayItem, value);
+    }
 }
 
 /// <summary>
@@ -139,10 +46,10 @@ public partial class RecentPlayPage : Page
 
     public RecentPlayPage()
     {
-        InitializeComponent();
+        DataContext = _viewModel = new RecentPlayPageVm();
         _playerService = App.Current.ServiceProvider.GetService<PlayerService>();
         _playListService = App.Current.ServiceProvider.GetService<PlayListService>();
-        DataContext = _viewModel = new RecentPlayPageVm();
+        InitializeComponent();
     }
 
     private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -153,7 +60,7 @@ public partial class RecentPlayPage : Page
             k.PlayItem?.StandardizedPath == _playListService.GetCurrentPath());
         if (item != null)
         {
-            RecentList.SelectedItem = item;
+            DataGrid.SelectedItem = item;
         }
     }
 
@@ -194,11 +101,83 @@ public partial class RecentPlayPage : Page
 
     private async void PlaySelected()
     {
-        var loosePlayItem = (LoosePlayItem)RecentList.SelectedItem;
+        var loosePlayItem = (LoosePlayItem)DataGrid.SelectedItem;
         if (loosePlayItem == null) return;
         if (loosePlayItem.IsItemLost) return;
 
         var standardizedPath = loosePlayItem.PlayItem!.StandardizedPath;
         await _playerService.InitializeNewAsync(standardizedPath, true);
+    }
+
+    private async void MiPlay_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_viewModel.SelectedPlayItem is not { IsItemLost: false, PlayItem: { } playItem } loosePlayItem) return;
+
+        await _playerService.InitializeNewAsync(playItem.StandardizedPath, true);
+    }
+
+    private void MiConditionSearch_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: string type }) return;
+
+        var keyword = type switch
+        {
+            "Title" => _viewModel.SelectedPlayItem.Title,
+            "Artist" => _viewModel.SelectedPlayItem.Artist,
+            "Creator" => _viewModel.SelectedPlayItem.Creator,
+            "Source" => _viewModel.SelectedPlayItem.PlayItem?.PlayItemDetail?.Creator,
+            _ => null
+        };
+        if (keyword is null) return;
+
+        App.CurrentMainWindow
+            .NavigationBar
+            .SwitchSearch
+            .CheckAndAction(page => ((SearchPage)page).Search(keyword));
+    }
+
+    private void MiOpenSourceFolder_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_viewModel.SelectedPlayItem is not { IsItemLost: false, PlayItem: { } playItem } loosePlayItem) return;
+
+        var folder = PathUtils.GetFullPath(playItem.StandardizedFolder, AppSettings.Default.GeneralSection.OsuSongDir);
+        if (!Directory.Exists(folder))
+        {
+            Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
+            return;
+        }
+
+        ProcessUtils.StartWithShellExecute(folder);
+    }
+
+    private void MiOpenScorePage_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_viewModel.SelectedPlayItem is not { IsItemLost: false, PlayItem: { } playItem } loosePlayItem) return;
+
+        ProcessUtils.StartWithShellExecute($"https://osu.ppy.sh/s/{playItem.PlayItemDetail.BeatmapSetId}");
+    }
+
+    private void MiSaveToPlayList_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_viewModel.SelectedPlayItem is not { IsItemLost: false, PlayItem: { } playItem } loosePlayItem) return;
+
+        App.CurrentMainContentDialog.ShowContent(new SelectPlayListControl(playItem),
+            DialogOptionFactory.SelectPlayListOptions);
+    }
+
+    private void MiExport_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_viewModel.SelectedPlayItem is not { IsItemLost: false, PlayItem: { } playItem } loosePlayItem) return;
+
+        ExportPage.QueueBeatmap(loosePlayItem.PlayItem!);
+    }
+
+    private async void MiDelete_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_viewModel.SelectedPlayItem is not { IsItemLost: false, PlayItem: { } playItem } loosePlayItem) return;
+
+        //var appDbContext = ServiceProviders.GetApplicationDbContext();
+        //await appDbContext.RemoveBeatmapFromRecent(loosePlayItem);
+        //_viewModel.PlayItems.Remove(loosePlayItem);
     }
 }

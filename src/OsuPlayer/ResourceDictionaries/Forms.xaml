@@ -2,10 +2,194 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Milki.OsuPlayer">
+    <Style x:Key="GenericColumnHeaderGripperStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="Width" Value="8" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Cursor" Value="SizeWE" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Grid>
+                        <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" />
+                        <Line
+                            x:Name="Line"
+                            Width="2"
+                            Margin="0"
+                            HorizontalAlignment="Center"
+                            IsHitTestVisible="False"
+                            SnapsToDevicePixels="True"
+                            Stroke="#F0303030"
+                            StrokeDashArray="1,1"
+                            StrokeThickness="3"
+                            Visibility="Hidden"
+                            X1="0.5"
+                            X2="0.5"
+                            Y1="0"
+                            Y2="25" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Line" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="GenericDataGridColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="TextBlock.FontSize" Value="13" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="0,4,0,4" />
+        <Setter Property="BorderBrush" Value="#D0D0D0" />
+        <Setter Property="BorderThickness" Value="2,0,0,0" />
+        <Setter Property="Foreground" Value="#484848" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+                    <Grid>
+                        <Border x:Name="BR" Background="{TemplateBinding Background}">
+                            <Border
+                                x:Name="BRIN"
+                                Margin="{TemplateBinding Padding}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                                <ContentPresenter
+                                    Margin="8,0,0,0"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            </Border>
+
+                        </Border>
+                        <Path
+                            x:Name="SortArrow"
+                            Width="7"
+                            Height="4"
+                            Margin="0,1,0,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Data="M0,0 L1,0 0.5,1 z"
+                            Fill="#B0B0B0"
+                            RenderTransformOrigin="0.5,0.5"
+                            Stretch="Fill"
+                            Visibility="Visible" />
+                        <Thumb
+                            x:Name="PART_LeftHeaderGripper"
+                            HorizontalAlignment="Left"
+                            Style="{StaticResource GenericColumnHeaderGripperStyle}" />
+                        <Thumb
+                            x:Name="PART_RightHeaderGripper"
+                            HorizontalAlignment="Right"
+                            Style="{StaticResource GenericColumnHeaderGripperStyle}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="SortDirection" Value="{x:Null}">
+                            <Setter TargetName="SortArrow" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="SortDirection" Value="Ascending">
+                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="SortArrow" Property="RenderTransform">
+                                <Setter.Value>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleY="-1" />
+                                    </TransformGroup>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="BR" Property="Border.Background" Value="#ebeced" />
+                        </Trigger>
+                        <Trigger Property="SortDirection" Value="Descending">
+                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="BR" Property="Border.Background" Value="#ebeced" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="BR" Property="Border.Background" Value="#90FFFFFF" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="BR" Property="Border.Padding" Value="0,0,0,0" />
+                            <Setter TargetName="BRIN" Property="Border.Background" Value="#dbdcdd" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="GenericDataGridCellStyle" TargetType="DataGridCell">
+        <Setter Property="Height" Value="25" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="#242424" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#F4F4F4" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="Transparent" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="GenericDataGridRowStyle" TargetType="DataGridRow">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="BorderBrush" Value="#20303030" />
+        <Setter Property="Margin" Value="0,1" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#F4F4F4" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource TextureBrush3}" />
+                <Setter Property="Panel.ZIndex" Value="1" />
+                <Setter Property="BorderThickness" Value="1,1" />
+                <Setter Property="Margin" Value="-1,0" />
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect
+                            BlurRadius="15"
+                            Opacity="0.3"
+                            ShadowDepth="0"
+                            Color="Black" />
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="GenericDataGridStyle" TargetType="DataGrid">
+        <Setter Property="AlternationCount" Value="1" />
+        <Setter Property="AlternatingRowBackground" Value="#80F0F0F0" />
+        <Setter Property="AutoGenerateColumns" Value="False" />
+        <Setter Property="Background" Value="{StaticResource WhiteBrush80}" />
+        <Setter Property="BorderBrush" Value="#D0D0D0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="ColumnHeaderStyle" Value="{StaticResource GenericDataGridColumnHeaderStyle}" />
+        <Setter Property="CellStyle" Value="{StaticResource GenericDataGridCellStyle}" />
+        <Setter Property="RowStyle" Value="{StaticResource GenericDataGridRowStyle}" />
+        <Setter Property="FontWeight" Value="Regular" />
+        <Setter Property="GridLinesVisibility" Value="None" />
+        <Setter Property="HeadersVisibility" Value="Column" />
+        <Setter Property="HorizontalGridLinesBrush" Value="#DCDCDC" />
+        <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="RowDetailsVisibilityMode" Value="Collapsed" />
+        <Setter Property="RowHeaderWidth" Value="0" />
+        <Setter Property="SelectionMode" Value="Single" />
+        <Setter Property="SelectionUnit" Value="FullRow" />
+        <Setter Property="TextBlock.FontSize" Value="13" />
+        <Setter Property="VerticalGridLinesBrush" Value="#D0D0D0" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+    </Style>
+    <Style x:Key="GenericAlignmentStyle" TargetType="TextBlock">
+        <Setter Property="Margin" Value="8,0,0,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="FullAlignmentStyle" TargetType="TextBlock">
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
     <!--  List View  -->
     <Style x:Key="HiddenHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
         <Setter Property="Visibility" Value="Collapsed" />
     </Style>
+
     <Style x:Key="GridViewColumnHeaderGripper" TargetType="Thumb">
         <Setter Property="Width" Value="6" />
         <Setter Property="Template">

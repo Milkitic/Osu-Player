@@ -177,7 +177,7 @@ public sealed partial class ApplicationDbContext
         if (playItems.Count < 1) return;
         var findAsync = await PlayLists.FindAsync(collection.Id);
         if (findAsync == null) return;
-        await Entry(findAsync).Collection(p => p.PlayItems).LoadAsync(); 
+        await Entry(findAsync).Collection(p => p.PlayItems).LoadAsync();
         findAsync.PlayItems.AddRange(playItems);
 
         await SaveChangesAsync();
@@ -226,7 +226,7 @@ public sealed partial class ApplicationDbContext
             from looseItem in LoosePlayItems
             where looseItem.LooseItemType == LooseItemType.RecentPlay
             orderby looseItem.LastPlay descending
-            join playItem in PlayItems on looseItem.PlayItemId equals playItem.Id into newCollection
+            join playItem in PlayItems.Include(k => k.PlayItemDetail)/*.Include(k => k.PlayItemAsset)*/ on looseItem.PlayItemId equals playItem.Id into newCollection
             from playItem in newCollection.DefaultIfEmpty()
             select new
             {

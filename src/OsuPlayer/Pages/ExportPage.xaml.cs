@@ -14,7 +14,6 @@ using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.UiComponents.NotificationComponent;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.Windows;
-using Milki.OsuPlayer.Wpf.Command;
 
 namespace Milki.OsuPlayer.Pages;
 
@@ -41,116 +40,8 @@ public class ExportPageVm : VmBase
         get => _exportPath;
         set => this.RaiseAndSetIfChanged(ref _exportPath, value);
     }
-
-    public ICommand UpdateList
-    {
-        get
-        {
-            return new DelegateCommand(async obj =>
-            {
-                await UpdateCollection();
-            });
-        }
-    }
-
-    public ICommand ItemFolderCommand => new DelegateCommand(obj =>
-    {
-        if (obj is string path)
-        {
-            if (Directory.Exists(path))
-            {
-                ProcessUtils.StartWithShellExecute(path);
-            }
-            else
-            {
-                Notification.Push(I18NUtil.GetString("err-dirNotFound"), I18NUtil.GetString("text-error"));
-            }
-        }
-        else if (obj is ExportItem orderedModel)
-        {
-            ProcessUtils.StartWithShellExecute("Explorer", "/select," + orderedModel?.ExportPath);
-            // todo: include
-        }
-    });
-
-    public ICommand ItemReExportCommand => new DelegateCommand(async obj =>
-    {
-        if (SelectedItems == null) return;
-        foreach (var exportItem in SelectedItems)
-        {
-            if (exportItem.PlayItem != null)
-            {
-                ExportPage.QueueBeatmap(exportItem.PlayItem);
-            }
-            else
-            {
-                // todo: Not valid...
-            }
-        }
-
-        while (ExportPage.IsTaskBusy)
-        {
-            await Task.Delay(10);
-        }
-
-        if (ExportPage.HasTaskSuccess)
-        {
-            await UpdateCollection();
-        }
-    });
-
-    public ICommand ItemDeleteCommand => new DelegateCommand(async obj =>
-    {
-        if (SelectedItems == null) return;
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
-
-        foreach (var exportItem in SelectedItems)
-        {
-            if (!File.Exists(exportItem.ExportPath)) continue;
-            File.Delete(exportItem.ExportPath);
-            var dir = new FileInfo(exportItem.ExportPath).Directory;
-            if (dir is { Exists: true } && !dir.EnumerateFiles().Any())
-            {
-                dir.Delete();
-            }
-        }
-
-        dbContext.Exports.RemoveRange(SelectedItems);
-        await dbContext.SaveChangesAsync();
-        await UpdateCollection();
-    });
-
-    private async Task UpdateCollection()
-    {
-        await using var dbContext = ServiceProviders.GetApplicationDbContext();
-        var paginationQueryResult = await dbContext.GetExportListFull();
-        var exports = paginationQueryResult.Results;
-        //foreach (var export in exports)
-        //{
-        //    var map = export.PlayItem;
-        //    try
-        //    {
-        //        var fi = new FileInfo(export.ExportPath);
-        //        if (fi.Exists)
-        //        {
-        //            export.IsValid = true;
-        //            export.IsItemLost = fi.Length;
-        //            export.CreationTime = fi.CreationTime;
-        //        }
-        //        else
-        //        {
-        //            export.IsValid = false;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        LogTo.ErrorException($"Error while updating view item: {map}", ex);
-        //    }
-        //}
-
-        ExportList = new ObservableCollection<ExportItem>(exports);
-    }
 }
+
 /// <summary>
 /// ExportPage.xaml 的交互逻辑
 /// </summary>
@@ -416,13 +307,89 @@ public partial class ExportPage : Page
         MessageBox.Show("The " + command + " command has been invoked on target object " + targetobj);
     }
 
+    private async Task UpdateCollection()
+    {
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+        var paginationQueryResult = await dbContext.GetExportListFull();
+        var exports = paginationQueryResult.Results;
+        _viewModel.ExportList = new ObservableCollection<ExportItem>(exports);
+    }
+
     private void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
     {
         e.CanExecute = true;
     }
 
-    private void Page_Loaded(object sender, RoutedEventArgs e)
+    private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        _viewModel.UpdateList.Execute(null);
+        await UpdateCollection();
+    }
+
+    private void MiOpenSourceFolder_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement fe) return;
+
+        if (fe.Tag is string path)
+        {
+            if (Directory.Exists(path))
+            {
+                ProcessUtils.StartWithShellExecute(path);
+            }
+            else
+            {
+                Notification.Push(I18NUtil.GetString("err-dirNotFound"), I18NUtil.GetString("text-error"));
+            }
+        }
+        else if (fe.Tag is ExportItem orderedModel)
+        {
+            ProcessUtils.StartWithShellExecute("Explorer", "/select," + orderedModel?.ExportPath);
+        }
+    }
+
+    private async void MiReexport_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_viewModel.SelectedItems == null) return;
+        foreach (var exportItem in _viewModel.SelectedItems)
+        {
+            if (exportItem.PlayItem != null)
+            {
+                ExportPage.QueueBeatmap(exportItem.PlayItem);
+            }
+            else
+            {
+                // todo: Not valid...
+            }
+        }
+
+        while (ExportPage.IsTaskBusy)
+        {
+            await Task.Delay(10);
+        }
+
+        if (ExportPage.HasTaskSuccess)
+        {
+            await UpdateCollection();
+        }
+    }
+
+    private async void MiDelete_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_viewModel.SelectedItems == null) return;
+        await using var dbContext = ServiceProviders.GetApplicationDbContext();
+
+        foreach (var exportItem in _viewModel.SelectedItems)
+        {
+            if (!File.Exists(exportItem.ExportPath)) continue;
+            File.Delete(exportItem.ExportPath);
+            var dir = new FileInfo(exportItem.ExportPath).Directory;
+            if (dir is { Exists: true } && !dir.EnumerateFiles().Any())
+            {
+                dir.Delete();
+            }
+        }
+
+        dbContext.Exports.RemoveRange(_viewModel.SelectedItems);
+        await dbContext.SaveChangesAsync();
+        await UpdateCollection();
     }
 }

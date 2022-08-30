@@ -19,7 +19,7 @@
                 <ResourceDictionary Source="ResourceDictionaries/ButtonDictionary.xaml" />
                 <ResourceDictionary Source="ResourceDictionaries/ConfigStyle.xaml" />
                 <ResourceDictionary Source="ResourceDictionaries/ContextMenuStyle.xaml" />
-                <ResourceDictionary Source="ResourceDictionaries/ListViewStyle.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries/Forms.xaml" />
                 <ResourceDictionary Source="ResourceDictionaries/NavigationStyle.xaml" />
                 <ResourceDictionary Source="ResourceDictionaries/Radios.xaml" />
                 <ResourceDictionary Source="ResourceDictionaries/SliderStyle.xaml" />

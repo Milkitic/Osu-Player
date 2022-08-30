@@ -41,7 +41,10 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
         _fileName = Path.GetFileName(osuFile.OriginalPath)!;
 
         var waveFormat = engine.WaveFormat;
-        MusicTrack = new SoundSeekingTrack(TimerSource, waveFormat);
+        MusicTrack = new SoundSeekingTrack(TimerSource, waveFormat)
+        {
+            ReadFully = false
+        };
         HitsoundTrack = new HitsoundTrack(TimerSource, waveFormat);
         SampleTrack = new SampleTrack(osuFile, TimerSource, waveFormat);
 
