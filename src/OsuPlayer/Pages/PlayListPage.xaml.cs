@@ -47,7 +47,7 @@ public partial class PlayListPage : Page
         _viewModel.PlayList = playList;
     }
 
-    public async Task UpdateList()
+    public async ValueTask UpdateList()
     {
         await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var playListDetail = await dbContext.PlayLists

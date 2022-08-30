@@ -312,7 +312,7 @@ public partial class ContentDialog : UserControl
         return overlay;
     }
 
-    public async Task<bool?> ShowDialog(Window window)
+    public async ValueTask<bool?> ShowDialog(Window window)
     {
         var tcs = new TaskCompletionSource<bool?>();
 

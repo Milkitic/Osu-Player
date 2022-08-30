@@ -50,43 +50,78 @@ public partial class LyricWindow : WindowEx
         MouseLeave += LyricWindow_MouseLeave;
     }
 
-    public void StopWork()
+    public async ValueTask StopTaskAsync()
     {
-        CancelTask();
+        await CancelTask();
     }
 
-    public void StartTask()
+    public async ValueTask ShowAsync()
     {
-        _cts = new CancellationTokenSource();
-    }
-
-    public new void Show()
-    {
+        base.Show();
         var lastLoadContext = _playerService.LastLoadContext;
         var meta = lastLoadContext?.OsuFile?.Metadata;
         MetaString metaArtist = meta?.ArtistMeta ?? default;
         MetaString metaTitle = meta?.TitleMeta ?? default;
-        SetNewLyric(null, metaArtist, metaTitle);
+        await SetNewLyric(null, metaArtist, metaTitle);
         AppSettings.Default.LyricSection.IsDesktopLyricEnabled = true;
         AppSettings.SaveDefault();
 
         SharedVm.Default.IsLyricWindowEnabled = true;
         _lyricsService.SetLyricSynchronously(lastLoadContext?.PlayItem);
-        base.Show();
     }
 
-    public new void Hide()
+    public async ValueTask HideAsync()
     {
+        base.Hide();
         AppSettings.Default.LyricSection.IsDesktopLyricEnabled = false;
         AppSettings.SaveDefault();
         SharedVm.Default.IsLyricWindowEnabled = false;
-        CancelTask();
-        base.Hide();
+        await CancelTask();
+    }
+
+    public async ValueTask SetNewLyric(Lyrics lyric, MetaString metaArtist, MetaString metaTitle)
+    {
+        await StopTaskAsync();
+
+        _lyricList = lyric?.LyricsSentences ?? new List<Sentence>();
+        _lyricList.Insert(0,
+            new Sentence($"{metaArtist.ToUnicodeString()} - {metaTitle.ToUnicodeString()}", 0));
+    }
+
+    public void StartWork()
+    {
+        _cts = new CancellationTokenSource();
+        _playingTask = Task.Run(() =>
+        {
+            int oldTime = -1;
+            while (!_cts.Token.IsCancellationRequested)
+            {
+                Thread.Sleep(50);
+                var currentTime = _playerService.PlayTime;
+                var validLyrics = _lyricList.Where(t => t.StartTime <= currentTime.TotalMilliseconds).ToArray();
+                if (validLyrics.Length < 1)
+                    continue;
+                int maxTime = validLyrics.Max(t => t.StartTime);
+                if (oldTime == maxTime)
+                    continue;
+                var current = _lyricList.First(t => t.StartTime == maxTime);
+                var predictLyrics = _lyricList.Where(t => t.StartTime > maxTime);
+                Sentence? next = null;
+                if (predictLyrics.Any())
+                    next = _lyricList.First(t => t.StartTime > maxTime);
+                LogTo.Debug(() => current.Content);
+
+                var size = SetLyricByIndexAsync(_lyricList.IndexOf(current)).AsTask().Result;
+                Execute.OnUiThread(() => { BeginTranslate(size, maxTime, next?.StartTime ?? -1); });
+                _pressed = false;
+                oldTime = maxTime;
+            }
+        }, _cts.Token);
     }
 
     public void Dispose()
     {
-        StopWork();
+        StopTaskAsync().AsTask().Wait();
         Close();
     }
 
@@ -125,46 +160,6 @@ public partial class LyricWindow : WindowEx
     {
         if (!_pressed)
             Left = 0;
-    }
-
-    public void SetNewLyric(Lyrics lyric, MetaString metaArtist, MetaString metaTitle)
-    {
-        StopWork();
-
-        _lyricList = lyric?.LyricsSentences ?? new List<Sentence>();
-        _lyricList.Insert(0,
-            new Sentence($"{metaArtist.ToUnicodeString()} - {metaTitle.ToUnicodeString()}", 0));
-    }
-
-    public void StartWork()
-    {
-        StartTask();
-        _playingTask = Task.Run(() =>
-        {
-            int oldTime = -1;
-            while (!_cts.Token.IsCancellationRequested)
-            {
-                Thread.Sleep(50);
-                var currentTime = _playerService.PlayTime;
-                var validLyrics = _lyricList.Where(t => t.StartTime <= currentTime.TotalMilliseconds).ToArray();
-                if (validLyrics.Length < 1)
-                    continue;
-                int maxTime = validLyrics.Max(t => t.StartTime);
-                if (oldTime == maxTime)
-                    continue;
-                var current = _lyricList.First(t => t.StartTime == maxTime);
-                var predictLyrics = _lyricList.Where(t => t.StartTime > maxTime);
-                Sentence? next = null;
-                if (predictLyrics.Any())
-                    next = _lyricList.First(t => t.StartTime > maxTime);
-                LogTo.Debug(() => current.Content);
-
-                var size = SetLyricByIndexAsync(_lyricList.IndexOf(current)).AsTask().Result;
-                Execute.OnUiThread(() => { BeginTranslate(size, maxTime, next?.StartTime ?? -1); });
-                _pressed = false;
-                oldTime = maxTime;
-            }
-        }, _cts.Token);
     }
 
     private void BeginTranslate(Size size, int nowTime, int nextTime)
@@ -260,11 +255,10 @@ public partial class LyricWindow : WindowEx
         return lyricSize;
     }
 
-    private void CancelTask()
+    private async ValueTask CancelTask()
     {
         _cts?.Cancel();
-        if (_playingTask != null)
-            Task.WaitAll(_playingTask);
+        if (_playingTask != null) await _playingTask;
     }
 
     private void ImgLyric_MouseDown(object sender, MouseButtonEventArgs e)
@@ -281,9 +275,9 @@ public partial class LyricWindow : WindowEx
         _pressed = false;
     }
 
-    private void BtnHide_Click(object sender, RoutedEventArgs e)
+    private async void BtnHide_Click(object sender, RoutedEventArgs e)
     {
-        Hide();
+        await HideAsync();
     }
 
     private void BtnLock_Click(object sender, RoutedEventArgs e)

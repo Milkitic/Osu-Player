@@ -82,7 +82,7 @@ public partial class RecentPlayPage : Page
         _viewModel.PlayItems.Clear();
     }
 
-    private async Task UpdateList()
+    private async ValueTask UpdateList()
     {
         var appDbContext = ServiceProviders.GetApplicationDbContext();
         var queryResult = await appDbContext.GetRecentListFull();

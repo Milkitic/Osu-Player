@@ -142,7 +142,7 @@ public partial class GeneralPage : Page
         await SyncCustomFolderAsync(AppSettings.Default.GeneralSection.CustomSongDir);
     }
 
-    private async Task SyncOsuDbAsync(string path)
+    private async ValueTask SyncOsuDbAsync(string path)
     {
         try
         {
@@ -155,7 +155,7 @@ public partial class GeneralPage : Page
         }
     }
 
-    private async Task SyncCustomFolderAsync(string songDir)
+    private async ValueTask SyncCustomFolderAsync(string songDir)
     {
         try
         {

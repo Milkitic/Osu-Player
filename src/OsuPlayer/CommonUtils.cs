@@ -32,7 +32,7 @@ public static class CommonUtils
         return result;
     }
 
-    public static async Task SyncOsuDbAsync(this BeatmapSyncService syncService, string path)
+    public static async ValueTask SyncOsuDbAsync(this BeatmapSyncService syncService, string path)
     {
         try
         {
@@ -54,7 +54,7 @@ public static class CommonUtils
         }
     }
 
-    public static async Task SyncCustomFolderAsync(this OsuFileScanningService osuFileScanningService, string path)
+    public static async ValueTask SyncCustomFolderAsync(this OsuFileScanningService osuFileScanningService, string path)
     {
         try
         {
@@ -71,7 +71,7 @@ public static class CommonUtils
         }
     }
 
-    public static async Task<string?> GetThumbByBeatmapDbId(PlayItem playItem)
+    public static async ValueTask<string?> GetThumbByBeatmapDbId(PlayItem playItem)
     {
         if (playItem.PlayItemAsset?.ThumbPath != null)
         {
@@ -153,7 +153,7 @@ public static class CommonUtils
         }
     }
 
-    public static async Task<bool> AddToPlayListAsync(PlayList playList, IList<PlayItem> beatmaps)
+    public static async ValueTask<bool> AddToPlayListAsync(PlayList playList, IList<PlayItem> beatmaps)
     {
         if (beatmaps.Count <= 0) return false;
 

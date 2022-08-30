@@ -24,7 +24,7 @@ public class Downloader
         Url = url;
     }
 
-    public async Task DownloadAsync(string savePath)
+    public async ValueTask DownloadAsync(string savePath)
     {
         _downloadTask = new Task(async () =>
         {

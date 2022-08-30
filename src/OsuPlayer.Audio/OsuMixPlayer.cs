@@ -301,7 +301,7 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
         await AddAudioCacheAsync(startTime, endTime, hitsoundNodes);
     }
 
-    private async Task AddAudioCacheAsync(int startTime, int endTime, IReadOnlyCollection<HitsoundNode> hitsoundNodes)
+    private async ValueTask AddAudioCacheAsync(int startTime, int endTime, IReadOnlyCollection<HitsoundNode> hitsoundNodes)
     {
         if (hitsoundNodes.Count == 0)
         {
@@ -318,11 +318,11 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
                 .AsParallel()
                 .WithDegreeOfParallelism(1)
                 //.WithDegreeOfParallelism(Environment.ProcessorCount == 1 ? 1 : Environment.ProcessorCount / 2)
-                .ForAll(playableNode => { AddHitsoundCache(playableNode, folder, waveFormat).Wait(); });
+                .ForAll(playableNode => { AddHitsoundCache(playableNode, folder, waveFormat).AsTask().Wait(); });
         });
     }
 
-    private static async Task AddHitsoundCache(HitsoundNode hitsoundNode,
+    private static async ValueTask AddHitsoundCache(HitsoundNode hitsoundNode,
         string beatmapFolder,
         WaveFormat waveFormat)
     {

@@ -63,7 +63,7 @@ public partial class ExportPage : Page
         MessageBox.Show("The " + command + " command has been invoked on target object " + targetobj);
     }
 
-    private async Task UpdateCollection()
+    private async ValueTask UpdateCollection()
     {
         await using var dbContext = ServiceProviders.GetApplicationDbContext();
         var paginationQueryResult = await dbContext.GetExportListFull();

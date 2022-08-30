@@ -39,7 +39,7 @@ public class OsuFileScanningService
     private static readonly object ScanObject = new object();
     private static readonly object CancelObject = new object();
 
-    public async Task ScanAndSyncAsync(string path)
+    public async ValueTask ScanAndSyncAsync(string path)
     {
         var dbFolder = Path.GetFullPath(AppSettings.Default.GeneralSection.OsuSongDir);
         var customFolder = Path.GetFullPath(AppSettings.Default.GeneralSection.CustomSongDir);
@@ -82,7 +82,7 @@ public class OsuFileScanningService
         }
     }
 
-    public async Task CancelTaskAsync()
+    public async ValueTask CancelTaskAsync()
     {
         lock (CancelObject)
         {

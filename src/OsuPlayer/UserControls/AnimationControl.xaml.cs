@@ -198,21 +198,21 @@ public partial class AnimationControl : UserControl
         }
     }
 
-    private async Task PlayVideo()
+    private async ValueTask PlayVideo()
     {
         if (VideoElement.MediaState == MediaPlaybackState.Play)
             return;
         await VideoElement.Play();
     }
 
-    private async Task PauseVideo()
+    private async ValueTask PauseVideo()
     {
         if (VideoElement.MediaState != MediaPlaybackState.Play)
             return;
         await VideoElement.Pause();
     }
 
-    private async Task StopVideo()
+    private async ValueTask StopVideo()
     {
         if (VideoElement.MediaState != MediaPlaybackState.Play)
             return;
@@ -225,7 +225,7 @@ public partial class AnimationControl : UserControl
             VideoElement.SpeedRatio = AppSettings.Default.PlaySection.PlaybackRate;
     }
 
-    private async Task CloseVideoAsync()
+    private async ValueTask CloseVideoAsync()
     {
         await VideoElement.Stop();
         await VideoElement.Close();
@@ -236,7 +236,7 @@ public partial class AnimationControl : UserControl
             VideoElement.SpeedRatio = AppSettings.Default.PlaySection.PlaybackRate;
         });
     }
-    private async Task InitVideoAsync(PlayerService.PlayItemLoadContext loadContext)
+    private async ValueTask InitVideoAsync(PlayerService.PlayItemLoadContext loadContext)
     {
         if (loadContext.OsuFile?.Events?.VideoInfo == null || loadContext.VideoPath == null) return;
 

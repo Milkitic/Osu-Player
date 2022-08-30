@@ -43,7 +43,7 @@ public class UpdateService
         return _version;
     }
 
-    public async Task<bool?> CheckUpdateAsync()
+    public async ValueTask<bool?> CheckUpdateAsync()
     {
         IsRunningChecking = true;
 
@@ -100,7 +100,7 @@ public class UpdateService
         return true;
     }
 
-    private async Task<string?> HttpGetAsync(string url)
+    private async ValueTask<string?> HttpGetAsync(string url)
     {
         for (int i = 0; i < RetryCount; i++)
         {

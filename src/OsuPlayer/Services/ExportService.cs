@@ -62,7 +62,7 @@ internal class ExportService
         });
     }
 
-    private async Task CopyFileAsync(PlayItem playItem)
+    private async ValueTask CopyFileAsync(PlayItem playItem)
     {
         var playItemDetail = playItem.PlayItemDetail;
         var folder = PathUtils.GetFullPath(playItem.StandardizedFolder,

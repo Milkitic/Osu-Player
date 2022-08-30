@@ -26,7 +26,7 @@ public class LyricsService : IDisposable
             ProvideType = provideType;
         }
 
-        public async Task<Lyrics> GetLyricAsync(string artist, string title, int duration)
+        public async ValueTask<Lyrics> GetLyricAsync(string artist, string title, int duration)
         {
             Lyrics lyric;
             switch (ProvideType)
@@ -52,7 +52,7 @@ public class LyricsService : IDisposable
             return lyric;
         }
 
-        private async Task<Lyrics> InnerGetLyric(string artist, string title, int duration, bool useTranslated,
+        private async ValueTask<Lyrics> InnerGetLyric(string artist, string title, int duration, bool useTranslated,
             bool useCache = false)
         {
             if (useCache && TryGetCache(title, artist, duration, useTranslated, out Lyrics cached))
@@ -77,8 +77,8 @@ public class LyricsService : IDisposable
         }
     }
 
-    private LyricWindow _lyricWindow = null!;
     private readonly PlayerService _playerService;
+    private LyricWindow _lyricWindow = null!;
     private LyricProvider? _lyricProvider;
     private Task? _searchLyricTask;
 
@@ -87,12 +87,9 @@ public class LyricsService : IDisposable
         _playerService = playerService;
     }
 
-    public async Task CreateWindowAsync()
+    public async ValueTask CreateWindowAsync()
     {
-        await App.Current.Dispatcher.InvokeAsync(() =>
-        {
-            _lyricWindow = new LyricWindow();
-        });
+        await App.Current.Dispatcher.InvokeAsync(() => _lyricWindow = new LyricWindow());
     }
 
     public void ReloadLyricProvider(bool useStrict = true)
@@ -130,33 +127,34 @@ public class LyricsService : IDisposable
     /// <summary>
     /// Call lyric provider to check lyric
     /// </summary>
-    public void SetLyricSynchronously(PlayItem? playItem)
+    public async void SetLyricSynchronously(PlayItem? playItem)
     {
-        Task.Run(async () =>
+        if (_searchLyricTask?.IsTaskBusy() == true)
         {
-            if (_searchLyricTask?.IsTaskBusy() == true)
+            await _searchLyricTask;
+        }
+
+        _searchLyricTask = Task.Run(async () =>
+        {
+            if (_playerService.LastLoadContext?.PlayItem == null) return;
+            if (_playerService.ActiveMixPlayer == null) return;
+
+            var playItemDetail = playItem?.PlayItemDetail ?? _playerService.LastLoadContext.PlayItem.PlayItemDetail;
+
+            var artistUnicode = playItemDetail.ArtistUnicode;
+            var titleUnicode = playItemDetail.TitleUnicode;
+
+            var metaArtist = new MetaString(playItemDetail.Artist, artistUnicode);
+            var metaTitle = new MetaString(playItemDetail.Tags, titleUnicode);
+
+            if (_lyricProvider != null)
             {
-                await _searchLyricTask;
-            }
-
-            _searchLyricTask = Task.Run(async () =>
-            {
-                if (_playerService.LastLoadContext?.PlayItem == null) return;
-                if (_playerService.ActiveMixPlayer == null) return;
-
-                var playItemDetail = playItem?.PlayItemDetail ?? _playerService.LastLoadContext.PlayItem.PlayItemDetail;
-
-                var artistUnicode = playItemDetail.ArtistUnicode;
-                var titleUnicode = playItemDetail.TitleUnicode;
-
-                var metaArtist = new MetaString(playItemDetail.Artist, artistUnicode);
-                var metaTitle = new MetaString(playItemDetail.Tags, titleUnicode);
-
                 var lyric = await _lyricProvider.GetLyricAsync(artistUnicode, titleUnicode,
                     (int)_playerService.ActiveMixPlayer.MusicTrack.Duration);
-                _lyricWindow.SetNewLyric(lyric, metaArtist, metaTitle);
-                _lyricWindow.StartWork();
-            });
+                await _lyricWindow.SetNewLyric(lyric, metaArtist, metaTitle);
+            }
+
+            _lyricWindow.StartWork();
         });
     }
 

@@ -6,7 +6,7 @@ namespace Milki.OsuPlayer.Data;
 
 public sealed partial class ApplicationDbContext
 {
-    public async Task<PlayItem> GetOrAddPlayItem(string standardizedPath)
+    public async ValueTask<PlayItem> GetOrAddPlayItem(string standardizedPath)
     {
         var playItem = await PlayItems
             //.AsNoTracking()
@@ -71,7 +71,7 @@ public sealed partial class ApplicationDbContext
         return entity;
     }
 
-    public async Task<PlayItem> GetPlayItemByDetail(PlayItemDetail playItemDetail, bool createExtraInfos)
+    public async ValueTask<PlayItem> GetPlayItemByDetail(PlayItemDetail playItemDetail, bool createExtraInfos)
     {
         if (!createExtraInfos)
         {
@@ -116,7 +116,7 @@ public sealed partial class ApplicationDbContext
         return playItem;
     }
 
-    public async Task<IReadOnlyList<PlayItem>> GetPlayItemsByFolderAsync(string standardizedFolder)
+    public async ValueTask<IReadOnlyList<PlayItem>> GetPlayItemsByFolderAsync(string standardizedFolder)
     {
         return await PlayItems
             .AsNoTracking()
@@ -129,7 +129,7 @@ public sealed partial class ApplicationDbContext
             .ToArrayAsync();
     }
 
-    public async Task<IReadOnlyList<PlayItemDetail>> GetPlayItemDetailsByFolderAsync(string standardizedFolder)
+    public async ValueTask<IReadOnlyList<PlayItemDetail>> GetPlayItemDetailsByFolderAsync(string standardizedFolder)
     {
         return await PlayItemDetails
             .AsNoTracking()
@@ -137,7 +137,7 @@ public sealed partial class ApplicationDbContext
             .ToArrayAsync();
     }
 
-    public async Task UpdateThumbPath(PlayItem playItem, string path)
+    public async ValueTask UpdateThumbPath(PlayItem playItem, string path)
     {
         var item = await GetOrAddPlayItem(playItem.StandardizedPath);
         item.PlayItemAsset!.ThumbPath = path;
@@ -145,7 +145,7 @@ public sealed partial class ApplicationDbContext
         await SaveChangesAsync();
     }
 
-    public async Task UpdateVideoPath(PlayItem playItem, string path)
+    public async ValueTask UpdateVideoPath(PlayItem playItem, string path)
     {
         var item = await GetOrAddPlayItem(playItem.StandardizedPath);
         item.PlayItemAsset!.VideoPath = path;
@@ -153,7 +153,7 @@ public sealed partial class ApplicationDbContext
         await SaveChangesAsync();
     }
 
-    public async Task UpdateStoryboardVideoPath(PlayItem playItem, string path)
+    public async ValueTask UpdateStoryboardVideoPath(PlayItem playItem, string path)
     {
         var item = await GetOrAddPlayItem(playItem.StandardizedPath);
         item.PlayItemAsset!.StoryboardVideoPath = path;
@@ -162,7 +162,7 @@ public sealed partial class ApplicationDbContext
     }
 
 
-    public async Task RemoveFolderAll()
+    public async ValueTask RemoveFolderAll()
     {
         PlayItems.RemoveRange(PlayItems.Where(k => !k.StandardizedPath.StartsWith("./")));
         await SaveChangesAsync();

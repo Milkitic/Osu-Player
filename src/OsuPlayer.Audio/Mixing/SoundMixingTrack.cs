@@ -110,7 +110,7 @@ public class SoundMixingTrack : Track
         await InitializeHitsoundAsync();
     }
 
-    private async Task InitializeHitsoundAsync()
+    private async ValueTask InitializeHitsoundAsync()
     {
         Duration = HitsoundNodes is { Count: not 0 } ? HitsoundNodes.Max(k => k.Offset) : 0;
         RebuildNodeQueue();

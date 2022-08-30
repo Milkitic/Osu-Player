@@ -138,7 +138,7 @@ public sealed partial class ApplicationDbContext
     }
 
 
-    public async Task AddOrUpdatePlayListAsync(PlayList playList)
+    public async ValueTask AddOrUpdatePlayListAsync(PlayList playList)
     {
         var result = await PlayLists.FindAsync(playList.Id);
         if (result == null)
@@ -371,7 +371,7 @@ public sealed partial class ApplicationDbContext
         }
     }
 
-    public async Task<PaginationQueryResult<ExportItem>> GetExportListFull(
+    public async ValueTask<PaginationQueryResult<ExportItem>> GetExportListFull(
         int page = 0,
         int countPerPage = 50)
     {
@@ -402,7 +402,7 @@ public sealed partial class ApplicationDbContext
         return new PaginationQueryResult<ExportItem>(result, count);
     }
 
-    public async Task AddOrUpdateExportAsync(ExportItem export)
+    public async ValueTask AddOrUpdateExportAsync(ExportItem export)
     {
         var exist = await Exports.FindAsync(export.Id);
         if (exist != null)
@@ -425,7 +425,7 @@ public sealed partial class ApplicationDbContext
         await SaveChangesAsync();
     }
 
-    public async Task<PaginationQueryResult<ExportItem>> GetExportList(
+    public async ValueTask<PaginationQueryResult<ExportItem>> GetExportList(
         int page = 0,
         int countPerPage = 50)
     {

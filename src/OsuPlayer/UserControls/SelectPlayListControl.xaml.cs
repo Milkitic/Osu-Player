@@ -71,7 +71,7 @@ public partial class SelectPlayListControl : UserControl
         App.CurrentMainContentDialog.RaiseOk();
     }
 
-    private async Task RefreshList()
+    private async ValueTask RefreshList()
     {
         await using var dbContext = ServiceProviders.GetApplicationDbContext();
         _viewModel.PlayLists = new ObservableCollection<PlayList>(await dbContext.GetPlayListsAsync());
