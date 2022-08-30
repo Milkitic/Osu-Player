@@ -96,7 +96,7 @@ public class CurrentPlayControlVm : VmBase
         {
             return new DelegateCommand(param =>
             {
-                Process.Start(PathUtils.GetFullPath(SelectedMap.StandardizedFolder,
+                ProcessUtils.StartWithShellExecute(PathUtils.GetFullPath(SelectedMap.StandardizedFolder,
                     AppSettings.Default.GeneralSection.OsuSongDir));
             });
         }
@@ -108,7 +108,7 @@ public class CurrentPlayControlVm : VmBase
         {
             return new DelegateCommand(param =>
             {
-                Process.Start($"https://osu.ppy.sh/b/{SelectedMap.PlayItemDetail.BeatmapId}");
+                ProcessUtils.StartWithShellExecute($"https://osu.ppy.sh/b/{SelectedMap.PlayItemDetail.BeatmapId}");
             });
         }
     }

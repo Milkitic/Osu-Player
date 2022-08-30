@@ -115,7 +115,7 @@ public partial class AboutPage : Page
 
     private void LinkLicense_Click(object sender, RoutedEventArgs e)
     {
-        Process.Start("https://github.com/Milkitic/Osu-Player/blob/master/LICENSE");
+        ProcessUtils.StartWithShellExecute("https://github.com/Milkitic/Osu-Player/blob/master/LICENSE");
     }
 
     private void LinkPrivacy_Click(object sender, RoutedEventArgs e)

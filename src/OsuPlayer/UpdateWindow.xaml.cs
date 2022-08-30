@@ -63,8 +63,8 @@ public partial class UpdateWindow : Window
 
     private void Downloader_OnFinishDownloading()
     {
-        Process.Start(new FileInfo(_savePath).DirectoryName);
-        Process.Start(_savePath);
+        ProcessUtils.StartWithShellExecute(new FileInfo(_savePath).DirectoryName);
+        ProcessUtils.StartWithShellExecute(_savePath);
         Dispatcher.BeginInvoke(new Action(Close));
     }
 

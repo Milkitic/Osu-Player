@@ -2,6 +2,7 @@
 using System.Windows;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Shared.Models;
+using Milki.OsuPlayer.Shared.Utils;
 using Milki.OsuPlayer.Wpf;
 
 namespace Milki.OsuPlayer.Windows;
@@ -31,7 +32,7 @@ public partial class NewVersionWindow : WindowEx
 
     private void HtmlUrl_Click(object sender, RoutedEventArgs e)
     {
-        Process.Start(_release.HtmlUrl);
+        ProcessUtils.StartWithShellExecute(_release.HtmlUrl);
     }
 
     private async void Skip_Click(object sender, RoutedEventArgs e)

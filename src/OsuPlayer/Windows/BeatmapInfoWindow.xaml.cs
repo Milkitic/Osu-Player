@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using Milki.OsuPlayer.Data.Models;
+using Milki.OsuPlayer.Shared.Utils;
 
 namespace Milki.OsuPlayer.Windows;
 
@@ -21,11 +22,11 @@ public partial class BeatmapInfoWindow : Window
 
     private void SLink_Click(object sender, RoutedEventArgs e)
     {
-        Process.Start("https://osu.ppy.sh/s/" + _info.BeatmapSetId);
+        ProcessUtils.StartWithShellExecute("https://osu.ppy.sh/s/" + _info.BeatmapSetId);
     }
 
     private void BLink_Click(object sender, RoutedEventArgs e)
     {
-        Process.Start("https://osu.ppy.sh/b/" + _info.BeatmapId);
+        ProcessUtils.StartWithShellExecute("https://osu.ppy.sh/b/" + _info.BeatmapId);
     }
 }
