@@ -42,7 +42,7 @@ public partial class App : Application
     {
         DispatcherUnhandledException += Application_DispatcherUnhandledException;
 
-        I18NUtil.LoadI18N();
+        I18NUtil.InitializeI18NSettings();
         ConfigurationItemFactory.Default.LayoutRenderers.RegisterDefinition("InvariantCulture",
             typeof(InvariantCultureLayoutRendererWrapper));
 
@@ -108,6 +108,7 @@ public partial class App : Application
         services.AddSingleton<OsuFileScanningService>();
         services.AddSingleton<PlayListService>();
         services.AddSingleton<PlayerService>();
+        services.AddSingleton<ExportService>();
 
         ServiceProvider = services.BuildServiceProvider();
     }

@@ -43,12 +43,14 @@ public partial class RecentPlayPage : Page
     private readonly PlayerService _playerService;
     private readonly PlayListService _playListService;
     private readonly RecentPlayPageVm _viewModel;
+    private readonly ExportService _exportService;
 
     public RecentPlayPage()
     {
         DataContext = _viewModel = new RecentPlayPageVm();
         _playerService = App.Current.ServiceProvider.GetService<PlayerService>();
         _playListService = App.Current.ServiceProvider.GetService<PlayListService>();
+        _exportService = ServiceProviders.Default.GetService<ExportService>();
         InitializeComponent();
     }
 
@@ -169,7 +171,7 @@ public partial class RecentPlayPage : Page
     {
         if (_viewModel.SelectedPlayItem is not { IsItemLost: false, PlayItem: { } playItem } loosePlayItem) return;
 
-        ExportPage.QueueBeatmap(loosePlayItem.PlayItem!);
+        _exportService.QueueBeatmap(playItem);
     }
 
     private async void MiDelete_OnClick(object sender, RoutedEventArgs e)

@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data.Models;
-using Milki.OsuPlayer.Pages;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.Shared.Utils;
@@ -147,7 +146,7 @@ public class CurrentPlayControlVm : VmBase
         {
             return new DelegateCommand(param =>
             {
-                ExportPage.QueueBeatmap(SelectedMap);
+                //ExportPage.QueueBeatmap(SelectedMap);
             });
         }
     }

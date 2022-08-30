@@ -16,7 +16,7 @@ namespace Milki.OsuPlayer.Pages;
 public class PlayListPageVm : VmBase
 {
     private PlayList _playList;
-    
+
     public PlayList PlayList
     {
         get => _playList;
@@ -35,12 +35,14 @@ public partial class PlayListPage : Page
 
     private List<PlayItem> _playItems;
     private bool _isFirstLoaded;
+    private readonly ExportService _exportService;
 
     public PlayListPage(PlayList playList)
     {
         InitializeComponent();
         _playerService = App.Current.ServiceProvider.GetService<PlayerService>();
         _playListService = App.Current.ServiceProvider.GetService<PlayListService>();
+        _exportService = ServiceProviders.Default.GetService<ExportService>();
         DataContext = _viewModel = new PlayListPageVm();
         _viewModel.PlayList = playList;
     }
@@ -115,7 +117,7 @@ public partial class PlayListPage : Page
 
     private void BtnExportAll_Click(object sender, RoutedEventArgs e)
     {
-        ExportPage.QueueBeatmaps(_playItems);
+        _exportService.QueueBeatmaps(_playItems);
     }
 
     private void BtnEdit_Click(object sender, RoutedEventArgs e)

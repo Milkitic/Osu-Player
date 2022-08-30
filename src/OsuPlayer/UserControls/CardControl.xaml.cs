@@ -35,10 +35,12 @@ public partial class CardControl : UserControl
         nameof(PlayItem), typeof(PlayItem), typeof(CardControl), new PropertyMetadata(default(PlayItem)));
 
     private readonly PlayerService _playerService;
+    private readonly ExportService _exportService;
 
     public CardControl()
     {
         InitializeComponent();
+        _exportService = ServiceProviders.Default.GetService<ExportService>();
         _playerService = App.Current.ServiceProvider.GetService<PlayerService>();
     }
 
@@ -173,7 +175,7 @@ public partial class CardControl : UserControl
     private void MiExport_OnClick(object sender, RoutedEventArgs e)
     {
         if (PlayItem == null) return;
-        ExportPage.QueueBeatmap(PlayItem);
+        _exportService.QueueBeatmap(PlayItem);
     }
 
     private void UIElement_OnMouseMove(object sender, MouseEventArgs e)
