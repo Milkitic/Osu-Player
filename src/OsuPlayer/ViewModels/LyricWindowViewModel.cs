@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Globalization;
+using System.Windows;
 using System.Windows.Media;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Shared.Observable;
@@ -9,7 +10,7 @@ namespace Milki.OsuPlayer.ViewModels;
 public class LyricWindowViewModel : VmBase
 {
     private bool _showFrame;
-    private object _fontFamily;
+    private FontFamily _fontFamily;
     private double _hue;
     private double _saturation;
     private double _lightness;
@@ -19,14 +20,10 @@ public class LyricWindowViewModel : VmBase
     public bool ShowFrame
     {
         get => _showFrame;
-        set
-        {
-            _showFrame = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _showFrame, value);
     }
 
-    public object FontFamily
+    public FontFamily FontFamily
     {
         get => _fontFamily;
         set
@@ -43,38 +40,23 @@ public class LyricWindowViewModel : VmBase
         new SortedSet<FontFamily>(Fonts.SystemFontFamilies.Concat(new[]
         {
             (FontFamily) Application.Current.FindResource("GenericRegular")
-        }), new FontFamilyComparer());
+        }), new FontFamilyComparer(CultureInfo.CurrentUICulture));
 
     public double Hue
     {
         get => _hue;
-        set
-        {
-            if (value.Equals(_hue)) return;
-            _hue = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _hue, value);
     }
 
     public double Saturation
     {
         get => _saturation;
-        set
-        {
-            if (value.Equals(_saturation)) return;
-            _saturation = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _saturation, value);
     }
 
     public double Lightness
     {
         get => _lightness;
-        set
-        {
-            if (value.Equals(_lightness)) return;
-            _lightness = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _lightness, value);
     }
 }

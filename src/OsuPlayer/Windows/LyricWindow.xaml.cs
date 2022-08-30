@@ -20,6 +20,10 @@ namespace Milki.OsuPlayer.Windows;
 /// </summary>
 public partial class LyricWindow : WindowEx
 {
+    //动画定义
+    private Storyboard _myStoryboard;
+    private Timer _frameTimer;
+
     private readonly LyricWindowViewModel _viewModel;
     private readonly PlayerService _playerService;
     private readonly LyricsService _lyricsService;
@@ -46,10 +50,58 @@ public partial class LyricWindow : WindowEx
         MouseLeave += LyricWindow_MouseLeave;
     }
 
+    public void StopWork()
+    {
+        CancelTask();
+    }
+
+    public void StartTask()
+    {
+        _cts = new CancellationTokenSource();
+    }
+
+    public new void Show()
+    {
+        var lastLoadContext = _playerService.LastLoadContext;
+        var meta = lastLoadContext?.OsuFile?.Metadata;
+        MetaString metaArtist = meta?.ArtistMeta ?? default;
+        MetaString metaTitle = meta?.TitleMeta ?? default;
+        SetNewLyric(null, metaArtist, metaTitle);
+        AppSettings.Default.LyricSection.IsDesktopLyricEnabled = true;
+        AppSettings.SaveDefault();
+
+        SharedVm.Default.IsLyricWindowEnabled = true;
+        _lyricsService.SetLyricSynchronously(lastLoadContext?.PlayItem);
+        base.Show();
+    }
+
+    public new void Hide()
+    {
+        AppSettings.Default.LyricSection.IsDesktopLyricEnabled = false;
+        AppSettings.SaveDefault();
+        SharedVm.Default.IsLyricWindowEnabled = false;
+        CancelTask();
+        base.Hide();
+    }
+
+    public void Dispose()
+    {
+        StopWork();
+        Close();
+    }
+
     private void LyricWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        var lyricFont = AppSettings.Default.LyricSection.FontFamily ??
-                        Application.Current.FindResource("GenericRegular");
+        FontFamily lyricFont;
+        if (AppSettings.Default.LyricSection.FontFamily == null)
+        {
+            lyricFont = Application.Current.FindResource("GenericRegular") as FontFamily;
+        }
+        else
+        {
+            lyricFont = new FontFamily(AppSettings.Default.LyricSection.FontFamily);
+        }
+
         _viewModel.FontFamily = lyricFont;
         _viewModel.Hue = AppSettings.Default.LyricSection.Hue;
         _viewModel.Saturation = AppSettings.Default.LyricSection.Saturation;
@@ -63,8 +115,10 @@ public partial class LyricWindow : WindowEx
 
     private void LyricWindow_MouseLeave(object sender, MouseEventArgs e)
     {
-        _frameTimer = new Timer(state => { Execute.OnUiThread(() => _viewModel.ShowFrame = false); }, null, 1500,
-            Timeout.Infinite);
+        _frameTimer = new Timer(_ =>
+        {
+            Execute.OnUiThread(() => _viewModel.ShowFrame = false);
+        }, null, 1500, Timeout.Infinite);
     }
 
     private void OnRendering(object sender, EventArgs e)
@@ -105,17 +159,13 @@ public partial class LyricWindow : WindowEx
                     next = _lyricList.First(t => t.StartTime > maxTime);
                 LogTo.Debug(() => current.Content);
 
-                var size = DrawLyric(_lyricList.IndexOf(current));
+                var size = SetLyricByIndexAsync(_lyricList.IndexOf(current)).AsTask().Result;
                 Execute.OnUiThread(() => { BeginTranslate(size, maxTime, next?.StartTime ?? -1); });
                 _pressed = false;
                 oldTime = maxTime;
             }
         }, _cts.Token);
     }
-
-    //动画定义
-    private Storyboard _myStoryboard;
-    private Timer _frameTimer;
 
     private void BeginTranslate(Size size, int nowTime, int nextTime)
     {
@@ -182,98 +232,32 @@ public partial class LyricWindow : WindowEx
         _myStoryboard.Begin();
     }
 
-    private Size DrawLyric(int index)
+    private async ValueTask<Size> SetLyricByIndexAsync(int index)
     {
-        string content = _lyricList[index].Content;
-        Size drawLyric = Size.Empty;
-        bool o = false;
+        var content = _lyricList[index].Content;
+
+        using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(300));
+
+        var tcs = new TaskCompletionSource<Size>();
+        cts.Token.Register(_ => tcs.TrySetCanceled(), null);
         Execute.OnUiThread(() =>
         {
-            TbLyric.FinalSizeChanged += (size) =>
-            {
-                drawLyric = TbLyric.FinalSize;
-                o = true;
-            };
+            TbLyric.FinalSizeChanged += size => tcs.TrySetResult(size);
             TbLyric.Text = content;
         });
-        var time = DateTime.Now;
-        while (!o && !_cts.Token.IsCancellationRequested && DateTime.Now - time < TimeSpan.FromMilliseconds(500))
+
+        Size lyricSize;
+        try
         {
-            Thread.Sleep(1);
+            lyricSize = await tcs.Task;
+        }
+        catch (TaskCanceledException)
+        {
+            lyricSize = Size.Empty;
         }
 
-        LogTo.Debug(() => drawLyric.ToString());
-        return drawLyric;
-        //var bmp = new Bitmap(1, 1);
-        //SizeF size;
-        //using (var g = Graphics.FromImage(bmp))
-        //using (var f = new Font(_fontFamily, 32))
-        //{
-        //    size = g.MeasureString(content, f);
-        //}
-
-        //int width = (int)size.Width < 1 ? 1 : (int)size.Width;
-        //int height = (int)size.Height < 1 ? 1 : (int)size.Height;
-
-        //bmp.Dispose();
-        //bmp = new Bitmap(width + 5, height + 5);
-        //using (var format = StringFormat.GenericTypographic)
-        //using (var g = Graphics.FromImage(bmp))
-        ////using (Brush bBg = new SolidBrush(Color.FromArgb(48, 0, 176, 255)))
-        ////using (Pen pBg = new Pen(Color.FromArgb(192, 0, 176, 255), 3))
-        //using (Brush b = new TextureBrush(
-        //        Image.FromFile(Path.Combine(Domain.ExtensionPath, "texture", "osu.png"))))
-        ////using (Pen p = new Pen(Color.Red))
-        //using (var p2 = new Pen(Color.FromArgb(255, 255, 255), 6))
-        //using (var f = new Font(_fontFamily, 32))
-        //{
-        //    g.SmoothingMode = SmoothingMode.AntiAlias;
-        //    g.TextRenderingHint = TextRenderingHint.AntiAlias;
-
-        //    var rect = new Rectangle(16, 5, bmp.Width - 1, bmp.Height - 1);
-        //    float dpi = g.DpiY;
-        //    using (GraphicsPath gp = GetStringPath(content, dpi, rect, f, format))
-        //    {
-        //        g.DrawPath(p2, gp);
-        //        g.FillPath(b, gp);
-        //    }
-        //}
-
-        //Execute.ToUiThread(() =>
-        //{
-        //    using (var ms = new MemoryStream())
-        //    {
-        //        bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-        //        var wpfImage = new BitmapImage();
-        //        wpfImage.BeginInit();
-        //        wpfImage.StreamSource = new MemoryStream(ms.ToArray());
-        //        wpfImage.EndInit();
-
-        //        ImgLyric.Source = wpfImage;
-        //    }
-        //});
-
-        //return new Size(width + 5, height + 5);
-    }
-
-    //private static GraphicsPath GetStringPath(string s, float dpi, RectangleF rect, Font font, StringFormat format)
-    //{
-    //    var path = new GraphicsPath();
-    //    // Convert font size into appropriate coordinates
-    //    float emSize = dpi * font.SizeInPoints / 72;
-    //    path.AddString(s, font.FontFamily, (int)font.Style, emSize, rect, format);
-
-    //    return path;
-    //}
-
-    public void StopWork()
-    {
-        CancelTask();
-    }
-
-    public void StartTask()
-    {
-        _cts = new CancellationTokenSource();
+        LogTo.Debug(() => lyricSize.ToString());
+        return lyricSize;
     }
 
     private void CancelTask()
@@ -300,36 +284,6 @@ public partial class LyricWindow : WindowEx
     private void BtnHide_Click(object sender, RoutedEventArgs e)
     {
         Hide();
-    }
-
-    public new void Show()
-    {
-        var lastLoadContext = _playerService.LastLoadContext;
-        var meta = lastLoadContext?.OsuFile?.Metadata;
-        MetaString metaArtist = meta?.ArtistMeta ?? default;
-        MetaString metaTitle = meta?.TitleMeta ?? default;
-        SetNewLyric(null, metaArtist, metaTitle);
-        AppSettings.Default.LyricSection.IsDesktopLyricEnabled = true;
-        AppSettings.SaveDefault();
-
-        SharedVm.Default.IsLyricWindowEnabled = true;
-        _lyricsService.SetLyricSynchronously(lastLoadContext?.PlayItem);
-        base.Show();
-    }
-
-    public new void Hide()
-    {
-        AppSettings.Default.LyricSection.IsDesktopLyricEnabled = false;
-        AppSettings.SaveDefault();
-        SharedVm.Default.IsLyricWindowEnabled = false;
-        CancelTask();
-        base.Hide();
-    }
-
-    public void Dispose()
-    {
-        StopWork();
-        Close();
     }
 
     private void BtnLock_Click(object sender, RoutedEventArgs e)

@@ -18,6 +18,44 @@ public static class I18NUtil
     public static KeyValuePair<string, string> CurrentLocale { get; private set; }
     public static Dictionary<string, string> AvailableLangDic { get; } = new();
 
+    public static void SwitchToLang(string locale)
+    {
+        if (!AvailableLangDic.ContainsValue(locale))
+        {
+            locale = "en-US";
+        }
+
+        ResourceDictionary langRd;
+        using (var s = new FileStream(Path.Combine(AppSettings.Directories.LanguageDir, $"{locale}.xaml"), FileMode.Open))
+        {
+            langRd = (ResourceDictionary)System.Windows.Markup.XamlReader.Load(s);
+        }
+
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(locale);
+        var current = CurrentLangDictionary;
+        if (current == null) return;
+
+        foreach (object key in langRd.Keys)
+        {
+            if (current.Contains(key))
+            {
+                current[key] = langRd[key];
+            }
+        }
+
+        CurrentLocale = AvailableLangDic.First(k => k.Value == locale);
+    }
+
+    public static string GetString(string key)
+    {
+        if (CurrentLangDictionary?.Contains(key) == true)
+        {
+            return (string)CurrentLangDictionary[key];
+        }
+
+        return "LOCALE_MISSING";
+    }
+
     public static void InitializeI18NSettings()
     {
         var locale = AppSettings.Default.GeneralSection.Locale;
@@ -80,7 +118,7 @@ public static class I18NUtil
                         existKeyValuePairsFromFile.Add(unspecifiedKv.Key, unspecifiedKv.Value);
                     }
                 }
-                
+
                 foreach (var shouldDelKv in shouldDelKvs)
                 {
                     existKeyValuePairsFromFile.Remove(shouldDelKv.Key);
@@ -92,43 +130,6 @@ public static class I18NUtil
         }
 
         AvailableLangDic.Add(nativeName, localeCode);
-    }
-
-    public static void SwitchToLang(string locale)
-    {
-        if (!AvailableLangDic.ContainsValue(locale))
-        {
-            locale = "en-US";
-        }
-
-        ResourceDictionary langRd;
-        using (var s = new FileStream(Path.Combine(AppSettings.Directories.LanguageDir, $"{locale}.xaml"), FileMode.Open))
-        {
-            langRd = (ResourceDictionary)System.Windows.Markup.XamlReader.Load(s);
-        }
-
-        var current = CurrentLangDictionary;
-        if (current == null) return;
-
-        foreach (object key in langRd.Keys)
-        {
-            if (current.Contains(key))
-            {
-                current[key] = langRd[key];
-            }
-        }
-
-        CurrentLocale = AvailableLangDic.First(k => k.Value == locale);
-    }
-
-    public static string GetString(string key)
-    {
-        if (CurrentLangDictionary?.Contains(key) == true)
-        {
-            return (string)CurrentLangDictionary[key];
-        }
-
-        return "LOCALE_MISSING";
     }
 
     private static Dictionary<string, string?> GetStringKeyValuePairs(string fullText)
