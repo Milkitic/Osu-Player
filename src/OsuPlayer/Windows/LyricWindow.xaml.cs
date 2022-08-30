@@ -237,9 +237,9 @@ public partial class LyricWindow : WindowEx
         var content = _lyricList[index].Content;
 
         using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(300));
-
         var tcs = new TaskCompletionSource<Size>();
         cts.Token.Register(_ => tcs.TrySetCanceled(), null);
+
         Execute.OnUiThread(() =>
         {
             TbLyric.FinalSizeChanged += size => tcs.TrySetResult(size);
