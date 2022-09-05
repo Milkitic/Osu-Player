@@ -233,7 +233,7 @@ public partial class MainWindow : WindowBase
                     }
                     catch (Exception ex)
                     {
-                        Notification.Push(I18NUtil.GetString("err-osudb-sync"), Title);
+                        Notification.Push($"{I18NUtil.GetString("err-osudb-sync")}: {ex.ToMessage()}", Title);
                     }
                 }
             }

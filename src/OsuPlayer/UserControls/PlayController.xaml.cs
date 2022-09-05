@@ -105,7 +105,7 @@ public partial class PlayController : UserControl
         InitializeComponent();
     }
 
-    private void UserControl_Initialized(object sender, EventArgs e)
+    private void UserControl_OnInitialized(object sender, EventArgs e)
     {
         PlayModeControl.CloseRequested += (_, _) => { PopMode.IsOpen = false; };
     }
@@ -160,7 +160,7 @@ public partial class PlayController : UserControl
 
     private void BtnVolume_OnClick(object sender, RoutedEventArgs e)
     {
-        Pop.IsOpen = true;
+        PopVolume.IsOpen = true;
     }
 
     private void BtnCurrentPlay_OnClick(object sender, RoutedEventArgs e)
@@ -182,24 +182,16 @@ public partial class PlayController : UserControl
         PopPlayList.IsOpen = false;
     }
 
-    /// <summary>
-    /// Play progress control.
-    /// While drag started, slider's updating should be paused.
-    /// </summary>
-    private void PlayProgress_OnDragStarted(object sender, DragStartedEventArgs e)
+    private void SldPlayProgress_OnDragStarted(object sender, DragStartedEventArgs e)
     {
-        _scrollLock = true;
+        _scrollLock = true; // While drag started, slider's updating should be paused.
     }
 
-    /// <summary>
-    /// Play progress control.
-    /// While drag ended, slider's updating should be recovered.
-    /// </summary>
-    private async void PlayProgress_OnDragCompleted(object sender, DragCompletedEventArgs e)
+    private async void SldPlayProgress_OnDragCompleted(object sender, DragCompletedEventArgs e)
     {
         var slider = (Slider)sender;
         await _playerService.SeekAsync(TimeSpan.FromMilliseconds(slider.Value));
-        _scrollLock = false;
+        _scrollLock = false; // While drag ended, slider's updating should be recovered.
     }
 
     private ValueTask PlayerService_OnLoadMetaFinished(PlayerService.PlayItemLoadContext arg)

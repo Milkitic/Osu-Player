@@ -13,7 +13,7 @@
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="46"
     d:DesignWidth="800"
-    Initialized="UserControl_Initialized"
+    Initialized="UserControl_OnInitialized"
     TextBlock.FontFamily="{StaticResource GenericRegular}"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -148,7 +148,7 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Button
-            x:Name="ThumbButton"
+            x:Name="BtnThumb"
             MinWidth="61"
             MinHeight="46"
             MaxWidth="61"
@@ -251,8 +251,8 @@
                 Margin="3"
                 Maximum="{Binding MaxTime}"
                 Minimum="{Binding MinTime}"
-                Thumb.DragCompleted="PlayProgress_OnDragCompleted"
-                Thumb.DragStarted="PlayProgress_OnDragStarted"
+                Thumb.DragCompleted="SldPlayProgress_OnDragCompleted"
+                Thumb.DragStarted="SldPlayProgress_OnDragStarted"
                 Value="{Binding CurrentTime}">
                 <Slider.Style>
                     <Style BasedOn="{StaticResource HorizontalSliderPinkStyle}" TargetType="Slider">
@@ -279,7 +279,7 @@
                 Orientation="Horizontal">
                 <StackPanel Orientation="Horizontal">
                     <buttonComponent:CommonButton
-                        x:Name="ModeButton"
+                        x:Name="BtnPlayListMode"
                         Width="24"
                         Height="24"
                         Margin="8"
@@ -304,7 +304,7 @@
                         MouseOverBackground="Transparent"
                         Style="{StaticResource LikeButtonStyle}" />
                     <buttonComponent:CommonButton
-                        x:Name="VolumeButton"
+                        x:Name="BtnVolume"
                         Width="23"
                         Height="23"
                         Margin="6"
@@ -315,7 +315,7 @@
                         IconSize="20"
                         IconTemplate="{StaticResource VolumeTempl}" />
                     <buttonComponent:CommonButton
-                        x:Name="PlayListButton"
+                        x:Name="BtnCurrentPlay"
                         Width="23"
                         Height="23"
                         Margin="6"
@@ -336,7 +336,7 @@
             AllowsTransparency="True"
             HorizontalOffset="-44"
             Placement="Top"
-            PlacementTarget="{Binding ElementName=ModeButton}"
+            PlacementTarget="{Binding ElementName=BtnPlayListMode}"
             PopupAnimation="Fade"
             StaysOpen="False">
             <userControls:PlayModeControl x:Name="PlayModeControl" />
@@ -350,19 +350,19 @@
             AllowsTransparency="True"
             HorizontalOffset="-570"
             Placement="Top"
-            PlacementTarget="{Binding ElementName=PlayListButton}"
+            PlacementTarget="{Binding ElementName=BtnCurrentPlay}"
             PopupAnimation="Fade"
             StaysOpen="False">
             <userControls:CurrentPlayControl CloseRequested="CurrentPlayControl_OnCloseRequested" />
         </Popup>
         <Popup
-            x:Name="Pop"
+            x:Name="PopVolume"
             Grid.Row="0"
             Grid.Column="0"
             MinWidth="170"
             AllowsTransparency="True"
             Placement="Top"
-            PlacementTarget="{Binding ElementName=VolumeButton}"
+            PlacementTarget="{Binding ElementName=BtnVolume}"
             PopupAnimation="Fade"
             StaysOpen="False">
             <userControls:VolumeControl x:Name="VolumeControl" />
