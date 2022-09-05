@@ -8,7 +8,7 @@ namespace Milki.OsuPlayer.Audio;
 public class PlayListService : INotifyPropertyChanged
 {
     private readonly Random _random = new();
-    private PlaylistMode _playlistMode;
+    private PlayListMode _playListMode;
 
     private int? _pointer;
     private int[] _pathIndexList = Array.Empty<int>(); // [3,0,2,1,4]
@@ -21,16 +21,16 @@ public class PlayListService : INotifyPropertyChanged
 
     public IReadOnlyList<string> PathList { get; }
 
-    public PlaylistMode PlaylistMode
+    public PlayListMode PlayListMode
     {
-        get => _playlistMode;
+        get => _playListMode;
         set
         {
-            if (_playlistMode == value) return;
+            if (_playListMode == value) return;
 
-            var preIsRandom = _playlistMode is PlaylistMode.Random or PlaylistMode.LoopRandom;
-            _playlistMode = value;
-            var isRandom = value is PlaylistMode.Random or PlaylistMode.LoopRandom;
+            var preIsRandom = _playListMode is PlayListMode.Random or PlayListMode.LoopRandom;
+            _playListMode = value;
+            var isRandom = value is PlayListMode.Random or PlayListMode.LoopRandom;
             if (preIsRandom != isRandom)
             {
                 RebuildPathIndexes();
@@ -142,7 +142,7 @@ public class PlayListService : INotifyPropertyChanged
 
         var currentPath = GetCurrentPath();
 
-        if (forceLoop || PlaylistMode is PlaylistMode.Loop or PlaylistMode.LoopRandom)
+        if (forceLoop || PlayListMode is PlayListMode.Loop or PlayListMode.LoopRandom)
         {
             if (playDirection == PlayDirection.Next)
             {
@@ -152,7 +152,7 @@ public class PlayListService : INotifyPropertyChanged
             return SetPathByPointer(_pointer == 0 ? _pathIndexList.Length - 1 : _pointer - 1);
         }
 
-        if (PlaylistMode is PlaylistMode.Normal or PlaylistMode.Random)
+        if (PlayListMode is PlayListMode.Normal or PlayListMode.Random)
         {
             if (playDirection == PlayDirection.Next)
             {
@@ -164,17 +164,17 @@ public class PlayListService : INotifyPropertyChanged
             return SetPathByPointer(_pointer - 1);
         }
 
-        if (PlaylistMode == PlaylistMode.SingleLoop) return currentPath;
-        if (PlaylistMode == PlaylistMode.Single) return null;
+        if (PlayListMode == PlayListMode.SingleLoop) return currentPath;
+        if (PlayListMode == PlayListMode.Single) return null;
 
-        throw new ArgumentOutOfRangeException(nameof(PlaylistMode), PlaylistMode, null);
+        throw new ArgumentOutOfRangeException(nameof(PlayListMode), PlayListMode, null);
     }
 
     private void RebuildPathIndexes()
     {
         if (_pathList.Count == 0) return;
         var array = Enumerable.Range(0, _pathList.Count).ToArray();
-        if (PlaylistMode is PlaylistMode.LoopRandom or PlaylistMode.Random)
+        if (PlayListMode is PlayListMode.LoopRandom or PlayListMode.Random)
         {
             Shuffle(array);
         }

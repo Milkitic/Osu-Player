@@ -119,22 +119,22 @@
             TargetType="buttonComponent:CommonButton">
             <Setter Property="IconTemplate" Value="{StaticResource ModeNormalTempl}" />
             <Style.Triggers>
-                <DataTrigger Binding="{Binding PlayListService.PlaylistMode}" Value="{x:Static models:PlaylistMode.Normal}">
+                <DataTrigger Binding="{Binding PlayListService.PlayListMode}" Value="{x:Static models:PlayListMode.Normal}">
                     <Setter Property="IconTemplate" Value="{StaticResource ModeNormalTempl}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding PlayListService.PlaylistMode}" Value="{x:Static models:PlaylistMode.Random}">
+                <DataTrigger Binding="{Binding PlayListService.PlayListMode}" Value="{x:Static models:PlayListMode.Random}">
                     <Setter Property="IconTemplate" Value="{StaticResource ModeRandomTempl}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding PlayListService.PlaylistMode}" Value="{x:Static models:PlaylistMode.Loop}">
+                <DataTrigger Binding="{Binding PlayListService.PlayListMode}" Value="{x:Static models:PlayListMode.Loop}">
                     <Setter Property="IconTemplate" Value="{StaticResource ModeLoopTempl}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding PlayListService.PlaylistMode}" Value="{x:Static models:PlaylistMode.LoopRandom}">
+                <DataTrigger Binding="{Binding PlayListService.PlayListMode}" Value="{x:Static models:PlayListMode.LoopRandom}">
                     <Setter Property="IconTemplate" Value="{StaticResource ModeLoopRandomTempl}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding PlayListService.PlaylistMode}" Value="{x:Static models:PlaylistMode.Single}">
+                <DataTrigger Binding="{Binding PlayListService.PlayListMode}" Value="{x:Static models:PlayListMode.Single}">
                     <Setter Property="IconTemplate" Value="{StaticResource ModeSingleTempl}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding PlayListService.PlaylistMode}" Value="{x:Static models:PlaylistMode.SingleLoop}">
+                <DataTrigger Binding="{Binding PlayListService.PlayListMode}" Value="{x:Static models:PlayListMode.SingleLoop}">
                     <Setter Property="IconTemplate" Value="{StaticResource ModeSingleLoopTempl}" />
                 </DataTrigger>
             </Style.Triggers>
@@ -154,7 +154,7 @@
             MaxWidth="61"
             MaxHeight="46"
             Margin="1"
-            Click="ThumbButton_Click"
+            Click="BtnThumb_OnClick"
             Style="{StaticResource FullScrButton}">
             <Image
                 x:Name="Thumb"
@@ -168,13 +168,13 @@
             Margin="10,0,10,0"
             Orientation="Horizontal">
             <buttonComponent:CommonButton
-                Click="PrevButton_Click"
+                Click="BtnPrev_OnClick"
                 IconTemplate="{StaticResource PrevTempl}"
                 Style="{StaticResource ControlButton}" />
             <buttonComponent:CommonButton
                 Width="32"
                 Height="32"
-                Click="BtnPlay_Click">
+                Click="BtnPlay_OnClick">
                 <Button.Style>
                     <Style BasedOn="{StaticResource ControlButton}" TargetType="buttonComponent:CommonButton">
                         <Setter Property="IconMargin" Value="2,0,0,0" />
@@ -191,12 +191,12 @@
                 </Button.Style>
             </buttonComponent:CommonButton>
             <buttonComponent:CommonButton
-                Click="NextButton_Click"
+                Click="BtnNext_OnClick"
                 IconTemplate="{StaticResource NextTempl}"
                 Style="{StaticResource ControlButton}" />
             <buttonComponent:CommonButton
                 Background="{StaticResource OsuTextureBlueBrush}"
-                Click="OpenButton_Click"
+                Click="BtnOpen_OnClick"
                 CornerRadius="14"
                 IconTemplate="{StaticResource OpenTempl}"
                 ShadowColor="#5d9cec"
@@ -229,7 +229,7 @@
                 <buttonComponent:CommonButton
                     Margin="3,0"
                     Padding="0"
-                    Click="TitleArtist_Click"
+                    Click="BtnMetadata_OnClick"
                     Style="{StaticResource InvisibleButton}">
                     <TextBlock FontSize="12">
                         <Run Foreground="#777777" Text="{Binding Title, Mode=OneWay}" />
@@ -251,8 +251,8 @@
                 Margin="3"
                 Maximum="{Binding MaxTime}"
                 Minimum="{Binding MinTime}"
-                Thumb.DragCompleted="PlayProgress_DragCompleted"
-                Thumb.DragStarted="PlayProgress_DragStarted"
+                Thumb.DragCompleted="PlayProgress_OnDragCompleted"
+                Thumb.DragStarted="PlayProgress_OnDragStarted"
                 Value="{Binding CurrentTime}">
                 <Slider.Style>
                     <Style BasedOn="{StaticResource HorizontalSliderPinkStyle}" TargetType="Slider">
@@ -285,7 +285,7 @@
                         Margin="8"
                         Background="Transparent"
                         BorderThickness="0"
-                        Click="ModeButton_Click"
+                        Click="BtnPlayListMode_OnClick"
                         IconMargin="0"
                         IconSize="25"
                         MouseOverBackground="Transparent"
@@ -298,7 +298,7 @@
                         VerticalAlignment="Center"
                         Background="Transparent"
                         BorderThickness="0"
-                        Click="LikeButton_Click"
+                        Click="BtnLike_OnClick"
                         IconMargin="0"
                         IconSize="24"
                         MouseOverBackground="Transparent"
@@ -310,7 +310,7 @@
                         Margin="6"
                         VerticalAlignment="Center"
                         BorderThickness="0"
-                        Click="VolumeButton_Click"
+                        Click="BtnVolume_OnClick"
                         IconMargin="0"
                         IconSize="20"
                         IconTemplate="{StaticResource VolumeTempl}" />
@@ -321,7 +321,7 @@
                         Margin="6"
                         VerticalAlignment="Center"
                         BorderThickness="0"
-                        Click="PlayListButton_Click"
+                        Click="BtnCurrentPlay_OnClick"
                         IconMargin="0"
                         IconSize="18"
                         IconTemplate="{StaticResource PlayListTempl}" />
@@ -353,7 +353,7 @@
             PlacementTarget="{Binding ElementName=PlayListButton}"
             PopupAnimation="Fade"
             StaysOpen="False">
-            <userControls:CurrentPlayControl CloseRequested="PlayListControl_CloseRequested" />
+            <userControls:CurrentPlayControl CloseRequested="CurrentPlayControl_OnCloseRequested" />
         </Popup>
         <Popup
             x:Name="Pop"

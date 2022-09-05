@@ -38,18 +38,16 @@ public partial class ExportPage : Page
 
     private void BtnMp3Path_Click(object sender, RoutedEventArgs e)
     {
-        using (var dialog = new CommonOpenFileDialog
+        using var dialog = new CommonOpenFileDialog
         {
             IsFolderPicker = true,
             Title = "选择音乐导出目录",
-        })
-        {
-            var result = dialog.ShowDialog();
-            if (result != CommonFileDialogResult.Ok) return;
-            AppSettings.Default.ExportSection.MusicDir = dialog.FileName;
-            LblMp3Path.Text = AppSettings.Default.ExportSection.MusicDir;
-            AppSettings.SaveDefault();
-        }
+        };
+        var result = dialog.ShowDialog();
+        if (result != CommonFileDialogResult.Ok) return;
+        AppSettings.Default.ExportSection.MusicDir = dialog.FileName;
+        LblMp3Path.Text = AppSettings.Default.ExportSection.MusicDir;
+        AppSettings.SaveDefault();
     }
 
     private void BtnBgPath_Click(object sender, RoutedEventArgs e)

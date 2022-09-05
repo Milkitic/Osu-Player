@@ -41,38 +41,38 @@ public partial class PlayModeControl : UserControl
         if (!DesignerProperties.GetIsInDesignMode(this))
         {
             _playListService.PropertyChanged += Player_PropertyChanged;
-            SwitchOption(_playListService.PlaylistMode);
+            SwitchOption(_playListService.PlayListMode);
         }
     }
 
     private void Player_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(_playListService.PlaylistMode))
+        if (e.PropertyName == nameof(_playListService.PlayListMode))
         {
-            SwitchOption(_playListService.PlaylistMode);
+            SwitchOption(_playListService.PlayListMode);
         }
     }
 
-    private void SwitchOption(PlaylistMode playMode)
+    private void SwitchOption(PlayListMode playMode)
     {
         switch (playMode)
         {
-            case PlaylistMode.Normal:
+            case PlayListMode.Normal:
                 ModeNormal.IsChecked = true;
                 break;
-            case PlaylistMode.Random:
+            case PlayListMode.Random:
                 ModeRandom.IsChecked = true;
                 break;
-            case PlaylistMode.Loop:
+            case PlayListMode.Loop:
                 ModeLoop.IsChecked = true;
                 break;
-            case PlaylistMode.LoopRandom:
+            case PlayListMode.LoopRandom:
                 ModeLoopRandom.IsChecked = true;
                 break;
-            case PlaylistMode.Single:
+            case PlayListMode.Single:
                 ModeSingle.IsChecked = true;
                 break;
-            case PlaylistMode.SingleLoop:
+            case PlayListMode.SingleLoop:
                 ModeSingleLoop.IsChecked = true;
                 break;
             default:
@@ -84,7 +84,7 @@ public partial class PlayModeControl : UserControl
     {
         if (e.OriginalSource is RadioButton radio)
         {
-            _playListService.PlaylistMode = (PlaylistMode)radio.Tag;
+            _playListService.PlayListMode = (PlayListMode)radio.Tag;
             RaiseEvent(new RoutedEventArgs(CloseRequestedEvent, this));
         }
     }

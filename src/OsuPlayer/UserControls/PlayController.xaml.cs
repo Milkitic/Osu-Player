@@ -4,10 +4,11 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
+using Milki.OsuPlayer.UiComponents.ContentDialogComponent;
 using Milki.OsuPlayer.Windows;
 using Milki.OsuPlayer.Wpf;
 
@@ -81,33 +82,7 @@ public class PlayControllerVm : VmBase
 /// </summary>
 public partial class PlayController : UserControl
 {
-    #region Events
-
-    public static readonly RoutedEvent ThumbClickedEvent = EventManager.RegisterRoutedEvent(
-        "ThumbClicked",
-        RoutingStrategy.Bubble,
-        typeof(RoutedPropertyChangedEventArgs<object>),
-        typeof(PlayController));
-
-    public event RoutedEventHandler ThumbClicked
-    {
-        add => AddHandler(ThumbClickedEvent, value);
-        remove => RemoveHandler(ThumbClickedEvent, value);
-    }
-
-    public static readonly RoutedEvent LikeClickedEvent = EventManager.RegisterRoutedEvent(
-        "LikeClicked",
-        RoutingStrategy.Bubble,
-        typeof(RoutedPropertyChangedEventArgs<object>),
-        typeof(PlayController));
-
-    public event RoutedEventHandler LikeClicked
-    {
-        add => AddHandler(LikeClickedEvent, value);
-        remove => RemoveHandler(LikeClickedEvent, value);
-    }
-
-    #endregion
+    public event Action ToggleAnimationSceneRequested;
 
     private bool _scrollLock;
     private readonly PlayerService _playerService;
@@ -118,11 +93,11 @@ public partial class PlayController : UserControl
         if (!DesignerProperties.GetIsInDesignMode(this))
         {
             _playerService = ServiceProviders.Default.GetService<PlayerService>()!;
-            _playerService.LoadMetaFinished += PlayerService_LoadMetaFinished;
-            _playerService.LoadStarted += PlayerService_LoadStarted;
-            _playerService.LoadBackgroundInfoFinished += PlayerService_BackgroundInfoLoaded;
-            _playerService.LoadMusicFinished += PlayerService_MusicLoaded;
-            _playerService.PlayTimeChanged += PlayerService_PlayTimeChanged;
+            _playerService.LoadMetaFinished += PlayerService_OnLoadMetaFinished;
+            _playerService.LoadStarted += PlayerService_OnLoadStarted;
+            _playerService.LoadBackgroundInfoFinished += PlayerService_OnBackgroundInfoLoaded;
+            _playerService.LoadMusicFinished += PlayerService_OnMusicLoaded;
+            _playerService.PlayTimeChanged += PlayerService_OnPlayTimeChanged;
 
             DataContext = _viewModel = new PlayControllerVm();
         }
@@ -130,19 +105,111 @@ public partial class PlayController : UserControl
         InitializeComponent();
     }
 
-    private ValueTask PlayerService_LoadMetaFinished(PlayerService.PlayItemLoadContext arg)
+    private void UserControl_Initialized(object sender, EventArgs e)
+    {
+        PlayModeControl.CloseRequested += (_, _) => { PopMode.IsOpen = false; };
+    }
+
+    private void BtnThumb_OnClick(object sender, RoutedEventArgs e)
+    {
+        ToggleAnimationSceneRequested?.Invoke();
+    }
+
+    private async void BtnPrev_OnClick(object sender, RoutedEventArgs e)
+    {
+        await _playerService.PlayPreviousAsync();
+    }
+
+    private async void BtnPlay_OnClick(object sender, RoutedEventArgs e)
+    {
+        await _playerService.TogglePlayAsync();
+    }
+
+    private async void BtnNext_OnClick(object sender, RoutedEventArgs e)
+    {
+        await _playerService.PlayNextAsync();
+    }
+
+    private async void BtnOpen_OnClick(object sender, RoutedEventArgs e)
+    {
+        using var openFileDialog = new CommonOpenFileDialog
+        {
+            Title = "请选择一个图片",
+            Filters = { new CommonFileDialogFilter("Osu Files", "osu") }
+        };
+        var result = openFileDialog.ShowDialog();
+        var path = result == CommonFileDialogResult.Ok ? openFileDialog.FileName : null;
+        if (path == null) return;
+
+        await _playerService.InitializeNewAsync(path, true);
+    }
+
+    private void BtnPlayListMode_OnClick(object sender, RoutedEventArgs e)
+    {
+        PopMode.IsOpen = true;
+    }
+
+    private void BtnLike_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_playerService.LastLoadContext is { PlayItem: { } playItem })
+        {
+            App.CurrentMainContentDialog.ShowContent(new SelectPlayListControl(playItem),
+                DialogOptionFactory.SelectPlayListOptions);
+        }
+    }
+
+    private void BtnVolume_OnClick(object sender, RoutedEventArgs e)
+    {
+        Pop.IsOpen = true;
+    }
+
+    private void BtnCurrentPlay_OnClick(object sender, RoutedEventArgs e)
+    {
+        PopPlayList.IsOpen = true;
+    }
+
+    private void BtnMetadata_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_playerService.LastLoadContext?.PlayItem is { PlayItemDetail: { } detail })
+        {
+            var win = new BeatmapInfoWindow(detail);
+            win.ShowDialog();
+        }
+    }
+
+    private void CurrentPlayControl_OnCloseRequested(object sender, RoutedEventArgs e)
+    {
+        PopPlayList.IsOpen = false;
+    }
+
+    /// <summary>
+    /// Play progress control.
+    /// While drag started, slider's updating should be paused.
+    /// </summary>
+    private void PlayProgress_OnDragStarted(object sender, DragStartedEventArgs e)
+    {
+        _scrollLock = true;
+    }
+
+    /// <summary>
+    /// Play progress control.
+    /// While drag ended, slider's updating should be recovered.
+    /// </summary>
+    private async void PlayProgress_OnDragCompleted(object sender, DragCompletedEventArgs e)
+    {
+        var slider = (Slider)sender;
+        await _playerService.SeekAsync(TimeSpan.FromMilliseconds(slider.Value));
+        _scrollLock = false;
+    }
+
+    private ValueTask PlayerService_OnLoadMetaFinished(PlayerService.PlayItemLoadContext arg)
     {
         _viewModel.Artist = arg.PlayItem?.PlayItemDetail.AutoArtist;
         _viewModel.Title = arg.PlayItem?.PlayItemDetail.AutoTitle;
         return ValueTask.CompletedTask;
     }
 
-    private void UserControl_Initialized(object sender, EventArgs e)
-    {
-        PlayModeControl.CloseRequested += (obj, args) => { PopMode.IsOpen = false; };
-    }
-
-    private ValueTask PlayerService_LoadStarted(PlayerService.PlayItemLoadContext loadContext)
+    private ValueTask PlayerService_OnLoadStarted(PlayerService.PlayItemLoadContext loadContext)
     {
         Execute.OnUiThread(() =>
         {
@@ -155,16 +222,7 @@ public partial class PlayController : UserControl
         return ValueTask.CompletedTask;
     }
 
-    private void PlayerService_PlayTimeChanged(TimeSpan time)
-    {
-        if (_scrollLock) return;
-        Execute.OnUiThread(() =>
-        {
-            _viewModel.CurrentTime = time.TotalMilliseconds;
-        });
-    }
-
-    private ValueTask PlayerService_BackgroundInfoLoaded(PlayerService.PlayItemLoadContext loadContext)
+    private ValueTask PlayerService_OnBackgroundInfoLoaded(PlayerService.PlayItemLoadContext loadContext)
     {
         Execute.OnUiThread(() =>
         {
@@ -175,7 +233,7 @@ public partial class PlayController : UserControl
         return ValueTask.CompletedTask;
     }
 
-    private ValueTask PlayerService_MusicLoaded(PlayerService.PlayItemLoadContext loadContext)
+    private ValueTask PlayerService_OnMusicLoaded(PlayerService.PlayItemLoadContext loadContext)
     {
         var player = loadContext.Player!;
         Execute.OnUiThread(() =>
@@ -189,91 +247,12 @@ public partial class PlayController : UserControl
         return ValueTask.CompletedTask;
     }
 
-    private void ThumbButton_Click(object sender, RoutedEventArgs e)
+    private void PlayerService_OnPlayTimeChanged(TimeSpan time)
     {
-        RaiseEvent(new RoutedEventArgs(ThumbClickedEvent, this));
-    }
-
-    private async void PrevButton_Click(object sender, RoutedEventArgs e)
-    {
-        await _playerService.PlayPreviousAsync();
-    }
-
-    private async void BtnPlay_Click(object sender, RoutedEventArgs e)
-    {
-        await _playerService.TogglePlayAsync();
-    }
-
-    private async void NextButton_Click(object sender, RoutedEventArgs e)
-    {
-        await _playerService.PlayNextAsync();
-    }
-
-    private async void OpenButton_Click(object sender, RoutedEventArgs e)
-    {
-        var openFileDialog = new OpenFileDialog
+        if (_scrollLock) return;
+        Execute.OnUiThread(() =>
         {
-            Title = @"请选择一个.osu文件",
-            Filter = @"Osu Files(*.osu)|*.osu"
-        };
-        var result = openFileDialog.ShowDialog();
-        var path = result == true ? openFileDialog.FileName : null;
-        if (path == null) return;
-
-        await _playerService.InitializeNewAsync(path, true);
-    }
-
-    /// <summary>
-    /// Play progress control.
-    /// While drag started, slider's updating should be paused.
-    /// </summary>
-    private void PlayProgress_DragStarted(object sender, DragStartedEventArgs e)
-    {
-        _scrollLock = true;
-    }
-
-    /// <summary>
-    /// Play progress control.
-    /// While drag ended, slider's updating should be recovered.
-    /// </summary>
-    private async void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
-    {
-        var slider = (Slider)sender;
-        await _playerService.SeekAsync(TimeSpan.FromMilliseconds(slider.Value));
-        _scrollLock = false;
-    }
-
-    private void ModeButton_Click(object sender, RoutedEventArgs e)
-    {
-        PopMode.IsOpen = true;
-    }
-
-    private void LikeButton_Click(object sender, RoutedEventArgs e)
-    {
-        RaiseEvent(new RoutedEventArgs(LikeClickedEvent, this));
-    }
-
-    private void VolumeButton_Click(object sender, RoutedEventArgs e)
-    {
-        Pop.IsOpen = true;
-    }
-
-    private void PlayListButton_Click(object sender, RoutedEventArgs e)
-    {
-        PopPlayList.IsOpen = true;
-    }
-
-    private void PlayListControl_CloseRequested(object sender, RoutedEventArgs e)
-    {
-        PopPlayList.IsOpen = false;
-    }
-
-    private void TitleArtist_Click(object sender, RoutedEventArgs e)
-    {
-        if (_playerService.LastLoadContext?.PlayItem is { PlayItemDetail: { } detail })
-        {
-            var win = new BeatmapInfoWindow(detail);
-            win.ShowDialog();
-        }
+            _viewModel.CurrentTime = time.TotalMilliseconds;
+        });
     }
 }

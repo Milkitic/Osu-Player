@@ -4,7 +4,6 @@ using Anotar.NLog;
 using Microsoft.Extensions.DependencyInjection;
 using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Configuration;
-using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
@@ -66,8 +65,7 @@ public partial class MainWindow : WindowBase
 
         InitializeComponent();
         Animation.Loaded += Animation_Loaded;
-        PlayController.LikeClicked += Controller_LikeClicked;
-        PlayController.ThumbClicked += Controller_ThumbClicked;
+        PlayController.ToggleAnimationSceneRequested += Controller_OnToggleAnimationSceneRequested;
     }
 
     protected override async Task<bool> OnAsyncClosing()
@@ -339,18 +337,9 @@ public partial class MainWindow : WindowBase
         SharedVm.Default.IsLyricWindowLocked = !SharedVm.Default.IsLyricWindowLocked;
     }
 
-    private void Controller_ThumbClicked(object sender, RoutedEventArgs e)
+    private void Controller_OnToggleAnimationSceneRequested()
     {
         MainFrame.Content = null;
-    }
-
-    private void Controller_LikeClicked(object sender, RoutedEventArgs e)
-    {
-        if (_playerService.LastLoadContext is { PlayItem: { } playItem })
-        {
-            ContentDialog.ShowContent(new SelectPlayListControl(playItem),
-                DialogOptionFactory.SelectPlayListOptions);
-        }
     }
 
     #endregion Events

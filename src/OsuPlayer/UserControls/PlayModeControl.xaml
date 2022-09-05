@@ -43,7 +43,7 @@
                     IconTemplate="{StaticResource ModeSingleTempl}"
                     MouseDownBackground="#80D8D8D8"
                     MouseOverBackground="#80E0E0E0"
-                    Tag="{x:Static models:PlaylistMode.Single}" />
+                    Tag="{x:Static models:PlayListMode.Single}" />
                 <radioButtonComponent:SwitchRadio
                     x:Name="ModeSingleLoop"
                     Height="30"
@@ -57,7 +57,7 @@
                     IconTemplate="{StaticResource ModeSingleLoopTempl}"
                     MouseDownBackground="#80D8D8D8"
                     MouseOverBackground="#80E0E0E0"
-                    Tag="{x:Static models:PlaylistMode.SingleLoop}" />
+                    Tag="{x:Static models:PlayListMode.SingleLoop}" />
                 <radioButtonComponent:SwitchRadio
                     x:Name="ModeNormal"
                     Height="30"
@@ -71,7 +71,7 @@
                     IconTemplate="{StaticResource ModeNormalTempl}"
                     MouseDownBackground="#80D8D8D8"
                     MouseOverBackground="#80E0E0E0"
-                    Tag="{x:Static models:PlaylistMode.Normal}" />
+                    Tag="{x:Static models:PlayListMode.Normal}" />
                 <radioButtonComponent:SwitchRadio
                     x:Name="ModeRandom"
                     Height="30"
@@ -85,7 +85,7 @@
                     IconTemplate="{StaticResource ModeRandomTempl}"
                     MouseDownBackground="#80D8D8D8"
                     MouseOverBackground="#80E0E0E0"
-                    Tag="{x:Static models:PlaylistMode.Random}" />
+                    Tag="{x:Static models:PlayListMode.Random}" />
                 <radioButtonComponent:SwitchRadio
                     x:Name="ModeLoop"
                     Height="30"
@@ -99,7 +99,7 @@
                     IconTemplate="{StaticResource ModeLoopTempl}"
                     MouseDownBackground="#80D8D8D8"
                     MouseOverBackground="#80E0E0E0"
-                    Tag="{x:Static models:PlaylistMode.Loop}" />
+                    Tag="{x:Static models:PlayListMode.Loop}" />
                 <radioButtonComponent:SwitchRadio
                     x:Name="ModeLoopRandom"
                     Height="30"
@@ -113,7 +113,7 @@
                     IconTemplate="{StaticResource ModeLoopRandomTempl}"
                     MouseDownBackground="#80D8D8D8"
                     MouseOverBackground="#80E0E0E0"
-                    Tag="{x:Static models:PlaylistMode.LoopRandom}" />
+                    Tag="{x:Static models:PlayListMode.LoopRandom}" />
             </StackPanel>
         </Border>
     </Grid>

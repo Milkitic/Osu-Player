@@ -1,11 +1,12 @@
 ﻿#nullable enable
 
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Windows.Media.Imaging;
 using Anotar.NLog;
 using Coosu.Beatmap;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data;
 using Milki.OsuPlayer.Data.Models;
@@ -20,16 +21,25 @@ public static class CommonUtils
     private static readonly SemaphoreSlim ConcurrentLimit =
         new(Environment.ProcessorCount == 1 ? Environment.ProcessorCount : Environment.ProcessorCount - 1);
 
-    public static bool? BrowseDb(out string path)
+    public static bool BrowseDb([NotNullWhen(true)] out string? path)
     {
-        var fbd = new OpenFileDialog
+        var fbd = new CommonOpenFileDialog
         {
-            Title = @"请选择osu所在目录内的""osu!.db""",
-            Filter = @"Beatmap Database|osu!.db"
+            Title = "请选择osu所在目录内的\"osu!.db\"",
+            Filters =
+            {
+                new CommonFileDialogFilter("Beatmap Database", "db")
+            }
         };
         var result = fbd.ShowDialog();
+        if (result == CommonFileDialogResult.Cancel)
+        {
+            path = null;
+            return false;
+        }
+
         path = fbd.FileName;
-        return result;
+        return true;
     }
 
     public static async ValueTask SyncOsuDbAsync(this BeatmapSyncService syncService, string path)

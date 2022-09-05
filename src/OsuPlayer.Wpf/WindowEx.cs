@@ -85,7 +85,7 @@ public class WindowEx : Window, IWindowBase
 
         void RoutedEventHandler(object sender, RoutedEventArgs e)
         {
-            this.Handle = new WindowInteropHelper(this).Handle;
+            Handle = new WindowInteropHelper(this).Handle;
             Loaded -= RoutedEventHandler;
             var args = new RoutedEventArgs(FirstLoadedEvent, this);
             RaiseEvent(args);
@@ -188,7 +188,7 @@ public class WindowEx : Window, IWindowBase
     {
     }
 
-    private async void WindowBase_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    private async void WindowBase_Closing(object? sender, CancelEventArgs e)
     {
         if (!CanClose)
         {
@@ -232,20 +232,21 @@ public class WindowEx : Window, IWindowBase
         }
     }
 
-    private void WindowBase_Closed(object sender, EventArgs e)
+    private void WindowBase_Closed(object? sender, EventArgs e)
     {
-        if (Application.Current.MainWindow != this) return;
-
-        var windows = CurrentWindows.Where(k => k != this).ToList();
-        foreach (var windowBase in windows)
+        if (Application.Current.MainWindow == this)
         {
-            if (windowBase is ToolWindow tw)
+            var windows = CurrentWindows.Where(k => k != this).ToList();
+            foreach (var windowBase in windows)
             {
-                tw.ForceClose();
-            }
-            else
-            {
-                windowBase.Close();
+                if (windowBase is ToolWindow tw)
+                {
+                    tw.ForceClose();
+                }
+                else
+                {
+                    windowBase.Close();
+                }
             }
         }
 

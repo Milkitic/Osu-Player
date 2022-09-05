@@ -36,7 +36,7 @@ public class WelcomeControlVm : VmBase
                 var syncService = ServiceProviders.Default.GetService<BeatmapSyncService>()!;
 
                 var result = CommonUtils.BrowseDb(out var path);
-                if (!result.HasValue || !result.Value)
+                if (!result)
                 {
                     GuideSelectedDb = false;
                     return;

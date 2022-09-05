@@ -9,20 +9,20 @@ public class PlayModeConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (!(value is PlaylistMode playerMode)) return value;
+        if (!(value is PlayListMode playerMode)) return value;
         switch (playerMode)
         {
-            case PlaylistMode.Normal:
+            case PlayListMode.Normal:
                 return Application.Current.FindResource($"ModeNormal{parameter}Templ");
-            case PlaylistMode.Random:
+            case PlayListMode.Random:
                 return Application.Current.FindResource($"ModeRandom{parameter}Templ");
-            case PlaylistMode.Loop:
+            case PlayListMode.Loop:
                 return Application.Current.FindResource($"ModeLoop{parameter}Templ");
-            case PlaylistMode.LoopRandom:
+            case PlayListMode.LoopRandom:
                 return Application.Current.FindResource($"ModeLoopRandom{parameter}Templ");
-            case PlaylistMode.Single:
+            case PlayListMode.Single:
                 return Application.Current.FindResource($"ModeSingle{parameter}Templ");
-            case PlaylistMode.SingleLoop:
+            case PlayListMode.SingleLoop:
                 return Application.Current.FindResource($"ModeSingleLoop{parameter}Templ");
             default:
                 throw new ArgumentOutOfRangeException();

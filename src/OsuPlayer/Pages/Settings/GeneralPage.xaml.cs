@@ -89,7 +89,7 @@ public partial class GeneralPage : Page
     private async void BrowseDb_Click(object sender, RoutedEventArgs e)
     {
         var result = CommonUtils.BrowseDb(out var path);
-        if (!result.HasValue || !result.Value)
+        if (!result)
         {
             return;
         }
@@ -112,10 +112,10 @@ public partial class GeneralPage : Page
         using var openFileDialog = new CommonOpenFileDialog
         {
             IsFolderPicker = true,
-            Title = "Select Folder"
+            Title = "Select Folder",
         };
 
-        var result = openFileDialog.ShowDialog();
+        var result = openFileDialog.ShowDialog(_configWindow);
         if (result != CommonFileDialogResult.Ok)
         {
             return;

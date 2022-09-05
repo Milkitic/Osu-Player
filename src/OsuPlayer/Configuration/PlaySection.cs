@@ -16,5 +16,5 @@ public class PlaySection
     public DeviceDescription? DeviceInfo { get; set; }
     public int DesiredLatency { get; set; } = 5;
     public bool IsExclusive { get; set; } = false;
-    public PlaylistMode PlayListMode { get; set; } = PlaylistMode.Normal;
+    public PlayListMode PlayListMode { get; set; } = PlayListMode.Normal;
 }

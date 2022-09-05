@@ -119,7 +119,7 @@ public partial class App : Application
         await lyricsService.CreateWindowAsync();
         lyricsService!.ReloadLyricProvider();
         var playListService = ServiceProvider.GetService<PlayListService>()!;
-        playListService.PlaylistMode = AppSettings.Default.PlaySection.PlayListMode;
+        playListService.PlayListMode = AppSettings.Default.PlaySection.PlayListMode;
 
         var version = ServiceProvider.GetService<UpdateService>()!.GetVersion();
         if (AppSettings.Default.GeneralSection.LastMigrateVersion != version)

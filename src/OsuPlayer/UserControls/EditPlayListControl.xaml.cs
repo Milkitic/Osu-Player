@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Shared.Observable;
 
@@ -62,13 +62,13 @@ public partial class EditPlayListControl : UserControl
 
     private void BtnChooseImg_Click(object sender, RoutedEventArgs e)
     {
-        var fbd = new OpenFileDialog
+        using var fbd = new CommonOpenFileDialog
         {
             Title = @"请选择一个图片",
-            Filter = @"所有支持的图片类型|*.jpg;*.png;*.jpeg"
+            Filters = { new CommonFileDialogFilter("所有支持的图片类型", @"jpg;png;jpeg") }
         };
         var result = fbd.ShowDialog();
-        if (result == true)
+        if (result == CommonFileDialogResult.Ok)
         {
             _viewModel.CoverPath = fbd.FileName;
         }
