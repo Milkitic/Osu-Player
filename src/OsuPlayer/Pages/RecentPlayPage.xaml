@@ -6,12 +6,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pages="clr-namespace:Milki.OsuPlayer.Pages"
+    xmlns:utils="clr-namespace:Milki.OsuPlayer.Utils"
     Title="RecentPlayPage"
     d:DataContext="{d:DesignInstance pages:RecentPlayPageVm,
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     FontFamily="{StaticResource GenericRegular}"
+    FontSize="13"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
     <Grid>
@@ -50,6 +52,7 @@
                     <DataGrid
                         x:Name="DataGrid"
                         Grid.Row="1"
+                        utils:DataGridBehavior.DisplayRowNumber="True"
                         ItemsSource="{Binding PlayItems, Mode=OneWay}"
                         SelectedItem="{Binding SelectedPlayItem}"
                         Style="{StaticResource GenericDataGridStyle}">
@@ -118,12 +121,6 @@
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>
-                            <DataGridTextColumn
-                                Width="40"
-                                Binding="{Binding Index, Mode=OneWay, Converter={StaticResource IndexToStringConverter}}"
-                                ElementStyle="{StaticResource FullAlignmentStyle}"
-                                Foreground="#777777"
-                                Header="" />
                             <DataGridTextColumn
                                 Width="3*"
                                 Binding="{Binding Title, Mode=OneWay}"

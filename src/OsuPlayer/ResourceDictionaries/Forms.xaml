@@ -36,6 +36,51 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style x:Key="GenericDataGridRowHeaderStyle" TargetType="{x:Type DataGridRowHeader}">
+        <Setter Property="TextBlock.FontSize" Value="13" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FontWeight" Value="Light" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderBrush" Value="#D0D0D0" />
+        <Setter Property="BorderThickness" Value="0,0,0,0" />
+        <Setter Property="Foreground" Value="#999999" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridRowHeader}">
+                    <Grid>
+                        <Border x:Name="BR" Background="{TemplateBinding Background}">
+                            <Border
+                                x:Name="BRIN"
+                                Width="40"
+                                Margin="{TemplateBinding Padding}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                                <ContentPresenter
+                                    Margin="0,0"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            </Border>
+
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="BR" Property="Border.Background" Value="#90FFFFFF" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="BR" Property="Border.Padding" Value="0,0,0,0" />
+                            <Setter TargetName="BRIN" Property="Border.Background" Value="#dbdcdd" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
     <Style x:Key="GenericDataGridColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
         <Setter Property="TextBlock.FontSize" Value="13" />
         <Setter Property="Background" Value="Transparent" />
@@ -117,7 +162,7 @@
         </Setter>
     </Style>
     <Style x:Key="GenericDataGridCellStyle" TargetType="DataGridCell">
-        <Setter Property="Height" Value="25" />
+        <Setter Property="Height" Value="29" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Foreground" Value="#242424" />
         <Style.Triggers>
@@ -162,15 +207,16 @@
         <Setter Property="BorderBrush" Value="#D0D0D0" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="ColumnHeaderStyle" Value="{StaticResource GenericDataGridColumnHeaderStyle}" />
+        <Setter Property="RowHeaderStyle" Value="{StaticResource GenericDataGridRowHeaderStyle}" />
         <Setter Property="CellStyle" Value="{StaticResource GenericDataGridCellStyle}" />
         <Setter Property="RowStyle" Value="{StaticResource GenericDataGridRowStyle}" />
         <Setter Property="FontWeight" Value="Regular" />
         <Setter Property="GridLinesVisibility" Value="None" />
-        <Setter Property="HeadersVisibility" Value="Column" />
+        <!--<Setter Property="HeadersVisibility" Value="Column" />-->
         <Setter Property="HorizontalGridLinesBrush" Value="#DCDCDC" />
         <Setter Property="IsReadOnly" Value="True" />
-        <Setter Property="RowDetailsVisibilityMode" Value="Collapsed" />
-        <Setter Property="RowHeaderWidth" Value="0" />
+        <!--<Setter Property="RowDetailsVisibilityMode" Value="Collapsed" />-->
+        <!--<Setter Property="RowHeaderWidth" Value="0" />-->
         <Setter Property="SelectionMode" Value="Single" />
         <Setter Property="SelectionUnit" Value="FullRow" />
         <Setter Property="TextBlock.FontSize" Value="13" />

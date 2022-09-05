@@ -18,6 +18,7 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     Focusable="False"
+    FontSize="13"
     IsHitTestVisible="True"
     Loaded="Page_Loaded"
     TextBlock.FontFamily="{StaticResource GenericRegular}"
@@ -231,7 +232,7 @@
                                 <userControls:CardCollectionControl
                                     x:Name="CardCollectionControl"
                                     Grid.Row="0"
-                                    CardHeight="220"
+                                    CardHeight="230"
                                     CardWidth="160" />
                             </Grid>
                         </TabItem>

@@ -19,6 +19,7 @@
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    FontSize="13"
     Initialized="SearchPage_Initialized"
     KeepAlive="True"
     Loaded="SearchPage_OnLoaded"
@@ -38,7 +39,7 @@
             Width="auto"
             Height="40"
             Margin="20,20,20,15"
-            Padding="3,0"
+            Padding="5,0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Top"
             HorizontalContentAlignment="Stretch"
@@ -68,7 +69,7 @@
         <userControls:CardCollectionControl
             x:Name="CardCollectionControl"
             Grid.Row="2"
-            CardHeight="220"
+            CardHeight="230"
             CardWidth="265" />
         <paginationComponent:Pagination
             x:Name="Pagination"

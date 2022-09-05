@@ -207,7 +207,7 @@
                 <StackPanel Grid.Row="1">
                     <TextBlock
                         Margin="0,0,0,2"
-                        FontSize="14"
+                        FontSize="15"
                         FontWeight="Bold"
                         Text="{Binding ElementName=Self, Path=Title}" />
                     <StackPanel Margin="0,0,0,2" Orientation="Horizontal">
@@ -239,7 +239,7 @@
                     </StackPanel>
                     <Canvas
                         x:Name="MoreInfoCanvas"
-                        Margin="-6,0"
+                        Margin="-6,-1,-6,0"
                         Panel.ZIndex="1"
                         Background="Transparent"
                         Opacity="0">
