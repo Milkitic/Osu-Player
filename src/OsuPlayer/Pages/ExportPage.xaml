@@ -15,7 +15,6 @@
     FontFamily="{StaticResource GenericRegular}"
     FontSize="13"
     Loaded="Page_Loaded"
-    TextOptions.TextFormattingMode="Display"
     mc:Ignorable="d">
     <Grid>
         <TabControl Style="{StaticResource FrameTabControlStyle}">

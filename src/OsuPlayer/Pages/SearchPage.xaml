@@ -24,7 +24,6 @@
     KeepAlive="True"
     Loaded="SearchPage_OnLoaded"
     TextBlock.FontFamily="{StaticResource GenericRegular}"
-    TextOptions.TextFormattingMode="Display"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>

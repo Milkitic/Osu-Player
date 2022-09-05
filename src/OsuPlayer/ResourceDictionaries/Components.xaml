@@ -5,7 +5,6 @@
         <Setter Property="Margin" Value="5" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Opacity" Value="0.95" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
         <Setter Property="Effect">
             <Setter.Value>
                 <DropShadowEffect

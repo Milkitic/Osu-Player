@@ -185,9 +185,10 @@
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Background" Value="{StaticResource TextureBrush3}" />
                 <Setter Property="Panel.ZIndex" Value="1" />
-                <Setter Property="BorderThickness" Value="1,1" />
+                <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="Margin" Value="-1,0" />
-                <Setter Property="Effect">
+                <!--<Setter Property="TextOptions.TextFormattingMode" Value="Display" />-->
+                <!--<Setter Property="Effect">
                     <Setter.Value>
                         <DropShadowEffect
                             BlurRadius="15"
@@ -195,7 +196,7 @@
                             ShadowDepth="0"
                             Color="Black" />
                     </Setter.Value>
-                </Setter>
+                </Setter>-->
             </Trigger>
         </Style.Triggers>
     </Style>

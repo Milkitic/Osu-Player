@@ -22,7 +22,6 @@
     IsHitTestVisible="True"
     Loaded="Page_Loaded"
     TextBlock.FontFamily="{StaticResource GenericRegular}"
-    TextOptions.TextFormattingMode="Display"
     Unloaded="Page_Unloaded"
     mc:Ignorable="d">
     <Grid>

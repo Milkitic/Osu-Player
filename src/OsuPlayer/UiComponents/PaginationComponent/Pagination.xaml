@@ -11,7 +11,6 @@
     d:DataContext="{d:DesignInstance Type=local:PaginationViewModel,
                                      IsDesignTimeCreatable=False}"
     TextBlock.FontFamily="{StaticResource GenericRegular}"
-    TextOptions.TextFormattingMode="Display"
     mc:Ignorable="d">
     <UserControl.Resources>
         <Style

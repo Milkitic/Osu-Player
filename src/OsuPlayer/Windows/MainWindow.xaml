@@ -25,7 +25,6 @@
     Icon="pack://application:,,,/OsuPlayer;component/Resources/osuPlayer.ico"
     Loaded="Window_Loaded"
     TextBlock.FontFamily="{StaticResource GenericRegular}"
-    TextOptions.TextFormattingMode="Display"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <WindowChrome.WindowChrome>
