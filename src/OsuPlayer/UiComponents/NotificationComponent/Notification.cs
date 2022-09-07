@@ -7,20 +7,23 @@ public static class Notification
 {
     public static ObservableCollection<NotificationOption> NotificationList { get; } = new();
 
-    public static void Push(string content, string title = null)
+    public static async void Push(string content, string title = null)
     {
-        Execute.ToUiThreadAsync(() =>
+        void InnerPush()
         {
-            NotificationList?.Add(new NotificationOption
-            {
-                Content = content,
-                Title = title
-            });
-        });
+            NotificationList?.Add(new NotificationOption { Content = content, Title = title });
+        }
+
+        await Execute.ToUiThreadAsync(InnerPush);
     }
 
-    public static void Push(NotificationOption notification)
+    public static async void Push(NotificationOption notification)
     {
-        Execute.ToUiThreadAsync(() => { NotificationList?.Add(notification); });
+        void InnerPush()
+        {
+            NotificationList?.Add(notification);
+        }
+
+        await Execute.ToUiThreadAsync(InnerPush);
     }
 }
