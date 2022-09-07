@@ -19,6 +19,7 @@ public class PlayingConverter : IMultiValueConverter
                 {
                     return lyricWindow.FindResource(isPlaying ? "PauseButtonTempl" : "PlayButtonTempl");
                 }
+
                 if (window is MainWindow mainWindow)
                 {
                     return Application.Current.FindResource(isPlaying ? "PauseButtonStyle" : "PlayButtonStyle");

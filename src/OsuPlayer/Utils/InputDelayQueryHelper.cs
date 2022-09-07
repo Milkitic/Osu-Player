@@ -4,11 +4,10 @@ namespace Milki.OsuPlayer.Utils;
 
 public sealed class InputDelayQueryHelper
 {
-    public Func<int, ValueTask> QueryAsync;
-
-    private readonly Stopwatch _querySw = new();
     private readonly object _queryLock = new();
+    private readonly Stopwatch _querySw = new();
     private bool _isQuerying;
+    public Func<int, ValueTask> QueryAsync;
 
     public async ValueTask StartDelayedQuery(int page = 0)
     {

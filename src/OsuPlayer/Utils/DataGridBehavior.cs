@@ -78,6 +78,7 @@ public class DataGridBehavior
             {
                 visualCollection.Add(child as T);
             }
+
             if (child != null)
             {
                 GetVisualChildCollection(child, visualCollection);

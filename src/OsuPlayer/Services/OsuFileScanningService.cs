@@ -15,29 +15,28 @@ namespace Milki.OsuPlayer.Services;
 
 public class FileScannerViewModel : VmBase
 {
-    private bool _isScanning;
     private bool _isCanceling;
-
-    public bool IsScanning
-    {
-        get => _isScanning;
-        internal set => this.RaiseAndSetIfChanged(ref _isScanning, value);
-    }
+    private bool _isScanning;
 
     public bool IsCanceling
     {
         get => _isCanceling;
         set => this.RaiseAndSetIfChanged(ref _isCanceling, value);
     }
+
+    public bool IsScanning
+    {
+        get => _isScanning;
+        internal set => this.RaiseAndSetIfChanged(ref _isScanning, value);
+    }
 }
 
 public class OsuFileScanningService
 {
-    public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();
-    private CancellationTokenSource _scanCts;
-
     private static readonly object ScanObject = new object();
     private static readonly object CancelObject = new object();
+    private CancellationTokenSource _scanCts;
+    public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();
 
     public async ValueTask ScanAndSyncAsync(string path)
     {
@@ -67,10 +66,7 @@ public class OsuFileScanningService
             {
                 dirInfo.EnumerateDirectories(searchPattern: "*.*", searchOption: SearchOption.TopDirectoryOnly)
                     .AsParallel()
-                    .ForAll(privateFolder =>
-                    {
-                        ScanPrivateFolder(concurrentBag, privateFolder);
-                    });
+                    .ForAll(privateFolder => { ScanPrivateFolder(concurrentBag, privateFolder); });
             });
         }
 
@@ -104,53 +100,6 @@ public class OsuFileScanningService
         lock (CancelObject)
         {
             ViewModel.IsCanceling = false;
-        }
-    }
-
-    private void ScanPrivateFolder(ConcurrentDictionary<string, PlayItemDetail> playItemDetails, DirectoryInfo privateFolder)
-    {
-        foreach (var fileInfo in privateFolder.EnumerateFiles("*.osu", SearchOption.AllDirectories))
-        {
-            if (_scanCts.IsCancellationRequested)
-                return;
-            try
-            {
-                var osuFile = OsuFile.ReadFromFile(fileInfo.FullName,
-                    options =>
-                    {
-                        options.IncludeSection("General");
-                        options.IncludeSection("Metadata");
-                        options.IncludeSection("TimingPoints");
-                        options.IncludeSection("Difficulty");
-                        options.IncludeSection("HitObjects");
-                        options.IncludeSection("Events");
-                        options.IgnoreSample();
-                        options.IgnoreStoryboard();
-                    });
-                var playItemDetail = new PlayItemDetail();
-                UpdateDetailByCoosu(playItemDetail, osuFile);
-                var songFolder = AppSettings.Default.GeneralSection.OsuSongDir;
-                var fullPath = Path.GetFullPath(songFolder);
-                var index = fileInfo.FullName.IndexOf(fullPath, StringComparison.Ordinal);
-                string standardizedPath;
-                var separator = Path.DirectorySeparatorChar;
-                if (index == 0)
-                {
-                    var subStr = fileInfo.FullName.Substring(fullPath.Length);
-                    standardizedPath = "./" + subStr.Replace(separator, '/');
-                    //var index = fileInfo.FullName;
-                }
-                else
-                {
-                    standardizedPath = fileInfo.FullName.Replace(separator, '/');
-                }
-
-                playItemDetails.TryAdd(standardizedPath, playItemDetail);
-            }
-            catch (Exception ex)
-            {
-                LogTo.ErrorException($"Error during scanning file, ignored {fileInfo.FullName}", ex);
-            }
         }
     }
 
@@ -263,6 +212,54 @@ public class OsuFileScanningService
 
             LogTo.Debug(() => $"Add {listItem.Count} items in {sw.ElapsedMilliseconds}ms.");
             sw.Restart();
+        }
+    }
+
+    private void ScanPrivateFolder(ConcurrentDictionary<string, PlayItemDetail> playItemDetails,
+        DirectoryInfo privateFolder)
+    {
+        foreach (var fileInfo in privateFolder.EnumerateFiles("*.osu", SearchOption.AllDirectories))
+        {
+            if (_scanCts.IsCancellationRequested)
+                return;
+            try
+            {
+                var osuFile = OsuFile.ReadFromFile(fileInfo.FullName,
+                    options =>
+                    {
+                        options.IncludeSection("General");
+                        options.IncludeSection("Metadata");
+                        options.IncludeSection("TimingPoints");
+                        options.IncludeSection("Difficulty");
+                        options.IncludeSection("HitObjects");
+                        options.IncludeSection("Events");
+                        options.IgnoreSample();
+                        options.IgnoreStoryboard();
+                    });
+                var playItemDetail = new PlayItemDetail();
+                UpdateDetailByCoosu(playItemDetail, osuFile);
+                var songFolder = AppSettings.Default.GeneralSection.OsuSongDir;
+                var fullPath = Path.GetFullPath(songFolder);
+                var index = fileInfo.FullName.IndexOf(fullPath, StringComparison.Ordinal);
+                string standardizedPath;
+                var separator = Path.DirectorySeparatorChar;
+                if (index == 0)
+                {
+                    var subStr = fileInfo.FullName.Substring(fullPath.Length);
+                    standardizedPath = "./" + subStr.Replace(separator, '/');
+                    //var index = fileInfo.FullName;
+                }
+                else
+                {
+                    standardizedPath = fileInfo.FullName.Replace(separator, '/');
+                }
+
+                playItemDetails.TryAdd(standardizedPath, playItemDetail);
+            }
+            catch (Exception ex)
+            {
+                LogTo.ErrorException($"Error during scanning file, ignored {fileInfo.FullName}", ex);
+            }
         }
     }
 

@@ -14,51 +14,30 @@ internal static class KeyConverter
         if (keyStr.StartsWith("NumPad") && keyStr.Length == 7)
             return "Num" + keyStr[6];
 
-        switch (key)
+        return key switch
         {
-            case Key.OemMinus:
-                return "-";
-            case Key.OemPlus:
-                return "=";
-            case Key.OemQuestion:
-                return "/";
-            case Key.Oem3:
-                return "`";
-            case Key.OemComma:
-                return ",";
-            case Key.OemPeriod:
-                return ".";
-            case Key.Oem1:
-                return ";";
-            case Key.OemQuotes:
-                return "'";
-            case Key.OemOpenBrackets:
-                return "[";
-            case Key.Oem6:
-                return "]";
-            case Key.Oem5:
-                return "\\";
-            case Key.Divide:
-                return "Num/";
-            case Key.Multiply:
-                return "Num*";
-            case Key.Subtract:
-                return "Num-";
-            case Key.Add:
-                return "Num+";
-            case Key.Decimal:
-                return "Num.";
-            case Key.Left:
-                return "←";
-            case Key.Right:
-                return "→";
-            case Key.Up:
-                return "↑";
-            case Key.Down:
-                return "↓";
-            default:
-                return keyStr;
-        }
+            Key.OemMinus => "-",
+            Key.OemPlus => "=",
+            Key.OemQuestion => "/",
+            Key.Oem3 => "`",
+            Key.OemComma => ",",
+            Key.OemPeriod => ".",
+            Key.Oem1 => ";",
+            Key.OemQuotes => "'",
+            Key.OemOpenBrackets => "[",
+            Key.Oem6 => "]",
+            Key.Oem5 => "\\",
+            Key.Divide => "Num/",
+            Key.Multiply => "Num*",
+            Key.Subtract => "Num-",
+            Key.Add => "Num+",
+            Key.Decimal => "Num.",
+            Key.Left => "←",
+            Key.Right => "→",
+            Key.Up => "↑",
+            Key.Down => "↓",
+            _ => keyStr
+        };
     }
 
     public static string ConvertToString(this Keys key)
@@ -70,50 +49,29 @@ internal static class KeyConverter
         if (keyStr.StartsWith("NumPad") && keyStr.Length == 7)
             return "Num" + keyStr[6];
 
-        switch (key)
+        return key switch
         {
-            case Keys.OemMinus:
-                return "-";
-            case Keys.Oemplus:
-                return "=";
-            case Keys.OemQuestion:
-                return "/";
-            case Keys.Oem3:
-                return "`";
-            case Keys.Oemcomma:
-                return ",";
-            case Keys.OemPeriod:
-                return ".";
-            case Keys.Oem1:
-                return ";";
-            case Keys.OemQuotes:
-                return "'";
-            case Keys.OemOpenBrackets:
-                return "[";
-            case Keys.Oem6:
-                return "]";
-            case Keys.Oem5:
-                return "\\";
-            case Keys.Divide:
-                return "Num/";
-            case Keys.Multiply:
-                return "Num*";
-            case Keys.Subtract:
-                return "Num-";
-            case Keys.Add:
-                return "Num+";
-            case Keys.Decimal:
-                return "Num.";
-            case Keys.Left:
-                return "←";
-            case Keys.Right:
-                return "→";
-            case Keys.Up:
-                return "↑";
-            case Keys.Down:
-                return "↓";
-            default:
-                return keyStr;
-        }
+            Keys.OemMinus => "-",
+            Keys.Oemplus => "=",
+            Keys.OemQuestion => "/",
+            Keys.Oem3 => "`",
+            Keys.Oemcomma => ",",
+            Keys.OemPeriod => ".",
+            Keys.Oem1 => ";",
+            Keys.OemQuotes => "'",
+            Keys.OemOpenBrackets => "[",
+            Keys.Oem6 => "]",
+            Keys.Oem5 => "\\",
+            Keys.Divide => "Num/",
+            Keys.Multiply => "Num*",
+            Keys.Subtract => "Num-",
+            Keys.Add => "Num+",
+            Keys.Decimal => "Num.",
+            Keys.Left => "←",
+            Keys.Right => "→",
+            Keys.Up => "↑",
+            Keys.Down => "↓",
+            _ => keyStr
+        };
     }
 }

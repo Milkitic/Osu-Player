@@ -6,17 +6,20 @@ using System.Xaml;
 using Anotar.NLog;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Shared.Utils;
+using XamlReader = System.Windows.Markup.XamlReader;
 
 namespace Milki.OsuPlayer.Utils;
 
 public static class I18NUtil
 {
-    private static readonly ResourceDictionary? I18NDic = Application.Current.Resources.MergedDictionaries.FirstOrDefault(k =>
-        k.Source.OriginalString.Contains("i18n.xaml", StringComparison.OrdinalIgnoreCase));
+    private static readonly ResourceDictionary? I18NDic =
+        Application.Current.Resources.MergedDictionaries.FirstOrDefault(k =>
+            k.Source.OriginalString.Contains("i18n.xaml", StringComparison.OrdinalIgnoreCase));
+
+    public static Dictionary<string, string> AvailableLangDic { get; } = new();
 
     public static ResourceDictionary? CurrentLangDictionary { get; } = I18NDic?.MergedDictionaries.FirstOrDefault();
     public static KeyValuePair<string, string> CurrentLocale { get; private set; }
-    public static Dictionary<string, string> AvailableLangDic { get; } = new();
 
     public static void SwitchToLang(string locale)
     {
@@ -26,9 +29,10 @@ public static class I18NUtil
         }
 
         ResourceDictionary langRd;
-        using (var s = new FileStream(Path.Combine(AppSettings.Directories.LanguageDir, $"{locale}.xaml"), FileMode.Open))
+        using (var s = new FileStream(Path.Combine(AppSettings.Directories.LanguageDir, $"{locale}.xaml"),
+                   FileMode.Open))
         {
-            langRd = (ResourceDictionary)System.Windows.Markup.XamlReader.Load(s);
+            langRd = (ResourceDictionary)XamlReader.Load(s);
         }
 
         CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(locale);
@@ -107,8 +111,10 @@ public static class I18NUtil
             // 否则分析文件，和默认的做对比，如果少了相应的字段则补齐，然后排序写入
             var existKeyValuePairsFromFile = GetStringKeyValuePairs(fullText);
 
-            var unspecifiedKvs = defUiStrings.Where(k => !existKeyValuePairsFromFile.ContainsKey(k.Key)).ToList(); // 是否缺少字段
-            var shouldDelKvs = existKeyValuePairsFromFile.Where(k => !defUiStrings.ContainsKey(k.Key)).ToList(); // 是否缺少字段
+            var unspecifiedKvs =
+                defUiStrings.Where(k => !existKeyValuePairsFromFile.ContainsKey(k.Key)).ToList(); // 是否缺少字段
+            var shouldDelKvs =
+                existKeyValuePairsFromFile.Where(k => !defUiStrings.ContainsKey(k.Key)).ToList(); // 是否缺少字段
             if (unspecifiedKvs.Count > 0 || shouldDelKvs.Count > 0)
             {
                 foreach (var unspecifiedKv in unspecifiedKvs)

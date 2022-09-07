@@ -6,6 +6,7 @@ namespace Milki.OsuPlayer.Utils;
 public static class GradientStopCollectionExtensions
 {
     private static readonly ConcurrentDictionary<GradientStopCollection, GradientStopCollectionInfo> Cache = new();
+
     public static Color GetRelativeColor(this GradientStopCollection gsc, double offset)
     {
         var info = Cache.GetOrAdd(gsc, collection =>

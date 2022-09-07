@@ -30,7 +30,6 @@ public class SingleParameterConverter : IValueConverter
                 default:
                     throw new NotImplementedException();
             }
-
         }
 
         throw new NotImplementedException();

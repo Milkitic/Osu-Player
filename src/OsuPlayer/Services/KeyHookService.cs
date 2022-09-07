@@ -7,23 +7,29 @@ namespace Milki.OsuPlayer.Services;
 
 public sealed class KeyHookService : IDisposable
 {
-    public Action? TogglePlayAction { get; set; }
-    public Action? PrevSongAction { get; set; }
-    public Action? NextSongAction { get; set; }
-    public Action? VolumeUpAction { get; set; }
-    public Action? VolumeDownAction { get; set; }
-    public Action? SwitchFullMiniModeAction { get; set; }
-    public Action? AddCurrentToFavAction { get; set; }
-    public Action? SwitchLyricWindowAction { get; set; }
-
-    private readonly List<Guid> _registerList = new();
     private readonly AppSettings _appSettings;
     private readonly IKeyboardHook _keyboardHook;
+
+    private readonly List<Guid> _registerList = new();
 
     public KeyHookService(AppSettings appSettings)
     {
         _appSettings = appSettings;
         _keyboardHook = KeyboardHookFactory.CreateGlobal();
+    }
+
+    public Action? AddCurrentToFavAction { get; set; }
+    public Action? NextSongAction { get; set; }
+    public Action? PrevSongAction { get; set; }
+    public Action? SwitchFullMiniModeAction { get; set; }
+    public Action? SwitchLyricWindowAction { get; set; }
+    public Action? TogglePlayAction { get; set; }
+    public Action? VolumeDownAction { get; set; }
+    public Action? VolumeUpAction { get; set; }
+
+    public void Dispose()
+    {
+        _keyboardHook.Dispose();
     }
 
     public void InitializeAndActivateHotKeys()
@@ -36,6 +42,16 @@ public sealed class KeyHookService : IDisposable
         RegisterKey(_appSettings.HotKeys.SwitchFullMiniMode, () => SwitchFullMiniModeAction);
         RegisterKey(_appSettings.HotKeys.AddCurrentToFav, () => AddCurrentToFavAction);
         RegisterKey(_appSettings.HotKeys.SwitchLyricWindow, () => SwitchLyricWindowAction);
+    }
+
+    public void DeactivateHotKeys()
+    {
+        foreach (var guid in _registerList)
+        {
+            _keyboardHook.TryUnregister(guid);
+        }
+
+        _registerList.Clear();
     }
 
     private void RegisterKey(BindKeys? bindKeys, Func<Action?> getAction)
@@ -55,20 +71,5 @@ public sealed class KeyHookService : IDisposable
         {
             getAction()?.Invoke();
         }
-    }
-
-    public void DeactivateHotKeys()
-    {
-        foreach (var guid in _registerList)
-        {
-            _keyboardHook.TryUnregister(guid);
-        }
-
-        _registerList.Clear();
-    }
-
-    public void Dispose()
-    {
-        _keyboardHook.Dispose();
     }
 }

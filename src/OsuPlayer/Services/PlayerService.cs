@@ -4,6 +4,7 @@ using System.IO;
 using Anotar.NLog;
 using Coosu.Beatmap;
 using Coosu.Beatmap.Extensions;
+using Fody;
 using Milki.Extensions.MixPlayer.Devices;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
@@ -17,31 +18,62 @@ using Milki.OsuPlayer.Wpf;
 
 namespace Milki.OsuPlayer.Services;
 
-[Fody.ConfigureAwait(false)]
+[ConfigureAwait(false)]
 public class PlayerService : VmBase, IAsyncDisposable
 {
-    public class PlayItemLoadContext
-    {
-        private readonly CancellationTokenSource _cancellationTokenSource;
+    private readonly AsyncLock _initializationLock = new();
+    private readonly PlayListService _playListService;
 
-        public PlayItemLoadContext(CancellationTokenSource cancellationTokenSource)
+    private AudioPlaybackEngine _audioPlaybackEngine;
+    private bool _isInitializing;
+    private CancellationTokenSource? _lastInitCts;
+    private string? _lastStandardizedFolder;
+
+    private TimeSpan _playTime;
+    private TimeSpan _totalTime;
+
+    public PlayerService(PlayListService playListService, AppSettings appSettings)
+    {
+        _playListService = playListService;
+        var playSectionDeviceInfo = appSettings.PlaySection.DeviceInfo ?? DeviceDescription.WasapiDefault;
+        if (playSectionDeviceInfo.Latency == 0)
         {
-            _cancellationTokenSource = cancellationTokenSource;
+            playSectionDeviceInfo.Latency = 1;
         }
 
-        public CancellationToken CancellationToken => _cancellationTokenSource.Token;
-        public LocalOsuFile? OsuFile { get; set; }
-        public bool PlayInstant { get; set; }
+        _audioPlaybackEngine = new AudioPlaybackEngine(playSectionDeviceInfo, 48000, notifyProgress: false);
+    }
 
-        public PlayItem? PlayItem { get; set; }
-        public bool IsPlayItemFavorite { get; set; }
+    public OsuMixPlayer? ActiveMixPlayer { get; private set; }
 
-        public string? BackgroundPath { get; set; }
-        public string? MusicPath { get; set; }
-        public string? VideoPath { get; set; }
+    public bool IsInitializing
+    {
+        get => _isInitializing;
+        set => this.RaiseAndSetIfChanged(ref _isInitializing, value);
+    }
 
-        public bool IsLoaded { get; set; }
-        public OsuMixPlayer? Player { get; set; }
+    public PlayItemLoadContext? LastLoadContext { get; private set; }
+
+    public PlayerStatus PlayerStatus => ActiveMixPlayer?.PlayerStatus ?? PlayerStatus.Uninitialized;
+
+    public TimeSpan PlayTime
+    {
+        get => _playTime;
+        set => this.RaiseAndSetIfChanged(ref _playTime, value);
+    }
+
+    public TimeSpan TotalTime
+    {
+        get => _totalTime;
+        set => this.RaiseAndSetIfChanged(ref _totalTime, value);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        CancelPreviousInitialization();
+        await DisposeActiveMixPlayer();
+        _initializationLock.Dispose();
+        _lastInitCts?.Dispose();
     }
 
     public event Func<PlayItemLoadContext, ValueTask>? LoadPreStarted;
@@ -60,53 +92,6 @@ public class PlayerService : VmBase, IAsyncDisposable
 
     public event Action<PlayerStatus>? PlayerStatusChanged;
     public event Action<TimeSpan>? PlayTimeChanged;
-
-    private readonly PlayListService _playListService;
-    private readonly AsyncLock _initializationLock = new();
-
-    private AudioPlaybackEngine _audioPlaybackEngine;
-    private bool _isInitializing;
-    private string? _lastStandardizedFolder;
-    private CancellationTokenSource? _lastInitCts;
-
-    private TimeSpan _playTime;
-    private TimeSpan _totalTime;
-
-    public PlayerService(PlayListService playListService, AppSettings appSettings)
-    {
-        _playListService = playListService;
-        var playSectionDeviceInfo = appSettings.PlaySection.DeviceInfo ?? DeviceDescription.WasapiDefault;
-        if (playSectionDeviceInfo.Latency == 0)
-        {
-            playSectionDeviceInfo.Latency = 1;
-        }
-
-        _audioPlaybackEngine = new AudioPlaybackEngine(playSectionDeviceInfo, 48000, notifyProgress: false);
-    }
-
-    public bool IsInitializing
-    {
-        get => _isInitializing;
-        set => this.RaiseAndSetIfChanged(ref _isInitializing, value);
-    }
-
-    public OsuMixPlayer? ActiveMixPlayer { get; private set; }
-
-    public PlayItemLoadContext? LastLoadContext { get; private set; }
-
-    public TimeSpan PlayTime
-    {
-        get => _playTime;
-        set => this.RaiseAndSetIfChanged(ref _playTime, value);
-    }
-
-    public TimeSpan TotalTime
-    {
-        get => _totalTime;
-        set => this.RaiseAndSetIfChanged(ref _totalTime, value);
-    }
-
-    public PlayerStatus PlayerStatus => ActiveMixPlayer?.PlayerStatus ?? PlayerStatus.Uninitialized;
 
     public async ValueTask PlayAsync()
     {
@@ -304,7 +289,8 @@ public class PlayerService : VmBase, IAsyncDisposable
         }
     }
 
-    private async void Player_PlayerStatusChanged(TrackPlayer trackPlayer, PlayerStatus oldStatus, PlayerStatus newStatus)
+    private async void Player_PlayerStatusChanged(TrackPlayer trackPlayer, PlayerStatus oldStatus,
+        PlayerStatus newStatus)
     {
         Execute.OnUiThread(() => OnPropertyChanged(nameof(PlayerStatus)));
         PlayerStatusChanged?.Invoke(newStatus);
@@ -377,11 +363,27 @@ public class PlayerService : VmBase, IAsyncDisposable
         ActiveMixPlayer = null;
     }
 
-    public async ValueTask DisposeAsync()
+    public class PlayItemLoadContext
     {
-        CancelPreviousInitialization();
-        await DisposeActiveMixPlayer();
-        _initializationLock.Dispose();
-        _lastInitCts?.Dispose();
+        private readonly CancellationTokenSource _cancellationTokenSource;
+
+        public PlayItemLoadContext(CancellationTokenSource cancellationTokenSource)
+        {
+            _cancellationTokenSource = cancellationTokenSource;
+        }
+
+        public string? BackgroundPath { get; set; }
+
+        public CancellationToken CancellationToken => _cancellationTokenSource.Token;
+
+        public bool IsLoaded { get; set; }
+        public bool IsPlayItemFavorite { get; set; }
+        public string? MusicPath { get; set; }
+        public LocalOsuFile? OsuFile { get; set; }
+        public OsuMixPlayer? Player { get; set; }
+        public bool PlayInstant { get; set; }
+
+        public PlayItem? PlayItem { get; set; }
+        public string? VideoPath { get; set; }
     }
 }

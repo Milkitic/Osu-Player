@@ -13,9 +13,9 @@ namespace Milki.OsuPlayer.Services;
 public class UpdateService
 {
     private const string Repo = "Milkitic/Osu-Player";
-    private static string? _version;
     private const int Timeout = 10000;
     private const int RetryCount = 3;
+    private static string? _version;
     private readonly HttpClient _httpClient;
 
     public UpdateService()
@@ -30,8 +30,8 @@ public class UpdateService
             "ozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
     }
 
-    public GithubRelease? NewRelease { get; private set; }
     public bool IsRunningChecking { get; private set; }
+    public GithubRelease? NewRelease { get; private set; }
 
     public string GetVersion()
     {

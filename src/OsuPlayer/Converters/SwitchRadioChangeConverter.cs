@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Animation;
 using Milki.OsuPlayer.UiComponents.RadioButtonComponent;
@@ -20,7 +21,8 @@ public class SwitchRadioChangeConverter : IMultiValueConverter
                     : new Thickness(0, 0, 8, 0), TimeSpan.FromMilliseconds(300))
                 {
                     From = sr.IconMargin,
-                    EasingFunction = new QuarticEase() { EasingMode = isNavigationCollapsed ? EasingMode.EaseInOut : EasingMode.EaseOut }
+                    EasingFunction = new QuarticEase()
+                        { EasingMode = isNavigationCollapsed ? EasingMode.EaseInOut : EasingMode.EaseOut }
                 };
 
                 Storyboard.SetTargetProperty(da, new PropertyPath(SwitchRadio.IconMarginProperty));
@@ -38,7 +40,7 @@ public class SwitchRadioChangeConverter : IMultiValueConverter
                         EasingFunction = new QuarticEase() { EasingMode = EasingMode.EaseInOut }
                     };
 
-                    Storyboard.SetTargetProperty(ta, new PropertyPath(System.Windows.Controls.Control.PaddingProperty));
+                    Storyboard.SetTargetProperty(ta, new PropertyPath(Control.PaddingProperty));
                     Storyboard.SetTarget(ta, sr);
                     sb.Children.Add(ta);
                 }

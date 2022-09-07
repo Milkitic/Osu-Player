@@ -7,6 +7,7 @@ namespace Milki.OsuPlayer.Utils;
 public class FontFamilyComparer : IComparer<FontFamily>
 {
     private readonly string _currentCulture;
+
     public FontFamilyComparer(CultureInfo cultureInfo)
     {
         _currentCulture = cultureInfo.Name;

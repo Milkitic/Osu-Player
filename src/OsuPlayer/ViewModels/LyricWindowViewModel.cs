@@ -9,19 +9,17 @@ namespace Milki.OsuPlayer.ViewModels;
 
 public class LyricWindowViewModel : VmBase
 {
-    private bool _showFrame;
     private FontFamily _fontFamily;
     private double _hue;
-    private double _saturation;
     private double _lightness;
+    private double _saturation;
+    private bool _showFrame;
 
-    public SharedVm Shared => SharedVm.Default;
-
-    public bool ShowFrame
-    {
-        get => _showFrame;
-        set => this.RaiseAndSetIfChanged(ref _showFrame, value);
-    }
+    public ICollection<FontFamily> AllFontFamilies { get; } =
+        new SortedSet<FontFamily>(Fonts.SystemFontFamilies.Concat(new[]
+        {
+            (FontFamily)Application.Current.FindResource("GenericRegular")
+        }), new FontFamilyComparer(CultureInfo.CurrentUICulture));
 
     public FontFamily FontFamily
     {
@@ -36,16 +34,16 @@ public class LyricWindowViewModel : VmBase
         }
     }
 
-    public ICollection<FontFamily> AllFontFamilies { get; } =
-        new SortedSet<FontFamily>(Fonts.SystemFontFamilies.Concat(new[]
-        {
-            (FontFamily) Application.Current.FindResource("GenericRegular")
-        }), new FontFamilyComparer(CultureInfo.CurrentUICulture));
-
     public double Hue
     {
         get => _hue;
         set => this.RaiseAndSetIfChanged(ref _hue, value);
+    }
+
+    public double Lightness
+    {
+        get => _lightness;
+        set => this.RaiseAndSetIfChanged(ref _lightness, value);
     }
 
     public double Saturation
@@ -54,9 +52,11 @@ public class LyricWindowViewModel : VmBase
         set => this.RaiseAndSetIfChanged(ref _saturation, value);
     }
 
-    public double Lightness
+    public SharedVm Shared => SharedVm.Default;
+
+    public bool ShowFrame
     {
-        get => _lightness;
-        set => this.RaiseAndSetIfChanged(ref _lightness, value);
+        get => _showFrame;
+        set => this.RaiseAndSetIfChanged(ref _showFrame, value);
     }
 }
