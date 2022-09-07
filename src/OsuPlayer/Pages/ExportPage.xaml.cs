@@ -17,8 +17,8 @@ namespace Milki.OsuPlayer.Pages;
 public class ExportPageVm : VmBase
 {
     private ObservableCollection<ExportItem> _exportList;
-    private List<ExportItem> _selectedItems;
     private string _exportPath;
+    private List<ExportItem> _selectedItems;
 
     public ObservableCollection<ExportItem> ExportList
     {
@@ -26,26 +26,26 @@ public class ExportPageVm : VmBase
         set => this.RaiseAndSetIfChanged(ref _exportList, value);
     }
 
-    public List<ExportItem> SelectedItems
-    {
-        get => _selectedItems;
-        set => this.RaiseAndSetIfChanged(ref _selectedItems, value);
-    }
-
     public string ExportPath
     {
         get => _exportPath;
         set => this.RaiseAndSetIfChanged(ref _exportPath, value);
     }
+
+    public List<ExportItem> SelectedItems
+    {
+        get => _selectedItems;
+        set => this.RaiseAndSetIfChanged(ref _selectedItems, value);
+    }
 }
 
 /// <summary>
-/// ExportPage.xaml 的交互逻辑
+///     ExportPage.xaml 的交互逻辑
 /// </summary>
 public partial class ExportPage : Page
 {
-    private readonly ExportPageVm _viewModel;
     private readonly ExportService _exportService;
+    private readonly ExportPageVm _viewModel;
 
     public ExportPage()
     {
@@ -88,13 +88,9 @@ public partial class ExportPage : Page
         if (fe.Tag is string path)
         {
             if (Directory.Exists(path))
-            {
                 ProcessUtils.StartWithShellExecute(path);
-            }
             else
-            {
                 Notification.Push(I18NUtil.GetString("err-dirNotFound"), I18NUtil.GetString("text-error"));
-            }
         }
         else if (fe.Tag is ExportItem orderedModel)
         {
@@ -117,15 +113,9 @@ public partial class ExportPage : Page
             }
         }
 
-        while (_exportService.IsTaskBusy)
-        {
-            await Task.Delay(10);
-        }
+        while (_exportService.IsTaskBusy) await Task.Delay(10);
 
-        if (_exportService.HasTaskSuccess)
-        {
-            await UpdateCollection();
-        }
+        if (_exportService.HasTaskSuccess) await UpdateCollection();
     }
 
     private async void MiDelete_OnClick(object sender, RoutedEventArgs e)
@@ -138,10 +128,7 @@ public partial class ExportPage : Page
             if (!File.Exists(exportItem.ExportPath)) continue;
             File.Delete(exportItem.ExportPath);
             var dir = new FileInfo(exportItem.ExportPath).Directory;
-            if (dir is { Exists: true } && !dir.EnumerateFiles().Any())
-            {
-                dir.Delete();
-            }
+            if (dir is { Exists: true } && !dir.EnumerateFiles().Any()) dir.Delete();
         }
 
         dbContext.Exports.RemoveRange(_viewModel.SelectedItems);
