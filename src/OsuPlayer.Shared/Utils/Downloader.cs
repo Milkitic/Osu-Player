@@ -1,28 +1,32 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using NLog;
 
 namespace Milki.OsuPlayer.Shared.Utils;
 
 public class Downloader
 {
-    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
-    public delegate void StartDownloadingHandler(long size);
     public delegate void DownloadingHandler(long size, long downloadedSize, long speed);
+
     public delegate void FinishDownloadingHandler();
 
-    public event StartDownloadingHandler OnStartDownloading;
-    public event DownloadingHandler OnDownloading;
-    public event FinishDownloadingHandler OnFinishDownloading;
+    public delegate void StartDownloadingHandler(long size);
 
-    private string Url { get; set; }
-    private Task _downloadTask;
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+    private Task _downloadTask;
+
     public Downloader(string url)
     {
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         Url = url;
     }
+
+    private string Url { get; set; }
+
+    public event StartDownloadingHandler OnStartDownloading;
+    public event DownloadingHandler OnDownloading;
+    public event FinishDownloadingHandler OnFinishDownloading;
 
     public async ValueTask DownloadAsync(string savePath)
     {

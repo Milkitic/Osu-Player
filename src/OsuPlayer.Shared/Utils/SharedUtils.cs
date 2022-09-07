@@ -6,7 +6,10 @@ public static class SharedUtils
 
     public static string SizeSuffix(long value, int decimalPlaces = 1)
     {
-        if (value < 0) { return "-" + SizeSuffix(-value, decimalPlaces); }
+        if (value < 0)
+        {
+            return "-" + SizeSuffix(-value, decimalPlaces);
+        }
 
         int i = 0;
         double dValue = value;

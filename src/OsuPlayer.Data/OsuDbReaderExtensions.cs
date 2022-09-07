@@ -67,10 +67,14 @@ public static class OsuDbReaderExtensions
             var mods = (Mods)data.IntValue;
             if (mods != Mods.None) continue;
 
-            if (index == DbGameMode.Circle) playItemDetail.DefaultStarRatingStd = (long)(data.DoubleValue * 1_000_000_000);
-            else if (index == DbGameMode.Taiko) playItemDetail.DefaultStarRatingTaiko = (long)(data.DoubleValue * 1_000_000_000);
-            else if (index == DbGameMode.Catch) playItemDetail.DefaultStarRatingCtB = (long)(data.DoubleValue * 1_000_000_000);
-            else if (index == DbGameMode.Mania) playItemDetail.DefaultStarRatingMania = (long)(data.DoubleValue * 1_000_000_000);
+            if (index == DbGameMode.Circle)
+                playItemDetail.DefaultStarRatingStd = (long)(data.DoubleValue * 1_000_000_000);
+            else if (index == DbGameMode.Taiko)
+                playItemDetail.DefaultStarRatingTaiko = (long)(data.DoubleValue * 1_000_000_000);
+            else if (index == DbGameMode.Catch)
+                playItemDetail.DefaultStarRatingCtB = (long)(data.DoubleValue * 1_000_000_000);
+            else if (index == DbGameMode.Mania)
+                playItemDetail.DefaultStarRatingMania = (long)(data.DoubleValue * 1_000_000_000);
         }
     }
 }

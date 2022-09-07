@@ -25,6 +25,28 @@ public static class DebugUtils
         return ExceptionToFullMessage(exception, new StringBuilder(), 0, true, null)!;
     }
 
+    public static void InvokeAndPrint(Action method, string caller = "anonymous method")
+    {
+        var sw = Stopwatch.StartNew();
+        method?.Invoke();
+        sw.Stop();
+        Console.WriteLine($"[{caller}] Executed in {sw.Elapsed.TotalMilliseconds:#0.000} ms");
+    }
+
+    public static T InvokeAndPrint<T>(Func<T> method, string caller = "anonymous method")
+    {
+        var sw = Stopwatch.StartNew();
+        var value = method.Invoke();
+        sw.Stop();
+        Console.WriteLine($"[{caller}] Executed in {sw.Elapsed.TotalMilliseconds:#0.000} ms");
+        return value;
+    }
+
+    public static IDisposable CreateTimer(string name, ILogger? logger = null)
+    {
+        return new TimerImpl(name, logger);
+    }
+
     private static string? ExceptionToFullMessage(Exception exception, StringBuilder stringBuilder, int deep,
         bool isLastItem, bool? includeFullType)
     {
@@ -96,32 +118,10 @@ public static class DebugUtils
         }
     }
 
-    public static void InvokeAndPrint(Action method, string caller = "anonymous method")
-    {
-        var sw = Stopwatch.StartNew();
-        method?.Invoke();
-        sw.Stop();
-        Console.WriteLine($"[{caller}] Executed in {sw.Elapsed.TotalMilliseconds:#0.000} ms");
-    }
-
-    public static T InvokeAndPrint<T>(Func<T> method, string caller = "anonymous method")
-    {
-        var sw = Stopwatch.StartNew();
-        var value = method.Invoke();
-        sw.Stop();
-        Console.WriteLine($"[{caller}] Executed in {sw.Elapsed.TotalMilliseconds:#0.000} ms");
-        return value;
-    }
-
-    public static IDisposable CreateTimer(string name, ILogger? logger = null)
-    {
-        return new TimerImpl(name, logger);
-    }
-
     private class TimerImpl : IDisposable
     {
-        private readonly string _name;
         private readonly ILogger? _logger;
+        private readonly string _name;
         private readonly Stopwatch _sw;
 
         public TimerImpl(string name, ILogger? logger)

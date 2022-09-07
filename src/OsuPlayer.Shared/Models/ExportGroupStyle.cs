@@ -2,5 +2,8 @@
 
 public enum ExportGroupStyle
 {
-    None, Artist, Mapper, Source
+    None,
+    Artist,
+    Mapper,
+    Source
 }

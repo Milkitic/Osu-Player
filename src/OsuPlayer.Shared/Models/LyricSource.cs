@@ -2,5 +2,8 @@
 
 public enum LyricSource
 {
-    Auto, Netease, Kugou, QqMusic
+    Auto,
+    Netease,
+    Kugou,
+    QqMusic
 }

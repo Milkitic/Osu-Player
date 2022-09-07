@@ -2,5 +2,10 @@
 
 public enum PlayListMode
 {
-    Normal, Random, Loop, LoopRandom, Single, SingleLoop,
+    Normal,
+    Random,
+    Loop,
+    LoopRandom,
+    Single,
+    SingleLoop,
 }

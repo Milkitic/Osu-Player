@@ -226,7 +226,8 @@ public sealed partial class ApplicationDbContext
             from looseItem in LoosePlayItems
             where looseItem.LooseItemType == LooseItemType.RecentPlay
             orderby looseItem.LastPlay descending
-            join playItem in PlayItems.Include(k => k.PlayItemDetail)/*.Include(k => k.PlayItemAsset)*/ on looseItem.PlayItemId equals playItem.Id into newCollection
+            join playItem in PlayItems.Include(k => k.PlayItemDetail) /*.Include(k => k.PlayItemAsset)*/
+                on looseItem.PlayItemId equals playItem.Id into newCollection
             from playItem in newCollection.DefaultIfEmpty()
             select new
             {
@@ -303,7 +304,9 @@ public sealed partial class ApplicationDbContext
         sw.Restart();
 
         var newAllLooseItems = playItems
-            .Select(k => new KeyValuePair<int, LoosePlayItem>(k.Id, k.ToLoosePlayItem(DateTime.MinValue, LooseItemType.CurrentPlay)))
+            .Select(k =>
+                new KeyValuePair<int, LoosePlayItem>(k.Id,
+                    k.ToLoosePlayItem(DateTime.MinValue, LooseItemType.CurrentPlay)))
             .ToDictionary(k => k.Key, k => k.Value);
 
         LogTo.Debug(() => $"Enumerate {dbItems.Count} newAllLooseItems in {sw.ElapsedMilliseconds}ms.");
@@ -363,7 +366,7 @@ public sealed partial class ApplicationDbContext
 
         if (listItem.Count > 0)
         {
-            await this.BulkInsertAsync(listItem/*, k => k.CustomDestinationTableName = nameof(CurrentPlay)*/);
+            await this.BulkInsertAsync(listItem /*, k => k.CustomDestinationTableName = nameof(CurrentPlay)*/);
             await this.BulkSaveChangesAsync();
 
             LogTo.Debug(() => $"Add {listItem.Count} LooseItems in {sw.ElapsedMilliseconds}ms.");

@@ -2,5 +2,9 @@
 
 public enum PlayModifier
 {
-    None, DoubleTime, NightCore, HalfTime, DayCore
+    None,
+    DoubleTime,
+    NightCore,
+    HalfTime,
+    DayCore
 }

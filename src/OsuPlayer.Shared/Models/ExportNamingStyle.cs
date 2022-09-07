@@ -2,5 +2,7 @@
 
 public enum ExportNamingStyle
 {
-    Title, ArtistTitle, TitleArtist
+    Title,
+    ArtistTitle,
+    TitleArtist
 }

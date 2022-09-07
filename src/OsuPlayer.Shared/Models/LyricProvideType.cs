@@ -2,5 +2,7 @@
 
 public enum LyricProvideType
 {
-    Original, PreferTranslated, PreferBoth
+    Original,
+    PreferTranslated,
+    PreferBoth
 }

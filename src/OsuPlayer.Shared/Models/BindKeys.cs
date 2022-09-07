@@ -11,8 +11,9 @@ public class BindKeys
         Keys = keys;
     }
 
-    public HookModifierKeys ModifierKeys { get; }
     public HookKeys? Keys { get; }
+
+    public HookModifierKeys ModifierKeys { get; }
 
     public override string ToString()
     {

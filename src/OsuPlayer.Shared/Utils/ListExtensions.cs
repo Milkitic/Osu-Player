@@ -3,6 +3,7 @@
 public static class ListExtensions
 {
     private static readonly Random Rnd = new Random();
+
     public static void Shuffle<T>(this IList<T> list)
     {
         int n = list.Count;

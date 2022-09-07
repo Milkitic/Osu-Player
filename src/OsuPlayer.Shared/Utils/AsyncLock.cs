@@ -2,22 +2,20 @@
 
 public class AsyncLock : IDisposable
 {
-    private class AsyncLockImpl : IDisposable
-    {
-        private readonly AsyncLock _parent;
-        public AsyncLockImpl(AsyncLock parent) => _parent = parent;
-        public void Dispose() => _parent._semaphoreSlim.Release();
-    }
-
     private readonly AsyncLockImpl _asyncLockImpl;
-    private readonly SemaphoreSlim _semaphoreSlim;
     private readonly Task<IDisposable> _completeTask;
+    private readonly SemaphoreSlim _semaphoreSlim;
 
     public AsyncLock()
     {
         _semaphoreSlim = new SemaphoreSlim(1, 1);
         _asyncLockImpl = new AsyncLockImpl(this);
         _completeTask = Task.FromResult((IDisposable)_asyncLockImpl);
+    }
+
+    public void Dispose()
+    {
+        _semaphoreSlim.Dispose();
     }
 
     public IDisposable Lock()
@@ -37,8 +35,10 @@ public class AsyncLock : IDisposable
                 TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
     }
 
-    public void Dispose()
+    private class AsyncLockImpl : IDisposable
     {
-        _semaphoreSlim.Dispose();
+        private readonly AsyncLock _parent;
+        public AsyncLockImpl(AsyncLock parent) => _parent = parent;
+        public void Dispose() => _parent._semaphoreSlim.Release();
     }
 }
