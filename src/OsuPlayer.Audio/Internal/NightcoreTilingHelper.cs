@@ -5,22 +5,6 @@ namespace Milki.OsuPlayer.Audio.Internal;
 
 internal static class NightcoreTilingHelper
 {
-    private class RhythmGroup
-    {
-        public RhythmGroup(int periodCount, int loopCount, (string, int)[] relativeNode)
-        {
-            PeriodCount = periodCount;
-            LoopCount = loopCount;
-            RelativeNodes = relativeNode;
-        }
-
-        public int PeriodCount { get; set; }
-
-        public int LoopCount { get; set; }
-
-        public (string fileName, int skipRhythm)[] RelativeNodes { get; set; }
-    }
-
     private const string NC_FINISH = "nightcore-finish";
     private const string NC_KICK = "nightcore-kick";
     private const string NC_CLAP = "nightcore-clap";
@@ -122,8 +106,25 @@ internal static class NightcoreTilingHelper
     private static HitsoundNode GetHitsoundAndSkip(ref double currentTime, double skipTime,
         string fileName)
     {
-        var ele = HitsoundNode.Create(Guid.NewGuid(), (int)currentTime, 1, 0, fileName, true, PlayablePriority.Sampling);
+        var ele = HitsoundNode.Create(Guid.NewGuid(), (int)currentTime, 1, 0, fileName, true,
+            PlayablePriority.Sampling);
         currentTime += skipTime;
         return ele;
+    }
+
+    private class RhythmGroup
+    {
+        public RhythmGroup(int periodCount, int loopCount, (string, int)[] relativeNode)
+        {
+            PeriodCount = periodCount;
+            LoopCount = loopCount;
+            RelativeNodes = relativeNode;
+        }
+
+        public int LoopCount { get; set; }
+
+        public int PeriodCount { get; set; }
+
+        public (string fileName, int skipRhythm)[] RelativeNodes { get; set; }
     }
 }

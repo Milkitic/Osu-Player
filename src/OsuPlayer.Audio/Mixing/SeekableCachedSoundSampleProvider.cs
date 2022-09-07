@@ -5,9 +5,9 @@ namespace Milki.OsuPlayer.Audio.Mixing;
 
 public class SeekableCachedSoundSampleProvider : ISampleProvider
 {
-    private readonly CachedSound _sourceSound;
     private readonly float[] _audioData;
     private readonly int _preSamples;
+    private readonly CachedSound _sourceSound;
     private int _position;
 
     public SeekableCachedSoundSampleProvider(in CachedSound cachedSound, int leadInMilliseconds = 0)
@@ -21,8 +21,6 @@ public class SeekableCachedSoundSampleProvider : ISampleProvider
 
         _audioData = cachedSound.AudioData;
     }
-
-    public WaveFormat WaveFormat => _sourceSound.WaveFormat;
 
     public TimeSpan PlayTime
     {
@@ -42,6 +40,8 @@ public class SeekableCachedSoundSampleProvider : ISampleProvider
         }
     }
 
+    public WaveFormat WaveFormat => _sourceSound.WaveFormat;
+
     public int Read(float[] buffer, int offset, int count)
     {
         lock (_sourceSound)
@@ -60,7 +60,7 @@ public class SeekableCachedSoundSampleProvider : ISampleProvider
                 return samplesToCopy;
             }
 
-            var preLeft = _preSamples - _position;//1200-1000
+            var preLeft = _preSamples - _position; //1200-1000
             if (preLeft <= 0)
             {
                 try

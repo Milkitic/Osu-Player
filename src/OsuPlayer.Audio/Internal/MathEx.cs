@@ -14,6 +14,7 @@ internal static class MathEx
         {
             if (def.CompareTo(value) < 0) def = value;
         }
+
         return def;
     }
 }

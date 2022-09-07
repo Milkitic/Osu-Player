@@ -6,14 +6,15 @@ namespace Milki.OsuPlayer.Audio;
 
 public class AudioCacheManager
 {
+    private readonly ConcurrentDictionary<string, CachedSound?> _filenameToCachedSoundMapping = new();
+
+    private readonly ConcurrentDictionary<HitsoundNode, CachedSound?> _hitsoundNodeToCachedSoundMapping = new();
+
     private AudioCacheManager()
     {
     }
 
     public static AudioCacheManager Instance { get; } = new();
-
-    private readonly ConcurrentDictionary<HitsoundNode, CachedSound?> _hitsoundNodeToCachedSoundMapping = new();
-    private readonly ConcurrentDictionary<string, CachedSound?> _filenameToCachedSoundMapping = new();
 
     public void AddCachedSound(string path, CachedSound? cachedSound)
     {

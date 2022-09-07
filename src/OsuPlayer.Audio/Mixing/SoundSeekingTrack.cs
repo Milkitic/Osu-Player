@@ -7,25 +7,40 @@ namespace Milki.OsuPlayer.Audio.Mixing;
 
 public class SoundSeekingTrack : Track
 {
-    private readonly WaveFormat _waveFormat;
     private readonly VariableSpeedOptions _sharedVariableSpeedOptions;
     private readonly EnhancedVolumeSampleProvider _volumeSampleProvider;
+    private readonly WaveFormat _waveFormat;
 
     private SeekableCachedSoundSampleProvider? _cachedSoundSampleProvider;
-    private SmartWaveReader? _smartWaveReader;
-    private VariableSpeedSampleProvider? _variableSpeedSampleProvider;
+    private bool _keepTune;
+    private ISampleProvider? _normalSampleProvider;
 
     private string? _path;
-    private bool _keepTune;
-    private bool _readFully = true;
     private double _previousCurrentPlayTime;
-    private ISampleProvider? _normalSampleProvider;
+    private bool _readFully = true;
+    private SmartWaveReader? _smartWaveReader;
+    private VariableSpeedSampleProvider? _variableSpeedSampleProvider;
 
     public SoundSeekingTrack(TimerSource timerSource, WaveFormat waveFormat) : base(timerSource)
     {
         _waveFormat = waveFormat;
         _sharedVariableSpeedOptions = new VariableSpeedOptions(true, true);
         _volumeSampleProvider = new EnhancedVolumeSampleProvider(null);
+    }
+
+    public override bool KeepTune
+    {
+        get => _keepTune;
+        set
+        {
+            if (value.Equals(_keepTune)) return;
+            _keepTune = value;
+            var sampleProvider = _variableSpeedSampleProvider;
+            if (sampleProvider == null) return;
+
+            _sharedVariableSpeedOptions.KeepTune = value;
+            sampleProvider.SetSoundTouchProfile(_sharedVariableSpeedOptions);
+        }
     }
 
     public string? Path
@@ -44,21 +59,6 @@ public class SoundSeekingTrack : Track
             : value;
     }
 
-    public override bool KeepTune
-    {
-        get => _keepTune;
-        set
-        {
-            if (value.Equals(_keepTune)) return;
-            _keepTune = value;
-            var sampleProvider = _variableSpeedSampleProvider;
-            if (sampleProvider == null) return;
-
-            _sharedVariableSpeedOptions.KeepTune = value;
-            sampleProvider.SetSoundTouchProfile(_sharedVariableSpeedOptions);
-        }
-    }
-
     public override void OnUpdated(double previous, double current)
     {
         var sampleProvider = _cachedSoundSampleProvider;
@@ -70,7 +70,8 @@ public class SoundSeekingTrack : Track
         var diffMilliseconds = Math.Abs(currentPlayTime - current);
         if (diffMilliseconds > diffTolerance)
         {
-            LogTo.Debug($"Music offset too large {diffMilliseconds:N2}ms for {diffTolerance:N0}ms, will force to seek.");
+            LogTo.Debug(
+                $"Music offset too large {diffMilliseconds:N2}ms for {diffTolerance:N0}ms, will force to seek.");
             sampleProvider.PlayTime = TimeSpan.FromMilliseconds(current);
         }
 
@@ -97,7 +98,8 @@ public class SoundSeekingTrack : Track
         {
             if (ReadFully)
             {
-                var cachedSound = (await CachedSoundFactory.GetOrCreateCacheSound(_waveFormat, Path, checkFileExist: false,
+                var cachedSound = (await CachedSoundFactory.GetOrCreateCacheSound(_waveFormat, Path,
+                    checkFileExist: false,
                     useWdlResampler: true))!;
                 _cachedSoundSampleProvider = new SeekableCachedSoundSampleProvider(cachedSound);
                 _normalSampleProvider = _cachedSoundSampleProvider;
@@ -111,7 +113,8 @@ public class SoundSeekingTrack : Track
                 if (_smartWaveReader.WaveFormat.Channels == 1)
                     _normalSampleProvider = new MonoToStereoSampleProvider(_normalSampleProvider);
                 if (_smartWaveReader.WaveFormat.SampleRate != _waveFormat.SampleRate)
-                    _normalSampleProvider = new WdlResamplingSampleProvider(_normalSampleProvider, _waveFormat.SampleRate);
+                    _normalSampleProvider =
+                        new WdlResamplingSampleProvider(_normalSampleProvider, _waveFormat.SampleRate);
                 _variableSpeedSampleProvider = new VariableSpeedSampleProvider(_normalSampleProvider,
                     readDurationMilliseconds: 10, _sharedVariableSpeedOptions);
                 Duration = _smartWaveReader.TotalTime.TotalMilliseconds;
@@ -128,12 +131,12 @@ public class SoundSeekingTrack : Track
         _variableSpeedSampleProvider.PlaybackRate = TimerSource.Rate;
     }
 
+    protected virtual double GetDifferenceTolerance() => 8;
+
     private void ChangeSourceByTimer()
     {
         _volumeSampleProvider.Source = Math.Abs(TimerSource.Rate - 1f) < 0.005
             ? _normalSampleProvider
             : _variableSpeedSampleProvider;
     }
-
-    protected virtual double GetDifferenceTolerance() => 8;
 }

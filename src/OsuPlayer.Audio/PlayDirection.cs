@@ -2,5 +2,6 @@
 
 public enum PlayDirection
 {
-    Next, Previous
+    Next,
+    Previous
 }

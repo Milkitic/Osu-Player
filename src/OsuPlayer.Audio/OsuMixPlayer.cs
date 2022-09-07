@@ -18,20 +18,20 @@ namespace Milki.OsuPlayer.Audio;
 public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
 {
     public const string SkinSoundFlag = "UserSkin";
-
-    private bool _isMusicTrackAdded;
+    private readonly string _fileName;
 
     private readonly string _folder;
-    private readonly string _fileName;
-    private readonly LocalOsuFile _osuFile;
+    private readonly EnhancedVolumeSampleProvider _hitsoundVsp;
 
     private readonly EnhancedVolumeSampleProvider _musicVsp;
-    private readonly EnhancedVolumeSampleProvider _hitsoundVsp;
+    private readonly LocalOsuFile _osuFile;
     private readonly EnhancedVolumeSampleProvider _sampleVsp;
+    private List<HitsoundNode>? _hitsoundNodes;
+
+    private bool _isMusicTrackAdded;
+    private int _nextCachingTime;
 
     private PlayModifier _playModifier;
-    private List<HitsoundNode>? _hitsoundNodes;
-    private int _nextCachingTime;
 
     public OsuMixPlayer(LocalOsuFile osuFile, AudioPlaybackEngine engine, TimerSource? timerSource = null)
         : base(engine, timerSource)
@@ -53,34 +53,18 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
         _sampleVsp = new EnhancedVolumeSampleProvider(null!) { Volume = 1f };
     }
 
-    public SoundSeekingTrack MusicTrack { get; }
+    public float HitsoundBalanceRatio
+    {
+        get => HitsoundTrack.BalanceRatio;
+        set
+        {
+            if (Equals(value, HitsoundTrack.BalanceRatio)) return;
+            HitsoundTrack.BalanceRatio = value;
+            OnPropertyChanged();
+        }
+    }
+
     public HitsoundTrack HitsoundTrack { get; }
-    public SampleTrack SampleTrack { get; }
-
-    public TimeSpan PlayTime => TimeSpan.FromMilliseconds(Position);
-    public TimeSpan TotalTime => TimeSpan.FromMilliseconds(Duration);
-
-    public float Volume
-    {
-        get => Engine.Volume;
-        set
-        {
-            if (Equals(value, Engine.Volume)) return;
-            Engine.Volume = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public float MusicVolume
-    {
-        get => _musicVsp.Volume;
-        set
-        {
-            if (Equals(value, _musicVsp.Volume)) return;
-            _musicVsp.Volume = value;
-            OnPropertyChanged();
-        }
-    }
 
     public float HitsoundVolume
     {
@@ -93,24 +77,15 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
         }
     }
 
-    public float HitsoundBalanceRatio
-    {
-        get => HitsoundTrack.BalanceRatio;
-        set
-        {
-            if (Equals(value, HitsoundTrack.BalanceRatio)) return;
-            HitsoundTrack.BalanceRatio = value;
-            OnPropertyChanged();
-        }
-    }
+    public SoundSeekingTrack MusicTrack { get; }
 
-    public float SampleVolume
+    public float MusicVolume
     {
-        get => _sampleVsp.Volume;
+        get => _musicVsp.Volume;
         set
         {
-            if (Equals(value, _sampleVsp.Volume)) return;
-            _sampleVsp.Volume = value;
+            if (Equals(value, _musicVsp.Volume)) return;
+            _musicVsp.Volume = value;
             OnPropertyChanged();
         }
     }
@@ -156,6 +131,33 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
 
+            OnPropertyChanged();
+        }
+    }
+
+    public TimeSpan PlayTime => TimeSpan.FromMilliseconds(Position);
+    public SampleTrack SampleTrack { get; }
+
+    public float SampleVolume
+    {
+        get => _sampleVsp.Volume;
+        set
+        {
+            if (Equals(value, _sampleVsp.Volume)) return;
+            _sampleVsp.Volume = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public TimeSpan TotalTime => TimeSpan.FromMilliseconds(Duration);
+
+    public float Volume
+    {
+        get => Engine.Volume;
+        set
+        {
+            if (Equals(value, Engine.Volume)) return;
+            Engine.Volume = value;
             OnPropertyChanged();
         }
     }
@@ -221,33 +223,6 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
         Tracks.Clear();
     }
 
-    private async ValueTask InitializeMusicTrack()
-    {
-        var audioFile = Path.Combine(_folder, _osuFile.General?.AudioFilename ?? "audio.mp3");
-
-        MusicTrack.Path = audioFile;
-        await MusicTrack.InitializeAsync();
-    }
-
-    private async ValueTask InitializeHitsoundTrack(List<HitsoundNode> hitsoundNodes)
-    {
-        HitsoundTrack.HitsoundNodes = hitsoundNodes.Where(k => k is not PlayableNode
-        {
-            PlayablePriority: PlayablePriority.Sampling
-        }).ToList();
-        await HitsoundTrack.InitializeAsync();
-    }
-
-    private async ValueTask InitializeSampleTrack(List<HitsoundNode> hitsoundNodes)
-    {
-        SampleTrack.HitsoundNodes = hitsoundNodes.Where(k => k is PlayableNode
-        {
-            PlayablePriority: PlayablePriority.Sampling
-        }).ToList();
-        SampleTrack.MusicTrackDuration = TimeSpan.FromMilliseconds(MusicTrack.Duration);
-        await SampleTrack.InitializeAsync();
-    }
-
     public override void OnStatusChanged(TimerStatus previousStatus, TimerStatus currentStatus)
     {
         //Console.WriteLine(previousStatus + "->" + currentStatus);
@@ -283,6 +258,33 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
         await base.SeekCore(time);
     }
 
+    private async ValueTask InitializeMusicTrack()
+    {
+        var audioFile = Path.Combine(_folder, _osuFile.General?.AudioFilename ?? "audio.mp3");
+
+        MusicTrack.Path = audioFile;
+        await MusicTrack.InitializeAsync();
+    }
+
+    private async ValueTask InitializeHitsoundTrack(List<HitsoundNode> hitsoundNodes)
+    {
+        HitsoundTrack.HitsoundNodes = hitsoundNodes.Where(k => k is not PlayableNode
+        {
+            PlayablePriority: PlayablePriority.Sampling
+        }).ToList();
+        await HitsoundTrack.InitializeAsync();
+    }
+
+    private async ValueTask InitializeSampleTrack(List<HitsoundNode> hitsoundNodes)
+    {
+        SampleTrack.HitsoundNodes = hitsoundNodes.Where(k => k is PlayableNode
+        {
+            PlayablePriority: PlayablePriority.Sampling
+        }).ToList();
+        SampleTrack.MusicTrackDuration = TimeSpan.FromMilliseconds(MusicTrack.Duration);
+        await SampleTrack.InitializeAsync();
+    }
+
     private void PlayMusic()
     {
         if (_isMusicTrackAdded) return;
@@ -296,12 +298,14 @@ public class OsuMixPlayer : TrackPlayer, INotifyPropertyChanged
         Engine.RemoveMixerInput(_musicVsp);
     }
 
-    private async void AddAudioCacheInBackground(int startTime, int endTime, IReadOnlyCollection<HitsoundNode> hitsoundNodes)
+    private async void AddAudioCacheInBackground(int startTime, int endTime,
+        IReadOnlyCollection<HitsoundNode> hitsoundNodes)
     {
         await AddAudioCacheAsync(startTime, endTime, hitsoundNodes);
     }
 
-    private async ValueTask AddAudioCacheAsync(int startTime, int endTime, IReadOnlyCollection<HitsoundNode> hitsoundNodes)
+    private async ValueTask AddAudioCacheAsync(int startTime, int endTime,
+        IReadOnlyCollection<HitsoundNode> hitsoundNodes)
     {
         if (hitsoundNodes.Count == 0)
         {

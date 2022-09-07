@@ -1,2 +1,5 @@
-[assembly: Anotar.NLog.LogMinimalMessage]
-[assembly: Fody.ConfigureAwait(false)]
+using Anotar.NLog;
+using Fody;
+
+[assembly: LogMinimalMessage]
+[assembly: ConfigureAwait(false)]

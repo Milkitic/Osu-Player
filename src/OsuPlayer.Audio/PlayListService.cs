@@ -8,11 +8,11 @@ namespace Milki.OsuPlayer.Audio;
 public class PlayListService : INotifyPropertyChanged
 {
     private readonly Random _random = new();
+    private int[] _pathIndexList = Array.Empty<int>(); // [3,0,2,1,4]
+    private List<string> _pathList = new(); // ["a","b","c","d","e"]
     private PlayListMode _playListMode;
 
     private int? _pointer;
-    private int[] _pathIndexList = Array.Empty<int>(); // [3,0,2,1,4]
-    private List<string> _pathList = new(); // ["a","b","c","d","e"]
 
     public PlayListService()
     {
@@ -39,6 +39,8 @@ public class PlayListService : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public void SetPathList(IEnumerable<string> paths, bool resetToCurrentPath)
     {
@@ -170,6 +172,11 @@ public class PlayListService : INotifyPropertyChanged
         throw new ArgumentOutOfRangeException(nameof(PlayListMode), PlayListMode, null);
     }
 
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
     private void RebuildPathIndexes()
     {
         if (_pathList.Count == 0) return;
@@ -208,12 +215,5 @@ public class PlayListService : INotifyPropertyChanged
             var k = _random.Next(n + 1);
             (list[k], list[n]) = (list[n], list[k]);
         }
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

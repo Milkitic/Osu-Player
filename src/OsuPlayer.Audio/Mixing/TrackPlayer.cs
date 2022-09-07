@@ -5,19 +5,16 @@ namespace Milki.OsuPlayer.Audio.Mixing;
 
 public class TrackPlayer : IAsyncDisposable
 {
-    public event Action<TrackPlayer, PlayerStatus, PlayerStatus>? PlayerStatusChanged;
-    public event Action<TrackPlayer, double, double>? PositionChanged;
-
-    protected readonly TimerSource TimerSource;
+    private readonly HashSet<ISampleProvider?> _trackHashSet;
     protected readonly AudioPlaybackEngine Engine;
 
-    private readonly HashSet<ISampleProvider?> _trackHashSet;
+    protected readonly TimerSource TimerSource;
 
     private PlayerStatus _playerStatus;
-    private TimerStatus _previousStatus = TimerStatus.Stop;
-    private float _previousRate;
-    private double _previousPosition;
     private double _position;
+    private double _previousPosition;
+    private float _previousRate;
+    private TimerStatus _previousStatus = TimerStatus.Stop;
 
     public TrackPlayer(AudioPlaybackEngine engine, TimerSource? timerSource = null)
     {
@@ -30,13 +27,7 @@ public class TrackPlayer : IAsyncDisposable
         TimerSource.RateChanged += TimerSource_RateChanged;
     }
 
-    public double PreInsertDuration
-    {
-        get => -TimerSource.StartTime;
-        set => TimerSource.StartTime = -value;
-    }
-
-    public double PostInsertDuration { get; set; }
+    public double Duration { get; protected set; }
 
     public PlayerStatus PlayerStatus
     {
@@ -62,9 +53,29 @@ public class TrackPlayer : IAsyncDisposable
         }
     }
 
+    public double PostInsertDuration { get; set; }
+
+    public double PreInsertDuration
+    {
+        get => -TimerSource.StartTime;
+        set => TimerSource.StartTime = -value;
+    }
+
     public List<Track> Tracks { get; }
 
-    public double Duration { get; protected set; }
+    public virtual async ValueTask DisposeAsync()
+    {
+        foreach (var track in Tracks)
+        {
+            await track.DisposeAsync();
+            RemoveFromMixer(track.RootSampleProvider);
+        }
+
+        Tracks.Clear();
+    }
+
+    public event Action<TrackPlayer, PlayerStatus, PlayerStatus>? PlayerStatusChanged;
+    public event Action<TrackPlayer, double, double>? PositionChanged;
 
     public async ValueTask Play()
     {
@@ -205,18 +216,9 @@ public class TrackPlayer : IAsyncDisposable
         PlayerStatus = PlayerStatus.Ready;
     }
 
-    public virtual async ValueTask DisposeAsync()
+    public virtual void OnUpdated(double previous, double current)
     {
-        foreach (var track in Tracks)
-        {
-            await track.DisposeAsync();
-            RemoveFromMixer(track.RootSampleProvider);
-        }
-
-        Tracks.Clear();
     }
-
-    public virtual void OnUpdated(double previous, double current) { }
 
     public virtual void OnStatusChanged(TimerStatus previousStatus, TimerStatus currentStatus)
     {
@@ -238,7 +240,9 @@ public class TrackPlayer : IAsyncDisposable
         }
     }
 
-    public virtual void OnRateChanged(float previousRate, float currentRate) { }
+    public virtual void OnRateChanged(float previousRate, float currentRate)
+    {
+    }
 
     protected virtual ValueTask PlayCoreAsync()
     {
@@ -320,5 +324,9 @@ public class TrackPlayer : IAsyncDisposable
 
 public enum PlayerStatus
 {
-    Uninitialized, Ready, Playing, Paused, Seeking
+    Uninitialized,
+    Ready,
+    Playing,
+    Paused,
+    Seeking
 }

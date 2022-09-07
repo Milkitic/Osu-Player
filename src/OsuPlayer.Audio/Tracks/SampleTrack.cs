@@ -12,13 +12,12 @@ public class SampleTrack : HitsoundTrack
     private readonly OsuFile _osuFile;
     private bool _keepTune;
 
-    public SampleTrack(OsuFile osuFile, TimerSource timerSource, WaveFormat waveFormat, List<HitsoundNode>? hitsoundNodes = null)
+    public SampleTrack(OsuFile osuFile, TimerSource timerSource, WaveFormat waveFormat,
+        List<HitsoundNode>? hitsoundNodes = null)
         : base(timerSource, waveFormat, hitsoundNodes)
     {
         _osuFile = osuFile;
     }
-
-    public TimeSpan MusicTrackDuration { get; set; }
 
     public override bool KeepTune
     {
@@ -30,6 +29,8 @@ public class SampleTrack : HitsoundTrack
             RebuildNodeQueue();
         }
     }
+
+    public TimeSpan MusicTrackDuration { get; set; }
 
     public override void OnRateChanged(float previousRate, float currentRate)
     {

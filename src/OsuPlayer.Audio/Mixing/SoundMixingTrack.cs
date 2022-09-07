@@ -9,14 +9,14 @@ namespace Milki.OsuPlayer.Audio.Mixing;
 
 public class SoundMixingTrack : Track
 {
-    private readonly WaveFormat _waveFormat;
     private readonly LoopProviderHelper _loopProviderHelper;
+    private readonly WaveFormat _waveFormat;
+    private ConcurrentQueue<HitsoundNode>? _hitsoundQueue;
+    private bool _isPlayReady;
 
     private MixingSampleProvider? _mixingSampleProvider;
-    private EnhancedVolumeSampleProvider? _volumeProvider;
-    private ConcurrentQueue<HitsoundNode>? _hitsoundQueue;
     private bool _rebuildRequested;
-    private bool _isPlayReady;
+    private EnhancedVolumeSampleProvider? _volumeProvider;
 
     public SoundMixingTrack(TimerSource timerSource, WaveFormat waveFormat,
         List<HitsoundNode>? hitsoundNodes = null)
@@ -85,6 +85,30 @@ public class SoundMixingTrack : Track
         }
     }
 
+    public string DebuggerDisplay(HitsoundNode node)
+    {
+        if (node is PlayableNode playableNode)
+        {
+            return $"PL{(playableNode.UseUserSkin ? "D" : "")}:{Offset}: " +
+                   $"P{(int)playableNode.PlayablePriority}: " +
+                   $"V{(playableNode.Volume * 10):#.#}: " +
+                   $"B{(playableNode.Balance * 10):#.#}: " +
+                   $"{(playableNode.Filename)}";
+        }
+
+        if (node is ControlNode controlNode)
+        {
+            return $"CT{(controlNode.UseUserSkin ? "D" : "")}:{Offset}: " +
+                   $"O{Offset}: " +
+                   $"T{(int)controlNode.ControlType}{(controlNode.ControlType is ControlType.StartSliding or ControlType.StopSliding ? (int)controlNode.SlideChannel : "")}: " +
+                   $"V{(controlNode.Volume * 10):#.#}: " +
+                   $"B{(controlNode.Balance * 10):#.#}: " +
+                   $"{(controlNode.Filename == null ? "" : Path.GetFileNameWithoutExtension(controlNode.Filename))}";
+        }
+
+        return "";
+    }
+
     protected virtual ConcurrentQueue<HitsoundNode> RebuildNodeQueueCore()
     {
         var currentTime = TimerSource.ElapsedMilliseconds - Offset;
@@ -110,16 +134,16 @@ public class SoundMixingTrack : Track
         await InitializeHitsoundAsync();
     }
 
+    protected virtual ValueTask InitializeActualDurationAsync()
+    {
+        return ValueTask.CompletedTask;
+    }
+
     private async ValueTask InitializeHitsoundAsync()
     {
         Duration = HitsoundNodes is { Count: not 0 } ? HitsoundNodes.Max(k => k.Offset) : 0;
         RebuildNodeQueue();
         await InitializeActualDurationAsync();
-    }
-
-    protected virtual ValueTask InitializeActualDurationAsync()
-    {
-        return ValueTask.CompletedTask;
     }
 
     private void PlayHitsoundNode(HitsoundNode hitsoundNode, MixingSampleProvider rootMixer)
@@ -138,9 +162,9 @@ public class SoundMixingTrack : Track
                 new BalanceSampleProvider(
                         new EnhancedVolumeSampleProvider(
                                 new SeekableCachedSoundSampleProvider(cachedSound!))
-                        { Volume = volume }
+                            { Volume = volume }
                     )
-                { Balance = balance }
+                    { Balance = balance }
             );
         }
         else if (hitsoundNode is ControlNode controlNode)
@@ -175,29 +199,5 @@ public class SoundMixingTrack : Track
                 _loopProviderHelper.ChangeAllBalances(balance);
             }
         }
-    }
-
-    public string DebuggerDisplay(HitsoundNode node)
-    {
-        if (node is PlayableNode playableNode)
-        {
-            return $"PL{(playableNode.UseUserSkin ? "D" : "")}:{Offset}: " +
-                $"P{(int)playableNode.PlayablePriority}: " +
-                $"V{(playableNode.Volume * 10):#.#}: " +
-                $"B{(playableNode.Balance * 10):#.#}: " +
-                $"{(playableNode.Filename)}";
-        }
-
-        if (node is ControlNode controlNode)
-        {
-            return $"CT{(controlNode.UseUserSkin ? "D" : "")}:{Offset}: " +
-                   $"O{Offset}: " +
-                   $"T{(int)controlNode.ControlType}{(controlNode.ControlType is ControlType.StartSliding or ControlType.StopSliding ? (int)controlNode.SlideChannel : "")}: " +
-                   $"V{(controlNode.Volume * 10):#.#}: " +
-                   $"B{(controlNode.Balance * 10):#.#}: " +
-                   $"{(controlNode.Filename == null ? "" : Path.GetFileNameWithoutExtension(controlNode.Filename))}";
-        }
-
-        return "";
     }
 }

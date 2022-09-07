@@ -7,8 +7,8 @@ public abstract class Track : ITrack
     protected readonly TimerSource TimerSource;
 
     private double _previous;
-    private TimerStatus _previousStatus;
     private float _previousRate;
+    private TimerStatus _previousStatus;
 
     public Track(TimerSource timerSource)
     {
@@ -19,12 +19,11 @@ public abstract class Track : ITrack
         timerSource.RateChanged += TimerSource_RateChanged;
     }
 
+    public virtual bool KeepTune { get; set; }
+    public double Offset { get; set; }
     protected bool IsInitialized { get; private set; }
     public ISampleProvider? RootSampleProvider { get; protected set; }
-
-    public double Offset { get; set; }
     public double Duration { get; protected set; }
-    public virtual bool KeepTune { get; set; }
 
     public async ValueTask InitializeAsync()
     {
@@ -33,9 +32,18 @@ public abstract class Track : ITrack
     }
 
     public abstract ValueTask DisposeAsync();
-    public virtual void OnUpdated(double previous, double current) { }
-    public virtual void OnStatusChanged(TimerStatus previousStatus, TimerStatus currentStatus) { }
-    public virtual void OnRateChanged(float previousRate, float currentRate) { }
+
+    public virtual void OnUpdated(double previous, double current)
+    {
+    }
+
+    public virtual void OnStatusChanged(TimerStatus previousStatus, TimerStatus currentStatus)
+    {
+    }
+
+    public virtual void OnRateChanged(float previousRate, float currentRate)
+    {
+    }
 
     protected abstract ValueTask InitializeCoreAsync();
 

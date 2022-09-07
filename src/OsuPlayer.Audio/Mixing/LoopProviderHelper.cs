@@ -23,6 +23,7 @@ internal class LoopProviderHelper
             var loopProvider = kvp.Value;
             loopProvider.SetVolume(volume * volumeFactor);
         }
+
         return true;
     }
 
@@ -126,7 +127,8 @@ internal class LoopProviderHelper
             Balance = balance * balanceFactor
         };
 
-        var loopProvider = new LoopProvider(balanceProvider, volumeProvider, memoryStream, waveStream, loopStream, byteArray);
+        var loopProvider = new LoopProvider(balanceProvider, volumeProvider, memoryStream, waveStream, loopStream,
+            byteArray);
         _dictionary.Add(slideChannel, loopProvider);
         loopProvider.AddTo(mixer);
     }

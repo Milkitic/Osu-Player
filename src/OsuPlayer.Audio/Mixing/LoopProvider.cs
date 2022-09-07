@@ -8,11 +8,11 @@ namespace Milki.OsuPlayer.Audio.Mixing;
 internal sealed class LoopProvider : IDisposable
 {
     private readonly BalanceSampleProvider _balanceProvider;
-    private readonly EnhancedVolumeSampleProvider _volumeProvider;
-    private readonly MemoryStream _memoryStream;
-    private readonly RawSourceWaveStream _waveStream;
-    private readonly LoopStream _loopStream;
     private readonly byte[] _byteArray;
+    private readonly LoopStream _loopStream;
+    private readonly MemoryStream _memoryStream;
+    private readonly EnhancedVolumeSampleProvider _volumeProvider;
+    private readonly RawSourceWaveStream _waveStream;
     private bool _isAdded;
 
     public LoopProvider(BalanceSampleProvider balanceProvider,
@@ -28,6 +28,20 @@ internal sealed class LoopProvider : IDisposable
         _waveStream = waveStream;
         _loopStream = loopStream;
         _byteArray = byteArray;
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            _loopStream.Dispose();
+            _waveStream.Dispose();
+            _memoryStream.Dispose();
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(_byteArray);
+        }
     }
 
     public void SetBalance(float balance)
@@ -51,19 +65,5 @@ internal sealed class LoopProvider : IDisposable
     {
         mixer?.RemoveMixerInput(_balanceProvider);
         _isAdded = false;
-    }
-
-    public void Dispose()
-    {
-        try
-        {
-            _loopStream.Dispose();
-            _waveStream.Dispose();
-            _memoryStream.Dispose();
-        }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(_byteArray);
-        }
     }
 }

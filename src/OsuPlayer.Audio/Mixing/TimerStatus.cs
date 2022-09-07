@@ -2,5 +2,9 @@
 
 public enum TimerStatus
 {
-    Start, Stop, Reset, Restart, Skip
+    Start,
+    Stop,
+    Reset,
+    Restart,
+    Skip
 }

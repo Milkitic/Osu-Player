@@ -4,13 +4,9 @@ namespace Milki.OsuPlayer.Audio.Mixing;
 
 public class TimerSource
 {
-    public event Action<TimerStatus>? StatusChanged;
-    public event Action<double>? TimeUpdated;
-    public event Action<float>? RateChanged;
-
     private readonly Stopwatch _stopwatch;
-    private double _offset;
     private CancellationTokenSource? _cts;
+    private double _offset;
     private float _rate = 1;
     private double _startTime;
 
@@ -20,13 +16,26 @@ public class TimerSource
         NotifyIntervalMillisecond = notifyIntervalMillisecond;
     }
 
-    public long ElapsedMilliseconds =>
-        (long)(_stopwatch.Elapsed.TotalMilliseconds * Rate + _offset);
-
     public TimeSpan Elapsed =>
         TimeSpan.FromMilliseconds(_stopwatch.Elapsed.TotalMilliseconds * Rate + _offset);
 
+    public long ElapsedMilliseconds =>
+        (long)(_stopwatch.Elapsed.TotalMilliseconds * Rate + _offset);
+
     public bool IsRunning => _stopwatch.IsRunning;
+
+    public double NotifyIntervalMillisecond { get; set; }
+
+    public float Rate
+    {
+        get => _rate;
+        set
+        {
+            if (value.Equals(_rate)) return;
+            _rate = value;
+            RateChanged?.Invoke(value);
+        }
+    }
 
     public double StartTime
     {
@@ -42,18 +51,9 @@ public class TimerSource
         }
     }
 
-    public float Rate
-    {
-        get => _rate;
-        set
-        {
-            if (value.Equals(_rate)) return;
-            _rate = value;
-            RateChanged?.Invoke(value);
-        }
-    }
-
-    public double NotifyIntervalMillisecond { get; set; }
+    public event Action<TimerStatus>? StatusChanged;
+    public event Action<double>? TimeUpdated;
+    public event Action<float>? RateChanged;
 
     public void Start()
     {
