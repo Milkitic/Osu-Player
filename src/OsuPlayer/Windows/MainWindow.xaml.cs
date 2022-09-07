@@ -276,7 +276,7 @@ public partial class MainWindow : WindowBase
         _playListService.SetPathList(
             currentPlays.Where(k => k.PlayItem != null).Select(k => k.PlayItem.StandardizedPath), false);
 
-        if (lastPlay != null)
+        if (lastPlay != null && currentPlays.Count > 0)
         {
             await _playerService.InitializeNewAsync(lastPlay.PlayItem!.StandardizedPath,
                 AppSettings.Default.PlaySection.AutoPlay);

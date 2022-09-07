@@ -5,6 +5,7 @@ using Anotar.NLog;
 using Coosu.Beatmap;
 using Coosu.Beatmap.Extensions;
 using Fody;
+using Microsoft.EntityFrameworkCore;
 using Milki.Extensions.MixPlayer.Devices;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
@@ -270,6 +271,8 @@ public class PlayerService : VmBase, IAsyncDisposable
 
             await applicationDbContext.SaveChangesAsync(_lastInitCts.Token);
             await applicationDbContext.AddOrUpdatePlayItemToRecentPlayAsync(playItem, DateTime.Now);
+            await applicationDbContext.RecreateCurrentPlayAsync(applicationDbContext.PlayItems.AsNoTracking()
+                .Include(k => k.PlayItemDetail).Where(k => _playListService.PathList.Contains(k.StandardizedPath)));
         }
         catch (Exception ex)
         {
@@ -310,7 +313,7 @@ public class PlayerService : VmBase, IAsyncDisposable
     {
         try
         {
-            var currentPath = _playListService.GetCurrentPath();
+            var currentPath = _playListService.CurrentPath;
             var nextPath = _playListService.GetAndSetNextPath(direction, isManual);
             if (nextPath == null)
             {

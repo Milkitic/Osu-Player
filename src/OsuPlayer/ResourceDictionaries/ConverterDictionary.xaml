@@ -1,8 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:converters="clr-namespace:Milki.OsuPlayer.Converters"
-    xmlns:local="clr-namespace:Milki.OsuPlayer">
+    xmlns:converters="clr-namespace:Milki.OsuPlayer.Converters">
     <converters:DateTime2FormatStringConverter x:Key="DateTime2FormatStringConverter" />
     <converters:IndexToStringConverter x:Key="IndexToStringConverter" />
     <converters:TrueToVisibleConverter x:Key="TrueToVisibleConverter" />
@@ -27,4 +26,5 @@
     <converters:StarRating2ColorConverter x:Key="StarRating2ColorConverter" />
     <converters:StarRating2ForeColorConverter x:Key="StarRating2ForeColorConverter" />
     <converters:Byte2SizeStringConverter x:Key="Byte2SizeStringConverter" />
+    <converters:PathToCurrentPlayConverter x:Key="PathToCurrentPlayConverter" />
 </ResourceDictionary>

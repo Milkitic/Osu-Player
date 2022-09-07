@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
+    xmlns:utils="clr-namespace:Milki.OsuPlayer.Utils"
     d:DataContext="{d:DesignInstance Type=userControls:CurrentPlayControlVm,
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
@@ -105,7 +106,7 @@
                             <Label.Content>
                                 <TextBlock>
                                     <Run Text="{DynamicResource ui-total}" />
-                                    <Run Text="{Binding Controller.PlayList.SongList.Count, Mode=OneWay}" />
+                                    <Run Text="{Binding PlayListService.PathList.Count, Mode=OneWay}" />
                                     <Run Text="{DynamicResource ui-songsClassifier}" />
                                 </TextBlock>
                             </Label.Content>
@@ -172,6 +173,7 @@
                 ItemContainerStyle="{StaticResource EventGridViewItem}"
                 ItemsSource="{Binding Controller.PlayList.SongList}"
                 MouseMove="PlayList_MouseMove"
+                Opacity="0"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 SelectionChanged="PlayList_SelectionChanged"
                 Style="{StaticResource ListView}">
@@ -242,6 +244,31 @@
                     </MultiBinding>
                 </ListView.SelectedItem>
             </ListView>
+            <DataGrid
+                Grid.Row="1"
+                utils:DataGridBehavior.DisplayRowNumber="True"
+                ItemsSource="{Binding PlayListService.PathList}"
+                SelectedItem="{Binding SelectedPath}"
+                Style="{StaticResource GenericDataGridStyle}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn
+                        Binding="{Binding Converter={StaticResource PathToCurrentPlayConverter}, ConverterParameter=Title}"
+                        ElementStyle="{StaticResource GenericAlignmentStyle}"
+                        Header="{DynamicResource ui-title}" />
+                    <DataGridTextColumn
+                        Binding="{Binding Converter={StaticResource PathToCurrentPlayConverter}, ConverterParameter=Artist}"
+                        ElementStyle="{StaticResource GenericAlignmentStyle}"
+                        Header="{DynamicResource ui-artist}" />
+                    <DataGridTextColumn
+                        Binding="{Binding Converter={StaticResource PathToCurrentPlayConverter}, ConverterParameter=Creator}"
+                        ElementStyle="{StaticResource GenericAlignmentStyle}"
+                        Header="{DynamicResource ui-creator}" />
+                    <DataGridTextColumn
+                        Binding="{Binding Converter={StaticResource PathToCurrentPlayConverter}, ConverterParameter=Version}"
+                        ElementStyle="{StaticResource GenericAlignmentStyle}"
+                        Header="{DynamicResource ui-mapDifficulty}" />
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
     </Grid>
 </UserControl>

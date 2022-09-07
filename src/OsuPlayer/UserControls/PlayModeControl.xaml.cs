@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using Milki.OsuPlayer.Audio;
+using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Models;
 
 namespace Milki.OsuPlayer.UserControls;

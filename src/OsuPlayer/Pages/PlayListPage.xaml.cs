@@ -80,7 +80,7 @@ public partial class PlayListPage : Page
             _isFirstLoaded = true;
         }
 
-        var item = _playItems?.FirstOrDefault(k => k.StandardizedPath == _playListService.GetCurrentPath());
+        var item = _playItems?.FirstOrDefault(k => k.StandardizedPath == _playListService.CurrentPath);
         if (item != null)
         {
             //MapCardList.SelectedItem = item;

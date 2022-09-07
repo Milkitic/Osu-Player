@@ -102,7 +102,7 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}">
                                 <ContentPresenter
-                                    Margin="8,0,0,0"
+                                    Margin="8,0,8,0"
                                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                     SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
@@ -225,7 +225,7 @@
         <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
     <Style x:Key="GenericAlignmentStyle" TargetType="TextBlock">
-        <Setter Property="Margin" Value="8,0,0,0" />
+        <Setter Property="Margin" Value="8,0,8,0" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style x:Key="FullAlignmentStyle" TargetType="TextBlock">

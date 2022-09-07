@@ -1,25 +1,28 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿#nullable enable
+
+using System.Collections.ObjectModel;
+using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Shared.Models;
+using Milki.OsuPlayer.Shared.Observable;
+using Milki.OsuPlayer.Wpf;
 
-namespace Milki.OsuPlayer.Audio;
+namespace Milki.OsuPlayer.Services;
 
-public class PlayListService : INotifyPropertyChanged
+public class PlayListService : VmBase
 {
     private readonly Random _random = new();
     private int[] _pathIndexList = Array.Empty<int>(); // [3,0,2,1,4]
-    private List<string> _pathList = new(); // ["a","b","c","d","e"]
     private PlayListMode _playListMode;
-
     private int? _pointer;
 
     public PlayListService()
     {
-        PathList = new ReadOnlyCollection<string>(_pathList);
+        PathList = new ObservableCollection<string>();
     }
 
-    public IReadOnlyList<string> PathList { get; }
+    public string? CurrentPath => Pointer == null ? null : PathList[_pathIndexList[Pointer.Value]];
+
+    public ObservableCollection<string> PathList { get; }
 
     public PlayListMode PlayListMode
     {
@@ -40,13 +43,30 @@ public class PlayListService : INotifyPropertyChanged
         }
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public int? Pointer
+    {
+        get => _pointer;
+        private set
+        {
+            if (value == _pointer) return;
+            _pointer = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CurrentPath));
+        }
+    }
 
     public void SetPathList(IEnumerable<string> paths, bool resetToCurrentPath)
     {
-        var currentPath = GetCurrentPath();
+        var currentPath = CurrentPath;
 
-        _pathList = new List<string>(paths);
+        Execute.OnUiThread(() =>
+        {
+            PathList.Clear();
+            foreach (var path in paths)
+            {
+                PathList.Add(path);
+            }
+        });
         RebuildPathIndexes();
 
         if (resetToCurrentPath && currentPath != null)
@@ -57,28 +77,28 @@ public class PlayListService : INotifyPropertyChanged
 
     public int? SetPointerByPath(string path, bool autoAppend)
     {
-        var pathIndex = _pathList.IndexOf(path);
+        var pathIndex = PathList.IndexOf(path);
         if (pathIndex < 0)
         {
             if (autoAppend)
             {
                 AppendPaths(path);
-                pathIndex = _pathList.IndexOf(path);
+                pathIndex = PathList.IndexOf(path);
                 if (pathIndex < 0)
                 {
-                    _pointer = null;
+                    Pointer = null;
                     return null;
                 }
             }
             else
             {
-                _pointer = null;
+                Pointer = null;
                 return null;
             }
         }
 
-        _pointer = Array.IndexOf(_pathIndexList, pathIndex);
-        return _pointer;
+        Pointer = Array.IndexOf(_pathIndexList, pathIndex);
+        return Pointer;
     }
 
     public void RemovePaths(params string[] paths)
@@ -88,18 +108,18 @@ public class PlayListService : INotifyPropertyChanged
 
     public void RemovePaths(IEnumerable<string> paths)
     {
-        var currentPath = GetCurrentPath();
+        var currentPath = CurrentPath;
 
         var array = paths as string[] ?? paths.ToArray();
         if (array.Length == 0) return;
 
         foreach (var path in array)
         {
-            var success = _pathList.Remove(path);
+            var success = App.Current.Dispatcher.Invoke(() => PathList.Remove(path));
             if (success && path.Equals(currentPath, StringComparison.Ordinal))
             {
                 currentPath = null;
-                _pointer = null;
+                Pointer = null;
             }
         }
 
@@ -107,63 +127,64 @@ public class PlayListService : INotifyPropertyChanged
 
         if (currentPath == null) return;
 
-        var pathIndex = _pathList.IndexOf(currentPath);
+        var pathIndex = PathList.IndexOf(currentPath);
         var pointer = Array.IndexOf(_pathIndexList, pathIndex);
-        _pointer = pointer;
+        Pointer = pointer;
     }
 
     public void AppendPaths(params string[] paths)
     {
-        var currentPath = GetCurrentPath();
+        var currentPath = CurrentPath;
 
         if (paths.Length <= 0) return;
 
-        var hashSet = _pathList.ToHashSet(StringComparer.Ordinal);
+        var hashSet = PathList.ToHashSet(StringComparer.Ordinal);
+        Execute.OnUiThread(() =>
+        {
+            foreach (var path in paths.Where(k => !hashSet.Contains(k)))
+            {
+                PathList.Add(path);
+            }
+        });
 
-        _pathList.AddRange(paths.Where(k => !hashSet.Contains(k)));
         RebuildPathIndexes();
 
         if (currentPath == null) return;
 
-        var pathIndex = _pathList.IndexOf(currentPath);
+        var pathIndex = PathList.IndexOf(currentPath);
         var pointer = Array.IndexOf(_pathIndexList, pathIndex);
-        _pointer = pointer;
-    }
-
-    public string? GetCurrentPath()
-    {
-        return _pointer == null ? null : _pathList[_pathIndexList[_pointer.Value]];
+        Pointer = pointer;
     }
 
     public string? GetAndSetNextPath(PlayDirection playDirection, bool forceLoop)
     {
-        if (_pointer == null && _pathList.Count > 0)
+        if (Pointer == null && PathList.Count > 0)
         {
             return SetPathByPointer(0);
         }
 
-        var currentPath = GetCurrentPath();
+        var currentPath = CurrentPath;
 
         if (forceLoop || PlayListMode is PlayListMode.Loop or PlayListMode.LoopRandom)
         {
             if (playDirection == PlayDirection.Next)
             {
-                return SetPathByPointer(_pointer == _pathIndexList.Length - 1 ? 0 : _pointer + 1);
+                return SetPathByPointer(Pointer == _pathIndexList.Length - 1 ? 0 : Pointer + 1);
             }
 
-            return SetPathByPointer(_pointer == 0 ? _pathIndexList.Length - 1 : _pointer - 1);
+            return SetPathByPointer(Pointer == 0 ? _pathIndexList.Length - 1 : Pointer - 1);
         }
 
         if (PlayListMode is PlayListMode.Normal or PlayListMode.Random)
         {
             if (playDirection == PlayDirection.Next)
             {
-                if (_pointer == _pathIndexList.Length - 1) return null;
-                return SetPathByPointer(_pointer + 1);
+                if (Pointer == _pathIndexList.Length - 1) return null;
+                return SetPathByPointer(Pointer + 1);
             }
 
-            if (_pointer == 0) return null;
-            return SetPathByPointer(_pointer - 1);
+            if (Pointer == 0) return null;
+            return SetPathByPointer(Pointer - 1);
         }
 
         if (PlayListMode == PlayListMode.SingleLoop) return currentPath;
@@ -172,15 +193,10 @@ public class PlayListService : INotifyPropertyChanged
         throw new ArgumentOutOfRangeException(nameof(PlayListMode), PlayListMode, null);
     }
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
     private void RebuildPathIndexes()
     {
-        if (_pathList.Count == 0) return;
-        var array = Enumerable.Range(0, _pathList.Count).ToArray();
+        if (PathList.Count == 0) return;
+        var array = Enumerable.Range(0, PathList.Count).ToArray();
         if (PlayListMode is PlayListMode.LoopRandom or PlayListMode.Random)
         {
             Shuffle(array);
@@ -195,13 +211,13 @@ public class PlayListService : INotifyPropertyChanged
         {
             value = 0;
         }
-        else if (value > _pathList.Count - 1)
+        else if (value > PathList.Count - 1)
         {
-            value = _pathList.Count - 1;
+            value = PathList.Count - 1;
         }
 
-        var currentPath = value == null ? null : _pathList[_pathIndexList[value.Value]];
-        _pointer = value;
+        var currentPath = value == null ? null : PathList[_pathIndexList[value.Value]];
+        Pointer = value;
 
         return currentPath;
     }

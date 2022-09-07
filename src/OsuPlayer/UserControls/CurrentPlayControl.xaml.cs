@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
-using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Configuration;
+using Milki.OsuPlayer.Converters;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
@@ -17,17 +16,74 @@ namespace Milki.OsuPlayer.UserControls;
 
 public class CurrentPlayControlVm : VmBase
 {
-    private readonly PlayerService _playerService;
-    private readonly PlayListService _playListService;
+    private readonly ExportService _exportService;
 
     private PlayItem _selectedMap;
     private List<PlayItem> _selectedMaps;
+    private string _selectedPath;
 
     public CurrentPlayControlVm()
     {
-        _playerService = ServiceProviders.Default.GetService<PlayerService>();
-        _playListService = ServiceProviders.Default.GetService<PlayListService>();
+        _exportService = ServiceProviders.Default.GetService<ExportService>();
+        PlayerService = ServiceProviders.Default.GetService<PlayerService>();
+        PlayListService = ServiceProviders.Default.GetService<PlayListService>();
     }
+
+    public PlayerService PlayerService { get; }
+    public PlayListService PlayListService { get; }
+
+    public ICommand ClearPlayListCommand => new DelegateCommand(async param =>
+    {
+        PlayListService.SetPathList(Array.Empty<string>(), false);
+        await using var applicationDbContext = ServiceProviders.GetApplicationDbContext();
+        await applicationDbContext.RecreateCurrentPlayAsync(Array.Empty<PlayItem>());
+    });
+
+    public ICommand ExportCommand => new DelegateCommand(param =>
+    {
+        _exportService.QueueBeatmap(SelectedMap);
+    });
+
+    public ICommand OpenScorePageCommand => new DelegateCommand(param =>
+    {
+        ProcessUtils.StartWithShellExecute($"https://osu.ppy.sh/b/{SelectedMap.PlayItemDetail.BeatmapId}");
+    });
+
+    public ICommand OpenSourceFolderCommand => new DelegateCommand(param =>
+    {
+        ProcessUtils.StartWithShellExecute(PathUtils.GetFullPath(SelectedMap.StandardizedFolder,
+            AppSettings.Default.GeneralSection.OsuSongDir));
+    });
+
+    public ICommand PlayCommand => new DelegateCommand(async param =>
+    {
+        await PlayerService.InitializeNewAsync(SelectedMap.StandardizedPath, true);
+    });
+
+    public ICommand RemoveCommand => new DelegateCommand(param =>
+    {
+        PlayListService.RemovePaths(SelectedMaps.Select(k => k.StandardizedPath));
+    });
+
+    public ICommand SaveAllPlayListCommand => new DelegateCommand(param =>
+    {
+        if (PlayListService.PathList.Count == 0) return;
+        var playItems = PlayListService.PathList
+            .Select(k => ((LoosePlayItem)PathToCurrentPlayConverter.Default?.GetLoosePlayItemByStandardizedPath(k, null))?.PlayItem)
+            .ToArray();
+        App.CurrentMainContentDialog.ShowContent(new SelectPlayListControl(playItems),
+            DialogOptionFactory.SelectPlayListOptions);
+    });
+
+    public ICommand SavePlayListCommand => new DelegateCommand(param =>
+    {
+        App.CurrentMainContentDialog.ShowContent(new SelectPlayListControl(SelectedMap),
+            DialogOptionFactory.SelectPlayListOptions);
+    });
+
+    public ICommand SearchCommand => new DelegateCommand(param =>
+    {
+    });
 
     public PlayItem SelectedMap
     {
@@ -41,130 +97,15 @@ public class CurrentPlayControlVm : VmBase
         set => this.RaiseAndSetIfChanged(ref _selectedMaps, value);
     }
 
-    public ICommand ClearPlayListCommand
+    public string SelectedPath
     {
-        get
-        {
-            return new DelegateCommand(param =>
-            {
-                _playListService.SetPathList(Array.Empty<string>(), false);
-            });
-        }
-    }
-
-    public ICommand PlayCommand
-    {
-        get
-        {
-            return new DelegateCommand(async param =>
-            {
-                await _playerService.InitializeNewAsync(SelectedMap.StandardizedPath, true);
-            });
-        }
-    }
-
-    public ICommand SearchCommand
-    {
-        get
-        {
-            return new DelegateCommand(param =>
-            {
-                //var mw = WindowEx.GetCurrentFirst<MainWindow>();
-                //var s = (string)param;
-                //switch (s)
-                //{
-                //    case "0":
-                //        mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.PreferredTitle));
-                //        break;
-                //    case "1":
-                //        mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.PreferredArtist));
-                //        break;
-                //    case "2":
-                //        mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.SongSource));
-                //        break;
-                //    case "3":
-                //        mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.Creator));
-                //        break;
-                //}
-            });
-        }
-    }
-
-    public ICommand OpenSourceFolderCommand
-    {
-        get
-        {
-            return new DelegateCommand(param =>
-            {
-                ProcessUtils.StartWithShellExecute(PathUtils.GetFullPath(SelectedMap.StandardizedFolder,
-                    AppSettings.Default.GeneralSection.OsuSongDir));
-            });
-        }
-    }
-
-    public ICommand OpenScorePageCommand
-    {
-        get
-        {
-            return new DelegateCommand(param =>
-            {
-                ProcessUtils.StartWithShellExecute($"https://osu.ppy.sh/b/{SelectedMap.PlayItemDetail.BeatmapId}");
-            });
-        }
-    }
-
-    public ICommand SavePlayListCommand
-    {
-        get
-        {
-            return new DelegateCommand(param =>
-            {
-                App.CurrentMainContentDialog.ShowContent(new SelectPlayListControl(SelectedMap),
-                    DialogOptionFactory.SelectPlayListOptions);
-                //var mw = WindowEx.GetCurrentFirst<MainWindow>();
-                //mw.FramePop.Navigate(new SelectPlayListPage(SelectedMap));
-            });
-        }
-    }
-
-    public ICommand SaveAllPlayListCommand
-    {
-        get
-        {
-            return new DelegateCommand(param =>
-            {
-                if (_playListService.PathList.Count == 0) return;
-                //FrontDialogOverlay.Default.ShowContent(new SelectPlayListControl(Controller.PlayList.SongList),
-                //    DialogOptionFactory.SelectPlayListOptions);
-            });
-        }
-    }
-
-    public ICommand ExportCommand
-    {
-        get
-        {
-            return new DelegateCommand(param =>
-            {
-                //ExportPage.QueueBeatmap(SelectedMap);
-            });
-        }
-    }
-
-    public ICommand RemoveCommand
-    {
-        get
-        {
-            return new DelegateCommand(param =>
-            {
-                _playListService.RemovePaths(SelectedMaps.Select(k => k.StandardizedPath));
-            });
-        }
+        get => _selectedPath;
+        set => this.RaiseAndSetIfChanged(ref _selectedPath, value);
     }
 }
 
 /// <summary>
-/// PlayListControl.xaml 的交互逻辑
+///     PlayListControl.xaml 的交互逻辑
 /// </summary>
 public partial class CurrentPlayControl : UserControl
 {
@@ -174,15 +115,10 @@ public partial class CurrentPlayControl : UserControl
             typeof(RoutedEventHandler),
             typeof(CurrentPlayControl));
 
-    public event RoutedEventHandler CloseRequested
-    {
-        add => AddHandler(CloseRequestedEvent, value);
-        remove => RemoveHandler(CloseRequestedEvent, value);
-    }
-
-    private bool _signed = false;
     private readonly PlayerService _playerService;
     private readonly CurrentPlayControlVm _viewModel;
+
+    private bool _signed = false;
 
     public CurrentPlayControl()
     {
@@ -193,6 +129,12 @@ public partial class CurrentPlayControl : UserControl
         }
 
         InitializeComponent();
+    }
+
+    public event RoutedEventHandler CloseRequested
+    {
+        add => AddHandler(CloseRequestedEvent, value);
+        remove => RemoveHandler(CloseRequestedEvent, value);
     }
 
     private void PlayListItem_MouseDoubleClick(object sender, RoutedEventArgs e)

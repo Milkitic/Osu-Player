@@ -59,7 +59,7 @@ public partial class RecentPlayPage : Page
         await UpdateList();
 
         var item = _viewModel.PlayItems?.FirstOrDefault(k =>
-            k.PlayItem?.StandardizedPath == _playListService.GetCurrentPath());
+            k.PlayItem?.StandardizedPath == _playListService.CurrentPath);
         if (item != null)
         {
             DataGrid.SelectedItem = item;
