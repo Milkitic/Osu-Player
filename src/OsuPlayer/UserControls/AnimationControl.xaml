@@ -20,28 +20,11 @@
         BorderThickness="1"
         SnapsToDevicePixels="True">
         <Grid>
-            <Grid x:Name="MediaGrid">
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Setter Property="Background">
-                            <Setter.Value>
-                                <LinearGradientBrush EndPoint="0,1">
-                                    <GradientStop Offset="0" Color="#dc498d" />
-                                    <GradientStop Offset="1" Color="White" />
-                                </LinearGradientBrush>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Source, ElementName=BackImage}" Value="{x:Null}">
-                                <Setter Property="Background" Value="White" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Source, ElementName=BackImage}" Value="">
-                                <Setter Property="Background" Value="White" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-                <Border x:Name="BackImageBorder" Background="Black">
+            <Grid x:Name="MediaGrid" Background="White">
+                <Border
+                    x:Name="BackImageBorder"
+                    Background="Black"
+                    Opacity="1">
                     <Image
                         x:Name="BackImage"
                         HorizontalAlignment="Center"
@@ -89,10 +72,7 @@
             </Border.Effect>-->
                 </Border>
             </Grid>
-            <Border
-                Margin="0"
-                Background="{fluentWpf:AcrylicBrush BackImageBorder}"
-                Visibility="{Binding ElementName=Self, Path=IsBlur, Converter={StaticResource BoolTrueToVisibleConverter}}" />
+            <!--<Border Margin="0" Background="{fluentWpf:AcrylicBrush MediaGrid}" />-->
         </Grid>
     </Border>
 </UserControl>

@@ -1,8 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 using Anotar.NLog;
 using Microsoft.Extensions.DependencyInjection;
-using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Configuration;
 using Milki.OsuPlayer.Data.Models;
 using Milki.OsuPlayer.Services;
@@ -13,6 +14,7 @@ using Milki.OsuPlayer.UiComponents.NotificationComponent;
 using Milki.OsuPlayer.UserControls;
 using Milki.OsuPlayer.Utils;
 using Milki.OsuPlayer.ViewModels;
+using Milki.OsuPlayer.Wpf;
 
 namespace Milki.OsuPlayer.Windows;
 
@@ -52,6 +54,9 @@ public partial class MainWindow : WindowBase
     private MiniWindow _miniWindow;
 
     private readonly MainWindowVm _viewModel;
+    private readonly Storyboard _storyboardHideAnimationControl;
+    private readonly Storyboard _storyboardShowAnimationControl;
+    private bool _animationShown;
 
     public MainWindow()
     {
@@ -61,11 +66,34 @@ public partial class MainWindow : WindowBase
         _osuFileScanningService = ServiceProviders.Default.GetService<OsuFileScanningService>()!;
         _lyricsService = ServiceProviders.Default.GetService<LyricsService>()!;
         _updateService = ServiceProviders.Default.GetService<UpdateService>()!;
+        if (_playerService != null)
+        {
+            _playerService.LoadBackgroundInfoFinished += PlayerService_LoadBackgroundInfoFinished;
+        }
+
         DataContext = _viewModel = new MainWindowVm();
 
         InitializeComponent();
         Animation.Loaded += Animation_Loaded;
         PlayController.ToggleAnimationSceneRequested += Controller_OnToggleAnimationSceneRequested;
+
+        _storyboardHideAnimationControl = (Storyboard)FindResource("StoryboardHideAnimationControl");
+        _storyboardShowAnimationControl = (Storyboard)FindResource("StoryboardShowAnimationControl");
+    }
+
+    private async ValueTask PlayerService_LoadBackgroundInfoFinished(PlayerService.PlayItemLoadContext loadContext)
+    {
+        Execute.OnUiThread(() =>
+        {
+            if (loadContext.BackgroundPath == null)
+            {
+                BackImage.Source = null;
+            }
+            else
+            {
+                BackImage.Source = new BitmapImage(new Uri(loadContext.BackgroundPath));
+            }
+        });
     }
 
     protected override async Task<bool> OnAsyncClosing()
@@ -339,7 +367,16 @@ public partial class MainWindow : WindowBase
 
     private void Controller_OnToggleAnimationSceneRequested()
     {
-        MainFrame.Content = null;
+        if (_animationShown)
+        {
+            _storyboardHideAnimationControl.Begin();
+            _animationShown = false;
+        }
+        else
+        {
+            _storyboardShowAnimationControl.Begin();
+            _animationShown = true;
+        }
     }
 
     #endregion Events

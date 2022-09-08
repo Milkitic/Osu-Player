@@ -6,6 +6,7 @@
     xmlns:contentDialogComponent="clr-namespace:Milki.OsuPlayer.UiComponents.ContentDialogComponent"
     xmlns:converters="clr-namespace:Milki.OsuPlayer.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fluentWpf="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
     xmlns:local="clr-namespace:Milki.OsuPlayer.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:notificationComponent="clr-namespace:Milki.OsuPlayer.UiComponents.NotificationComponent"
@@ -36,6 +37,40 @@
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
     <wpf:WindowEx.Resources>
+        <Storyboard x:Key="StoryboardShowAnimationControl" TargetName="Animation">
+            <DoubleAnimation
+                EasingFunction="{StaticResource QuinticEaseOut}"
+                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                To="1"
+                Duration="00:00:00.3" />
+            <DoubleAnimation
+                EasingFunction="{StaticResource QuinticEaseOut}"
+                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                To="1"
+                Duration="00:00:00.3" />
+            <DoubleAnimation
+                EasingFunction="{StaticResource QuinticEaseOut}"
+                Storyboard.TargetProperty="Opacity"
+                To="1"
+                Duration="00:00:00.3" />
+        </Storyboard>
+        <Storyboard x:Key="StoryboardHideAnimationControl" TargetName="Animation">
+            <DoubleAnimation
+                EasingFunction="{StaticResource CircEaseIn}"
+                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                To="0"
+                Duration="00:00:00.3" />
+            <DoubleAnimation
+                EasingFunction="{StaticResource CircEaseIn}"
+                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                To="0"
+                Duration="00:00:00.3" />
+            <DoubleAnimation
+                EasingFunction="{StaticResource CircEaseIn}"
+                Storyboard.TargetProperty="Opacity"
+                To="0"
+                Duration="00:00:00.3" />
+        </Storyboard>
         <converters:TitleIconConverter x:Key="CvtTitleIcon" />
         <converters:LyricWindowShownConverter x:Key="CvtLyricWindowShown" />
         <converters:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
@@ -87,10 +122,16 @@
                 Margin="0,0,1,0">
                 <userControls:NavigationBar x:Name="NavigationBar" />
                 <Grid>
-                    <userControls:AnimationControl
-                        x:Name="Animation"
-                        ClipToBounds="True"
-                        IsBlur="{Binding Content, ElementName=MainFrame, Converter={StaticResource NullToBoolFalseConverter}}" />
+                    <Grid Background="White">
+                        <Border x:Name="BackImageContainer" Background="Black">
+                            <Image
+                                x:Name="BackImage"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Stretch="UniformToFill" />
+                        </Border>
+                    </Grid>
+                    <Border Margin="0" Background="{fluentWpf:AcrylicBrush BackImageContainer}" />
                     <uiComponents:AnimatedFrame
                         x:Name="MainFrame"
                         Background="#B0FFFFFF"
@@ -98,6 +139,15 @@
                         Visibility="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource NullToHiddenConverter}}" />
                 </Grid>
             </DockPanel>
+            <userControls:AnimationControl
+                x:Name="Animation"
+                Grid.Row="0"
+                ClipToBounds="True"
+                RenderTransformOrigin="0,1">
+                <userControls:AnimationControl.RenderTransform>
+                    <ScaleTransform ScaleX="0" ScaleY="0" />
+                </userControls:AnimationControl.RenderTransform>
+            </userControls:AnimationControl>
             <userControls:PlayController x:Name="PlayController" Grid.Row="1" />
         </Grid>
         <Border
