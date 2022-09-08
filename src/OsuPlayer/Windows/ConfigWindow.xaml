@@ -46,7 +46,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Orientation="Horizontal">
-                <buttonComponent:CloseButton MouseDownBackground="#80F72F2F" WindowChrome.IsHitTestVisibleInChrome="True" />
+                <buttonComponent:CloseUiButton WindowChrome.IsHitTestVisibleInChrome="True" />
             </StackPanel>
         </Grid>
         <DockPanel
