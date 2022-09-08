@@ -45,6 +45,7 @@
                                 </Viewbox>
                             </Border>
                         </Grid>
+
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Trigger.EnterActions>

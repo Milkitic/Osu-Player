@@ -24,25 +24,23 @@
                 Duration="00:00:00.300" />
 
             <!--  ScaleX  -->
-            <!--
             <DoubleAnimation
                 x:Name="FadeInScaleX"
                 EasingFunction="{StaticResource ExponentialEaseOut}"
                 Storyboard.TargetProperty="RenderTransform.ScaleX"
-                From="0.95"
+                From="1"
                 To="1"
                 Duration="00:00:00.300" />
 
-            -->
+
             <!--  ScaleY  -->
-            <!--
             <DoubleAnimation
                 x:Name="FadeInScaleY"
                 EasingFunction="{StaticResource ExponentialEaseOut}"
                 Storyboard.TargetProperty="RenderTransform.ScaleY"
-                From="0.95"
+                From="1"
                 To="1"
-                Duration="00:00:00.300" />-->
+                Duration="00:00:00.300" />
 
             <!--  Y  -->
             <DoubleAnimation
@@ -50,7 +48,7 @@
                 EasingFunction="{StaticResource CircEaseOut}"
                 Storyboard.TargetProperty="RenderTransform.Y"
                 From="50"
-                To="0" 
+                To="0"
                 Duration="00:00:00.450" />
         </Storyboard>
 

@@ -5,7 +5,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Milki.OsuPlayer.Audio;
 using Milki.OsuPlayer.Services;
 using Milki.OsuPlayer.Shared.Observable;
 using Milki.OsuPlayer.UiComponents.ContentDialogComponent;
@@ -16,14 +15,44 @@ namespace Milki.OsuPlayer.UserControls;
 
 public class PlayControllerVm : VmBase
 {
+    private string _artist;
+    private double _currentTime;
+    private bool _isPlayerEmpty = true;
+    private bool _isPlayerError;
+    private bool _isPlayerLoading;
     private double _maxTime = 0.001;
     private double _minTime;
-    private double _currentTime;
     private string _title;
-    private string _artist;
-    private bool _isPlayerEmpty = true;
-    private bool _isPlayerLoading;
-    private bool _isPlayerError;
+
+    public string Artist
+    {
+        get => _artist;
+        set => this.RaiseAndSetIfChanged(ref _artist, value);
+    }
+
+    public double CurrentTime
+    {
+        get => _currentTime;
+        set => this.RaiseAndSetIfChanged(ref _currentTime, value);
+    }
+
+    public bool IsPlayerEmpty
+    {
+        get => _isPlayerEmpty;
+        set => this.RaiseAndSetIfChanged(ref _isPlayerEmpty, value);
+    }
+
+    public bool IsPlayerError
+    {
+        get => _isPlayerError;
+        set => this.RaiseAndSetIfChanged(ref _isPlayerError, value);
+    }
+
+    public bool IsPlayerLoading
+    {
+        get => _isPlayerLoading;
+        set => this.RaiseAndSetIfChanged(ref _isPlayerLoading, value);
+    }
 
     public double MaxTime
     {
@@ -37,40 +66,10 @@ public class PlayControllerVm : VmBase
         set => this.RaiseAndSetIfChanged(ref _minTime, value);
     }
 
-    public double CurrentTime
-    {
-        get => _currentTime;
-        set => this.RaiseAndSetIfChanged(ref _currentTime, value);
-    }
-
     public string Title
     {
         get => _title;
         set => this.RaiseAndSetIfChanged(ref _title, value);
-    }
-
-    public string Artist
-    {
-        get => _artist;
-        set => this.RaiseAndSetIfChanged(ref _artist, value);
-    }
-
-    public bool IsPlayerEmpty
-    {
-        get => _isPlayerEmpty;
-        set => this.RaiseAndSetIfChanged(ref _isPlayerEmpty, value);
-    }
-
-    public bool IsPlayerLoading
-    {
-        get => _isPlayerLoading;
-        set => this.RaiseAndSetIfChanged(ref _isPlayerLoading, value);
-    }
-
-    public bool IsPlayerError
-    {
-        get => _isPlayerError;
-        set => this.RaiseAndSetIfChanged(ref _isPlayerError, value);
     }
 
     public PlayerService PlayerService { get; } = ServiceProviders.Default?.GetService<PlayerService>();
@@ -82,11 +81,10 @@ public class PlayControllerVm : VmBase
 /// </summary>
 public partial class PlayController : UserControl
 {
-    public event Action ToggleAnimationSceneRequested;
-
-    private bool _scrollLock;
     private readonly PlayerService _playerService;
     private readonly PlayControllerVm _viewModel;
+
+    private bool _scrollLock;
 
     public PlayController()
     {
@@ -104,6 +102,8 @@ public partial class PlayController : UserControl
 
         InitializeComponent();
     }
+
+    public event Action ToggleAnimationSceneRequested;
 
     private void UserControl_OnInitialized(object sender, EventArgs e)
     {
