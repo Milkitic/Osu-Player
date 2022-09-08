@@ -9,13 +9,13 @@ public class DeviceInfoToStringConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (!(value is DeviceDescription b)) return value;
+        if (value is not DeviceDescription b) return value;
         if (b.Equals(DeviceDescription.WasapiDefault))
         {
             return I18NUtil.GetString("ui-sets-content-systemDefault");
         }
 
-        return $"({b.WavePlayerType}) {b.FriendlyName}";
+        return b.WavePlayerType == WavePlayerType.ASIO ? $"({b.WavePlayerType}) {b.FriendlyName}" : b.FriendlyName;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

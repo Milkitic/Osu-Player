@@ -25,28 +25,70 @@
                         <Grid>
                             <ContentPresenter />
                             <Border
-                                x:Name="FullScr"
+                                x:Name="CoverBorder"
                                 Background="#40000000"
                                 Opacity="0">
+                                <Border.CacheMode>
+                                    <BitmapCache RenderAtScale="2" />
+                                </Border.CacheMode>
                                 <Viewbox
-                                    Width="30"
-                                    Height="30"
+                                    Width="25"
+                                    Height="25"
                                     Stretch="Uniform">
-                                    <Canvas Width="1000" Height="1000">
-                                        <Path Fill="{StaticResource ExtraLightBrushF0}">
-                                            <Path.Data>
-                                                <PathGeometry Figures="M602.1 500l226.5 226.5l91.9-91.9c11.5-12.1 29.4-15.3 44.7-8.9c14.7 6.4 24.9 21.1 24.9 37.6v285.8c0 22.3-18.5 40.8-40.8 40.8H663.3c-16.6 0-31.3-10.2-37.6-25.5c-6.4-14.7-3.2-32.5 8.9-44l91.9-91.9L500 602.1L273.5 828.6l91.9 91.9c12.1 11.5 15.3 29.4 8.9 44c-6.4 15.3-21.1 25.5-37.6 25.5H50.8C28.5 990 10 971.5 10 949.2V663.3c0-16.6 10.2-31.3 25.5-37.6c14.7-6.4 32.5-3.2 44 8.9l91.9 91.9L397.9 500L171.4 273.5l-91.9 91.9c-7.7 7.7-17.9 12.1-28.7 12.1c-5.1 0-10.8-1.3-15.3-3.2C20.2 367.9 10 353.3 10 336.7V50.8C10 28.5 28.5 10 50.8 10h285.8c16.6 0 31.3 10.2 37.6 25.5c6.4 14.7 3.2 32.5-8.9 44l-91.9 91.9L500 397.9l226.5-226.5l-91.9-91.9c-12.1-11.5-15.3-29.3-8.9-44c6.4-15.3 21.1-25.5 37.6-25.5h285.8c22.3 0 40.8 18.5 40.8 40.8v285.8c0 16.6-10.2 31.3-24.9 37.6c-5.1 1.9-10.8 3.2-16 3.2c-10.8 0-21.1-4.5-28.7-12.1l-91.9-91.9L602.1 500z" FillRule="NonZero" />
-                                            </Path.Data>
-                                        </Path>
-                                    </Canvas>
+                                    <Viewbox.Effect>
+                                        <DropShadowEffect
+                                            BlurRadius="15"
+                                            Opacity="0.4"
+                                            ShadowDepth="0" />
+                                    </Viewbox.Effect>
+                                    <ContentControl Template="{StaticResource FullScrTempl}" />
                                 </Viewbox>
                             </Border>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="FullScr" Property="Opacity" Value="1" />
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource CircEaseOut}"
+                                                Storyboard.TargetName="CoverBorder"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1"
+                                                Duration="0:0:0.2" />
+                                            <ObjectAnimationUsingKeyFrames
+                                                Storyboard.TargetName="CoverBorder"
+                                                Storyboard.TargetProperty="Visibility"
+                                                Duration="0:0:0.2">
+                                                <ObjectAnimationUsingKeyFrames.KeyFrames>
+                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+                                                </ObjectAnimationUsingKeyFrames.KeyFrames>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard Storyboard.TargetName="CoverBorder">
+                                            <DoubleAnimation
+                                                EasingFunction="{StaticResource QuinticEaseOut}"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="0"
+                                                Duration="0:0:0.3" />
+                                            <ObjectAnimationUsingKeyFrames
+                                                Storyboard.TargetName="CoverBorder"
+                                                Storyboard.TargetProperty="Visibility"
+                                                Duration="0:0:0.3">
+                                                <ObjectAnimationUsingKeyFrames.KeyFrames>
+                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="{x:Static Visibility.Collapsed}" />
+                                                </ObjectAnimationUsingKeyFrames.KeyFrames>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
                             </Trigger>
                         </ControlTemplate.Triggers>
+
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -163,6 +205,7 @@
                 RenderOptions.BitmapScalingMode="HighQuality"
                 Stretch="UniformToFill" />
         </Button>
+
         <StackPanel
             Grid.Column="1"
             Margin="10,0,10,0"

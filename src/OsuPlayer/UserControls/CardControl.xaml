@@ -15,9 +15,6 @@
     d:DesignWidth="267"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <QuinticEase x:Key="QuinticEaseOut" EasingMode="EaseOut" />
-        <CircleEase x:Key="CircEaseOut" EasingMode="EaseOut" />
-        <CircleEase x:Key="CircEaseIn" EasingMode="EaseIn" />
         <Style BasedOn="{StaticResource DefaultMenuItem}" TargetType="MenuItem" />
         <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
             <MenuItem Click="MiPlay_OnClick">
@@ -71,9 +68,6 @@
         </DataTemplate>
         <ControlTemplate x:Key="ThumbButtonTempl" TargetType="Button">
             <Grid Background="#F0F0F0">
-                <Grid.CacheMode>
-                    <BitmapCache RenderAtScale="1" />
-                </Grid.CacheMode>
                 <Image
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
@@ -84,6 +78,9 @@
                     x:Name="CoverBorder"
                     Background="#50000000"
                     Opacity="0">
+                    <Border.CacheMode>
+                        <BitmapCache RenderAtScale="2" />
+                    </Border.CacheMode>
                     <Viewbox Width="48" Height="48">
                         <Viewbox.Effect>
                             <DropShadowEffect

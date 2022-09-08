@@ -83,14 +83,14 @@
                                     <BeginStoryboard>
                                         <Storyboard RepeatBehavior="Forever">
                                             <DoubleAnimation
-                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                EasingFunction="{StaticResource CircEaseOut}"
                                                 Storyboard.TargetName="InnerGrid"
                                                 Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
                                                 From="1.1"
                                                 To="1"
                                                 Duration="0:0:0.62" />
                                             <DoubleAnimation
-                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                EasingFunction="{StaticResource CircEaseOut}"
                                                 Storyboard.TargetName="InnerGrid"
                                                 Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
                                                 From="1.1"
@@ -103,13 +103,13 @@
                                     <BeginStoryboard>
                                         <Storyboard>
                                             <DoubleAnimation
-                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                EasingFunction="{StaticResource CircEaseOut}"
                                                 Storyboard.TargetName="InnerGrid"
                                                 Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
                                                 To="1"
                                                 Duration="0:0:0.62" />
                                             <DoubleAnimation
-                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                EasingFunction="{StaticResource CircEaseOut}"
                                                 Storyboard.TargetName="InnerGrid"
                                                 Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
                                                 To="1"
@@ -123,13 +123,13 @@
                                     <BeginStoryboard>
                                         <Storyboard RepeatBehavior="1x">
                                             <DoubleAnimation
-                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                EasingFunction="{StaticResource CircEaseOut}"
                                                 Storyboard.TargetName="MainGrid"
                                                 Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
                                                 To="1.1"
                                                 Duration="0:0:0.12" />
                                             <DoubleAnimation
-                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                EasingFunction="{StaticResource CircEaseOut}"
                                                 Storyboard.TargetName="MainGrid"
                                                 Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
                                                 To="1.1"
@@ -141,13 +141,13 @@
                                     <BeginStoryboard>
                                         <Storyboard RepeatBehavior="1x">
                                             <DoubleAnimation
-                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                EasingFunction="{StaticResource CircEaseOut}"
                                                 Storyboard.TargetName="MainGrid"
                                                 Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
                                                 To="1"
                                                 Duration="0:0:0.12" />
                                             <DoubleAnimation
-                                                EasingFunction="{StaticResource CircleEaseOut}"
+                                                EasingFunction="{StaticResource CircEaseOut}"
                                                 Storyboard.TargetName="MainGrid"
                                                 Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
                                                 To="1"

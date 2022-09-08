@@ -17,13 +17,14 @@
             Storyboard.Target="{Binding ElementName=Self, Path=Content}">
             <!--  Opacity  -->
             <DoubleAnimation
-                EasingFunction="{StaticResource ExponentialEaseOut}"
+                EasingFunction="{StaticResource ExponentialEaseIn}"
                 Storyboard.TargetProperty="Opacity"
                 From="0"
                 To="1"
                 Duration="00:00:00.300" />
 
             <!--  ScaleX  -->
+            <!--
             <DoubleAnimation
                 x:Name="FadeInScaleX"
                 EasingFunction="{StaticResource ExponentialEaseOut}"
@@ -32,22 +33,25 @@
                 To="1"
                 Duration="00:00:00.300" />
 
+            -->
             <!--  ScaleY  -->
+            <!--
             <DoubleAnimation
                 x:Name="FadeInScaleY"
                 EasingFunction="{StaticResource ExponentialEaseOut}"
                 Storyboard.TargetProperty="RenderTransform.ScaleY"
                 From="0.95"
                 To="1"
-                Duration="00:00:00.300" />
+                Duration="00:00:00.300" />-->
 
             <!--  Y  -->
             <DoubleAnimation
                 x:Name="FadeInY"
+                EasingFunction="{StaticResource CircEaseOut}"
                 Storyboard.TargetProperty="RenderTransform.Y"
-                From="0"
-                To="0"
-                Duration="00:00:00.300" />
+                From="50"
+                To="0" 
+                Duration="00:00:00.450" />
         </Storyboard>
 
         <Storyboard

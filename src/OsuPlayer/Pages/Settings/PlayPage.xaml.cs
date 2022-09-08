@@ -64,7 +64,7 @@ public partial class PlayPage : Page
         AppSettings.SaveDefault();
     }
 
-    private void Page_Loaded(object sender, RoutedEventArgs e)
+    private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
         SliderOffset.Value = AppSettings.Default.PlaySection.GeneralOffset;
         BoxOffset.Text = AppSettings.Default.PlaySection.GeneralOffset.ToString();
@@ -75,7 +75,13 @@ public partial class PlayPage : Page
         ChkAutoPlay.IsChecked = AppSettings.Default.PlaySection.AutoPlay;
         SliderLatency.Value = AppSettings.Default.PlaySection.DesiredLatency;
         BoxLatency.Text = AppSettings.Default.PlaySection.DesiredLatency.ToString();
-        var itemsSource = DeviceCreationHelper.GetCachedAvailableDevices();
+        await LoadDeviceList();
+    }
+
+    private async Task LoadDeviceList()
+    {
+        var itemsSource = (await Task.Run(DeviceCreationHelper.GetCachedAvailableDevices))
+            .Where(k => k.WavePlayerType is not WavePlayerType.DirectSound).ToArray();
         DeviceInfoCombo.ItemsSource = itemsSource;
         if (itemsSource.Contains(AppSettings.Default.PlaySection.DeviceInfo))
         {
@@ -87,7 +93,7 @@ public partial class PlayPage : Page
         }
 
         var selectedItem = (DeviceDescription)DeviceInfoCombo.SelectedItem;
-        SliderLatency.IsEnabled = selectedItem.WavePlayerType != WavePlayerType.ASIO;
+        SliderLatency.IsEnabled = selectedItem?.WavePlayerType != WavePlayerType.ASIO;
     }
 
     private void BoxLatency_TextChanged(object sender, TextChangedEventArgs e)
