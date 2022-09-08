@@ -1,12 +1,9 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 
-namespace WpfControlsTest;
+namespace Milki.OsuPlayer.UiComponents;
 
 /// <summary>
 /// UiButton.xaml 的交互逻辑
