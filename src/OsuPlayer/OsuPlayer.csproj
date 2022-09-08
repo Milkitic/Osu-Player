@@ -123,13 +123,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="UiComponents\UiButton.xaml.cs">
+    <Compile Update="UiComponents\ButtonComponent\UiButton.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="UiComponents\UiButton.xaml">
+    <Page Update="UiComponents\ButtonComponent\UiButton.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

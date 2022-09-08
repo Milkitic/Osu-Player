@@ -156,9 +156,9 @@
                             WindowChrome.IsHitTestVisibleInChrome="True" />
                     </StackPanel>
                 </Border>
-                <buttonComponent:MinButton IconSize="22" WindowChrome.IsHitTestVisibleInChrome="True" />
-                <buttonComponent:MaxButton WindowChrome.IsHitTestVisibleInChrome="True" />
-                <buttonComponent:CloseButton MouseDownBackground="#a0c72828" WindowChrome.IsHitTestVisibleInChrome="True" />
+                <buttonComponent:MinUiButton WindowChrome.IsHitTestVisibleInChrome="True" />
+                <buttonComponent:MaxUiButton WindowChrome.IsHitTestVisibleInChrome="True" />
+                <buttonComponent:CloseUiButton WindowChrome.IsHitTestVisibleInChrome="True" />
             </StackPanel>
         </DockPanel>
         <!--<control:WelcomeControl x:Name="WelcomeControl" Grid.Row="1" />-->

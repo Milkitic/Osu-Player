@@ -29,7 +29,7 @@
                 <ResourceDictionary Source="ResourceDictionaries/Components.xaml" />
 
                 <ResourceDictionary Source="UiComponents/ButtonComponent/CommonButton.xaml" />
-                <ResourceDictionary Source="UiComponents/ButtonComponent/PlayerControlButton.xaml" />
+                <!--<ResourceDictionary Source="UiComponents/ButtonComponent/PlayerControlButton.xaml" />-->
                 <ResourceDictionary Source="UiComponents/LoaderComponent/Loader.xaml" />
                 <ResourceDictionary Source="UiComponents/RadioButtonComponent/SwitchRadio.xaml" />
                 <ResourceDictionary Source="UiComponents/TextBoxComponent/CommonTextBox.xaml" />

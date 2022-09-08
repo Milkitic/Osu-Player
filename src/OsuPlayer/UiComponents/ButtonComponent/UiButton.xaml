@@ -25,6 +25,8 @@
             <Setter Property="MouseDownBackground" Value="#e8e8e8" />
             <Setter Property="MouseDownForeground" Value="#323232" />
             <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="ShadowOpacity" Value="0" />
+            <Setter Property="ShadowBlurRadius" Value="0" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="UseLayoutRounding" Value="True" />
             <Setter Property="Template">
