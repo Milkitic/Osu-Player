@@ -122,6 +122,19 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="UiComponents\UiButton.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="UiComponents\UiButton.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
 
   <!--<Target Condition=" '$(Configuration)'!='Debug'" Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File &quot;$(SolutionDir)post-build.ps1&quot; $(OutDir)" />

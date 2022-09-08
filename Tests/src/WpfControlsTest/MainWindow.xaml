@@ -1,0 +1,29 @@
+﻿<Window
+    x:Class="WpfControlsTest.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:WpfControlsTest"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="MainWindow"
+    Width="800"
+    Height="450"
+    mc:Ignorable="d">
+    <Grid>
+        <local:UiButton
+            Margin="50"
+            Content="SB"
+            CornerRadius="50"
+            IconSize="32"
+            ShadowBlurRadius="150"
+            ShadowColor="#234915"
+            ShadowOpacity="1">
+            <!--<local:UiButton.IsEnabled>False</local:UiButton.IsEnabled>-->
+            <local:UiButton.IconTemplate>
+                <ControlTemplate>
+                    <Button Content="asdf" />
+                </ControlTemplate>
+            </local:UiButton.IconTemplate>
+        </local:UiButton>
+    </Grid>
+</Window>

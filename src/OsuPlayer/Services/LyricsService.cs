@@ -32,7 +32,7 @@ public class LyricsService : IDisposable
 
     public async ValueTask CreateWindowAsync()
     {
-        await App.Current.Dispatcher.InvokeAsync(() => _lyricWindow = new LyricWindow());
+        //await App.Current.Dispatcher.InvokeAsync(() => _lyricWindow = new LyricWindow());
     }
 
     public void ReloadLyricProvider(bool useStrict = true)
