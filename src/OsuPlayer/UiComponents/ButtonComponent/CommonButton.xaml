@@ -224,4 +224,49 @@
         <Setter Property="MouseDownForeground" Value="#929292" />
         <Setter Property="MouseOverForeground" Value="#C0C0C0" />
     </Style>
+
+    <Style x:Key="ControlUiButton" TargetType="local:UiButton">
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Background" Value="{StaticResource TextureBrush}" />
+        <Setter Property="BorderBrush" Value="White" />
+        <Setter Property="CornerRadius" Value="7" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="MouseDownForeground" Value="White" />
+        <Setter Property="MouseOverForeground" Value="White" />
+        <Setter Property="ShadowOpacity" Value="0.2" />
+        <Setter Property="ShadowBlurRadius" Value="10" />
+        <Setter Property="IconMargin" Value="0" />
+        <Setter Property="Margin" Value="8,0" />
+        <Setter Property="IconSize" Value="24" />
+        <Setter Property="MouseOverBackground">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0" Color="#F05090" />
+                    <GradientStop Offset="1" Color="#E05888" />
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="MouseDownBackground">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0" Color="#E04070" />
+                    <GradientStop Offset="1" Color="#F05090" />
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ToolUiButton" TargetType="local:UiButton">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="MouseOverBackground" Value="#80F8F8F8" />
+        <Setter Property="MouseDownBackground" Value="#80E8E8E8" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
 </ResourceDictionary>

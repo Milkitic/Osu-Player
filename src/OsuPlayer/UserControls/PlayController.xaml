@@ -95,42 +95,6 @@
             </Setter>
         </Style>
         <Style
-            x:Key="ControlButton"
-            BasedOn="{StaticResource {x:Type buttonComponent:CommonButton}}"
-            TargetType="buttonComponent:CommonButton">
-            <Setter Property="Width" Value="28" />
-            <Setter Property="Height" Value="28" />
-            <Setter Property="MinWidth" Value="0" />
-            <Setter Property="MinHeight" Value="0" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Background" Value="{StaticResource TextureBrush}" />
-            <Setter Property="BorderBrush" Value="White" />
-            <Setter Property="CornerRadius" Value="7" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="MouseDownForeground" Value="White" />
-            <Setter Property="MouseOverForeground" Value="White" />
-            <Setter Property="ShadowOpacity" Value="0.2" />
-            <Setter Property="IconMargin" Value="0" />
-            <Setter Property="Margin" Value="8" />
-            <Setter Property="IconSize" Value="24" />
-            <Setter Property="MouseOverBackground">
-                <Setter.Value>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                        <GradientStop Offset="0" Color="#F05090" />
-                        <GradientStop Offset="1" Color="#E05888" />
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="MouseDownBackground">
-                <Setter.Value>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                        <GradientStop Offset="0" Color="#E04070" />
-                        <GradientStop Offset="1" Color="#F05090" />
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style
             x:Key="InvisibleButton"
             BasedOn="{StaticResource {x:Type buttonComponent:CommonButton}}"
             TargetType="buttonComponent:CommonButton">
@@ -157,10 +121,13 @@
             </Style.Triggers>
         </Style>
         <Style
-            x:Key="PlayListButtonStyle"
-            BasedOn="{StaticResource {x:Type buttonComponent:CommonButton}}"
-            TargetType="buttonComponent:CommonButton">
-            <Setter Property="IconTemplate" Value="{StaticResource ModeNormalTempl}" />
+            x:Key="PlayListTypeUiButtonStyle"
+            BasedOn="{StaticResource ToolUiButton}"
+            TargetType="buttonComponent:UiButton">
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="IconSize" Value="18"></Setter>
+            <Setter Property="CornerRadius" Value="3" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding PlayListService.PlayListMode}" Value="{x:Static models:PlayListMode.Normal}">
                     <Setter Property="IconTemplate" Value="{StaticResource ModeNormalTempl}" />
@@ -211,16 +178,16 @@
             Grid.Column="1"
             Margin="10,0,10,0"
             Orientation="Horizontal">
-            <buttonComponent:CommonButton
+            <buttonComponent:UiButton
                 Click="BtnPrev_OnClick"
                 IconTemplate="{StaticResource PrevTempl}"
-                Style="{StaticResource ControlButton}" />
-            <buttonComponent:CommonButton
+                Style="{StaticResource ControlUiButton}" />
+            <buttonComponent:UiButton
                 Width="32"
                 Height="32"
                 Click="BtnPlay_OnClick">
                 <Button.Style>
-                    <Style BasedOn="{StaticResource ControlButton}" TargetType="buttonComponent:CommonButton">
+                    <Style BasedOn="{StaticResource ControlUiButton}" TargetType="buttonComponent:UiButton">
                         <Setter Property="IconMargin" Value="2,0,0,0" />
                         <Setter Property="IconSize" Value="20" />
                         <Setter Property="IconTemplate" Value="{StaticResource PlayTempl}" />
@@ -233,31 +200,31 @@
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
-            </buttonComponent:CommonButton>
-            <buttonComponent:CommonButton
+            </buttonComponent:UiButton>
+            <buttonComponent:UiButton
                 Click="BtnNext_OnClick"
                 IconTemplate="{StaticResource NextTempl}"
-                Style="{StaticResource ControlButton}" />
-            <buttonComponent:CommonButton
+                Style="{StaticResource ControlUiButton}" />
+            <buttonComponent:UiButton
                 Background="{StaticResource OsuTextureBlueBrush}"
                 Click="BtnOpen_OnClick"
                 CornerRadius="14"
                 IconTemplate="{StaticResource OpenTempl}"
                 ShadowColor="#5d9cec"
-                Style="{StaticResource ControlButton}">
-                <buttonComponent:CommonButton.MouseDownBackground>
+                Style="{StaticResource ControlUiButton}">
+                <buttonComponent:UiButton.MouseDownBackground>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                         <GradientStop Offset="0" Color="#3d7ccc" />
                         <GradientStop Offset="1" Color="#4d8cdc" />
                     </LinearGradientBrush>
-                </buttonComponent:CommonButton.MouseDownBackground>
-                <buttonComponent:CommonButton.MouseOverBackground>
+                </buttonComponent:UiButton.MouseDownBackground>
+                <buttonComponent:UiButton.MouseOverBackground>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                         <GradientStop Offset="0" Color="#5d9cec" />
                         <GradientStop Offset="1" Color="#4d8cdc" />
                     </LinearGradientBrush>
-                </buttonComponent:CommonButton.MouseOverBackground>
-            </buttonComponent:CommonButton>
+                </buttonComponent:UiButton.MouseOverBackground>
+            </buttonComponent:UiButton>
         </StackPanel>
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
@@ -270,17 +237,16 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <buttonComponent:CommonButton
+                <buttonComponent:UiButton
                     Margin="3,0"
-                    Padding="0"
                     Click="BtnMetadata_OnClick"
-                    Style="{StaticResource InvisibleButton}">
+                    Style="{StaticResource ToolUiButton}">
                     <TextBlock FontSize="12">
                         <Run Foreground="#777777" Text="{Binding Title, Mode=OneWay}" />
                         <Run Foreground="#858585" Text="-" />
                         <Run Foreground="#AAAAAA" Text="{Binding Artist, Mode=OneWay}" />
                     </TextBlock>
-                </buttonComponent:CommonButton>
+                </buttonComponent:UiButton>
                 <TextBlock
                     Grid.Column="2"
                     Margin="3"
@@ -317,59 +283,47 @@
         </Grid>
         <Grid Grid.Column="3">
             <StackPanel
-                x:Name="FuncPanel"
-                Margin="10,0,10,0"
+                Margin="10,0"
                 VerticalAlignment="Center"
                 Orientation="Horizontal">
-                <StackPanel Orientation="Horizontal">
-                    <buttonComponent:CommonButton
-                        x:Name="BtnPlayListMode"
-                        Width="24"
-                        Height="24"
-                        Margin="8"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Click="BtnPlayListMode_OnClick"
-                        IconMargin="0"
-                        IconSize="25"
-                        MouseOverBackground="Transparent"
-                        Style="{StaticResource PlayListButtonStyle}"
-                        WindowChrome.IsHitTestVisibleInChrome="True" />
-                    <buttonComponent:CommonButton
-                        Width="23"
-                        Height="23"
-                        Margin="6"
-                        VerticalAlignment="Center"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Click="BtnLike_OnClick"
-                        IconMargin="0"
-                        IconSize="24"
-                        MouseOverBackground="Transparent"
-                        Style="{StaticResource LikeButtonStyle}" />
-                    <buttonComponent:CommonButton
-                        x:Name="BtnVolume"
-                        Width="23"
-                        Height="23"
-                        Margin="6"
-                        VerticalAlignment="Center"
-                        BorderThickness="0"
-                        Click="BtnVolume_OnClick"
-                        IconMargin="0"
-                        IconSize="20"
-                        IconTemplate="{StaticResource VolumeTempl}" />
-                    <buttonComponent:CommonButton
-                        x:Name="BtnCurrentPlay"
-                        Width="23"
-                        Height="23"
-                        Margin="6"
-                        VerticalAlignment="Center"
-                        BorderThickness="0"
-                        Click="BtnCurrentPlay_OnClick"
-                        IconMargin="0"
-                        IconSize="18"
-                        IconTemplate="{StaticResource PlayListTempl}" />
-                </StackPanel>
+                <buttonComponent:UiButton
+                    x:Name="BtnPlayListMode"
+                    Click="BtnPlayListMode_OnClick"
+                    Style="{StaticResource PlayListTypeUiButtonStyle}" />
+                <buttonComponent:CommonButton
+                    Width="23"
+                    Height="23"
+                    Margin="6"
+                    VerticalAlignment="Center"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Click="BtnLike_OnClick"
+                    IconMargin="0"
+                    IconSize="24"
+                    MouseOverBackground="Transparent"
+                    Style="{StaticResource LikeButtonStyle}" />
+                <buttonComponent:CommonButton
+                    x:Name="BtnVolume"
+                    Width="23"
+                    Height="23"
+                    Margin="6"
+                    VerticalAlignment="Center"
+                    BorderThickness="0"
+                    Click="BtnVolume_OnClick"
+                    IconMargin="0"
+                    IconSize="20"
+                    IconTemplate="{StaticResource VolumeTempl}" />
+                <buttonComponent:CommonButton
+                    x:Name="BtnCurrentPlay"
+                    Width="23"
+                    Height="23"
+                    Margin="6"
+                    VerticalAlignment="Center"
+                    BorderThickness="0"
+                    Click="BtnCurrentPlay_OnClick"
+                    IconMargin="0"
+                    IconSize="18"
+                    IconTemplate="{StaticResource PlayListTempl}" />
             </StackPanel>
         </Grid>
         <Popup

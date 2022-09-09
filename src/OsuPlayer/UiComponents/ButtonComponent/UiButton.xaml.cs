@@ -33,17 +33,20 @@ public partial class UiButton : Button
     public static readonly DependencyProperty CheckedBackgroundProperty = DependencyProperty.Register(nameof(CheckedBackground), typeof(Brush), typeof(UiButton), new PropertyMetadata(default(Brush)));
     public static readonly DependencyProperty CheckedForegroundProperty = DependencyProperty.Register(nameof(CheckedForeground), typeof(Brush), typeof(UiButton), new PropertyMetadata(default(Brush)));
 
+    static UiButton()
+    {
+        PaddingProperty.OverrideMetadata(typeof(UiButton), new FrameworkPropertyMetadata(new Thickness(0)));
+        UseLayoutRoundingProperty.OverrideMetadata(typeof(UiButton), new FrameworkPropertyMetadata(true));
+        SnapsToDevicePixelsProperty.OverrideMetadata(typeof(UiButton), new FrameworkPropertyMetadata(true));
+        HorizontalContentAlignmentProperty.OverrideMetadata(typeof(UiButton), new FrameworkPropertyMetadata(HorizontalAlignment.Center));
+        VerticalContentAlignmentProperty.OverrideMetadata(typeof(UiButton), new FrameworkPropertyMetadata(VerticalAlignment.Center));
+        BackgroundProperty.OverrideMetadata(typeof(UiButton), new FrameworkPropertyMetadata(BrushBackground));
+        ForegroundProperty.OverrideMetadata(typeof(UiButton), new FrameworkPropertyMetadata(BrushForeground));
+        BorderBrushProperty.OverrideMetadata(typeof(UiButton), new FrameworkPropertyMetadata(BrushBorder));
+    }
+
     public UiButton()
     {
-        Padding = new Thickness(0);
-        Margin = new Thickness(0);
-        UseLayoutRounding = true;
-        SnapsToDevicePixels = true;
-        HorizontalContentAlignment = HorizontalAlignment.Center;
-        VerticalContentAlignment = VerticalAlignment.Center;
-        Background = BrushBackground;
-        Foreground = BrushForeground;
-        BorderBrush = BrushBorder;
         InitializeComponent();
     }
 
