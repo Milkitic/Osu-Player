@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
     xmlns:fluentWpf="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
-    xmlns:local="clr-namespace:Milki.OsuPlayer"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:shaderEffects="clr-namespace:MDS.ShaderEffects;assembly=ShaderEffects"
     xmlns:userControls="clr-namespace:Milki.OsuPlayer.UserControls"
@@ -16,11 +15,27 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Border
-        BorderBrush="#40FFFFFF"
-        BorderThickness="1"
+        Background="White"
+        CornerRadius="{Binding ElementName=Self, Path=CornerRadius}"
         SnapsToDevicePixels="True">
-        <Grid>
-            <Grid x:Name="MediaGrid" Background="White">
+        <Border.Clip>
+            <MultiBinding Converter="{StaticResource Multi_BorderClipConverter}">
+                <Binding Path="ActualWidth" RelativeSource="{RelativeSource Self}" />
+                <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}" />
+                <Binding Path="CornerRadius" RelativeSource="{RelativeSource Self}" />
+            </MultiBinding>
+        </Border.Clip>
+        <Grid
+            Margin="-50"
+            Background="White"
+            Opacity="0.3">
+            <Grid.CacheMode>
+                <BitmapCache RenderAtScale="1" />
+            </Grid.CacheMode>
+            <Grid
+                x:Name="MediaGrid"
+                Background="Transparent"
+                Opacity="1">
                 <Border
                     x:Name="BackImageBorder"
                     Background="Black"
@@ -29,7 +44,7 @@
                         x:Name="BackImage"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        RenderOptions.BitmapScalingMode="HighQuality"
+                        RenderOptions.BitmapScalingMode="NearestNeighbor"
                         Stretch="UniformToFill" />
                 </Border>
                 <Border
@@ -72,7 +87,7 @@
             </Border.Effect>-->
                 </Border>
             </Grid>
-            <!--<Border Margin="0" Background="{fluentWpf:AcrylicBrush MediaGrid}" />-->
+            <Border Margin="0" Background="{fluentWpf:AcrylicBrush MediaGrid}" />
         </Grid>
     </Border>
 </UserControl>

@@ -38,23 +38,37 @@
     </WindowChrome.WindowChrome>
     <wpf:WindowEx.Resources>
         <Storyboard x:Key="StoryboardShowAnimationControl" TargetName="Animation">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Duration="00:00:00.5">
+                <ObjectAnimationUsingKeyFrames.KeyFrames>
+                    <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="{x:Static Visibility.Visible}" />
+                </ObjectAnimationUsingKeyFrames.KeyFrames>
+            </ObjectAnimationUsingKeyFrames>
             <DoubleAnimation
-                EasingFunction="{StaticResource QuinticEaseOut}"
+                EasingFunction="{StaticResource PowerEaseOut5}"
                 Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
                 To="1"
-                Duration="00:00:00.3" />
+                Duration="00:00:00.5" />
             <DoubleAnimation
-                EasingFunction="{StaticResource QuinticEaseOut}"
+                EasingFunction="{StaticResource PowerEaseOut5}"
                 Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
                 To="1"
-                Duration="00:00:00.3" />
+                Duration="00:00:00.5" />
             <DoubleAnimation
-                EasingFunction="{StaticResource QuinticEaseOut}"
+                EasingFunction="{StaticResource PowerEaseOut5}"
                 Storyboard.TargetProperty="Opacity"
                 To="1"
+                Duration="00:00:00.5" />
+            <osuPlayer:CornerRadiusAnimation
+                Storyboard.TargetProperty="CornerRadius"
+                To="0"
                 Duration="00:00:00.3" />
         </Storyboard>
         <Storyboard x:Key="StoryboardHideAnimationControl" TargetName="Animation">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Duration="00:00:00.3">
+                <ObjectAnimationUsingKeyFrames.KeyFrames>
+                    <DiscreteObjectKeyFrame KeyTime="00:00:00.3" Value="{x:Static Visibility.Collapsed}" />
+                </ObjectAnimationUsingKeyFrames.KeyFrames>
+            </ObjectAnimationUsingKeyFrames>
             <DoubleAnimation
                 EasingFunction="{StaticResource CircEaseIn}"
                 Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
@@ -69,6 +83,10 @@
                 EasingFunction="{StaticResource CircEaseIn}"
                 Storyboard.TargetProperty="Opacity"
                 To="0"
+                Duration="00:00:00.3" />
+            <osuPlayer:CornerRadiusAnimation
+                Storyboard.TargetProperty="CornerRadius"
+                To="280"
                 Duration="00:00:00.3" />
         </Storyboard>
         <converters:TitleIconConverter x:Key="CvtTitleIcon" />
@@ -121,20 +139,24 @@
                 Height="Auto"
                 Margin="0,0,1,0">
                 <userControls:NavigationBar x:Name="NavigationBar" />
-                <Grid>
-                    <Grid Background="White">
+                <Grid ClipToBounds="True">
+                    <Grid Margin="-50" Background="White">
+                        <Grid.CacheMode>
+                            <BitmapCache RenderAtScale="1" />
+                        </Grid.CacheMode>
                         <Border x:Name="BackImageContainer" Background="Black">
                             <Image
                                 x:Name="BackImage"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
                                 Stretch="UniformToFill" />
                         </Border>
+                        <Border Margin="0" Background="{fluentWpf:AcrylicBrush BackImageContainer}" />
                     </Grid>
-                    <Border Margin="0" Background="{fluentWpf:AcrylicBrush BackImageContainer}" />
                     <uiComponents:AnimatedFrame
                         x:Name="MainFrame"
-                        Background="#B0FFFFFF"
+                        Background="#A0FFFFFF"
                         NavigationUIVisibility="Hidden"
                         Visibility="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource NullToHiddenConverter}}" />
                 </Grid>

@@ -71,7 +71,7 @@
                 <Image
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    RenderOptions.BitmapScalingMode="LowQuality"
+                    RenderOptions.BitmapScalingMode="Linear"
                     Source="{Binding ElementName=Self, Path=ThumbPath}"
                     Stretch="UniformToFill" />
                 <Border

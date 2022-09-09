@@ -18,6 +18,7 @@
     <converters:PlayModeConverter x:Key="PlayModeConverter" />
     <converters:BoolIsFavToSvgConverter x:Key="BoolIsFavToSvgConverter" />
     <converters:DeviceInfoToStringConverter x:Key="DeviceInfoToStringConverter" />
+    <converters:Multi_BorderClipConverter x:Key="Multi_BorderClipConverter" />
     <converters:Multi_EqualityToVisibilityConverter x:Key="Multi_EqualityToVisibilityConverter" />
     <converters:Multi_ListViewSelectAndScrollConverter x:Key="Multi_ListViewSelectAndScrollConverter" />
     <converters:LocalizedFontFamilyConverter x:Key="LocalizedFontFamilyConverter" />

@@ -15,28 +15,23 @@ using Unosquare.FFME.Common;
 namespace Milki.OsuPlayer.UserControls;
 
 public class AnimationControlVm : VmBase
-{
-}
+{}
 
 /// <summary>
 /// AnimationControl.xaml 的交互逻辑
 /// </summary>
 public partial class AnimationControl : UserControl
 {
-    public static readonly DependencyProperty IsBlurProperty =
-        DependencyProperty.Register(nameof(IsBlur),
-            typeof(bool),
-            typeof(AnimationControl),
-            new PropertyMetadata(false));
+    public static readonly DependencyProperty IsBlurProperty = DependencyProperty.Register(nameof(IsBlur), typeof(bool), typeof(AnimationControl), new PropertyMetadata(false));
+    public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(AnimationControl), new PropertyMetadata(default(CornerRadius)));
 
     private readonly PlayerService _playerService;
     private readonly AnimationControlVm _viewModel;
-
-    private Task _waitTask;
-    private TimeSpan _initialVideoPosition;
-    private double _videoOffset;
-
     private PlayerService.PlayItemLoadContext _loadContext;
+
+    private TimeSpan _videoInitialPosition;
+    private double _videoOffset;
+    private Task _videoWaitTask;
 
     public AnimationControl()
     {
@@ -64,6 +59,12 @@ public partial class AnimationControl : UserControl
         //BackImage.Source =
         //    new BitmapImage(new Uri("pack://application:,,,/OsuPlayer;component/Resources/official/registration.jpg"));
         BackImage.Opacity = 1;
+    }
+
+    public CornerRadius CornerRadius
+    {
+        get => (CornerRadius)GetValue(CornerRadiusProperty);
+        set => SetValue(CornerRadiusProperty, value);
     }
 
     public bool IsBlur
@@ -236,6 +237,7 @@ public partial class AnimationControl : UserControl
             VideoElement.SpeedRatio = AppSettings.Default.PlaySection.PlaybackRate;
         });
     }
+
     private async ValueTask InitVideoAsync(PlayerService.PlayItemLoadContext loadContext)
     {
         if (loadContext.OsuFile?.Events?.VideoInfo == null || loadContext.VideoPath == null) return;
@@ -243,12 +245,12 @@ public partial class AnimationControl : UserControl
         _videoOffset = -(loadContext.OsuFile.Events.VideoInfo.Offset);
         if (_videoOffset >= 0)
         {
-            _waitTask = Task.Delay(0);
-            _initialVideoPosition = TimeSpan.FromMilliseconds(_videoOffset);
+            _videoWaitTask = Task.Delay(0);
+            _videoInitialPosition = TimeSpan.FromMilliseconds(_videoOffset);
         }
         else
         {
-            _waitTask = Task.Delay(TimeSpan.FromMilliseconds(-_videoOffset));
+            _videoWaitTask = Task.Delay(TimeSpan.FromMilliseconds(-_videoOffset));
         }
 
         await VideoElement.Open(new Uri(loadContext.VideoPath));
@@ -266,9 +268,9 @@ public partial class AnimationControl : UserControl
         if (VideoElement == null) return;
         if (_loadContext?.PlayInstant == true)
         {
-            await _waitTask;
+            await _videoWaitTask;
             await VideoElement.Play();
-            VideoElement.Position = _initialVideoPosition;
+            VideoElement.Position = _videoInitialPosition;
         }
     }
 

@@ -1,5 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <QuinticEase x:Key="QuinticEaseOut" EasingMode="EaseOut" />
+    <SineEase x:Key="SineEaseOut" EasingMode="EaseOut" />
     <CircleEase x:Key="CircEaseOut" EasingMode="EaseOut" />
     <CircleEase x:Key="CircEaseIn" EasingMode="EaseIn" />
+    <PowerEase
+        x:Key="PowerEaseOut5"
+        EasingMode="EaseOut"
+        Power="5" />
 </ResourceDictionary>
