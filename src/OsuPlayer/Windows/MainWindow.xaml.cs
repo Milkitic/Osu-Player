@@ -83,7 +83,7 @@ public partial class MainWindow : WindowBase
 
     private async ValueTask PlayerService_LoadBackgroundInfoFinished(PlayerService.PlayItemLoadContext loadContext)
     {
-        Execute.OnUiThread(() =>
+        await Execute.ToUiThreadAsync(() =>
         {
             if (loadContext.BackgroundPath == null)
             {
