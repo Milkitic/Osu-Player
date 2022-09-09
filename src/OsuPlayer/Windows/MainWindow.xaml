@@ -94,14 +94,14 @@
         <converters:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
     </wpf:WindowEx.Resources>
     <Grid Margin="{Binding WindowState, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource WindowMarginConverter}}">
-        <!--<Grid.Background>
+        <Grid.Background>
             <ImageBrush
                 ImageSource="{StaticResource TextureSource1}"
                 TileMode="Tile"
                 Viewport="0,0,500,500"
                 ViewportUnits="Absolute" />
-        </Grid.Background>-->
-        <Grid.Background>Gray</Grid.Background>
+        </Grid.Background>
+        <!--<Grid.Background>Gray</Grid.Background>-->
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition />
@@ -152,11 +152,14 @@
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
                                 Stretch="UniformToFill" />
                         </Border>
-                        <Border Margin="0" Background="{fluentWpf:AcrylicBrush BackImageContainer}" />
+                        <fluentWpf:AcrylicPanel
+                            NoiseOpacity="0.03"
+                            Target="{Binding ElementName=BackImageContainer}"
+                            TintColor="White"
+                            TintOpacity="0.55" />
                     </Grid>
                     <uiComponents:AnimatedFrame
                         x:Name="MainFrame"
-                        Background="#A0FFFFFF"
                         NavigationUIVisibility="Hidden"
                         Visibility="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource NullToHiddenConverter}}" />
                 </Grid>

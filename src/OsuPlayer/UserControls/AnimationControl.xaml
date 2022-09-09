@@ -25,21 +25,12 @@
                 <Binding Path="CornerRadius" RelativeSource="{RelativeSource Self}" />
             </MultiBinding>
         </Border.Clip>
-        <Grid
-            Margin="-50"
-            Background="White"
-            Opacity="0.3">
+        <Grid Margin="-50">
             <Grid.CacheMode>
                 <BitmapCache RenderAtScale="1" />
             </Grid.CacheMode>
-            <Grid
-                x:Name="MediaGrid"
-                Background="Transparent"
-                Opacity="1">
-                <Border
-                    x:Name="BackImageBorder"
-                    Background="Black"
-                    Opacity="1">
+            <Grid x:Name="MediaGrid">
+                <Border x:Name="BackImageBorder" Background="Black">
                     <Image
                         x:Name="BackImage"
                         HorizontalAlignment="Center"
@@ -87,7 +78,11 @@
             </Border.Effect>-->
                 </Border>
             </Grid>
-            <Border Margin="0" Background="{fluentWpf:AcrylicBrush MediaGrid}" />
+            <fluentWpf:AcrylicPanel
+                NoiseOpacity="0.03"
+                Target="{Binding ElementName=MediaGrid}"
+                TintColor="White"
+                TintOpacity="0.7" />
         </Grid>
     </Border>
 </UserControl>
