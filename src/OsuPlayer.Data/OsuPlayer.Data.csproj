@@ -14,14 +14,14 @@
     <PackageReference Include="ConfigureAwait.Fody" Version="3.3.1">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Coosu.Beatmap" Version="2.3.12" />
-    <PackageReference Include="Coosu.Database" Version="2.3.12" />
+    <PackageReference Include="Coosu.Beatmap" Version="2.3.18" />
+    <PackageReference Include="Coosu.Database" Version="2.3.18" />
     <PackageReference Include="EFCore.BulkExtensions" Version="6.5.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.9" />
   </ItemGroup>
 
   <ItemGroup>

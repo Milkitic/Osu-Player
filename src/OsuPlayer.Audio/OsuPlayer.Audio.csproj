@@ -22,7 +22,7 @@
     <PackageReference Include="ConfigureAwait.Fody" Version="3.3.1">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Coosu.Beatmap" Version="2.3.12" />
+    <PackageReference Include="Coosu.Beatmap" Version="2.3.18" />
     <PackageReference Include="Milki.Extensions.MixPlayer" Version="0.0.30" />
   </ItemGroup>
 

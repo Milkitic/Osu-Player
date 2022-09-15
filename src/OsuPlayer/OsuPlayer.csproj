@@ -48,7 +48,7 @@
       <Version>4.4.350</Version>
     </PackageReference>
     <PackageReference Include="FluentWPF" Version="0.10.2" />
-    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.63" />
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.64" />
     <PackageReference Include="LyricsFinder" Version="1.1.4" />
     <PackageReference Include="Markdig.Wpf">
       <Version>0.5.0.1</Version>
@@ -57,14 +57,14 @@
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
     <PackageReference Include="Milki.Extensions.Configuration" Version="0.0.30" />
     <PackageReference Include="NLog">
-      <Version>5.0.2</Version>
+      <Version>5.0.4</Version>
     </PackageReference>
     <PackageReference Include="NLog.Schema">
-      <Version>5.0.2</Version>
+      <Version>5.0.4</Version>
     </PackageReference>
     <PackageReference Include="Semver" Version="2.2.0" />
     <PackageReference Include="Sentry.NLog">
-      <Version>3.20.1</Version>
+      <Version>3.21.0</Version>
     </PackageReference>
   </ItemGroup>
 

@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sentry" Version="3.20.1" />
-    <PackageReference Include="NLog" Version="5.0.2" />
-    <PackageReference Include="Sentry.NLog" Version="3.20.1" />
+    <PackageReference Include="Sentry" Version="3.21.0" />
+    <PackageReference Include="NLog" Version="5.0.4" />
+    <PackageReference Include="Sentry.NLog" Version="3.21.0" />
   </ItemGroup>
 
 </Project>
