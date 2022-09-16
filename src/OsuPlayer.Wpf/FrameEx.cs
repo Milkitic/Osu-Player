@@ -16,10 +16,3 @@ public class FrameEx : Frame
 
     public new Uri BaseUri => base.BaseUri;
 }
-
-public class PageEx : Page
-{
-    protected internal virtual void OnContentRendered(EventArgs args)
-    {
-    }
-}
