@@ -7,14 +7,13 @@ namespace Milki.OsuPlayer.Configuration;
 
 public class PlaySection
 {
-    public int GeneralOffset { get; set; }
-    public bool ReplacePlayList { get; set; } = true;
-    public float PlaybackRate { get; set; } = 1;
-    public bool PlayUseTempo { get; set; }
-    public bool AutoPlay { get; set; } = false;
-    //public bool Memory { get; set; } = true;
-    public DeviceDescription? DeviceInfo { get; set; }
-    public int DesiredLatency { get; set; } = 5;
-    public bool IsExclusive { get; set; } = false;
+    public bool IsAutoPlayOnStartup { get; set; } = false;
+    public bool IsReplacePlayList { get; set; } = true;
+    public int PlayerDesiredLatency { get; set; } = 5;
+    public DeviceDescription? PlayerDeviceInfo { get; set; }
+    public int PlayerGeneralOffset { get; set; }
+    public bool PlayerIsExclusive { get; set; } = false;
+    public bool PlayerKeepTune { get; set; }
+    public float PlayerPlaybackRate { get; set; } = 1;
     public PlayListMode PlayListMode { get; set; } = PlayListMode.Normal;
 }

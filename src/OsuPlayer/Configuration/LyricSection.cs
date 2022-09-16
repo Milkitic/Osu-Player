@@ -4,14 +4,14 @@ namespace Milki.OsuPlayer.Configuration;
 
 public class LyricSection
 {
+    public double AppearanceHue { get; set; }
+    public double AppearanceLightness { get; set; }
+    public double AppearanceSaturation { get; set; }
+    public string FontFamily { get; set; }
+    public bool IsCacheEnabled { get; set; } = true;
     public bool IsDesktopLyricEnabled { get; set; } = true;
     public bool IsDesktopLyricLocked { get; set; } = true;
+    public bool IsStrictModeEnabled { get; set; } = true;
+    public LyricProvideType LyricProvideType { get; set; } = LyricProvideType.Original;
     public LyricSource LyricSource { get; set; } = LyricSource.Auto;
-    public LyricProvideType ProvideType { get; set; } = LyricProvideType.Original;
-    public bool StrictMode { get; set; } = true;
-    public bool EnableCache { get; set; } = true;
-    public string FontFamily { get; set; }
-    public double Hue { get; set; }
-    public double Saturation { get; set; }
-    public double Lightness { get; set; }
 }

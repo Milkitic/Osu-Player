@@ -37,7 +37,7 @@ public class LyricsService : IDisposable
 
     public void ReloadLyricProvider(bool useStrict = true)
     {
-        AppSettings.Default.LyricSection.StrictMode = useStrict;
+        AppSettings.Default.LyricSection.IsStrictModeEnabled = useStrict;
         GlobalSetting.StrictMatch = useStrict;
         SourceProviderBase provider;
         switch (AppSettings.Default.LyricSection.LyricSource)

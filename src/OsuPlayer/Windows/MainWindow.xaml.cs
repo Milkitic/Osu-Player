@@ -98,7 +98,7 @@ public partial class MainWindow : WindowBase
 
     protected override async Task<bool> OnAsyncClosing()
     {
-        var promptType = AppSettings.Default.GeneralSection.ExitWhenClosed;
+        var promptType = AppSettings.Default.GeneralSection.CloseBehavior;
         if (IsForceExitState || promptType == true)
         {
             _miniWindow?.Close();
@@ -126,7 +126,7 @@ public partial class MainWindow : WindowBase
             {
                 if (closingControl.AsDefault.IsChecked == true)
                 {
-                    AppSettings.Default.GeneralSection.ExitWhenClosed = closingControl.RadioMinimum.IsChecked != true;
+                    AppSettings.Default.GeneralSection.CloseBehavior = closingControl.RadioMinimum.IsChecked != true;
                     AppSettings.SaveDefault();
                 }
 
@@ -210,7 +210,7 @@ public partial class MainWindow : WindowBase
         SharedVm.Default.IsNavigationCollapsed = !softwareState.ShowFullNavigation;
         MiniPlayController.CloseButtonClicked += () =>
         {
-            if (AppSettings.Default.GeneralSection.ExitWhenClosed == null) Show();
+            if (AppSettings.Default.GeneralSection.CloseBehavior == null) Show();
             Close();
         };
 
@@ -238,7 +238,7 @@ public partial class MainWindow : WindowBase
             {
             });
 
-            var songDir = AppSettings.Default.GeneralSection.CustomSongDir;
+            var songDir = AppSettings.Default.GeneralSection.DirCustomSong;
             try
             {
                 await _osuFileScanningService.SyncCustomFolderAsync(songDir);
@@ -252,7 +252,7 @@ public partial class MainWindow : WindowBase
         {
             if (DateTime.Now - softwareState.LastSync > TimeSpan.FromDays(1))
             {
-                var dbPath = AppSettings.Default.GeneralSection.DbPath;
+                var dbPath = AppSettings.Default.GeneralSection.PathOsuDb;
                 if (dbPath != null)
                 {
                     try
@@ -307,7 +307,7 @@ public partial class MainWindow : WindowBase
         if (lastPlay != null && currentPlays.Count > 0)
         {
             await _playerService.InitializeNewAsync(lastPlay.PlayItem!.StandardizedPath,
-                AppSettings.Default.PlaySection.AutoPlay);
+                AppSettings.Default.PlaySection.IsAutoPlayOnStartup);
         }
     }
 

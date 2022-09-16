@@ -52,7 +52,7 @@ public class CurrentPlayControlVm : VmBase
     public ICommand OpenSourceFolderCommand => new DelegateCommand(param =>
     {
         ProcessUtils.StartWithShellExecute(PathUtils.GetFullPath(SelectedMap.StandardizedFolder,
-            AppSettings.Default.GeneralSection.OsuSongDir));
+            AppSettings.Default.GeneralSection.DirOsuSong));
     });
 
     public ICommand PlayCommand => new DelegateCommand(async param =>

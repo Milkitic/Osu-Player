@@ -39,12 +39,12 @@ public partial class GeneralPage : Page
             if (isRunOnStartup)
             {
                 rKey?.SetValue("OsuPlayer", Process.GetCurrentProcess().MainModule?.FileName ?? "");
-                AppSettings.Default.GeneralSection.RunOnStartup = true;
+                AppSettings.Default.GeneralSection.IsRunOnStartup = true;
             }
             else
             {
                 rKey?.DeleteValue("OsuPlayer", false);
-                AppSettings.Default.GeneralSection.RunOnStartup = false;
+                AppSettings.Default.GeneralSection.IsRunOnStartup = false;
             }
         }
 
@@ -53,13 +53,13 @@ public partial class GeneralPage : Page
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        RunOnStartup.IsChecked = AppSettings.Default.GeneralSection.RunOnStartup;
-        TbDbPath.Text = AppSettings.Default.GeneralSection.DbPath;
-        TbCustomPath.Text = AppSettings.Default.GeneralSection.CustomSongDir;
+        RunOnStartup.IsChecked = AppSettings.Default.GeneralSection.IsRunOnStartup;
+        TbDbPath.Text = AppSettings.Default.GeneralSection.PathOsuDb;
+        TbCustomPath.Text = AppSettings.Default.GeneralSection.DirCustomSong;
 
-        if (AppSettings.Default.GeneralSection.ExitWhenClosed.HasValue)
+        if (AppSettings.Default.GeneralSection.CloseBehavior.HasValue)
         {
-            if (AppSettings.Default.GeneralSection.ExitWhenClosed.Value)
+            if (AppSettings.Default.GeneralSection.CloseBehavior.Value)
                 RadioExit.IsChecked = true;
             else
                 RadioMinimum.IsChecked = true;
@@ -75,11 +75,11 @@ public partial class GeneralPage : Page
     {
         if (RadioExit.IsChecked.HasValue && RadioExit.IsChecked.Value)
         {
-            AppSettings.Default.GeneralSection.ExitWhenClosed = true;
+            AppSettings.Default.GeneralSection.CloseBehavior = true;
         }
         else if (RadioMinimum.IsChecked.HasValue && RadioMinimum.IsChecked.Value)
         {
-            AppSettings.Default.GeneralSection.ExitWhenClosed = false;
+            AppSettings.Default.GeneralSection.CloseBehavior = false;
         }
 
         AsDefault.IsChecked = true;
@@ -101,7 +101,7 @@ public partial class GeneralPage : Page
     private void AsDefault_CheckChanged(object sender, RoutedEventArgs e)
     {
         if (AsDefault.IsChecked.HasValue && !AsDefault.IsChecked.Value)
-            AppSettings.Default.GeneralSection.ExitWhenClosed = null;
+            AppSettings.Default.GeneralSection.CloseBehavior = null;
         else
             Radio_CheckChanged(sender, e);
         AppSettings.SaveDefault();
@@ -133,13 +133,13 @@ public partial class GeneralPage : Page
 
     private async void SyncNow_Click(object sender, RoutedEventArgs e)
     {
-        await SyncOsuDbAsync(AppSettings.Default.GeneralSection.DbPath);
+        await SyncOsuDbAsync(AppSettings.Default.GeneralSection.PathOsuDb);
     }
 
     private async void ScanNow_Click(object sender, RoutedEventArgs e)
     {
         await _osuFileScanningService.CancelTaskAsync();
-        await SyncCustomFolderAsync(AppSettings.Default.GeneralSection.CustomSongDir);
+        await SyncCustomFolderAsync(AppSettings.Default.GeneralSection.DirCustomSong);
     }
 
     private async ValueTask SyncOsuDbAsync(string path)

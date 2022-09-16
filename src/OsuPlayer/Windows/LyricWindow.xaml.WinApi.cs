@@ -1,24 +1,16 @@
 ﻿using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Interop;
 
 namespace Milki.OsuPlayer.Windows;
 
 public partial class LyricWindow
 {
-    private uint _oldGwlEx;
-    private bool _isLocked;
     private const uint WS_EX_LAYERED = 0x80000;
     private const int WS_EX_TRANSPARENT = 0x20;
     private const int GWL_EXSTYLE = (-20);
 
-    [DllImport("user32", EntryPoint = "SetWindowLong")]
-    private static extern uint SetWindowLong(IntPtr hwnd, int nIndex, uint dwNewLong);
-
-    [DllImport("user32", EntryPoint = "GetWindowLong")]
-    private static extern uint GetWindowLong(IntPtr hwnd, int nIndex);
-
-    private IntPtr Handle { get; set; }
+    private bool _isLocked;
+    private uint _oldGwlEx;
 
     public bool IsLocked
     {
@@ -42,9 +34,14 @@ public partial class LyricWindow
         }
     }
 
+    [DllImport("user32", EntryPoint = "SetWindowLong")]
+    private static extern uint SetWindowLong(IntPtr hwnd, int nIndex, uint dwNewLong);
+
+    [DllImport("user32", EntryPoint = "GetWindowLong")]
+    private static extern uint GetWindowLong(IntPtr hwnd, int nIndex);
+
     private void WindowBase_Loaded(object sender, RoutedEventArgs e)
     {
-        Handle = new WindowInteropHelper(this).Handle;
         _oldGwlEx = GetWindowLong(this.Handle, GWL_EXSTYLE);
     }
 

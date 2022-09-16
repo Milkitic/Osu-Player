@@ -18,8 +18,8 @@ public partial class ExportPage : Page
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        LblMp3Path.Text = AppSettings.Default.ExportSection.MusicDir;
-        LblBgPath.Text = AppSettings.Default.ExportSection.BackgroundDir;
+        LblMp3Path.Text = AppSettings.Default.ExportSection.DirMusic;
+        LblBgPath.Text = AppSettings.Default.ExportSection.DirBackground;
         if (AppSettings.Default.ExportSection.ExportNamingStyle == ExportNamingStyle.Title)
             RadioT.IsChecked = true;
         else if (AppSettings.Default.ExportSection.ExportNamingStyle == ExportNamingStyle.ArtistTitle)
@@ -45,8 +45,8 @@ public partial class ExportPage : Page
         };
         var result = dialog.ShowDialog();
         if (result != CommonFileDialogResult.Ok) return;
-        AppSettings.Default.ExportSection.MusicDir = dialog.FileName;
-        LblMp3Path.Text = AppSettings.Default.ExportSection.MusicDir;
+        AppSettings.Default.ExportSection.DirMusic = dialog.FileName;
+        LblMp3Path.Text = AppSettings.Default.ExportSection.DirMusic;
         AppSettings.SaveDefault();
     }
 
@@ -60,8 +60,8 @@ public partial class ExportPage : Page
         {
             var result = dialog.ShowDialog();
             if (result != CommonFileDialogResult.Ok) return;
-            AppSettings.Default.ExportSection.BackgroundDir = dialog.FileName;
-            LblBgPath.Text = AppSettings.Default.ExportSection.BackgroundDir;
+            AppSettings.Default.ExportSection.DirBackground = dialog.FileName;
+            LblBgPath.Text = AppSettings.Default.ExportSection.DirBackground;
             AppSettings.SaveDefault();
         }
     }

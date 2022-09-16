@@ -32,14 +32,14 @@ public partial class LyricPage : Page
             SourceKugou.IsChecked = true;
         else if (AppSettings.Default.LyricSection.LyricSource == LyricSource.QqMusic)
             SourceQqMusic.IsChecked = true;
-        if (AppSettings.Default.LyricSection.ProvideType == LyricProvideType.PreferBoth)
+        if (AppSettings.Default.LyricSection.LyricProvideType == LyricProvideType.PreferBoth)
             ShowAll.IsChecked = true;
-        else if (AppSettings.Default.LyricSection.ProvideType == LyricProvideType.Original)
+        else if (AppSettings.Default.LyricSection.LyricProvideType == LyricProvideType.Original)
             ShowOrigin.IsChecked = true;
-        else if (AppSettings.Default.LyricSection.ProvideType == LyricProvideType.PreferTranslated)
+        else if (AppSettings.Default.LyricSection.LyricProvideType == LyricProvideType.PreferTranslated)
             ShowTrans.IsChecked = true;
-        StrictMode.IsChecked = AppSettings.Default.LyricSection.StrictMode;
-        EnableCache.IsChecked = AppSettings.Default.LyricSection.EnableCache;
+        StrictMode.IsChecked = AppSettings.Default.LyricSection.IsStrictModeEnabled;
+        EnableCache.IsChecked = AppSettings.Default.LyricSection.IsCacheEnabled;
         _loaded = true;
     }
 
@@ -75,11 +75,11 @@ public partial class LyricPage : Page
     {
         if (!_loaded) return;
         if (ShowAll.IsChecked.HasValue && ShowAll.IsChecked.Value)
-            AppSettings.Default.LyricSection.ProvideType = LyricProvideType.PreferBoth;
+            AppSettings.Default.LyricSection.LyricProvideType = LyricProvideType.PreferBoth;
         else if (ShowOrigin.IsChecked.HasValue && ShowOrigin.IsChecked.Value)
-            AppSettings.Default.LyricSection.ProvideType = LyricProvideType.Original;
+            AppSettings.Default.LyricSection.LyricProvideType = LyricProvideType.Original;
         else if (ShowTrans.IsChecked.HasValue && ShowTrans.IsChecked.Value)
-            AppSettings.Default.LyricSection.ProvideType = LyricProvideType.PreferTranslated;
+            AppSettings.Default.LyricSection.LyricProvideType = LyricProvideType.PreferTranslated;
         ReloadLyric();
         AppSettings.SaveDefault();
     }
@@ -88,9 +88,9 @@ public partial class LyricPage : Page
     {
         if (!_loaded) return;
         if (StrictMode.IsChecked.HasValue && StrictMode.IsChecked.Value)
-            AppSettings.Default.LyricSection.StrictMode = true;
+            AppSettings.Default.LyricSection.IsStrictModeEnabled = true;
         else
-            AppSettings.Default.LyricSection.StrictMode = false;
+            AppSettings.Default.LyricSection.IsStrictModeEnabled = false;
         ReloadLyric();
         AppSettings.SaveDefault();
     }
@@ -99,9 +99,9 @@ public partial class LyricPage : Page
     {
         if (!_loaded) return;
         if (EnableCache.IsChecked.HasValue && EnableCache.IsChecked.Value)
-            AppSettings.Default.LyricSection.EnableCache = true;
+            AppSettings.Default.LyricSection.IsCacheEnabled = true;
         else
-            AppSettings.Default.LyricSection.EnableCache = false;
+            AppSettings.Default.LyricSection.IsCacheEnabled = false;
         ReloadLyric();
         AppSettings.SaveDefault();
     }

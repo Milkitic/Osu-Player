@@ -129,7 +129,7 @@ public partial class CardControl : UserControl
     private void MiOpenFolder_OnClick(object sender, RoutedEventArgs e)
     {
         var standardizedFolder = PlayItem.StandardizedFolder;
-        var folder = PathUtils.GetFullPath(standardizedFolder, AppSettings.Default.GeneralSection.OsuSongDir);
+        var folder = PathUtils.GetFullPath(standardizedFolder, AppSettings.Default.GeneralSection.DirOsuSong);
         if (!Directory.Exists(folder))
         {
             Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");

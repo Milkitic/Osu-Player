@@ -142,7 +142,7 @@ public partial class RecentPlayPage : Page
     {
         if (_viewModel.SelectedPlayItem is not { IsItemLost: false, PlayItem: { } playItem } loosePlayItem) return;
 
-        var folder = PathUtils.GetFullPath(playItem.StandardizedFolder, AppSettings.Default.GeneralSection.OsuSongDir);
+        var folder = PathUtils.GetFullPath(playItem.StandardizedFolder, AppSettings.Default.GeneralSection.DirOsuSong);
         if (!Directory.Exists(folder))
         {
             Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");

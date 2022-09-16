@@ -138,8 +138,8 @@ public partial class LyricWindow : WindowEx
         }
 
         _viewModel.FontFamily = lyricFont;
-        _viewModel.Hue = AppSettings.Default.LyricSection.Hue;
-        _viewModel.Saturation = AppSettings.Default.LyricSection.Saturation;
+        _viewModel.Hue = AppSettings.Default.LyricSection.AppearanceHue;
+        _viewModel.Saturation = AppSettings.Default.LyricSection.AppearanceSaturation;
     }
 
     private void LyricWindow_MouseMove(object sender, MouseEventArgs e)
@@ -317,19 +317,19 @@ public partial class LyricWindow : WindowEx
 
     private void sldHue_OnDragCompleted(object sender, DragCompletedEventArgs e)
     {
-        AppSettings.Default.LyricSection.Hue = _viewModel.Hue;
+        AppSettings.Default.LyricSection.AppearanceHue = _viewModel.Hue;
         AppSettings.SaveDefault();
     }
 
     private void sldSaturation_OnDragCompleted(object sender, DragCompletedEventArgs e)
     {
-        AppSettings.Default.LyricSection.Saturation = _viewModel.Saturation;
+        AppSettings.Default.LyricSection.AppearanceSaturation = _viewModel.Saturation;
         AppSettings.SaveDefault();
     }
 
     private void sldLightness_OnDragCompleted(object sender, DragCompletedEventArgs e)
     {
-        AppSettings.Default.LyricSection.Lightness = _viewModel.Lightness;
+        AppSettings.Default.LyricSection.AppearanceLightness = _viewModel.Lightness;
         AppSettings.SaveDefault();
     }
 }

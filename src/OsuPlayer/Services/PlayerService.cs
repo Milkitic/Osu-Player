@@ -36,7 +36,7 @@ public class PlayerService : VmBase, IAsyncDisposable
     public PlayerService(PlayListService playListService, AppSettings appSettings)
     {
         _playListService = playListService;
-        var playSectionDeviceInfo = appSettings.PlaySection.DeviceInfo ?? DeviceDescription.WasapiDefault;
+        var playSectionDeviceInfo = appSettings.PlaySection.PlayerDeviceInfo ?? DeviceDescription.WasapiDefault;
         if (playSectionDeviceInfo.Latency == 0)
         {
             playSectionDeviceInfo.Latency = 1;
@@ -167,7 +167,7 @@ public class PlayerService : VmBase, IAsyncDisposable
 
             LogTo.Info("Start load new song from path: {0}", standardizedPath);
             if (LoadPreStarted != null) await LoadPreStarted.Invoke(context);
-            var path = PathUtils.GetFullPath(standardizedPath, AppSettings.Default.GeneralSection.OsuSongDir);
+            var path = PathUtils.GetFullPath(standardizedPath, AppSettings.Default.GeneralSection.DirOsuSong);
             var osuFile = await OsuFile.ReadFromFileAsync(path, options =>
             {
                 options.ExcludeSection("Editor");

@@ -40,8 +40,8 @@ public class OsuFileScanningService
 
     public async ValueTask ScanAndSyncAsync(string path)
     {
-        var dbFolder = Path.GetFullPath(AppSettings.Default.GeneralSection.OsuSongDir);
-        var customFolder = Path.GetFullPath(AppSettings.Default.GeneralSection.CustomSongDir);
+        var dbFolder = Path.GetFullPath(AppSettings.Default.GeneralSection.DirOsuSong);
+        var customFolder = Path.GetFullPath(AppSettings.Default.GeneralSection.DirCustomSong);
         if (dbFolder.StartsWith(customFolder) || customFolder.StartsWith(customFolder))
         {
             return;
@@ -238,7 +238,7 @@ public class OsuFileScanningService
                     });
                 var playItemDetail = new PlayItemDetail();
                 UpdateDetailByCoosu(playItemDetail, osuFile);
-                var songFolder = AppSettings.Default.GeneralSection.OsuSongDir;
+                var songFolder = AppSettings.Default.GeneralSection.DirOsuSong;
                 var fullPath = Path.GetFullPath(songFolder);
                 var index = fileInfo.FullName.IndexOf(fullPath, StringComparison.Ordinal);
                 string standardizedPath;

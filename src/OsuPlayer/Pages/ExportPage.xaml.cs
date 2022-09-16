@@ -52,7 +52,7 @@ public partial class ExportPage : Page
         _exportService = ServiceProviders.Default.GetService<ExportService>();
         DataContext = _viewModel = new ExportPageVm();
         InitializeComponent();
-        _viewModel.ExportPath = AppSettings.Default.ExportSection.MusicDir;
+        _viewModel.ExportPath = AppSettings.Default.ExportSection.DirMusic;
     }
 
     private void OpenCmdExecuted(object target, ExecutedRoutedEventArgs e)

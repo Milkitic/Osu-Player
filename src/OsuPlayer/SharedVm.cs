@@ -6,36 +6,26 @@ namespace Milki.OsuPlayer;
 
 public class SharedVm : SingletonVm<SharedVm>
 {
-    private bool _enableVideo = true;
-    private bool _isNavigationCollapsed;
-    private List<PlayList> _playLists;
     private NavigationType _checkedNavigationType;
+    private bool _enableVideo = true;
     private bool _isLyricEnabled;
     private bool _isLyricWindowLocked;
     private bool _isMinimalMode;
+    private bool _isNavigationCollapsed;
+    private List<PlayList> _playLists;
 
-    public bool EnableVideo
-    {
-        get => _enableVideo;
-        set => this.RaiseAndSetIfChanged(ref _enableVideo, value);
-    }
-
-    public bool IsNavigationCollapsed
-    {
-        get => _isNavigationCollapsed;
-        set => this.RaiseAndSetIfChanged(ref _isNavigationCollapsed, value);
-    }
-
-    public List<PlayList> PlayLists
-    {
-        get => _playLists;
-        set => this.RaiseAndSetIfChanged(ref _playLists, value);
-    }
+    public AppSettings AppSettings => AppSettings.Default;
 
     public NavigationType CheckedNavigationType
     {
         get => _checkedNavigationType;
         set => this.RaiseAndSetIfChanged(ref _checkedNavigationType, value);
+    }
+
+    public bool EnableVideo
+    {
+        get => _enableVideo;
+        set => this.RaiseAndSetIfChanged(ref _enableVideo, value);
     }
 
     public bool IsLyricWindowEnabled
@@ -56,7 +46,17 @@ public class SharedVm : SingletonVm<SharedVm>
         set => this.RaiseAndSetIfChanged(ref _isMinimalMode, value);
     }
 
-    public AppSettings AppSettings => AppSettings.Default;
+    public bool IsNavigationCollapsed
+    {
+        get => _isNavigationCollapsed;
+        set => this.RaiseAndSetIfChanged(ref _isNavigationCollapsed, value);
+    }
+
+    public List<PlayList> PlayLists
+    {
+        get => _playLists;
+        set => this.RaiseAndSetIfChanged(ref _playLists, value);
+    }
 
     public async ValueTask UpdatePlayListsAsync()
     {
@@ -64,9 +64,4 @@ public class SharedVm : SingletonVm<SharedVm>
         var list = await dbContext.GetPlayListsAsync();
         PlayLists = new List<PlayList>(list);
     }
-}
-
-public enum NavigationType
-{
-    Search, Recent, Export
 }

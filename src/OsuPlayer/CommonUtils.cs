@@ -48,7 +48,7 @@ public static class CommonUtils
         {
             await syncService.SynchronizeManaged(syncService.GetPlayItemDetailsFormDb(path));
 
-            AppSettings.Default.GeneralSection.DbPath = path;
+            AppSettings.Default.GeneralSection.PathOsuDb = path;
             AppSettings.SaveDefault();
 
             await using var dbContext = ServiceProviders.GetApplicationDbContext();
@@ -71,7 +71,7 @@ public static class CommonUtils
             await osuFileScanningService.CancelTaskAsync();
             await osuFileScanningService.ScanAndSyncAsync(path);
 
-            AppSettings.Default.GeneralSection.CustomSongDir = path;
+            AppSettings.Default.GeneralSection.DirCustomSong = path;
             AppSettings.SaveDefault();
         }
         catch (Exception ex)
@@ -92,7 +92,7 @@ public static class CommonUtils
             }
         }
 
-        var osuFilePath = PathUtils.GetFullPath(playItem.StandardizedPath, AppSettings.Default.GeneralSection.OsuSongDir);
+        var osuFilePath = PathUtils.GetFullPath(playItem.StandardizedPath, AppSettings.Default.GeneralSection.DirOsuSong);
 
         if (!File.Exists(osuFilePath))
         {
@@ -170,7 +170,7 @@ public static class CommonUtils
         await using var dbContext = ServiceProviders.GetApplicationDbContext();
         if (string.IsNullOrEmpty(playList.ImagePath))
         {
-            var osuSongDir = AppSettings.Default.GeneralSection.OsuSongDir;
+            var osuSongDir = AppSettings.Default.GeneralSection.DirOsuSong;
             foreach (var beatmap in beatmaps)
             {
                 var folder = PathUtils.GetFullPath(beatmap.StandardizedFolder, osuSongDir);

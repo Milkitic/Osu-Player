@@ -29,10 +29,10 @@ internal class ExportService
 
     public bool IsTaskBusy => _exportTask is { IsCanceled: false, IsCompleted: false, IsFaulted: false };
 
-    public string MusicDir => AppSettings.Default.ExportSection.MusicDir;
+    public string MusicDir => AppSettings.Default.ExportSection.DirMusic;
     public bool Overwrite { get; } = true;
 
-    private string BackgroundDir => AppSettings.Default.ExportSection.BackgroundDir;
+    private string BackgroundDir => AppSettings.Default.ExportSection.DirBackground;
 
     public void QueueBeatmaps(IEnumerable<PlayItem> beatmaps)
     {
@@ -68,7 +68,7 @@ internal class ExportService
     {
         var playItemDetail = playItem.PlayItemDetail;
         var folder = PathUtils.GetFullPath(playItem.StandardizedFolder,
-            AppSettings.Default.GeneralSection.OsuSongDir);
+            AppSettings.Default.GeneralSection.DirOsuSong);
         try
         {
             var mp3FileInfo = new FileInfo(Path.Combine(folder, playItemDetail.AudioFileName));

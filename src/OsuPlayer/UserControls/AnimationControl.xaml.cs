@@ -222,8 +222,8 @@ public partial class AnimationControl : UserControl
 
     private void Play_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(AppSettings.PlaySection.PlaybackRate))
-            VideoElement.SpeedRatio = AppSettings.Default.PlaySection.PlaybackRate;
+        if (e.PropertyName == nameof(AppSettings.PlaySection.PlayerPlaybackRate))
+            VideoElement.SpeedRatio = AppSettings.Default.PlaySection.PlayerPlaybackRate;
     }
 
     private async ValueTask CloseVideoAsync()
@@ -234,7 +234,7 @@ public partial class AnimationControl : UserControl
         Execute.OnUiThread(() =>
         {
             VideoElementBorder.Visibility = Visibility.Hidden;
-            VideoElement.SpeedRatio = AppSettings.Default.PlaySection.PlaybackRate;
+            VideoElement.SpeedRatio = AppSettings.Default.PlaySection.PlayerPlaybackRate;
         });
     }
 
