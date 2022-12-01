@@ -22,7 +22,7 @@ namespace ExportTest
 
         private static async Task ExportOsu()
         {
-            var path = @"E:\Games\osu!\Songs\cYsmix_-_triangles\cYsmix - triangles (yf_bmp) [Expert].osu";
+            var path = @"C:\Users\milkitic\Downloads\ETERNAL DRAIN\ (bms2osu) [lv.11].osu";
 
             //var path = "E:\\Games\\osu!\\Songs\\3198 Rhapsody - Emerald Sword\\" +
             //           //"1376486 Risshuu feat. Choko - Take\\" +
@@ -47,8 +47,8 @@ namespace ExportTest
             await using var hitsoundChannel = new HitsoundChannel(osuFile, engine, fileCache)
             {
                 ManualOffset = 0,
-                Volume = 1f,
-                BalanceFactor = 0.3f
+                Volume = 0.4f,
+                BalanceFactor = 0f
             };
             await using var sampleChannel = new SampleChannel(osuFile, engine, new Subchannel[]
             {
@@ -56,14 +56,14 @@ namespace ExportTest
             }, fileCache)
             {
                 ManualOffset = 0,
-                Volume = 1f,
-                BalanceFactor = 0.3f
+                Volume = 0.4f,
+                BalanceFactor = 0f
             };
 
             var exporter = new WavPcmExporter(new MultiElementsChannel[] { directChannel, hitsoundChannel, sampleChannel }
                 , engine);
             string pre = null;
-            await exporter.ExportAsync("Crazy Thursday - Expert.wav", progress =>
+            await exporter.ExportAsync("ETERNAL DRAIN.wav", progress =>
             {
                 var p = $"Progress: {progress:P0}";
                 if (pre != p)
