@@ -220,8 +220,6 @@ namespace Milky.OsuPlayer.Pages
             {
                 Logger.Error(ex, "Error while loading panel item.");
             }
-
-            Logger.Debug("VirtualizingGalleryWrapPanel: {0}", e.Index);
         }
 
         private void Panel_Loaded(object sender, RoutedEventArgs e)
