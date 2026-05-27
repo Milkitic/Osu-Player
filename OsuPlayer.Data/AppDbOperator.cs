@@ -62,6 +62,9 @@ namespace Milky.OsuPlayer.Data
             {
                 using var db = CreateDbContext();
                 db.Database.EnsureCreated();
+                db.Database.ExecuteSqlRaw(@"
+CREATE INDEX IF NOT EXISTS IX_beatmap_identity
+ON beatmap(folderName, version, own);");
             }
             catch (Exception ex)
             {

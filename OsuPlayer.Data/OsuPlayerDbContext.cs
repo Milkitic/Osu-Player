@@ -41,6 +41,8 @@ namespace Milky.OsuPlayer.Data
 
             entity.ToTable("beatmap");
             entity.HasKey(k => k.Id);
+            entity.HasIndex(k => new { k.FolderName, k.Version, k.InOwnDb })
+                .HasDatabaseName("IX_beatmap_identity");
             entity.Property(k => k.Id).HasColumnName("id");
             entity.Property(k => k.Artist).HasColumnName("artist");
             entity.Property(k => k.ArtistUnicode).HasColumnName("artistU");

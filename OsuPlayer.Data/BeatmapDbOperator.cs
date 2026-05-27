@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Coosu.Beatmap.MetaData;
 using Dapper;
@@ -15,6 +16,7 @@ namespace Milky.OsuPlayer.Data
     public static class BeatmapDbOperator
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private const int MaxIdentitiesPerQuery = 300;
 
         public static List<Beatmap> SearchBeatmapByOptions(this AppDbOperator op, string searchText, BeatmapSortMode beatmapSortMode, int startIndex, int count)
         {
@@ -89,8 +91,14 @@ namespace Milky.OsuPlayer.Data
             try
             {
                 using var db = new OsuPlayerDbContext();
-                return db.Beatmaps.AsNoTracking()
-                    .FirstOrDefault(k => k.Version == id.Version && k.FolderName == id.FolderName);
+                var query = db.Beatmaps.AsNoTracking()
+                    .Where(k => k.Version == id.Version && k.FolderName == id.FolderName);
+
+                return query
+                    .FirstOrDefault(k => k.InOwnDb == id.InOwnDb) ??
+                    query
+                    .FirstOrDefault(k => k.Version == id.Version &&
+                                         k.FolderName == id.FolderName);
             }
             catch (Exception ex)
             {
@@ -158,33 +166,42 @@ namespace Milky.OsuPlayer.Data
                     dbConnection.Open();
                 }
 
-                using (var transaction = dbConnection.BeginTransaction())
+                var result = new List<Beatmap>(identities.Count);
+                foreach (var chunk in identities.Chunk(MaxIdentitiesPerQuery))
                 {
-                    dbConnection.Execute("DROP TABLE IF EXISTS tmp_table;", transaction: transaction);
-                    dbConnection.Execute(@"
-CREATE TEMPORARY TABLE tmp_table (
-    folder  NVARCHAR (255),
-    version NVARCHAR (255),
-    ownDb NVARCHAR (255) 
-);
-", transaction: transaction);
+                    var sql = new StringBuilder(@"
+WITH ids(folder, version, ownDb, ord) AS (
+    VALUES ");
+                    var parameters = new DynamicParameters();
 
-                    dbConnection.Execute(@"
-INSERT INTO tmp_table (folder, version, ownDb) VALUES (@FolderName, @Version, @OwnDb);
-", identities, transaction);
+                    for (var i = 0; i < chunk.Length; i++)
+                    {
+                        if (i > 0)
+                        {
+                            sql.Append(", ");
+                        }
 
-                    var result = dbConnection.Query<Beatmap>(@"
-SELECT *
-  FROM beatmap
+                        sql.Append($"(@folder{i}, @version{i}, @ownDb{i}, @ord{i})");
+                        parameters.Add($"folder{i}", chunk[i].FolderName);
+                        parameters.Add($"version{i}", chunk[i].Version);
+                        parameters.Add($"ownDb{i}", chunk[i].OwnDb);
+                        parameters.Add($"ord{i}", i);
+                    }
+
+                    sql.Append(@"
+)
+SELECT b.*
+  FROM ids
        INNER JOIN
-       tmp_table ON beatmap.folderName = tmp_table.folder AND 
-                    beatmap.version = tmp_table.version AND 
-                    beatmap.own = tmp_table.ownDb;
-", transaction: transaction).ToList();
+       beatmap AS b ON b.folderName = ids.folder AND 
+                     b.version = ids.version AND 
+                     b.own = ids.ownDb
+ ORDER BY ids.ord;");
 
-                    transaction.Commit();
-                    return result;
+                    result.AddRange(dbConnection.Query<Beatmap>(sql.ToString(), parameters));
                 }
+
+                return result;
             }
             catch (Exception ex)
             {
