@@ -162,7 +162,7 @@ namespace Milky.OsuPlayer.Data.Dapper.Provider
                 GetAllTables();
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }
@@ -497,40 +497,52 @@ namespace Milky.OsuPlayer.Data.Dapper.Provider
             }
         }
 
-        public virtual int InsertArray(string table, ICollection<Dictionary<string, object>> insertColumns)
+        public virtual int InsertArray(string table, IEnumerable<Dictionary<string, object>> insertColumns)
         {
+            if (insertColumns == null)
+                throw new ArgumentNullException(nameof(insertColumns));
+
             int count = 0;
             if (SingletonConnection.State != ConnectionState.Open)
                 SingletonConnection.Open();
-            using (var transaction = SingletonConnection.BeginTransaction())
+
+            try
             {
-                foreach (var insertColumn in insertColumns)
+                using (var transaction = SingletonConnection.BeginTransaction())
                 {
-                    if (insertColumn == null || insertColumn.Count == 0)
-                        throw new Exception("请提供插入字段");
-                    if (!VerifyTableAndColumn(table, insertColumn.Keys.ToList(), null, null, out var keyword))
-                        throw new Exception($"不存在表或者相关列名：{keyword}");
-
-                    GetInsertCommandTemplate(table, insertColumn, out var sql, out var @params);
-
-                    int result;
-
-                    try
+                    foreach (var insertColumn in insertColumns)
                     {
-                        result = @params == null
-                            ? SingletonConnection.Execute(sql)
-                            : SingletonConnection.Execute(sql, @params);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception($"从{DbType}数据库中获取数据出错：\r\n" +
-                                            $"数据库执行语句：{sql}", ex);
+                        if (insertColumn == null || insertColumn.Count == 0)
+                            throw new Exception("请提供插入字段");
+                        if (!VerifyTableAndColumn(table, insertColumn.Keys.ToList(), null, null, out var keyword))
+                            throw new Exception($"不存在表或者相关列名：{keyword}");
+
+                        GetInsertCommandTemplate(table, insertColumn, out var sql, out var @params);
+
+                        int result;
+
+                        try
+                        {
+                            result = @params == null
+                                ? SingletonConnection.Execute(sql, transaction: transaction)
+                                : SingletonConnection.Execute(sql, @params, transaction);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception($"从{DbType}数据库中获取数据出错：\r\n" +
+                                                $"数据库执行语句：{sql}", ex);
+                        }
+
+                        count += result;
                     }
 
-                    count += result;
+                    transaction.Commit();
                 }
-
-                transaction.Commit();
+            }
+            finally
+            {
+                if (!KeepSingletonConnectionOpen)
+                    SingletonConnection.Close();
             }
 
             return count;
@@ -581,8 +593,10 @@ namespace Milky.OsuPlayer.Data.Dapper.Provider
             }
             else
             {
-                var dbConn = GetNewDbConnection();
-                innerGetAllTables = InnerGetAllTables(dbConn);
+                using (var dbConn = GetNewDbConnection())
+                {
+                    innerGetAllTables = InnerGetAllTables(dbConn);
+                }
             }
 
             return innerGetAllTables;
@@ -610,8 +624,10 @@ namespace Milky.OsuPlayer.Data.Dapper.Provider
             }
             else
             {
-                var dbConn = GetNewDbConnection();
-                columns = InnerGetColumnsByTable(dbConn, tableName);
+                using (var dbConn = GetNewDbConnection())
+                {
+                    columns = InnerGetColumnsByTable(dbConn, tableName);
+                }
             }
 
             return columns;
@@ -695,30 +711,37 @@ namespace Milky.OsuPlayer.Data.Dapper.Provider
             }
 
             @params = new DynamicParameters();
+            var parameterNames = new List<string>();
             var existColumn = new HashSet<string>();
             foreach (var kvp in whereConditions)
             {
-                if (kvp.Value is null) continue;
-
-                if (!existColumn.Contains(kvp.ColumnName))
+                if (kvp.Value is null)
                 {
-                    existColumn.Add(kvp.ColumnName);
+                    parameterNames.Add(null);
+                    continue;
+                }
+
+                var parameterName = kvp.ColumnName;
+                if (!existColumn.Contains(parameterName))
+                {
+                    existColumn.Add(parameterName);
                 }
                 else
                 {
                     int j = 0;
-                    var newStr = kvp.ColumnName + j;
+                    var newStr = parameterName + j;
                     while (existColumn.Contains(newStr))
                     {
                         j++;
-                        newStr = kvp.ColumnName + j;
+                        newStr = parameterName + j;
                     }
 
-                    kvp.ColumnName = newStr;
                     existColumn.Add(newStr);
+                    parameterName = newStr;
                 }
 
-                @params.Add(kvp.ColumnName, kvp.Value);
+                parameterNames.Add(parameterName);
+                @params.Add(parameterName, kvp.Value);
             }
 
             var sb = new StringBuilder();
@@ -731,60 +754,7 @@ namespace Milky.OsuPlayer.Data.Dapper.Provider
                 }
 
                 var columnName = condition.ColumnName;
-                var valueQuote = "";
-
-                switch (DbType)
-                {
-                    case DataBaseType.Access:
-                        if (condition.ForceKeyType.HasValue)
-                        {
-                            valueQuote =
-                                (condition.ForceKeyType == System.Data.DbType.Time ||
-                                 condition.ForceKeyType == System.Data.DbType.DateTime ||
-                                 condition.ForceKeyType == System.Data.DbType.DateTime2 ||
-                                 condition.ForceKeyType == System.Data.DbType.DateTimeOffset)
-                                    ? ""
-                                    : "";
-                        }
-                        else
-                        {
-                            valueQuote =
-                                (condition.Value is DateTime ||
-                                 condition.Value is DateTimeOffset)
-                                    ? ""
-                                    : "";
-                        }
-
-                        break;
-                    case DataBaseType.Sqlite:
-                    case DataBaseType.SqlServer:
-                        if (condition.ForceKeyType.HasValue)
-                        {
-                            valueQuote =
-                                (condition.ForceKeyType == System.Data.DbType.String ||
-                                 condition.ForceKeyType == System.Data.DbType.StringFixedLength ||
-                                 condition.ForceKeyType == System.Data.DbType.AnsiString ||
-                                 condition.ForceKeyType == System.Data.DbType.AnsiStringFixedLength
-                                )
-                                    ? ""
-                                    : "";
-                        }
-                        else
-                        {
-                            valueQuote =
-                                (condition.Value is string ||
-                                 condition.Value is char)
-                                    ? ""
-                                    : "";
-                        }
-
-                        break;
-                    case DataBaseType.MySql:
-                        valueQuote = "";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(DbType));
-                }
+                var parameterName = parameterNames[i];
 
                 if (condition.Value is null)
                 {
@@ -806,10 +776,10 @@ namespace Milky.OsuPlayer.Data.Dapper.Provider
                 }
                 else
                 {
-                    sb.Append(string.Format("[{0}] {1} {2}@{3}{4}",
+                    sb.Append(string.Format("[{0}] {1} @{2}",
                         columnName,
                         Where.GetTypeSymbol(condition.WhereType),
-                        valueQuote, columnName, valueQuote));
+                        parameterName));
                 }
 
                 i++;

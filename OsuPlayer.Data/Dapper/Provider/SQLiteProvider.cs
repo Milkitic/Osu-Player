@@ -80,44 +80,38 @@ namespace Milky.OsuPlayer.Data.Dapper.Provider
             bool asc, out string sql, out DynamicParameters kvParams)
         {
             kvParams = new DynamicParameters();
-            //var s = ((ICollection<KeyValuePair<string, object>>) whereParams).ToDictionary(k => k.Key, k => k.Value);
-            var existColumn = whereParams == null ? new List<string>() : whereParams.ParameterNames.ToList();
-            //new HashSet<string>(((ICollection<KeyValuePair<string, object>>)whereParams).Select(k => k.Key));
-            //var expando = (ICollection<KeyValuePair<string, object>>)kvParams;
+            var assignments = new List<string>(updateColumns.Count);
+            var usedParameterNames = whereParams == null
+                ? new HashSet<string>()
+                : new HashSet<string>(whereParams.ParameterNames);
+
             foreach (var kvp in updateColumns)
             {
-                if (!existColumn.Contains(kvp.Key))
-                {
-                    existColumn.Add(kvp.Key);
-                    kvParams.Add("upd_" + kvp.Key, kvp.Value);
-                }
-                else
-                {
-                    int j = 0;
-                    var newStr = kvp.Key + j;
-                    while (existColumn.Contains(newStr))
-                    {
-                        j++;
-                        newStr = kvp.Key + j;
-                    }
-
-                    kvParams.Add("upd_" + newStr, kvp.Value);
-                    existColumn.Add(newStr);
-                }
-            }
-
-            //var newDic = eoColl.ToDictionary(k => k.Key, k => k.Value);
-            var newDic = new Dictionary<string, string>();
-            var o1 = updateColumns.Keys.ToList();
-            var o2 = kvParams.ParameterNames.ToList();
-            for (int i = 0; i < o1.Count; i++)
-            {
-                newDic.Add(o1[i], o2[i]);
+                var parameterName = GetUniqueParameterName("upd_" + kvp.Key, usedParameterNames);
+                kvParams.Add(parameterName, kvp.Value);
+                assignments.Add($"[{kvp.Key}]=@{parameterName}");
             }
 
             sql = $"UPDATE {table} SET " +
-                  string.Join(",", newDic.Select(k => $"[{k.Key}]=@{k.Value}")) + " " +
+                  string.Join(",", assignments) + " " +
                   $"WHERE {whereStr} ";
+        }
+
+        private static string GetUniqueParameterName(string baseName, ISet<string> usedParameterNames)
+        {
+            if (usedParameterNames.Add(baseName))
+            {
+                return baseName;
+            }
+
+            var index = 0;
+            string candidate;
+            do
+            {
+                candidate = baseName + index++;
+            } while (!usedParameterNames.Add(candidate));
+
+            return candidate;
         }
 
         protected override void GetInsertCommandTemplate(string table, Dictionary<string, object> insertColumns,

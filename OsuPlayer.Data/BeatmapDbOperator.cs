@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -108,49 +109,54 @@ namespace Milky.OsuPlayer.Data
         public static List<Beatmap> GetBeatmapsByIdentifiable<T>(this AppDbOperator op, IEnumerable<T> reqList)
             where T : IMapIdentifiable
         {
-            if (!reqList.Any()) return new List<Beatmap>();
+            var identities = reqList
+                .Where(k => !k.IsMapTemporary())
+                .Where(k => !(k is MapIdentity mi && mi.Equals(MapIdentity.Default)))
+                .Select(k => new
+                {
+                    k.FolderName,
+                    k.Version,
+                    OwnDb = k.InOwnDb ? 1 : 0
+                })
+                .ToList();
+
+            if (identities.Count == 0) return new List<Beatmap>();
 
             try
             {
-                var inDbMaps = reqList.Where(k => !k.IsMapTemporary()).ToList();
-                //var absMaps = reqList.Except(inDbMaps).ToList();
-                //var args = new ExpandoObject();
-                //var expando = (ICollection<KeyValuePair<string, object>>)args;
-
-                var sb = new StringBuilder();
-                foreach (var id in inDbMaps)
+                var dbConnection = op.ThreadedProvider.GetDbConnection();
+                if (dbConnection.State != ConnectionState.Open)
                 {
-                    if (id is MapIdentity mi && mi.Equals(MapIdentity.Default)) continue;
-                    var valueSql = string.Format("('{0}', '{1}', {2}),",
-                        id.FolderName.Replace(@"'", @"''"),
-                        id.Version.Replace(@"'", @"''"),
-                        id.InOwnDb ? 1 : 0); // escape is still safe
-                    sb.Append(valueSql);
-                    // sb.Append($"(@folder{i}, @version{i}),");
-                    // expando.Add(new KeyValuePair<string, object>($"folder{i}", id.FolderName));
-                    // expando.Add(new KeyValuePair<string, object>($"version{i}", id.Version));
-                    // SQL logic error: too many SQL variables
+                    dbConnection.Open();
                 }
 
-                sb.Remove(sb.Length - 1, 1);
-                var sql = $@"
-DROP TABLE IF EXISTS tmp_table;
+                using (var transaction = dbConnection.BeginTransaction())
+                {
+                    dbConnection.Execute("DROP TABLE IF EXISTS tmp_table;", transaction: transaction);
+                    dbConnection.Execute(@"
 CREATE TEMPORARY TABLE tmp_table (
     folder  NVARCHAR (255),
     version NVARCHAR (255),
     ownDb NVARCHAR (255) 
 );
-INSERT INTO tmp_table (folder, version, ownDb)
-                      VALUES {sb};
+", transaction: transaction);
+
+                    dbConnection.Execute(@"
+INSERT INTO tmp_table (folder, version, ownDb) VALUES (@FolderName, @Version, @OwnDb);
+", identities, transaction);
+
+                    var result = dbConnection.Query<Beatmap>(@"
 SELECT *
   FROM beatmap
        INNER JOIN
        tmp_table ON beatmap.folderName = tmp_table.folder AND 
                     beatmap.version = tmp_table.version AND 
                     beatmap.own = tmp_table.ownDb;
-";
+", transaction: transaction).ToList();
 
-                return op.ThreadedProvider.GetDbConnection().Query<Beatmap>(sql).ToList();
+                    transaction.Commit();
+                    return result;
+                }
             }
             catch (Exception ex)
             {
@@ -229,7 +235,7 @@ SELECT *
                 ["folderName"] = k.FolderName,
                 ["audioName"] = k.AudioFileName,
                 ["own"] = k.InOwnDb,
-            }).ToList());
+            }));
         }
 
         public static void AddNewMaps(this AppDbOperator op, params Beatmap[] beatmaps)

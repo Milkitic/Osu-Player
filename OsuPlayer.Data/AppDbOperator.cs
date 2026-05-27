@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using Coosu.Beatmap.MetaData;
 using Dapper;
@@ -319,7 +318,8 @@ SELECT collection.id,
         {
             if (beatmaps.Count < 1) return;
 
-            var sb = new StringBuilder($"INSERT INTO {TABLE_RELATION} (id, collectionId, mapId, addTime) VALUES ");
+            var relations = new List<Dictionary<string, object>>(beatmaps.Count);
+            var addTime = DateTime.Now;
             foreach (var beatmap in beatmaps)
             {
                 if (beatmap.IsMapTemporary())
@@ -328,12 +328,16 @@ SELECT collection.id,
                 }
 
                 var map = GetMapFromDb(beatmap.GetIdentity());
-                sb.Append($"('{Guid.NewGuid()}', '{collection.Id}', '{map.Id}', '{DateTime.Now}'),"); // maybe no injection here
+                relations.Add(new Dictionary<string, object>
+                {
+                    ["id"] = Guid.NewGuid().ToString(),
+                    ["collectionId"] = collection.Id,
+                    ["mapId"] = map.Id,
+                    ["addTime"] = addTime
+                });
             }
 
-            sb.Remove(sb.Length - 1, 1).Append(";");
-            var sql = sb.ToString();
-            ThreadedProvider.GetDbConnection().Execute(sql);
+            ThreadedProvider.InsertArray(TABLE_RELATION, relations);
         }
 
         public void UpdateCollection(Collection collection)
@@ -486,7 +490,7 @@ SELECT collection.id,
                 Logger.Debug("需确认加入自定义目录后才可继续");
             }
 
-            var hasResult = GetMapThumb(beatmapDbId, out _);
+            var hasResult = HasMapSbInfo(beatmapDbId);
 
             if (hasResult)
             {
@@ -497,7 +501,7 @@ SELECT collection.id,
                         ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
                         ["version"] = sbInfo.Version,
                         ["folder"] = sbInfo.FolderName,
-                        ["ownDb"] = sbInfo.InOwnDb
+                        ["own"] = sbInfo.InOwnDb
                     },
                     ("mapId", beatmapDbId, "=="));
             }
@@ -512,7 +516,7 @@ SELECT collection.id,
                         ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
                         ["version"] = sbInfo.Version,
                         ["folder"] = sbInfo.FolderName,
-                        ["ownDb"] = sbInfo.InOwnDb
+                        ["own"] = sbInfo.InOwnDb
                     }
                 );
             }
@@ -521,6 +525,14 @@ SELECT collection.id,
         public void SetMapSbInfo(Beatmap beatmap, StoryboardInfo sbInfo)
         {
             SetMapSbInfo(beatmap.Id, sbInfo);
+        }
+
+        private bool HasMapSbInfo(Guid beatmapDbId)
+        {
+            return ThreadedProvider.Query(TABLE_SB,
+                    ("mapId", beatmapDbId, "=="),
+                    count: 1)
+                .Any();
         }
 
         private void InnerUpdateMap(IMapIdentifiable id, Dictionary<string, object> updateColumns)

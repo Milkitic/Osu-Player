@@ -13,7 +13,7 @@ namespace Milky.OsuPlayer.Data.Models
             Map(p => p.SbThumbVideoPath).ToColumn("thumbVideoPath");
             Map(p => p.Version).ToColumn("version");
             Map(p => p.FolderName).ToColumn("folder");
-            Map(p => p.InOwnDb).ToColumn("ownDb");
+            Map(p => p.InOwnDb).ToColumn("own");
         }
     }
 
