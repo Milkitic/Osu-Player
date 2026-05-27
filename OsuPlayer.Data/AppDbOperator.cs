@@ -1,12 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using Coosu.Beatmap.MetaData;
 using Dapper;
-using Milky.OsuPlayer.Data.Dapper;
+using Microsoft.EntityFrameworkCore;
 using Milky.OsuPlayer.Data.Dapper.Provider;
 using Milky.OsuPlayer.Data.Models;
 
@@ -17,150 +15,33 @@ namespace Milky.OsuPlayer.Data
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public const string TABLE_BEATMAP = "beatmap";
-        private const string TABLE_RELATION = "collection_relation";
-        private const string TABLE_MAP = "map_info";
-        private const string TABLE_THUMB = "map_thumb";
-        private const string TABLE_SB = "sb_info";
-        private const string TABLE_COLLECTION = "collection";
 
         static AppDbOperator()
         {
             DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
-        private static ReadOnlyDictionary<string, string> _creationMapping =
-            new ReadOnlyDictionary<string, string>(
-                new Dictionary<string, string>()
-                {
-                    [TABLE_COLLECTION] = $@"
-CREATE TABLE {TABLE_COLLECTION} (
-    [id]          NVARCHAR (40)        NOT NULL,
-    [name]        NVARCHAR (100) NOT NULL,
-    [locked]      INT                   NOT NULL,
-    [index]       INT                   NOT NULL,
-    [imagePath]   NVARCHAR (700),
-    [description] NVARCHAR (700),
-    [createTime]  DATETIME              NOT NULL,
-    PRIMARY KEY (
-        id
-    )
-);",
-                    [TABLE_RELATION] = $@"
-CREATE TABLE {TABLE_RELATION} (
-    [id]           NVARCHAR (40)        NOT NULL,
-    [collectionId] NVARCHAR (40) NOT NULL,
-    [mapId]        NVARCHAR (40) NOT NULL,
-    [addTime]      DATETIME,
-    PRIMARY KEY (
-        id
-    )
-);",
-                    [TABLE_MAP] = $@"
-CREATE TABLE {TABLE_MAP} (
-    [id]           NVARCHAR (40)        NOT NULL,
-    [version]      NVARCHAR (255) NOT NULL,
-    [folder]       NVARCHAR (255) NOT NULL,
-    [ownDb]          BIT NOT NULL,
-    [offset]       INT                   NOT NULL,
-    [lastPlayTime] DATETIME,
-    [exportFile]   NVARCHAR (700),
-    PRIMARY KEY (
-        id
-    )
-);
-PRAGMA case_sensitive_like=false;",
-                    [TABLE_THUMB] = $@"
-CREATE TABLE {TABLE_THUMB} (
-    [id]           NVARCHAR (40) PRIMARY KEY
-                                         NOT NULL,
-    [mapId]        NVARCHAR (40) NOT NULL,
-    [thumbPath]    NVARCHAR (40) NOT NULL
-);
-",
-                    [TABLE_SB] = $@"
-CREATE TABLE {TABLE_SB} (
-    [id]               NVARCHAR (40) PRIMARY KEY
-                                         NOT NULL,
-    [mapId]            NVARCHAR (40) NOT NULL,
-    [thumbPath]        NVARCHAR (40) NOT NULL,
-    [thumbVideoPath]   NVARCHAR (40) NOT NULL,
-    [version]          NVARCHAR (255) NOT NULL,
-    [folder]           NVARCHAR (255) NOT NULL,
-    [own]              BIT NOT NULL
-);
-",
-                    [TABLE_BEATMAP] = $@"
-CREATE TABLE {TABLE_BEATMAP} (
-    id            UNIQUEIDENTIFIER      NOT NULL,
-    artist        NVARCHAR (2147483647),
-    artistU       NVARCHAR (2147483647),
-    title         NVARCHAR (2147483647),
-    titleU        NVARCHAR (2147483647),
-    creator       NVARCHAR (2147483647),
-    version       NVARCHAR (2147483647),
-    fileName      NVARCHAR (2147483647),
-    lastModified  DATETIME              NOT NULL,
-    diffSrStd     FLOAT                 NOT NULL,
-    diffSrTaiko   FLOAT                 NOT NULL,
-    diffSrCtb     FLOAT                 NOT NULL,
-    diffSrMania   FLOAT                 NOT NULL,
-    drainTime     INT                   NOT NULL,
-    totalTime     INT                   NOT NULL,
-    audioPreview  INT                   NOT NULL,
-    beatmapId     INT                   NOT NULL,
-    beatmapSetId  INT                   NOT NULL,
-    gameMode      INT                   NOT NULL,
-    source        NVARCHAR (2147483647),
-    tags          NVARCHAR (2147483647),
-    folderName    NVARCHAR (2147483647),
-    audioName     NVARCHAR (2147483647),
-    own           BIT                   NOT NULL,
-    PRIMARY KEY (
-        id
-    )
-);
-PRAGMA case_sensitive_like=false;"
-                });
+        private static readonly ThreadLocal<SQLiteProvider> Provider = new ThreadLocal<SQLiteProvider>(() =>
+            (SQLiteProvider)new SQLiteProvider().ConfigureConnectionString(OsuPlayerDbContext.DefaultConnectionString));
 
-        private static ThreadLocal<SQLiteProvider> _provider = new ThreadLocal<SQLiteProvider>(() =>
-            (SQLiteProvider)new SQLiteProvider().ConfigureConnectionString("data source=player.db"));
+        public SQLiteProvider ThreadedProvider => Provider.Value;
 
-        public SQLiteProvider ThreadedProvider => _provider.Value;
-
-        private List<CollectionRelation> GetCollectionsRelations()
+        private static OsuPlayerDbContext CreateDbContext()
         {
-            return ThreadedProvider.Query<CollectionRelation>(TABLE_RELATION).ToList();
-        }
-
-        private List<BeatmapSettings> GetMaps()
-        {
-            return ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP).ToList();
+            return new OsuPlayerDbContext();
         }
 
         public static void ValidateDb()
         {
-            var dbFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "player.db");
-            if (!File.Exists(dbFile))
+            try
             {
-                File.WriteAllText(dbFile, "");
+                using var db = CreateDbContext();
+                db.Database.EnsureCreated();
             }
-
-            var prov = _provider.Value;
-
-            var tables = prov.GetAllTables();
-
-            foreach (var pair in _creationMapping)
+            catch (Exception ex)
             {
-                if (tables.Contains(pair.Key)) continue;
-                try
-                {
-                    prov.GetDbConnection().Execute(pair.Value);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex, "Error while creating table: {0}", pair);
-                    throw new Exception($"Error while creating table: {pair}", ex);
-                }
+                Logger.Error(ex, "Error while validating local database.");
+                throw;
             }
         }
 
@@ -173,38 +54,28 @@ PRAGMA case_sensitive_like=false;"
                     Logger.Debug("需确认加入自定义目录后才可继续");
                 }
 
-                var map = ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
-                        new Where[]
-                        {
-                            ("version", id.Version),
-                            ("folder", id.FolderName),
-                            ("ownDb", id.InOwnDb)
-                        },
-                        count: 1)
-                    .FirstOrDefault();
+                using var db = CreateDbContext();
+                var map = db.BeatmapSettings.FirstOrDefault(k =>
+                    k.Version == id.Version &&
+                    k.FolderName == id.FolderName &&
+                    k.InOwnDb == id.InOwnDb);
 
-                if (map == null)
+                if (map != null)
                 {
-                    var guid = Guid.NewGuid().ToString();
-                    ThreadedProvider.Insert(TABLE_MAP, new Dictionary<string, object>()
-                    {
-                        ["id"] = guid,
-                        ["version"] = id.Version,
-                        ["folder"] = id.FolderName,
-                        ["ownDb"] = id.InOwnDb,
-                        ["offset"] = 0
-                    });
-
-                    return new BeatmapSettings
-                    {
-                        Id = guid,
-                        Version = id.Version,
-                        FolderName = id.FolderName,
-                        InOwnDb = id.InOwnDb,
-                        Offset = 0
-                    };
+                    return map;
                 }
 
+                map = new BeatmapSettings
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Version = id.Version,
+                    FolderName = id.FolderName,
+                    InOwnDb = id.InOwnDb,
+                    Offset = 0
+                };
+
+                db.BeatmapSettings.Add(map);
+                db.SaveChanges();
                 return map;
             }
             catch (Exception ex)
@@ -216,45 +87,47 @@ PRAGMA case_sensitive_like=false;"
 
         public List<BeatmapSettings> GetRecentList()
         {
-            return ThreadedProvider.Query<BeatmapSettings>(TABLE_MAP,
-                    ("lastPlayTime", null, "!="),
-                    orderColumn: "lastPlayTime")
+            using var db = CreateDbContext();
+            return db.BeatmapSettings
+                .Where(k => k.LastPlayTime != null)
+                .OrderBy(k => k.LastPlayTime)
                 .ToList();
         }
 
         public List<BeatmapSettings> GetExportedMaps()
         {
-            return ThreadedProvider.GetDbConnection()
-                .Query<BeatmapSettings>(@"SELECT * FROM map_info WHERE exportFile IS NOT NULL AND TRIM(exportFile) <> ''").ToList();
+            using var db = CreateDbContext();
+            return db.BeatmapSettings
+                .Where(k => k.ExportFile != null && k.ExportFile.Trim() != string.Empty)
+                .ToList();
         }
 
         public List<BeatmapSettings> GetMapsFromCollection(Collection collection)
         {
-            var result = ThreadedProvider.GetDbConnection()
-                .Query<BeatmapSettings>(@"
-SELECT map.id,
-       map.version,
-       map.folder,
-       map.ownDb,
-       map.[offset],
-       map.lastPlayTime,
-       map.exportFile,
-       CAST (relation.addTime AS VARCHAR (30) ) AS addTime
-  FROM (
-           SELECT *
-             FROM collection_relation
-            WHERE collectionId = @collectionId
-       )
-       AS relation
-       INNER JOIN
-       map_info AS map ON relation.mapId = map.id;
-", new { collectionId = collection.Id }).ToList();
-            return result;
+            using var db = CreateDbContext();
+            return db.CollectionRelations
+                .Where(relation => relation.CollectionId == collection.Id)
+                .Join(db.BeatmapSettings,
+                    relation => relation.MapId,
+                    map => map.Id,
+                    (relation, map) => new BeatmapSettings(
+                        map.Id,
+                        map.Version,
+                        map.FolderName,
+                        map.Offset,
+                        map.LastPlayTime,
+                        map.ExportFile,
+                        relation.AddTime)
+                    {
+                        InOwnDb = map.InOwnDb
+                    })
+                .ToList();
         }
 
         public List<Collection> GetCollections()
         {
-            return ThreadedProvider.Query<Collection>(TABLE_COLLECTION).ToList();
+            using var db = CreateDbContext();
+            return db.Collections.ToList();
         }
 
         public List<Collection> GetCollectionsByMap(BeatmapSettings beatmapSettings)
@@ -264,61 +137,57 @@ SELECT map.id,
                 Logger.Debug("需确认加入自定义目录后才可继续");
             }
 
-            return ThreadedProvider.GetDbConnection()
-                .Query<Collection>(@"
-SELECT collection.id,
-       collection.name,
-       collection.locked,
-       collection.[index],
-       collection.imagePath,
-       collection.description,
-       collection.createTime
-  FROM (
-           SELECT *
-             FROM collection_relation
-            WHERE mapId = @mapId
-       )
-       AS relation
-       INNER JOIN
-       collection ON relation.collectionId = collection.id;
-", new { mapId = beatmapSettings.Id }).ToList();
+            using var db = CreateDbContext();
+            return db.CollectionRelations
+                .Where(relation => relation.MapId == beatmapSettings.Id)
+                .Join(db.Collections,
+                    relation => relation.CollectionId,
+                    collection => collection.Id,
+                    (_, collection) => collection)
+                .ToList();
         }
 
         public void AddCollection(string name, bool locked = false)
         {
-            ThreadedProvider.Insert(TABLE_COLLECTION, new Dictionary<string, object>()
+            using var db = CreateDbContext();
+            db.Collections.Add(new Collection
             {
-                ["id"] = Guid.NewGuid().ToString(),
-                ["name"] = name,
-                ["locked"] = locked ? 1 : 0,
-                ["index"] = 0,
-                ["createTime"] = DateTime.Now
+                Id = Guid.NewGuid().ToString(),
+                Name = name,
+                Locked = locked ? 1 : 0,
+                Index = 0,
+                CreateTime = DateTime.Now
             });
+            db.SaveChanges();
         }
 
         private void AddCollection(Collection collection)
         {
-            ThreadedProvider.Insert(TABLE_COLLECTION, new Dictionary<string, object>
+            using var db = CreateDbContext();
+            db.Collections.Add(new Collection
             {
-                ["id"] = Guid.NewGuid().ToString(),
-                ["name"] = collection.Name,
-                ["locked"] = collection.LockedBool ? 1 : 0,
-                ["index"] = collection.Index,
-                ["createTime"] = collection.CreateTime
+                Id = string.IsNullOrWhiteSpace(collection.Id) ? Guid.NewGuid().ToString() : collection.Id,
+                Name = collection.Name,
+                Locked = collection.LockedBool ? 1 : 0,
+                Index = collection.Index,
+                ImagePath = collection.ImagePath,
+                Description = collection.Description,
+                CreateTime = collection.CreateTime == default ? DateTime.Now : collection.CreateTime
             });
+            db.SaveChanges();
         }
 
         public Collection GetCollectionById(string id)
         {
-            return ThreadedProvider.Query<Collection>(TABLE_COLLECTION, ("id", id), count: 1).FirstOrDefault();
+            using var db = CreateDbContext();
+            return db.Collections.FirstOrDefault(k => k.Id == id);
         }
 
-        //todo: 添加时有误
         public void AddMapsToCollection(IList<Beatmap> beatmaps, Collection collection)
         {
             if (beatmaps.Count < 1) return;
 
-            var relations = new List<Dictionary<string, object>>(beatmaps.Count);
+            var relations = new List<CollectionRelation>(beatmaps.Count);
             var addTime = DateTime.Now;
             foreach (var beatmap in beatmaps)
             {
@@ -328,49 +197,45 @@ SELECT collection.id,
                 }
 
                 var map = GetMapFromDb(beatmap.GetIdentity());
-                relations.Add(new Dictionary<string, object>
+                relations.Add(new CollectionRelation
                 {
-                    ["id"] = Guid.NewGuid().ToString(),
-                    ["collectionId"] = collection.Id,
-                    ["mapId"] = map.Id,
-                    ["addTime"] = addTime
+                    Id = Guid.NewGuid().ToString(),
+                    CollectionId = collection.Id,
+                    MapId = map.Id,
+                    AddTime = addTime
                 });
             }
 
-            ThreadedProvider.InsertArray(TABLE_RELATION, relations);
+            using var db = CreateDbContext();
+            db.CollectionRelations.AddRange(relations);
+            db.SaveChanges();
         }
 
         public void UpdateCollection(Collection collection)
         {
-            var result = GetCollectionById(collection.Id);
+            using var db = CreateDbContext();
+            var result = db.Collections.FirstOrDefault(k => k.Id == collection.Id);
             if (result == null)
             {
                 AddCollection(collection);
+                return;
             }
-            else
-            {
-                ThreadedProvider.Update(TABLE_COLLECTION,
-                    new Dictionary<string, object>
-                    {
-                        //["id"] = Guid.NewGuid().ToString(),
-                        ["name"] = collection.Name,
-                        ["locked"] = collection.LockedBool ? 1 : 0,
-                        ["index"] = collection.Index,
-                        ["imagePath"] = collection.ImagePath,
-                        ["description"] = collection.Description,
-                        ["createTime"] = collection.CreateTime
-                    },
-                    new Where[] { ("id", collection.Id) },
-                    count: 1);
-            }
+
+            result.Name = collection.Name;
+            result.Locked = collection.LockedBool ? 1 : 0;
+            result.Index = collection.Index;
+            result.ImagePath = collection.ImagePath;
+            result.Description = collection.Description;
+            result.CreateTime = collection.CreateTime;
+            db.SaveChanges();
         }
 
         public void UpdateMap(IMapIdentifiable id, int? offset = null)
         {
-            var updateColumns = new Dictionary<string, object> { ["lastPlayTime"] = DateTime.Now };
+            var updateColumns = new Action<BeatmapSettings>(map => map.LastPlayTime = DateTime.Now);
             if (offset != null)
             {
-                updateColumns.Add("offset", offset);
+                updateColumns += map => map.Offset = offset.Value;
             }
 
             InnerUpdateMap(id, updateColumns);
@@ -378,49 +243,33 @@ SELECT collection.id,
 
         public void AddMapExport(IMapIdentifiable id, string exportFilePath)
         {
-            InnerUpdateMap(id, new Dictionary<string, object> { ["exportFile"] = exportFilePath });
+            InnerUpdateMap(id, map => map.ExportFile = exportFilePath);
         }
 
         public void RemoveMapExport(IMapIdentifiable id)
         {
-            InnerUpdateMap(id, new Dictionary<string, object> { ["exportFile"] = null });
+            InnerUpdateMap(id, map => map.ExportFile = null);
         }
-
-        //public void UpdateMap(Beatmap beatmap, int? offset = null)
-        //{
-        //    UpdateMap(beatmap.GetIdentity(), offset);
-        //}
 
         public void RemoveFromRecent(IMapIdentifiable id)
         {
-            InnerUpdateMap(id, new Dictionary<string, object> { ["lastPlayTime"] = null });
+            InnerUpdateMap(id, map => map.LastPlayTime = null);
         }
-
-        //public void RemoveFromRecent(Beatmap beatmap)
-        //{
-        //    RemoveFromRecent(beatmap.GetIdentity());
-        //}
 
         public void ClearRecent()
         {
-            ThreadedProvider.Update(TABLE_MAP,
-                new Dictionary<string, object>
-                {
-                    ["lastPlayTime"] = null
-                },
-                Array.Empty<Where>());
+            using var db = CreateDbContext();
+            db.BeatmapSettings.ExecuteUpdate(setters => setters.SetProperty(map => map.LastPlayTime, (DateTime?)null));
         }
 
         public void RemoveCollection(Collection collection)
         {
-            ThreadedProvider.Delete(TABLE_COLLECTION, ("id", collection.Id));
-            ThreadedProvider.Delete(TABLE_RELATION, ("collectionId", collection.Id));
+            using var db = CreateDbContext();
+            using var transaction = db.Database.BeginTransaction();
+            db.Collections.Where(k => k.Id == collection.Id).ExecuteDelete();
+            db.CollectionRelations.Where(k => k.CollectionId == collection.Id).ExecuteDelete();
+            transaction.Commit();
         }
-
-        //public void RemoveMapFromCollection(Beatmap beatmap, Collection collection)
-        //{
-        //    RemoveMapFromCollection(beatmap.GetIdentity(), collection);
-        //}
 
         public void RemoveMapFromCollection(IMapIdentifiable id, Collection collection)
         {
@@ -430,16 +279,18 @@ SELECT collection.id,
             }
 
             var map = GetMapFromDb(id);
-            ThreadedProvider.Delete(TABLE_RELATION, new Where[] { ("collectionId", collection.Id), ("mapId", map.Id) });
+            using var db = CreateDbContext();
+            db.CollectionRelations
+                .Where(k => k.CollectionId == collection.Id && k.MapId == map.Id)
+                .ExecuteDelete();
         }
 
         public bool GetMapThumb(Guid beatmapDbId, out string thumbPath)
         {
-            var dy = ThreadedProvider.Query(TABLE_THUMB,
-                ("mapId", beatmapDbId, "=="),
-                count: 1).FirstOrDefault();
-            thumbPath = dy?.thumbPath;
-            return !(dy is null);
+            using var db = CreateDbContext();
+            var thumb = db.MapThumbs.FirstOrDefault(k => k.MapId == beatmapDbId);
+            thumbPath = thumb?.ThumbPath;
+            return thumb != null;
         }
 
         public bool GetMapThumb(Beatmap beatmap, out string thumbPath)
@@ -454,28 +305,23 @@ SELECT collection.id,
 
         public void SetMapThumb(Guid beatmapDbId, string thumbPath)
         {
-            var hasResult = GetMapThumb(beatmapDbId, out _);
-
-            if (hasResult)
+            using var db = CreateDbContext();
+            var thumb = db.MapThumbs.FirstOrDefault(k => k.MapId == beatmapDbId);
+            if (thumb == null)
             {
-                ThreadedProvider.Update(TABLE_THUMB,
-                    new Dictionary<string, object>
-                    {
-                        ["thumbPath"] = thumbPath
-                    },
-                    ("mapId", beatmapDbId, "=="));
+                db.MapThumbs.Add(new MapThumb
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    MapId = beatmapDbId,
+                    ThumbPath = thumbPath
+                });
             }
             else
             {
-                ThreadedProvider.Insert(TABLE_THUMB,
-                    new Dictionary<string, object>
-                    {
-                        ["id"] = Guid.NewGuid().ToString(),
-                        ["mapId"] = beatmapDbId,
-                        ["thumbPath"] = thumbPath
-                    }
-                );
+                thumb.ThumbPath = thumbPath;
             }
+
+            db.SaveChanges();
         }
 
         public void SetMapThumb(Beatmap beatmap, string thumbPath)
@@ -490,36 +336,32 @@ SELECT collection.id,
                 Logger.Debug("需确认加入自定义目录后才可继续");
             }
 
-            var hasResult = HasMapSbInfo(beatmapDbId);
-
-            if (hasResult)
+            var mapId = beatmapDbId.ToString();
+            using var db = CreateDbContext();
+            var result = db.StoryboardInfos.FirstOrDefault(k => k.MapId == mapId);
+            if (result == null)
             {
-                ThreadedProvider.Update(TABLE_SB,
-                    new Dictionary<string, object>
-                    {
-                        ["thumbPath"] = sbInfo.SbThumbPath,
-                        ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
-                        ["version"] = sbInfo.Version,
-                        ["folder"] = sbInfo.FolderName,
-                        ["own"] = sbInfo.InOwnDb
-                    },
-                    ("mapId", beatmapDbId, "=="));
+                db.StoryboardInfos.Add(new StoryboardInfo
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    MapId = mapId,
+                    SbThumbPath = sbInfo.SbThumbPath,
+                    SbThumbVideoPath = sbInfo.SbThumbVideoPath,
+                    Version = sbInfo.Version,
+                    FolderName = sbInfo.FolderName,
+                    InOwnDb = sbInfo.InOwnDb
+                });
             }
             else
             {
-                ThreadedProvider.Insert(TABLE_SB,
-                    new Dictionary<string, object>
-                    {
-                        ["id"] = Guid.NewGuid().ToString(),
-                        ["mapId"] = beatmapDbId,
-                        ["thumbPath"] = sbInfo.SbThumbPath,
-                        ["thumbVideoPath"] = sbInfo.SbThumbVideoPath,
-                        ["version"] = sbInfo.Version,
-                        ["folder"] = sbInfo.FolderName,
-                        ["own"] = sbInfo.InOwnDb
-                    }
-                );
+                result.SbThumbPath = sbInfo.SbThumbPath;
+                result.SbThumbVideoPath = sbInfo.SbThumbVideoPath;
+                result.Version = sbInfo.Version;
+                result.FolderName = sbInfo.FolderName;
+                result.InOwnDb = sbInfo.InOwnDb;
             }
+
+            db.SaveChanges();
         }
 
         public void SetMapSbInfo(Beatmap beatmap, StoryboardInfo sbInfo)
@@ -527,35 +369,36 @@ SELECT collection.id,
             SetMapSbInfo(beatmap.Id, sbInfo);
         }
 
-        private bool HasMapSbInfo(Guid beatmapDbId)
-        {
-            return ThreadedProvider.Query(TABLE_SB,
-                    ("mapId", beatmapDbId, "=="),
-                    count: 1)
-                .Any();
-        }
-
-        private void InnerUpdateMap(IMapIdentifiable id, Dictionary<string, object> updateColumns)
+        private void InnerUpdateMap(IMapIdentifiable id, Action<BeatmapSettings> updateAction)
         {
             if (id.IsMapTemporary())
             {
                 Logger.Debug("需确认加入自定义目录后才可继续");
             }
 
-            GetMapFromDb(id);
-            if (updateColumns.Count == 0) return;
-
             try
             {
-                ThreadedProvider.Update(TABLE_MAP,
-                    updateColumns,
-                    new Where[]
+                using var db = CreateDbContext();
+                var map = db.BeatmapSettings.FirstOrDefault(k =>
+                    k.Version == id.Version &&
+                    k.FolderName == id.FolderName &&
+                    k.InOwnDb == id.InOwnDb);
+
+                if (map == null)
+                {
+                    map = new BeatmapSettings
                     {
-                        ("version", id.Version),
-                        ("folder", id.FolderName),
-                        ("ownDb", id.InOwnDb)
-                    },
-                    count: 1);
+                        Id = Guid.NewGuid().ToString(),
+                        Version = id.Version,
+                        FolderName = id.FolderName,
+                        InOwnDb = id.InOwnDb,
+                        Offset = 0
+                    };
+                    db.BeatmapSettings.Add(map);
+                }
+
+                updateAction(map);
+                db.SaveChanges();
             }
             catch (Exception ex)
             {
