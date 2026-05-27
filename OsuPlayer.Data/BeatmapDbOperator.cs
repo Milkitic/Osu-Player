@@ -94,11 +94,8 @@ namespace Milky.OsuPlayer.Data
                 var query = db.Beatmaps.AsNoTracking()
                     .Where(k => k.Version == id.Version && k.FolderName == id.FolderName);
 
-                return query
-                    .FirstOrDefault(k => k.InOwnDb == id.InOwnDb) ??
-                    query
-                    .FirstOrDefault(k => k.Version == id.Version &&
-                                         k.FolderName == id.FolderName);
+                return query.FirstOrDefault(k => k.InOwnDb == id.InOwnDb) ??
+                    query.FirstOrDefault();
             }
             catch (Exception ex)
             {
