@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Coosu.Beatmap.MetaData;
 using Dapper;
@@ -16,18 +15,47 @@ namespace Milky.OsuPlayer.Data
     public static class BeatmapDbOperator
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private const string TABLE_BEATMAP = AppDbOperator.TABLE_BEATMAP;
 
         public static List<Beatmap> SearchBeatmapByOptions(this AppDbOperator op, string searchText, BeatmapSortMode beatmapSortMode, int startIndex, int count)
         {
-            var expando = new DynamicParameters();
-            var command = " SELECT * FROM beatmap WHERE ";
-            var keywordSql = GetKeywordQueryAndArgs(searchText, ref expando);
-            var sort = GetOrderAndTakeQueryAndArgs(beatmapSortMode, startIndex, count);
             var sw = Stopwatch.StartNew();
             try
             {
-                return op.GetDapperConnection().Query<Beatmap>(command + keywordSql + sort, expando)
+                using var db = new OsuPlayerDbContext();
+                IQueryable<Beatmap> query = db.Beatmaps.AsNoTracking();
+
+                var keywords = searchText?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                if (keywords != null)
+                {
+                    foreach (var keyword in keywords)
+                    {
+                        var pattern = $"%{keyword}%";
+                        query = query.Where(k =>
+                            EF.Functions.Like(k.Artist, pattern) ||
+                            EF.Functions.Like(k.ArtistUnicode, pattern) ||
+                            EF.Functions.Like(k.Title, pattern) ||
+                            EF.Functions.Like(k.TitleUnicode, pattern) ||
+                            EF.Functions.Like(k.SongTags, pattern) ||
+                            EF.Functions.Like(k.SongSource, pattern) ||
+                            EF.Functions.Like(k.Creator, pattern) ||
+                            EF.Functions.Like(k.Version, pattern));
+                    }
+                }
+
+                query = beatmapSortMode switch
+                {
+                    BeatmapSortMode.Title => query
+                        .OrderBy(k => k.TitleUnicode)
+                        .ThenBy(k => k.Title),
+                    _ => query
+                        .OrderBy(k => k.ArtistUnicode)
+                        .ThenBy(k => k.Artist)
+                };
+
+                return query
+                    .Skip(startIndex)
+                    .Take(count)
                     .ToList();
             }
             catch (Exception ex)
@@ -324,61 +352,6 @@ INSERT INTO beatmap (
         {
             using var db = new OsuPlayerDbContext();
             db.Beatmaps.Where(k => !k.InOwnDb).ExecuteDelete();
-        }
-
-        private static string GetKeywordQueryAndArgs(string keywordStr, ref DynamicParameters args)
-        {
-            if (string.IsNullOrWhiteSpace(keywordStr))
-            {
-                return "1=1";
-            }
-
-            var keywords = keywordStr.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-            if (args == null) args = new DynamicParameters();
-
-            var sb = new StringBuilder();
-            for (var i = 0; i < keywords.Length; i++)
-            {
-                var keyword = keywords[i];
-                var postfix = $" like @keyword{i} ";
-                sb.AppendLine("(")
-                    .AppendLine($" artist {postfix} OR ")
-                    .AppendLine($" artistU {postfix} OR ")
-                    .AppendLine($" title {postfix} OR ")
-                    .AppendLine($" titleU {postfix} OR ")
-                    .AppendLine($" tags {postfix} OR ")
-                    .AppendLine($" source {postfix} OR ")
-                    .AppendLine($" creator {postfix} OR ")
-                    .AppendLine($" version {postfix} ")
-                    .AppendLine(" ) ");
-
-                args.Add($"keyword{i}", $"%{keyword}%");
-                if (i != keywords.Length - 1)
-                {
-                    sb.AppendLine(" AND ");
-                }
-            }
-
-            return sb.ToString();
-        }
-
-        private static string GetOrderAndTakeQueryAndArgs(BeatmapSortMode beatmapSortMode, int startIndex, int count)
-        {
-            var sb = new StringBuilder();
-            switch (beatmapSortMode)
-            {
-                case BeatmapSortMode.Title:
-                    sb.AppendLine(" ORDER BY titleU, title ");
-                    break;
-                default:
-                case BeatmapSortMode.Artist:
-                    sb.AppendLine(" ORDER BY artistU, artist ");
-                    break;
-            }
-
-            sb.AppendLine($" LIMIT {startIndex}, {count} "); // no injection
-
-            return sb.ToString();
         }
     }
 
