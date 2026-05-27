@@ -34,8 +34,9 @@ namespace Milky.OsuPlayer
 
             StyleUtilities.SetAlignment();
 
-            //https://ffmpeg.zeranoe.com/builds/win32/shared/ffmpeg-4.2.1-win32-shared.zip
-            Unosquare.FFME.Library.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg");
+            // Keep FFmpeg binaries separated by process architecture to avoid x86/x64 mismatches.
+            var ffmpegArchitecture = Environment.Is64BitProcess ? "win-x64" : "win-x86";
+            Unosquare.FFME.Library.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg", ffmpegArchitecture);
         }
 
         private static bool LoadConfig()

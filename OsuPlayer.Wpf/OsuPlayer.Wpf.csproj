@@ -126,17 +126,7 @@
 
   <ItemGroup>
     <Content Include="extensions\font\default.ttc" CopyToOutputDirectory="Always" />
-    <Content Include="extensions\plugins\ffmpeg\avcodec-58.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="extensions\plugins\ffmpeg\avdevice-58.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="extensions\plugins\ffmpeg\avfilter-7.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="extensions\plugins\ffmpeg\avformat-58.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="extensions\plugins\ffmpeg\avutil-56.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="extensions\plugins\ffmpeg\ffmpeg.exe" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="extensions\plugins\ffmpeg\ffplay.exe" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="extensions\plugins\ffmpeg\ffprobe.exe" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="extensions\plugins\ffmpeg\postproc-55.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="extensions\plugins\ffmpeg\swresample-3.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="extensions\plugins\ffmpeg\swscale-5.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="extensions\plugins\ffmpeg\**\*.*" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="extensions\plugins\oppai-ng\oppai.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="extensions\plugins\oppai-ng\oppai.exe" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="extensions\plugins\ShaderEffects.dll" />
@@ -168,7 +158,7 @@
     <PackageReference Include="Coosu.Beatmap" Version="$(CoosuBeatmapVersion)" />
     <PackageReference Include="Dapper" Version="2.1.79" />
     <PackageReference Include="Dapper.FluentMap" Version="2.0.0" />
-    <PackageReference Include="FFME.Windows" Version="4.4.350" />
+    <PackageReference Include="FFME.Windows" Version="7.0.361-beta.1" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
     <PackageReference Include="HoLLy.osu.DatabaseReader" Version="3.4.0" />
     <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
