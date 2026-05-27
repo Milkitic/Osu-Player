@@ -2,19 +2,19 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>$(OsuPlayerWindowsTargetFramework)</TargetFramework>
     <RootNamespace>Milky.OsuPlayer</RootNamespace>
     <AssemblyName>OsuPlayer</AssemblyName>
+    <AssemblyTitle>Osu Player</AssemblyTitle>
+    <Product>Osu Player</Product>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
     <EnableDefaultPageItems>false</EnableDefaultPageItems>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>osuPlayer.ico</ApplicationIcon>
     <Deterministic>false</Deterministic>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -30,21 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="ShaderEffects">
-      <HintPath>External\plugins\ShaderEffects.dll</HintPath>
+      <HintPath>extensions\plugins\ShaderEffects.dll</HintPath>
     </Reference>
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Web" />
   </ItemGroup>
 
   <ItemGroup>
@@ -191,10 +179,9 @@
     <PackageReference Include="NLog" Version="5.0.1" />
     <PackageReference Include="NLog.Schema" Version="5.0.1" />
     <PackageReference Include="Sentry.NLog" Version="3.18.0" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.116" />
-    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.0" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.0" />
   </ItemGroup>
 
 </Project>

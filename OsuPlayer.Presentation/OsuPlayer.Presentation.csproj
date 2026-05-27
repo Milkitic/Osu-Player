@@ -1,26 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>$(OsuPlayerWindowsTargetFramework)</TargetFramework>
     <RootNamespace>Milky.OsuPlayer.Presentation</RootNamespace>
     <AssemblyName>OsuPlayer.Presentation</AssemblyName>
     <UseWPF>true</UseWPF>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyTitle>OsuPlayer.Interaction</AssemblyTitle>
+    <Product>OsuPlayer.Interaction</Product>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
+    <PackageReference Include="NLog" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NLog" Version="5.0.1" />
-    <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
+    <AssemblyAttribute Include="System.Runtime.InteropServices.GuidAttribute">
+      <_Parameter1>93e3612c-d388-438f-a04a-047265820998</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
 </Project>

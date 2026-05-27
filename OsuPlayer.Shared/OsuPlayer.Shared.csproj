@@ -1,22 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>$(OsuPlayerWindowsTargetFramework)</TargetFramework>
     <RootNamespace>Milky.OsuPlayer.Shared</RootNamespace>
     <AssemblyName>OsuPlayer.Shared</AssemblyName>
     <UseWPF>true</UseWPF>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Copyright>Copyright ©  2020</Copyright>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj" />
@@ -24,6 +16,12 @@
 
   <ItemGroup>
     <PackageReference Include="NLog" Version="5.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.InteropServices.GuidAttribute">
+      <_Parameter1>c842fab3-ec80-4e95-b402-bf0572f1806d</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
 </Project>
