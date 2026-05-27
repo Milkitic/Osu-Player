@@ -6,7 +6,7 @@ using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Shared;
 using Newtonsoft.Json;
-using NLog.Config;
+using NLog;
 using System;
 using System.IO;
 using System.Linq;
@@ -18,7 +18,8 @@ namespace Milky.OsuPlayer
     {
         public static void Startup()
         {
-            ConfigurationItemFactory.Default.LayoutRenderers.RegisterDefinition("InvariantCulture", typeof(InvariantCultureLayoutRendererWrapper));
+            LogManager.Setup().SetupExtensions(setup =>
+                setup.RegisterLayoutRenderer<InvariantCultureLayoutRendererWrapper>("InvariantCulture"));
             if (!LoadConfig())
             {
                 Environment.Exit(0);
