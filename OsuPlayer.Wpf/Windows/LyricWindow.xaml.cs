@@ -372,7 +372,7 @@ namespace Milky.OsuPlayer.Windows
 
         private async void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
-            await _controller.Player.TogglePlay();
+            await _controller.TogglePlayAsync();
         }
 
         private async void BtnNext_Click(object sender, RoutedEventArgs e)

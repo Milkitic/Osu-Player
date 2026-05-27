@@ -80,7 +80,7 @@ namespace Milky.OsuPlayer.Windows
 
         private void TryBindHotKeys()
         {
-            OverallKeyHook.AddKeyHook(HotKeyType.TogglePlay, () => _controller.PlayList.CurrentInfo?.TogglePlayHandle());
+            OverallKeyHook.AddKeyHook(HotKeyType.TogglePlay, async () => await _controller.TogglePlayAsync());
             OverallKeyHook.AddKeyHook(HotKeyType.PrevSong, async () => await _controller.PlayPrevAsync());
             OverallKeyHook.AddKeyHook(HotKeyType.NextSong, async () => await _controller.PlayNextAsync());
             OverallKeyHook.AddKeyHook(HotKeyType.VolumeUp, () =>

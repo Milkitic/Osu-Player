@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Coosu.Beatmap.Extensions;
 using Coosu.Beatmap.MetaData;
 using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
@@ -24,6 +23,7 @@ namespace Milky.OsuPlayer.Media.Audio
     {
         public event Action<PlayStatus> PlayStatusChanged;
         public event Action<TimeSpan> PositionUpdated;
+        public event Func<BeatmapContext, double, bool, Task> PositionSetRequested;
 
         public event Action InterfaceClearRequest;
 
@@ -81,6 +81,53 @@ namespace Milky.OsuPlayer.Media.Audio
 #if DEBUG
             LoadError += ObservablePlayController_LoadError;
 #endif
+        }
+
+        public async Task PlayAsync()
+        {
+            if (!TryGetReadyPlayer(out _, out var player)) return;
+            await player.Play().ConfigureAwait(false);
+        }
+
+        public async Task PauseAsync()
+        {
+            if (!TryGetReadyPlayer(out _, out var player)) return;
+            await player.Pause().ConfigureAwait(false);
+        }
+
+        public async Task StopAsync()
+        {
+            if (!TryGetReadyPlayer(out _, out var player)) return;
+            await player.Stop().ConfigureAwait(false);
+        }
+
+        public async Task RestartAsync()
+        {
+            await StopAsync().ConfigureAwait(false);
+            await PlayAsync().ConfigureAwait(false);
+        }
+
+        public async Task TogglePlayAsync()
+        {
+            if (!TryGetReadyPlayer(out _, out var player)) return;
+
+            if (player.PlayStatus == PlayStatus.Ready ||
+                player.PlayStatus == PlayStatus.Finished ||
+                player.PlayStatus == PlayStatus.Paused)
+            {
+                await PlayAsync().ConfigureAwait(false);
+            }
+            else if (player.PlayStatus == PlayStatus.Playing)
+            {
+                await PauseAsync().ConfigureAwait(false);
+            }
+        }
+
+        public async Task SetTimeAsync(double time, bool play)
+        {
+            if (!TryGetReadyPlayer(out var context, out var player)) return;
+            await player.SkipTo(TimeSpan.FromMilliseconds(time)).ConfigureAwait(false);
+            await RaisePositionSetRequestedAsync(context, time, play).ConfigureAwait(false);
         }
 
         private void ObservablePlayController_LoadError(BeatmapContext ctx, Exception ex)
@@ -285,7 +332,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
                 else
                 {
-                    if (await osuFile.OsuFileHasOsbStoryboard().ConfigureAwait(false))
+                    if (StoryboardFileHelper.HasOsbStoryboard(osuFile, beatmapDetail.MapPath))
                     {
                         Execute.OnUiThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
                     }
@@ -341,15 +388,21 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private async void Player_PlayStatusChanged(PlayStatus obj)
         {
-            Execute.OnUiThread(() => PlayStatusChanged?.Invoke(obj));
-            SharedVm.Default.IsPlaying = obj == PlayStatus.Playing;
+            // MixPlayer raises this through its audio STA. Posting to UI avoids UI<->audio Send deadlocks.
+            Execute.ToUiThread(() =>
+            {
+                PlayStatusChanged?.Invoke(obj);
+                SharedVm.Default.IsPlaying = obj == PlayStatus.Playing;
+            });
+
             if (obj == PlayStatus.Finished)
                 await PlayByControl(PlayControlType.Next, true).ConfigureAwait(false);
         }
 
         private void Player_PositionUpdated(TimeSpan position)
         {
-            Execute.OnUiThread(() => PositionUpdated?.Invoke(position));
+            // MixPlayer raises this through its audio STA. Posting to UI avoids UI<->audio Send deadlocks.
+            Execute.ToUiThread(() => PositionUpdated?.Invoke(position));
         }
 
         private async Task PlayList_AutoSwitched(PlayControlResult controlResult, Beatmap beatmap, bool playInstantly)
@@ -463,27 +516,37 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private void InitializeContextHandle(BeatmapContext context)
         {
-            context.PlayHandle = async () => await Player.Play().ConfigureAwait(false);
-            context.PauseHandle = async () => await Player.Pause().ConfigureAwait(false);
-            context.StopHandle = async () => await Player.Stop().ConfigureAwait(false);
-            context.RestartHandle = async () =>
-            {
-                await context.StopHandle().ConfigureAwait(false);
-                await context.PlayHandle().ConfigureAwait(false);
-            };
-            context.TogglePlayHandle = async () =>
-            {
-                if (Player.PlayStatus == PlayStatus.Ready ||
-                    Player.PlayStatus == PlayStatus.Finished ||
-                    Player.PlayStatus == PlayStatus.Paused)
-                {
-                    await context.PlayHandle().ConfigureAwait(false);
-                }
-                else if (Player.PlayStatus == PlayStatus.Playing) await context.PauseHandle().ConfigureAwait(false);
-            };
+            context.PlayHandle = PlayAsync;
+            context.PauseHandle = PauseAsync;
+            context.StopHandle = StopAsync;
+            context.RestartHandle = RestartAsync;
+            context.TogglePlayHandle = TogglePlayAsync;
+            context.SetTimeHandle = SetTimeAsync;
+        }
 
-            context.SetTimeHandle = async (time, play) =>
-                await Player.SkipTo(TimeSpan.FromMilliseconds(time)).ConfigureAwait(false);
+        private bool TryGetReadyPlayer(out BeatmapContext context, out OsuMixPlayer player)
+        {
+            context = PlayList.CurrentInfo;
+            player = Player;
+            return context != null && player != null && player.PlayStatus != PlayStatus.Unknown;
+        }
+
+        private async Task RaisePositionSetRequestedAsync(BeatmapContext context, double time, bool play)
+        {
+            var handlers = PositionSetRequested?.GetInvocationList();
+            if (handlers == null) return;
+
+            foreach (Func<BeatmapContext, double, bool, Task> handler in handlers)
+            {
+                try
+                {
+                    await handler(context, time, play).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, "Error while setting synchronized playback position.");
+                }
+            }
         }
 
         private void InterruptPrevOperation()

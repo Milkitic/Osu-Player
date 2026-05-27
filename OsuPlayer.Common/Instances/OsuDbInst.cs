@@ -79,7 +79,7 @@ namespace Milky.OsuPlayer.Common.Instances
                 try
                 {
                     using var reader = new OsuDbReader(path);
-                    return reader.EnumerateBeatmapCustom().ToArray();
+                    return reader.EnumerateBeatmapsCustom().ToArray();
                 }
                 catch (Exception ex)
                 {

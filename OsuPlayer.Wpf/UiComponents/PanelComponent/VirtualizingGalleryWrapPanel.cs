@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -71,7 +71,15 @@ namespace Milky.OsuPlayer.UiComponents.PanelComponent
 
         protected override void OnItemsChanged(object sender, ItemsChangedEventArgs args)
         {
-            InvalidateVisual();
+            base.OnItemsChanged(sender, args);
+            ClearNotificationCount();
+            _firstIndex = -1;
+            _lastIndex = -1;
+            _offset = new Point(0, 0);
+            _translate.BeginAnimation(TranslateTransform.YProperty, null);
+            _translate.Y = 0;
+            ScrollOwner?.InvalidateScrollInfo();
+            InvalidateMeasure();
         }
 
         protected override Size MeasureOverride(Size availableSize)
@@ -171,7 +179,7 @@ namespace Milky.OsuPlayer.UiComponents.PanelComponent
 
         protected override void BringIndexIntoView(int index)
         {
-            if (index < 0 || index >= Children.Count)
+            if (index < 0 || index >= GetItemCount(this))
                 throw new ArgumentOutOfRangeException();
             int row = index / GetColumnCount(RenderSize);
             SetVerticalOffset(row * ChildHeight);
@@ -182,10 +190,15 @@ namespace Milky.OsuPlayer.UiComponents.PanelComponent
         /// </summary>
         private (int firstIndex, int lastIndex) GetVisibleRange()
         {
+            int itemsCount = GetItemCount(this);
+            if (itemsCount <= 0)
+            {
+                return (0, -1);
+            }
+
             int childPerRow = GetColumnCount(_extent);
             var firstIndex = Convert.ToInt32(Math.Floor(_offset.Y / ChildHeight)) * childPerRow;
             var lastIndex = Convert.ToInt32(Math.Ceiling((_offset.Y + _viewPort.Height) / ChildHeight)) * childPerRow - 1;
-            int itemsCount = GetItemCount(this);
             if (lastIndex >= itemsCount)
                 lastIndex = itemsCount - 1;
 
@@ -195,7 +208,7 @@ namespace Milky.OsuPlayer.UiComponents.PanelComponent
         private int GetColumnCount(Size availableSize)
         {
             var childPerRow = double.IsPositiveInfinity(availableSize.Width)
-                ? Children.Count
+                ? Math.Max(1, Children.Count)
                 : Math.Max(1, Convert.ToInt32(Math.Floor(availableSize.Width / ChildWidth)));
             return childPerRow;
         }
@@ -213,11 +226,16 @@ namespace Milky.OsuPlayer.UiComponents.PanelComponent
                 ChildHeight * Math.Ceiling(Convert.ToDouble(itemsCount) / childPerRow));
         }
 
-        private int _firstIndex;
-        private int _lastIndex;
+        private int _firstIndex = -1;
+        private int _lastIndex = -1;
 
         private void CleanUpOffscreenItems(int firstIndex, int lastIndex)
         {
+            if (_firstIndex < 0 || _lastIndex < 0)
+            {
+                return;
+            }
+
             if (_firstIndex < firstIndex || _lastIndex > lastIndex)
             {
                 //Stopwatch sw = Stopwatch.StartNew();
@@ -298,13 +316,13 @@ namespace Milky.OsuPlayer.UiComponents.PanelComponent
             if (extent != _extent)
             {
                 _extent = extent;
-                ScrollOwner.InvalidateScrollInfo();
+                ScrollOwner?.InvalidateScrollInfo();
             }
 
             if (availableSize != _viewPort)
             {
                 _viewPort = availableSize;
-                ScrollOwner.InvalidateScrollInfo();
+                ScrollOwner?.InvalidateScrollInfo();
             }
         }
 

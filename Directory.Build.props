@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <OsuPlayerWindowsTargetFramework>net10.0-windows</OsuPlayerWindowsTargetFramework>
+    <OsuPlayerLibraryTargetFramework>net10.0</OsuPlayerLibraryTargetFramework>
+    <CoosuBeatmapVersion>2.5.1</CoosuBeatmapVersion>
+    <CoosuDatabaseVersion>2.5.1</CoosuDatabaseVersion>
+    <Copyright>Copyright © Milkitic 2018-2026</Copyright>
+    <AssemblyVersion>2.2.8888</AssemblyVersion>
+    <FileVersion>2.2.8888</FileVersion>
+  </PropertyGroup>
+</Project>

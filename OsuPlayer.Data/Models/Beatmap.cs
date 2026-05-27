@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Coosu.Beatmap;
 using Coosu.Beatmap.MetaData;
+using Coosu.Database.DataTypes;
 using Dapper.FluentMap.Mapping;
 
 namespace Milky.OsuPlayer.Data.Models
@@ -48,10 +49,55 @@ namespace Milky.OsuPlayer.Data.Models
         public string AudioFileName { get; set; }
         public string BeatmapFileName { get; set; }
         public DateTime LastModifiedTime { get; set; }
-        public double DiffSrNoneStandard { get; set; }
-        public double DiffSrNoneTaiko { get; set; }
-        public double DiffSrNoneCtB { get; set; }
-        public double DiffSrNoneMania { get; set; }
+
+        public Dictionary<Mods, float> StarRatingStd
+        {
+            get;
+            set => field = value ?? new Dictionary<Mods, float>();
+        } = new();
+
+        public Dictionary<Mods, float> StarRatingTaiko
+        {
+            get;
+            set => field = value ?? new Dictionary<Mods, float>();
+        } = new();
+
+        public Dictionary<Mods, float> StarRatingCtb
+        {
+            get;
+            set => field = value ?? new Dictionary<Mods, float>();
+        } = new();
+
+        public Dictionary<Mods, float> StarRatingMania
+        {
+            get;
+            set => field = value ?? new Dictionary<Mods, float>();
+        } = new();
+
+        public double DiffSrNoneStandard
+        {
+            get => StarRatingStd.GetValueOrDefault(Mods.None);
+            set => StarRatingStd[Mods.None] = (float)value;
+        }
+
+        public double DiffSrNoneTaiko
+        {
+            get => StarRatingTaiko.GetValueOrDefault(Mods.None);
+            set => StarRatingTaiko[Mods.None] = (float)value;
+        }
+
+        public double DiffSrNoneCtB
+        {
+            get => StarRatingCtb.GetValueOrDefault(Mods.None);
+            set => StarRatingCtb[Mods.None] = (float)value;
+        }
+
+        public double DiffSrNoneMania
+        {
+            get => StarRatingMania.GetValueOrDefault(Mods.None);
+            set => StarRatingMania[Mods.None] = (float)value;
+        }
+
         public int DrainTimeSeconds { get; set; } //NOTE: in s
         public int TotalTime { get; set; } //NOTE: in ms
         public int AudioPreviewTime { get; set; } //NOTE: in ms
@@ -66,39 +112,6 @@ namespace Milky.OsuPlayer.Data.Models
 
         public string AutoTitle => MetaString.GetUnicode(Title, TitleUnicode) ?? "未知标题";
         public string AutoArtist => MetaString.GetUnicode(Artist, ArtistUnicode) ?? "未知艺术家";
-
-        #region Only used in HoLLy
-        //public string BeatmapChecksum { get; set; }
-        //public RankStatus RankedStatus { get; set; }
-        //public ushort CountHitCircles { get; set; }
-        //public ushort CountSliders { get; set; }
-        //public ushort CountSpinners { get; set; }
-        //public float ApproachRate { get; set; }
-        //public float CircleSize { get; set; }
-        //public float HpDrainRate { get; set; }
-        //public float OveralDifficulty { get; set; }
-        //public double SliderVelocity { get; set; }
-        //public List<Timing> TimingPoints { get; set; }
-        //public int ThreadId { get; set; } //what's this?
-        //public Rank GradeStandard { get; set; }
-        //public Rank GradeTaiko { get; set; }
-        //public Rank GradeCtB { get; set; }
-        //public Rank GradeMania { get; set; }
-        //public short OffsetLocal { get; set; }
-        //public float StackLeniency { get; set; }
-        //public short OffsetOnline { get; set; }
-        //public string TitleFont { get; set; }
-        //public bool Unplayed { get; set; }
-        //public DateTime LastPlayed { get; set; }
-        //public bool IsOsz2 { get; set; }
-        //public DateTime LastCheckAgainstOsuRepo { get; set; }
-        //public bool IgnoreBeatmapSounds { get; set; }
-        //public bool IgnoreBeatmapSkin { get; set; }
-        //public bool DisableStoryBoard { get; set; }
-        //public bool DisableVideo { get; set; }
-        //public bool VisualOverride { get; set; }
-        //public byte ManiaScrollSpeed { get; set; }
-        #endregion
 
         public override int GetHashCode()
         {

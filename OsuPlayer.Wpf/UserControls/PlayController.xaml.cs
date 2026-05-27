@@ -155,9 +155,9 @@ namespace Milky.OsuPlayer.UserControls
             await _controller.PlayPrevAsync();
         }
 
-        private void BtnPlay_Click(object sender, RoutedEventArgs e)
+        private async void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
-            _controller.PlayList.CurrentInfo?.TogglePlayHandle();
+            await _controller.TogglePlayAsync();
         }
 
         private async void NextButton_Click(object sender, RoutedEventArgs e)
@@ -191,11 +191,11 @@ namespace Milky.OsuPlayer.UserControls
         /// Play progress control.
         /// While drag ended, slider's updating should be recovered.
         /// </summary>
-        private void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
+        private async void PlayProgress_DragCompleted(object sender, DragCompletedEventArgs e)
         {
             if (_controller.PlayList?.CurrentInfo != null)
             {
-                _controller.PlayList.CurrentInfo.SetTimeHandle(PlayProgress.Value,
+                await _controller.SetTimeAsync(PlayProgress.Value,
                     _controller.Player.PlayStatus == PlayStatus.Playing);
             }
 
