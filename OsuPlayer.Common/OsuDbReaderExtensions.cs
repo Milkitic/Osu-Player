@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using Coosu.Beatmap.Sections.GamePlay;
 using Coosu.Database;
 using Coosu.Database.DataTypes;
+using Coosu.Database.Generated;
 using Beatmap = Milky.OsuPlayer.Data.Models.Beatmap;
 
 namespace Milky.OsuPlayer.Common
 {
     public static class OsuDbReaderExtensions
     {
-        public static IEnumerable<Beatmap> EnumerateBeatmapCustom(this OsuDbReader reader)
+        public static IEnumerable<Beatmap> EnumerateBeatmapsCustom(this OsuDbReader reader)
         {
             Beatmap beatmap = null;
-
-            while (reader.Read())
+            while (!reader.IsEndOfStream && reader.Read())
             {
                 if (reader.NodeType == NodeType.ObjectStart)
                 {
@@ -24,55 +24,63 @@ namespace Milky.OsuPlayer.Common
                 if (reader.NodeType == NodeType.ObjectEnd && beatmap != null)
                 {
                     yield return beatmap;
-                    beatmap = null;
+                    beatmap = default;
                 }
 
-                if (reader.NodeType == NodeType.ArrayEnd && reader.NodeId == 7) yield break;
-                if (beatmap == null) continue;
-                if (reader.NodeType is not (NodeType.ArrayStart or NodeType.KeyValue)) continue;
-                FillProperty(reader, reader.NodeId, beatmap);
+                if (reader.NodeType == NodeType.ArrayEnd && reader.NodeId == (int)NodeId.OsuDb_BeatmapArray)
+                {
+                    yield break;
+                }
+
+                if (beatmap == default)
+                {
+                    continue;
+                }
+
+                if (reader.NodeType is not (NodeType.ArrayStart or NodeType.KeyValue))
+                {
+                    continue;
+                }
+
+                FillProperty(reader, beatmap);
             }
         }
 
-        private static void FillProperty(OsuDbReader reader, int nodeId, Beatmap playItemDetail)
+        private static void FillProperty(OsuDbReader reader, Beatmap beatmap)
         {
-            if (nodeId == 9) playItemDetail.Artist = reader.GetString();
-            else if (nodeId == 10) playItemDetail.ArtistUnicode = reader.GetString();
-            else if (nodeId == 11) playItemDetail.Title = reader.GetString();
-            else if (nodeId == 12) playItemDetail.TitleUnicode = reader.GetString();
-            else if (nodeId == 13) playItemDetail.Creator = reader.GetString();
-            else if (nodeId == 14) playItemDetail.Version = reader.GetString();
-            else if (nodeId == 15) playItemDetail.AudioFileName = reader.GetString();
-            else if (nodeId == 17) playItemDetail.BeatmapFileName = reader.GetString();
-            else if (nodeId == 22) playItemDetail.LastModifiedTime = reader.GetDateTime();
-            else if (nodeId == 29) FillStarRating(playItemDetail, reader, DbGameMode.Circle);
-            else if (nodeId == 32) FillStarRating(playItemDetail, reader, DbGameMode.Taiko);
-            else if (nodeId == 35) FillStarRating(playItemDetail, reader, DbGameMode.Catch);
-            else if (nodeId == 38) FillStarRating(playItemDetail, reader, DbGameMode.Mania);
-            else if (nodeId == 40) playItemDetail.DrainTimeSeconds = reader.GetInt32();
-            else if (nodeId == 41) playItemDetail.TotalTime = reader.GetInt32();
-            else if (nodeId == 42) playItemDetail.AudioPreviewTime = reader.GetInt32();
-            else if (nodeId == 46) playItemDetail.BeatmapId = reader.GetInt32();
-            else if (nodeId == 47) playItemDetail.BeatmapSetId = reader.GetInt32();
-            else if (nodeId == 55) playItemDetail.GameMode = (GameMode)reader.GetByte();
-            else if (nodeId == 56) playItemDetail.SongSource = reader.GetString();
-            else if (nodeId == 57) playItemDetail.SongTags = reader.GetString();
-            else if (nodeId == 63) playItemDetail.FolderName = reader.GetString();
+            var nodeId = (NodeId)reader.NodeId;
+            if (nodeId == NodeId.Artist) beatmap.Artist = reader.GetString();
+            else if (nodeId == NodeId.ArtistUnicode) beatmap.ArtistUnicode = reader.GetString();
+            else if (nodeId == NodeId.Title) beatmap.Title = reader.GetString();
+            else if (nodeId == NodeId.TitleUnicode) beatmap.TitleUnicode = reader.GetString();
+            else if (nodeId == NodeId.Creator) beatmap.Creator = reader.GetString();
+            else if (nodeId == NodeId.Difficulty) beatmap.Version = reader.GetString();
+            else if (nodeId == NodeId.AudioFileName) beatmap.AudioFileName = reader.GetString();
+            else if (nodeId == NodeId.FileName) beatmap.BeatmapFileName = reader.GetString();
+            else if (nodeId == NodeId.LastModified) beatmap.LastModifiedTime = reader.GetDateTime();
+            else if (nodeId == NodeId.StarRatingStdArray) FillStarRating(beatmap.StarRatingStd = new(), reader);
+            else if (nodeId == NodeId.StarRatingTaikoArray) FillStarRating(beatmap.StarRatingTaiko = new(), reader);
+            else if (nodeId == NodeId.StarRatingCtbArray) FillStarRating(beatmap.StarRatingCtb = new(), reader);
+            else if (nodeId == NodeId.StarRatingManiaArray) FillStarRating(beatmap.StarRatingMania = new(), reader);
+            else if (nodeId == NodeId.DrainTime) beatmap.DrainTimeSeconds = reader.GetInt32();
+            else if (nodeId == NodeId.TotalTime) beatmap.TotalTime = reader.GetInt32();
+            else if (nodeId == NodeId.AudioPreviewTime) beatmap.AudioPreviewTime = reader.GetInt32();
+            else if (nodeId == NodeId.BeatmapId) beatmap.BeatmapId = reader.GetInt32();
+            else if (nodeId == NodeId.BeatmapSetId) beatmap.BeatmapSetId = reader.GetInt32();
+            else if (nodeId == NodeId.GameMode) beatmap.GameMode = (GameMode)reader.GetByte();
+            else if (nodeId == NodeId.Source) beatmap.SongSource = reader.GetString();
+            else if (nodeId == NodeId.Tags) beatmap.SongTags = reader.GetString();
+            else if (nodeId == NodeId.FolderName) beatmap.FolderName = reader.GetString();
         }
 
-        private static void FillStarRating(Beatmap playItemDetail, OsuDbReader osuDbReader, DbGameMode index)
+        private static void FillStarRating(Dictionary<Mods, float> dictionary, OsuDbReader reader)
         {
-            while (osuDbReader.Read())
+            while (!reader.IsEndOfStream && reader.Read())
             {
-                if (osuDbReader.NodeType == NodeType.ArrayEnd) break;
-                var data = osuDbReader.GetIntDoublePair();
+                if (reader.NodeType == NodeType.ArrayEnd) break;
+                var data = reader.GetIntSinglePair();
                 var mods = (Mods)data.IntValue;
-                if (mods != Mods.None) continue;
-
-                if (index == DbGameMode.Circle) playItemDetail.DiffSrNoneStandard = (long)(data.DoubleValue * 1_000_000_000);
-                else if (index == DbGameMode.Taiko) playItemDetail.DiffSrNoneTaiko = (long)(data.DoubleValue * 1_000_000_000);
-                else if (index == DbGameMode.Catch) playItemDetail.DiffSrNoneCtB = (long)(data.DoubleValue * 1_000_000_000);
-                else if (index == DbGameMode.Mania) playItemDetail.DiffSrNoneMania = (long)(data.DoubleValue * 1_000_000_000);
+                dictionary.Add(mods, data.SingleValue);
             }
         }
     }

@@ -160,7 +160,6 @@
     <PackageReference Include="Dapper.FluentMap" Version="2.0.0" />
     <PackageReference Include="FFME.Windows" Version="7.0.361-beta.1" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
-    <PackageReference Include="HoLLy.osu.DatabaseReader" Version="3.4.0" />
     <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
     <PackageReference Include="MouseKeyHook" Version="5.7.1" />
