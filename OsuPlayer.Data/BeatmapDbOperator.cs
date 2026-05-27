@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Coosu.Beatmap.MetaData;
 using Dapper;
-using Milky.OsuPlayer.Data.Dapper;
+using Microsoft.EntityFrameworkCore;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Shared.Models;
 
@@ -27,7 +27,7 @@ namespace Milky.OsuPlayer.Data
             var sw = Stopwatch.StartNew();
             try
             {
-                return op.ThreadedProvider.GetDbConnection().Query<Beatmap>(command + keywordSql + sort, expando)
+                return op.GetDapperConnection().Query<Beatmap>(command + keywordSql + sort, expando)
                     .ToList();
             }
             catch (Exception ex)
@@ -46,7 +46,8 @@ namespace Milky.OsuPlayer.Data
         {
             try
             {
-                return op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP).ToList();
+                using var db = new OsuPlayerDbContext();
+                return db.Beatmaps.AsNoTracking().ToList();
             }
             catch (Exception ex)
             {
@@ -59,13 +60,9 @@ namespace Milky.OsuPlayer.Data
         {
             try
             {
-                return op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP,
-                    new Where[]
-                    {
-                        ("version", id.Version),
-                        ("folderName", id.FolderName)
-                    },
-                    count: 1).FirstOrDefault();
+                using var db = new OsuPlayerDbContext();
+                return db.Beatmaps.AsNoTracking()
+                    .FirstOrDefault(k => k.Version == id.Version && k.FolderName == id.FolderName);
             }
             catch (Exception ex)
             {
@@ -97,7 +94,10 @@ namespace Milky.OsuPlayer.Data
         {
             try
             {
-                return op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP, ("folderName", folder)).ToList();
+                using var db = new OsuPlayerDbContext();
+                return db.Beatmaps.AsNoTracking()
+                    .Where(k => k.FolderName == folder)
+                    .ToList();
             }
             catch (Exception ex)
             {
@@ -124,7 +124,7 @@ namespace Milky.OsuPlayer.Data
 
             try
             {
-                var dbConnection = op.ThreadedProvider.GetDbConnection();
+                var dbConnection = op.GetDapperConnection();
                 if (dbConnection.State != ConnectionState.Open)
                 {
                     dbConnection.Open();
@@ -175,7 +175,10 @@ SELECT *
                 {
                     try
                     {
-                        var dbMaps = op.ThreadedProvider.Query<Beatmap>(TABLE_BEATMAP, ("own", false));
+                        using var db = new OsuPlayerDbContext();
+                        var dbMaps = db.Beatmaps.AsNoTracking()
+                            .Where(k => !k.InOwnDb)
+                            .ToList();
                         var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
 
                         AddNewMaps(op, except);
@@ -209,33 +212,101 @@ SELECT *
 
         public static void AddNewMaps(this AppDbOperator op, IEnumerable<Beatmap> beatmaps)
         {
-            op.ThreadedProvider.InsertArray(TABLE_BEATMAP, beatmaps.Select(k => new Dictionary<string, object>
+            const string sql = @"
+INSERT INTO beatmap (
+    id,
+    artist,
+    artistU,
+    title,
+    titleU,
+    creator,
+    version,
+    fileName,
+    lastModified,
+    diffSrStd,
+    diffSrTaiko,
+    diffSrCtb,
+    diffSrMania,
+    drainTime,
+    totalTime,
+    audioPreview,
+    beatmapId,
+    beatmapSetId,
+    gameMode,
+    source,
+    tags,
+    folderName,
+    audioName,
+    own
+) VALUES (
+    @Id,
+    @Artist,
+    @ArtistUnicode,
+    @Title,
+    @TitleUnicode,
+    @Creator,
+    @Version,
+    @BeatmapFileName,
+    @LastModifiedTime,
+    @DiffSrNoneStandard,
+    @DiffSrNoneTaiko,
+    @DiffSrNoneCtB,
+    @DiffSrNoneMania,
+    @DrainTimeSeconds,
+    @TotalTime,
+    @AudioPreviewTime,
+    @BeatmapId,
+    @BeatmapSetId,
+    @GameMode,
+    @SongSource,
+    @SongTags,
+    @FolderName,
+    @AudioFileName,
+    @InOwnDb
+);";
+
+            var rows = beatmaps.Select(k => new
             {
-                ["id"] = k.Id,
-                ["artist"] = k.Artist,
-                ["artistU"] = k.ArtistUnicode,
-                ["title"] = k.Title,
-                ["titleU"] = k.TitleUnicode,
-                ["creator"] = k.Creator,
-                ["version"] = k.Version,
-                ["fileName"] = k.BeatmapFileName,
-                ["lastModified"] = k.LastModifiedTime,
-                ["diffSrStd"] = k.DiffSrNoneStandard,
-                ["diffSrTaiko"] = k.DiffSrNoneTaiko,
-                ["diffSrCtb"] = k.DiffSrNoneCtB,
-                ["diffSrMania"] = k.DiffSrNoneMania,
-                ["drainTime"] = k.DrainTimeSeconds,
-                ["totalTime"] = k.TotalTime,
-                ["audioPreview"] = k.AudioPreviewTime,
-                ["beatmapId"] = k.BeatmapId,
-                ["beatmapSetId"] = k.BeatmapSetId,
-                ["gameMode"] = k.GameMode,
-                ["source"] = k.SongSource,
-                ["tags"] = k.SongTags,
-                ["folderName"] = k.FolderName,
-                ["audioName"] = k.AudioFileName,
-                ["own"] = k.InOwnDb,
-            }));
+                k.Id,
+                k.Artist,
+                k.ArtistUnicode,
+                k.Title,
+                k.TitleUnicode,
+                k.Creator,
+                k.Version,
+                k.BeatmapFileName,
+                k.LastModifiedTime,
+                k.DiffSrNoneStandard,
+                k.DiffSrNoneTaiko,
+                k.DiffSrNoneCtB,
+                k.DiffSrNoneMania,
+                k.DrainTimeSeconds,
+                k.TotalTime,
+                k.AudioPreviewTime,
+                k.BeatmapId,
+                k.BeatmapSetId,
+                GameMode = (int)k.GameMode,
+                k.SongSource,
+                k.SongTags,
+                k.FolderName,
+                k.AudioFileName,
+                k.InOwnDb
+            }).ToList();
+
+            if (rows.Count == 0)
+            {
+                return;
+            }
+
+            var dbConnection = op.GetDapperConnection();
+            if (dbConnection.State != ConnectionState.Open)
+            {
+                dbConnection.Open();
+            }
+
+            using var transaction = dbConnection.BeginTransaction();
+            dbConnection.Execute(sql, rows, transaction);
+            transaction.Commit();
         }
 
         public static void AddNewMaps(this AppDbOperator op, params Beatmap[] beatmaps)
@@ -245,12 +316,14 @@ SELECT *
 
         public static void RemoveLocalAll(this AppDbOperator op)
         {
-            op.ThreadedProvider.Delete(TABLE_BEATMAP, ("own", true));
+            using var db = new OsuPlayerDbContext();
+            db.Beatmaps.Where(k => k.InOwnDb).ExecuteDelete();
         }
 
         public static void RemoveSyncedAll(this AppDbOperator op)
         {
-            op.ThreadedProvider.Delete(TABLE_BEATMAP, ("own", false));
+            using var db = new OsuPlayerDbContext();
+            db.Beatmaps.Where(k => !k.InOwnDb).ExecuteDelete();
         }
 
         private static string GetKeywordQueryAndArgs(string keywordStr, ref DynamicParameters args)

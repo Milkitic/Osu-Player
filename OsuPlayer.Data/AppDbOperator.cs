@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading;
 using Coosu.Beatmap.MetaData;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
-using Milky.OsuPlayer.Data.Dapper.Provider;
+using Microsoft.Data.Sqlite;
 using Milky.OsuPlayer.Data.Models;
 
 namespace Milky.OsuPlayer.Data
@@ -21,10 +22,13 @@ namespace Milky.OsuPlayer.Data
             DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
-        private static readonly ThreadLocal<SQLiteProvider> Provider = new ThreadLocal<SQLiteProvider>(() =>
-            (SQLiteProvider)new SQLiteProvider().ConfigureConnectionString(OsuPlayerDbContext.DefaultConnectionString));
+        private static readonly ThreadLocal<DbConnection> DapperConnection = new ThreadLocal<DbConnection>(() =>
+            new SqliteConnection(OsuPlayerDbContext.DefaultConnectionString));
 
-        public SQLiteProvider ThreadedProvider => Provider.Value;
+        public DbConnection GetDapperConnection()
+        {
+            return DapperConnection.Value;
+        }
 
         private static OsuPlayerDbContext CreateDbContext()
         {
