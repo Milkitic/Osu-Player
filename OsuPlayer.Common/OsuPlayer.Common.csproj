@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Coosu.Beatmap" Version="2.3.0" />
-    <PackageReference Include="Coosu.Database" Version="2.3.0" />
+    <PackageReference Include="Coosu.Beatmap" Version="$(CoosuBeatmapVersion)" />
+    <PackageReference Include="Coosu.Database" Version="$(CoosuDatabaseVersion)" />
     <PackageReference Include="Dapper" Version="2.1.79" />
     <PackageReference Include="Dapper.FluentMap" Version="2.0.0" />
     <PackageReference Include="Milki.Extensions.MixPlayer" Version="0.0.9" />

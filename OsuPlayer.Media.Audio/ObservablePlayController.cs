@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Coosu.Beatmap.Extensions;
 using Coosu.Beatmap.MetaData;
 using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
@@ -285,7 +284,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 }
                 else
                 {
-                    if (await osuFile.OsuFileHasOsbStoryboard().ConfigureAwait(false))
+                    if (StoryboardFileHelper.HasOsbStoryboard(osuFile, beatmapDetail.MapPath))
                     {
                         Execute.OnUiThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
                     }

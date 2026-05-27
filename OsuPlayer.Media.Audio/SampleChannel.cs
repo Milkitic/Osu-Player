@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Coosu.Beatmap.Extensions;
 using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.Subchannels;
@@ -29,7 +28,7 @@ namespace Milky.OsuPlayer.Media.Audio
             ICollection<Subchannel> referencedChannels, HitsoundFileCache cache = null)
             : base(engine, new MixSettings(), referencedChannels)
         {
-            _cache = cache;
+            _cache = cache ?? new HitsoundFileCache();
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
 

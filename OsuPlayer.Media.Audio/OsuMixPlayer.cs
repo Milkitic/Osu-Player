@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Coosu.Beatmap.Extensions;
 using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milki.Extensions.MixPlayer.Subchannels;
