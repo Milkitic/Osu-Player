@@ -33,7 +33,7 @@ namespace Milky.OsuPlayer.UserControls
 
         public ICommand PlayNextCommand => new DelegateCommand(async param => await _controller.PlayNextAsync());
 
-        public ICommand PlayPauseCommand => new DelegateCommand(param => _controller.Player.TogglePlay());
+        public ICommand PlayPauseCommand => new DelegateCommand(async param => await _controller.TogglePlayAsync());
 
         public double PositionPercent
         {

@@ -32,9 +32,6 @@ namespace Milky.OsuPlayer.UserControls
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        private Task _waitTask;
-        private TimeSpan _initialVideoPosition;
-
         private double _videoOffset;
 
         private AnimationControlVm _viewModel;
@@ -62,6 +59,8 @@ namespace Milky.OsuPlayer.UserControls
             _controller.VideoLoadRequested += Controller_VideoLoadRequested;
             _controller.InterfaceClearRequest += Controller_InterfaceClearRequest;
             _controller.LoadError += Controller_LoadError;
+            _controller.PlayStatusChanged += Controller_PlayStatusChanged;
+            _controller.PositionSetRequested += Controller_PositionSetRequested;
 
             SharedVm.Default.PropertyChanged += Shared_PropertyChanged;
             AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
@@ -183,135 +182,86 @@ namespace Milky.OsuPlayer.UserControls
             await VideoElement.Stop();
             await VideoElement.Close();
 
-            if (_beatmapCtx != null)
-            {
-                _beatmapCtx.PlayHandle = async () => await _controller.Player.Play().ConfigureAwait(false);
-                _beatmapCtx.PauseHandle = async () => await _controller.Player.Pause().ConfigureAwait(false);
-                _beatmapCtx.StopHandle = async () => await _controller.Player.Stop().ConfigureAwait(false);
-                _beatmapCtx.RestartHandle = async () =>
-                {
-                    await _beatmapCtx.StopHandle().ConfigureAwait(false);
-                    await _beatmapCtx.PlayHandle().ConfigureAwait(false);
-                };
-                _beatmapCtx.TogglePlayHandle = async () =>
-                {
-                    if (_controller.Player.PlayStatus == PlayStatus.Ready ||
-                        _controller.Player.PlayStatus == PlayStatus.Finished ||
-                        _controller.Player.PlayStatus == PlayStatus.Paused)
-                    {
-                        await _beatmapCtx.PlayHandle().ConfigureAwait(false);
-                    }
-                    else if (_controller.Player.PlayStatus == PlayStatus.Playing)
-                    {
-                        await _beatmapCtx.PauseHandle().ConfigureAwait(false);
-                    }
-                };
-
-                _beatmapCtx.SetTimeHandle = async (time, play) =>
-                    await _controller.Player.SkipTo(TimeSpan.FromMilliseconds(time)).ConfigureAwait(false);
-            }
-
-            Execute.OnUiThread(() =>
-            {
-                VideoElementBorder.Visibility = Visibility.Hidden;
-                VideoElement.SpeedRatio = AppSettings.Default.Play.PlaybackRate;
-            });
+            VideoElementBorder.Visibility = Visibility.Hidden;
+            VideoElement.SpeedRatio = AppSettings.Default.Play.PlaybackRate;
         }
+
         private async Task InitVideoAsync(BeatmapContext beatmapCtx)
         {
             if (beatmapCtx.OsuFile.Events.VideoInfo == null) return;
 
             _videoOffset = -(beatmapCtx.OsuFile.Events.VideoInfo.Offset);
-            if (_videoOffset >= 0)
-            {
-                _waitTask = Task.Delay(0);
-                _initialVideoPosition = TimeSpan.FromMilliseconds(_videoOffset);
-            }
-            else
-            {
-                _waitTask = Task.Delay(TimeSpan.FromMilliseconds(-_videoOffset));
-            }
-
             await VideoElement.Open(new Uri(beatmapCtx.BeatmapDetail.VideoPath));
-            Execute.OnUiThread(() =>
+            BackImage.Opacity = 0.15;
+            BlendBorder.Visibility = Visibility.Visible;
+
+            AppSettings.Default.Play.PropertyChanged -= Play_PropertyChanged;
+            AppSettings.Default.Play.PropertyChanged += Play_PropertyChanged;
+        }
+
+        private async void Controller_PlayStatusChanged(PlayStatus status)
+        {
+            if (!ShouldSyncVideo(_beatmapCtx)) return;
+
+            switch (status)
             {
-                BackImage.Opacity = 0.15;
-                BlendBorder.Visibility = Visibility.Visible;
-            });
-
-            beatmapCtx.PlayHandle = async () =>
-            {
-                Logger.Warn("Called PlayHandle()");
-                await _controller.Player.Play();
-                await PlayVideo();
-            };
-
-            beatmapCtx.PauseHandle = async () =>
-            {
-                Logger.Warn("Called PauseHandle()");
-                await _controller.Player.Pause();
-                await PauseVideo();
-            };
-
-            beatmapCtx.StopHandle = async () =>
-            {
-                Logger.Warn("Called StopHandle()");
-                await _controller.Player.Stop();
-                await StopVideo();
-            };
-
-            beatmapCtx.SetTimeHandle = async (time, play) =>
-            {
-                Logger.Warn("Called PlayHandle()");
-                await _controller.Player.Pause();
-                var trueOffset = time + _videoOffset;
-
-                bool waitForSeek = true;
-
-                VideoElement.SeekingEnded += OnVideoElementOnSeekingEnded;
-                if (trueOffset < 0)
-                {
-                    Execute.OnUiThread(async () =>
-                    {
-                        await PauseVideo();
-                        VideoElement.Position = TimeSpan.FromMilliseconds(0);
-                    });
-
-                    await Task.Run(() => { Thread.Sleep(TimeSpan.FromMilliseconds(-trueOffset)); });
-                }
-                else if (trueOffset >= 0)
-                {
-                    Execute.OnUiThread(() => VideoElement.Position = TimeSpan.FromMilliseconds(trueOffset));
-                }
-
-                await Task.Run(() =>
-                {
-                    while (waitForSeek)
-                    {
-                        Thread.Sleep(1);
-                    }
-                });
-
-                VideoElement.SeekingEnded -= OnVideoElementOnSeekingEnded;
-                await _controller.Player.SkipTo(VideoElement.Position - TimeSpan.FromMilliseconds(_videoOffset));
-
-                Logger.Warn("SetTime Done");
-
-                async void OnVideoElementOnSeekingEnded(object sender, EventArgs e)
-                {
-                    waitForSeek = false;
-                    if (play)
-                    {
-                        await _controller.Player.Play();
-                        await PlayVideo();
-                    }
+                case PlayStatus.Playing:
+                    await PlayVideoFromCurrentPositionAsync();
+                    break;
+                case PlayStatus.Paused:
+                    if (_controller.Player?.Position <= TimeSpan.FromMilliseconds(10))
+                        await StopVideo();
                     else
-                    {
-                        await _controller.Player.Pause();
                         await PauseVideo();
-                    }
-                }
-            };
+                    break;
+                case PlayStatus.Finished:
+                    await StopVideo();
+                    break;
+            }
+        }
+
+        private Task Controller_PositionSetRequested(BeatmapContext beatmapCtx, double time, bool play)
+        {
+            if (!ShouldSyncVideo(beatmapCtx)) return Task.CompletedTask;
+            _ = Execute.OnUiThreadAsync(() => SeekVideoAsync(time, play));
+            return Task.CompletedTask;
+        }
+
+        private bool ShouldSyncVideo(BeatmapContext beatmapCtx)
+        {
+            return VideoElement != null &&
+                   SharedVm.Default.EnableVideo &&
+                   ReferenceEquals(_beatmapCtx, beatmapCtx) &&
+                   !string.IsNullOrWhiteSpace(beatmapCtx?.BeatmapDetail?.VideoPath);
+        }
+
+        private async Task PlayVideoFromCurrentPositionAsync()
+        {
+            var position = _controller.Player?.Position.TotalMilliseconds ?? 0;
+            await SeekVideoAsync(position, true);
+        }
+
+        private async Task SeekVideoAsync(double audioPosition, bool play)
+        {
+            var videoPosition = audioPosition + _videoOffset;
+            if (videoPosition < 0)
+            {
+                await PauseVideo();
+                VideoElement.Position = TimeSpan.Zero;
+                if (!play) return;
+
+                await Task.Delay(TimeSpan.FromMilliseconds(-videoPosition));
+                if (_controller.Player?.PlayStatus != PlayStatus.Playing || !ShouldSyncVideo(_beatmapCtx))
+                    return;
+
+                videoPosition = (_controller.Player?.Position.TotalMilliseconds ?? audioPosition) + _videoOffset;
+            }
+
+            VideoElement.Position = TimeSpan.FromMilliseconds(Math.Max(0, videoPosition));
+            if (play)
+                await PlayVideo();
+            else
+                await PauseVideo();
         }
 
         private async void OnMediaOpened(object sender, MediaOpenedEventArgs e)
@@ -319,12 +269,8 @@ namespace Milky.OsuPlayer.UserControls
             VideoElementBorder.Visibility = Visibility.Visible;
             if (!SharedVm.Default.EnableVideo) return;
             if (VideoElement == null) return;
-            if (_controller.PlayList.CurrentInfo.PlayInstantly)
-            {
-                await _waitTask;
-                await VideoElement.Play();
-                VideoElement.Position = _initialVideoPosition;
-            }
+            if (_controller.Player?.PlayStatus == PlayStatus.Playing)
+                await PlayVideoFromCurrentPositionAsync();
         }
 
         private async void OnMediaFailed(object sender, MediaFailedEventArgs e)
@@ -334,7 +280,6 @@ namespace Milky.OsuPlayer.UserControls
             Notification.Push("不支持的视频格式");
             if (!SharedVm.Default.EnableVideo) return;
             await CloseVideoAsync();
-            await _controller.Player.TogglePlay();
         }
     }
 }
