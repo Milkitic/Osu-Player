@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Threading;
@@ -20,6 +21,7 @@ namespace Milky.OsuPlayer.Data
         static AppDbOperator()
         {
             DefaultTypeMap.MatchNamesWithUnderscores = true;
+            SqlMapper.AddTypeHandler(new GuidTypeHandler());
         }
 
         private static readonly ThreadLocal<DbConnection> DapperConnection = new ThreadLocal<DbConnection>(() =>
@@ -28,6 +30,25 @@ namespace Milky.OsuPlayer.Data
         public DbConnection GetDapperConnection()
         {
             return DapperConnection.Value;
+        }
+
+        private sealed class GuidTypeHandler : SqlMapper.TypeHandler<Guid>
+        {
+            public override void SetValue(IDbDataParameter parameter, Guid value)
+            {
+                parameter.Value = value.ToString();
+            }
+
+            public override Guid Parse(object value)
+            {
+                return value switch
+                {
+                    Guid guid => guid,
+                    string text => Guid.Parse(text),
+                    byte[] bytes => new Guid(bytes),
+                    _ => Guid.Parse(value.ToString())
+                };
+            }
         }
 
         private static OsuPlayerDbContext CreateDbContext()
