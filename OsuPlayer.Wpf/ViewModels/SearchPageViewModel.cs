@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xaml;
+using CommunityToolkit.Mvvm.Input;
 using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Data.Models;
@@ -16,20 +17,20 @@ using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Shared.Models;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UiComponents.PanelComponent;
 using Milky.OsuPlayer.UserControls;
-using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.ViewModels
 {
     public class SearchPageViewModel : VmBase
     {
-        private readonly SafeDbOperator _safeDbOperator = new SafeDbOperator();
+        private readonly IPlayerDataService _playerData;
 
         private const int MaxListCount = 100;
         private List<BeatmapDataModel> _searchedMaps;
@@ -128,13 +129,23 @@ namespace Milky.OsuPlayer.ViewModels
         private List<Beatmap> _searchedDbMaps;
         private static readonly object QueryLock = new object();
 
+        public SearchPageViewModel()
+            : this(AppServices.PlayerData)
+        {
+        }
+
+        public SearchPageViewModel(IPlayerDataService playerData)
+        {
+            _playerData = playerData;
+        }
+
         public async Task PlayListQueryAsync(int startIndex = 0)
         {
             //if (Services.Get<OsuDbInst>().Beatmaps == null)
             //    return;
 
             //SortEnum sortEnum = (SortEnum)cbSortType.SelectedItem;
-            var sortMode = BeatmapSortMode.Artist;
+            //var sortMode = BeatmapSortMode.Artist;
             _querySw.Restart();
 
             lock (QueryLock)
@@ -144,14 +155,14 @@ namespace Milky.OsuPlayer.ViewModels
                 _isQuerying = true;
             }
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 while (_querySw.ElapsedMilliseconds < 300)
                     Thread.Sleep(1);
                 _querySw.Stop();
 
-                SearchedDbMaps = _safeDbOperator
-                    .SearchBeatmapByOptions(SearchText, BeatmapSortMode.Artist, startIndex, int.MaxValue);
+                SearchedDbMaps = await _playerData
+                    .SearchBeatmapByOptionsAsync(SearchText, BeatmapSortMode.Artist, startIndex, int.MaxValue);
 
                 List<BeatmapDataModel> sorted = SearchedDbMaps
                     .ToDataModelList(true);
@@ -226,7 +237,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(obj =>
+                return new RelayCommand<object>(obj =>
                 {
                     if (obj is bool b)
                     {
@@ -259,7 +270,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new RelayCommand<object>(param =>
                 {
                     WindowEx.GetCurrentFirst<MainWindow>()
                         .SwitchSearch
@@ -272,10 +283,10 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = GetHighestSrBeatmap(beatmap);
+                    var map = await GetHighestSrBeatmapAsync(beatmap);
                     if (map == null) return;
                     var folderName = beatmap.GetFolder(out _, out _);
                     if (!Directory.Exists(folderName))
@@ -293,10 +304,10 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = GetHighestSrBeatmap(beatmap);
+                    var map = await GetHighestSrBeatmapAsync(beatmap);
                     if (map == null) return;
                     Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
                 });
@@ -307,15 +318,15 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
                     var control = new DiffSelectControl(
-                        _safeDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName),
-                        (selected, arg) =>
+                        await _playerData.GetBeatmapsFromFolderAsync(beatmap.GetIdentity().FolderName),
+                        async (selected, arg) =>
                         {
                             arg.Handled = true;
-                            var entry = _safeDbOperator.GetBeatmapsFromFolder(selected.FolderName)
+                            var entry = (await _playerData.GetBeatmapsFromFolderAsync(selected.FolderName))
                                 .FirstOrDefault(k => k.Version == selected.Version);
                             FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
                                 DialogOptionFactory.SelectCollectionOptions);
@@ -329,10 +340,10 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = GetHighestSrBeatmap(beatmap);
+                    var map = await GetHighestSrBeatmapAsync(beatmap);
                     if (map == null) return;
                     ExportPage.QueueEntry(map);
                 });
@@ -343,10 +354,10 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(async param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = GetHighestSrBeatmap(beatmap);
+                    var map = await GetHighestSrBeatmapAsync(beatmap);
                     if (map == null) return;
                     var controller = Service.Get<ObservablePlayController>();
                     await controller.PlayNewAsync(map);
@@ -358,15 +369,15 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var beatmaps = _safeDbOperator.GetBeatmapsFromFolder(beatmap.GetIdentity().FolderName);
+                    var beatmaps = await _playerData.GetBeatmapsFromFolderAsync(beatmap.GetIdentity().FolderName);
                     var control = new DiffSelectControl(
                         beatmaps,
                         async (selected, arg) =>
                         {
-                            var map = _safeDbOperator.GetBeatmapByIdentifiable(selected);
+                            var map = await _playerData.GetBeatmapByIdentifiableAsync(selected);
                             if (map == null) return;
                             var controller = Service.Get<ObservablePlayController>();
                             await controller.PlayNewAsync(map, true);
@@ -376,10 +387,10 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        private Beatmap GetHighestSrBeatmap(IMapIdentifiable beatmap)
+        private async Task<Beatmap> GetHighestSrBeatmapAsync(IMapIdentifiable beatmap)
         {
             if (beatmap == null) return null;
-            var map = _safeDbOperator.GetBeatmapsFromFolder(beatmap.FolderName).GetHighestDiff();
+            var map = (await _playerData.GetBeatmapsFromFolderAsync(beatmap.FolderName)).GetHighestDiff();
             return map;
         }
     }

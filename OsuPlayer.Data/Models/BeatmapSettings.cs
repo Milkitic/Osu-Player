@@ -9,12 +9,12 @@ namespace Milky.OsuPlayer.Data.Models
         public BeatmapSettingsMap()
         {
             Map(p => p.Id).ToColumn("id");
-            Map(p => p.Version).ToColumn("version");
-            Map(p => p.FolderName).ToColumn("folder");
-            Map(p => p.InOwnDb).ToColumn("ownDb");
-            Map(p => p.Offset).ToColumn("offset");
-            Map(p => p.LastPlayTime).ToColumn("lastPlayTime");
-            Map(p => p.ExportFile).ToColumn("exportFile");
+            Map(p => p.Version).ToColumn("difficulty_name");
+            Map(p => p.FolderName).ToColumn("folder_name");
+            Map(p => p.InOwnDb).ToColumn("is_local");
+            Map(p => p.Offset).ToColumn("audio_offset_ms");
+            Map(p => p.LastPlayTime).ToColumn("last_played_at");
+            Map(p => p.ExportFile).ToColumn("exported_file_path");
         }
     }
 

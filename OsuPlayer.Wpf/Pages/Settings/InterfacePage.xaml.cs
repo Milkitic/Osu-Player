@@ -28,8 +28,8 @@ namespace Milky.OsuPlayer.Pages.Settings
         private void InterfacePage_OnLoaded(object sender, RoutedEventArgs e)
         {
             var l = I18NUtil.AvailableLangDic.Keys.ToList();
-            Language.ItemsSource = l;
-            Language.SelectedItem = I18NUtil.CurrentLocale.Key;
+            LanguageComboBox.ItemsSource = l;
+            LanguageComboBox.SelectedItem = I18NUtil.CurrentLocale.Key;
         }
 
         private void Language_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

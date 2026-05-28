@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
@@ -24,17 +26,18 @@ namespace Milky.OsuPlayer.UserControls
             }
         }
 
-        public Action<Beatmap, CallbackObj> Callback { get; set; }
+        public Func<Beatmap, CallbackObj, Task> Callback { get; set; }
 
         public ICommand SelectCommand
         {
             get
             {
-                return new DelegateCommand(obj =>
+                return new AsyncRelayCommand<object>(async obj =>
                 {
                     var selectedMap = Entries.FirstOrDefault(k => k.Version == (string)obj);
                     var callbackObj = new CallbackObj();
-                    Callback?.Invoke(selectedMap, callbackObj);
+                    if (Callback != null)
+                        await Callback(selectedMap, callbackObj);
                     if (!callbackObj.Handled)
                         FrontDialogOverlay.Default.RaiseCancel();
                 });
@@ -53,7 +56,8 @@ namespace Milky.OsuPlayer.UserControls
     public partial class DiffSelectControl : UserControl
     {
         private readonly DiffSelectPageViewModel _viewModel;
-        public DiffSelectControl(IEnumerable<Beatmap> entries, Action<Beatmap, CallbackObj> onSelect)
+
+        public DiffSelectControl(IEnumerable<Beatmap> entries, Func<Beatmap, CallbackObj, Task> onSelect)
         {
             InitializeComponent();
 

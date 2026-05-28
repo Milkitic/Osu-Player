@@ -1,20 +1,22 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Coosu.Beatmap.MetaData;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Services;
 
 namespace Milky.OsuPlayer.Common
 {
     public static class IdentifiableExtension
     {
-        private static AppDbOperator _beatmapDbOperator = new AppDbOperator();
+        private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly IPlayerDataStore s_playerData = new PlayerDataService();
 
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        public static List<BeatmapDataModel> ToDataModelList(this IEnumerable<IMapIdentifiable> identifiable, bool distinctByVersion = false)
+        public static List<BeatmapDataModel> ToDataModelList(this IEnumerable<IMapIdentifiable> identifiable,
+            bool distinctByVersion = false)
         {
             List<BeatmapDataModel> ret;
             switch (identifiable)
@@ -31,15 +33,27 @@ namespace Milky.OsuPlayer.Common
                 case List<BeatmapDataModel> dataModels:
                     ret = dataModels;
                     break;
-                case List<BeatmapSettings> infos:
-                    ret = _beatmapDbOperator.GetBeatmapsByIdentifiable(infos).InnerToDataModelList();
-                    break;
+                case List<BeatmapSettings>:
+                    throw new InvalidOperationException("Use ToDataModelListAsync for BeatmapSettings sources.");
                 default:
                     throw new ArgumentOutOfRangeException(nameof(identifiable), identifiable?.GetType(),
                         "Not support source type.");
             }
 
             return ret.Distinct(new DataModelComparer(distinctByVersion)).ToList();
+        }
+
+        public static async Task<List<BeatmapDataModel>> ToDataModelListAsync(
+            this IEnumerable<IMapIdentifiable> identifiable,
+            bool distinctByVersion = false)
+        {
+            if (identifiable is List<BeatmapSettings> infos)
+            {
+                var beatmaps = await s_playerData.GetBeatmapsByIdentifiableAsync(infos);
+                return beatmaps.InnerToDataModelList().Distinct(new DataModelComparer(distinctByVersion)).ToList();
+            }
+
+            return identifiable.ToDataModelList(distinctByVersion);
         }
 
         private static List<BeatmapDataModel> InnerToDataModelList(this IEnumerable<Beatmap> beatmaps)
@@ -83,7 +97,7 @@ namespace Milky.OsuPlayer.Common
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex);
+                    s_logger.Error(ex);
                 }
 
                 return model;

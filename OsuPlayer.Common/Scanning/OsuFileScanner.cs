@@ -1,28 +1,39 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Services;
 
 namespace Milky.OsuPlayer.Common.Scanning
 {
     public class OsuFileScanner
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+
+        private static readonly Lock s_scanObject = new Lock();
+        private static readonly Lock s_cancelObject = new Lock();
 
         public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();
         private CancellationTokenSource _scanCts;
-        private readonly AppDbOperator _dbOperator = new AppDbOperator();
+        private readonly IPlayerDataStore _playerData;
 
-        private static readonly object ScanObject = new object();
-        private static readonly object CancelObject = new object();
+        public OsuFileScanner()
+            : this(new PlayerDataService())
+        {
+        }
+
+        public OsuFileScanner(IPlayerDataStore playerData)
+        {
+            _playerData = playerData;
+        }
 
         public async Task NewScanAndAddAsync(string path)
         {
-            lock (ScanObject)
+            lock (s_scanObject)
             {
                 if (ViewModel.IsScanning)
                     return;
@@ -30,19 +41,20 @@ namespace Milky.OsuPlayer.Common.Scanning
             }
 
             _scanCts = new CancellationTokenSource();
-            _dbOperator.RemoveLocalAll();
+            await _playerData.TryRemoveLocalAllAsync();
+
             var dirInfo = new DirectoryInfo(path);
             if (dirInfo.Exists)
             {
-                foreach (var privateFolder in dirInfo.EnumerateDirectories(searchPattern: "*.*", searchOption: SearchOption.TopDirectoryOnly))
+                foreach (var group in EnumerateOsuFiles(dirInfo).GroupBy(k => k.DirectoryName))
                 {
                     if (_scanCts.IsCancellationRequested)
                         break;
-                    await ScanPrivateFolderAsync(privateFolder);
+                    await ScanFolderAsync(dirInfo, group);
                 }
             }
 
-            lock (ScanObject)
+            lock (s_scanObject)
             {
                 ViewModel.IsScanning = false;
             }
@@ -50,7 +62,7 @@ namespace Milky.OsuPlayer.Common.Scanning
 
         public async Task CancelTaskAsync()
         {
-            lock (CancelObject)
+            lock (s_cancelObject)
             {
                 if (ViewModel.IsCanceling)
                     return;
@@ -67,16 +79,16 @@ namespace Milky.OsuPlayer.Common.Scanning
                 }
             });
 
-            lock (CancelObject)
+            lock (s_cancelObject)
             {
                 ViewModel.IsCanceling = false;
             }
         }
 
-        private async Task ScanPrivateFolderAsync(DirectoryInfo privateFolder)
+        private async Task ScanFolderAsync(DirectoryInfo rootFolder, IEnumerable<FileInfo> osuFiles)
         {
             var beatmaps = new List<Beatmap>();
-            foreach (var fileInfo in privateFolder.EnumerateFiles("*.osu", SearchOption.TopDirectoryOnly))
+            foreach (var fileInfo in osuFiles)
             {
                 if (_scanCts.IsCancellationRequested)
                     return;
@@ -95,34 +107,64 @@ namespace Milky.OsuPlayer.Common.Scanning
                             options.IgnoreStoryboard();
                         });
 
-                    var beatmap = GetBeatmapObj(osuFile, fileInfo);
+                    var beatmap = GetBeatmapObj(rootFolder, osuFile, fileInfo);
                     beatmaps.Add(beatmap);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex, "Error during scanning file, ignored {0}", fileInfo.FullName);
+                    s_logger.Error(ex, "Error during scanning file, ignored {0}", fileInfo.FullName);
                 }
             }
 
             try
             {
-                _dbOperator.AddNewMaps(beatmaps);
+                await _playerData.TryAddNewMapsAsync(beatmaps);
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                s_logger.Error(ex);
                 throw;
             }
         }
 
-        private Beatmap GetBeatmapObj(LocalOsuFile osuFile, FileInfo fileInfo)
+        private static IEnumerable<FileInfo> EnumerateOsuFiles(DirectoryInfo rootFolder)
+        {
+            try
+            {
+                return rootFolder.EnumerateFiles("*.osu", SearchOption.AllDirectories);
+            }
+            catch (Exception ex)
+            {
+                s_logger.Error(ex, "Error during enumerating osu files, ignored {0}", rootFolder.FullName);
+                return Enumerable.Empty<FileInfo>();
+            }
+        }
+
+        private Beatmap GetBeatmapObj(DirectoryInfo rootFolder, LocalOsuFile osuFile, FileInfo fileInfo)
         {
             var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
             beatmap.BeatmapFileName = fileInfo.Name;
             beatmap.LastModifiedTime = fileInfo.LastWriteTime;
-            beatmap.FolderName = fileInfo.Directory?.Name;
+            beatmap.FolderName = GetRelativeFolderName(rootFolder, fileInfo);
             beatmap.InOwnDb = true;
             return beatmap;
+        }
+
+        private static string GetRelativeFolderName(DirectoryInfo rootFolder, FileInfo fileInfo)
+        {
+            var directory = fileInfo.Directory?.FullName;
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                return string.Empty;
+            }
+
+            var relativePath = Path.GetRelativePath(rootFolder.FullName, directory);
+            if (relativePath == ".")
+            {
+                return string.Empty;
+            }
+
+            return relativePath;
         }
     }
 }

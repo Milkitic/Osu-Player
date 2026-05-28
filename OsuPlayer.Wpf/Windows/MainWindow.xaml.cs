@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -16,6 +16,7 @@ using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
@@ -40,7 +41,7 @@ namespace Milky.OsuPlayer.Windows
 
         private WindowState _lastState;
 
-        private readonly SafeDbOperator _safeDbOperator = new SafeDbOperator();
+        private readonly IPlayerDataService _playerData = AppServices.PlayerData;
 
         private Task _searchLyricTask;
 
@@ -110,9 +111,9 @@ namespace Milky.OsuPlayer.Windows
         /// <summary>
         /// Update collections in the navigation bar.
         /// </summary>
-        public void UpdateCollections()
+        public async Task UpdateCollectionsAsync()
         {
-            var list = _safeDbOperator.GetCollections();
+            var list = await _playerData.GetCollectionsAsync();
             list.Reverse();
             ViewModel.Collection = new ObservableCollection<Collection>(list);
         }
@@ -175,10 +176,7 @@ namespace Milky.OsuPlayer.Windows
                     Width = 350,
                     ShowDialogButtons = false,
                     ShowTitleBar = false
-                }, (obj, args) =>
-                {
-                    SwitchSearch.IsChecked = true;
-                });
+                }, (obj, args) => { SwitchSearch.IsChecked = true; });
                 //WelcomeControl.Show();
                 //try
                 //{
@@ -218,7 +216,7 @@ namespace Milky.OsuPlayer.Windows
                 }
             }
 
-            UpdateCollections();
+            await UpdateCollectionsAsync();
 
             _controller.LoadFinished += Controller_LoadFinished;
 
@@ -308,7 +306,8 @@ namespace Milky.OsuPlayer.Windows
 
             // 加至播放列表
             var entries =
-                _safeDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList.Cast<IMapIdentifiable>());
+                await _playerData.GetBeatmapsByIdentifiableAsync(
+                    AppSettings.Default.CurrentList.Cast<IMapIdentifiable>());
 
             await _controller.PlayList.SetSongListAsync(entries, true, false, false);
 
@@ -319,7 +318,7 @@ namespace Milky.OsuPlayer.Windows
             }
             else
             {
-                var current = _safeDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
+                var current = await _playerData.GetBeatmapByIdentifiableAsync(AppSettings.Default.CurrentMap);
                 if (current == null) return;
                 await _controller.PlayNewAsync(current, play);
             }
@@ -328,13 +327,16 @@ namespace Milky.OsuPlayer.Windows
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
         {
             var addCollectionControl = new AddCollectionControl();
-            FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, (obj, args) =>
-            {
-                if (!_safeDbOperator.TryAddCollection(addCollectionControl.CollectionName.Text))
-                    return;
+            FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions,
+                (obj, args) => { _ = AddCollectionAndRefreshAsync(addCollectionControl.CollectionName.Text); });
+        }
 
-                UpdateCollections();
-            });
+        private async Task AddCollectionAndRefreshAsync(string collectionName)
+        {
+            if (!await _playerData.TryAddCollectionAsync(collectionName))
+                return;
+
+            await UpdateCollectionsAsync();
         }
 
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
@@ -413,11 +415,11 @@ namespace Milky.OsuPlayer.Windows
             MainFrame.Content = null;
         }
 
-        private void Controller_LikeClicked(object sender, RoutedEventArgs e)
+        private async void Controller_LikeClicked(object sender, RoutedEventArgs e)
         {
             if (_controller.PlayList.CurrentInfo == null) return;
             var detail = _controller.PlayList.CurrentInfo.Beatmap;
-            var entry = _safeDbOperator.GetBeatmapByIdentifiable(detail.GetIdentity());
+            var entry = await _playerData.GetBeatmapByIdentifiableAsync(detail.GetIdentity());
             if (entry == null) return;
 
             FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),

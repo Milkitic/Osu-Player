@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,15 +7,16 @@ using System.Windows.Media.Imaging;
 using Coosu.Beatmap;
 using Microsoft.Win32;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Services;
 
 namespace Milky.OsuPlayer.Common
 {
     public static class CommonUtils
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private static AppDbOperator _appDbOperator = new AppDbOperator();
-        private static readonly SemaphoreSlim Lock = new SemaphoreSlim(5);
+        private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly SemaphoreSlim s_lock = new SemaphoreSlim(5);
+
+        private static readonly IPlayerDataStore s_playerData = new PlayerDataService();
         ///// <summary>
         ///// Copy resource to folder
         ///// </summary>
@@ -50,10 +51,11 @@ namespace Milky.OsuPlayer.Common
         {
             return await Task.Run(async () =>
             {
-                await Lock.WaitAsync();
+                await s_lock.WaitAsync();
                 try
                 {
-                    if (_appDbOperator.GetMapThumb(dataModel.BeatmapDbId, out var path) && path != null)
+                    var (found, path) = await s_playerData.TryGetMapThumbAsync(dataModel.BeatmapDbId);
+                    if (found && path != null)
                     {
                         if (File.Exists(path)) return path;
                     }
@@ -79,7 +81,7 @@ namespace Milky.OsuPlayer.Common
                     var sourceBgFile = osuFile.Events?.BackgroundInfo?.Filename;
                     if (string.IsNullOrWhiteSpace(sourceBgFile))
                     {
-                        _appDbOperator.SetMapThumb(dataModel.BeatmapDbId, null);
+                        await s_playerData.TrySetMapThumbAsync(dataModel.BeatmapDbId, null);
                         return null;
                     }
 
@@ -87,22 +89,22 @@ namespace Milky.OsuPlayer.Common
 
                     if (!File.Exists(sourceBgPath))
                     {
-                        //_appDbOperator.SetMapThumb(dataModel.BeatmapDbId, null);
+                        //db.SetMapThumb(dataModel.BeatmapDbId, null);
                         return null;
                     }
 
                     ResizeImageAndSave(sourceBgPath, guidStr, height: 200);
-                    _appDbOperator.SetMapThumb(dataModel.BeatmapDbId, guidStr);
+                    await s_playerData.TrySetMapThumbAsync(dataModel.BeatmapDbId, guidStr);
                     return guidStr;
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Error while creating beatmap thumb cache: {0}", dataModel.GetIdentity());
-                    return default;
+                    s_logger.Error(ex, "Error while creating beatmap thumb cache: {0}", dataModel.GetIdentity());
+                    return null;
                 }
                 finally
                 {
-                    Lock.Release();
+                    s_lock.Release();
                 }
             });
         }

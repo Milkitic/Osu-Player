@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -8,14 +8,13 @@ using System.Windows;
 using System.Windows.Controls;
 using Coosu.Beatmap;
 using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Annotations;
+using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 
@@ -26,8 +25,8 @@ namespace Milky.OsuPlayer.UserControls
     /// </summary>
     public partial class SelectCollectionControl : UserControl
     {
+        private readonly IPlayerDataService _playerData = AppServices.PlayerData;
         private SelectCollectionPageViewModel _viewModel;
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
         private FrontDialogOverlay _overlay;
 
         public SelectCollectionControl(Beatmap entry) : this(new[] { entry })
@@ -39,21 +38,24 @@ namespace Milky.OsuPlayer.UserControls
             InitializeComponent();
             _viewModel = (SelectCollectionPageViewModel)DataContext;
             _viewModel.Entries = entries;
-            RefreshList();
+            _ = RefreshListAsync();
             _overlay = FrontDialogOverlay.Default.GetOrCreateSubOverlay();
         }
 
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
         {
             var addCollectionControl = new AddCollectionControl();
-            _overlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, (obj, args) =>
-            {
-                if (!SafeDbOperator.TryAddCollection(addCollectionControl.CollectionName.Text))
-                    return;
+            _overlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions,
+                (obj, args) => { _ = AddCollectionAndRefreshAsync(addCollectionControl.CollectionName.Text); });
+        }
 
-                WindowEx.GetCurrentFirst<MainWindow>().UpdateCollections();
-                RefreshList();
-            });
+        private async Task AddCollectionAndRefreshAsync(string collectionName)
+        {
+            if (!await _playerData.TryAddCollectionAsync(collectionName))
+                return;
+
+            await WindowEx.GetCurrentFirst<MainWindow>().UpdateCollectionsAsync();
+            await RefreshListAsync();
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)
@@ -61,16 +63,16 @@ namespace Milky.OsuPlayer.UserControls
             FrontDialogOverlay.Default.RaiseOk();
         }
 
-        private void RefreshList()
+        private async Task RefreshListAsync()
         {
             _viewModel.Collections = new ObservableCollection<CollectionViewModel>(
-                CollectionViewModel.CopyFrom(SafeDbOperator.GetCollections().OrderByDescending(k => k.CreateTime)));
+                CollectionViewModel.CopyFrom(
+                    (await _playerData.GetCollectionsAsync()).OrderByDescending(k => k.CreateTime)));
         }
 
         public static async Task<bool> AddToCollectionAsync([NotNull] Collection col, IList<Beatmap> entries)
         {
             var controller = Service.Get<ObservablePlayController>();
-            var appDbOperator = new AppDbOperator();
             if (entries == null || entries.Count <= 0) return false;
             if (string.IsNullOrEmpty(col.ImagePath))
             {
@@ -91,17 +93,24 @@ namespace Milky.OsuPlayer.UserControls
                         if (File.Exists(imgPath))
                         {
                             col.ImagePath = imgPath;
-                            appDbOperator.UpdateCollection(col);
+                            if (!await AppServices.PlayerData.TryUpdateCollectionAsync(col))
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     return false;
                 }
             }
 
-            appDbOperator.AddMapsToCollection(entries, col);
+            if (!await AppServices.PlayerData.TryAddMapsToCollectionAsync(entries, col))
+            {
+                return false;
+            }
+
             foreach (var beatmap in entries)
             {
                 if (!controller.PlayList.CurrentInfo.Beatmap.GetIdentity().Equals(beatmap.GetIdentity()) ||

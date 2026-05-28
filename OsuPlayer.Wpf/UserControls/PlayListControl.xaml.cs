@@ -1,4 +1,12 @@
-﻿using Milky.OsuPlayer.Common;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
@@ -8,13 +16,6 @@ using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.Windows;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace Milky.OsuPlayer.UserControls
 {
@@ -44,11 +45,12 @@ namespace Milky.OsuPlayer.UserControls
                 OnPropertyChanged();
             }
         }
+
         public ICommand ClearPlayListCommand
         {
             get
             {
-                return new DelegateCommand(async param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     await Controller.PlayList.SetSongListAsync(Array.Empty<Beatmap>(), false);
                 });
@@ -59,10 +61,7 @@ namespace Milky.OsuPlayer.UserControls
         {
             get
             {
-                return new DelegateCommand(async param =>
-                {
-                    await Controller.PlayNewAsync(SelectedMap);
-                });
+                return new AsyncRelayCommand<object>(async param => { await Controller.PlayNewAsync(SelectedMap); });
             }
         }
 
@@ -70,7 +69,7 @@ namespace Milky.OsuPlayer.UserControls
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new RelayCommand<object>(param =>
                 {
                     var mw = WindowEx.GetCurrentFirst<MainWindow>();
                     var s = (string)param;
@@ -95,20 +94,14 @@ namespace Milky.OsuPlayer.UserControls
 
         public ICommand OpenSourceFolderCommand
         {
-            get
-            {
-                return new DelegateCommand(param =>
-                {
-                    Process.Start(SelectedMap.GetFolder(out _, out _));
-                });
-            }
+            get { return new RelayCommand<object>(param => { Process.Start(SelectedMap.GetFolder(out _, out _)); }); }
         }
 
         public ICommand OpenScorePageCommand
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new RelayCommand<object>(param =>
                 {
                     Process.Start($"https://osu.ppy.sh/b/{SelectedMap.BeatmapId}");
                 });
@@ -119,7 +112,7 @@ namespace Milky.OsuPlayer.UserControls
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new RelayCommand<object>(param =>
                 {
                     FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(SelectedMap),
                         DialogOptionFactory.SelectCollectionOptions);
@@ -133,7 +126,7 @@ namespace Milky.OsuPlayer.UserControls
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new RelayCommand<object>(param =>
                 {
                     if (Controller.PlayList.SongList.Count == 0) return;
                     var mw = WindowEx.GetCurrentFirst<MainWindow>();
@@ -145,20 +138,14 @@ namespace Milky.OsuPlayer.UserControls
 
         public ICommand ExportCommand
         {
-            get
-            {
-                return new DelegateCommand(param =>
-                {
-                    ExportPage.QueueEntry(SelectedMap);
-                });
-            }
+            get { return new RelayCommand<object>(param => { ExportPage.QueueEntry(SelectedMap); }); }
         }
 
         public ICommand RemoveCommand
         {
             get
             {
-                return new DelegateCommand(async param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     foreach (var beatmap in SelectedMaps)
                     {

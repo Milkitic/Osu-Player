@@ -1,13 +1,14 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Services;
+using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Media.Audio.Playlist
 {
@@ -16,9 +17,16 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         public event Action SongListChanged;
         public event Func<PlayControlResult, Beatmap, bool, Task> AutoSwitched;
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private readonly IPlayerDataStore _playerData;
 
         public PlayList()
+            : this(new PlayerDataService())
         {
+        }
+
+        public PlayList(IPlayerDataStore playerData)
+        {
+            _playerData = playerData;
             SongList = new ObservableCollection<Beatmap>();
             SongList.CollectionChanged += SongList_CollectionChanged;
             //PlayerMixer = new ObservablePlayerMixer(this);
@@ -64,45 +72,17 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
             set
             {
                 if (Equals(value, _mode)) return;
-                var preIsRandom = IsRandom;
-                _mode = value;
-                if (preIsRandom != IsRandom)
-                {
-                    var b = RearrangeIndexesAndReposition();
-                    if (b)
-                    {
-                        Logger.Warn("PlayMode changing causes CurrentInfo changed.");
-                        //throw new Exception("PlayMode changes cause current info changed");
-                    }
-                }
-
-                AppSettings.Default.Play.PlayListMode = _mode;
-                AppSettings.SaveDefault();
-                OnPropertyChanged();
+                _ = SetModeAsync(value);
             }
         }
 
         public int IndexPointer
         {
             get => _indexPointer;
-            set
+            private set
             {
-                if (value < -1) value = -1;
-                else if (value > SongList.Count - 1) value = SongList.Count - 1;
-
-                PreInfo = CurrentInfo;
-                CurrentInfo = value == -1 ? null : BeatmapContext.CreateAsync(SongList[_songIndexList[value]]).Result;
-
                 if (Equals(value, _indexPointer)) return;
                 _indexPointer = value;
-
-                if (_indexPointer != -1 && _temporaryPointerChanged != null)
-                {
-                    _indexPointer = _temporaryPointerChanged.Invoke(_indexPointer);
-                    Logger.Debug("Index switched to {_indexPointer}", _indexPointer);
-                }
-
-                _temporaryPointerChanged = null;
                 OnPropertyChanged();
             }
         }
@@ -135,7 +115,7 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
             Execute.OnUiThread(() => SongList = new ObservableCollection<Beatmap>(value.Where(k => k != null)));
             SongList.CollectionChanged += SongList_CollectionChanged;
 
-            var changed = RearrangeIndexesAndReposition(startAnew ? (int?)0 : null);
+            var changed = await RearrangeIndexesAndRepositionAsync(startAnew ? (int?)0 : null);
             PlayControlResult result; // 这里可能混入空/不空的情况
             if (autoSetSong && changed)
                 result = await AutoSwitchAfterCollectionChanged(playInstantly).ConfigureAwait(false);
@@ -152,12 +132,12 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         /// </summary>
         /// <param name="beatmap"></param>
         /// <returns></returns>
-        public void AddOrSwitchTo(Beatmap beatmap)
+        public async Task AddOrSwitchToAsync(Beatmap beatmap)
         {
             if (beatmap is null) return;
             if (!SongList.Contains(beatmap))
                 Execute.OnUiThread(() => SongList.Add(beatmap));
-            IndexPointer = _songIndexList.IndexOf(SongList.IndexOf(beatmap));
+            await SetIndexPointerAsync(_songIndexList.IndexOf(SongList.IndexOf(beatmap)));
         }
 
         public async Task<PlayControlResult> SwitchByControl(PlayControlType control)
@@ -182,12 +162,13 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                 var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Unknown,
                     PlayControlResult.PointerControlStatus.Default);
                 if (AutoSwitched != null)
-                    await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, playInstantly).ConfigureAwait(false);
+                    await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, playInstantly)
+                        .ConfigureAwait(false);
                 return playControlResult;
             }
 
             // 播放列表空
-            IndexPointer = -1;
+            await SetIndexPointerAsync(-1);
             var controlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                 PlayControlResult.PointerControlStatus.Clear);
             if (AutoSwitched != null)
@@ -224,18 +205,20 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                         var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                             PlayControlResult.PointerControlStatus.Clear);
                         if (AutoSwitched != null)
-                            await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true).ConfigureAwait(false);
+                            await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true)
+                                .ConfigureAwait(false);
                         return playControlResult;
                     }
 
                     if (IndexPointer == 0 && !isNext ||
                         IndexPointer == _songIndexList.Count - 1 && isNext)
                     {
-                        IndexPointer = 0;
+                        await SetIndexPointerAsync(0);
                         var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                             PlayControlResult.PointerControlStatus.Reset);
                         if (AutoSwitched != null)
-                            await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true).ConfigureAwait(false);
+                            await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true)
+                                .ConfigureAwait(false);
                         return playControlResult;
                     }
                 }
@@ -250,16 +233,16 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
             if (isNext)
             {
                 if (IndexPointer == _songIndexList.Count - 1 && (isManual || IsLoop))
-                    IndexPointer = 0;
+                    await SetIndexPointerAsync(0);
                 else
-                    IndexPointer++;
+                    await SetIndexPointerAsync(IndexPointer + 1);
             }
             else
             {
                 if (IndexPointer == 0 && (isManual || IsLoop))
-                    IndexPointer = _songIndexList.Count - 1;
+                    await SetIndexPointerAsync(_songIndexList.Count - 1);
                 else
-                    IndexPointer--;
+                    await SetIndexPointerAsync(IndexPointer - 1);
             }
 
             var result = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
@@ -268,12 +251,12 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         }
 
         // returns CurrentInfo changed?
-        private bool RearrangeIndexesAndReposition(int? forceIndex = null)
+        private async Task<bool> RearrangeIndexesAndRepositionAsync(int? forceIndex = null)
         {
             if (SongList.Count == 0)
             {
                 var current = CurrentInfo;
-                IndexPointer = -1;
+                await SetIndexPointerAsync(-1);
                 _songIndexList.Clear();
                 return CurrentInfo != current; // 从有到无，则为true
             }
@@ -284,36 +267,79 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
             if (forceIndex != null)
             {
                 var currentInfo = CurrentInfo;
-                IndexPointer = forceIndex.Value;
+                await SetIndexPointerAsync(forceIndex.Value);
                 return currentInfo != CurrentInfo; // force return false
             }
 
             var indexOf = SongList.IndexOf(CurrentInfo.Beatmap);
             if (indexOf == -1)
             {
-                IndexPointer = 0;
+                await SetIndexPointerAsync(0);
                 return true;
             }
             else
             {
                 var i = _songIndexList.IndexOf(indexOf);
-                IndexPointer = i;
+                await SetIndexPointerAsync(i);
                 return false;
             }
         }
 
+        private async Task SetModeAsync(PlaylistMode value)
+        {
+            var preIsRandom = IsRandom;
+            _mode = value;
+            if (preIsRandom != IsRandom)
+            {
+                var b = await RearrangeIndexesAndRepositionAsync();
+                if (b)
+                {
+                    Logger.Warn("PlayMode changing causes CurrentInfo changed.");
+                    //throw new Exception("PlayMode changes cause current info changed");
+                }
+            }
+
+            AppSettings.Default.Play.PlayListMode = _mode;
+            AppSettings.SaveDefault();
+            OnPropertyChanged(nameof(Mode));
+        }
+
+        private async Task SetIndexPointerAsync(int value)
+        {
+            if (value < -1) value = -1;
+            else if (value > SongList.Count - 1) value = SongList.Count - 1;
+
+            PreInfo = CurrentInfo;
+            CurrentInfo = value == -1
+                ? null
+                : await BeatmapContext.CreateAsync(SongList[_songIndexList[value]], _playerData);
+
+            if (Equals(value, _indexPointer)) return;
+            IndexPointer = value;
+
+            if (_indexPointer != -1 && _temporaryPointerChanged != null)
+            {
+                IndexPointer = _temporaryPointerChanged.Invoke(_indexPointer);
+                Logger.Debug("Index switched to {_indexPointer}", _indexPointer);
+            }
+
+            _temporaryPointerChanged = null;
+        }
+
         // 如果随机，改变集合是否重排？
-        private void SongList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private async void SongList_CollectionChanged(object sender,
+            System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             SongListChanged?.Invoke();
             if ((e.NewItems?.Count ?? 0) + (e.OldItems?.Count ?? 0) > 1 || _temporaryPointerChanged != null ||
                 SongList.Count == 0)
             {
                 _temporaryPointerChanged = null;
-                RearrangeIndexesAndReposition();
+                await RearrangeIndexesAndRepositionAsync();
 
                 if (!CheckCount())
-                { }
+                {
+                }
 
                 return;
             }
@@ -346,10 +372,11 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                 if (oldIndexPointer == -1)
                 {
                     _temporaryPointerChanged = null;
-                    RearrangeIndexesAndReposition();
+                    await RearrangeIndexesAndRepositionAsync();
 
                     if (!CheckCount())
-                    { }
+                    {
+                    }
 
                     return;
                 }
@@ -378,7 +405,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                 }
 
                 if (!CheckCount())
-                { }
+                {
+                }
             }
         }
 

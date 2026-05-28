@@ -19,7 +19,7 @@
             <StackPanel Margin="10">
                 <Label Content="{DynamicResource ui-sets-title-language}" Style="{StaticResource ConfigTitleStyle}" />
                 <ComboBox
-                    x:Name="Language"
+                    x:Name="LanguageComboBox"
                     Width="220"
                     Margin="8,0"
                     HorizontalAlignment="Left"

@@ -1,17 +1,28 @@
-﻿using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.UserControls;
-using Milky.OsuPlayer.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Services;
+using Milky.OsuPlayer.UserControls;
 
 namespace Milky.OsuPlayer.ViewModels
 {
     public class CollectionViewModel : VmBase
     {
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
+        private readonly IPlayerDataService _playerData;
+
+        public CollectionViewModel()
+            : this(AppServices.PlayerData)
+        {
+        }
+
+        public CollectionViewModel(IPlayerDataService playerData)
+        {
+            _playerData = playerData;
+        }
 
         public string Id { get; set; }
         public string Name { get; set; }
@@ -25,10 +36,10 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(async obj =>
+                return new AsyncRelayCommand<object>(async obj =>
                 {
                     var entries = (IList<Beatmap>)obj;
-                    var col = SafeDbOperator.GetCollectionById(Id);
+                    var col = await _playerData.GetCollectionByIdAsync(Id);
                     if (col == null) return;
                     await SelectCollectionControl.AddToCollectionAsync(col, entries);
                 });

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -10,9 +10,9 @@ using Coosu.Beatmap;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared.Models;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using Path = System.IO.Path;
@@ -25,11 +25,11 @@ namespace Milky.OsuPlayer.Pages
     public partial class ExportPage : Page
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly IPlayerDataService s_playerData = AppServices.PlayerData;
 
         //Page view model
         private static bool _hasTaskSuccess;
         private readonly MainWindow _mainWindow;
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
 
         public ExportPageViewModel ViewModel { get; }
         public static readonly ConcurrentQueue<Beatmap> TaskQueue = new ConcurrentQueue<Beatmap>();
@@ -124,7 +124,8 @@ namespace Milky.OsuPlayer.Pages
                 if (bgFileInfo.Exists)
                     Export(bgFileInfo, exportBgFolder, exportBgName);
                 if (mp3FileInfo.Exists || bgFileInfo.Exists)
-                    SafeDbOperator.TryAddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
+                    await s_playerData.TryAddMapExportAsync(entry.GetIdentity(),
+                        Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
             }
             catch (Exception ex)
             {

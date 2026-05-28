@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Services;
 
 namespace Milky.OsuPlayer.Media.Audio.Playlist
 {
@@ -20,13 +20,11 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
             BeatmapDetail = new BeatmapDetail(beatmap);
         }
 
-        private static AppDbOperator _operator = new AppDbOperator();
-
-        public static async Task<BeatmapContext> CreateAsync(Beatmap beatmap)
+        public static async Task<BeatmapContext> CreateAsync(Beatmap beatmap, IPlayerDataStore playerData)
         {
             return new BeatmapContext(beatmap)
             {
-                BeatmapSettings = _operator.GetMapFromDb(beatmap.GetIdentity()),
+                BeatmapSettings = await playerData.GetMapFromDbAsync(beatmap.GetIdentity()),
             };
         }
 

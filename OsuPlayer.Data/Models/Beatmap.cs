@@ -13,28 +13,28 @@ namespace Milky.OsuPlayer.Data.Models
         {
             Map(p => p.Artist).ToColumn("artist");
             Map(p => p.Title).ToColumn("title");
-            Map(p => p.ArtistUnicode).ToColumn("artistU");
-            Map(p => p.TitleUnicode).ToColumn("titleU");
+            Map(p => p.ArtistUnicode).ToColumn("artist_unicode");
+            Map(p => p.TitleUnicode).ToColumn("title_unicode");
             Map(p => p.Creator).ToColumn("creator");
-            Map(p => p.BeatmapFileName).ToColumn("fileName");
-            Map(p => p.LastModifiedTime).ToColumn("lastModified");
-            Map(p => p.DiffSrNoneStandard).ToColumn("diffSrStd");
-            Map(p => p.DiffSrNoneTaiko).ToColumn("diffSrTaiko");
-            Map(p => p.DiffSrNoneCtB).ToColumn("diffSrCtb");
-            Map(p => p.DiffSrNoneMania).ToColumn("diffSrMania");
-            Map(p => p.DrainTimeSeconds).ToColumn("drainTime");
-            Map(p => p.TotalTime).ToColumn("totalTime");
-            Map(p => p.AudioPreviewTime).ToColumn("audioPreview");
-            Map(p => p.BeatmapId).ToColumn("beatmapId");
-            Map(p => p.BeatmapSetId).ToColumn("beatmapSetId");
-            Map(p => p.GameMode).ToColumn("gameMode");
+            Map(p => p.BeatmapFileName).ToColumn("beatmap_file_name");
+            Map(p => p.LastModifiedTime).ToColumn("last_modified_at");
+            Map(p => p.DiffSrNoneStandard).ToColumn("star_rating_standard");
+            Map(p => p.DiffSrNoneTaiko).ToColumn("star_rating_taiko");
+            Map(p => p.DiffSrNoneCtB).ToColumn("star_rating_catch");
+            Map(p => p.DiffSrNoneMania).ToColumn("star_rating_mania");
+            Map(p => p.DrainTimeSeconds).ToColumn("drain_time_seconds");
+            Map(p => p.TotalTime).ToColumn("total_time_ms");
+            Map(p => p.AudioPreviewTime).ToColumn("preview_time_ms");
+            Map(p => p.BeatmapId).ToColumn("osu_beatmap_id");
+            Map(p => p.BeatmapSetId).ToColumn("osu_beatmapset_id");
+            Map(p => p.GameMode).ToColumn("game_mode");
             Map(p => p.SongSource).ToColumn("source");
             Map(p => p.SongTags).ToColumn("tags");
-            Map(p => p.FolderName).ToColumn("folderName");
-            Map(p => p.AudioFileName).ToColumn("audioName");
+            Map(p => p.FolderName).ToColumn("folder_name");
+            Map(p => p.AudioFileName).ToColumn("audio_file_name");
             Map(p => p.Id).ToColumn("id");
-            Map(p => p.InOwnDb).ToColumn("own");
-            Map(p => p.Version).ToColumn("version");
+            Map(p => p.InOwnDb).ToColumn("is_local");
+            Map(p => p.Version).ToColumn("difficulty_name");
         }
     }
 
