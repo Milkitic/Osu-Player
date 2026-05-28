@@ -1,4 +1,4 @@
-﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Windows;
 using System;
@@ -19,7 +19,7 @@ namespace Milky.OsuPlayer
 
         private readonly GithubRelease _release;
         private readonly MainWindow _mainWindow;
-        private Downloader _downloader;
+        private GithubAssetsDownloader _githubAssetsDownloader;
         private readonly string _savePath = Path.Combine(Domain.CurrentPath, "update.zip");
 
         public UpdateWindow(GithubRelease release, MainWindow mainWindow)
@@ -34,13 +34,16 @@ namespace Milky.OsuPlayer
             var asset = _release?.Assets.FirstOrDefault(k => k.Name == "Osu-Player.zip");
             if (asset == null) return;
             _mainWindow.ForceClose();
-            _downloader = new Downloader(asset.BrowserDownloadUrl);
-            _downloader.OnStartDownloading += Downloader_OnStartDownloading;
-            _downloader.OnDownloading += Downloader_OnDownloading;
-            _downloader.OnFinishDownloading += Downloader_OnFinishDownloading;
+            _githubAssetsDownloader = new GithubAssetsDownloader(asset.BrowserDownloadUrl);
             try
             {
-                await _downloader.DownloadAsync(_savePath);
+                var progress = new Progress<DownloadProgress>(UpdateDownloadProgress);
+                await _githubAssetsDownloader.DownloadAsync(_savePath, progress);
+                OpenDownloadedUpdate();
+            }
+            catch (OperationCanceledException) when (_githubAssetsDownloader.IsCancellationRequested)
+            {
+                Logger.Info("Update download canceled.");
             }
             catch (Exception ex)
             {
@@ -50,31 +53,34 @@ namespace Milky.OsuPlayer
             }
         }
 
-        private void Downloader_OnStartDownloading(long size)
+        private void UpdateDownloadProgress(DownloadProgress progress)
         {
-            Dispatcher.BeginInvoke(new Action(() => DlProgress.Maximum = size));
-        }
-
-        private void Downloader_OnDownloading(long size, long downloadedSize, long speed)
-        {
-            Dispatcher.BeginInvoke(new Action(() =>
+            if (progress.HasKnownTotal)
             {
-                DlProgress.Value = downloadedSize;
-                LblSpeed.Content = SharedUtils.CountSize(speed) + "/s";
-                LblProgress.Content = $"{Math.Round(downloadedSize / (float)size * 100)} %";
-            }));
+                DlProgress.IsIndeterminate = false;
+                DlProgress.Maximum = progress.TotalBytes;
+                DlProgress.Value = progress.DownloadedBytes;
+                LblProgress.Content = $"{Math.Round(progress.Percentage)} %";
+            }
+            else
+            {
+                DlProgress.IsIndeterminate = true;
+                LblProgress.Content = "-- %";
+            }
+
+            LblSpeed.Content = SharedUtils.CountSize(progress.BytesPerSecond) + "/s";
         }
 
-        private void Downloader_OnFinishDownloading()
+        private void OpenDownloadedUpdate()
         {
-            Process.Start(new FileInfo(_savePath).DirectoryName);
+            Process.Start(new FileInfo(_savePath).DirectoryName!);
             Process.Start(_savePath);
-            Dispatcher.BeginInvoke(new Action(Close));
+            Close();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _downloader.Interrupt();
+            _githubAssetsDownloader?.Interrupt();
         }
     }
 }
