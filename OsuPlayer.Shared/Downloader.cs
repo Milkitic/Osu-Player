@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -24,7 +24,6 @@ namespace Milky.OsuPlayer.Shared
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         public Downloader(string url)
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             this.Url = url;
         }
 

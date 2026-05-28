@@ -56,7 +56,7 @@ namespace Milky.OsuPlayer.Pages
 
         public CollectionPage(string colId) : this()
         {
-            UpdateView(colId);
+            _ = UpdateView(colId);
         }
 
         public async Task UpdateView(string colId)

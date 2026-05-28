@@ -17,7 +17,6 @@ namespace Milky.OsuPlayer.UserControls
 
         private bool _guideSyncing;
         private bool _guideSelectedDb;
-        private bool _showWelcome;
 
         public bool GuideSyncing
         {

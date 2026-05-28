@@ -144,7 +144,7 @@ namespace Milky.OsuPlayer.ViewModels
             //    return;
 
             //SortEnum sortEnum = (SortEnum)cbSortType.SelectedItem;
-            var sortMode = BeatmapSortMode.Artist;
+            //var sortMode = BeatmapSortMode.Artist;
             _querySw.Restart();
 
             lock (QueryLock)

@@ -77,7 +77,6 @@ namespace Milky.OsuPlayer.Common.Instances
 
         static UpdateInst()
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             HttpClient =
                 new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip })
                 {
