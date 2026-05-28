@@ -21,18 +21,33 @@ namespace Milky.OsuPlayer.Presentation.ObjectModel
             if (e.Action == NotifyCollectionChangedAction.Add ||
                 e.Action == NotifyCollectionChangedAction.Replace)
             {
-                for (int i = e.NewStartingIndex; i < Count; i++)
-                {
-                    this[i].Index = i;
-                }
+                RenumberFrom(e.NewStartingIndex);
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                RenumberFrom(e.OldStartingIndex);
             }
             else
             {
-                for (var i = e.NewStartingIndex; i < this.Count; i++)
-                {
-                    var item = this[i];
-                    item.Index = i;
-                }
+                RenumberFrom(0);
+            }
+        }
+
+        private void RenumberFrom(int startIndex)
+        {
+            if (Count == 0)
+            {
+                return;
+            }
+
+            if (startIndex < 0 || startIndex >= Count)
+            {
+                startIndex = 0;
+            }
+
+            for (var i = startIndex; i < Count; i++)
+            {
+                this[i].Index = i;
             }
         }
 
