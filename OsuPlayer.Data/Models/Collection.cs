@@ -10,11 +10,11 @@ namespace Milky.OsuPlayer.Data.Models
         {
             Map(p => p.Id).ToColumn("id");
             Map(p => p.Name).ToColumn("name");
-            Map(p => p.Locked).ToColumn("locked");
-            Map(p => p.Index).ToColumn("index");
-            Map(p => p.ImagePath).ToColumn("imagePath");
+            Map(p => p.Locked).ToColumn("is_locked");
+            Map(p => p.Index).ToColumn("sort_order");
+            Map(p => p.ImagePath).ToColumn("cover_image_path");
             Map(p => p.Description).ToColumn("description");
-            Map(p => p.CreateTime).ToColumn("createTime");
+            Map(p => p.CreateTime).ToColumn("created_at");
         }
     }
 

@@ -66,34 +66,37 @@ namespace Milky.OsuPlayer.Data
         {
             var entity = modelBuilder.Entity<Beatmap>();
 
-            entity.ToTable("beatmap");
+            entity.ToTable("beatmaps");
             entity.HasKey(k => k.Id);
             entity.HasIndex(k => new { k.FolderName, k.Version, k.InOwnDb })
-                .HasDatabaseName("IX_beatmap_identity");
+                .IsUnique()
+                .HasDatabaseName("ux_beatmaps_identity");
+            entity.HasIndex(k => k.FolderName).HasDatabaseName("ix_beatmaps_folder_name");
+            entity.HasIndex(k => k.BeatmapSetId).HasDatabaseName("ix_beatmaps_osu_beatmapset_id");
             entity.Property(k => k.Id).HasColumnName("id");
             entity.Property(k => k.Artist).HasColumnName("artist");
-            entity.Property(k => k.ArtistUnicode).HasColumnName("artistU");
+            entity.Property(k => k.ArtistUnicode).HasColumnName("artist_unicode");
             entity.Property(k => k.Title).HasColumnName("title");
-            entity.Property(k => k.TitleUnicode).HasColumnName("titleU");
+            entity.Property(k => k.TitleUnicode).HasColumnName("title_unicode");
             entity.Property(k => k.Creator).HasColumnName("creator");
-            entity.Property(k => k.Version).HasColumnName("version");
-            entity.Property(k => k.BeatmapFileName).HasColumnName("fileName");
-            entity.Property(k => k.LastModifiedTime).HasColumnName("lastModified");
-            entity.Property(k => k.DiffSrNoneStandard).HasColumnName("diffSrStd");
-            entity.Property(k => k.DiffSrNoneTaiko).HasColumnName("diffSrTaiko");
-            entity.Property(k => k.DiffSrNoneCtB).HasColumnName("diffSrCtb");
-            entity.Property(k => k.DiffSrNoneMania).HasColumnName("diffSrMania");
-            entity.Property(k => k.DrainTimeSeconds).HasColumnName("drainTime");
-            entity.Property(k => k.TotalTime).HasColumnName("totalTime");
-            entity.Property(k => k.AudioPreviewTime).HasColumnName("audioPreview");
-            entity.Property(k => k.BeatmapId).HasColumnName("beatmapId");
-            entity.Property(k => k.BeatmapSetId).HasColumnName("beatmapSetId");
-            entity.Property(k => k.GameMode).HasColumnName("gameMode");
+            entity.Property(k => k.Version).HasColumnName("difficulty_name");
+            entity.Property(k => k.BeatmapFileName).HasColumnName("beatmap_file_name");
+            entity.Property(k => k.LastModifiedTime).HasColumnName("last_modified_at");
+            entity.Property(k => k.DiffSrNoneStandard).HasColumnName("star_rating_standard");
+            entity.Property(k => k.DiffSrNoneTaiko).HasColumnName("star_rating_taiko");
+            entity.Property(k => k.DiffSrNoneCtB).HasColumnName("star_rating_catch");
+            entity.Property(k => k.DiffSrNoneMania).HasColumnName("star_rating_mania");
+            entity.Property(k => k.DrainTimeSeconds).HasColumnName("drain_time_seconds");
+            entity.Property(k => k.TotalTime).HasColumnName("total_time_ms");
+            entity.Property(k => k.AudioPreviewTime).HasColumnName("preview_time_ms");
+            entity.Property(k => k.BeatmapId).HasColumnName("osu_beatmap_id");
+            entity.Property(k => k.BeatmapSetId).HasColumnName("osu_beatmapset_id");
+            entity.Property(k => k.GameMode).HasColumnName("game_mode");
             entity.Property(k => k.SongSource).HasColumnName("source");
             entity.Property(k => k.SongTags).HasColumnName("tags");
-            entity.Property(k => k.FolderName).HasColumnName("folderName");
-            entity.Property(k => k.AudioFileName).HasColumnName("audioName");
-            entity.Property(k => k.InOwnDb).HasColumnName("own");
+            entity.Property(k => k.FolderName).HasColumnName("folder_name");
+            entity.Property(k => k.AudioFileName).HasColumnName("audio_file_name");
+            entity.Property(k => k.InOwnDb).HasColumnName("is_local");
 
             entity.Ignore(k => k.StarRatingStd);
             entity.Ignore(k => k.StarRatingTaiko);
@@ -107,15 +110,20 @@ namespace Milky.OsuPlayer.Data
         {
             var entity = modelBuilder.Entity<BeatmapSettings>();
 
-            entity.ToTable("map_info");
+            entity.ToTable("beatmap_play_settings");
             entity.HasKey(k => k.Id);
+            entity.HasIndex(k => new { k.FolderName, k.Version, k.InOwnDb })
+                .IsUnique()
+                .HasDatabaseName("ux_beatmap_play_settings_identity");
+            entity.HasIndex(k => k.LastPlayTime).HasDatabaseName("ix_beatmap_play_settings_last_played_at");
+            entity.HasIndex(k => k.ExportFile).HasDatabaseName("ix_beatmap_play_settings_exported_file_path");
             entity.Property(k => k.Id).HasColumnName("id");
-            entity.Property(k => k.Version).HasColumnName("version").IsRequired();
-            entity.Property(k => k.FolderName).HasColumnName("folder").IsRequired();
-            entity.Property(k => k.InOwnDb).HasColumnName("ownDb");
-            entity.Property(k => k.Offset).HasColumnName("offset");
-            entity.Property(k => k.LastPlayTime).HasColumnName("lastPlayTime");
-            entity.Property(k => k.ExportFile).HasColumnName("exportFile");
+            entity.Property(k => k.Version).HasColumnName("difficulty_name").IsRequired();
+            entity.Property(k => k.FolderName).HasColumnName("folder_name").IsRequired();
+            entity.Property(k => k.InOwnDb).HasColumnName("is_local");
+            entity.Property(k => k.Offset).HasColumnName("audio_offset_ms");
+            entity.Property(k => k.LastPlayTime).HasColumnName("last_played_at");
+            entity.Property(k => k.ExportFile).HasColumnName("exported_file_path");
 
             entity.Ignore(k => k.AddTime);
         }
@@ -124,15 +132,17 @@ namespace Milky.OsuPlayer.Data
         {
             var entity = modelBuilder.Entity<Collection>();
 
-            entity.ToTable("collection");
+            entity.ToTable("collections");
             entity.HasKey(k => k.Id);
+            entity.HasIndex(k => k.Name).HasDatabaseName("ix_collections_name");
+            entity.HasIndex(k => k.Index).HasDatabaseName("ix_collections_sort_order");
             entity.Property(k => k.Id).HasColumnName("id");
             entity.Property(k => k.Name).HasColumnName("name").IsRequired().HasMaxLength(100);
-            entity.Property(k => k.Locked).HasColumnName("locked");
-            entity.Property(k => k.Index).HasColumnName("index");
-            entity.Property(k => k.ImagePath).HasColumnName("imagePath").HasMaxLength(700);
+            entity.Property(k => k.Locked).HasColumnName("is_locked");
+            entity.Property(k => k.Index).HasColumnName("sort_order");
+            entity.Property(k => k.ImagePath).HasColumnName("cover_image_path").HasMaxLength(700);
             entity.Property(k => k.Description).HasColumnName("description").HasMaxLength(700);
-            entity.Property(k => k.CreateTime).HasColumnName("createTime");
+            entity.Property(k => k.CreateTime).HasColumnName("created_at");
 
             entity.Ignore(k => k.LockedBool);
         }
@@ -141,38 +151,58 @@ namespace Milky.OsuPlayer.Data
         {
             var entity = modelBuilder.Entity<CollectionRelation>();
 
-            entity.ToTable("collection_relation");
+            entity.ToTable("collection_beatmaps");
             entity.HasKey(k => k.Id);
+            entity.HasIndex(k => new { k.CollectionId, k.MapId })
+                .IsUnique()
+                .HasDatabaseName("ux_collection_beatmaps_collection_map");
+            entity.HasIndex(k => k.MapId).HasDatabaseName("ix_collection_beatmaps_beatmap_settings_id");
             entity.Property(k => k.Id).HasColumnName("id");
-            entity.Property(k => k.CollectionId).HasColumnName("collectionId").IsRequired();
-            entity.Property(k => k.MapId).HasColumnName("mapId").IsRequired();
-            entity.Property(k => k.AddTime).HasColumnName("addTime");
+            entity.Property(k => k.CollectionId).HasColumnName("collection_id").IsRequired();
+            entity.Property(k => k.MapId).HasColumnName("beatmap_settings_id").IsRequired();
+            entity.Property(k => k.AddTime).HasColumnName("added_at");
+
+            entity.HasOne<Collection>()
+                .WithMany()
+                .HasForeignKey(k => k.CollectionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne<BeatmapSettings>()
+                .WithMany()
+                .HasForeignKey(k => k.MapId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         private static void ConfigureMapThumb(ModelBuilder modelBuilder)
         {
             var entity = modelBuilder.Entity<MapThumb>();
 
-            entity.ToTable("map_thumb");
+            entity.ToTable("beatmap_thumbnails");
             entity.HasKey(k => k.Id);
+            entity.HasIndex(k => k.MapId)
+                .IsUnique()
+                .HasDatabaseName("ux_beatmap_thumbnails_beatmap_id");
             entity.Property(k => k.Id).HasColumnName("id");
-            entity.Property(k => k.MapId).HasColumnName("mapId");
-            entity.Property(k => k.ThumbPath).HasColumnName("thumbPath");
+            entity.Property(k => k.MapId).HasColumnName("beatmap_id");
+            entity.Property(k => k.ThumbPath).HasColumnName("thumbnail_path");
         }
 
         private static void ConfigureStoryboardInfo(ModelBuilder modelBuilder)
         {
             var entity = modelBuilder.Entity<StoryboardInfo>();
 
-            entity.ToTable("sb_info");
+            entity.ToTable("storyboard_assets");
             entity.HasKey(k => k.Id);
+            entity.HasIndex(k => k.MapId)
+                .IsUnique()
+                .HasDatabaseName("ux_storyboard_assets_beatmap_id");
             entity.Property(k => k.Id).HasColumnName("id");
-            entity.Property(k => k.MapId).HasColumnName("mapId").IsRequired();
-            entity.Property(k => k.SbThumbPath).HasColumnName("thumbPath").IsRequired();
-            entity.Property(k => k.SbThumbVideoPath).HasColumnName("thumbVideoPath").IsRequired();
-            entity.Property(k => k.Version).HasColumnName("version").IsRequired();
-            entity.Property(k => k.FolderName).HasColumnName("folder").IsRequired();
-            entity.Property(k => k.InOwnDb).HasColumnName("own");
+            entity.Property(k => k.MapId).HasColumnName("beatmap_id").IsRequired();
+            entity.Property(k => k.SbThumbPath).HasColumnName("thumbnail_path").IsRequired();
+            entity.Property(k => k.SbThumbVideoPath).HasColumnName("preview_video_path").IsRequired();
+            entity.Property(k => k.Version).HasColumnName("difficulty_name").IsRequired();
+            entity.Property(k => k.FolderName).HasColumnName("folder_name").IsRequired();
+            entity.Property(k => k.InOwnDb).HasColumnName("is_local");
         }
 
         public static void InitializeDatabase()
@@ -309,11 +339,20 @@ namespace Milky.OsuPlayer.Data
 
             var relations = new List<CollectionRelation>(beatmaps.Count);
             var addTime = DateTime.Now;
+            var existingMapIds = CollectionRelations
+                .Where(k => k.CollectionId == collection.Id)
+                .Select(k => k.MapId)
+                .ToHashSet();
             foreach (var beatmap in beatmaps)
             {
                 LogTemporaryMap(beatmap);
 
                 var map = GetMapFromDb(beatmap.GetIdentity());
+                if (existingMapIds.Contains(map.Id))
+                {
+                    continue;
+                }
+
                 relations.Add(new CollectionRelation
                 {
                     Id = Guid.NewGuid().ToString(),
@@ -321,6 +360,7 @@ namespace Milky.OsuPlayer.Data
                     MapId = map.Id,
                     AddTime = addTime
                 });
+                existingMapIds.Add(map.Id);
             }
 
             CollectionRelations.AddRange(relations);
@@ -617,7 +657,7 @@ namespace Milky.OsuPlayer.Data
                     foreach (var chunk in identities.Chunk(MaxIdentitiesPerQuery))
                     {
                         var sql = new StringBuilder(@"
-WITH ids(folder, version, ownDb, ord) AS (
+WITH ids(folder_name, difficulty_name, is_local, ord) AS (
     VALUES ");
                         var parameters = new DynamicParameters();
 
@@ -640,9 +680,9 @@ WITH ids(folder, version, ownDb, ord) AS (
 SELECT b.*
   FROM ids
        INNER JOIN
-       beatmap AS b ON b.folderName = ids.folder AND 
-                     b.version = ids.version AND 
-                     b.own = ids.ownDb
+       beatmaps AS b ON b.folder_name = ids.folder_name AND 
+                       b.difficulty_name = ids.difficulty_name AND 
+                       b.is_local = ids.is_local
  ORDER BY ids.ord;");
 
                         result.AddRange(dbConnection.Query<Beatmap>(sql.ToString(), parameters));
@@ -698,31 +738,31 @@ SELECT b.*
         public void AddNewMaps(IEnumerable<Beatmap> beatmaps)
         {
             const string sql = @"
-INSERT INTO beatmap (
+INSERT OR IGNORE INTO beatmaps (
     id,
     artist,
-    artistU,
+    artist_unicode,
     title,
-    titleU,
+    title_unicode,
     creator,
-    version,
-    fileName,
-    lastModified,
-    diffSrStd,
-    diffSrTaiko,
-    diffSrCtb,
-    diffSrMania,
-    drainTime,
-    totalTime,
-    audioPreview,
-    beatmapId,
-    beatmapSetId,
-    gameMode,
+    difficulty_name,
+    beatmap_file_name,
+    last_modified_at,
+    star_rating_standard,
+    star_rating_taiko,
+    star_rating_catch,
+    star_rating_mania,
+    drain_time_seconds,
+    total_time_ms,
+    preview_time_ms,
+    osu_beatmap_id,
+    osu_beatmapset_id,
+    game_mode,
     source,
     tags,
-    folderName,
-    audioName,
-    own
+    folder_name,
+    audio_file_name,
+    is_local
 ) VALUES (
     @Id,
     @Artist,

@@ -156,7 +156,7 @@ VALUES ($migrationId, $sourcePath, $migratedAtUtc);";
         {
             if (!TableExists(connection, LegacySchema, tableName) || !TableExists(connection, "main", tableName))
             {
-                return 0;
+                return CopyLegacyTable(connection, transaction, tableName);
             }
 
             var targetColumns = GetColumnNames(connection, "main", tableName);
@@ -178,6 +178,68 @@ INSERT OR IGNORE INTO main.{QuoteIdentifier(tableName)} ({columnList})
 SELECT {columnList}
 FROM {QuoteIdentifier(LegacySchema)}.{QuoteIdentifier(tableName)};";
 
+            return command.ExecuteNonQuery();
+        }
+
+        private static int CopyLegacyTable(SqliteConnection connection, SqliteTransaction transaction, string tableName)
+        {
+            if (!TableExists(connection, LegacySchema, tableName))
+            {
+                return 0;
+            }
+
+            var sql = tableName switch
+            {
+                "beatmap" when TableExists(connection, "main", "beatmaps") => @"
+INSERT OR IGNORE INTO main.beatmaps (
+    id, artist, artist_unicode, title, title_unicode, creator, difficulty_name, audio_file_name,
+    beatmap_file_name, last_modified_at, star_rating_standard, star_rating_taiko, star_rating_catch,
+    star_rating_mania, drain_time_seconds, total_time_ms, preview_time_ms, osu_beatmap_id,
+    osu_beatmapset_id, game_mode, source, tags, folder_name, is_local)
+SELECT id, artist, artistU, title, titleU, creator, version, audioName,
+       fileName, lastModified, diffSrStd, diffSrTaiko, diffSrCtb,
+       diffSrMania, drainTime, totalTime, audioPreview, beatmapId,
+       beatmapSetId, gameMode, source, tags, folderName, own
+FROM legacy.beatmap;",
+                "map_info" when TableExists(connection, "main", "beatmap_play_settings") => @"
+INSERT OR IGNORE INTO main.beatmap_play_settings (
+    id, difficulty_name, folder_name, is_local, audio_offset_ms, last_played_at, exported_file_path)
+SELECT id, version, folder, ownDb, offset, lastPlayTime, exportFile
+FROM legacy.map_info;",
+                "collection" when TableExists(connection, "main", "collections") => @"
+INSERT OR IGNORE INTO main.collections (
+    id, name, is_locked, sort_order, cover_image_path, description, created_at)
+SELECT id, name, locked, ""index"", imagePath, description, createTime
+FROM legacy.collection;",
+                "collection_relation" when TableExists(connection, "main", "collection_beatmaps") => @"
+INSERT OR IGNORE INTO main.collection_beatmaps (
+    id, collection_id, beatmap_settings_id, added_at)
+SELECT id, collectionId, mapId, addTime
+FROM legacy.collection_relation
+WHERE EXISTS (SELECT 1 FROM main.collections WHERE main.collections.id = legacy.collection_relation.collectionId)
+  AND EXISTS (SELECT 1 FROM main.beatmap_play_settings WHERE main.beatmap_play_settings.id = legacy.collection_relation.mapId);",
+                "map_thumb" when TableExists(connection, "main", "beatmap_thumbnails") => @"
+INSERT OR IGNORE INTO main.beatmap_thumbnails (
+    id, beatmap_id, thumbnail_path)
+SELECT id, mapId, thumbPath
+FROM legacy.map_thumb
+WHERE EXISTS (SELECT 1 FROM main.beatmaps WHERE main.beatmaps.id = legacy.map_thumb.mapId);",
+                "sb_info" when TableExists(connection, "main", "storyboard_assets") => @"
+INSERT OR IGNORE INTO main.storyboard_assets (
+    id, beatmap_id, thumbnail_path, preview_video_path, difficulty_name, folder_name, is_local)
+SELECT id, mapId, thumbPath, thumbVideoPath, version, folder, own
+FROM legacy.sb_info;",
+                _ => null
+            };
+
+            if (string.IsNullOrWhiteSpace(sql))
+            {
+                return 0;
+            }
+
+            using var command = connection.CreateCommand();
+            command.Transaction = transaction;
+            command.CommandText = sql;
             return command.ExecuteNonQuery();
         }
 

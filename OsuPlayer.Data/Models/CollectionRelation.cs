@@ -8,9 +8,9 @@ namespace Milky.OsuPlayer.Data.Models
         public CollectionRelationMap()
         {
             Map(p => p.Id).ToColumn("id");
-            Map(p => p.CollectionId).ToColumn("collectionId");
-            Map(p => p.MapId).ToColumn("mapId");
-            Map(p => p.AddTime).ToColumn("addTime");
+            Map(p => p.CollectionId).ToColumn("collection_id");
+            Map(p => p.MapId).ToColumn("beatmap_settings_id");
+            Map(p => p.AddTime).ToColumn("added_at");
         }
     }
 

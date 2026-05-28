@@ -8,12 +8,12 @@ namespace Milky.OsuPlayer.Data.Models
         public StoryboardInfoMap()
         {
             Map(p => p.Id).ToColumn("id");
-            Map(p => p.MapId).ToColumn("mapId");
-            Map(p => p.SbThumbPath).ToColumn("thumbPath");
-            Map(p => p.SbThumbVideoPath).ToColumn("thumbVideoPath");
-            Map(p => p.Version).ToColumn("version");
-            Map(p => p.FolderName).ToColumn("folder");
-            Map(p => p.InOwnDb).ToColumn("own");
+            Map(p => p.MapId).ToColumn("beatmap_id");
+            Map(p => p.SbThumbPath).ToColumn("thumbnail_path");
+            Map(p => p.SbThumbVideoPath).ToColumn("preview_video_path");
+            Map(p => p.Version).ToColumn("difficulty_name");
+            Map(p => p.FolderName).ToColumn("folder_name");
+            Map(p => p.InOwnDb).ToColumn("is_local");
         }
     }
 

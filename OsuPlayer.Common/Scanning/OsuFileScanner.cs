@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
@@ -45,12 +46,11 @@ namespace Milky.OsuPlayer.Common.Scanning
             var dirInfo = new DirectoryInfo(path);
             if (dirInfo.Exists)
             {
-                foreach (var privateFolder in dirInfo.EnumerateDirectories(searchPattern: "*.*",
-                             searchOption: SearchOption.TopDirectoryOnly))
+                foreach (var group in EnumerateOsuFiles(dirInfo).GroupBy(k => k.DirectoryName))
                 {
                     if (_scanCts.IsCancellationRequested)
                         break;
-                    await ScanPrivateFolderAsync(privateFolder);
+                    await ScanFolderAsync(dirInfo, group);
                 }
             }
 
@@ -85,10 +85,10 @@ namespace Milky.OsuPlayer.Common.Scanning
             }
         }
 
-        private async Task ScanPrivateFolderAsync(DirectoryInfo privateFolder)
+        private async Task ScanFolderAsync(DirectoryInfo rootFolder, IEnumerable<FileInfo> osuFiles)
         {
             var beatmaps = new List<Beatmap>();
-            foreach (var fileInfo in privateFolder.EnumerateFiles("*.osu", SearchOption.TopDirectoryOnly))
+            foreach (var fileInfo in osuFiles)
             {
                 if (_scanCts.IsCancellationRequested)
                     return;
@@ -107,7 +107,7 @@ namespace Milky.OsuPlayer.Common.Scanning
                             options.IgnoreStoryboard();
                         });
 
-                    var beatmap = GetBeatmapObj(osuFile, fileInfo);
+                    var beatmap = GetBeatmapObj(rootFolder, osuFile, fileInfo);
                     beatmaps.Add(beatmap);
                 }
                 catch (Exception ex)
@@ -127,14 +127,44 @@ namespace Milky.OsuPlayer.Common.Scanning
             }
         }
 
-        private Beatmap GetBeatmapObj(LocalOsuFile osuFile, FileInfo fileInfo)
+        private static IEnumerable<FileInfo> EnumerateOsuFiles(DirectoryInfo rootFolder)
+        {
+            try
+            {
+                return rootFolder.EnumerateFiles("*.osu", SearchOption.AllDirectories);
+            }
+            catch (Exception ex)
+            {
+                s_logger.Error(ex, "Error during enumerating osu files, ignored {0}", rootFolder.FullName);
+                return Enumerable.Empty<FileInfo>();
+            }
+        }
+
+        private Beatmap GetBeatmapObj(DirectoryInfo rootFolder, LocalOsuFile osuFile, FileInfo fileInfo)
         {
             var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
             beatmap.BeatmapFileName = fileInfo.Name;
             beatmap.LastModifiedTime = fileInfo.LastWriteTime;
-            beatmap.FolderName = fileInfo.Directory?.Name;
+            beatmap.FolderName = GetRelativeFolderName(rootFolder, fileInfo);
             beatmap.InOwnDb = true;
             return beatmap;
+        }
+
+        private static string GetRelativeFolderName(DirectoryInfo rootFolder, FileInfo fileInfo)
+        {
+            var directory = fileInfo.Directory?.FullName;
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                return string.Empty;
+            }
+
+            var relativePath = Path.GetRelativePath(rootFolder.FullName, directory);
+            if (relativePath == ".")
+            {
+                return string.Empty;
+            }
+
+            return relativePath;
         }
     }
 }

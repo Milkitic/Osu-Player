@@ -30,27 +30,27 @@ namespace Milky.OsuPlayer.Data.Migrations
 
                     b.Property<string>("ArtistUnicode")
                         .HasColumnType("TEXT")
-                        .HasColumnName("artistU");
+                        .HasColumnName("artist_unicode");
 
                     b.Property<string>("AudioFileName")
                         .HasColumnType("TEXT")
-                        .HasColumnName("audioName");
+                        .HasColumnName("audio_file_name");
 
                     b.Property<int>("AudioPreviewTime")
                         .HasColumnType("INTEGER")
-                        .HasColumnName("audioPreview");
+                        .HasColumnName("preview_time_ms");
 
                     b.Property<string>("BeatmapFileName")
                         .HasColumnType("TEXT")
-                        .HasColumnName("fileName");
+                        .HasColumnName("beatmap_file_name");
 
                     b.Property<int>("BeatmapId")
                         .HasColumnType("INTEGER")
-                        .HasColumnName("beatmapId");
+                        .HasColumnName("osu_beatmap_id");
 
                     b.Property<int>("BeatmapSetId")
                         .HasColumnType("INTEGER")
-                        .HasColumnName("beatmapSetId");
+                        .HasColumnName("osu_beatmapset_id");
 
                     b.Property<string>("Creator")
                         .HasColumnType("TEXT")
@@ -58,39 +58,39 @@ namespace Milky.OsuPlayer.Data.Migrations
 
                     b.Property<double>("DiffSrNoneCtB")
                         .HasColumnType("REAL")
-                        .HasColumnName("diffSrCtb");
+                        .HasColumnName("star_rating_catch");
 
                     b.Property<double>("DiffSrNoneMania")
                         .HasColumnType("REAL")
-                        .HasColumnName("diffSrMania");
+                        .HasColumnName("star_rating_mania");
 
                     b.Property<double>("DiffSrNoneStandard")
                         .HasColumnType("REAL")
-                        .HasColumnName("diffSrStd");
+                        .HasColumnName("star_rating_standard");
 
                     b.Property<double>("DiffSrNoneTaiko")
                         .HasColumnType("REAL")
-                        .HasColumnName("diffSrTaiko");
+                        .HasColumnName("star_rating_taiko");
 
                     b.Property<int>("DrainTimeSeconds")
                         .HasColumnType("INTEGER")
-                        .HasColumnName("drainTime");
+                        .HasColumnName("drain_time_seconds");
 
                     b.Property<string>("FolderName")
                         .HasColumnType("TEXT")
-                        .HasColumnName("folderName");
+                        .HasColumnName("folder_name");
 
                     b.Property<byte>("GameMode")
                         .HasColumnType("INTEGER")
-                        .HasColumnName("gameMode");
+                        .HasColumnName("game_mode");
 
                     b.Property<bool>("InOwnDb")
                         .HasColumnType("INTEGER")
-                        .HasColumnName("own");
+                        .HasColumnName("is_local");
 
                     b.Property<DateTime>("LastModifiedTime")
                         .HasColumnType("TEXT")
-                        .HasColumnName("lastModified");
+                        .HasColumnName("last_modified_at");
 
                     b.Property<string>("SongSource")
                         .HasColumnType("TEXT")
@@ -106,22 +106,29 @@ namespace Milky.OsuPlayer.Data.Migrations
 
                     b.Property<string>("TitleUnicode")
                         .HasColumnType("TEXT")
-                        .HasColumnName("titleU");
+                        .HasColumnName("title_unicode");
 
                     b.Property<int>("TotalTime")
                         .HasColumnType("INTEGER")
-                        .HasColumnName("totalTime");
+                        .HasColumnName("total_time_ms");
 
                     b.Property<string>("Version")
                         .HasColumnType("TEXT")
-                        .HasColumnName("version");
+                        .HasColumnName("difficulty_name");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FolderName", "Version", "InOwnDb")
-                        .HasDatabaseName("IX_beatmap_identity");
+                    b.HasIndex("BeatmapSetId")
+                        .HasDatabaseName("ix_beatmaps_osu_beatmapset_id");
 
-                    b.ToTable("beatmap", (string)null);
+                    b.HasIndex("FolderName")
+                        .HasDatabaseName("ix_beatmaps_folder_name");
+
+                    b.HasIndex("FolderName", "Version", "InOwnDb")
+                        .IsUnique()
+                        .HasDatabaseName("ux_beatmaps_identity");
+
+                    b.ToTable("beatmaps", (string)null);
                 });
 
             modelBuilder.Entity("Milky.OsuPlayer.Data.Models.BeatmapSettings", b =>
@@ -132,33 +139,43 @@ namespace Milky.OsuPlayer.Data.Migrations
 
                     b.Property<string>("ExportFile")
                         .HasColumnType("TEXT")
-                        .HasColumnName("exportFile");
+                        .HasColumnName("exported_file_path");
 
                     b.Property<string>("FolderName")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnName("folder");
+                        .HasColumnName("folder_name");
 
                     b.Property<bool>("InOwnDb")
                         .HasColumnType("INTEGER")
-                        .HasColumnName("ownDb");
+                        .HasColumnName("is_local");
 
                     b.Property<DateTime?>("LastPlayTime")
                         .HasColumnType("TEXT")
-                        .HasColumnName("lastPlayTime");
+                        .HasColumnName("last_played_at");
 
                     b.Property<int>("Offset")
                         .HasColumnType("INTEGER")
-                        .HasColumnName("offset");
+                        .HasColumnName("audio_offset_ms");
 
                     b.Property<string>("Version")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnName("version");
+                        .HasColumnName("difficulty_name");
 
                     b.HasKey("Id");
 
-                    b.ToTable("map_info", (string)null);
+                    b.HasIndex("ExportFile")
+                        .HasDatabaseName("ix_beatmap_play_settings_exported_file_path");
+
+                    b.HasIndex("LastPlayTime")
+                        .HasDatabaseName("ix_beatmap_play_settings_last_played_at");
+
+                    b.HasIndex("FolderName", "Version", "InOwnDb")
+                        .IsUnique()
+                        .HasDatabaseName("ux_beatmap_play_settings_identity");
+
+                    b.ToTable("beatmap_play_settings", (string)null);
                 });
 
             modelBuilder.Entity("Milky.OsuPlayer.Data.Models.Collection", b =>
@@ -169,7 +186,7 @@ namespace Milky.OsuPlayer.Data.Migrations
 
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("TEXT")
-                        .HasColumnName("createTime");
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Description")
                         .HasMaxLength(700)
@@ -179,15 +196,15 @@ namespace Milky.OsuPlayer.Data.Migrations
                     b.Property<string>("ImagePath")
                         .HasMaxLength(700)
                         .HasColumnType("TEXT")
-                        .HasColumnName("imagePath");
+                        .HasColumnName("cover_image_path");
 
                     b.Property<int>("Index")
                         .HasColumnType("INTEGER")
-                        .HasColumnName("index");
+                        .HasColumnName("sort_order");
 
                     b.Property<int>("Locked")
                         .HasColumnType("INTEGER")
-                        .HasColumnName("locked");
+                        .HasColumnName("is_locked");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -197,7 +214,13 @@ namespace Milky.OsuPlayer.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("collection", (string)null);
+                    b.HasIndex("Index")
+                        .HasDatabaseName("ix_collections_sort_order");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_collections_name");
+
+                    b.ToTable("collections", (string)null);
                 });
 
             modelBuilder.Entity("Milky.OsuPlayer.Data.Models.CollectionRelation", b =>
@@ -208,21 +231,28 @@ namespace Milky.OsuPlayer.Data.Migrations
 
                     b.Property<DateTime?>("AddTime")
                         .HasColumnType("TEXT")
-                        .HasColumnName("addTime");
+                        .HasColumnName("added_at");
 
                     b.Property<string>("CollectionId")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnName("collectionId");
+                        .HasColumnName("collection_id");
 
                     b.Property<string>("MapId")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnName("mapId");
+                        .HasColumnName("beatmap_settings_id");
 
                     b.HasKey("Id");
 
-                    b.ToTable("collection_relation", (string)null);
+                    b.HasIndex("MapId")
+                        .HasDatabaseName("ix_collection_beatmaps_beatmap_settings_id");
+
+                    b.HasIndex("CollectionId", "MapId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_collection_beatmaps_collection_map");
+
+                    b.ToTable("collection_beatmaps", (string)null);
                 });
 
             modelBuilder.Entity("Milky.OsuPlayer.Data.Models.MapThumb", b =>
@@ -233,15 +263,19 @@ namespace Milky.OsuPlayer.Data.Migrations
 
                     b.Property<Guid>("MapId")
                         .HasColumnType("TEXT")
-                        .HasColumnName("mapId");
+                        .HasColumnName("beatmap_id");
 
                     b.Property<string>("ThumbPath")
                         .HasColumnType("TEXT")
-                        .HasColumnName("thumbPath");
+                        .HasColumnName("thumbnail_path");
 
                     b.HasKey("Id");
 
-                    b.ToTable("map_thumb", (string)null);
+                    b.HasIndex("MapId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_beatmap_thumbnails_beatmap_id");
+
+                    b.ToTable("beatmap_thumbnails", (string)null);
                 });
 
             modelBuilder.Entity("Milky.OsuPlayer.Data.Models.StoryboardInfo", b =>
@@ -253,35 +287,54 @@ namespace Milky.OsuPlayer.Data.Migrations
                     b.Property<string>("FolderName")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnName("folder");
+                        .HasColumnName("folder_name");
 
                     b.Property<bool>("InOwnDb")
                         .HasColumnType("INTEGER")
-                        .HasColumnName("own");
+                        .HasColumnName("is_local");
 
                     b.Property<string>("MapId")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnName("mapId");
+                        .HasColumnName("beatmap_id");
 
                     b.Property<string>("SbThumbPath")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnName("thumbPath");
+                        .HasColumnName("thumbnail_path");
 
                     b.Property<string>("SbThumbVideoPath")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnName("thumbVideoPath");
+                        .HasColumnName("preview_video_path");
 
                     b.Property<string>("Version")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnName("version");
+                        .HasColumnName("difficulty_name");
 
                     b.HasKey("Id");
 
-                    b.ToTable("sb_info", (string)null);
+                    b.HasIndex("MapId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_storyboard_assets_beatmap_id");
+
+                    b.ToTable("storyboard_assets", (string)null);
+                });
+
+            modelBuilder.Entity("Milky.OsuPlayer.Data.Models.CollectionRelation", b =>
+                {
+                    b.HasOne("Milky.OsuPlayer.Data.Models.Collection", null)
+                        .WithMany()
+                        .HasForeignKey("CollectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Milky.OsuPlayer.Data.Models.BeatmapSettings", null)
+                        .WithMany()
+                        .HasForeignKey("MapId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
