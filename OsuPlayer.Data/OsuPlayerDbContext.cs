@@ -183,7 +183,11 @@ namespace Milky.OsuPlayer.Data
                 .IsUnique()
                 .HasDatabaseName("ux_beatmap_thumbnails_beatmap_id");
             entity.Property(k => k.Id).HasColumnName("id");
-            entity.Property(k => k.MapId).HasColumnName("beatmap_id");
+            entity.Property(k => k.MapId)
+                .HasColumnName("beatmap_id")
+                .HasConversion(
+                    value => value.ToString("D"),
+                    value => Guid.Parse(value));
             entity.Property(k => k.ThumbPath).HasColumnName("thumbnail_path");
         }
 
@@ -346,11 +350,7 @@ namespace Milky.OsuPlayer.Data
                 .Select(k => k.MapId)
                 .ToHashSetAsync();
 
-            var queryKeys = beatmaps.Select(b => b.GetIdentity()).ToList();
-            var settingsLookup = await BeatmapSettings
-                .Where(s => queryKeys.Any(id =>
-                    s.FolderName == id.FolderName && s.Version == id.Version && s.InOwnDb == id.InOwnDb))
-                .ToDictionaryAsync(s => $"{s.FolderName}|{s.Version}|{s.InOwnDb}");
+            var settingsLookup = await GetBeatmapSettingsLookupAsync(beatmaps);
 
             var newSettings = new List<BeatmapSettings>();
             foreach (var beatmap in beatmaps)
@@ -394,6 +394,83 @@ namespace Milky.OsuPlayer.Data
 
             CollectionRelations.AddRange(relations);
             await SaveChangesAsync();
+        }
+
+        private async Task<Dictionary<string, BeatmapSettings>> GetBeatmapSettingsLookupAsync(
+            IEnumerable<Beatmap> beatmaps)
+        {
+            var identities = beatmaps
+                .Select(k => new
+                {
+                    k.FolderName,
+                    k.Version,
+                    OwnDb = k.InOwnDb ? 1 : 0
+                })
+                .Distinct()
+                .ToList();
+
+            var lookup = new Dictionary<string, BeatmapSettings>(identities.Count);
+            if (identities.Count == 0) return lookup;
+
+            var dbConnection = Database.GetDbConnection();
+            var shouldClose = dbConnection.State != ConnectionState.Open;
+            if (shouldClose)
+            {
+                await dbConnection.OpenAsync();
+            }
+
+            try
+            {
+                foreach (var chunk in identities.Chunk(MaxIdentitiesPerQuery))
+                {
+                    var sql = new StringBuilder(@"
+ WITH ids(folder_name, difficulty_name, is_local) AS (
+     VALUES ");
+                    var parameters = new DynamicParameters();
+
+                    for (var i = 0; i < chunk.Length; i++)
+                    {
+                        if (i > 0)
+                        {
+                            sql.Append(", ");
+                        }
+
+                        sql.Append($"(@folder{i}, @version{i}, @ownDb{i})");
+                        parameters.Add($"folder{i}", chunk[i].FolderName);
+                        parameters.Add($"version{i}", chunk[i].Version);
+                        parameters.Add($"ownDb{i}", chunk[i].OwnDb);
+                    }
+
+                    sql.Append(@"
+ )
+ SELECT b.id AS Id,
+        b.difficulty_name AS Version,
+        b.folder_name AS FolderName,
+        b.is_local AS InOwnDb,
+        b.audio_offset_ms AS Offset,
+        b.last_played_at AS LastPlayTime,
+        b.exported_file_path AS ExportFile
+   FROM ids
+        INNER JOIN
+        beatmap_play_settings AS b ON b.folder_name = ids.folder_name AND
+                                      b.difficulty_name = ids.difficulty_name AND
+                                      b.is_local = ids.is_local;");
+
+                    foreach (var settings in await dbConnection.QueryAsync<BeatmapSettings>(sql.ToString(), parameters))
+                    {
+                        lookup[$"{settings.FolderName}|{settings.Version}|{settings.InOwnDb}"] = settings;
+                    }
+                }
+
+                return lookup;
+            }
+            finally
+            {
+                if (shouldClose)
+                {
+                    await dbConnection.CloseAsync();
+                }
+            }
         }
 
         public async Task UpdateCollectionAsync(Collection collection)
@@ -495,7 +572,7 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
                 await dbConnection.ExecuteAsync(sql, new
                 {
                     Id = Guid.NewGuid().ToString(),
-                    MapId = beatmapDbId.ToString(),
+                    MapId = beatmapDbId.ToString("D"),
                     ThumbPath = thumbPath
                 });
             }
