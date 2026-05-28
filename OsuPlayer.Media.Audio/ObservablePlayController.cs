@@ -70,6 +70,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private bool _isFileLoading;
+        private bool _isHandlingLoadFailure;
 
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
@@ -248,11 +249,11 @@ namespace Milky.OsuPlayer.Media.Audio
                 var osuFile = context.OsuFile;
                 var beatmapDetail = context.BeatmapDetail;
 
-                var folder = beatmap.GetFolder(out var isFromDb, out var freePath).Trim();
+                var folder = beatmap.GetFolder(out var isFromDb, out var freePath)?.Trim();
                 if (osuFile == null)
                 {
                     Logger.Info("Start load new song from db: {0}", beatmap.BeatmapFileName);
-                    string path = isFromDb ? Path.Combine(folder, beatmap.BeatmapFileName) : freePath;
+                    var path = ResolveBeatmapPath(folder, beatmap.BeatmapFileName, isFromDb, freePath);
                     beatmapDetail.MapPath = path;
                     beatmapDetail.BaseFolder = Path.GetDirectoryName(path);
 
@@ -287,8 +288,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 if (osuFile.Events.BackgroundInfo != null)
                 {
-                    var bgPath = Path.Combine(beatmapDetail.BaseFolder,
-                        osuFile.Events.BackgroundInfo.Filename);
+                    var bgPath = TryResolveChildPath(beatmapDetail.BaseFolder, osuFile.Events.BackgroundInfo.Filename);
                     beatmapDetail.BackgroundPath = File.Exists(bgPath)
                         ? bgPath
                         : File.Exists(defaultPath)
@@ -305,8 +305,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 Execute.OnUiThread(() => BackgroundInfoLoaded?.Invoke(context, _cts.Token));
 
                 // music
-                beatmapDetail.MusicPath = Path.Combine(beatmapDetail.BaseFolder,
-                    osuFile.General.AudioFilename);
+                beatmapDetail.MusicPath = ResolveChildPath(beatmapDetail.BaseFolder, osuFile.General.AudioFilename);
 
                 if (PlayList.PreInfo?.BeatmapDetail?.BaseFolder != PlayList.CurrentInfo?.BeatmapDetail?.BaseFolder)
                 {
@@ -326,7 +325,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 if (videoName != null)
                 {
-                    var videoPath = Path.Combine(beatmapDetail.BaseFolder, videoName);
+                    var videoPath = TryResolveChildPath(beatmapDetail.BaseFolder, videoName);
                     if (File.Exists(videoPath))
                     {
                         beatmapDetail.VideoPath = videoPath;
@@ -373,9 +372,17 @@ namespace Milky.OsuPlayer.Media.Audio
                     _readLock.Release();
                 }
 
-                if (Player?.PlayStatus != PlayStatus.Playing)
+                if (!_isHandlingLoadFailure && Player?.PlayStatus != PlayStatus.Playing)
                 {
-                    await PlayByControl(PlayControlType.Next, false).ConfigureAwait(false);
+                    _isHandlingLoadFailure = true;
+                    try
+                    {
+                        await PlayByControl(PlayControlType.Next, false).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        _isHandlingLoadFailure = false;
+                    }
                 }
 
                 return false;
@@ -388,11 +395,30 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private async Task ClearPlayer()
         {
-            if (Player == null) return;
-            await PlayList.CurrentInfo.StopHandle().ConfigureAwait(false);
-            Player.PlayStatusChanged -= Player_PlayStatusChanged;
-            Player.PositionUpdated -= Player_PositionUpdated;
-            await Player.DisposeAsync().ConfigureAwait(false);
+            var player = Player;
+            if (player == null) return;
+
+            Player = null;
+            player.PlayStatusChanged -= Player_PlayStatusChanged;
+            player.PositionUpdated -= Player_PositionUpdated;
+
+            try
+            {
+                await player.Stop().ConfigureAwait(false);
+            }
+            catch (ObjectDisposedException ex)
+            {
+                Logger.Warn(ex, "Player was already disposed while stopping.");
+            }
+
+            try
+            {
+                await player.DisposeAsync().ConfigureAwait(false);
+            }
+            catch (ObjectDisposedException ex)
+            {
+                Logger.Warn(ex, "Player was already disposed while disposing.");
+            }
         }
 
         private async void Player_PlayStatusChanged(PlayStatus obj)
@@ -538,6 +564,43 @@ namespace Milky.OsuPlayer.Media.Audio
             context = PlayList.CurrentInfo;
             player = Player;
             return context != null && player != null && player.PlayStatus != PlayStatus.Unknown;
+        }
+
+        private static string ResolveBeatmapPath(string folder, string beatmapFileName, bool isFromDb, string freePath)
+        {
+            if (!isFromDb)
+            {
+                if (string.IsNullOrWhiteSpace(freePath))
+                {
+                    throw new InvalidDataException("Beatmap path is empty.");
+                }
+
+                return freePath;
+            }
+
+            return ResolveChildPath(folder, beatmapFileName);
+        }
+
+        private static string ResolveChildPath(string baseFolder, string childPath)
+        {
+            if (string.IsNullOrWhiteSpace(baseFolder))
+            {
+                throw new InvalidDataException("Beatmap base folder is empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(childPath))
+            {
+                throw new InvalidDataException("Beatmap referenced file path is empty.");
+            }
+
+            return Path.Combine(baseFolder, childPath);
+        }
+
+        private static string TryResolveChildPath(string baseFolder, string childPath)
+        {
+            return string.IsNullOrWhiteSpace(baseFolder) || string.IsNullOrWhiteSpace(childPath)
+                ? null
+                : Path.Combine(baseFolder, childPath);
         }
 
         private async Task RaisePositionSetRequestedAsync(BeatmapContext context, double time, bool play)
