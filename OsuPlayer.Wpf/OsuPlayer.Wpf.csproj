@@ -22,14 +22,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Pages\AddCollectionPage.xaml.cs" />
-    <Compile Remove="Pages\ClosingPage.xaml.cs" />
-    <Compile Remove="Pages\DiffSelectPage.xaml.cs" />
-    <Compile Remove="Pages\EditCollectionPage.xaml.cs" />
-    <Compile Remove="Pages\SelectCollectionPage.xaml.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="ShaderEffects">
       <HintPath>extensions\plugins\ShaderEffects.dll</HintPath>
     </Reference>

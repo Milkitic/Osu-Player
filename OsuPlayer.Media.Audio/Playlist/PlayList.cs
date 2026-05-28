@@ -1,13 +1,14 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Services;
+using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Media.Audio.Playlist
 {
@@ -16,9 +17,16 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         public event Action SongListChanged;
         public event Func<PlayControlResult, Beatmap, bool, Task> AutoSwitched;
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private readonly IPlayerDataService _playerData;
 
         public PlayList()
+            : this(new PlayerDataService())
         {
+        }
+
+        public PlayList(IPlayerDataService playerData)
+        {
+            _playerData = playerData;
             SongList = new ObservableCollection<Beatmap>();
             SongList.CollectionChanged += SongList_CollectionChanged;
             //PlayerMixer = new ObservablePlayerMixer(this);
@@ -91,7 +99,9 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                 else if (value > SongList.Count - 1) value = SongList.Count - 1;
 
                 PreInfo = CurrentInfo;
-                CurrentInfo = value == -1 ? null : BeatmapContext.CreateAsync(SongList[_songIndexList[value]]).Result;
+                CurrentInfo = value == -1
+                    ? null
+                    : BeatmapContext.CreateAsync(SongList[_songIndexList[value]], _playerData).Result;
 
                 if (Equals(value, _indexPointer)) return;
                 _indexPointer = value;
@@ -182,7 +192,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                 var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Unknown,
                     PlayControlResult.PointerControlStatus.Default);
                 if (AutoSwitched != null)
-                    await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, playInstantly).ConfigureAwait(false);
+                    await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, playInstantly)
+                        .ConfigureAwait(false);
                 return playControlResult;
             }
 
@@ -224,7 +235,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                         var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                             PlayControlResult.PointerControlStatus.Clear);
                         if (AutoSwitched != null)
-                            await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true).ConfigureAwait(false);
+                            await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true)
+                                .ConfigureAwait(false);
                         return playControlResult;
                     }
 
@@ -235,7 +247,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                         var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                             PlayControlResult.PointerControlStatus.Reset);
                         if (AutoSwitched != null)
-                            await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true).ConfigureAwait(false);
+                            await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true)
+                                .ConfigureAwait(false);
                         return playControlResult;
                     }
                 }
@@ -303,7 +316,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         }
 
         // 如果随机，改变集合是否重排？
-        private void SongList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void SongList_CollectionChanged(object sender,
+            System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             SongListChanged?.Invoke();
             if ((e.NewItems?.Count ?? 0) + (e.OldItems?.Count ?? 0) > 1 || _temporaryPointerChanged != null ||
@@ -313,7 +327,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                 RearrangeIndexesAndReposition();
 
                 if (!CheckCount())
-                { }
+                {
+                }
 
                 return;
             }
@@ -349,7 +364,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                     RearrangeIndexesAndReposition();
 
                     if (!CheckCount())
-                    { }
+                    {
+                    }
 
                     return;
                 }
@@ -378,7 +394,8 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                 }
 
                 if (!CheckCount())
-                { }
+                {
+                }
             }
         }
 

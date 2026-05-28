@@ -1,4 +1,4 @@
-﻿using Dapper.FluentMap;
+using Dapper.FluentMap;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data;
@@ -90,10 +90,10 @@ namespace Milky.OsuPlayer
 
             OsuPlayerDbContext.ValidateDb();
 
-            using var db = new OsuPlayerDbContext();
-            var defCol = db.GetCollections();
+            var playerData = new PlayerDataService();
+            var defCol = playerData.GetCollections();
             var locked = defCol.Where(k => k.LockedBool);
-            if (!locked.Any()) db.AddCollection("Favorite", true);
+            if (!locked.Any()) playerData.TryAddCollection("Favorite");
         }
     }
 }

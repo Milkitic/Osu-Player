@@ -1,18 +1,21 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Coosu.Beatmap.MetaData;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Services;
 
 namespace Milky.OsuPlayer.Common
 {
     public static class IdentifiableExtension
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        public static List<BeatmapDataModel> ToDataModelList(this IEnumerable<IMapIdentifiable> identifiable, bool distinctByVersion = false)
+        private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly IPlayerDataService s_playerData = new PlayerDataService();
+
+        public static List<BeatmapDataModel> ToDataModelList(this IEnumerable<IMapIdentifiable> identifiable,
+            bool distinctByVersion = false)
         {
             List<BeatmapDataModel> ret;
             switch (identifiable)
@@ -30,10 +33,7 @@ namespace Milky.OsuPlayer.Common
                     ret = dataModels;
                     break;
                 case List<BeatmapSettings> infos:
-                    using (var db = new OsuPlayerDbContext())
-                    {
-                        ret = db.GetBeatmapsByIdentifiable(infos).InnerToDataModelList();
-                    }
+                    ret = s_playerData.GetBeatmapsByIdentifiable(infos).InnerToDataModelList();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(identifiable), identifiable?.GetType(),
@@ -84,7 +84,7 @@ namespace Milky.OsuPlayer.Common
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex);
+                    s_logger.Error(ex);
                 }
 
                 return model;

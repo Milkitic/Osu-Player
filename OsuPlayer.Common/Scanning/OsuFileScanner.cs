@@ -1,27 +1,38 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Services;
 
 namespace Milky.OsuPlayer.Common.Scanning
 {
     public class OsuFileScanner
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+
+        private static readonly Lock s_scanObject = new Lock();
+        private static readonly Lock s_cancelObject = new Lock();
 
         public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();
         private CancellationTokenSource _scanCts;
+        private readonly IPlayerDataService _playerData;
 
-        private static readonly object ScanObject = new object();
-        private static readonly object CancelObject = new object();
+        public OsuFileScanner()
+            : this(new PlayerDataService())
+        {
+        }
+
+        public OsuFileScanner(IPlayerDataService playerData)
+        {
+            _playerData = playerData;
+        }
 
         public async Task NewScanAndAddAsync(string path)
         {
-            lock (ScanObject)
+            lock (s_scanObject)
             {
                 if (ViewModel.IsScanning)
                     return;
@@ -29,15 +40,13 @@ namespace Milky.OsuPlayer.Common.Scanning
             }
 
             _scanCts = new CancellationTokenSource();
-            using (var db = new OsuPlayerDbContext())
-            {
-                db.RemoveLocalAll();
-            }
+            _playerData.TryRemoveLocalAll();
 
             var dirInfo = new DirectoryInfo(path);
             if (dirInfo.Exists)
             {
-                foreach (var privateFolder in dirInfo.EnumerateDirectories(searchPattern: "*.*", searchOption: SearchOption.TopDirectoryOnly))
+                foreach (var privateFolder in dirInfo.EnumerateDirectories(searchPattern: "*.*",
+                             searchOption: SearchOption.TopDirectoryOnly))
                 {
                     if (_scanCts.IsCancellationRequested)
                         break;
@@ -45,7 +54,7 @@ namespace Milky.OsuPlayer.Common.Scanning
                 }
             }
 
-            lock (ScanObject)
+            lock (s_scanObject)
             {
                 ViewModel.IsScanning = false;
             }
@@ -53,7 +62,7 @@ namespace Milky.OsuPlayer.Common.Scanning
 
         public async Task CancelTaskAsync()
         {
-            lock (CancelObject)
+            lock (s_cancelObject)
             {
                 if (ViewModel.IsCanceling)
                     return;
@@ -70,7 +79,7 @@ namespace Milky.OsuPlayer.Common.Scanning
                 }
             });
 
-            lock (CancelObject)
+            lock (s_cancelObject)
             {
                 ViewModel.IsCanceling = false;
             }
@@ -103,18 +112,17 @@ namespace Milky.OsuPlayer.Common.Scanning
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex, "Error during scanning file, ignored {0}", fileInfo.FullName);
+                    s_logger.Error(ex, "Error during scanning file, ignored {0}", fileInfo.FullName);
                 }
             }
 
             try
             {
-                using var db = new OsuPlayerDbContext();
-                db.AddNewMaps(beatmaps);
+                _playerData.TryAddNewMaps(beatmaps);
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                s_logger.Error(ex);
                 throw;
             }
         }

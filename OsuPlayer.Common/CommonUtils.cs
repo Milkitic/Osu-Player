@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,14 +7,16 @@ using System.Windows.Media.Imaging;
 using Coosu.Beatmap;
 using Microsoft.Win32;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Services;
 
 namespace Milky.OsuPlayer.Common
 {
     public static class CommonUtils
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private static readonly SemaphoreSlim Lock = new SemaphoreSlim(5);
+        private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly SemaphoreSlim s_lock = new SemaphoreSlim(5);
+
+        private static readonly IPlayerDataService s_playerData = new PlayerDataService();
         ///// <summary>
         ///// Copy resource to folder
         ///// </summary>
@@ -49,11 +51,10 @@ namespace Milky.OsuPlayer.Common
         {
             return await Task.Run(async () =>
             {
-                await Lock.WaitAsync();
+                await s_lock.WaitAsync();
                 try
                 {
-                    using var db = new OsuPlayerDbContext();
-                    if (db.GetMapThumb(dataModel.BeatmapDbId, out var path) && path != null)
+                    if (s_playerData.TryGetMapThumb(dataModel.BeatmapDbId, out var path) && path != null)
                     {
                         if (File.Exists(path)) return path;
                     }
@@ -79,7 +80,7 @@ namespace Milky.OsuPlayer.Common
                     var sourceBgFile = osuFile.Events?.BackgroundInfo?.Filename;
                     if (string.IsNullOrWhiteSpace(sourceBgFile))
                     {
-                        db.SetMapThumb(dataModel.BeatmapDbId, null);
+                        s_playerData.TrySetMapThumb(dataModel.BeatmapDbId, null);
                         return null;
                     }
 
@@ -92,17 +93,17 @@ namespace Milky.OsuPlayer.Common
                     }
 
                     ResizeImageAndSave(sourceBgPath, guidStr, height: 200);
-                    db.SetMapThumb(dataModel.BeatmapDbId, guidStr);
+                    s_playerData.TrySetMapThumb(dataModel.BeatmapDbId, guidStr);
                     return guidStr;
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex, "Error while creating beatmap thumb cache: {0}", dataModel.GetIdentity());
-                    return default;
+                    s_logger.Error(ex, "Error while creating beatmap thumb cache: {0}", dataModel.GetIdentity());
+                    return null;
                 }
                 finally
                 {
-                    Lock.Release();
+                    s_lock.Release();
                 }
             });
         }

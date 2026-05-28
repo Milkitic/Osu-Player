@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,15 +10,14 @@ using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Annotations;
 using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Services;
 
 namespace Milky.OsuPlayer.Media.Audio
 {
-
     public sealed class ObservablePlayController : VmBase, IAsyncDisposable
     {
         public event Action<PlayStatus> PlayStatusChanged;
@@ -63,9 +62,10 @@ namespace Milky.OsuPlayer.Media.Audio
             }
         }
 
-        public PlayList PlayList { get; } = new PlayList();
+        public PlayList PlayList { get; }
         public bool IsPlayerReady => Player != null && Player.PlayStatus != PlayStatus.Unknown;
 
+        private readonly IPlayerDataService _playerData;
         private OsuMixPlayer _player;
         private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
         private CancellationTokenSource _cts = new CancellationTokenSource();
@@ -74,7 +74,14 @@ namespace Milky.OsuPlayer.Media.Audio
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public ObservablePlayController()
+            : this(new PlayerDataService())
         {
+        }
+
+        public ObservablePlayController(IPlayerDataService playerData)
+        {
+            _playerData = playerData;
+            PlayList = new PlayList(playerData);
             PlayList.AutoSwitched += PlayList_AutoSwitched;
             PlayList.SongListChanged += PlayList_SongListChanged;
 #if DEBUG
@@ -181,11 +188,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 context.OsuFile = osuFile;
 
                 var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
-                Beatmap trueBeatmap;
-                using (var db = new OsuPlayerDbContext())
-                {
-                    trueBeatmap = db.GetBeatmapByIdentifiable(beatmap);
-                }
+                var trueBeatmap = _playerData.GetBeatmapByIdentifiable(beatmap);
 
                 if (trueBeatmap == null)
                 {
@@ -257,11 +260,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     context.OsuFile = osuFile;
                 }
 
-                List<Collection> album;
-                using (var db = new OsuPlayerDbContext())
-                {
-                    album = db.GetCollectionsByMap(context.BeatmapSettings);
-                }
+                var album = _playerData.GetCollectionsByMap(context.BeatmapSettings);
 
                 bool isFavorite = album != null && album.Count > 0 && album.Any(k => k.LockedBool);
                 var metadata = beatmapDetail.Metadata;
@@ -292,7 +291,9 @@ namespace Milky.OsuPlayer.Media.Audio
                         osuFile.Events.BackgroundInfo.Filename);
                     beatmapDetail.BackgroundPath = File.Exists(bgPath)
                         ? bgPath
-                        : File.Exists(defaultPath) ? defaultPath : null;
+                        : File.Exists(defaultPath)
+                            ? defaultPath
+                            : null;
                 }
                 else
                 {
@@ -381,8 +382,7 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             finally
             {
-                using var db = new OsuPlayerDbContext();
-                db.UpdateMap(context.Beatmap.GetIdentity());
+                _playerData.TryUpdateMap(context.Beatmap.GetIdentity());
             }
         }
 
@@ -473,8 +473,8 @@ namespace Milky.OsuPlayer.Media.Audio
 
                 var preInfo = PlayList.CurrentInfo;
                 var controlResult = auto
-                        ? await PlayList.InvokeAutoNext().ConfigureAwait(false)
-                        : await PlayList.SwitchByControl(control).ConfigureAwait(false);
+                    ? await PlayList.InvokeAutoNext().ConfigureAwait(false)
+                    : await PlayList.SwitchByControl(control).ConfigureAwait(false);
                 if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default &&
                     controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play)
                 {

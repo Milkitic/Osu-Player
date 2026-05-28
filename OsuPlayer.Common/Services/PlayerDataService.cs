@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
@@ -27,6 +28,12 @@ namespace Milky.OsuPlayer.Services
             return db.GetBeatmapByIdentifiable(beatmap);
         }
 
+        public BeatmapSettings GetMapFromDb(IMapIdentifiable beatmap)
+        {
+            using var db = _createDbContext();
+            return db.GetMapFromDb(beatmap);
+        }
+
         public bool TryRemoveFromRecent(MapIdentity identity)
         {
             using var db = _createDbContext();
@@ -41,7 +48,8 @@ namespace Milky.OsuPlayer.Services
             return true;
         }
 
-        public List<Beatmap> SearchBeatmapByOptions(string searchText, BeatmapSortMode sortMode, int startIndex, int count)
+        public List<Beatmap> SearchBeatmapByOptions(string searchText, BeatmapSortMode sortMode, int startIndex,
+            int count)
         {
             using var db = _createDbContext();
             return db.SearchBeatmapByOptions(searchText, sortMode, startIndex, count);
@@ -57,6 +65,12 @@ namespace Milky.OsuPlayer.Services
         {
             using var db = _createDbContext();
             return db.GetCollections();
+        }
+
+        public List<Collection> GetCollectionsByMap(BeatmapSettings beatmapSettings)
+        {
+            using var db = _createDbContext();
+            return db.GetCollectionsByMap(beatmapSettings);
         }
 
         public bool TryAddCollection(string collectionName)
@@ -141,6 +155,39 @@ namespace Milky.OsuPlayer.Services
         {
             using var db = _createDbContext();
             db.AddMapsToCollection(beatmaps, collection);
+            return true;
+        }
+
+        public bool TryRemoveLocalAll()
+        {
+            using var db = _createDbContext();
+            db.RemoveLocalAll();
+            return true;
+        }
+
+        public bool TryAddNewMaps(IEnumerable<Beatmap> beatmaps)
+        {
+            using var db = _createDbContext();
+            db.AddNewMaps(beatmaps);
+            return true;
+        }
+
+        public async Task SyncMapsFromOsuDbAsync(IEnumerable<Beatmap> beatmaps, bool addOnly)
+        {
+            using var db = _createDbContext();
+            await db.SyncMapsFromOsuDbAsync(beatmaps, addOnly);
+        }
+
+        public bool TryGetMapThumb(Guid beatmapDbId, out string thumbPath)
+        {
+            using var db = _createDbContext();
+            return db.GetMapThumb(beatmapDbId, out thumbPath);
+        }
+
+        public bool TrySetMapThumb(Guid beatmapDbId, string thumbPath)
+        {
+            using var db = _createDbContext();
+            db.SetMapThumb(beatmapDbId, thumbPath);
             return true;
         }
     }

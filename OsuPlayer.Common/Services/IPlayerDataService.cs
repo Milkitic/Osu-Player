@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
@@ -10,6 +12,8 @@ namespace Milky.OsuPlayer.Services
     {
         Beatmap GetBeatmapByIdentifiable(IMapIdentifiable beatmap);
 
+        BeatmapSettings GetMapFromDb(IMapIdentifiable beatmap);
+
         bool TryRemoveFromRecent(MapIdentity identity);
 
         bool TryRemoveMapFromCollection(IMapIdentifiable identity, Collection collection);
@@ -19,6 +23,8 @@ namespace Milky.OsuPlayer.Services
         List<Beatmap> GetBeatmapsFromFolder(string folderName);
 
         List<Collection> GetCollections();
+
+        List<Collection> GetCollectionsByMap(BeatmapSettings beatmapSettings);
 
         bool TryAddCollection(string collectionName);
 
@@ -45,5 +51,15 @@ namespace Milky.OsuPlayer.Services
         bool TryClearRecent();
 
         bool TryAddMapsToCollection(IList<Beatmap> beatmaps, Collection collection);
+
+        bool TryRemoveLocalAll();
+
+        bool TryAddNewMaps(IEnumerable<Beatmap> beatmaps);
+
+        Task SyncMapsFromOsuDbAsync(IEnumerable<Beatmap> beatmaps, bool addOnly);
+
+        bool TryGetMapThumb(Guid beatmapDbId, out string thumbPath);
+
+        bool TrySetMapThumb(Guid beatmapDbId, string thumbPath);
     }
 }

@@ -1,15 +1,16 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
+using System;
+using System.Windows;
+using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Scanning;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using NLog;
-using System;
-using System.Windows;
 
 namespace Milky.OsuPlayer
 {
@@ -25,7 +26,7 @@ namespace Milky.OsuPlayer
 
             EntryStartup.Startup();
 
-            var controller = new ObservablePlayController();
+            var controller = new ObservablePlayController(AppServices.PlayerData);
             controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
 
             Service.TryAddInstance(controller);
@@ -60,7 +61,8 @@ namespace Milky.OsuPlayer
             Environment.Exit(1);
         }
 
-        private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private void Application_DispatcherUnhandledException(object sender,
+            System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             var logger = LogManager.GetCurrentClassLogger();
             logger.Error(e.Exception, "DispatcherUnhandledException");
