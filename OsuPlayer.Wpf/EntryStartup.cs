@@ -86,12 +86,12 @@ namespace Milky.OsuPlayer
                 config.AddMap(new CollectionRelationMap());
             });
 
-            AppDbOperator.ValidateDb();
+            OsuPlayerDbContext.ValidateDb();
 
-            var appDbOperator = new AppDbOperator();
-            var defCol = appDbOperator.GetCollections();
+            using var db = new OsuPlayerDbContext();
+            var defCol = db.GetCollections();
             var locked = defCol.Where(k => k.LockedBool);
-            if (!locked.Any()) appDbOperator.AddCollection("Favorite", true);
+            if (!locked.Any()) db.AddCollection("Favorite", true);
         }
     }
 }

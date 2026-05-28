@@ -14,7 +14,6 @@ namespace Milky.OsuPlayer.Common
     public static class CommonUtils
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private static AppDbOperator _appDbOperator = new AppDbOperator();
         private static readonly SemaphoreSlim Lock = new SemaphoreSlim(5);
         ///// <summary>
         ///// Copy resource to folder
@@ -53,7 +52,8 @@ namespace Milky.OsuPlayer.Common
                 await Lock.WaitAsync();
                 try
                 {
-                    if (_appDbOperator.GetMapThumb(dataModel.BeatmapDbId, out var path) && path != null)
+                    using var db = new OsuPlayerDbContext();
+                    if (db.GetMapThumb(dataModel.BeatmapDbId, out var path) && path != null)
                     {
                         if (File.Exists(path)) return path;
                     }
@@ -79,7 +79,7 @@ namespace Milky.OsuPlayer.Common
                     var sourceBgFile = osuFile.Events?.BackgroundInfo?.Filename;
                     if (string.IsNullOrWhiteSpace(sourceBgFile))
                     {
-                        _appDbOperator.SetMapThumb(dataModel.BeatmapDbId, null);
+                        db.SetMapThumb(dataModel.BeatmapDbId, null);
                         return null;
                     }
 
@@ -87,17 +87,17 @@ namespace Milky.OsuPlayer.Common
 
                     if (!File.Exists(sourceBgPath))
                     {
-                        //_appDbOperator.SetMapThumb(dataModel.BeatmapDbId, null);
+                        //db.SetMapThumb(dataModel.BeatmapDbId, null);
                         return null;
                     }
 
                     ResizeImageAndSave(sourceBgPath, guidStr, height: 200);
-                    _appDbOperator.SetMapThumb(dataModel.BeatmapDbId, guidStr);
+                    db.SetMapThumb(dataModel.BeatmapDbId, guidStr);
                     return guidStr;
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Error while creating beatmap thumb cache: {0}", dataModel.GetIdentity());
+                    Logger.Error(ex, "Error while creating beatmap thumb cache: {0}", dataModel.GetIdentity());
                     return default;
                 }
                 finally

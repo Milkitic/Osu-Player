@@ -11,8 +11,6 @@ namespace Milky.OsuPlayer.Utils
 {
     public class SafeDbOperator
     {
-        private readonly AppDbOperator _dbOperator = new AppDbOperator();
-
         [CanBeNull]
         public Beatmap GetBeatmapByIdentifiable(IMapIdentifiable beatmap)
         {
@@ -39,7 +37,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                _dbOperator.RemoveFromRecent(identity);
+                using var db = new OsuPlayerDbContext();
+                db.RemoveFromRecent(identity);
                 return true;
             }
             catch (Exception ex)
@@ -53,7 +52,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                _dbOperator.RemoveMapFromCollection(identity, collection);
+                using var db = new OsuPlayerDbContext();
+                db.RemoveMapFromCollection(identity, collection);
                 return true;
             }
             catch (Exception ex)
@@ -96,7 +96,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                return _dbOperator.GetCollections();
+                using var db = new OsuPlayerDbContext();
+                return db.GetCollections();
             }
             catch (Exception ex)
             {
@@ -109,7 +110,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                _dbOperator.AddCollection(collectionName);
+                using var db = new OsuPlayerDbContext();
+                db.AddCollection(collectionName);
                 return true;
             }
             catch (Exception ex)
@@ -137,7 +139,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                _dbOperator.UpdateCollection(collection);
+                using var db = new OsuPlayerDbContext();
+                db.UpdateCollection(collection);
                 return true;
             }
             catch (Exception ex)
@@ -151,7 +154,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                _dbOperator.UpdateMap(beatmap, offset);
+                using var db = new OsuPlayerDbContext();
+                db.UpdateMap(beatmap, offset);
                 return true;
             }
             catch (Exception ex)
@@ -166,7 +170,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                var collection = _dbOperator.GetCollectionById(id);
+                using var db = new OsuPlayerDbContext();
+                var collection = db.GetCollectionById(id);
                 if (collection is null)
                 {
                     Notification.Push(I18NUtil.GetString("err-collectionNotInDb"), I18NUtil.GetString("text-error"));
@@ -185,7 +190,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                return _dbOperator.GetMapsFromCollection(collection);
+                using var db = new OsuPlayerDbContext();
+                return db.GetMapsFromCollection(collection);
             }
             catch (Exception ex)
             {
@@ -212,7 +218,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                _dbOperator.RemoveCollection(collection);
+                using var db = new OsuPlayerDbContext();
+                db.RemoveCollection(collection);
                 return true;
             }
             catch (Exception ex)
@@ -226,7 +233,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                _dbOperator.AddMapExport(mapIdentity, path);
+                using var db = new OsuPlayerDbContext();
+                db.AddMapExport(mapIdentity, path);
                 return true;
             }
             catch (Exception ex)
@@ -240,7 +248,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                return _dbOperator.GetRecentList();
+                using var db = new OsuPlayerDbContext();
+                return db.GetRecentList();
             }
             catch (Exception ex)
             {
@@ -253,7 +262,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                return _dbOperator.GetExportedMaps();
+                using var db = new OsuPlayerDbContext();
+                return db.GetExportedMaps();
             }
             catch (Exception ex)
             {
@@ -266,7 +276,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                _dbOperator.ClearRecent();
+                using var db = new OsuPlayerDbContext();
+                db.ClearRecent();
                 return true;
             }
             catch (Exception ex)

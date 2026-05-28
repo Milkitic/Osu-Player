@@ -70,7 +70,6 @@ namespace Milky.OsuPlayer.UserControls
         public static async Task<bool> AddToCollectionAsync([NotNull] Collection col, IList<Beatmap> entries)
         {
             var controller = Service.Get<ObservablePlayController>();
-            var appDbOperator = new AppDbOperator();
             if (entries == null || entries.Count <= 0) return false;
             if (string.IsNullOrEmpty(col.ImagePath))
             {
@@ -91,17 +90,22 @@ namespace Milky.OsuPlayer.UserControls
                         if (File.Exists(imgPath))
                         {
                             col.ImagePath = imgPath;
-                            appDbOperator.UpdateCollection(col);
+                            using var db = new OsuPlayerDbContext();
+                            db.UpdateCollection(col);
                         }
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     return false;
                 }
             }
 
-            appDbOperator.AddMapsToCollection(entries, col);
+            using (var db = new OsuPlayerDbContext())
+            {
+                db.AddMapsToCollection(entries, col);
+            }
+
             foreach (var beatmap in entries)
             {
                 if (!controller.PlayList.CurrentInfo.Beatmap.GetIdentity().Equals(beatmap.GetIdentity()) ||

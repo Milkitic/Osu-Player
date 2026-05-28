@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.Pages
@@ -12,7 +12,6 @@ namespace Milky.OsuPlayer.Pages
     {
         private readonly MainWindow _window;
         private readonly SelectCollectionPage _page;
-        private AppDbOperator _appDbOperator = new AppDbOperator();
 
         public AddCollectionPage(MainWindow window, SelectCollectionPage page)
         {
@@ -43,7 +42,8 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnNew_Click(object sender, RoutedEventArgs e)
         {
-            _appDbOperator.AddCollection(CollectionName.Text);
+            using var db = new OsuPlayerDbContext();
+            db.AddCollection(CollectionName.Text);
             _window.UpdateCollections();
             Dispose();
             _page?.RefreshList();

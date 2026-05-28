@@ -19,15 +19,13 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
             Beatmap = beatmap;
             BeatmapDetail = new BeatmapDetail(beatmap);
         }
-
-        private static AppDbOperator _operator = new AppDbOperator();
-
-        public static async Task<BeatmapContext> CreateAsync(Beatmap beatmap)
+        public static Task<BeatmapContext> CreateAsync(Beatmap beatmap)
         {
-            return new BeatmapContext(beatmap)
+            using var db = new OsuPlayerDbContext();
+            return Task.FromResult(new BeatmapContext(beatmap)
             {
-                BeatmapSettings = _operator.GetMapFromDb(beatmap.GetIdentity()),
-            };
+                BeatmapSettings = db.GetMapFromDb(beatmap.GetIdentity()),
+            });
         }
 
         public bool FullLoaded { get; set; } = false;

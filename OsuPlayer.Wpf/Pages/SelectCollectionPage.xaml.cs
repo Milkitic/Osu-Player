@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Data;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using OSharp.Beatmap;
@@ -10,8 +11,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Common.Data.EF.Model;
-using Collection = Milky.OsuPlayer.Common.Data.EF.Model.V1.Collection;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -24,7 +23,6 @@ namespace Milky.OsuPlayer.Pages
 
         private readonly MainWindow _mainWindow;
         private readonly IList<Beatmap> _entries;
-        private static AppDbOperator _appDbOperator = new AppDbOperator();
 
         public SelectCollectionPage(Beatmap entry) : this(new[] { entry })
         {
@@ -57,8 +55,9 @@ namespace Milky.OsuPlayer.Pages
 
         public void RefreshList()
         {
+            using var db = new OsuPlayerDbContext();
             ViewModel.Collections = new ObservableCollection<CollectionViewModel>(
-                CollectionViewModel.CopyFrom(_appDbOperator.GetCollections().OrderByDescending(k => k.CreateTime)));
+                CollectionViewModel.CopyFrom(db.GetCollections().OrderByDescending(k => k.CreateTime)));
         }
 
         public static async Task AddToCollectionAsync(Collection col, IList<Beatmap> entries)
@@ -77,12 +76,16 @@ namespace Milky.OsuPlayer.Pages
                     if (File.Exists(imgPath))
                     {
                         col.ImagePath = imgPath;
-                        _appDbOperator.UpdateCollection(col);
+                        using var db = new OsuPlayerDbContext();
+                        db.UpdateCollection(col);
                     }
                 }
             }
 
-            _appDbOperator.AddMapsToCollection(entries, col);
+            using (var db = new OsuPlayerDbContext())
+            {
+                db.AddMapsToCollection(entries, col);
+            }
         }
     }
 }

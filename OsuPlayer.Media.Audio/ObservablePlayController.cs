@@ -69,7 +69,6 @@ namespace Milky.OsuPlayer.Media.Audio
         private OsuMixPlayer _player;
         private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
         private CancellationTokenSource _cts = new CancellationTokenSource();
-        private readonly AppDbOperator _appDbOperator = new AppDbOperator();
         private bool _isFileLoading;
 
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
@@ -258,7 +257,11 @@ namespace Milky.OsuPlayer.Media.Audio
                     context.OsuFile = osuFile;
                 }
 
-                var album = _appDbOperator.GetCollectionsByMap(context.BeatmapSettings);
+                List<Collection> album;
+                using (var db = new OsuPlayerDbContext())
+                {
+                    album = db.GetCollectionsByMap(context.BeatmapSettings);
+                }
 
                 bool isFavorite = album != null && album.Count > 0 && album.Any(k => k.LockedBool);
                 var metadata = beatmapDetail.Metadata;
@@ -378,7 +381,8 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             finally
             {
-                _appDbOperator.UpdateMap(context.Beatmap.GetIdentity());
+                using var db = new OsuPlayerDbContext();
+                db.UpdateMap(context.Beatmap.GetIdentity());
             }
         }
 

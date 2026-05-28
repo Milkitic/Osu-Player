@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
-using Milky.OsuPlayer.Common.Data;
-using Milky.OsuPlayer.Common.Data.EF.Model.V1;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 
@@ -15,7 +15,6 @@ namespace Milky.OsuPlayer.Pages
     {
         private readonly MainWindow _mainWindow;
         private readonly Collection _collection;
-        private AppDbOperator _appDbOperator = new AppDbOperator();
 
         public EditCollectionPage(MainWindow mainWindow, Collection collection)
         {
@@ -51,7 +50,8 @@ namespace Milky.OsuPlayer.Pages
             _collection.Description = ViewModel.Description;
             _collection.ImagePath = ViewModel.CoverPath;
 
-            _appDbOperator.UpdateCollection(_collection);
+            using var db = new OsuPlayerDbContext();
+            db.UpdateCollection(_collection);
             BtnClose_Click(sender, e);
         }
 
