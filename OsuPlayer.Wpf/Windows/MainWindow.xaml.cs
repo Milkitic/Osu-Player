@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -16,6 +16,7 @@ using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
@@ -40,7 +41,7 @@ namespace Milky.OsuPlayer.Windows
 
         private WindowState _lastState;
 
-        private readonly SafeDbOperator _safeDbOperator = new SafeDbOperator();
+        private readonly IPlayerDataService _playerData = AppServices.PlayerData;
 
         private Task _searchLyricTask;
 
@@ -112,7 +113,7 @@ namespace Milky.OsuPlayer.Windows
         /// </summary>
         public void UpdateCollections()
         {
-            var list = _safeDbOperator.GetCollections();
+            var list = _playerData.GetCollections();
             list.Reverse();
             ViewModel.Collection = new ObservableCollection<Collection>(list);
         }
@@ -308,7 +309,7 @@ namespace Milky.OsuPlayer.Windows
 
             // 加至播放列表
             var entries =
-                _safeDbOperator.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList.Cast<IMapIdentifiable>());
+                _playerData.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList.Cast<IMapIdentifiable>());
 
             await _controller.PlayList.SetSongListAsync(entries, true, false, false);
 
@@ -319,7 +320,7 @@ namespace Milky.OsuPlayer.Windows
             }
             else
             {
-                var current = _safeDbOperator.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
+                var current = _playerData.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
                 if (current == null) return;
                 await _controller.PlayNewAsync(current, play);
             }
@@ -330,7 +331,7 @@ namespace Milky.OsuPlayer.Windows
             var addCollectionControl = new AddCollectionControl();
             FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, (obj, args) =>
             {
-                if (!_safeDbOperator.TryAddCollection(addCollectionControl.CollectionName.Text))
+                if (!_playerData.TryAddCollection(addCollectionControl.CollectionName.Text))
                     return;
 
                 UpdateCollections();
@@ -417,7 +418,7 @@ namespace Milky.OsuPlayer.Windows
         {
             if (_controller.PlayList.CurrentInfo == null) return;
             var detail = _controller.PlayList.CurrentInfo.Beatmap;
-            var entry = _safeDbOperator.GetBeatmapByIdentifiable(detail.GetIdentity());
+            var entry = _playerData.GetBeatmapByIdentifiable(detail.GetIdentity());
             if (entry == null) return;
 
             FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),

@@ -1,13 +1,3 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponents.PanelComponent;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,6 +6,16 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Services;
+using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.UiComponents.PanelComponent;
+using Milky.OsuPlayer.ViewModels;
+using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -25,7 +25,7 @@ namespace Milky.OsuPlayer.Pages
     public partial class SearchPage : Page
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
+        private readonly IPlayerDataService _playerData = AppServices.PlayerData;
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         private MainWindow _mainWindow;
@@ -114,7 +114,7 @@ namespace Milky.OsuPlayer.Pages
         {
             if (ResultList.SelectedItem == null)
                 return null;
-            var map = SafeDbOperator
+            var map = _playerData
                 .GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
                 .GetHighestDiff();
             return map;

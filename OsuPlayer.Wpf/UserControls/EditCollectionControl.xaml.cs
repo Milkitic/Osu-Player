@@ -1,10 +1,10 @@
-﻿using Microsoft.Win32;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Win32;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Services;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milky.OsuPlayer.ViewModels;
 
 namespace Milky.OsuPlayer.UserControls
 {
@@ -13,8 +13,8 @@ namespace Milky.OsuPlayer.UserControls
     /// </summary>
     public partial class EditCollectionControl : UserControl
     {
+        private readonly IPlayerDataService _playerData = AppServices.PlayerData;
         private readonly Collection _collection;
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
         private EditCollectionPageViewModel _viewModel;
 
         public EditCollectionControl(Collection collection)
@@ -33,7 +33,7 @@ namespace Milky.OsuPlayer.UserControls
             _collection.Description = _viewModel.Description;
             _collection.ImagePath = _viewModel.CoverPath;
 
-            if (SafeDbOperator.TryUpdateCollection(_collection))
+            if (_playerData.TryUpdateCollection(_collection))
             {
                 FrontDialogOverlay.Default.RaiseOk();
             }

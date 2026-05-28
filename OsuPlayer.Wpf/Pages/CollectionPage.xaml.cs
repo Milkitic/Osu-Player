@@ -1,17 +1,3 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Presentation.ObjectModel;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponents.PanelComponent;
-using Milky.OsuPlayer.UserControls;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,6 +6,21 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Data;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Presentation.ObjectModel;
+using Milky.OsuPlayer.Services;
+using Milky.OsuPlayer.Shared.Dependency;
+using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using Milky.OsuPlayer.UiComponents.PanelComponent;
+using Milky.OsuPlayer.UserControls;
+using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.ViewModels;
+using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.Pages
 {
@@ -29,9 +30,10 @@ namespace Milky.OsuPlayer.Pages
     public partial class CollectionPage : Page
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private readonly IPlayerDataService _playerData = AppServices.PlayerData;
+
         private readonly MainWindow _mainWindow;
         private IEnumerable<Beatmap> _entries;
-        private readonly SafeDbOperator _safeDbOperator = new SafeDbOperator();
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         private static Binding _sourceBinding = new Binding(nameof(CollectionPageViewModel.DisplayedBeatmaps))
@@ -61,7 +63,7 @@ namespace Milky.OsuPlayer.Pages
         {
             await Task.Delay(1);
 
-            var collectionInfo = _safeDbOperator.GetCollectionById(colId);
+            var collectionInfo = _playerData.GetCollectionById(colId);
             if (collectionInfo == null) return;
             ViewModel.CollectionInfo = collectionInfo;
             UpdateList();
@@ -69,8 +71,8 @@ namespace Milky.OsuPlayer.Pages
 
         public void UpdateList()
         {
-            var infos = _safeDbOperator.GetMapsFromCollection(ViewModel.CollectionInfo);
-            _entries = _safeDbOperator.GetBeatmapsByMapInfo(infos, TimeSortMode.AddTime);
+            var infos = _playerData.GetMapsFromCollection(ViewModel.CollectionInfo);
+            _entries = _playerData.GetBeatmapsByMapInfo(infos, TimeSortMode.AddTime);
             ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModelList(false));
             ViewModel.DisplayedBeatmaps = ViewModel.Beatmaps;
             ListCount.Content = ViewModel.Beatmaps.Count;
@@ -141,7 +143,7 @@ namespace Milky.OsuPlayer.Pages
             var entries = ConvertToEntries(selected.Cast<BeatmapDataModel>());
             foreach (var entry in entries)
             {
-                if (!_safeDbOperator.TryRemoveMapFromCollection(entry.GetIdentity(), ViewModel.CollectionInfo))
+                if (!_playerData.TryRemoveMapFromCollection(entry.GetIdentity(), ViewModel.CollectionInfo))
                     continue;
                 if (!_controller.PlayList.CurrentInfo.Beatmap.GetIdentity().Equals(entry.GetIdentity()) ||
                     !ViewModel.CollectionInfo.LockedBool) continue;
@@ -156,7 +158,7 @@ namespace Milky.OsuPlayer.Pages
                 MessageBoxImage.Exclamation);
             if (result == MessageBoxResult.OK)
             {
-                if (!_safeDbOperator.TryRemoveCollection(ViewModel.CollectionInfo)) return;
+                if (!_playerData.TryRemoveCollection(ViewModel.CollectionInfo)) return;
                 _mainWindow.SwitchRecent.IsChecked = true;
                 _mainWindow.UpdateCollections();
             }
@@ -179,7 +181,7 @@ namespace Milky.OsuPlayer.Pages
             if (MapList.SelectedItem == null)
                 return null;
             var selectedItem = (BeatmapDataModel)MapList.SelectedItem;
-            return _safeDbOperator.GetBeatmapsFromFolder(selectedItem.FolderName)
+            return _playerData.GetBeatmapsFromFolder(selectedItem.FolderName)
                 .FirstOrDefault(k => k.Version == selectedItem.Version);
         }
 
@@ -191,7 +193,7 @@ namespace Milky.OsuPlayer.Pages
 
         private Beatmap ConvertToEntry(BeatmapDataModel dataModel)
         {
-            return _safeDbOperator.GetBeatmapsFromFolder(dataModel.FolderName)
+            return _playerData.GetBeatmapsFromFolder(dataModel.FolderName)
                 .FirstOrDefault(k => k.Version == dataModel.Version);
         }
 

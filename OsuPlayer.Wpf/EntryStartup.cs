@@ -4,6 +4,7 @@ using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared;
 using Newtonsoft.Json;
 using NLog;
@@ -31,6 +32,7 @@ namespace Milky.OsuPlayer
 #endif
 
             InitLocalDb();
+            AppServices.RegisterDefaults();
 
             StyleUtilities.SetAlignment();
 

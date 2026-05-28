@@ -1,14 +1,14 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.Utils;
 using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Media.Audio.Playlist;
+using Milky.OsuPlayer.Presentation.Interaction;
+using Milky.OsuPlayer.Services;
+using Milky.OsuPlayer.Shared.Dependency;
 
 namespace Milky.OsuPlayer.UserControls
 {
@@ -51,8 +51,8 @@ namespace Milky.OsuPlayer.UserControls
     /// </summary>
     public partial class MiniPlayController : UserControl
     {
+        private readonly IPlayerDataService _playerData = AppServices.PlayerData;
         private MiniPlayListControlVm _viewModel;
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
 
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
@@ -123,11 +123,11 @@ namespace Milky.OsuPlayer.UserControls
 
         private async void CommonButton_Click(object sender, RoutedEventArgs e)
         {
-            var collection = SafeDbOperator.GetCollections().First(k => k.LockedBool);
+            var collection = _playerData.GetCollections().First(k => k.LockedBool);
             var metadata = _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata;
             if (metadata.IsFavorite)
             {
-                if (SafeDbOperator.TryRemoveMapFromCollection(_controller.PlayList.CurrentInfo.Beatmap, collection))
+                if (_playerData.TryRemoveMapFromCollection(_controller.PlayList.CurrentInfo.Beatmap, collection))
                     metadata.IsFavorite = false;
             }
             else

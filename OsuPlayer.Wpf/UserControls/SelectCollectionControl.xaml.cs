@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -8,14 +8,13 @@ using System.Windows;
 using System.Windows.Controls;
 using Coosu.Beatmap;
 using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Annotations;
+using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 
@@ -26,8 +25,8 @@ namespace Milky.OsuPlayer.UserControls
     /// </summary>
     public partial class SelectCollectionControl : UserControl
     {
+        private readonly IPlayerDataService _playerData = AppServices.PlayerData;
         private SelectCollectionPageViewModel _viewModel;
-        private static readonly SafeDbOperator SafeDbOperator = new SafeDbOperator();
         private FrontDialogOverlay _overlay;
 
         public SelectCollectionControl(Beatmap entry) : this(new[] { entry })
@@ -48,7 +47,7 @@ namespace Milky.OsuPlayer.UserControls
             var addCollectionControl = new AddCollectionControl();
             _overlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, (obj, args) =>
             {
-                if (!SafeDbOperator.TryAddCollection(addCollectionControl.CollectionName.Text))
+                if (!_playerData.TryAddCollection(addCollectionControl.CollectionName.Text))
                     return;
 
                 WindowEx.GetCurrentFirst<MainWindow>().UpdateCollections();
@@ -64,7 +63,7 @@ namespace Milky.OsuPlayer.UserControls
         private void RefreshList()
         {
             _viewModel.Collections = new ObservableCollection<CollectionViewModel>(
-                CollectionViewModel.CopyFrom(SafeDbOperator.GetCollections().OrderByDescending(k => k.CreateTime)));
+                CollectionViewModel.CopyFrom(_playerData.GetCollections().OrderByDescending(k => k.CreateTime)));
         }
 
         public static async Task<bool> AddToCollectionAsync([NotNull] Collection col, IList<Beatmap> entries)
@@ -90,8 +89,10 @@ namespace Milky.OsuPlayer.UserControls
                         if (File.Exists(imgPath))
                         {
                             col.ImagePath = imgPath;
-                            using var db = new OsuPlayerDbContext();
-                            db.UpdateCollection(col);
+                            if (!AppServices.PlayerData.TryUpdateCollection(col))
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
@@ -101,9 +102,9 @@ namespace Milky.OsuPlayer.UserControls
                 }
             }
 
-            using (var db = new OsuPlayerDbContext())
+            if (!AppServices.PlayerData.TryAddMapsToCollection(entries, col))
             {
-                db.AddMapsToCollection(entries, col);
+                return false;
             }
 
             foreach (var beatmap in entries)
