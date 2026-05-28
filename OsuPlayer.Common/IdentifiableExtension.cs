@@ -11,8 +11,6 @@ namespace Milky.OsuPlayer.Common
 {
     public static class IdentifiableExtension
     {
-        private static AppDbOperator _beatmapDbOperator = new AppDbOperator();
-
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         public static List<BeatmapDataModel> ToDataModelList(this IEnumerable<IMapIdentifiable> identifiable, bool distinctByVersion = false)
         {
@@ -32,7 +30,10 @@ namespace Milky.OsuPlayer.Common
                     ret = dataModels;
                     break;
                 case List<BeatmapSettings> infos:
-                    ret = _beatmapDbOperator.GetBeatmapsByIdentifiable(infos).InnerToDataModelList();
+                    using (var db = new OsuPlayerDbContext())
+                    {
+                        ret = db.GetBeatmapsByIdentifiable(infos).InnerToDataModelList();
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(identifiable), identifiable?.GetType(),

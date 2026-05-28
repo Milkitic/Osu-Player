@@ -29,7 +29,6 @@ namespace Milky.OsuPlayer.Common.Instances
         }
 
         private readonly object _scanningObject = new object();
-        private AppDbOperator _beatmapDbOperator = new AppDbOperator();
 
         public ViewModelClass ViewModel { get; set; } = new ViewModelClass();
 
@@ -49,7 +48,11 @@ namespace Milky.OsuPlayer.Common.Instances
 
         //public async Task LoadLocalDbAsync()
         //{
-        //    await Task.Run(() => Beatmaps = new HashSet<Beatmap>(_beatmapDbOperator.GetAllBeatmaps()));
+        //    await Task.Run(() =>
+        //    {
+        //        using var db = new OsuPlayerDbContext();
+        //        Beatmaps = new HashSet<Beatmap>(db.GetAllBeatmaps());
+        //    });
         //}
 
         public async Task SyncOsuDbAsync(string path, bool addOnly)
@@ -65,7 +68,11 @@ namespace Milky.OsuPlayer.Common.Instances
             if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
             {
                 var beatmaps = await ReadDbAsync(path);
-                await _beatmapDbOperator.SyncMapsFromOsuDbAsync(beatmaps, addOnly);
+                await Task.Run(() =>
+                {
+                    using var db = new OsuPlayerDbContext();
+                    return db.SyncMapsFromOsuDbAsync(beatmaps, addOnly);
+                });
             }
 
             lock (_scanningObject)

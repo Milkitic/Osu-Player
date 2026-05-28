@@ -15,7 +15,6 @@ namespace Milky.OsuPlayer.Common.Scanning
 
         public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();
         private CancellationTokenSource _scanCts;
-        private readonly AppDbOperator _dbOperator = new AppDbOperator();
 
         private static readonly object ScanObject = new object();
         private static readonly object CancelObject = new object();
@@ -30,7 +29,11 @@ namespace Milky.OsuPlayer.Common.Scanning
             }
 
             _scanCts = new CancellationTokenSource();
-            _dbOperator.RemoveLocalAll();
+            using (var db = new OsuPlayerDbContext())
+            {
+                db.RemoveLocalAll();
+            }
+
             var dirInfo = new DirectoryInfo(path);
             if (dirInfo.Exists)
             {
@@ -106,7 +109,8 @@ namespace Milky.OsuPlayer.Common.Scanning
 
             try
             {
-                _dbOperator.AddNewMaps(beatmaps);
+                using var db = new OsuPlayerDbContext();
+                db.AddNewMaps(beatmaps);
             }
             catch (Exception ex)
             {

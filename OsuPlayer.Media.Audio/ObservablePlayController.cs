@@ -182,7 +182,12 @@ namespace Milky.OsuPlayer.Media.Audio
                 context.OsuFile = osuFile;
 
                 var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
-                Beatmap trueBeatmap = _appDbOperator.GetBeatmapByIdentifiable(beatmap);
+                Beatmap trueBeatmap;
+                using (var db = new OsuPlayerDbContext())
+                {
+                    trueBeatmap = db.GetBeatmapByIdentifiable(beatmap);
+                }
+
                 if (trueBeatmap == null)
                 {
                     trueBeatmap = beatmap;

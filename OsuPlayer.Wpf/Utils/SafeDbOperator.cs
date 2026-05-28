@@ -19,7 +19,8 @@ namespace Milky.OsuPlayer.Utils
             Beatmap map;
             try
             {
-                map = _dbOperator.GetBeatmapByIdentifiable(beatmap);
+                using var db = new OsuPlayerDbContext();
+                map = db.GetBeatmapByIdentifiable(beatmap);
                 if (map is null)
                 {
                     Notification.Push(I18NUtil.GetString("err-mapNotInDb"), I18NUtil.GetString("text-error"));
@@ -67,7 +68,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                return _dbOperator.SearchBeatmapByOptions(searchText, sortMode, startIndex, count);
+                using var db = new OsuPlayerDbContext();
+                return db.SearchBeatmapByOptions(searchText, sortMode, startIndex, count);
             }
             catch (Exception ex)
             {
@@ -80,7 +82,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                return _dbOperator.GetBeatmapsFromFolder(folderName);
+                using var db = new OsuPlayerDbContext();
+                return db.GetBeatmapsFromFolder(folderName);
             }
             catch (Exception ex)
             {
@@ -120,7 +123,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                return _dbOperator.GetBeatmapsByIdentifiable(mapIdentities);
+                using var db = new OsuPlayerDbContext();
+                return db.GetBeatmapsByIdentifiable(mapIdentities);
             }
             catch (Exception ex)
             {
@@ -194,7 +198,8 @@ namespace Milky.OsuPlayer.Utils
         {
             try
             {
-                return _dbOperator.GetBeatmapsByMapInfo(settings, sortMode);
+                using var db = new OsuPlayerDbContext();
+                return db.GetBeatmapsByMapInfo(settings, sortMode);
             }
             catch (Exception ex)
             {
