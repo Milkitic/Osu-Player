@@ -31,6 +31,9 @@
     <AssemblyAttribute Include="System.Runtime.InteropServices.GuidAttribute">
       <_Parameter1>094fac4a-6277-46e8-97b4-c992f1674638</_Parameter1>
     </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>OsuPlayer.Data.Tests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
 </Project>

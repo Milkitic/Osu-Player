@@ -14,14 +14,14 @@ namespace Milky.OsuPlayer.Data
         private const string LegacySchema = "legacy";
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        private static readonly string[] Tables =
+        private static readonly TableMigration[] TableMigrations =
         {
-            "beatmap",
-            "map_info",
-            "collection",
-            "collection_relation",
-            "map_thumb",
-            "sb_info"
+            new("beatmap", "beatmaps"),
+            new("map_info", "beatmap_play_settings"),
+            new("collection", "collections"),
+            new("collection_relation", "collection_beatmaps"),
+            new("map_thumb", "beatmap_thumbnails"),
+            new("sb_info", "storyboard_assets")
         };
 
         public static void MigrateIfRequired(string appDatabasePath, string legacyDatabasePath)
@@ -52,11 +52,10 @@ namespace Milky.OsuPlayer.Data
 
             if (TableExists(legacyConnection, "main", "__EFMigrationsHistory"))
             {
-                Logger.Info("Skip legacy player.db import because it already contains EF migration history.");
-                return;
+                Logger.Info("Legacy player.db contains EF migration history; importing compatible tables.");
             }
 
-            if (!Tables.Any(table => TableExists(legacyConnection, "main", table)))
+            if (!TableMigrations.Any(migration => migration.HasSourceTable(legacyConnection, "main")))
             {
                 Logger.Info("Skip legacy player.db import because no known legacy tables were found.");
                 return;
@@ -68,16 +67,33 @@ namespace Milky.OsuPlayer.Data
             {
                 using var transaction = appConnection.BeginTransaction();
                 var copiedRows = 0;
+                var ignoredRows = 0;
 
-                foreach (var table in Tables)
+                foreach (var migration in TableMigrations)
                 {
-                    copiedRows += CopyTable(appConnection, transaction, table);
+                    var result = CopyTable(appConnection, transaction, migration);
+                    copiedRows += result.InsertedRows;
+                    ignoredRows += result.IgnoredRows;
+
+                    if (result.SourceRows > 0 || result.IgnoredRows > 0)
+                    {
+                        Logger.Info(
+                            "Imported table {0}->{1}: source={2}, inserted={3}, ignored={4}.",
+                            result.SourceTable,
+                            result.TargetTable,
+                            result.SourceRows,
+                            result.InsertedRows,
+                            result.IgnoredRows);
+                    }
                 }
 
                 MarkDataMigration(appConnection, transaction, legacyFullPath);
                 transaction.Commit();
 
-                Logger.Info("Imported {0} rows from legacy player.db into app.db.", copiedRows);
+                Logger.Info(
+                    "Imported {0} rows from legacy player.db into app.db. Ignored {1} rows due to conflicts or invalid relations.",
+                    copiedRows,
+                    ignoredRows);
             }
             finally
             {
@@ -152,43 +168,69 @@ VALUES ($migrationId, $sourcePath, $migratedAtUtc);";
             command.ExecuteNonQuery();
         }
 
-        private static int CopyTable(SqliteConnection connection, SqliteTransaction transaction, string tableName)
+        private static CopyResult CopyTable(SqliteConnection connection, SqliteTransaction transaction,
+            TableMigration migration)
         {
-            if (!TableExists(connection, LegacySchema, tableName) || !TableExists(connection, "main", tableName))
+            if (TableExists(connection, LegacySchema, migration.LegacyTableName) &&
+                TableExists(connection, "main", migration.TargetTableName))
             {
-                return CopyLegacyTable(connection, transaction, tableName);
+                return CopyLegacyTable(connection, transaction, migration);
             }
 
-            var targetColumns = GetColumnNames(connection, "main", tableName);
-            var legacyColumns = GetColumnNames(connection, LegacySchema, tableName).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            if (!TableExists(connection, LegacySchema, migration.TargetTableName) ||
+                !TableExists(connection, "main", migration.TargetTableName))
+            {
+                return CopyResult.Empty(migration.LegacyTableName, migration.TargetTableName);
+            }
+
+            var targetColumns = GetColumnNames(connection, "main", migration.TargetTableName);
+            var legacyColumns = GetColumnNames(connection, LegacySchema, migration.TargetTableName)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
             var sharedColumns = targetColumns
                 .Where(legacyColumns.Contains)
                 .ToArray();
 
             if (sharedColumns.Length == 0)
             {
-                return 0;
+                return CopyResult.Empty(migration.TargetTableName, migration.TargetTableName);
             }
 
+            var sourceRows = CountRows(connection, LegacySchema, migration.TargetTableName);
             var columnList = string.Join(", ", sharedColumns.Select(QuoteIdentifier));
             using var command = connection.CreateCommand();
             command.Transaction = transaction;
             command.CommandText = $@"
-INSERT OR IGNORE INTO main.{QuoteIdentifier(tableName)} ({columnList})
+INSERT OR IGNORE INTO main.{QuoteIdentifier(migration.TargetTableName)} ({columnList})
 SELECT {columnList}
-FROM {QuoteIdentifier(LegacySchema)}.{QuoteIdentifier(tableName)};";
+FROM {QuoteIdentifier(LegacySchema)}.{QuoteIdentifier(migration.TargetTableName)};";
 
-            return command.ExecuteNonQuery();
+            var insertedRows = command.ExecuteNonQuery();
+            return new CopyResult(migration.TargetTableName, migration.TargetTableName, sourceRows, insertedRows);
         }
 
-        private static int CopyLegacyTable(SqliteConnection connection, SqliteTransaction transaction, string tableName)
+        private static CopyResult CopyLegacyTable(SqliteConnection connection, SqliteTransaction transaction,
+            TableMigration migration)
         {
-            if (!TableExists(connection, LegacySchema, tableName))
+            if (!TableExists(connection, LegacySchema, migration.LegacyTableName))
             {
-                return 0;
+                return CopyResult.Empty(migration.LegacyTableName, migration.TargetTableName);
             }
 
-            var sql = tableName switch
+            var sourceCountSql = migration.LegacyTableName switch
+            {
+                "collection_relation" => @"
+SELECT COUNT(*)
+FROM legacy.collection_relation
+WHERE EXISTS (SELECT 1 FROM main.collections WHERE main.collections.id = legacy.collection_relation.collectionId)
+  AND EXISTS (SELECT 1 FROM main.beatmap_play_settings WHERE main.beatmap_play_settings.id = legacy.collection_relation.mapId);",
+                "map_thumb" => @"
+SELECT COUNT(*)
+FROM legacy.map_thumb
+WHERE EXISTS (SELECT 1 FROM main.beatmaps WHERE main.beatmaps.id = legacy.map_thumb.mapId);",
+                _ => $"SELECT COUNT(*) FROM {QuoteIdentifier(LegacySchema)}.{QuoteIdentifier(migration.LegacyTableName)};"
+            };
+
+            var sql = migration.LegacyTableName switch
             {
                 "beatmap" when TableExists(connection, "main", "beatmaps") => @"
 INSERT OR IGNORE INTO main.beatmaps (
@@ -234,13 +276,15 @@ FROM legacy.sb_info;",
 
             if (string.IsNullOrWhiteSpace(sql))
             {
-                return 0;
+                return CopyResult.Empty(migration.LegacyTableName, migration.TargetTableName);
             }
 
+            var sourceRows = CountRows(connection, sourceCountSql);
             using var command = connection.CreateCommand();
             command.Transaction = transaction;
             command.CommandText = sql;
-            return command.ExecuteNonQuery();
+            var insertedRows = command.ExecuteNonQuery();
+            return new CopyResult(migration.LegacyTableName, migration.TargetTableName, sourceRows, insertedRows);
         }
 
         private static bool TableExists(SqliteConnection connection, string schemaName, string tableName)
@@ -279,6 +323,64 @@ LIMIT 1;";
         private static string QuoteString(string value)
         {
             return "'" + value.Replace("'", "''") + "'";
+        }
+
+        private static int CountRows(SqliteConnection connection, string schemaName, string tableName)
+        {
+            return CountRows(connection,
+                $"SELECT COUNT(*) FROM {QuoteIdentifier(schemaName)}.{QuoteIdentifier(tableName)};");
+        }
+
+        private static int CountRows(SqliteConnection connection, string sql)
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = sql;
+            return Convert.ToInt32(command.ExecuteScalar());
+        }
+
+        private sealed class TableMigration
+        {
+            public TableMigration(string legacyTableName, string targetTableName)
+            {
+                LegacyTableName = legacyTableName;
+                TargetTableName = targetTableName;
+            }
+
+            public string LegacyTableName { get; }
+
+            public string TargetTableName { get; }
+
+            public bool HasSourceTable(SqliteConnection connection, string schemaName)
+            {
+                return TableExists(connection, schemaName, LegacyTableName) ||
+                       TableExists(connection, schemaName, TargetTableName);
+            }
+        }
+
+        private readonly struct CopyResult
+        {
+            public CopyResult(string sourceTable, string targetTable, int sourceRows, int insertedRows)
+            {
+                SourceTable = sourceTable;
+                TargetTable = targetTable;
+                SourceRows = sourceRows;
+                InsertedRows = insertedRows;
+            }
+
+            public string SourceTable { get; }
+
+            public string TargetTable { get; }
+
+            public int SourceRows { get; }
+
+            public int InsertedRows { get; }
+
+            public int IgnoredRows => Math.Max(0, SourceRows - InsertedRows);
+
+            public static CopyResult Empty(string sourceTable, string targetTable)
+            {
+                return new CopyResult(sourceTable, targetTable, 0, 0);
+            }
         }
     }
 }
