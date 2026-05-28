@@ -88,7 +88,7 @@ namespace Milky.OsuPlayer
                 config.AddMap(new CollectionRelationMap());
             });
 
-            OsuPlayerDbContext.ValidateDb();
+            OsuPlayerDbContext.InitializeDatabase();
 
             var playerData = new PlayerDataService();
             var defCol = playerData.GetCollections();

@@ -19,7 +19,8 @@ namespace Milky.OsuPlayer.Data
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private const int MaxIdentitiesPerQuery = 300;
 
-        public static string DefaultDatabasePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "player.db");
+        public static string DefaultDatabasePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.db");
+        public static string LegacyDatabasePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "player.db");
         public static string DefaultConnectionString => $"Data Source={DefaultDatabasePath}";
 
         static OsuPlayerDbContext()
@@ -174,21 +175,24 @@ namespace Milky.OsuPlayer.Data
             entity.Property(k => k.InOwnDb).HasColumnName("own");
         }
 
-        public static void ValidateDb()
+        public static void InitializeDatabase()
         {
             try
             {
                 using var db = new OsuPlayerDbContext();
-                db.Database.EnsureCreated();
-                db.Database.ExecuteSqlRaw(@"
-CREATE INDEX IF NOT EXISTS IX_beatmap_identity
-ON beatmap(folderName, version, own);");
+                db.Database.Migrate();
+                LegacyPlayerDatabaseMigrator.MigrateIfRequired(DefaultDatabasePath, LegacyDatabasePath);
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Error while validating local database.");
+                Logger.Error(ex, "Error while initializing local database.");
                 throw;
             }
+        }
+
+        public static void ValidateDb()
+        {
+            InitializeDatabase();
         }
 
         public BeatmapSettings GetMapFromDb(IMapIdentifiable id)

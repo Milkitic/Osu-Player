@@ -18,7 +18,12 @@
     <PackageReference Include="Coosu.Database" Version="2.5.1" />
     <PackageReference Include="Dapper" Version="2.1.79" />
     <PackageReference Include="Dapper.FluentMap" Version="2.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.8" />
     <PackageReference Include="NLog" Version="6.1.3" />
   </ItemGroup>
 
