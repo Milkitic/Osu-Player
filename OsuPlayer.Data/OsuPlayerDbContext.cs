@@ -488,9 +488,16 @@ namespace Milky.OsuPlayer.Data
             try
             {
                 const string sql = @"
-INSERT OR REPLACE INTO beatmap_thumbnails (id, beatmap_id, thumbnail_path)
-VALUES ((SELECT id FROM beatmap_thumbnails WHERE beatmap_id = @MapId), @MapId, @ThumbPath);";
-                await dbConnection.ExecuteAsync(sql, new { MapId = beatmapDbId.ToString(), ThumbPath = thumbPath });
+INSERT INTO beatmap_thumbnails (id, beatmap_id, thumbnail_path)
+VALUES (@Id, @MapId, @ThumbPath)
+ON CONFLICT(beatmap_id) DO UPDATE SET
+    thumbnail_path = excluded.thumbnail_path;";
+                await dbConnection.ExecuteAsync(sql, new
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    MapId = beatmapDbId.ToString(),
+                    ThumbPath = thumbPath
+                });
             }
             finally
             {
@@ -520,10 +527,17 @@ VALUES ((SELECT id FROM beatmap_thumbnails WHERE beatmap_id = @MapId), @MapId, @
             try
             {
                 const string sql = @"
-INSERT OR REPLACE INTO storyboard_assets (id, beatmap_id, thumbnail_path, preview_video_path, difficulty_name, folder_name, is_local)
-VALUES ((SELECT id FROM storyboard_assets WHERE beatmap_id = @MapId), @MapId, @SbThumbPath, @SbThumbVideoPath, @Version, @FolderName, @InOwnDb);";
+INSERT INTO storyboard_assets (id, beatmap_id, thumbnail_path, preview_video_path, difficulty_name, folder_name, is_local)
+VALUES (@Id, @MapId, @SbThumbPath, @SbThumbVideoPath, @Version, @FolderName, @InOwnDb)
+ON CONFLICT(beatmap_id) DO UPDATE SET
+    thumbnail_path = excluded.thumbnail_path,
+    preview_video_path = excluded.preview_video_path,
+    difficulty_name = excluded.difficulty_name,
+    folder_name = excluded.folder_name,
+    is_local = excluded.is_local;";
                 await dbConnection.ExecuteAsync(sql, new
                 {
+                    Id = Guid.NewGuid().ToString(),
                     MapId = beatmapDbId.ToString(),
                     SbThumbPath = sbInfo.SbThumbPath,
                     SbThumbVideoPath = sbInfo.SbThumbVideoPath,

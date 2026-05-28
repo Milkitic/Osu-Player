@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace Coosu.Beatmap.MetaData
@@ -13,9 +14,9 @@ namespace Coosu.Beatmap.MetaData
     }
 
     [DebuggerDisplay("{DebuggerDisplay()}")]
-    public readonly struct MapIdentity : IMapIdentifiable
+    public readonly struct MapIdentity : IMapIdentifiable, IEquatable<MapIdentity>
     {
-        private static readonly MapIdentity _default;
+        private static readonly MapIdentity s_default;
 
         public MapIdentity(string folderName, string version, bool inOwnDb)
         {
@@ -29,7 +30,7 @@ namespace Coosu.Beatmap.MetaData
         public string Version { get; }
         public bool InOwnDb { get; }
 
-        public static ref readonly MapIdentity Default => ref _default;
+        public static ref readonly MapIdentity Default => ref s_default;
 
         public MapIdentity GetIdentity()
         {
@@ -38,7 +39,7 @@ namespace Coosu.Beatmap.MetaData
 
         public override bool Equals(object obj)
         {
-            if (!(obj is MapIdentity mapIdentity))
+            if (obj is not MapIdentity mapIdentity)
             {
                 return false;
             }
@@ -51,12 +52,17 @@ namespace Coosu.Beatmap.MetaData
             return false;
         }
 
-        public override int GetHashCode()
+        public bool Equals(MapIdentity other)
         {
-            return base.GetHashCode();
+            return FolderName == other.FolderName && Version == other.Version && InOwnDb == other.InOwnDb;
         }
 
-        private string DebuggerDisplay()
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(FolderName, Version, InOwnDb);
+        }
+
+        public override string ToString()
         {
             if (this.IsMapTemporary())
             {
@@ -70,6 +76,8 @@ namespace Coosu.Beatmap.MetaData
 
             return "osu: [\"" + FolderName + "\",\"" + Version + "\"]";
         }
+
+        private string DebuggerDisplay() => ToString();
     }
 
     public static class MapIdentifiableExtension

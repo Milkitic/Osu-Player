@@ -14,7 +14,7 @@ namespace Milky.OsuPlayer.Common
     public static class CommonUtils
     {
         private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
-        private static readonly SemaphoreSlim s_lock = new SemaphoreSlim(1);
+        private static readonly SemaphoreSlim s_lock = new SemaphoreSlim(5);
 
         private static readonly IPlayerDataStore s_playerData = new PlayerDataService();
         ///// <summary>
@@ -99,7 +99,6 @@ namespace Milky.OsuPlayer.Common
                 }
                 catch (Exception ex)
                 {
-                    throw;
                     s_logger.Error(ex, "Error while creating beatmap thumb cache: {0}", dataModel.GetIdentity());
                     return null;
                 }
