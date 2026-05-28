@@ -11,13 +11,14 @@ using NLog;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Milky.OsuPlayer
 {
     public static class EntryStartup
     {
-        public static void Startup()
+        public static async Task StartupAsync()
         {
             LogManager.Setup().SetupExtensions(setup =>
                 setup.RegisterLayoutRenderer<InvariantCultureLayoutRendererWrapper>("InvariantCulture"));
@@ -31,7 +32,7 @@ namespace Milky.OsuPlayer
             //ConsoleManager.Show();
 #endif
 
-            InitLocalDb();
+            await InitLocalDbAsync();
             AppServices.RegisterDefaults();
 
             StyleUtilities.SetAlignment();
@@ -77,7 +78,7 @@ namespace Milky.OsuPlayer
             return true;
         }
 
-        private static void InitLocalDb()
+        private static async Task InitLocalDbAsync()
         {
             FluentMapper.Initialize(config =>
             {
@@ -88,12 +89,12 @@ namespace Milky.OsuPlayer
                 config.AddMap(new CollectionRelationMap());
             });
 
-            OsuPlayerDbContext.InitializeDatabase();
+            await OsuPlayerDbContext.InitializeDatabaseAsync();
 
             var playerData = new PlayerDataService();
-            var defCol = playerData.GetCollections();
+            var defCol = await playerData.GetCollectionsAsync();
             var locked = defCol.Where(k => k.LockedBool);
-            if (!locked.Any()) playerData.TryAddCollection("Favorite");
+            if (!locked.Any()) await playerData.TryAddCollectionAsync("Favorite");
         }
     }
 }

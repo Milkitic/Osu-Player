@@ -124,7 +124,8 @@ namespace Milky.OsuPlayer.Pages
                 if (bgFileInfo.Exists)
                     Export(bgFileInfo, exportBgFolder, exportBgName);
                 if (mp3FileInfo.Exists || bgFileInfo.Exists)
-                    s_playerData.TryAddMapExport(entry.GetIdentity(), Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
+                    await s_playerData.TryAddMapExportAsync(entry.GetIdentity(),
+                        Path.Combine(exportMp3Folder, exportMp3Name + mp3FileInfo.Extension));
             }
             catch (Exception ex)
             {

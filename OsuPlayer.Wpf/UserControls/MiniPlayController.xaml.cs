@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
@@ -29,11 +30,14 @@ namespace Milky.OsuPlayer.UserControls
 
         public SharedVm Shared { get; } = SharedVm.Default;
 
-        public ICommand PlayPrevCommand => new DelegateCommand(async param => await _controller.PlayPrevAsync());
+        public ICommand PlayPrevCommand =>
+            new AsyncRelayCommand<object>(async param => await _controller.PlayPrevAsync());
 
-        public ICommand PlayNextCommand => new DelegateCommand(async param => await _controller.PlayNextAsync());
+        public ICommand PlayNextCommand =>
+            new AsyncRelayCommand<object>(async param => await _controller.PlayNextAsync());
 
-        public ICommand PlayPauseCommand => new DelegateCommand(async param => await _controller.TogglePlayAsync());
+        public ICommand PlayPauseCommand =>
+            new AsyncRelayCommand<object>(async param => await _controller.TogglePlayAsync());
 
         public double PositionPercent
         {
@@ -123,20 +127,21 @@ namespace Milky.OsuPlayer.UserControls
 
         private async void CommonButton_Click(object sender, RoutedEventArgs e)
         {
-            var collection = _playerData.GetCollections().First(k => k.LockedBool);
+            var collection = (await _playerData.GetCollectionsAsync()).First(k => k.LockedBool);
             var metadata = _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata;
             if (metadata.IsFavorite)
             {
-                if (_playerData.TryRemoveMapFromCollection(_controller.PlayList.CurrentInfo.Beatmap, collection))
+                if (await _playerData.TryRemoveMapFromCollectionAsync(_controller.PlayList.CurrentInfo.Beatmap,
+                        collection))
                     metadata.IsFavorite = false;
             }
             else
             {
                 if (await SelectCollectionControl.AddToCollectionAsync(collection,
-                    new[]
-                    {
-                        _controller.PlayList.CurrentInfo.Beatmap
-                    }))
+                        new[]
+                        {
+                            _controller.PlayList.CurrentInfo.Beatmap
+                        }))
                     metadata.IsFavorite = true;
             }
         }

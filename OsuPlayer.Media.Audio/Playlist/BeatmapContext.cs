@@ -20,12 +20,12 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
             BeatmapDetail = new BeatmapDetail(beatmap);
         }
 
-        public static Task<BeatmapContext> CreateAsync(Beatmap beatmap, IPlayerDataStore playerData)
+        public static async Task<BeatmapContext> CreateAsync(Beatmap beatmap, IPlayerDataStore playerData)
         {
-            return Task.FromResult(new BeatmapContext(beatmap)
+            return new BeatmapContext(beatmap)
             {
-                BeatmapSettings = playerData.GetMapFromDb(beatmap.GetIdentity()),
-            });
+                BeatmapSettings = await playerData.GetMapFromDbAsync(beatmap.GetIdentity()),
+            };
         }
 
         public bool FullLoaded { get; set; } = false;

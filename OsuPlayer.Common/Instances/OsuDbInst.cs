@@ -57,7 +57,7 @@ namespace Milky.OsuPlayer.Common.Instances
             if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
             {
                 var beatmaps = await ReadDbAsync(path);
-                await Task.Run(() => _playerData.SyncMapsFromOsuDbAsync(beatmaps, addOnly));
+                await _playerData.SyncMapsFromOsuDbAsync(beatmaps, addOnly);
             }
 
             lock (_scanningObject)

@@ -22,11 +22,11 @@ namespace Milky.OsuPlayer.Services
             _notifications = notifications ?? throw new ArgumentNullException(nameof(notifications));
         }
 
-        public Beatmap GetBeatmapByIdentifiable(IMapIdentifiable beatmap)
+        public async Task<Beatmap> GetBeatmapByIdentifiableAsync(IMapIdentifiable beatmap)
         {
             try
             {
-                var map = _inner.GetBeatmapByIdentifiable(beatmap);
+                var map = await _inner.GetBeatmapByIdentifiableAsync(beatmap);
                 if (map is null)
                 {
                     _notifications.Push(I18NUtil.GetString("err-mapNotInDb"), I18NUtil.GetString("text-error"));
@@ -41,53 +41,58 @@ namespace Milky.OsuPlayer.Services
             }
         }
 
-        public bool TryRemoveFromRecent(MapIdentity identity)
-            => Run(() => _inner.TryRemoveFromRecent(identity), "Error while removing beatmap from recent", false);
-
-        public BeatmapSettings GetMapFromDb(IMapIdentifiable beatmap)
-            => Run(() => _inner.GetMapFromDb(beatmap), "Error while getting beatmap settings from database", null);
-
-        public bool TryRemoveMapFromCollection(IMapIdentifiable identity, Collection collection)
-            => Run(() => _inner.TryRemoveMapFromCollection(identity, collection),
-                "Error while removing beatmap from collection", false);
-
-        public List<Beatmap> SearchBeatmapByOptions(string searchText, BeatmapSortMode sortMode, int startIndex,
-            int count)
-            => Run(() => _inner.SearchBeatmapByOptions(searchText, sortMode, startIndex, count),
-                "Error while searching for beatmaps", []);
-
-        public List<Beatmap> GetBeatmapsFromFolder(string folderName)
-            => Run(() => _inner.GetBeatmapsFromFolder(folderName), "Error while getting beatmaps from folder",
-                []);
-
-        public List<Collection> GetCollections()
-            => Run(() => _inner.GetCollections(), "Error while getting collections", []);
-
-        public List<Collection> GetCollectionsByMap(BeatmapSettings beatmapSettings)
-            => Run(() => _inner.GetCollectionsByMap(beatmapSettings), "Error while getting collections by map",
-                []);
-
-        public bool TryAddCollection(string collectionName)
-            => Run(() => _inner.TryAddCollection(collectionName), $"Error while adding collection \"{collectionName}\"",
+        public Task<bool> TryRemoveFromRecentAsync(MapIdentity identity)
+            => RunAsync(() => _inner.TryRemoveFromRecentAsync(identity), "Error while removing beatmap from recent",
                 false);
 
-        public List<Beatmap> GetBeatmapsByIdentifiable(IEnumerable<IMapIdentifiable> mapIdentities)
-            => Run(() => _inner.GetBeatmapsByIdentifiable(mapIdentities),
+        public Task<BeatmapSettings> GetMapFromDbAsync(IMapIdentifiable beatmap)
+            => RunAsync(() => _inner.GetMapFromDbAsync(beatmap), "Error while getting beatmap settings from database",
+                null);
+
+        public Task<bool> TryRemoveMapFromCollectionAsync(IMapIdentifiable identity, Collection collection)
+            => RunAsync(() => _inner.TryRemoveMapFromCollectionAsync(identity, collection),
+                "Error while removing beatmap from collection", false);
+
+        public Task<List<Beatmap>> SearchBeatmapByOptionsAsync(string searchText, BeatmapSortMode sortMode,
+            int startIndex,
+            int count)
+            => RunAsync(() => _inner.SearchBeatmapByOptionsAsync(searchText, sortMode, startIndex, count),
+                "Error while searching for beatmaps", []);
+
+        public Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folderName)
+            => RunAsync(() => _inner.GetBeatmapsFromFolderAsync(folderName), "Error while getting beatmaps from folder",
+                []);
+
+        public Task<List<Collection>> GetCollectionsAsync()
+            => RunAsync(() => _inner.GetCollectionsAsync(), "Error while getting collections", []);
+
+        public Task<List<Collection>> GetCollectionsByMapAsync(BeatmapSettings beatmapSettings)
+            => RunAsync(() => _inner.GetCollectionsByMapAsync(beatmapSettings),
+                "Error while getting collections by map",
+                []);
+
+        public Task<bool> TryAddCollectionAsync(string collectionName)
+            => RunAsync(() => _inner.TryAddCollectionAsync(collectionName),
+                $"Error while adding collection \"{collectionName}\"",
+                false);
+
+        public Task<List<Beatmap>> GetBeatmapsByIdentifiableAsync(IEnumerable<IMapIdentifiable> mapIdentities)
+            => RunAsync(() => _inner.GetBeatmapsByIdentifiableAsync(mapIdentities),
                 "Error while getting beatmaps by IMapIdentifiable from database", []);
 
-        public bool TryUpdateCollection(Collection collection)
-            => Run(() => _inner.TryUpdateCollection(collection),
+        public Task<bool> TryUpdateCollectionAsync(Collection collection)
+            => RunAsync(() => _inner.TryUpdateCollectionAsync(collection),
                 $"Error while updating collection \"{collection?.Name}\"", false);
 
-        public bool TryUpdateMap(IMapIdentifiable beatmap, int? offset = null)
-            => Run(() => _inner.TryUpdateMap(beatmap, offset),
+        public Task<bool> TryUpdateMapAsync(IMapIdentifiable beatmap, int? offset = null)
+            => RunAsync(() => _inner.TryUpdateMapAsync(beatmap, offset),
                 $"Error while updating map offset \"{beatmap?.GetIdentity()}\"", false);
 
-        public Collection GetCollectionById(string id)
+        public async Task<Collection> GetCollectionByIdAsync(string id)
         {
             try
             {
-                var collection = _inner.GetCollectionById(id);
+                var collection = await _inner.GetCollectionByIdAsync(id);
                 if (collection is null)
                 {
                     _notifications.Push(I18NUtil.GetString("err-collectionNotInDb"), I18NUtil.GetString("text-error"));
@@ -102,38 +107,41 @@ namespace Milky.OsuPlayer.Services
             }
         }
 
-        public List<BeatmapSettings> GetMapsFromCollection(Collection collection)
-            => Run(() => _inner.GetMapsFromCollection(collection), "Error while getting maps from collection",
+        public Task<List<BeatmapSettings>> GetMapsFromCollectionAsync(Collection collection)
+            => RunAsync(() => _inner.GetMapsFromCollectionAsync(collection), "Error while getting maps from collection",
                 []);
 
-        public List<Beatmap> GetBeatmapsByMapInfo(List<BeatmapSettings> settings, TimeSortMode sortMode)
-            => Run(() => _inner.GetBeatmapsByMapInfo(settings, sortMode), "Error while getting maps by settings",
+        public Task<List<Beatmap>> GetBeatmapsByMapInfoAsync(List<BeatmapSettings> settings, TimeSortMode sortMode)
+            => RunAsync(() => _inner.GetBeatmapsByMapInfoAsync(settings, sortMode),
+                "Error while getting maps by settings",
                 []);
 
-        public bool TryRemoveCollection(Collection collection)
-            => Run(() => _inner.TryRemoveCollection(collection), "Error while removing collection", false);
+        public Task<bool> TryRemoveCollectionAsync(Collection collection)
+            => RunAsync(() => _inner.TryRemoveCollectionAsync(collection), "Error while removing collection", false);
 
-        public bool TryAddMapExport(IMapIdentifiable mapIdentity, string path)
-            => Run(() => _inner.TryAddMapExport(mapIdentity, path), "Error while updating exported map", false);
-
-        public List<BeatmapSettings> GetRecentList()
-            => Run(() => _inner.GetRecentList(), "Error while getting recent list", []);
-
-        public List<BeatmapSettings> GetExportedMaps()
-            => Run(() => _inner.GetExportedMaps(), "Error while getting exported list", []);
-
-        public bool TryClearRecent()
-            => Run(() => _inner.TryClearRecent(), "Error while clearing recent", false);
-
-        public bool TryAddMapsToCollection(IList<Beatmap> beatmaps, Collection collection)
-            => Run(() => _inner.TryAddMapsToCollection(beatmaps, collection), "Error while adding maps to collection",
+        public Task<bool> TryAddMapExportAsync(IMapIdentifiable mapIdentity, string path)
+            => RunAsync(() => _inner.TryAddMapExportAsync(mapIdentity, path), "Error while updating exported map",
                 false);
 
-        public bool TryRemoveLocalAll()
-            => Run(() => _inner.TryRemoveLocalAll(), "Error while removing local beatmaps", false);
+        public Task<List<BeatmapSettings>> GetRecentListAsync()
+            => RunAsync(() => _inner.GetRecentListAsync(), "Error while getting recent list", []);
 
-        public bool TryAddNewMaps(IEnumerable<Beatmap> beatmaps)
-            => Run(() => _inner.TryAddNewMaps(beatmaps), "Error while adding new beatmaps", false);
+        public Task<List<BeatmapSettings>> GetExportedMapsAsync()
+            => RunAsync(() => _inner.GetExportedMapsAsync(), "Error while getting exported list", []);
+
+        public Task<bool> TryClearRecentAsync()
+            => RunAsync(() => _inner.TryClearRecentAsync(), "Error while clearing recent", false);
+
+        public Task<bool> TryAddMapsToCollectionAsync(IList<Beatmap> beatmaps, Collection collection)
+            => RunAsync(() => _inner.TryAddMapsToCollectionAsync(beatmaps, collection),
+                "Error while adding maps to collection",
+                false);
+
+        public Task<bool> TryRemoveLocalAllAsync()
+            => RunAsync(() => _inner.TryRemoveLocalAllAsync(), "Error while removing local beatmaps", false);
+
+        public Task<bool> TryAddNewMapsAsync(IEnumerable<Beatmap> beatmaps)
+            => RunAsync(() => _inner.TryAddNewMapsAsync(beatmaps), "Error while adding new beatmaps", false);
 
         public async Task SyncMapsFromOsuDbAsync(IEnumerable<Beatmap> beatmaps, bool addOnly)
         {
@@ -147,28 +155,28 @@ namespace Milky.OsuPlayer.Services
             }
         }
 
-        public bool TryGetMapThumb(Guid beatmapDbId, out string thumbPath)
+        public async Task<(bool found, string thumbPath)> TryGetMapThumbAsync(Guid beatmapDbId)
         {
             try
             {
-                return _inner.TryGetMapThumb(beatmapDbId, out thumbPath);
+                return await _inner.TryGetMapThumbAsync(beatmapDbId);
             }
             catch (Exception ex)
             {
                 NotifyError(ex, "Error while getting map thumbnail");
-                thumbPath = null;
-                return false;
+                return (false, null);
             }
         }
 
-        public bool TrySetMapThumb(Guid beatmapDbId, string thumbPath)
-            => Run(() => _inner.TrySetMapThumb(beatmapDbId, thumbPath), "Error while setting map thumbnail", false);
+        public Task<bool> TrySetMapThumbAsync(Guid beatmapDbId, string thumbPath)
+            => RunAsync(() => _inner.TrySetMapThumbAsync(beatmapDbId, thumbPath), "Error while setting map thumbnail",
+                false);
 
-        private T Run<T>(Func<T> action, string message, T fallback)
+        private async Task<T> RunAsync<T>(Func<Task<T>> action, string message, T fallback)
         {
             try
             {
-                return action();
+                return await action();
             }
             catch (Exception ex)
             {

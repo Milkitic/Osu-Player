@@ -14,56 +14,57 @@ namespace Milky.OsuPlayer.Services
 
     public interface IPlayerDataStore
     {
-        Beatmap GetBeatmapByIdentifiable(IMapIdentifiable beatmap);
+        Task<Beatmap> GetBeatmapByIdentifiableAsync(IMapIdentifiable beatmap);
 
-        BeatmapSettings GetMapFromDb(IMapIdentifiable beatmap);
+        Task<BeatmapSettings> GetMapFromDbAsync(IMapIdentifiable beatmap);
 
-        bool TryRemoveFromRecent(MapIdentity identity);
+        Task<bool> TryRemoveFromRecentAsync(MapIdentity identity);
 
-        bool TryRemoveMapFromCollection(IMapIdentifiable identity, Collection collection);
+        Task<bool> TryRemoveMapFromCollectionAsync(IMapIdentifiable identity, Collection collection);
 
-        List<Beatmap> SearchBeatmapByOptions(string searchText, BeatmapSortMode sortMode, int startIndex, int count);
+        Task<List<Beatmap>> SearchBeatmapByOptionsAsync(string searchText, BeatmapSortMode sortMode, int startIndex,
+            int count);
 
-        List<Beatmap> GetBeatmapsFromFolder(string folderName);
+        Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folderName);
 
-        List<Collection> GetCollections();
+        Task<List<Collection>> GetCollectionsAsync();
 
-        List<Collection> GetCollectionsByMap(BeatmapSettings beatmapSettings);
+        Task<List<Collection>> GetCollectionsByMapAsync(BeatmapSettings beatmapSettings);
 
-        bool TryAddCollection(string collectionName);
+        Task<bool> TryAddCollectionAsync(string collectionName);
 
-        List<Beatmap> GetBeatmapsByIdentifiable(IEnumerable<IMapIdentifiable> mapIdentities);
+        Task<List<Beatmap>> GetBeatmapsByIdentifiableAsync(IEnumerable<IMapIdentifiable> mapIdentities);
 
-        bool TryUpdateCollection(Collection collection);
+        Task<bool> TryUpdateCollectionAsync(Collection collection);
 
-        bool TryUpdateMap(IMapIdentifiable beatmap, int? offset = null);
+        Task<bool> TryUpdateMapAsync(IMapIdentifiable beatmap, int? offset = null);
 
-        Collection GetCollectionById(string id);
+        Task<Collection> GetCollectionByIdAsync(string id);
 
-        List<BeatmapSettings> GetMapsFromCollection(Collection collection);
+        Task<List<BeatmapSettings>> GetMapsFromCollectionAsync(Collection collection);
 
-        List<Beatmap> GetBeatmapsByMapInfo(List<BeatmapSettings> settings, TimeSortMode sortMode);
+        Task<List<Beatmap>> GetBeatmapsByMapInfoAsync(List<BeatmapSettings> settings, TimeSortMode sortMode);
 
-        bool TryRemoveCollection(Collection collection);
+        Task<bool> TryRemoveCollectionAsync(Collection collection);
 
-        bool TryAddMapExport(IMapIdentifiable mapIdentity, string path);
+        Task<bool> TryAddMapExportAsync(IMapIdentifiable mapIdentity, string path);
 
-        List<BeatmapSettings> GetRecentList();
+        Task<List<BeatmapSettings>> GetRecentListAsync();
 
-        List<BeatmapSettings> GetExportedMaps();
+        Task<List<BeatmapSettings>> GetExportedMapsAsync();
 
-        bool TryClearRecent();
+        Task<bool> TryClearRecentAsync();
 
-        bool TryAddMapsToCollection(IList<Beatmap> beatmaps, Collection collection);
+        Task<bool> TryAddMapsToCollectionAsync(IList<Beatmap> beatmaps, Collection collection);
 
-        bool TryRemoveLocalAll();
+        Task<bool> TryRemoveLocalAllAsync();
 
-        bool TryAddNewMaps(IEnumerable<Beatmap> beatmaps);
+        Task<bool> TryAddNewMapsAsync(IEnumerable<Beatmap> beatmaps);
 
         Task SyncMapsFromOsuDbAsync(IEnumerable<Beatmap> beatmaps, bool addOnly);
 
-        bool TryGetMapThumb(Guid beatmapDbId, out string thumbPath);
+        Task<(bool found, string thumbPath)> TryGetMapThumbAsync(Guid beatmapDbId);
 
-        bool TrySetMapThumb(Guid beatmapDbId, string thumbPath);
+        Task<bool> TrySetMapThumbAsync(Guid beatmapDbId, string thumbPath);
     }
 }

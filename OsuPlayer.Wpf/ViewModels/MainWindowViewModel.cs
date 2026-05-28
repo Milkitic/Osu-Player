@@ -1,8 +1,9 @@
-﻿using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Data.Models;
+using Milky.OsuPlayer.Presentation.Interaction;
 
 namespace Milky.OsuPlayer.ViewModels
 {
@@ -65,7 +66,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(obj =>
+                return new RelayCommand<object>(obj =>
                 {
                     Execute.OnUiThread(() =>
                     {

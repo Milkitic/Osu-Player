@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Services;
@@ -32,15 +33,27 @@ namespace Milky.OsuPlayer.Common
                 case List<BeatmapDataModel> dataModels:
                     ret = dataModels;
                     break;
-                case List<BeatmapSettings> infos:
-                    ret = s_playerData.GetBeatmapsByIdentifiable(infos).InnerToDataModelList();
-                    break;
+                case List<BeatmapSettings>:
+                    throw new InvalidOperationException("Use ToDataModelListAsync for BeatmapSettings sources.");
                 default:
                     throw new ArgumentOutOfRangeException(nameof(identifiable), identifiable?.GetType(),
                         "Not support source type.");
             }
 
             return ret.Distinct(new DataModelComparer(distinctByVersion)).ToList();
+        }
+
+        public static async Task<List<BeatmapDataModel>> ToDataModelListAsync(
+            this IEnumerable<IMapIdentifiable> identifiable,
+            bool distinctByVersion = false)
+        {
+            if (identifiable is List<BeatmapSettings> infos)
+            {
+                var beatmaps = await s_playerData.GetBeatmapsByIdentifiableAsync(infos);
+                return beatmaps.InnerToDataModelList().Distinct(new DataModelComparer(distinctByVersion)).ToList();
+            }
+
+            return identifiable.ToDataModelList(distinctByVersion);
         }
 
         private static List<BeatmapDataModel> InnerToDataModelList(this IEnumerable<Beatmap> beatmaps)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -102,7 +103,7 @@ namespace Milky.OsuPlayer.Pages
 
         private async void PlaySelectedDefault()
         {
-            var map = GetSelectedDefault();
+            var map = await GetSelectedDefaultAsync();
             if (map == null)
                 return;
             //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
@@ -110,12 +111,12 @@ namespace Milky.OsuPlayer.Pages
             await _controller.PlayNewAsync(map);
         }
 
-        private Beatmap GetSelectedDefault()
+        private async Task<Beatmap> GetSelectedDefaultAsync()
         {
             if (ResultList.SelectedItem == null)
                 return null;
-            var map = _playerData
-                .GetBeatmapsFromFolder(((BeatmapDataModel)ResultList.SelectedItem).FolderName)
+            var map = (await _playerData
+                .GetBeatmapsFromFolderAsync(((BeatmapDataModel)ResultList.SelectedItem).FolderName))
                 .GetHighestDiff();
             return map;
         }
@@ -149,6 +150,7 @@ namespace Milky.OsuPlayer.Pages
             }
             catch (Exception ex)
             {
+                throw;
                 Logger.Error(ex, "Error while loading panel item.");
             }
         }

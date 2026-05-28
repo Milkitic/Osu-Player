@@ -22,172 +22,174 @@ namespace Milky.OsuPlayer.Services
             _createDbContext = createDbContext ?? throw new ArgumentNullException(nameof(createDbContext));
         }
 
-        public Beatmap GetBeatmapByIdentifiable(IMapIdentifiable beatmap)
+        public async Task<Beatmap> GetBeatmapByIdentifiableAsync(IMapIdentifiable beatmap)
         {
-            using var db = _createDbContext();
-            return db.GetBeatmapByIdentifiable(beatmap);
+            await using var db = _createDbContext();
+            return await db.GetBeatmapByIdentifiableAsync(beatmap);
         }
 
-        public BeatmapSettings GetMapFromDb(IMapIdentifiable beatmap)
+        public async Task<BeatmapSettings> GetMapFromDbAsync(IMapIdentifiable beatmap)
         {
-            using var db = _createDbContext();
-            return db.GetMapFromDb(beatmap);
+            await using var db = _createDbContext();
+            return await db.GetMapFromDbAsync(beatmap);
         }
 
-        public bool TryRemoveFromRecent(MapIdentity identity)
+        public async Task<bool> TryRemoveFromRecentAsync(MapIdentity identity)
         {
-            using var db = _createDbContext();
-            db.RemoveFromRecent(identity);
+            await using var db = _createDbContext();
+            await db.RemoveFromRecentAsync(identity);
             return true;
         }
 
-        public bool TryRemoveMapFromCollection(IMapIdentifiable identity, Collection collection)
+        public async Task<bool> TryRemoveMapFromCollectionAsync(IMapIdentifiable identity, Collection collection)
         {
-            using var db = _createDbContext();
-            db.RemoveMapFromCollection(identity, collection);
+            await using var db = _createDbContext();
+            await db.RemoveMapFromCollectionAsync(identity, collection);
             return true;
         }
 
-        public List<Beatmap> SearchBeatmapByOptions(string searchText, BeatmapSortMode sortMode, int startIndex,
+        public async Task<List<Beatmap>> SearchBeatmapByOptionsAsync(string searchText, BeatmapSortMode sortMode,
+            int startIndex,
             int count)
         {
-            using var db = _createDbContext();
-            return db.SearchBeatmapByOptions(searchText, sortMode, startIndex, count);
+            await using var db = _createDbContext();
+            return await db.SearchBeatmapByOptionsAsync(searchText, sortMode, startIndex, count);
         }
 
-        public List<Beatmap> GetBeatmapsFromFolder(string folderName)
+        public async Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folderName)
         {
-            using var db = _createDbContext();
-            return db.GetBeatmapsFromFolder(folderName);
+            await using var db = _createDbContext();
+            return await db.GetBeatmapsFromFolderAsync(folderName);
         }
 
-        public List<Collection> GetCollections()
+        public async Task<List<Collection>> GetCollectionsAsync()
         {
-            using var db = _createDbContext();
-            return db.GetCollections();
+            await using var db = _createDbContext();
+            return await db.GetCollectionsAsync();
         }
 
-        public List<Collection> GetCollectionsByMap(BeatmapSettings beatmapSettings)
+        public async Task<List<Collection>> GetCollectionsByMapAsync(BeatmapSettings beatmapSettings)
         {
-            using var db = _createDbContext();
-            return db.GetCollectionsByMap(beatmapSettings);
+            await using var db = _createDbContext();
+            return await db.GetCollectionsByMapAsync(beatmapSettings);
         }
 
-        public bool TryAddCollection(string collectionName)
+        public async Task<bool> TryAddCollectionAsync(string collectionName)
         {
-            using var db = _createDbContext();
-            db.AddCollection(collectionName);
+            await using var db = _createDbContext();
+            await db.AddCollectionAsync(collectionName);
             return true;
         }
 
-        public List<Beatmap> GetBeatmapsByIdentifiable(IEnumerable<IMapIdentifiable> mapIdentities)
+        public async Task<List<Beatmap>> GetBeatmapsByIdentifiableAsync(IEnumerable<IMapIdentifiable> mapIdentities)
         {
-            using var db = _createDbContext();
-            return db.GetBeatmapsByIdentifiable(mapIdentities);
+            await using var db = _createDbContext();
+            return await db.GetBeatmapsByIdentifiableAsync(mapIdentities);
         }
 
-        public bool TryUpdateCollection(Collection collection)
+        public async Task<bool> TryUpdateCollectionAsync(Collection collection)
         {
-            using var db = _createDbContext();
-            db.UpdateCollection(collection);
+            await using var db = _createDbContext();
+            await db.UpdateCollectionAsync(collection);
             return true;
         }
 
-        public bool TryUpdateMap(IMapIdentifiable beatmap, int? offset = null)
+        public async Task<bool> TryUpdateMapAsync(IMapIdentifiable beatmap, int? offset = null)
         {
-            using var db = _createDbContext();
-            db.UpdateMap(beatmap, offset);
+            await using var db = _createDbContext();
+            await db.UpdateMapAsync(beatmap, offset);
             return true;
         }
 
-        public Collection GetCollectionById(string id)
+        public async Task<Collection> GetCollectionByIdAsync(string id)
         {
-            using var db = _createDbContext();
-            return db.GetCollectionById(id);
+            await using var db = _createDbContext();
+            return await db.GetCollectionByIdAsync(id);
         }
 
-        public List<BeatmapSettings> GetMapsFromCollection(Collection collection)
+        public async Task<List<BeatmapSettings>> GetMapsFromCollectionAsync(Collection collection)
         {
-            using var db = _createDbContext();
-            return db.GetMapsFromCollection(collection);
+            await using var db = _createDbContext();
+            return await db.GetMapsFromCollectionAsync(collection);
         }
 
-        public List<Beatmap> GetBeatmapsByMapInfo(List<BeatmapSettings> settings, TimeSortMode sortMode)
+        public async Task<List<Beatmap>> GetBeatmapsByMapInfoAsync(List<BeatmapSettings> settings,
+            TimeSortMode sortMode)
         {
-            using var db = _createDbContext();
-            return db.GetBeatmapsByMapInfo(settings, sortMode);
+            await using var db = _createDbContext();
+            return await db.GetBeatmapsByMapInfoAsync(settings, sortMode);
         }
 
-        public bool TryRemoveCollection(Collection collection)
+        public async Task<bool> TryRemoveCollectionAsync(Collection collection)
         {
-            using var db = _createDbContext();
-            db.RemoveCollection(collection);
+            await using var db = _createDbContext();
+            await db.RemoveCollectionAsync(collection);
             return true;
         }
 
-        public bool TryAddMapExport(IMapIdentifiable mapIdentity, string path)
+        public async Task<bool> TryAddMapExportAsync(IMapIdentifiable mapIdentity, string path)
         {
-            using var db = _createDbContext();
-            db.AddMapExport(mapIdentity, path);
+            await using var db = _createDbContext();
+            await db.AddMapExportAsync(mapIdentity, path);
             return true;
         }
 
-        public List<BeatmapSettings> GetRecentList()
+        public async Task<List<BeatmapSettings>> GetRecentListAsync()
         {
-            using var db = _createDbContext();
-            return db.GetRecentList();
+            await using var db = _createDbContext();
+            return await db.GetRecentListAsync();
         }
 
-        public List<BeatmapSettings> GetExportedMaps()
+        public async Task<List<BeatmapSettings>> GetExportedMapsAsync()
         {
-            using var db = _createDbContext();
-            return db.GetExportedMaps();
+            await using var db = _createDbContext();
+            return await db.GetExportedMapsAsync();
         }
 
-        public bool TryClearRecent()
+        public async Task<bool> TryClearRecentAsync()
         {
-            using var db = _createDbContext();
-            db.ClearRecent();
+            await using var db = _createDbContext();
+            await db.ClearRecentAsync();
             return true;
         }
 
-        public bool TryAddMapsToCollection(IList<Beatmap> beatmaps, Collection collection)
+        public async Task<bool> TryAddMapsToCollectionAsync(IList<Beatmap> beatmaps, Collection collection)
         {
-            using var db = _createDbContext();
-            db.AddMapsToCollection(beatmaps, collection);
+            await using var db = _createDbContext();
+            await db.AddMapsToCollectionAsync(beatmaps, collection);
             return true;
         }
 
-        public bool TryRemoveLocalAll()
+        public async Task<bool> TryRemoveLocalAllAsync()
         {
-            using var db = _createDbContext();
-            db.RemoveLocalAll();
+            await using var db = _createDbContext();
+            await db.RemoveLocalAllAsync();
             return true;
         }
 
-        public bool TryAddNewMaps(IEnumerable<Beatmap> beatmaps)
+        public async Task<bool> TryAddNewMapsAsync(IEnumerable<Beatmap> beatmaps)
         {
-            using var db = _createDbContext();
-            db.AddNewMaps(beatmaps);
+            await using var db = _createDbContext();
+            await db.AddNewMapsAsync(beatmaps);
             return true;
         }
 
         public async Task SyncMapsFromOsuDbAsync(IEnumerable<Beatmap> beatmaps, bool addOnly)
         {
-            using var db = _createDbContext();
+            await using var db = _createDbContext();
             await db.SyncMapsFromOsuDbAsync(beatmaps, addOnly);
         }
 
-        public bool TryGetMapThumb(Guid beatmapDbId, out string thumbPath)
+        public async Task<(bool found, string thumbPath)> TryGetMapThumbAsync(Guid beatmapDbId)
         {
-            using var db = _createDbContext();
-            return db.GetMapThumb(beatmapDbId, out thumbPath);
+            await using var db = _createDbContext();
+            return await db.GetMapThumbAsync(beatmapDbId);
         }
 
-        public bool TrySetMapThumb(Guid beatmapDbId, string thumbPath)
+        public async Task<bool> TrySetMapThumbAsync(Guid beatmapDbId, string thumbPath)
         {
-            using var db = _createDbContext();
-            db.SetMapThumb(beatmapDbId, thumbPath);
+            await using var db = _createDbContext();
+            await db.SetMapThumbAsync(beatmapDbId, thumbPath);
             return true;
         }
     }

@@ -27,13 +27,13 @@ namespace Milky.OsuPlayer.UserControls
             _viewModel.CoverPath = _collection.ImagePath;
         }
 
-        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        private async void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             _collection.Name = _viewModel.Name;
             _collection.Description = _viewModel.Description;
             _collection.ImagePath = _viewModel.CoverPath;
 
-            if (_playerData.TryUpdateCollection(_collection))
+            if (await _playerData.TryUpdateCollectionAsync(_collection))
             {
                 FrontDialogOverlay.Default.RaiseOk();
             }

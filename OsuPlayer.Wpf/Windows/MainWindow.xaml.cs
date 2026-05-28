@@ -111,9 +111,9 @@ namespace Milky.OsuPlayer.Windows
         /// <summary>
         /// Update collections in the navigation bar.
         /// </summary>
-        public void UpdateCollections()
+        public async Task UpdateCollectionsAsync()
         {
-            var list = _playerData.GetCollections();
+            var list = await _playerData.GetCollectionsAsync();
             list.Reverse();
             ViewModel.Collection = new ObservableCollection<Collection>(list);
         }
@@ -176,10 +176,7 @@ namespace Milky.OsuPlayer.Windows
                     Width = 350,
                     ShowDialogButtons = false,
                     ShowTitleBar = false
-                }, (obj, args) =>
-                {
-                    SwitchSearch.IsChecked = true;
-                });
+                }, (obj, args) => { SwitchSearch.IsChecked = true; });
                 //WelcomeControl.Show();
                 //try
                 //{
@@ -219,7 +216,7 @@ namespace Milky.OsuPlayer.Windows
                 }
             }
 
-            UpdateCollections();
+            await UpdateCollectionsAsync();
 
             _controller.LoadFinished += Controller_LoadFinished;
 
@@ -309,7 +306,8 @@ namespace Milky.OsuPlayer.Windows
 
             // 加至播放列表
             var entries =
-                _playerData.GetBeatmapsByIdentifiable(AppSettings.Default.CurrentList.Cast<IMapIdentifiable>());
+                await _playerData.GetBeatmapsByIdentifiableAsync(
+                    AppSettings.Default.CurrentList.Cast<IMapIdentifiable>());
 
             await _controller.PlayList.SetSongListAsync(entries, true, false, false);
 
@@ -320,7 +318,7 @@ namespace Milky.OsuPlayer.Windows
             }
             else
             {
-                var current = _playerData.GetBeatmapByIdentifiable(AppSettings.Default.CurrentMap);
+                var current = await _playerData.GetBeatmapByIdentifiableAsync(AppSettings.Default.CurrentMap);
                 if (current == null) return;
                 await _controller.PlayNewAsync(current, play);
             }
@@ -329,13 +327,16 @@ namespace Milky.OsuPlayer.Windows
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
         {
             var addCollectionControl = new AddCollectionControl();
-            FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, (obj, args) =>
-            {
-                if (!_playerData.TryAddCollection(addCollectionControl.CollectionName.Text))
-                    return;
+            FrontDialogOverlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions,
+                (obj, args) => { _ = AddCollectionAndRefreshAsync(addCollectionControl.CollectionName.Text); });
+        }
 
-                UpdateCollections();
-            });
+        private async Task AddCollectionAndRefreshAsync(string collectionName)
+        {
+            if (!await _playerData.TryAddCollectionAsync(collectionName))
+                return;
+
+            await UpdateCollectionsAsync();
         }
 
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
@@ -414,11 +415,11 @@ namespace Milky.OsuPlayer.Windows
             MainFrame.Content = null;
         }
 
-        private void Controller_LikeClicked(object sender, RoutedEventArgs e)
+        private async void Controller_LikeClicked(object sender, RoutedEventArgs e)
         {
             if (_controller.PlayList.CurrentInfo == null) return;
             var detail = _controller.PlayList.CurrentInfo.Beatmap;
-            var entry = _playerData.GetBeatmapByIdentifiable(detail.GetIdentity());
+            var entry = await _playerData.GetBeatmapByIdentifiableAsync(detail.GetIdentity());
             if (entry == null) return;
 
             FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),

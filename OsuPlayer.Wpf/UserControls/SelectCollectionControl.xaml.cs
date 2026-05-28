@@ -38,21 +38,24 @@ namespace Milky.OsuPlayer.UserControls
             InitializeComponent();
             _viewModel = (SelectCollectionPageViewModel)DataContext;
             _viewModel.Entries = entries;
-            RefreshList();
+            _ = RefreshListAsync();
             _overlay = FrontDialogOverlay.Default.GetOrCreateSubOverlay();
         }
 
         private void BtnAddCollection_Click(object sender, RoutedEventArgs e)
         {
             var addCollectionControl = new AddCollectionControl();
-            _overlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions, (obj, args) =>
-            {
-                if (!_playerData.TryAddCollection(addCollectionControl.CollectionName.Text))
-                    return;
+            _overlay.ShowContent(addCollectionControl, DialogOptionFactory.AddCollectionOptions,
+                (obj, args) => { _ = AddCollectionAndRefreshAsync(addCollectionControl.CollectionName.Text); });
+        }
 
-                WindowEx.GetCurrentFirst<MainWindow>().UpdateCollections();
-                RefreshList();
-            });
+        private async Task AddCollectionAndRefreshAsync(string collectionName)
+        {
+            if (!await _playerData.TryAddCollectionAsync(collectionName))
+                return;
+
+            await WindowEx.GetCurrentFirst<MainWindow>().UpdateCollectionsAsync();
+            await RefreshListAsync();
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)
@@ -60,10 +63,11 @@ namespace Milky.OsuPlayer.UserControls
             FrontDialogOverlay.Default.RaiseOk();
         }
 
-        private void RefreshList()
+        private async Task RefreshListAsync()
         {
             _viewModel.Collections = new ObservableCollection<CollectionViewModel>(
-                CollectionViewModel.CopyFrom(_playerData.GetCollections().OrderByDescending(k => k.CreateTime)));
+                CollectionViewModel.CopyFrom(
+                    (await _playerData.GetCollectionsAsync()).OrderByDescending(k => k.CreateTime)));
         }
 
         public static async Task<bool> AddToCollectionAsync([NotNull] Collection col, IList<Beatmap> entries)
@@ -89,7 +93,7 @@ namespace Milky.OsuPlayer.UserControls
                         if (File.Exists(imgPath))
                         {
                             col.ImagePath = imgPath;
-                            if (!AppServices.PlayerData.TryUpdateCollection(col))
+                            if (!await AppServices.PlayerData.TryUpdateCollectionAsync(col))
                             {
                                 return false;
                             }
@@ -102,7 +106,7 @@ namespace Milky.OsuPlayer.UserControls
                 }
             }
 
-            if (!AppServices.PlayerData.TryAddMapsToCollection(entries, col))
+            if (!await AppServices.PlayerData.TryAddMapsToCollectionAsync(entries, col))
             {
                 return false;
             }

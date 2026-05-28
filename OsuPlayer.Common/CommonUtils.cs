@@ -14,7 +14,7 @@ namespace Milky.OsuPlayer.Common
     public static class CommonUtils
     {
         private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
-        private static readonly SemaphoreSlim s_lock = new SemaphoreSlim(5);
+        private static readonly SemaphoreSlim s_lock = new SemaphoreSlim(1);
 
         private static readonly IPlayerDataStore s_playerData = new PlayerDataService();
         ///// <summary>
@@ -54,7 +54,8 @@ namespace Milky.OsuPlayer.Common
                 await s_lock.WaitAsync();
                 try
                 {
-                    if (s_playerData.TryGetMapThumb(dataModel.BeatmapDbId, out var path) && path != null)
+                    var (found, path) = await s_playerData.TryGetMapThumbAsync(dataModel.BeatmapDbId);
+                    if (found && path != null)
                     {
                         if (File.Exists(path)) return path;
                     }
@@ -80,7 +81,7 @@ namespace Milky.OsuPlayer.Common
                     var sourceBgFile = osuFile.Events?.BackgroundInfo?.Filename;
                     if (string.IsNullOrWhiteSpace(sourceBgFile))
                     {
-                        s_playerData.TrySetMapThumb(dataModel.BeatmapDbId, null);
+                        await s_playerData.TrySetMapThumbAsync(dataModel.BeatmapDbId, null);
                         return null;
                     }
 
@@ -93,11 +94,12 @@ namespace Milky.OsuPlayer.Common
                     }
 
                     ResizeImageAndSave(sourceBgPath, guidStr, height: 200);
-                    s_playerData.TrySetMapThumb(dataModel.BeatmapDbId, guidStr);
+                    await s_playerData.TrySetMapThumbAsync(dataModel.BeatmapDbId, guidStr);
                     return guidStr;
                 }
                 catch (Exception ex)
                 {
+                    throw;
                     s_logger.Error(ex, "Error while creating beatmap thumb cache: {0}", dataModel.GetIdentity());
                     return null;
                 }

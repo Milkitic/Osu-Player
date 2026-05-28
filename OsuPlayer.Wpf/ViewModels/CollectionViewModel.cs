@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
@@ -35,10 +36,10 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new DelegateCommand(async obj =>
+                return new AsyncRelayCommand<object>(async obj =>
                 {
                     var entries = (IList<Beatmap>)obj;
-                    var col = _playerData.GetCollectionById(Id);
+                    var col = await _playerData.GetCollectionByIdAsync(Id);
                     if (col == null) return;
                     await SelectCollectionControl.AddToCollectionAsync(col, entries);
                 });

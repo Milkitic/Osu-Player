@@ -41,7 +41,7 @@ namespace Milky.OsuPlayer.Common.Scanning
             }
 
             _scanCts = new CancellationTokenSource();
-            _playerData.TryRemoveLocalAll();
+            await _playerData.TryRemoveLocalAllAsync();
 
             var dirInfo = new DirectoryInfo(path);
             if (dirInfo.Exists)
@@ -118,7 +118,7 @@ namespace Milky.OsuPlayer.Common.Scanning
 
             try
             {
-                _playerData.TryAddNewMaps(beatmaps);
+                await _playerData.TryAddNewMapsAsync(beatmaps);
             }
             catch (Exception ex)
             {

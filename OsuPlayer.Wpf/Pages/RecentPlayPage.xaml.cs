@@ -1,8 +1,10 @@
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -43,7 +45,7 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new RelayCommand<object>(param =>
                 {
                     WindowEx.GetCurrentFirst<MainWindow>()
                         .SwitchSearch
@@ -56,10 +58,10 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _playerData.GetBeatmapByIdentifiable(beatmap);
+                    var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
 
                     if (map == null) return;
                     var folder = beatmap.GetFolder(out _, out _);
@@ -78,10 +80,10 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _playerData.GetBeatmapByIdentifiable(beatmap);
+                    var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
                     if (map == null) return;
                     Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
                 });
@@ -92,10 +94,10 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _playerData.GetBeatmapByIdentifiable(beatmap);
+                    var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
                     if (map == null) return;
                     FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(map),
                         DialogOptionFactory.SelectCollectionOptions);
@@ -107,10 +109,10 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _playerData.GetBeatmapByIdentifiable(beatmap);
+                    var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
                     if (map == null) return;
                     ExportPage.QueueEntry(map);
                 });
@@ -121,10 +123,10 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(async param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _playerData.GetBeatmapByIdentifiable(beatmap);
+                    var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
                     if (map == null) return;
                     await _controller.PlayNewAsync(map);
                 });
@@ -135,10 +137,10 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(async param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    var map = _playerData.GetBeatmapByIdentifiable(beatmap);
+                    var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
                     if (map == null) return;
                     await _controller.PlayNewAsync(map);
                 });
@@ -149,10 +151,10 @@ namespace Milky.OsuPlayer.Pages
         {
             get
             {
-                return new DelegateCommand(param =>
+                return new AsyncRelayCommand<object>(async param =>
                 {
                     var beatmap = (BeatmapDataModel)param;
-                    if (_playerData.TryRemoveFromRecent(beatmap.GetIdentity()))
+                    if (await _playerData.TryRemoveFromRecentAsync(beatmap.GetIdentity()))
                     {
                         Beatmaps.Remove(beatmap);
                     }
@@ -180,16 +182,16 @@ namespace Milky.OsuPlayer.Pages
             _viewModel = (RecentPlayPageVm)DataContext;
         }
 
-        public void UpdateList()
+        public async Task UpdateListAsync()
         {
             _recentBeatmaps = new ObservableCollection<Beatmap>(
-                _playerData.GetBeatmapsByMapInfo(_playerData.GetRecentList(), TimeSortMode.PlayTime));
+                await _playerData.GetBeatmapsByMapInfoAsync(await _playerData.GetRecentListAsync(), TimeSortMode.PlayTime));
             _viewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_recentBeatmaps.ToDataModelList(false));
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            UpdateList();
+            await UpdateListAsync();
             var item = _viewModel.Beatmaps.FirstOrDefault(k =>
                 k.GetIdentity().Equals(_controller.PlayList.CurrentInfo?.Beatmap?.GetIdentity()));
             RecentList.SelectedItem = item;
@@ -200,14 +202,14 @@ namespace Milky.OsuPlayer.Pages
             PlaySelected();
         }
 
-        private void BtnDelAll_Click(object sender, RoutedEventArgs e)
+        private async void BtnDelAll_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show(_mainWindow, I18NUtil.GetString("ui-ensureRemoveAll"), _mainWindow.Title, MessageBoxButton.OKCancel,
                 MessageBoxImage.Exclamation);
             if (result == MessageBoxResult.OK)
             {
-                if (_playerData.TryClearRecent())
-                    UpdateList();
+                if (await _playerData.TryClearRecentAsync())
+                    await UpdateListAsync();
             }
         }
 

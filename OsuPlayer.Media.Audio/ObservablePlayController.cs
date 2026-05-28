@@ -152,7 +152,7 @@ namespace Milky.OsuPlayer.Media.Audio
         public async Task PlayNewAsync([CanBeNull] Beatmap beatmap, bool playInstantly = true)
         {
             if (beatmap is null) return;
-            PlayList.AddOrSwitchTo(beatmap);
+            await PlayList.AddOrSwitchToAsync(beatmap);
             InitializeContextHandle(PlayList.CurrentInfo);
             if (await LoadAsync(false, playInstantly).ConfigureAwait(false))
             {
@@ -188,7 +188,7 @@ namespace Milky.OsuPlayer.Media.Audio
                 context.OsuFile = osuFile;
 
                 var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
-                var trueBeatmap = _playerData.GetBeatmapByIdentifiable(beatmap);
+                var trueBeatmap = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
 
                 if (trueBeatmap == null)
                 {
@@ -196,7 +196,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     trueBeatmap.FolderName = path; // I forgot why I did this but there should be some reasons.
                 }
 
-                PlayList.AddOrSwitchTo(trueBeatmap);
+                await PlayList.AddOrSwitchToAsync(trueBeatmap);
 
                 InitializeContextHandle(context);
                 if (await LoadAsync(true, playInstantly).ConfigureAwait(false))
@@ -260,7 +260,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     context.OsuFile = osuFile;
                 }
 
-                var album = _playerData.GetCollectionsByMap(context.BeatmapSettings);
+                var album = await _playerData.GetCollectionsByMapAsync(context.BeatmapSettings);
 
                 bool isFavorite = album != null && album.Count > 0 && album.Any(k => k.LockedBool);
                 var metadata = beatmapDetail.Metadata;
@@ -382,7 +382,7 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             finally
             {
-                _playerData.TryUpdateMap(context.Beatmap.GetIdentity());
+                await _playerData.TryUpdateMapAsync(context.Beatmap.GetIdentity());
             }
         }
 

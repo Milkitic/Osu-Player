@@ -1,4 +1,5 @@
-﻿using System;
+using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common;
@@ -44,7 +45,7 @@ namespace Milky.OsuPlayer.UserControls
         {
             get
             {
-                return new DelegateCommand(async arg =>
+                return new AsyncRelayCommand<object>(async arg =>
                 {
                     var result = CommonUtils.BrowseDb(out var path);
                     if (!result.HasValue || !result.Value)
@@ -87,7 +88,7 @@ namespace Milky.OsuPlayer.UserControls
         {
             get
             {
-                return new DelegateCommand(arg =>
+                return new RelayCommand<object>(arg =>
                 {
                     //ShowWelcome = false;
                     FrontDialogOverlay.Default.RaiseCancel();

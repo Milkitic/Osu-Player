@@ -24,19 +24,6 @@ namespace Milky.OsuPlayer
         {
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
 
-            EntryStartup.Startup();
-
-            var controller = new ObservablePlayController(AppServices.PlayerDataStore);
-            controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
-
-            Service.TryAddInstance(controller);
-            Service.TryAddInstance(new OsuDbInst());
-            Service.TryAddInstance(new LyricsInst());
-            Service.TryAddInstance(new UpdateInst());
-            Service.TryAddInstance(new OsuFileScanner());
-
-            Service.Get<LyricsInst>().ReloadLyricProvider();
-
             var app = new App();
             app.InitializeComponent();
             app.Run();
@@ -64,6 +51,7 @@ namespace Milky.OsuPlayer
         private void Application_DispatcherUnhandledException(object sender,
             System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
+            return;
             var logger = LogManager.GetCurrentClassLogger();
             logger.Error(e.Exception, "DispatcherUnhandledException");
 
@@ -76,10 +64,28 @@ namespace Milky.OsuPlayer
             }
         }
 
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private async void Application_Startup(object sender, StartupEventArgs e)
         {
             Execute.SetMainThreadContext();
+
+            await EntryStartup.StartupAsync();
+
+            var controller = new ObservablePlayController(AppServices.PlayerDataStore);
+            controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
+
+            Service.TryAddInstance(controller);
+            Service.TryAddInstance(new OsuDbInst());
+            Service.TryAddInstance(new LyricsInst());
+            Service.TryAddInstance(new UpdateInst());
+            Service.TryAddInstance(new OsuFileScanner());
+
+            Service.Get<LyricsInst>().ReloadLyricProvider();
+
             I18NUtil.LoadI18N();
+
+            var mainWindow = new MainWindow();
+            MainWindow = mainWindow;
+            mainWindow.Show();
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
