@@ -16,14 +16,14 @@ namespace Milky.OsuPlayer.Common.Instances
         private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
 
         private readonly Lock _scanningObject = new Lock();
-        private readonly IPlayerDataService _playerData;
+        private readonly IPlayerDataStore _playerData;
 
         public OsuDbInst()
             : this(new PlayerDataService())
         {
         }
 
-        public OsuDbInst(IPlayerDataService playerData)
+        public OsuDbInst(IPlayerDataStore playerData)
         {
             _playerData = playerData;
         }

@@ -65,7 +65,7 @@ namespace Milky.OsuPlayer.Media.Audio
         public PlayList PlayList { get; }
         public bool IsPlayerReady => Player != null && Player.PlayStatus != PlayStatus.Unknown;
 
-        private readonly IPlayerDataService _playerData;
+        private readonly IPlayerDataStore _playerData;
         private OsuMixPlayer _player;
         private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
         private CancellationTokenSource _cts = new CancellationTokenSource();
@@ -78,7 +78,7 @@ namespace Milky.OsuPlayer.Media.Audio
         {
         }
 
-        public ObservablePlayController(IPlayerDataService playerData)
+        public ObservablePlayController(IPlayerDataStore playerData)
         {
             _playerData = playerData;
             PlayList = new PlayList(playerData);

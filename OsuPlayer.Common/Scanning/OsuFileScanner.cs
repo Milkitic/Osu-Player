@@ -18,14 +18,14 @@ namespace Milky.OsuPlayer.Common.Scanning
 
         public FileScannerViewModel ViewModel { get; set; } = new FileScannerViewModel();
         private CancellationTokenSource _scanCts;
-        private readonly IPlayerDataService _playerData;
+        private readonly IPlayerDataStore _playerData;
 
         public OsuFileScanner()
             : this(new PlayerDataService())
         {
         }
 
-        public OsuFileScanner(IPlayerDataService playerData)
+        public OsuFileScanner(IPlayerDataStore playerData)
         {
             _playerData = playerData;
         }

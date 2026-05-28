@@ -13,10 +13,10 @@ namespace Milky.OsuPlayer.Services
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        private readonly IPlayerDataService _inner;
+        private readonly IPlayerDataStore _inner;
         private readonly IAppNotificationService _notifications;
 
-        public NotifyingPlayerDataService(IPlayerDataService inner, IAppNotificationService notifications)
+        public NotifyingPlayerDataService(IPlayerDataStore inner, IAppNotificationService notifications)
         {
             _inner = inner ?? throw new ArgumentNullException(nameof(inner));
             _notifications = notifications ?? throw new ArgumentNullException(nameof(notifications));

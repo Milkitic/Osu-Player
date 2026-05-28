@@ -12,7 +12,7 @@ namespace Milky.OsuPlayer.Common
     public static class IdentifiableExtension
     {
         private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
-        private static readonly IPlayerDataService s_playerData = new PlayerDataService();
+        private static readonly IPlayerDataStore s_playerData = new PlayerDataService();
 
         public static List<BeatmapDataModel> ToDataModelList(this IEnumerable<IMapIdentifiable> identifiable,
             bool distinctByVersion = false)

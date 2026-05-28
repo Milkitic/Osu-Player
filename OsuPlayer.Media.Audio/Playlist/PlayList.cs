@@ -17,14 +17,14 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         public event Action SongListChanged;
         public event Func<PlayControlResult, Beatmap, bool, Task> AutoSwitched;
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly IPlayerDataService _playerData;
+        private readonly IPlayerDataStore _playerData;
 
         public PlayList()
             : this(new PlayerDataService())
         {
         }
 
-        public PlayList(IPlayerDataService playerData)
+        public PlayList(IPlayerDataStore playerData)
         {
             _playerData = playerData;
             SongList = new ObservableCollection<Beatmap>();

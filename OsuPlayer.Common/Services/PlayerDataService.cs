@@ -8,7 +8,7 @@ using Milky.OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Services
 {
-    public sealed class PlayerDataService : IPlayerDataService
+    public sealed class PlayerDataService : IPlayerDataStore
     {
         private readonly Func<OsuPlayerDbContext> _createDbContext;
 

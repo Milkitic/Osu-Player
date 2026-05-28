@@ -16,7 +16,7 @@ namespace Milky.OsuPlayer.Common
         private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
         private static readonly SemaphoreSlim s_lock = new SemaphoreSlim(5);
 
-        private static readonly IPlayerDataService s_playerData = new PlayerDataService();
+        private static readonly IPlayerDataStore s_playerData = new PlayerDataService();
         ///// <summary>
         ///// Copy resource to folder
         ///// </summary>

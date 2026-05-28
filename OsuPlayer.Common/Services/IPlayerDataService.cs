@@ -8,7 +8,11 @@ using Milky.OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Services
 {
-    public interface IPlayerDataService
+    public interface IPlayerDataService : IPlayerDataStore
+    {
+    }
+
+    public interface IPlayerDataStore
     {
         Beatmap GetBeatmapByIdentifiable(IMapIdentifiable beatmap);
 

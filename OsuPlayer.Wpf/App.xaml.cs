@@ -26,7 +26,7 @@ namespace Milky.OsuPlayer
 
             EntryStartup.Startup();
 
-            var controller = new ObservablePlayController(AppServices.PlayerData);
+            var controller = new ObservablePlayController(AppServices.PlayerDataStore);
             controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
 
             Service.TryAddInstance(controller);
