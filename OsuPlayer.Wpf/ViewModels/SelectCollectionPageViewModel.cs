@@ -1,33 +1,15 @@
-﻿using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Milky.OsuPlayer.Data.Models;
 
-namespace Milky.OsuPlayer.ViewModels
+namespace Milky.OsuPlayer.ViewModels;
+
+public partial class SelectCollectionPageViewModel : ObservableObject
 {
-    public class SelectCollectionPageViewModel : VmBase
-    {
-        private ObservableCollection<CollectionViewModel> _collections;
-        private IList<Beatmap> _entries;
+    [ObservableProperty]
+    public partial ObservableCollection<CollectionViewModel> Collections { get; set; }
 
-        public ObservableCollection<CollectionViewModel> Collections
-        {
-            get => _collections;
-            set
-            {
-                _collections = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public IList<Beatmap> Entries
-        {
-            get => _entries;
-            set
-            {
-                _entries = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    [ObservableProperty]
+    public partial IList<Beatmap> Entries { get; set; }
 }

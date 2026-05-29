@@ -1,58 +1,40 @@
-﻿using Milky.OsuPlayer.Presentation.Interaction;
 using System;
 using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Milky.OsuPlayer.Windows
+namespace Milky.OsuPlayer.Windows;
+
+internal partial class ExceptionWindowViewModel : ObservableObject
 {
-    internal class ExceptionWindowViewModel : VmBase
+    [ObservableProperty]
+    public partial Exception Exception { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsUiException { get; set; }
+}
+
+/// <summary>
+/// Interaction logic for ExceptionWindow.xaml
+/// </summary>
+public partial class ExceptionWindow : Window
+{
+    public ExceptionWindow(Exception ex, bool isUiException)
     {
-        private Exception _exception;
-        private bool _isUiException;
-
-        public Exception Exception
-        {
-            get => _exception;
-            set
-            {
-                _exception = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsUiException
-        {
-            get => _isUiException;
-            set
-            {
-                _isUiException = value;
-                OnPropertyChanged();
-            }
-        }
+        InitializeComponent();
+        var viewModel = (ExceptionWindowViewModel)DataContext;
+        viewModel.Exception = ex;
+        viewModel.IsUiException = isUiException;
     }
 
-    /// <summary>
-    /// Interaction logic for ExceptionWindow.xaml
-    /// </summary>
-    public partial class ExceptionWindow : Window
+    private void BtnExit_Click(object sender, RoutedEventArgs e)
     {
-        public ExceptionWindow(Exception ex, bool isUiException)
-        {
-            InitializeComponent();
-            var viewModel = (ExceptionWindowViewModel)DataContext;
-            viewModel.Exception = ex;
-            viewModel.IsUiException = isUiException;
-        }
+        DialogResult = true;
+        Close();
+    }
 
-        private void BtnExit_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = true;
-            Close();
-        }
-
-        private void BtnContinue_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-            Close();
-        }
+    private void BtnContinue_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Interaction;
@@ -10,329 +11,335 @@ using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Shared.Models;
 
-namespace Milky.OsuPlayer.Media.Audio.Playlist
+namespace Milky.OsuPlayer.Media.Audio.Playlist;
+
+public partial class PlayList : ObservableObject
 {
-    public class PlayList : VmBase
+    public event Action SongListChanged;
+    public event Func<PlayControlResult, Beatmap, bool, Task> AutoSwitched;
+    private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+    private readonly IPlayerDataStore _playerData;
+
+    public PlayList()
+        : this(new PlayerDataService())
     {
-        public event Action SongListChanged;
-        public event Func<PlayControlResult, Beatmap, bool, Task> AutoSwitched;
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly IPlayerDataStore _playerData;
+    }
 
-        public PlayList()
-            : this(new PlayerDataService())
+    public PlayList(IPlayerDataStore playerData)
+    {
+        _playerData = playerData;
+        SongList = new ObservableCollection<Beatmap>();
+        SongList.CollectionChanged += SongList_CollectionChanged;
+        //PlayerMixer = new ObservablePlayerMixer(this);
+    }
+
+    [ObservableProperty]
+    public partial ObservableCollection<Beatmap> SongList { get; set; }
+
+    partial void OnSongListChanged(ObservableCollection<Beatmap> value)
+    {
+        SongListChanged?.Invoke();
+    }
+
+    [ObservableProperty]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0032", Justification = "ObservableProperty")]
+    public partial BeatmapContext CurrentInfo { get; private set; }
+
+    [ObservableProperty]
+    public partial BeatmapContext PreInfo { get; set; }
+
+    public PlaylistMode Mode
+    {
+        get => _mode;
+        set
         {
+            if (Equals(value, _mode)) return;
+            _ = SetModeAsync(value);
+        }
+    }
+
+    [ObservableProperty]
+    public partial int IndexPointer { get; private set; } = -1;
+
+    public bool HasCurrent => CurrentInfo != null;
+
+    private bool IsRandom => _mode == PlaylistMode.Random || _mode == PlaylistMode.LoopRandom;
+    private bool IsLoop => _mode == PlaylistMode.Loop || _mode == PlaylistMode.LoopRandom;
+
+    private Func<int, int> _temporaryPointerChanged;
+    private PlaylistMode _mode;
+    private List<int> _songIndexList = new List<int>();
+
+    /// <summary>
+    /// 播放列表替换
+    /// </summary>
+    /// <param name="value">播放列表</param>
+    /// <param name="startAnew">若为false，则播放列表中若有相同曲，保持指针继续播放</param>
+    /// <param name="playInstantly">播放更新列表，并切换当前曲目后，立即播放新的曲目</param>
+    /// <param name="autoSetSong">若为false，则仅更改当前列表，不自动切换当前曲目</param>
+    /// <returns></returns>
+    public async Task<PlayControlResult> SetSongListAsync(IEnumerable<Beatmap> value, bool startAnew,
+        bool playInstantly = true, bool autoSetSong = true)
+    {
+        if (SongList != null) SongList.CollectionChanged -= SongList_CollectionChanged;
+        Execute.OnUiThread(() => SongList = new ObservableCollection<Beatmap>(value.Where(k => k != null)));
+        SongList.CollectionChanged += SongList_CollectionChanged;
+
+        var changed = await RearrangeIndexesAndRepositionAsync(startAnew ? (int?)0 : null);
+        PlayControlResult result; // 这里可能混入空/不空的情况
+        if (autoSetSong && changed)
+            result = await AutoSwitchAfterCollectionChanged(playInstantly).ConfigureAwait(false);
+        else
+            result = new PlayControlResult(PlayControlResult.PlayControlStatus.Keep,
+                PlayControlResult.PointerControlStatus.Keep);
+
+        //OnPropertyChanged(nameof(SongList));
+        return result;
+    }
+
+    /// <summary>
+    /// 播放指定歌曲，若播放列表不存在则自动添加
+    /// </summary>
+    /// <param name="beatmap"></param>
+    /// <returns></returns>
+    public async Task AddOrSwitchToAsync(Beatmap beatmap)
+    {
+        if (beatmap is null) return;
+        if (!SongList.Contains(beatmap))
+            Execute.OnUiThread(() => SongList.Add(beatmap));
+        await SetIndexPointerAsync(_songIndexList.IndexOf(SongList.IndexOf(beatmap)));
+    }
+
+    public async Task<PlayControlResult> SwitchByControl(PlayControlType control)
+    {
+        return await SwitchByControl(control == PlayControlType.Next, true).ConfigureAwait(false);
+    }
+
+    public async Task<PlayControlResult> InvokeAutoNext()
+    {
+        return await SwitchByControl(true, false).ConfigureAwait(false);
+    }
+
+    public void InitializeEmptyCurrentInfo()
+    {
+        CurrentInfo = new BeatmapContext();
+    }
+
+    private async Task<PlayControlResult> AutoSwitchAfterCollectionChanged(bool playInstantly)
+    {
+        if (CurrentInfo != null)
+        {
+            var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Unknown,
+                PlayControlResult.PointerControlStatus.Default);
+            if (AutoSwitched != null)
+                await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, playInstantly)
+                    .ConfigureAwait(false);
+            return playControlResult;
         }
 
-        public PlayList(IPlayerDataStore playerData)
-        {
-            _playerData = playerData;
-            SongList = new ObservableCollection<Beatmap>();
-            SongList.CollectionChanged += SongList_CollectionChanged;
-            //PlayerMixer = new ObservablePlayerMixer(this);
-        }
+        // 播放列表空
+        await SetIndexPointerAsync(-1);
+        var controlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+            PlayControlResult.PointerControlStatus.Clear);
+        if (AutoSwitched != null)
+            await AutoSwitched.Invoke(controlResult, null, playInstantly).ConfigureAwait(false);
+        return controlResult;
+    }
 
-        public ObservableCollection<Beatmap> SongList
+    private async Task<PlayControlResult> SwitchByControl(bool isNext, bool isManual)
+    {
+        if (!isManual) // auto
         {
-            get => _songList;
-            set
+            if (Mode == PlaylistMode.Single)
             {
-                if (Equals(value, _songList)) return;
-                _songList = value;
-                SongListChanged?.Invoke();
-                OnPropertyChanged();
-            }
-        }
-
-        public BeatmapContext CurrentInfo
-        {
-            get => _currentInfo;
-            private set
-            {
-                if (Equals(value, _currentInfo)) return;
-                _currentInfo = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public BeatmapContext PreInfo
-        {
-            get => _preInfo;
-            set
-            {
-                if (Equals(value, _preInfo)) return;
-                _preInfo = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public PlaylistMode Mode
-        {
-            get => _mode;
-            set
-            {
-                if (Equals(value, _mode)) return;
-                _ = SetModeAsync(value);
-            }
-        }
-
-        public int IndexPointer
-        {
-            get => _indexPointer;
-            private set
-            {
-                if (Equals(value, _indexPointer)) return;
-                _indexPointer = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool HasCurrent => CurrentInfo != null;
-
-        private bool IsRandom => _mode == PlaylistMode.Random || _mode == PlaylistMode.LoopRandom;
-        private bool IsLoop => _mode == PlaylistMode.Loop || _mode == PlaylistMode.LoopRandom;
-
-        private Func<int, int> _temporaryPointerChanged;
-        private PlaylistMode _mode;
-        private int _indexPointer = -1;
-        private List<int> _songIndexList = new List<int>();
-        private BeatmapContext _currentInfo;
-        private BeatmapContext _preInfo;
-        private ObservableCollection<Beatmap> _songList;
-
-        /// <summary>
-        /// 播放列表替换
-        /// </summary>
-        /// <param name="value">播放列表</param>
-        /// <param name="startAnew">若为false，则播放列表中若有相同曲，保持指针继续播放</param>
-        /// <param name="playInstantly">播放更新列表，并切换当前曲目后，立即播放新的曲目</param>
-        /// <param name="autoSetSong">若为false，则仅更改当前列表，不自动切换当前曲目</param>
-        /// <returns></returns>
-        public async Task<PlayControlResult> SetSongListAsync(IEnumerable<Beatmap> value, bool startAnew,
-            bool playInstantly = true, bool autoSetSong = true)
-        {
-            if (SongList != null) SongList.CollectionChanged -= SongList_CollectionChanged;
-            Execute.OnUiThread(() => SongList = new ObservableCollection<Beatmap>(value.Where(k => k != null)));
-            SongList.CollectionChanged += SongList_CollectionChanged;
-
-            var changed = await RearrangeIndexesAndRepositionAsync(startAnew ? (int?)0 : null);
-            PlayControlResult result; // 这里可能混入空/不空的情况
-            if (autoSetSong && changed)
-                result = await AutoSwitchAfterCollectionChanged(playInstantly).ConfigureAwait(false);
-            else
-                result = new PlayControlResult(PlayControlResult.PlayControlStatus.Keep,
+                var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
                     PlayControlResult.PointerControlStatus.Keep);
-
-            //OnPropertyChanged(nameof(SongList));
-            return result;
-        }
-
-        /// <summary>
-        /// 播放指定歌曲，若播放列表不存在则自动添加
-        /// </summary>
-        /// <param name="beatmap"></param>
-        /// <returns></returns>
-        public async Task AddOrSwitchToAsync(Beatmap beatmap)
-        {
-            if (beatmap is null) return;
-            if (!SongList.Contains(beatmap))
-                Execute.OnUiThread(() => SongList.Add(beatmap));
-            await SetIndexPointerAsync(_songIndexList.IndexOf(SongList.IndexOf(beatmap)));
-        }
-
-        public async Task<PlayControlResult> SwitchByControl(PlayControlType control)
-        {
-            return await SwitchByControl(control == PlayControlType.Next, true).ConfigureAwait(false);
-        }
-
-        public async Task<PlayControlResult> InvokeAutoNext()
-        {
-            return await SwitchByControl(true, false).ConfigureAwait(false);
-        }
-
-        public void InitializeEmptyCurrentInfo()
-        {
-            CurrentInfo = new BeatmapContext();
-        }
-
-        private async Task<PlayControlResult> AutoSwitchAfterCollectionChanged(bool playInstantly)
-        {
-            if (CurrentInfo != null)
-            {
-                var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Unknown,
-                    PlayControlResult.PointerControlStatus.Default);
                 if (AutoSwitched != null)
-                    await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, playInstantly)
-                        .ConfigureAwait(false);
+                    await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, false).ConfigureAwait(false);
                 return playControlResult;
             }
 
-            // 播放列表空
-            await SetIndexPointerAsync(-1);
-            var controlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
-                PlayControlResult.PointerControlStatus.Clear);
-            if (AutoSwitched != null)
-                await AutoSwitched.Invoke(controlResult, null, playInstantly).ConfigureAwait(false);
-            return controlResult;
-        }
-
-        private async Task<PlayControlResult> SwitchByControl(bool isNext, bool isManual)
-        {
-            if (!isManual) // auto
+            if (Mode == PlaylistMode.SingleLoop)
             {
-                if (Mode == PlaylistMode.Single)
+                var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
+                    PlayControlResult.PointerControlStatus.Keep);
+                if (AutoSwitched != null)
+                    await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true).ConfigureAwait(false);
+                return playControlResult;
+            }
+
+            if (!IsLoop)
+            {
+                if (SongList.Count == 0)
                 {
                     var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
-                        PlayControlResult.PointerControlStatus.Keep);
+                        PlayControlResult.PointerControlStatus.Clear);
                     if (AutoSwitched != null)
-                        await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, false).ConfigureAwait(false);
+                        await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true)
+                            .ConfigureAwait(false);
                     return playControlResult;
                 }
 
-                if (Mode == PlaylistMode.SingleLoop)
+                if (IndexPointer == 0 && !isNext ||
+                    IndexPointer == _songIndexList.Count - 1 && isNext)
                 {
-                    var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
-                        PlayControlResult.PointerControlStatus.Keep);
-                    if (AutoSwitched != null)
-                        await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true).ConfigureAwait(false);
-                    return playControlResult;
-                }
-
-                if (!IsLoop)
-                {
-                    if (SongList.Count == 0)
-                    {
-                        var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
-                            PlayControlResult.PointerControlStatus.Clear);
-                        if (AutoSwitched != null)
-                            await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true)
-                                .ConfigureAwait(false);
-                        return playControlResult;
-                    }
-
-                    if (IndexPointer == 0 && !isNext ||
-                        IndexPointer == _songIndexList.Count - 1 && isNext)
-                    {
-                        await SetIndexPointerAsync(0);
-                        var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
-                            PlayControlResult.PointerControlStatus.Reset);
-                        if (AutoSwitched != null)
-                            await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true)
-                                .ConfigureAwait(false);
-                        return playControlResult;
-                    }
-                }
-            }
-
-            if (SongList.Count == 0)
-            {
-                return new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
-                    PlayControlResult.PointerControlStatus.Clear);
-            }
-
-            if (isNext)
-            {
-                if (IndexPointer == _songIndexList.Count - 1 && (isManual || IsLoop))
                     await SetIndexPointerAsync(0);
-                else
-                    await SetIndexPointerAsync(IndexPointer + 1);
-            }
-            else
-            {
-                if (IndexPointer == 0 && (isManual || IsLoop))
-                    await SetIndexPointerAsync(_songIndexList.Count - 1);
-                else
-                    await SetIndexPointerAsync(IndexPointer - 1);
-            }
-
-            var result = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
-                PlayControlResult.PointerControlStatus.Default);
-            return result;
-        }
-
-        // returns CurrentInfo changed?
-        private async Task<bool> RearrangeIndexesAndRepositionAsync(int? forceIndex = null)
-        {
-            if (SongList.Count == 0)
-            {
-                var current = CurrentInfo;
-                await SetIndexPointerAsync(-1);
-                _songIndexList.Clear();
-                return CurrentInfo != current; // 从有到无，则为true
-            }
-
-            _songIndexList = SongList.Select((o, i) => i).ToList();
-            if (IsRandom) _songIndexList.Shuffle();
-
-            if (forceIndex != null)
-            {
-                var currentInfo = CurrentInfo;
-                await SetIndexPointerAsync(forceIndex.Value);
-                return currentInfo != CurrentInfo; // force return false
-            }
-
-            var indexOf = SongList.IndexOf(CurrentInfo.Beatmap);
-            if (indexOf == -1)
-            {
-                await SetIndexPointerAsync(0);
-                return true;
-            }
-            else
-            {
-                var i = _songIndexList.IndexOf(indexOf);
-                await SetIndexPointerAsync(i);
-                return false;
-            }
-        }
-
-        private async Task SetModeAsync(PlaylistMode value)
-        {
-            var preIsRandom = IsRandom;
-            _mode = value;
-            if (preIsRandom != IsRandom)
-            {
-                var b = await RearrangeIndexesAndRepositionAsync();
-                if (b)
-                {
-                    Logger.Warn("PlayMode changing causes CurrentInfo changed.");
-                    //throw new Exception("PlayMode changes cause current info changed");
+                    var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+                        PlayControlResult.PointerControlStatus.Reset);
+                    if (AutoSwitched != null)
+                        await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true)
+                            .ConfigureAwait(false);
+                    return playControlResult;
                 }
             }
-
-            AppSettings.Default.Play.PlayListMode = _mode;
-            AppSettings.SaveDefault();
-            OnPropertyChanged(nameof(Mode));
         }
 
-        private async Task SetIndexPointerAsync(int value)
+        if (SongList.Count == 0)
         {
-            if (value < -1) value = -1;
-            else if (value > SongList.Count - 1) value = SongList.Count - 1;
+            return new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+                PlayControlResult.PointerControlStatus.Clear);
+        }
 
-            PreInfo = CurrentInfo;
-            CurrentInfo = value == -1
-                ? null
-                : await BeatmapContext.CreateAsync(SongList[_songIndexList[value]], _playerData);
+        if (isNext)
+        {
+            if (IndexPointer == _songIndexList.Count - 1 && (isManual || IsLoop))
+                await SetIndexPointerAsync(0);
+            else
+                await SetIndexPointerAsync(IndexPointer + 1);
+        }
+        else
+        {
+            if (IndexPointer == 0 && (isManual || IsLoop))
+                await SetIndexPointerAsync(_songIndexList.Count - 1);
+            else
+                await SetIndexPointerAsync(IndexPointer - 1);
+        }
 
-            if (Equals(value, _indexPointer)) return;
-            IndexPointer = value;
+        var result = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
+            PlayControlResult.PointerControlStatus.Default);
+        return result;
+    }
 
-            if (_indexPointer != -1 && _temporaryPointerChanged != null)
+    // returns CurrentInfo changed?
+    private async Task<bool> RearrangeIndexesAndRepositionAsync(int? forceIndex = null)
+    {
+        if (SongList.Count == 0)
+        {
+            var current = CurrentInfo;
+            await SetIndexPointerAsync(-1);
+            _songIndexList.Clear();
+            return CurrentInfo != current; // 从有到无，则为true
+        }
+
+        _songIndexList = SongList.Select((o, i) => i).ToList();
+        if (IsRandom) _songIndexList.Shuffle();
+
+        if (forceIndex != null)
+        {
+            var currentInfo = CurrentInfo;
+            await SetIndexPointerAsync(forceIndex.Value);
+            return currentInfo != CurrentInfo; // force return false
+        }
+
+        var indexOf = SongList.IndexOf(CurrentInfo.Beatmap);
+        if (indexOf == -1)
+        {
+            await SetIndexPointerAsync(0);
+            return true;
+        }
+        else
+        {
+            var i = _songIndexList.IndexOf(indexOf);
+            await SetIndexPointerAsync(i);
+            return false;
+        }
+    }
+
+    private async Task SetModeAsync(PlaylistMode value)
+    {
+        var preIsRandom = IsRandom;
+        _mode = value;
+        if (preIsRandom != IsRandom)
+        {
+            var b = await RearrangeIndexesAndRepositionAsync();
+            if (b)
             {
-                IndexPointer = _temporaryPointerChanged.Invoke(_indexPointer);
-                Logger.Debug("Index switched to {_indexPointer}", _indexPointer);
+                s_logger.Warn("PlayMode changing causes CurrentInfo changed.");
+                //throw new Exception("PlayMode changes cause current info changed");
+            }
+        }
+
+        AppSettings.Default.Play.PlayListMode = _mode;
+        AppSettings.SaveDefault();
+        OnPropertyChanged(nameof(Mode));
+    }
+
+    private async Task SetIndexPointerAsync(int value)
+    {
+        if (value < -1) value = -1;
+        else if (value > SongList.Count - 1) value = SongList.Count - 1;
+
+        PreInfo = CurrentInfo;
+        CurrentInfo = value == -1
+            ? null
+            : await BeatmapContext.CreateAsync(SongList[_songIndexList[value]], _playerData);
+
+        if (Equals(value, IndexPointer)) return;
+        IndexPointer = value;
+
+        if (IndexPointer != -1 && _temporaryPointerChanged != null)
+        {
+            IndexPointer = _temporaryPointerChanged.Invoke(IndexPointer);
+            s_logger.Debug("Index switched to {IndexPointer}", IndexPointer);
+        }
+
+        _temporaryPointerChanged = null;
+    }
+
+    // 如果随机，改变集合是否重排？
+    private async void SongList_CollectionChanged(object sender,
+        System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        SongListChanged?.Invoke();
+        if ((e.NewItems?.Count ?? 0) + (e.OldItems?.Count ?? 0) > 1 || _temporaryPointerChanged != null ||
+            SongList.Count == 0)
+        {
+            _temporaryPointerChanged = null;
+            await RearrangeIndexesAndRepositionAsync();
+
+            if (!CheckCount())
+            {
             }
 
-            _temporaryPointerChanged = null;
+            return;
         }
 
-        // 如果随机，改变集合是否重排？
-        private async void SongList_CollectionChanged(object sender,
-            System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        if (e.NewItems != null && e.NewItems.Count > 0)
         {
-            SongListChanged?.Invoke();
-            if ((e.NewItems?.Count ?? 0) + (e.OldItems?.Count ?? 0) > 1 || _temporaryPointerChanged != null ||
-                SongList.Count == 0)
+            var rnd = new Random();
+            if (IsRandom)
+            {
+                var index = rnd.Next(IndexPointer + 1, _songIndexList.Count);
+                _songIndexList.Insert(index, e.NewStartingIndex);
+            }
+            else
+            {
+                _songIndexList.Add(e.NewStartingIndex);
+            }
+
+            if (e.NewStartingIndex < SongList.Count - 1)
+            {
+                for (var i = 0; i < _songIndexList.Count - 1; i++)
+                {
+                    if (_songIndexList[i] <= e.NewStartingIndex) _songIndexList[i]++;
+                }
+            }
+        }
+        else if (e.OldItems != null && e.OldItems.Count > 0)
+        {
+            var songIndex = e.OldStartingIndex;
+            var oldIndexPointer = _songIndexList.IndexOf(songIndex);
+            if (oldIndexPointer == -1)
             {
                 _temporaryPointerChanged = null;
                 await RearrangeIndexesAndRepositionAsync();
@@ -344,75 +351,37 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
                 return;
             }
 
-            if (e.NewItems != null && e.NewItems.Count > 0)
+            if (oldIndexPointer == IndexPointer)
             {
-                var rnd = new Random();
-                if (IsRandom)
+                _temporaryPointerChanged = indexPointer =>
                 {
-                    var index = rnd.Next(IndexPointer + 1, _songIndexList.Count);
-                    _songIndexList.Insert(index, e.NewStartingIndex);
-                }
-                else
-                {
-                    _songIndexList.Add(e.NewStartingIndex);
-                }
-
-                if (e.NewStartingIndex < SongList.Count - 1)
-                {
-                    for (var i = 0; i < _songIndexList.Count - 1; i++)
-                    {
-                        if (_songIndexList[i] <= e.NewStartingIndex) _songIndexList[i]++;
-                    }
-                }
-            }
-            else if (e.OldItems != null && e.OldItems.Count > 0)
-            {
-                var songIndex = e.OldStartingIndex;
-                var oldIndexPointer = _songIndexList.IndexOf(songIndex);
-                if (oldIndexPointer == -1)
-                {
-                    _temporaryPointerChanged = null;
-                    await RearrangeIndexesAndRepositionAsync();
-
-                    if (!CheckCount())
-                    {
-                    }
-
-                    return;
-                }
-
-                if (oldIndexPointer == IndexPointer)
-                {
-                    _temporaryPointerChanged = indexPointer =>
-                    {
-                        if (oldIndexPointer < 0) return indexPointer;
-                        _songIndexList.RemoveAt(oldIndexPointer);
-                        if (oldIndexPointer < indexPointer) indexPointer--;
-                        _temporaryPointerChanged = null;
-                        Logger.Debug("Index switched to {_indexPointer}", _indexPointer);
-                        return indexPointer;
-                    };
-                }
-                else
-                {
-                    _temporaryPointerChanged = null;
+                    if (oldIndexPointer < 0) return indexPointer;
                     _songIndexList.RemoveAt(oldIndexPointer);
-                }
+                    if (oldIndexPointer < indexPointer) indexPointer--;
+                    _temporaryPointerChanged = null;
+                    s_logger.Debug("Index switched to {IndexPointer}", IndexPointer);
+                    return indexPointer;
+                };
+            }
+            else
+            {
+                _temporaryPointerChanged = null;
+                _songIndexList.RemoveAt(oldIndexPointer);
+            }
 
-                for (var i = 0; i < _songIndexList.Count; i++)
-                {
-                    if (_songIndexList[i] > songIndex) _songIndexList[i]--;
-                }
+            for (var i = 0; i < _songIndexList.Count; i++)
+            {
+                if (_songIndexList[i] > songIndex) _songIndexList[i]--;
+            }
 
-                if (!CheckCount())
-                {
-                }
+            if (!CheckCount())
+            {
             }
         }
+    }
 
-        private bool CheckCount()
-        {
-            return _temporaryPointerChanged != null || SongList.Count == _songIndexList.Count;
-        }
+    private bool CheckCount()
+    {
+        return _temporaryPointerChanged != null || SongList.Count == _songIndexList.Count;
     }
 }

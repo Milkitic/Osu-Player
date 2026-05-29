@@ -1,115 +1,84 @@
-using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 
-namespace Milky.OsuPlayer.UserControls
+namespace Milky.OsuPlayer.UserControls;
+
+public partial class WelcomeControlVm : ObservableObject
 {
-    public class WelcomeControlVm : VmBase
+    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
+    [ObservableProperty]
+    public partial bool GuideSyncing { get; set; }
+
+    [ObservableProperty]
+    public partial bool GuideSelectedDb { get; set; }
+
+    [RelayCommand]
+    private async Task SelectDbAsync()
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
-        private bool _guideSyncing;
-        private bool _guideSelectedDb;
-
-        public bool GuideSyncing
+        var result = CommonUtils.BrowseDb(out var path);
+        if (!result.HasValue || !result.Value)
         {
-            get => _guideSyncing;
-            set
-            {
-                if (_guideSyncing == value) return;
-                _guideSyncing = value;
-                OnPropertyChanged();
-            }
+            GuideSelectedDb = false;
+            return;
         }
 
-        public bool GuideSelectedDb
+        bool isSuccess = false;
+        try
         {
-            get => _guideSelectedDb;
-            set
-            {
-                if (_guideSelectedDb == value) return;
-                _guideSelectedDb = value;
-                OnPropertyChanged();
-            }
+            GuideSyncing = true;
+            await Service.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
+            AppSettings.Default.General.DbPath = path;
+            AppSettings.SaveDefault();
+            GuideSyncing = false;
+            GuideSelectedDb = true;
+            isSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Error while syncing osu!db: {0}", path);
+            Notification.Push("Error while syncing osu!db: " + path + "\r\n" + ex.Message);
+            GuideSelectedDb = false;
         }
 
-        public ICommand SelectDbCommand
+        if (isSuccess)
         {
-            get
-            {
-                return new AsyncRelayCommand<object>(async arg =>
-                {
-                    var result = CommonUtils.BrowseDb(out var path);
-                    if (!result.HasValue || !result.Value)
-                    {
-                        GuideSelectedDb = false;
-                        return;
-                    }
-
-                    bool isSuccess = false;
-                    try
-                    {
-                        GuideSyncing = true;
-                        await Service.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
-                        AppSettings.Default.General.DbPath = path;
-                        AppSettings.SaveDefault();
-                        GuideSyncing = false;
-                        GuideSelectedDb = true;
-                        isSuccess = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(ex, "Error while syncing osu!db: {0}", path);
-                        Notification.Push("Error while syncing osu!db: " + path + "\r\n" + ex.Message);
-                        GuideSelectedDb = false;
-                    }
-
-                    if (isSuccess)
-                    {
-                        AppSettings.Default.General.FirstOpen = false;
-                        AppSettings.SaveDefault();
-                        FrontDialogOverlay.Default.RaiseOk();
-                    }
-
-                    GuideSyncing = false;
-                });
-            }
+            AppSettings.Default.General.FirstOpen = false;
+            AppSettings.SaveDefault();
+            FrontDialogOverlay.Default.RaiseOk();
         }
 
-        public ICommand SkipCommand
-        {
-            get
-            {
-                return new RelayCommand<object>(arg =>
-                {
-                    //ShowWelcome = false;
-                    FrontDialogOverlay.Default.RaiseCancel();
-                    AppSettings.Default.General.FirstOpen = false;
-                    AppSettings.SaveDefault();
-                });
-            }
-        }
+        GuideSyncing = false;
     }
 
-    /// <summary>
-    /// WelcomeControl.xaml 的交互逻辑
-    /// </summary>
-    public partial class WelcomeControl : UserControl
+    [RelayCommand]
+    private void Skip()
     {
-        public WelcomeControlVm ViewModel { get; }
+        FrontDialogOverlay.Default.RaiseCancel();
+        AppSettings.Default.General.FirstOpen = false;
+        AppSettings.SaveDefault();
+    }
+}
 
-        public WelcomeControl()
-        {
-            InitializeComponent();
-            ViewModel = (WelcomeControlVm)WelcomeArea.DataContext;
-        }
+/// <summary>
+/// WelcomeControl.xaml 的交互逻辑
+/// </summary>
+public partial class WelcomeControl : UserControl
+{
+    public WelcomeControlVm ViewModel { get; }
+
+    public WelcomeControl()
+    {
+        InitializeComponent();
+        ViewModel = (WelcomeControlVm)WelcomeArea.DataContext;
     }
 }

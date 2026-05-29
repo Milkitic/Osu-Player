@@ -1,62 +1,33 @@
-﻿using Milky.OsuPlayer.Data.Models;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Properties;
 
-namespace Milky.OsuPlayer.ViewModels
+namespace Milky.OsuPlayer.ViewModels;
+
+internal partial class StoryboardVm : ObservableObject
 {
-    internal class StoryboardVm : INotifyPropertyChanged
+    [ObservableProperty]
+    public partial bool IsScanned { get; set; }
+
+    [ObservableProperty]
+    public partial ObservableCollection<BeatmapDataModel> BeatmapModels { get; set; }
+
+    public static StoryboardVm Default
     {
-        private bool _isScanned;
-        private ObservableCollection<BeatmapDataModel> _beatmapModels;
-
-        public bool IsScanned
+        get
         {
-            get => _isScanned;
-            set
+            lock (s_defaultLock)
             {
-                if (value == _isScanned) return;
-                _isScanned = value;
-                OnPropertyChanged();
+                return _default ??= new StoryboardVm();
             }
         }
+    }
 
-        public ObservableCollection<BeatmapDataModel> BeatmapModels
-        {
-            get => _beatmapModels;
-            set
-            {
-                if (Equals(value, _beatmapModels)) return;
-                _beatmapModels = value;
-                OnPropertyChanged();
-            }
-        }
+    private static StoryboardVm _default;
+    private static readonly Lock s_defaultLock = new Lock();
 
-        public static StoryboardVm Default
-        {
-            get
-            {
-                lock (_defaultLock)
-                {
-                    return _default ?? (_default = new StoryboardVm());
-                }
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private static StoryboardVm _default;
-        private static object _defaultLock = new object();
-        private StoryboardVm()
-        {
-        }
+    private StoryboardVm()
+    {
     }
 }

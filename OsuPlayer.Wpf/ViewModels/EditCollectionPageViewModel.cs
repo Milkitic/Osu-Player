@@ -1,41 +1,15 @@
-﻿using Milky.OsuPlayer.Presentation.Interaction;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Milky.OsuPlayer.ViewModels
+namespace Milky.OsuPlayer.ViewModels;
+
+public partial class EditCollectionPageViewModel : ObservableObject
 {
-    public class EditCollectionPageViewModel : VmBase
-    {
-        private string _name;
-        private string _description;
-        private string _coverPath;
+    [ObservableProperty]
+    public partial string Name { get; set; }
 
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                _name = value;
-                OnPropertyChanged();
-            }
-        }
+    [ObservableProperty]
+    public partial string Description { get; set; }
 
-        public string Description
-        {
-            get => _description;
-            set
-            {
-                _description = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string CoverPath
-        {
-            get => _coverPath;
-            set
-            {
-                _coverPath = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    [ObservableProperty]
+    public partial string CoverPath { get; set; }
 }

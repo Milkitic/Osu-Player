@@ -1,53 +1,21 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Presentation.Interaction;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Milky.OsuPlayer.Common.Configuration;
 
-namespace Milky.OsuPlayer.Common
+namespace Milky.OsuPlayer.Common;
+
+public partial class SharedVm : ObservableObject
 {
-    public class SharedVm : VmBase
+    [ObservableProperty]
+    public partial bool EnableVideo { get; set; } = true;
+
+    [ObservableProperty]
+    public partial bool IsPlaying { get; set; } = false;
+
+    public AppSettings AppSettings { get; } = AppSettings.Default;
+
+    public static SharedVm Default { get; } = new();
+
+    private SharedVm()
     {
-        private bool _enableVideo = true;
-        private bool _isPlaying = false;
-
-        public bool EnableVideo
-        {
-            get => _enableVideo;
-            set
-            {
-                if (value == _enableVideo) return;
-                _enableVideo = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsPlaying
-        {
-            get => _isPlaying;
-            set
-            {
-                if (value == _isPlaying) return;
-                _isPlaying = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public AppSettings AppSettings { get; } = AppSettings.Default;
-
-        private static SharedVm _default;
-        private static object _defaultLock = new object();
-
-        public static SharedVm Default
-        {
-            get
-            {
-                lock (_defaultLock)
-                {
-                    return _default ?? (_default = new SharedVm());
-                }
-            }
-        }
-
-        private SharedVm()
-        {
-        }
     }
 }

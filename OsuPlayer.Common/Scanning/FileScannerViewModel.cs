@@ -1,30 +1,12 @@
-﻿using Milky.OsuPlayer.Presentation.Interaction;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Milky.OsuPlayer.Common.Scanning
+namespace Milky.OsuPlayer.Common.Scanning;
+
+public partial class FileScannerViewModel : ObservableObject
 {
-    public class FileScannerViewModel : VmBase
-    {
-        private bool _isScanning;
-        private bool _isCanceling;
+    [ObservableProperty]
+    public partial bool IsScanning { get; internal set; }
 
-        public bool IsScanning
-        {
-            get => _isScanning;
-            internal set
-            {
-                _isScanning = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsCanceling
-        {
-            get => _isCanceling;
-            set
-            {
-                _isCanceling = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    [ObservableProperty]
+    public partial bool IsCanceling { get; set; }
 }

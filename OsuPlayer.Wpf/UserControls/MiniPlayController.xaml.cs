@@ -1,175 +1,158 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared.Dependency;
 
-namespace Milky.OsuPlayer.UserControls
+namespace Milky.OsuPlayer.UserControls;
+
+public partial class MiniPlayListControlVm : ObservableObject
 {
-    public class MiniPlayListControlVm : VmBase
+    [ObservableProperty]
+    public partial ObservablePlayController Controller { get; set; }
+
+    public SharedVm Shared { get; } = SharedVm.Default;
+
+    [RelayCommand]
+    private async Task PlayPrevAsync() => await Controller.PlayPrevAsync();
+
+    [RelayCommand]
+    private async Task PlayNextAsync() => await Controller.PlayNextAsync();
+
+    [RelayCommand]
+    private async Task PlayPauseAsync() => await Controller.TogglePlayAsync();
+
+    [ObservableProperty]
+    public partial double PositionPercent { get; set; }
+}
+
+/// <summary>
+/// MiniPlayController.xaml 的交互逻辑
+/// </summary>
+public partial class MiniPlayController : UserControl
+{
+    private readonly IPlayerDataService _playerData = AppServices.PlayerData;
+    private MiniPlayListControlVm _viewModel;
+
+    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+
+    public static event Action MaxButtonClicked;
+    public static event Action CloseButtonClicked;
+
+    public MiniPlayController()
     {
-        private ObservablePlayController _controller;
-        private double _positionPercent;
+        InitializeComponent();
+        _viewModel = (MiniPlayListControlVm)DataContext;
+        _viewModel.Controller = Service.Get<ObservablePlayController>();
+        Default = this;
+    }
 
-        public ObservablePlayController Controller
+    private void UserControl_Loaded(object sender, RoutedEventArgs e)
+    {
+        PlayModeControl.CloseRequested += (obj, args) => PopMode.IsOpen = false;
+        if (_controller != null)
+            _controller.PositionUpdated += AudioPlayer_PositionChanged;
+    }
+
+    private void UserControl_Initialized(object sender, EventArgs e)
+    {
+        //if (_controller != null) _controller.LoadFinished += Controller_LoadFinished;
+    }
+
+    private void Controller_LoadFinished(BeatmapContext arg1, System.Threading.CancellationToken arg2)
+    {
+        //_controller.PositionUpdated += AudioPlayer_PositionChanged;
+    }
+
+    private void AudioPlayer_PositionChanged(TimeSpan time)
+    {
+        _viewModel.PositionPercent = time.TotalMilliseconds / _controller.Player.Duration.TotalMilliseconds;
+    }
+
+    private void MaxButton_Click(object sender, RoutedEventArgs e)
+    {
+        MaxButtonClicked?.Invoke();
+    }
+
+    private void CloseButton_Click(object sender, RoutedEventArgs e)
+    {
+        CloseButtonClicked?.Invoke();
+    }
+
+    public static MiniPlayController Default { get; private set; }
+
+    private void VolumeButton_Click(object sender, RoutedEventArgs e)
+    {
+        PopVolume.IsOpen = true;
+    }
+
+    private void PlayListControl_CloseRequested(object sender, RoutedEventArgs e)
+    {
+        PopPlayList.IsOpen = false;
+    }
+
+    private void PlayListButton_Click(object sender, RoutedEventArgs e)
+    {
+        PopPlayList.IsOpen = true;
+    }
+
+    private void ModeButton_Click(object sender, RoutedEventArgs e)
+    {
+        PopMode.IsOpen = true;
+    }
+
+    private async void CommonButton_Click(object sender, RoutedEventArgs e)
+    {
+        var collection = (await _playerData.GetCollectionsAsync()).First(k => k.LockedBool);
+        var metadata = _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata;
+        if (metadata.IsFavorite)
         {
-            get => _controller;
-            set
-            {
-                _controller = value;
-                OnPropertyChanged();
-            }
+            if (await _playerData.TryRemoveMapFromCollectionAsync(_controller.PlayList.CurrentInfo.Beatmap,
+                    collection))
+                metadata.IsFavorite = false;
         }
-
-        public SharedVm Shared { get; } = SharedVm.Default;
-
-        public ICommand PlayPrevCommand =>
-            new AsyncRelayCommand<object>(async param => await _controller.PlayPrevAsync());
-
-        public ICommand PlayNextCommand =>
-            new AsyncRelayCommand<object>(async param => await _controller.PlayNextAsync());
-
-        public ICommand PlayPauseCommand =>
-            new AsyncRelayCommand<object>(async param => await _controller.TogglePlayAsync());
-
-        public double PositionPercent
+        else
         {
-            get => _positionPercent;
-            set
-            {
-                _positionPercent = value;
-                OnPropertyChanged();
-            }
+            if (await SelectCollectionControl.AddToCollectionAsync(collection,
+                    new[]
+                    {
+                        _controller.PlayList.CurrentInfo.Beatmap
+                    }))
+                metadata.IsFavorite = true;
         }
     }
 
-    /// <summary>
-    /// MiniPlayController.xaml 的交互逻辑
-    /// </summary>
-    public partial class MiniPlayController : UserControl
+    private void UserControl_MouseEnter(object sender, MouseEventArgs e)
     {
-        private readonly IPlayerDataService _playerData = AppServices.PlayerData;
-        private MiniPlayListControlVm _viewModel;
+        OsuBg.Visibility = Visibility.Visible;
+    }
 
-        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+    private void UserControl_MouseLeave(object sender, MouseEventArgs e)
+    {
+        OsuBg.Visibility = Visibility.Hidden;
+    }
 
-        public static event Action MaxButtonClicked;
-        public static event Action CloseButtonClicked;
+    private void BgRetc_MouseMove(object sender, MouseEventArgs e)
+    {
+        //OsuBg.Opacity = 0;
+        //RectCover.Opacity = 0.8;
+        //BgBorder.Opacity = 1;
+        //BlurEffect.Radius = 0;
+    }
 
-        public MiniPlayController()
-        {
-            InitializeComponent();
-            _viewModel = (MiniPlayListControlVm)DataContext;
-            _viewModel.Controller = Service.Get<ObservablePlayController>();
-            Default = this;
-        }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            PlayModeControl.CloseRequested += (obj, args) => PopMode.IsOpen = false;
-            if (_controller != null)
-                _controller.PositionUpdated += AudioPlayer_PositionChanged;
-        }
-
-        private void UserControl_Initialized(object sender, EventArgs e)
-        {
-            //if (_controller != null) _controller.LoadFinished += Controller_LoadFinished;
-        }
-
-        private void Controller_LoadFinished(BeatmapContext arg1, System.Threading.CancellationToken arg2)
-        {
-            //_controller.PositionUpdated += AudioPlayer_PositionChanged;
-        }
-
-        private void AudioPlayer_PositionChanged(TimeSpan time)
-        {
-            _viewModel.PositionPercent = time.TotalMilliseconds / _controller.Player.Duration.TotalMilliseconds;
-        }
-
-        private void MaxButton_Click(object sender, RoutedEventArgs e)
-        {
-            MaxButtonClicked?.Invoke();
-        }
-
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            CloseButtonClicked?.Invoke();
-        }
-
-        public static MiniPlayController Default { get; private set; }
-
-        private void VolumeButton_Click(object sender, RoutedEventArgs e)
-        {
-            PopVolume.IsOpen = true;
-        }
-
-        private void PlayListControl_CloseRequested(object sender, RoutedEventArgs e)
-        {
-            PopPlayList.IsOpen = false;
-        }
-
-        private void PlayListButton_Click(object sender, RoutedEventArgs e)
-        {
-            PopPlayList.IsOpen = true;
-        }
-
-        private void ModeButton_Click(object sender, RoutedEventArgs e)
-        {
-            PopMode.IsOpen = true;
-        }
-
-        private async void CommonButton_Click(object sender, RoutedEventArgs e)
-        {
-            var collection = (await _playerData.GetCollectionsAsync()).First(k => k.LockedBool);
-            var metadata = _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata;
-            if (metadata.IsFavorite)
-            {
-                if (await _playerData.TryRemoveMapFromCollectionAsync(_controller.PlayList.CurrentInfo.Beatmap,
-                        collection))
-                    metadata.IsFavorite = false;
-            }
-            else
-            {
-                if (await SelectCollectionControl.AddToCollectionAsync(collection,
-                        new[]
-                        {
-                            _controller.PlayList.CurrentInfo.Beatmap
-                        }))
-                    metadata.IsFavorite = true;
-            }
-        }
-
-        private void UserControl_MouseEnter(object sender, MouseEventArgs e)
-        {
-            OsuBg.Visibility = Visibility.Visible;
-        }
-
-        private void UserControl_MouseLeave(object sender, MouseEventArgs e)
-        {
-            OsuBg.Visibility = Visibility.Hidden;
-        }
-
-        private void BgRetc_MouseMove(object sender, MouseEventArgs e)
-        {
-            //OsuBg.Opacity = 0;
-            //RectCover.Opacity = 0.8;
-            //BgBorder.Opacity = 1;
-            //BlurEffect.Radius = 0;
-        }
-
-        private void BgRetc_MouseLeave(object sender, MouseEventArgs e)
-        {
-            //OsuBg.Opacity = 1;
-            //RectCover.Opacity = 1;
-            //BgBorder.Opacity = 0;
-            //BlurEffect.Radius = 20;
-        }
+    private void BgRetc_MouseLeave(object sender, MouseEventArgs e)
+    {
+        //OsuBg.Opacity = 1;
+        //RectCover.Opacity = 1;
+        //BgBorder.Opacity = 0;
+        //BlurEffect.Radius = 20;
     }
 }

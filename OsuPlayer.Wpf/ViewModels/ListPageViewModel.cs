@@ -1,15 +1,17 @@
-﻿using Milky.OsuPlayer.Presentation.Interaction;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Milky.OsuPlayer.ViewModels
+namespace Milky.OsuPlayer.ViewModels;
+
+public partial class ListPageViewModel : ObservableObject
 {
-    public class ListPageViewModel : VmBase
+    public ListPageViewModel(int index)
     {
-        public ListPageViewModel(int index)
-        {
-            Index = index;
-        }
-
-        public int Index { get; set; }
-        public bool IsActivated { get; set; }
+        Index = index;
     }
+
+    [ObservableProperty]
+    public partial int Index { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsActivated { get; set; }
 }

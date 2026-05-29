@@ -1,81 +1,41 @@
 using System.Collections.ObjectModel;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.ViewModels
+namespace Milky.OsuPlayer.ViewModels;
+
+public partial class MainWindowViewModel : ObservableObject
 {
-    public class MainWindowViewModel : VmBase
+    public static MainWindowViewModel Current { get; private set; }
+
+    public MainWindowViewModel()
     {
-        public static MainWindowViewModel Current { get; private set; }
+        Current = this;
+    }
 
-        public MainWindowViewModel()
+    [ObservableProperty]
+    public partial LyricWindowViewModel LyricWindowViewModel { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsNavigationCollapsed { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsLyricWindowLocked { get; set; }
+
+    [ObservableProperty]
+    public partial ObservableCollection<Collection> Collection { get; set; }
+
+    [RelayCommand]
+    private void Collapse()
+    {
+        Execute.OnUiThread(() =>
         {
-            Current = this;
-        }
-
-        private bool _isNavigationCollapsed;
-        private ObservableCollection<Collection> _collection;
-        private bool _isLyricWindowLocked;
-        private LyricWindowViewModel _lyricWindowViewModel;
-
-        public LyricWindowViewModel LyricWindowViewModel
-        {
-            get => _lyricWindowViewModel;
-            set
-            {
-                _lyricWindowViewModel = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsNavigationCollapsed
-        {
-            get => _isNavigationCollapsed;
-            set
-            {
-                if (_isNavigationCollapsed == value) return;
-                _isNavigationCollapsed = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsLyricWindowLocked
-        {
-            get => _isLyricWindowLocked;
-            set
-            {
-                _isLyricWindowLocked = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public ObservableCollection<Collection> Collection
-        {
-            get => _collection;
-            set
-            {
-                _collection = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public ICommand CollapseCommand
-        {
-            get
-            {
-                return new RelayCommand<object>(obj =>
-                {
-                    Execute.OnUiThread(() =>
-                    {
-                        IsNavigationCollapsed = !IsNavigationCollapsed;
-                        AppSettings.Default.General.IsNavigationCollapsed = IsNavigationCollapsed;
-                        AppSettings.SaveDefault();
-                    });
-                });
-            }
-        }
+            IsNavigationCollapsed = !IsNavigationCollapsed;
+            AppSettings.Default.General.IsNavigationCollapsed = IsNavigationCollapsed;
+            AppSettings.SaveDefault();
+        });
     }
 }
