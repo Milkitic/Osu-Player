@@ -6,7 +6,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.ViewModels;

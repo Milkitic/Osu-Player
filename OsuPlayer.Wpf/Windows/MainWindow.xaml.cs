@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
 using CommunityToolkit.Mvvm.Messaging;
 using Coosu.Beatmap;
 using Coosu.Beatmap.MetaData;
@@ -114,6 +115,15 @@ public partial class MainWindow : WindowEx
                 }
             });
         });
+
+        WeakReferenceMessenger.Default.Register<CollectionDeletedMessage>(this, (r, m) =>
+        {
+            Execute.OnUiThread(async () =>
+            {
+                SwitchRecent.IsChecked = true;
+                await UpdateCollectionsAsync();
+            });
+        });
     }
 
     private void TryBindHotKeys()
@@ -193,7 +203,7 @@ public partial class MainWindow : WindowEx
         }
         else
         {
-            mini = new MiniWindow();
+            mini = App.Services.GetRequiredService<MiniWindow>();
             mini.Show();
             Hide();
             SharedVm.Default.EnableVideo = false;
@@ -380,7 +390,7 @@ public partial class MainWindow : WindowEx
     {
         if (ConfigWindow == null || ConfigWindow.IsClosed)
         {
-            ConfigWindow = new ConfigWindow();
+            ConfigWindow = App.Services.GetRequiredService<ConfigWindow>();
             ConfigWindow.Show();
         }
         else

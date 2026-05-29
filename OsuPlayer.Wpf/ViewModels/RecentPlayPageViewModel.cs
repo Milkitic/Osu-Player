@@ -1,10 +1,12 @@
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
@@ -92,7 +94,7 @@ public partial class RecentPlayPageViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task PlayAsync(BeatmapDataModel beatmap)
+    public async Task PlayAsync(BeatmapDataModel beatmap)
     {
         if (beatmap == null) return;
         var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
@@ -108,5 +110,31 @@ public partial class RecentPlayPageViewModel : ObservableObject
         {
             Beatmaps.Remove(beatmap);
         }
+    }
+
+    [RelayCommand]
+    private async Task PlayAllAsync()
+    {
+        var recentList = await _playerData.GetRecentListAsync();
+        var recentBeatmaps = await _playerData.GetBeatmapsByMapInfoAsync(recentList, TimeSortMode.PlayTime);
+        if (recentBeatmaps == null || !recentBeatmaps.Any()) return;
+
+        await _controller.PlayList.SetSongListAsync(recentBeatmaps, true);
+    }
+
+    [RelayCommand]
+    public async Task ClearAllRecentAsync()
+    {
+        if (await _playerData.TryClearRecentAsync())
+        {
+            Beatmaps?.Clear();
+        }
+    }
+
+    public async Task UpdateListAsync()
+    {
+        var recentList = await _playerData.GetRecentListAsync();
+        var recentBeatmaps = await _playerData.GetBeatmapsByMapInfoAsync(recentList, TimeSortMode.PlayTime);
+        Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(await recentBeatmaps.ToDataModelListAsync());
     }
 }

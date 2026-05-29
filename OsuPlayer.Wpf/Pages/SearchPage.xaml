@@ -131,7 +131,7 @@
             BorderThickness="0"
             FontSize="15px"
             Foreground="#555555"
-            TextChanged="SearchBox_TextChanged" />
+            Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
         <TextBlock
             Grid.Row="0"
             Margin="42,31,42,0"
@@ -158,7 +158,7 @@
             Orientation="Horizontal">
             <buttonComponent:CommonButton
                 x:Name="BtnPlayAll"
-                Click="BtnPlayAll_Click"
+                Command="{Binding PlayAllCommand}"
                 Style="{StaticResource PlayButton}" />
             <buttonComponent:CommonButton
                 x:Name="BtnQueueAll"

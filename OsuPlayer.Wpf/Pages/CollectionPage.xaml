@@ -218,7 +218,7 @@
                                         Foreground="#303030" />
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <buttonComponent:CommonButton Click="BtnPlayAll_Click" Style="{StaticResource PlayButton}" />
+                                    <buttonComponent:CommonButton Command="{Binding PlayAllCommand}" Style="{StaticResource PlayButton}" />
                                     <buttonComponent:CommonButton
                                         x:Name="BtnExportAll"
                                         Command="{Binding ExportAllCommand}"
@@ -323,13 +323,19 @@
                                     BorderThickness="1"
                                     CornerRadius="13"
                                     Hint="{DynamicResource ui-hint-searchCollectionMusic3Dot}"
-                                    TextChanged="SearchBox_TextChanged" />
+                                    Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
                                 <ListView
                                     x:Name="MapList"
                                     Background="{StaticResource WhiteBrush40}"
                                     BorderThickness="0"
                                     ItemContainerStyle="{StaticResource EventGridViewItem}"
                                     Visibility="Collapsed">
+                                    <ListView.InputBindings>
+                                        <KeyBinding
+                                            Key="Delete"
+                                            Command="{Binding RemoveSelectedCommand}"
+                                            CommandParameter="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}}" />
+                                    </ListView.InputBindings>
                                     <ListView.Resources>
                                         <DataTemplate x:Key="IdDt">
                                             <Label
@@ -385,6 +391,12 @@
                                     Background="Transparent"
                                     BorderThickness="0"
                                     ItemsSource="{Binding DisplayedBeatmaps, Mode=OneWay}">
+                                    <ListBox.InputBindings>
+                                        <KeyBinding
+                                            Key="Delete"
+                                            Command="{Binding RemoveSelectedCommand}"
+                                            CommandParameter="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" />
+                                    </ListBox.InputBindings>
                                     <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <panelComponent:VirtualizingGalleryWrapPanel

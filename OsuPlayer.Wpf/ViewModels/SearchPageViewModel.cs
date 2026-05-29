@@ -58,6 +58,11 @@ public partial class SearchPageViewModel : ObservableObject
     [ObservableProperty]
     public partial string SearchText { get; set; }
 
+    partial void OnSearchTextChanged(string value)
+    {
+        _ = PlayListQueryAsync(0);
+    }
+
     // Stores the currently displayed page results so existing page actions can reuse them.
     [ObservableProperty]
     public partial List<Beatmap> SearchedDbMaps { get; private set; } = [];
@@ -245,12 +250,25 @@ public partial class SearchPageViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task DirectPlayAsync(BeatmapDataModel beatmap)
+    public async Task DirectPlayAsync(BeatmapDataModel beatmap)
     {
         if (beatmap == null) return;
         var map = await GetHighestSrBeatmapAsync(beatmap);
         if (map == null) return;
         await _controller.PlayNewAsync(map);
+    }
+
+    [RelayCommand]
+    private async Task PlayAllAsync()
+    {
+        var beatmaps = await GetAllMatchedBeatmapsAsync();
+        if (beatmaps.Count <= 0) return;
+        var group = beatmaps.GroupBy(k => k.FolderName);
+        var newBeatmaps = group
+            .Select(k => k.GetHighestDiff())
+            .ToList();
+
+        await _controller.PlayList.SetSongListAsync(newBeatmaps, true);
     }
 
     [RelayCommand]

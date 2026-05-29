@@ -10,9 +10,8 @@ using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.UserControls;
+using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using NLog;
@@ -127,6 +126,7 @@ public partial class App : Application
         services.AddSingleton<MainWindow>();
         services.AddSingleton<LyricWindow>();
         services.AddTransient<ConfigWindow>();
+        services.AddTransient<MiniWindow>();
         services.AddTransient<CollectionPage>();
         services.AddTransient<SearchPage>();
         services.AddTransient<RecentPlayPage>();

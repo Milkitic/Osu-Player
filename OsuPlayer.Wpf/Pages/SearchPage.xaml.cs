@@ -1,20 +1,15 @@
 using System;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.PanelComponent;
 using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
 using NLog;
 
 namespace Milky.OsuPlayer.Pages;
@@ -34,7 +29,6 @@ public partial class SearchPage : Page
 
     private readonly ObservablePlayController _controller;
     private readonly IPlayerDataService _playerData;
-    private MainWindow _mainWindow;
     private VirtualizingGalleryWrapPanel _virtualizingGalleryWrapPanel;
 
     public SearchPage(SearchPageViewModel viewModel, IPlayerDataService playerData, ObservablePlayController controller)
@@ -44,7 +38,6 @@ public partial class SearchPage : Page
         _controller = controller;
 
         InitializeComponent();
-        _mainWindow = (MainWindow)Application.Current.MainWindow;
         DataContext = ViewModel;
     }
 
@@ -86,56 +79,10 @@ public partial class SearchPage : Page
         }
     }
 
-    private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        ViewModel.SearchText = ((TextBox)sender).Text;
-        await ViewModel.PlayListQueryAsync(0);
-    }
-
     private void Panel_Loaded(object sender, RoutedEventArgs e)
     {
         _virtualizingGalleryWrapPanel = sender as VirtualizingGalleryWrapPanel;
         ViewModel.GalleryWrapPanel = _virtualizingGalleryWrapPanel;
-    }
-
-    private void ResultListItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-    {
-        PlaySelectedDefault();
-    }
-
-    private async void PlaySelectedDefault()
-    {
-        var map = await GetSelectedDefaultAsync();
-        if (map == null)
-            return;
-        //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
-        //    map.BeatmapFileName));
-        await _controller.PlayNewAsync(map);
-    }
-
-    private async Task<Beatmap> GetSelectedDefaultAsync()
-    {
-        if (ResultList.SelectedItem == null)
-            return null;
-        var map = (await _playerData
-                .GetBeatmapsFromFolderAsync(((BeatmapDataModel)ResultList.SelectedItem).FolderName))
-            .GetHighestDiff();
-        return map;
-    }
-
-    private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
-    {
-        var beatmaps = await ViewModel.GetAllMatchedBeatmapsAsync();
-        if (beatmaps.Count <= 0) return;
-        var group = beatmaps.GroupBy(k => k.FolderName);
-        var newBeatmaps = group
-            .Select(k => k.GetHighestDiff())
-            .ToList();
-
-        //if (map == null) return;
-        //await _mainWindow.PlayNewFile(Path.Combine(Domain.OsuSongPath, map.FolderName,
-        //     map.BeatmapFileName));
-        await _controller.PlayList.SetSongListAsync(newBeatmaps, true);
     }
 
     private void BtnQueueAll_Click(object sender, RoutedEventArgs e)
@@ -154,6 +101,14 @@ public partial class SearchPage : Page
         catch (Exception ex)
         {
             s_logger.Error(ex, "Error while loading panel item.");
+        }
+    }
+
+    private async void ResultListItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (ResultList.SelectedItem is BeatmapDataModel map)
+        {
+            await ViewModel.DirectPlayAsync(map);
         }
     }
 }

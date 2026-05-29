@@ -122,7 +122,7 @@
                         Orientation="Horizontal">
                         <buttonComponent:CommonButton
                             x:Name="BtnPlayAll"
-                            Click="BtnPlayAll_Click"
+                            Command="{Binding PlayAllCommand}"
                             Style="{StaticResource PlayButton}" />
                         <buttonComponent:CommonButton
                             x:Name="BtnDelAll"

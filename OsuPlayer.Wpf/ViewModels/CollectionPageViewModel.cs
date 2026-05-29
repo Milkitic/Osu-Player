@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -24,7 +25,8 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
     private readonly IPlayerDataService _playerData;
     private readonly IExportService _exportService;
 
-    public CollectionPageViewModel(IPlayerDataService playerData, ObservablePlayController controller, IExportService exportService)
+    public CollectionPageViewModel(IPlayerDataService playerData, ObservablePlayController controller,
+        IExportService exportService)
     {
         _playerData = playerData;
         _controller = controller;
@@ -39,6 +41,17 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
 
     [ObservableProperty]
     public partial Collection CollectionInfo { get; set; }
+
+    [ObservableProperty]
+    private string _searchText = string.Empty;
+
+    partial void OnSearchTextChanged(string value)
+    {
+        var keyword = value.Trim();
+        DisplayedBeatmaps = string.IsNullOrWhiteSpace(keyword)
+            ? Beatmaps
+            : new NumberableObservableCollection<BeatmapDataModel>(Beatmaps.GetByKeyword(keyword));
+    }
 
     public IEnumerable<Beatmap> Entries { get; private set; }
 
@@ -127,7 +140,7 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
     }
 
     [RelayCommand]
-    private async Task DirectPlayAsync(BeatmapDataModel beatmap)
+    public async Task DirectPlayAsync(BeatmapDataModel beatmap)
     {
         if (beatmap == null) return;
         var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
@@ -158,5 +171,46 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
 
         Beatmaps.Remove(beatmap);
         DisplayedBeatmaps.Remove(beatmap);
+    }
+
+    [RelayCommand]
+    private async Task RemoveSelectedAsync(System.Collections.IList selectedItems)
+    {
+        if (selectedItems == null || selectedItems.Count == 0) return;
+        var itemsToRemove = selectedItems.Cast<BeatmapDataModel>().ToList();
+        foreach (var beatmap in itemsToRemove)
+        {
+            if (!await _playerData.TryRemoveMapFromCollectionAsync(beatmap.GetIdentity(), CollectionInfo))
+                continue;
+            if (_controller.PlayList.CurrentInfo?.Beatmap?.GetIdentity().Equals(beatmap.GetIdentity()) == true &&
+                CollectionInfo.LockedBool)
+            {
+                if (_controller.PlayList.CurrentInfo.BeatmapDetail?.Metadata != null)
+                {
+                    _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite = false;
+                }
+            }
+
+            Beatmaps.Remove(beatmap);
+            DisplayedBeatmaps.Remove(beatmap);
+        }
+    }
+
+    [RelayCommand]
+    private async Task PlayAllAsync()
+    {
+        if (Entries == null) return;
+        var beatmaps = Entries.ToList();
+        if (beatmaps.Count <= 0) return;
+
+        await _controller.PlayList.SetSongListAsync(beatmaps, true);
+    }
+
+    [RelayCommand]
+    public async Task DeleteCollectionAsync()
+    {
+        if (CollectionInfo == null) return;
+        if (!await _playerData.TryRemoveCollectionAsync(CollectionInfo)) return;
+        WeakReferenceMessenger.Default.Send(new CollectionDeletedMessage());
     }
 }
