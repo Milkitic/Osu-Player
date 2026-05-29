@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="Milky.OsuPlayer.Pages.ExportPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -16,9 +16,7 @@
     FontFamily="{StaticResource SspRegular}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
-    <Page.DataContext>
-        <viewModels:ExportPageViewModel />
-    </Page.DataContext>
+
     <!--<i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding UpdateList}" CommandParameter="10" />

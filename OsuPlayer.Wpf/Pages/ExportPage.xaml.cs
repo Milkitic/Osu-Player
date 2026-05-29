@@ -50,11 +50,12 @@ public partial class ExportPage : Page
     public static bool IsTaskBusy =>
         ExportTask != null && !ExportTask.IsCanceled && !ExportTask.IsCompleted && !ExportTask.IsFaulted;
 
-    public ExportPage()
+    public ExportPage(ExportPageViewModel viewModel)
     {
+        ViewModel = viewModel;
         InitializeComponent();
         _mainWindow = (MainWindow)Application.Current.MainWindow;
-        ViewModel = (ExportPageViewModel)DataContext;
+        DataContext = ViewModel;
         ViewModel.ExportPath = AppSettings.Default.Export.MusicPath;
     }
 

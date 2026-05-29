@@ -1,4 +1,4 @@
-﻿<presentation:WindowEx
+<presentation:WindowEx
     x:Class="Milky.OsuPlayer.Windows.LyricWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -87,9 +87,7 @@
             </Canvas>
         </ControlTemplate>
     </presentation:WindowEx.Resources>
-    <presentation:WindowEx.DataContext>
-        <viewModels:LyricWindowViewModel />
-    </presentation:WindowEx.DataContext>
+
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

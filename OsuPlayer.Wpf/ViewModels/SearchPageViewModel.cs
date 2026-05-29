@@ -30,6 +30,7 @@ namespace Milky.OsuPlayer.ViewModels;
 public partial class SearchPageViewModel : ObservableObject
 {
     private readonly IPlayerDataService _playerData;
+    private readonly ObservablePlayController _controller;
 
     private const int MaxListCount = 250;
     private const int QueryDelayMs = 167;
@@ -37,14 +38,10 @@ public partial class SearchPageViewModel : ObservableObject
     private CancellationTokenSource _queryCancellation;
     private int _queryVersion;
 
-    public SearchPageViewModel()
-        : this(AppServices.PlayerData)
-    {
-    }
-
-    public SearchPageViewModel(IPlayerDataService playerData)
+    public SearchPageViewModel(IPlayerDataService playerData, ObservablePlayController controller)
     {
         _playerData = playerData;
+        _controller = controller;
     }
 
     [ObservableProperty]
@@ -255,8 +252,7 @@ public partial class SearchPageViewModel : ObservableObject
         if (beatmap == null) return;
         var map = await GetHighestSrBeatmapAsync(beatmap);
         if (map == null) return;
-        var controller = Service.Get<ObservablePlayController>();
-        await controller.PlayNewAsync(map);
+        await _controller.PlayNewAsync(map);
     }
 
     [RelayCommand]
@@ -270,8 +266,7 @@ public partial class SearchPageViewModel : ObservableObject
             {
                 var map = await _playerData.GetBeatmapByIdentifiableAsync(selected);
                 if (map == null) return;
-                var controller = Service.Get<ObservablePlayController>();
-                await controller.PlayNewAsync(map, true);
+                await _controller.PlayNewAsync(map, true);
             });
         FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
     }

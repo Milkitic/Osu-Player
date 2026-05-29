@@ -1,135 +1,42 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared.Dependency;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.UserControls;
 using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.Pages;
-
-public partial class RecentPlayPageVm : ObservableObject
-{
-    private readonly IPlayerDataService _playerData = AppServices.PlayerData;
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
-
-    [ObservableProperty]
-    public partial NumberableObservableCollection<BeatmapDataModel> Beatmaps { get; set; }
-
-    [RelayCommand]
-    private void SearchByCondition(string param)
-    {
-        WindowEx.GetCurrentFirst<MainWindow>()
-            .SwitchSearch
-            .CheckAndAction(page => ((SearchPage)page).Search(param));
-    }
-
-    [RelayCommand]
-    private async Task OpenSourceFolderAsync(BeatmapDataModel beatmap)
-    {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-
-        if (map == null) return;
-        var folder = beatmap.GetFolder(out _, out _);
-        if (!Directory.Exists(folder))
-        {
-            Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
-            return;
-        }
-
-        Process.Start(folder);
-    }
-
-    [RelayCommand]
-    private async Task OpenScorePageAsync(BeatmapDataModel beatmap)
-    {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
-    }
-
-    [RelayCommand]
-    private async Task SaveCollectionAsync(BeatmapDataModel beatmap)
-    {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(map),
-            DialogOptionFactory.SelectCollectionOptions);
-    }
-
-    [RelayCommand]
-    private async Task ExportAsync(BeatmapDataModel beatmap)
-    {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        ExportPage.QueueEntry(map);
-    }
-
-    [RelayCommand]
-    private async Task DirectPlayAsync(BeatmapDataModel beatmap)
-    {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        await _controller.PlayNewAsync(map);
-    }
-
-    [RelayCommand]
-    private async Task PlayAsync(BeatmapDataModel beatmap)
-    {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        await _controller.PlayNewAsync(map);
-    }
-
-    [RelayCommand]
-    private async Task RemoveAsync(BeatmapDataModel beatmap)
-    {
-        if (beatmap == null) return;
-        if (await _playerData.TryRemoveFromRecentAsync(beatmap.GetIdentity()))
-        {
-            Beatmaps.Remove(beatmap);
-        }
-    }
-}
 
 /// <summary>
 /// RecentPlayPage.xaml 的交互逻辑
 /// </summary>
 public partial class RecentPlayPage : Page
 {
-    private readonly IPlayerDataService _playerData = AppServices.PlayerData;
-    private ObservableCollection<Beatmap> _recentBeatmaps;
+    private readonly IPlayerDataService _playerData;
+    private readonly ObservablePlayController _controller;
+    private readonly RecentPlayPageViewModel _viewModel;
     private readonly MainWindow _mainWindow;
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
-    private RecentPlayPageVm _viewModel;
+    private ObservableCollection<Beatmap> _recentBeatmaps;
 
-    public RecentPlayPage()
+    public RecentPlayPage(RecentPlayPageViewModel viewModel, IPlayerDataService playerData,
+        ObservablePlayController controller)
     {
+        _viewModel = viewModel;
+        _playerData = playerData;
+        _controller = controller;
+
         InitializeComponent();
         _mainWindow = (MainWindow)Application.Current.MainWindow;
-        _viewModel = (RecentPlayPageVm)DataContext;
+        DataContext = _viewModel;
     }
 
     public async Task UpdateListAsync()

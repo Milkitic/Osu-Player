@@ -50,12 +50,13 @@ public partial class MainWindow : WindowEx
 
     private bool _disposed;
 
-    public MainWindow(MainWindowViewModel viewModel)
+    public MainWindow(MainWindowViewModel viewModel, LyricWindow lyricWindow)
     {
         InitializeComponent();
         DataContext = ViewModel = viewModel;
         ViewModel.IsNavigationCollapsed = AppSettings.Default.General.IsNavigationCollapsed;
-        LyricWindow = new LyricWindow(this);
+        LyricWindow = lyricWindow;
+        LyricWindow.MainWindow = this;
         if (AppSettings.Default.Lyric.EnableLyric)
             LyricWindow.Show();
 

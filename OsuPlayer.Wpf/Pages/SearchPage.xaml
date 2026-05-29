@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="Milky.OsuPlayer.Pages.SearchPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -104,9 +104,7 @@
             <EventSetter Event="MouseDoubleClick" Handler="ResultListItem_MouseDoubleClick" />
         </Style>
     </Page.Resources>
-    <Page.DataContext>
-        <viewModels:SearchPageViewModel />
-    </Page.DataContext>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

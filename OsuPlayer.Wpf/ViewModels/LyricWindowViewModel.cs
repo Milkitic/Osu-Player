@@ -13,8 +13,14 @@ namespace Milky.OsuPlayer.ViewModels;
 
 public partial class LyricWindowViewModel : ObservableObject
 {
-    public ObservablePlayController Controller { get; } = Service.Get<ObservablePlayController>();
-    public SharedVm Shared { get; } = SharedVm.Default;
+    public ObservablePlayController Controller { get; }
+    public SharedVm Shared { get; }
+
+    public LyricWindowViewModel(ObservablePlayController controller, SharedVm shared)
+    {
+        Controller = controller;
+        Shared = shared;
+    }
 
     [ObservableProperty]
     public partial bool ShowFrame { get; set; }

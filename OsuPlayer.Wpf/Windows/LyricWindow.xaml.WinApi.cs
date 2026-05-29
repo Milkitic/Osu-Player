@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -7,11 +7,6 @@ namespace Milky.OsuPlayer.Windows
 {
     public partial class LyricWindow
     {
-        public LyricWindow()
-        {
-            Loaded += WindowBase_Loaded;
-        }
-
         private uint _oldGwlEx;
         private bool _isLocked;
         private const uint WS_EX_LAYERED = 0x80000;
@@ -32,7 +27,7 @@ namespace Milky.OsuPlayer.Windows
             set
             {
                 _isLocked = value;
-                _mainWindow.ViewModel.IsLyricWindowLocked = value;
+                MainWindow.ViewModel.IsLyricWindowLocked = value;
                 if (_isLocked)
                 {
                     SetPenetrate();

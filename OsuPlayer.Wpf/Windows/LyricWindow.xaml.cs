@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 //using System.Drawing;
 //using System.Drawing.Drawing2D;
@@ -34,7 +34,7 @@ namespace Milky.OsuPlayer.Windows
     /// </summary>
     public partial class LyricWindow : WindowEx
     {
-        private readonly MainWindow _mainWindow;
+        public MainWindow MainWindow { get; set; }
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public LyricWindowViewModel ViewModel { get; }
@@ -46,25 +46,16 @@ namespace Milky.OsuPlayer.Windows
         //private FontFamily _fontFamily;
         private bool _pressed;
 
-        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+        private readonly ObservablePlayController _controller;
 
-        public LyricWindow(MainWindow mainWindow) : this()
+        public LyricWindow(LyricWindowViewModel viewModel, ObservablePlayController controller)
         {
-            _mainWindow = mainWindow;
+            ViewModel = viewModel;
+            _controller = controller;
+
             InitializeComponent();
-
-            ViewModel = (LyricWindowViewModel)DataContext;
+            DataContext = ViewModel;
             MainWindowViewModel.Current.LyricWindowViewModel = ViewModel;
-
-            //var fi = new FileInfo(Path.Combine(Domain.ExtensionPath, "font", "default.ttc"));
-            //if (!fi.Exists)
-            //    _fontFamily = new FontFamily("等线");
-            //else
-            //{
-            //    var pfc = new PrivateFontCollection();
-            //    pfc.AddFontFile(fi.FullName);
-            //    _fontFamily = pfc.Families[0];
-            //}
 
             CompositionTarget.Rendering += OnRendering;
             Left = 0;
@@ -72,6 +63,8 @@ namespace Milky.OsuPlayer.Windows
             Width = SystemParameters.PrimaryScreenWidth;
             MouseMove += LyricWindow_MouseMove;
             MouseLeave += LyricWindow_MouseLeave;
+
+            Loaded += WindowBase_Loaded;
         }
 
         private void LyricWindow_Loaded(object sender, RoutedEventArgs e)
@@ -341,7 +334,7 @@ namespace Milky.OsuPlayer.Windows
             AppSettings.Default.Lyric.EnableLyric = true;
             AppSettings.SaveDefault();
             ViewModel.IsLyricWindowShown = true;
-            _mainWindow.SetLyricSynchronously();
+            MainWindow?.SetLyricSynchronously();
             base.Show();
         }
 

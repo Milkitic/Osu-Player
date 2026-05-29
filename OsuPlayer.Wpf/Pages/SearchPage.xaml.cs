@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,17 +32,20 @@ public partial class SearchPage : Page
 
     private static bool _minimal;
 
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
-    private readonly IPlayerDataService _playerData = AppServices.PlayerData;
-
+    private readonly ObservablePlayController _controller;
+    private readonly IPlayerDataService _playerData;
     private MainWindow _mainWindow;
     private VirtualizingGalleryWrapPanel _virtualizingGalleryWrapPanel;
 
-    public SearchPage()
+    public SearchPage(SearchPageViewModel viewModel, IPlayerDataService playerData, ObservablePlayController controller)
     {
-        _mainWindow = (MainWindow)Application.Current.MainWindow;
+        ViewModel = viewModel;
+        _playerData = playerData;
+        _controller = controller;
 
         InitializeComponent();
+        _mainWindow = (MainWindow)Application.Current.MainWindow;
+        DataContext = ViewModel;
     }
 
     public SearchPageViewModel ViewModel { get; set; }
@@ -55,7 +58,6 @@ public partial class SearchPage : Page
 
     private async void SearchPage_Initialized(object sender, EventArgs e)
     {
-        ViewModel = (SearchPageViewModel)DataContext;
         await ViewModel.PlayListQueryAsync(0, false);
     }
 

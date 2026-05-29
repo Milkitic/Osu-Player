@@ -26,11 +26,6 @@ public partial class ExportPageViewModel : ObservableObject
     private IEnumerable<Beatmap> _entries;
     private readonly IPlayerDataService _playerData;
 
-    public ExportPageViewModel()
-        : this(AppServices.PlayerData)
-    {
-    }
-
     public ExportPageViewModel(IPlayerDataService playerData)
     {
         _playerData = playerData;
