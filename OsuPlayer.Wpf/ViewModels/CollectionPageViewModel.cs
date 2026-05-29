@@ -4,20 +4,17 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UserControls;
-using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.ViewModels;
 
@@ -75,9 +72,7 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
     [RelayCommand]
     private void SearchByCondition(string param)
     {
-        WindowEx.GetCurrentFirst<MainWindow>()
-            .SwitchSearch
-            .CheckAndAction(page => ((SearchPage)page).Search(param));
+        WeakReferenceMessenger.Default.Send(new SearchRequestedMessage(param));
     }
 
     [RelayCommand]

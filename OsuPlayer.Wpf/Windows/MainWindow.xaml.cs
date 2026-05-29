@@ -2,9 +2,9 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
-using Milky.OsuPlayer.Pages;
 using System.Threading.Tasks;
 using System.Windows;
+using CommunityToolkit.Mvvm.Messaging;
 using Coosu.Beatmap;
 using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Common;
@@ -15,6 +15,7 @@ using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
+using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
@@ -81,6 +82,23 @@ public partial class MainWindow : WindowEx
             Topmost = false;
         };
         TryBindHotKeys();
+
+        // 注册解耦的消息监听，处理跨页面搜索与导航
+        WeakReferenceMessenger.Default.Register<SearchRequestedMessage>(this, (r, m) =>
+        {
+            Execute.OnUiThread(() =>
+            {
+                SwitchSearch.IsChecked = true;
+                if (MainFrame.Content is SearchPage searchPage)
+                {
+                    searchPage.Search(m.Value);
+                }
+                else
+                {
+                    SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(m.Value));
+                }
+            });
+        });
     }
 
     private void TryBindHotKeys()

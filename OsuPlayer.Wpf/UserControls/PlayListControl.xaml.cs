@@ -9,11 +9,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
+using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
@@ -52,22 +54,19 @@ public partial class PlayListControlVm : ObservableObject
     [RelayCommand]
     private void Search(object param)
     {
-        var mw = WindowEx.GetCurrentFirst<MainWindow>();
         var s = (string)param;
-        switch (s)
+        string keyword = s switch
         {
-            case "0":
-                mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.AutoTitle));
-                break;
-            case "1":
-                mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.AutoArtist));
-                break;
-            case "2":
-                mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.SongSource));
-                break;
-            case "3":
-                mw.SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(SelectedMap.Creator));
-                break;
+            "0" => SelectedMap.AutoTitle,
+            "1" => SelectedMap.AutoArtist,
+            "2" => SelectedMap.SongSource,
+            "3" => SelectedMap.Creator,
+            _ => null
+        };
+
+        if (!string.IsNullOrEmpty(keyword))
+        {
+            WeakReferenceMessenger.Default.Send(new SearchRequestedMessage(keyword));
         }
     }
 
