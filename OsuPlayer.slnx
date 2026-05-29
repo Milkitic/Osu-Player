@@ -1,0 +1,60 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Analysis" />
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="Release 4.5" />
+    <BuildType Name="Release 4.6" />
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="OsuPlayer.Common/OsuPlayer.Common.csproj">
+    <BuildType Solution="Analysis|Any CPU" Project="Release" />
+    <BuildType Solution="Analysis|x64" Project="Debug" />
+    <BuildType Solution="Analysis|x86" Project="Debug" />
+    <BuildType Solution="Release 4.5|*" Project="Release" />
+    <BuildType Solution="Release 4.6|*" Project="Release" />
+  </Project>
+  <Project Path="OsuPlayer.Data.Tests/OsuPlayer.Data.Tests.csproj">
+    <BuildType Solution="Analysis|*" Project="Debug" />
+    <BuildType Solution="Release 4.5|*" Project="Debug" />
+    <BuildType Solution="Release 4.6|*" Project="Debug" />
+  </Project>
+  <Project Path="OsuPlayer.Data/OsuPlayer.Data.csproj">
+    <BuildType Solution="Analysis|*" Project="Release" />
+    <BuildType Solution="Release 4.5|*" Project="Release" />
+    <BuildType Solution="Release 4.6|*" Project="Release" />
+  </Project>
+  <Project Path="OsuPlayer.Media.Audio/OsuPlayer.Media.Audio.csproj">
+    <BuildType Solution="Analysis|Any CPU" Project="Release" />
+    <BuildType Solution="Analysis|x64" Project="Debug" />
+    <BuildType Solution="Analysis|x86" Project="Debug" />
+    <BuildType Solution="Release 4.5|*" Project="Release" />
+    <BuildType Solution="Release 4.6|*" Project="Release" />
+  </Project>
+  <Project Path="OsuPlayer.Media.Lyric/OsuPlayer.Media.Lyric.csproj">
+    <BuildType Solution="Analysis|Any CPU" Project="Debug" />
+    <BuildType Solution="Analysis|x64" Project="Release" />
+    <BuildType Solution="Analysis|x86" Project="Release" />
+    <BuildType Solution="Release 4.5|*" Project="Release" />
+    <BuildType Solution="Release 4.6|*" Project="Release" />
+  </Project>
+  <Project Path="OsuPlayer.Presentation/OsuPlayer.Presentation.csproj">
+    <BuildType Solution="Analysis|*" Project="Release" />
+    <BuildType Solution="Release 4.5|*" Project="Release" />
+    <BuildType Solution="Release 4.6|*" Project="Release" />
+  </Project>
+  <Project Path="OsuPlayer.Shared/OsuPlayer.Shared.csproj">
+    <BuildType Solution="Analysis|*" Project="Release" />
+    <BuildType Solution="Release 4.5|*" Project="Release" />
+    <BuildType Solution="Release 4.6|*" Project="Release" />
+  </Project>
+  <Project Path="OsuPlayer.Wpf/OsuPlayer.Wpf.csproj">
+    <BuildType Solution="Analysis|Any CPU" Project="Release" />
+    <BuildType Solution="Analysis|x64" Project="Debug" />
+    <BuildType Solution="Analysis|x86" Project="Debug" />
+    <BuildType Solution="Release 4.5|*" Project="Release" />
+    <BuildType Solution="Release 4.6|*" Project="Release" />
+  </Project>
+</Solution>
