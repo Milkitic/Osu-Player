@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Coosu.Beatmap.MetaData;
@@ -46,6 +46,13 @@ namespace Milky.OsuPlayer.Services
             await using var db = _createDbContext();
             await db.RemoveMapFromCollectionAsync(identity, collection);
             return true;
+        }
+
+        public async Task<PaginationQueryResult<Beatmap>> SearchBeatmapPageAsync(string searchText,
+            BeatmapSortMode sortMode, int startIndex, int count)
+        {
+            await using var db = _createDbContext();
+            return await db.SearchBeatmapPageAsync(searchText, sortMode, startIndex, count);
         }
 
         public async Task<List<Beatmap>> SearchBeatmapByOptionsAsync(string searchText, BeatmapSortMode sortMode,

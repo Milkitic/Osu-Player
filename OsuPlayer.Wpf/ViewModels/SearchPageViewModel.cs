@@ -32,45 +32,16 @@ namespace Milky.OsuPlayer.ViewModels
     {
         private readonly IPlayerDataService _playerData;
 
-        private const int MaxListCount = 100;
-        private List<BeatmapDataModel> _searchedMaps;
-        private List<BeatmapDataModel> _displayedMaps;
+        private const int MaxListCount = 250;
+        private const int QueryDelayMs = 167;
 
-        private List<ListPageViewModel> _pages;
-        private ListPageViewModel _lastPage;
-        private ListPageViewModel _firstPage;
+        private List<BeatmapDataModel> _displayedMaps = [];
+        private List<ListPageViewModel> _pages = [];
         private ListPageViewModel _currentPage;
+        private List<Beatmap> _searchedDbMaps = [];
         private string _searchText;
-
-        public string SearchText
-        {
-            get => _searchText;
-            set
-            {
-                _searchText = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public List<Beatmap> SearchedDbMaps
-        {
-            get => _searchedDbMaps;
-            set
-            {
-                _searchedDbMaps = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public List<BeatmapDataModel> SearchedMaps
-        {
-            get => _searchedMaps;
-            private set
-            {
-                _searchedMaps = value;
-                OnPropertyChanged();
-            }
-        }
+        private CancellationTokenSource _queryCancellation;
+        private int _queryVersion;
 
         public List<BeatmapDataModel> DisplayedMaps
         {
@@ -92,26 +63,6 @@ namespace Milky.OsuPlayer.ViewModels
             }
         }
 
-        public ListPageViewModel LastPage
-        {
-            get => _lastPage;
-            private set
-            {
-                _lastPage = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public ListPageViewModel FirstPage
-        {
-            get => _firstPage;
-            private set
-            {
-                _firstPage = value;
-                OnPropertyChanged();
-            }
-        }
-
         public ListPageViewModel CurrentPage
         {
             get => _currentPage;
@@ -124,10 +75,26 @@ namespace Milky.OsuPlayer.ViewModels
 
         public VirtualizingGalleryWrapPanel GalleryWrapPanel { get; set; }
 
-        private readonly Stopwatch _querySw = new Stopwatch();
-        private bool _isQuerying;
-        private List<Beatmap> _searchedDbMaps;
-        private static readonly object QueryLock = new object();
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        // Stores the currently displayed page results so existing page actions can reuse them.
+        public List<Beatmap> SearchedDbMaps
+        {
+            get => _searchedDbMaps;
+            private set
+            {
+                _searchedDbMaps = value;
+                OnPropertyChanged();
+            }
+        }
 
         public SearchPageViewModel()
             : this(AppServices.PlayerData)
@@ -139,56 +106,60 @@ namespace Milky.OsuPlayer.ViewModels
             _playerData = playerData;
         }
 
-        public async Task PlayListQueryAsync(int startIndex = 0)
+        public async Task PlayListQueryAsync(int pageIndex = 0, bool debounce = true)
         {
-            //if (Services.Get<OsuDbInst>().Beatmaps == null)
-            //    return;
+            var normalizedPageIndex = Math.Max(0, pageIndex);
+            var requestVersion = Interlocked.Increment(ref _queryVersion);
+            var cancellation = BeginQuery();
 
-            //SortEnum sortEnum = (SortEnum)cbSortType.SelectedItem;
-            //var sortMode = BeatmapSortMode.Artist;
-            _querySw.Restart();
-
-            lock (QueryLock)
+            try
             {
-                if (_isQuerying)
-                    return;
-                _isQuerying = true;
-            }
-
-            await Task.Run(async () =>
-            {
-                while (_querySw.ElapsedMilliseconds < 300)
-                    Thread.Sleep(1);
-                _querySw.Stop();
-
-                SearchedDbMaps = await _playerData
-                    .SearchBeatmapByOptionsAsync(SearchText, BeatmapSortMode.Artist, startIndex, int.MaxValue);
-
-                List<BeatmapDataModel> sorted = SearchedDbMaps
-                    .ToDataModelList(true);
-
-                Execute.OnUiThread(() =>
+                if (debounce)
                 {
-                    SearchedMaps = sorted;
-                    SetPage(SearchedMaps.Count, 0);
-                });
-            });
+                    await Task.Delay(QueryDelayMs, cancellation.Token);
+                }
 
-            lock (QueryLock)
-            {
-                _isQuerying = false;
+                var result = await _playerData.SearchBeatmapPageAsync(SearchText, BeatmapSortMode.Artist,
+                    normalizedPageIndex * MaxListCount, MaxListCount);
+                if (cancellation.IsCancellationRequested || requestVersion != _queryVersion)
+                {
+                    return;
+                }
+
+                SearchedDbMaps = result.Results.ToList();
+                GalleryWrapPanel?.ClearNotificationCount();
+                DisplayedMaps = SearchedDbMaps.ToDataModelList(true);
+                SetPage(result.TotalCount, normalizedPageIndex);
             }
+            catch (OperationCanceledException)
+            {
+            }
+            finally
+            {
+                EndQuery(cancellation);
+            }
+        }
+
+        public Task<List<Beatmap>> GetAllMatchedBeatmapsAsync()
+        {
+            return _playerData.SearchBeatmapByOptionsAsync(SearchText, BeatmapSortMode.Artist, 0, int.MaxValue);
         }
 
         private void SetPage(int totalCount, int nowIndex)
         {
             totalCount = (int)Math.Ceiling(totalCount / (float)MaxListCount);
+            if (totalCount <= 0)
+            {
+                Pages = [];
+                CurrentPage = null;
+                return;
+            }
+
             int count, startIndex;
             if (totalCount > 10)
             {
                 if (nowIndex > 5)
                 {
-                    FirstPage = new ListPageViewModel(1);
                     if (nowIndex >= totalCount - 5)
                     {
                         startIndex = totalCount - 10;
@@ -224,8 +195,6 @@ namespace Milky.OsuPlayer.ViewModels
                 page.IsActivated = true;
 
             CurrentPage = page;
-            GalleryWrapPanel?.ClearNotificationCount();
-            DisplayedMaps = SearchedMaps.Skip(nowIndex * MaxListCount).Take(MaxListCount).ToList();
         }
 
         private ListPageViewModel GetPage(int page)
@@ -237,7 +206,7 @@ namespace Milky.OsuPlayer.ViewModels
         {
             get
             {
-                return new RelayCommand<object>(obj =>
+                return new AsyncRelayCommand<object>(async obj =>
                 {
                     if (obj is bool b)
                     {
@@ -249,18 +218,19 @@ namespace Milky.OsuPlayer.ViewModels
                             return;
                         }
 
-                        SetPage(SearchedMaps.Count, page.Index - 1);
+                        await PlayListQueryAsync(page.Index - 1, false);
                     }
                     else
                     {
                         var reqPage = (int)obj;
                         var page = GetPage(reqPage);
+                        if (page == null) return;
                         if (page.IsActivated)
                         {
                             return;
                         }
 
-                        SetPage(SearchedMaps.Count, reqPage - 1);
+                        await PlayListQueryAsync(reqPage - 1, false);
                     }
                 });
             }
@@ -392,6 +362,27 @@ namespace Milky.OsuPlayer.ViewModels
             if (beatmap == null) return null;
             var map = (await _playerData.GetBeatmapsFromFolderAsync(beatmap.FolderName)).GetHighestDiff();
             return map;
+        }
+
+        private CancellationTokenSource BeginQuery()
+        {
+            var next = new CancellationTokenSource();
+            var previous = Interlocked.Exchange(ref _queryCancellation, next);
+            if (previous != null)
+            {
+                previous.Cancel();
+                previous.Dispose();
+            }
+
+            return next;
+        }
+
+        private void EndQuery(CancellationTokenSource cancellation)
+        {
+            if (Interlocked.CompareExchange(ref _queryCancellation, null, cancellation) == cancellation)
+            {
+                cancellation.Dispose();
+            }
         }
     }
 

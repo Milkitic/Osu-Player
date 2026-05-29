@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -56,7 +56,7 @@ public partial class SearchPage : Page
     private async void SearchPage_Initialized(object sender, EventArgs e)
     {
         ViewModel = (SearchPageViewModel)DataContext;
-        await ViewModel.PlayListQueryAsync();
+        await ViewModel.PlayListQueryAsync(0, false);
     }
 
     private async void SearchPage_Loaded(object sender, RoutedEventArgs e)
@@ -80,14 +80,14 @@ public partial class SearchPage : Page
             }
 
             _minimal = minimal;
-            await ViewModel.PlayListQueryAsync();
+            await ViewModel.PlayListQueryAsync(0, false);
         }
     }
 
     private async void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
     {
         ViewModel.SearchText = ((TextBox)sender).Text;
-        await ViewModel.PlayListQueryAsync();
+        await ViewModel.PlayListQueryAsync(0);
     }
 
     private void Panel_Loaded(object sender, RoutedEventArgs e)
@@ -123,7 +123,7 @@ public partial class SearchPage : Page
 
     private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
     {
-        var beatmaps = ViewModel.SearchedDbMaps;
+        var beatmaps = await ViewModel.GetAllMatchedBeatmapsAsync();
         if (beatmaps.Count <= 0) return;
         var group = beatmaps.GroupBy(k => k.FolderName);
         var newBeatmaps = group

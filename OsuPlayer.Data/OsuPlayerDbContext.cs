@@ -637,44 +637,54 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
             await SetMapSbInfoAsync(beatmap.Id, sbInfo);
         }
 
+        public async Task<PaginationQueryResult<Beatmap>> SearchBeatmapPageAsync(string searchText,
+            BeatmapSortMode beatmapSortMode, int startIndex, int count)
+        {
+            var sw = Stopwatch.StartNew();
+            try
+            {
+                startIndex = Math.Max(0, startIndex);
+                count = Math.Max(0, count);
+
+                var query = ApplyBeatmapSearchFilters(Beatmaps.AsNoTracking(), searchText);
+                var totalCount = await query.CountAsync();
+                var results = (count == 0 || totalCount == 0)
+                    ? []
+                    : await ApplyBeatmapSort(query, beatmapSortMode)
+                        .Skip(startIndex)
+                        .Take(count)
+                        .ToListAsync();
+
+                return new PaginationQueryResult<Beatmap>(results, totalCount);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error while calling SearchBeatmapPageAsync().");
+                throw;
+            }
+            finally
+            {
+                Logger.Debug("查询花费: {0}", sw.ElapsedMilliseconds);
+                sw.Stop();
+            }
+        }
+
         public async Task<List<Beatmap>> SearchBeatmapByOptionsAsync(string searchText, BeatmapSortMode beatmapSortMode,
             int startIndex, int count)
         {
             var sw = Stopwatch.StartNew();
             try
             {
-                IQueryable<Beatmap> query = Beatmaps.AsNoTracking();
+                startIndex = Math.Max(0, startIndex);
+                count = Math.Max(0, count);
 
-                var keywords = searchText?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-                if (keywords != null)
+                if (count == 0)
                 {
-                    foreach (var keyword in keywords)
-                    {
-                        var pattern = $"%{keyword}%";
-                        query = query.Where(k =>
-                            EF.Functions.Like(k.Artist, pattern) ||
-                            EF.Functions.Like(k.ArtistUnicode, pattern) ||
-                            EF.Functions.Like(k.Title, pattern) ||
-                            EF.Functions.Like(k.TitleUnicode, pattern) ||
-                            EF.Functions.Like(k.SongTags, pattern) ||
-                            EF.Functions.Like(k.SongSource, pattern) ||
-                            EF.Functions.Like(k.Creator, pattern) ||
-                            EF.Functions.Like(k.Version, pattern));
-                    }
+                    return [];
                 }
 
-                query = beatmapSortMode switch
-                {
-                    BeatmapSortMode.Title => query
-                        .OrderBy(k => k.TitleUnicode)
-                        .ThenBy(k => k.Title),
-                    _ => query
-                        .OrderBy(k => k.ArtistUnicode)
-                        .ThenBy(k => k.Artist)
-                };
-
-                return await query
+                var query = ApplyBeatmapSearchFilters(Beatmaps.AsNoTracking(), searchText);
+                return await ApplyBeatmapSort(query, beatmapSortMode)
                     .Skip(startIndex)
                     .Take(count)
                     .ToListAsync();
@@ -689,6 +699,45 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
                 Logger.Debug("查询花费: {0}", sw.ElapsedMilliseconds);
                 sw.Stop();
             }
+        }
+
+        private static IQueryable<Beatmap> ApplyBeatmapSearchFilters(IQueryable<Beatmap> query, string searchText)
+        {
+            var keywords = searchText?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (keywords == null || keywords.Length == 0)
+            {
+                return query;
+            }
+
+            foreach (var keyword in keywords)
+            {
+                var pattern = $"%{keyword}%";
+                query = query.Where(k =>
+                    EF.Functions.Like(k.Artist, pattern) ||
+                    EF.Functions.Like(k.ArtistUnicode, pattern) ||
+                    EF.Functions.Like(k.Title, pattern) ||
+                    EF.Functions.Like(k.TitleUnicode, pattern) ||
+                    EF.Functions.Like(k.SongTags, pattern) ||
+                    EF.Functions.Like(k.SongSource, pattern) ||
+                    EF.Functions.Like(k.Creator, pattern) ||
+                    EF.Functions.Like(k.Version, pattern));
+            }
+
+            return query;
+        }
+
+        private static IOrderedQueryable<Beatmap> ApplyBeatmapSort(IQueryable<Beatmap> query,
+            BeatmapSortMode beatmapSortMode)
+        {
+            return beatmapSortMode switch
+            {
+                BeatmapSortMode.Title => query
+                    .OrderBy(k => k.TitleUnicode)
+                    .ThenBy(k => k.Title),
+                _ => query
+                    .OrderBy(k => k.ArtistUnicode)
+                    .ThenBy(k => k.Artist)
+            };
         }
 
         public async Task<List<Beatmap>> GetAllBeatmapsAsync()

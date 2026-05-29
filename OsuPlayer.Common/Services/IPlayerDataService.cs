@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Coosu.Beatmap.MetaData;
@@ -21,6 +21,9 @@ namespace Milky.OsuPlayer.Services
         Task<bool> TryRemoveFromRecentAsync(MapIdentity identity);
 
         Task<bool> TryRemoveMapFromCollectionAsync(IMapIdentifiable identity, Collection collection);
+
+        Task<PaginationQueryResult<Beatmap>> SearchBeatmapPageAsync(string searchText, BeatmapSortMode sortMode,
+            int startIndex, int count);
 
         Task<List<Beatmap>> SearchBeatmapByOptionsAsync(string searchText, BeatmapSortMode sortMode, int startIndex,
             int count);
