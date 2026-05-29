@@ -81,27 +81,6 @@ public partial class App : Application
         ConfigureServices(services);
         Services = services.BuildServiceProvider();
 
-        // 2. 向后兼容 Legacy Service Locator
-        var appNotificationService = Services.GetRequiredService<IAppNotificationService>();
-        var playerDataStore = Services.GetRequiredService<IPlayerDataStore>();
-        var playerDataService = Services.GetRequiredService<IPlayerDataService>();
-        var controller = Services.GetRequiredService<ObservablePlayController>();
-        var osuDbInst = Services.GetRequiredService<OsuDbInst>();
-        var lyricsInst = Services.GetRequiredService<LyricsInst>();
-        var updateInst = Services.GetRequiredService<UpdateInst>();
-        var osuFileScanner = Services.GetRequiredService<OsuFileScanner>();
-        var exportService = Services.GetRequiredService<IExportService>();
-
-        Service.AddOrUpdateInstance(appNotificationService, (_, _) => appNotificationService);
-        Service.AddOrUpdateInstance(playerDataStore, (_, _) => playerDataStore);
-        Service.AddOrUpdateInstance(playerDataService, (_, _) => playerDataService);
-        Service.TryAddInstance(controller);
-        Service.TryAddInstance(osuDbInst);
-        Service.TryAddInstance(lyricsInst);
-        Service.TryAddInstance(updateInst);
-        Service.TryAddInstance(osuFileScanner);
-        Service.TryAddInstance(exportService);
-
         Services.GetRequiredService<LyricsInst>().ReloadLyricProvider();
 
         I18NUtil.LoadI18N();

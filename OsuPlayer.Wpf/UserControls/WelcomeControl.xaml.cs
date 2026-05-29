@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 
@@ -36,7 +36,7 @@ public partial class WelcomeControlVm : ObservableObject
         try
         {
             GuideSyncing = true;
-            await Service.Get<OsuDbInst>().SyncOsuDbAsync(path, false);
+            await App.Services.GetRequiredService<OsuDbInst>().SyncOsuDbAsync(path, false);
             AppSettings.Default.General.DbPath = path;
             AppSettings.SaveDefault();
             GuideSyncing = false;

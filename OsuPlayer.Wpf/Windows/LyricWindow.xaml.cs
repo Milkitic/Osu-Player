@@ -18,7 +18,6 @@ using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Lyric.Models;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.ViewModels;
 
 //using Brush = System.Drawing.Brush;
@@ -42,7 +41,9 @@ namespace Milky.OsuPlayer.Windows
 
         private List<Sentence> _lyricList;
         private CancellationTokenSource _cts;
+
         private Task _playingTask;
+
         //private FontFamily _fontFamily;
         private bool _pressed;
 

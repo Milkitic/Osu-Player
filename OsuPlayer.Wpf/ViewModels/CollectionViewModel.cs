@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.UserControls;
@@ -13,11 +14,6 @@ namespace Milky.OsuPlayer.ViewModels;
 public partial class CollectionViewModel : ObservableObject
 {
     private readonly IPlayerDataService _playerData;
-
-    public CollectionViewModel()
-        : this(AppServices.PlayerData)
-    {
-    }
 
     public CollectionViewModel(IPlayerDataService playerData)
     {
@@ -42,7 +38,7 @@ public partial class CollectionViewModel : ObservableObject
     }
 
     public static CollectionViewModel CopyFrom(Collection collection)
-        => new CollectionViewModel
+        => new(App.Services.GetRequiredService<IPlayerDataService>())
         {
             Id = collection.Id,
             Name = collection.Name,
@@ -50,7 +46,7 @@ public partial class CollectionViewModel : ObservableObject
             ImagePath = collection.ImagePath,
             Description = collection.Description,
             CreateTime = collection.CreateTime,
-            Locked = collection.LockedBool
+            Locked = collection.LockedBool,
         };
 
     public static IEnumerable<CollectionViewModel> CopyFrom(IEnumerable<Collection> collection)

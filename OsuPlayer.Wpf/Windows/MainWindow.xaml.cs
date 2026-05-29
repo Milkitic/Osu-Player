@@ -20,7 +20,6 @@ using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UserControls;
@@ -48,15 +47,31 @@ public partial class MainWindow : WindowEx
     private Task _searchLyricTask;
 
     private readonly ObservablePlayController _controller;
+    private readonly LyricsInst _lyricsInst;
+    private readonly OsuFileScanner _osuFileScanner;
+    private readonly OsuDbInst _osuDbInst;
+    private readonly UpdateInst _updateInst;
     private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
 
     private bool _disposed;
 
-    public MainWindow(MainWindowViewModel viewModel, LyricWindow lyricWindow, ObservablePlayController controller, IPlayerDataService playerData)
+    public MainWindow(
+        MainWindowViewModel viewModel,
+        LyricWindow lyricWindow,
+        ObservablePlayController controller,
+        IPlayerDataService playerData,
+        LyricsInst lyricsInst,
+        OsuFileScanner osuFileScanner,
+        OsuDbInst osuDbInst,
+        UpdateInst updateInst)
     {
         InitializeComponent();
         _controller = controller;
         _playerData = playerData;
+        _lyricsInst = lyricsInst;
+        _osuFileScanner = osuFileScanner;
+        _osuDbInst = osuDbInst;
+        _updateInst = updateInst;
         DataContext = ViewModel = viewModel;
         ViewModel.IsNavigationCollapsed = AppSettings.Default.General.IsNavigationCollapsed;
         LyricWindow = lyricWindow;
@@ -116,10 +131,7 @@ public partial class MainWindow : WindowEx
             AppSettings.Default.Volume.Main -= 0.05f;
             AppSettings.SaveDefault();
         });
-        OverallKeyHook.AddKeyHook(HotKeyType.SwitchFullMiniMode, () =>
-        {
-            TriggerMiniWindow();
-        });
+        OverallKeyHook.AddKeyHook(HotKeyType.SwitchFullMiniMode, () => { TriggerMiniWindow(); });
         OverallKeyHook.AddKeyHook(HotKeyType.AddCurrentToFav, () =>
         {
             //TODO
@@ -160,7 +172,7 @@ public partial class MainWindow : WindowEx
             {
                 if (!_controller.IsPlayerReady) return;
 
-                var lyricInst = Service.Get<LyricsInst>();
+                var lyricInst = _lyricsInst;
                 var meta = _controller.PlayList.CurrentInfo.OsuFile.Metadata;
                 MetaString metaArtist = meta.ArtistMeta;
                 MetaString metaTitle = meta.TitleMeta;
@@ -205,7 +217,7 @@ public partial class MainWindow : WindowEx
             //WelcomeControl.Show();
             //try
             //{
-            //    await Service.Get<OsuDbInst>().LoadLocalDbAsync();
+            //    await _osuDbInst.LoadLocalDbAsync();
             //}
             //catch (Exception ex)
             //{
@@ -214,7 +226,7 @@ public partial class MainWindow : WindowEx
 
             try
             {
-                await Service.Get<OsuFileScanner>().NewScanAndAddAsync(AppSettings.Default.General.CustomSongsPath);
+                await _osuFileScanner.NewScanAndAddAsync(AppSettings.Default.General.CustomSongsPath);
             }
             catch (Exception ex)
             {
@@ -229,7 +241,7 @@ public partial class MainWindow : WindowEx
             {
                 try
                 {
-                    await Service.Get<OsuDbInst>().SyncOsuDbAsync(AppSettings.Default.General.DbPath, true);
+                    await _osuDbInst.SyncOsuDbAsync(AppSettings.Default.General.DbPath, true);
                     AppSettings.Default.LastTimeScanOsuDb = DateTime.Now;
                     AppSettings.SaveDefault();
                 }
@@ -247,7 +259,7 @@ public partial class MainWindow : WindowEx
 
         try
         {
-            var updater = Service.Get<UpdateInst>();
+            var updater = _updateInst;
             bool? hasUpdate = await updater.CheckUpdateAsync();
             if (hasUpdate == true && updater.NewRelease.NewVerString != AppSettings.Default.IgnoredVer)
             {

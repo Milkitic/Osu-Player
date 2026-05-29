@@ -8,13 +8,13 @@ using System.Windows.Controls;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
 using Milki.Extensions.MixPlayer;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Unosquare.FFME.Common;
 
@@ -30,7 +30,7 @@ public partial class AnimationControlVm : ObservableObject
 /// </summary>
 public partial class AnimationControl : UserControl
 {
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+    private readonly ObservablePlayController _controller;
     private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
     private double _videoOffset;
@@ -40,6 +40,11 @@ public partial class AnimationControl : UserControl
 
     public AnimationControl()
     {
+        if (App.Services != null)
+        {
+            _controller = App.Services.GetRequiredService<ObservablePlayController>();
+        }
+
         InitializeComponent();
     }
 

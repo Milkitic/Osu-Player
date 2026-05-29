@@ -17,7 +17,6 @@ using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 
 namespace Milky.OsuPlayer.UserControls;
@@ -133,7 +132,7 @@ public partial class PlayListControl : UserControl
     }
 
     private bool _signed;
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+    private readonly ObservablePlayController _controller;
     private PlayListControlVm _viewModel;
 
     public PlayListControl()
@@ -141,6 +140,7 @@ public partial class PlayListControl : UserControl
         if (!DesignerProperties.GetIsInDesignMode(this))
         {
             DataContext = App.Services.GetRequiredService(typeof(PlayListControlVm));
+            _controller = App.Services.GetRequiredService<ObservablePlayController>();
         }
 
         InitializeComponent();

@@ -6,11 +6,11 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared.Dependency;
 
 namespace Milky.OsuPlayer.UserControls;
 
@@ -39,19 +39,29 @@ public partial class MiniPlayListControlVm : ObservableObject
 /// </summary>
 public partial class MiniPlayController : UserControl
 {
-    private readonly IPlayerDataService _playerData = AppServices.PlayerData;
+    private readonly IPlayerDataService _playerData;
     private MiniPlayListControlVm _viewModel;
 
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+    private readonly ObservablePlayController _controller;
 
     public static event Action MaxButtonClicked;
     public static event Action CloseButtonClicked;
 
     public MiniPlayController()
     {
+        if (App.Services != null)
+        {
+            _playerData = App.Services.GetRequiredService<IPlayerDataService>();
+            _controller = App.Services.GetRequiredService<ObservablePlayController>();
+        }
+
         InitializeComponent();
         _viewModel = (MiniPlayListControlVm)DataContext;
-        _viewModel.Controller = Service.Get<ObservablePlayController>();
+        if (_viewModel != null)
+        {
+            _viewModel.Controller = _controller;
+        }
+
         Default = this;
     }
 

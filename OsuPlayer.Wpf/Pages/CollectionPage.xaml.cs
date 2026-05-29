@@ -8,13 +8,11 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.PanelComponent;
 using Milky.OsuPlayer.UserControls;
@@ -29,29 +27,30 @@ namespace Milky.OsuPlayer.Pages
     /// </summary>
     public partial class CollectionPage : Page
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly IPlayerDataService _playerData = AppServices.PlayerData;
-
-        private readonly MainWindow _mainWindow;
-        private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
-
-        private static Binding _sourceBinding = new Binding(nameof(CollectionPageViewModel.DisplayedBeatmaps))
+        private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly Binding s_sourceBinding = new(nameof(CollectionPageViewModel.DisplayedBeatmaps))
         {
             Mode = BindingMode.OneWay
         };
 
-        private bool _minimal = false;
+        private readonly IPlayerDataService _playerData;
+        private readonly MainWindow _mainWindow;
+        private readonly ObservablePlayController _controller;
 
-        public CollectionPageViewModel ViewModel { get; set; }
-        public string Id { get; set; }
+        private bool _minimal;
 
-        public CollectionPage(CollectionPageViewModel viewModel)
+        public CollectionPage(CollectionPageViewModel viewModel, IPlayerDataService playerData, ObservablePlayController controller)
         {
+            _playerData = playerData;
+            _controller = controller;
             InitializeComponent();
             _mainWindow = (MainWindow)Application.Current.MainWindow;
 
             DataContext = ViewModel = viewModel;
         }
+
+        public CollectionPageViewModel ViewModel { get; set; }
+        public string Id { get; set; }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
@@ -61,14 +60,14 @@ namespace Milky.OsuPlayer.Pages
                 if (minimal)
                 {
                     MapCardList.ItemsSource = null;
-                    MapList.SetBinding(ItemsControl.ItemsSourceProperty, _sourceBinding);
+                    MapList.SetBinding(ItemsControl.ItemsSourceProperty, s_sourceBinding);
                     MapCardList.Visibility = Visibility.Collapsed;
                     MapList.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     MapList.ItemsSource = null;
-                    MapCardList.SetBinding(ItemsControl.ItemsSourceProperty, _sourceBinding);
+                    MapCardList.SetBinding(ItemsControl.ItemsSourceProperty, s_sourceBinding);
                     MapList.Visibility = Visibility.Collapsed;
                     MapCardList.Visibility = Visibility.Visible;
                 }
@@ -183,7 +182,7 @@ namespace Milky.OsuPlayer.Pages
         private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {
             var beatmaps = ViewModel.Entries?.ToList();
-            if (beatmaps == null || beatmaps.Count <= 0) return;
+            if (beatmaps is not { Count: > 0 }) return;
 
             await _controller.PlayList.SetSongListAsync(beatmaps, true);
         }
@@ -199,7 +198,7 @@ namespace Milky.OsuPlayer.Pages
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Error while loading panel item.");
+                s_logger.Error(ex, "Error while loading panel item.");
             }
         }
 

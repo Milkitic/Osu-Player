@@ -2,12 +2,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared.Dependency;
 
 namespace Milky.OsuPlayer.UserControls;
 
@@ -21,11 +21,17 @@ public partial class VolumeControlVm : ObservableObject
 /// </summary>
 public partial class VolumeControl : UserControl
 {
-    private readonly IPlayerDataService _playerData = AppServices.PlayerData;
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+    private readonly IPlayerDataService _playerData;
+    private readonly ObservablePlayController _controller;
 
     public VolumeControl()
     {
+        if (App.Services != null)
+        {
+            _playerData = App.Services.GetRequiredService<IPlayerDataService>();
+            _controller = App.Services.GetRequiredService<ObservablePlayController>();
+        }
+
         InitializeComponent();
     }
 

@@ -33,7 +33,6 @@ namespace Milky.OsuPlayer
 #endif
 
             await InitLocalDbAsync();
-            AppServices.RegisterDefaults();
 
             StyleUtilities.SetAlignment();
 

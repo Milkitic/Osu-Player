@@ -6,13 +6,13 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.Devices;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
@@ -22,8 +22,16 @@ namespace Milky.OsuPlayer.UserControls;
 
 public partial class PlayControllerVm : ObservableObject
 {
-    public ObservablePlayController Controller { get; } = Service.Get<ObservablePlayController>();
+    public ObservablePlayController Controller { get; }
     public SharedVm Shared { get; } = SharedVm.Default;
+
+    public PlayControllerVm()
+    {
+        if (App.Services != null)
+        {
+            Controller = App.Services.GetRequiredService<ObservablePlayController>();
+        }
+    }
 }
 
 /// <summary>
@@ -60,13 +68,18 @@ public partial class PlayController : UserControl
     #endregion
 
     private bool _scrollLock;
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+    private readonly ObservablePlayController _controller;
     private IWavePlayer _device;
 
     private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
     public PlayController()
     {
+        if (App.Services != null)
+        {
+            _controller = App.Services.GetRequiredService<ObservablePlayController>();
+        }
+
         InitializeComponent();
     }
 
