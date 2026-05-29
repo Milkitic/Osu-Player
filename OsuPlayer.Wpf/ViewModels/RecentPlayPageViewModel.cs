@@ -22,11 +22,13 @@ public partial class RecentPlayPageViewModel : ObservableObject
 {
     private readonly IPlayerDataService _playerData;
     private readonly ObservablePlayController _controller;
+    private readonly IExportService _exportService;
 
-    public RecentPlayPageViewModel(IPlayerDataService playerData, ObservablePlayController controller)
+    public RecentPlayPageViewModel(IPlayerDataService playerData, ObservablePlayController controller, IExportService exportService)
     {
         _playerData = playerData;
         _controller = controller;
+        _exportService = exportService;
     }
 
     [ObservableProperty]
@@ -82,7 +84,7 @@ public partial class RecentPlayPageViewModel : ObservableObject
         if (beatmap == null) return;
         var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
         if (map == null) return;
-        ExportPage.QueueEntry(map);
+        _exportService.QueueEntry(map);
     }
 
     [RelayCommand]

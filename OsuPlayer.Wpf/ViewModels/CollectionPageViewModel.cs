@@ -25,11 +25,13 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
 {
     private readonly ObservablePlayController _controller;
     private readonly IPlayerDataService _playerData;
+    private readonly IExportService _exportService;
 
-    public CollectionPageViewModel(IPlayerDataService playerData, ObservablePlayController controller)
+    public CollectionPageViewModel(IPlayerDataService playerData, ObservablePlayController controller, IExportService exportService)
     {
         _playerData = playerData;
         _controller = controller;
+        _exportService = exportService;
     }
 
     [ObservableProperty]
@@ -119,7 +121,14 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
         if (beatmap == null) return;
         var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
         if (map == null) return;
-        ExportPage.QueueEntry(map);
+        _exportService.QueueEntry(map);
+    }
+
+    [RelayCommand]
+    private void ExportAll()
+    {
+        if (Entries == null) return;
+        _exportService.QueueEntries(Entries);
     }
 
     [RelayCommand]

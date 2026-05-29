@@ -15,8 +15,6 @@ namespace Milky.OsuPlayer.UiComponents.RadioButtonComponent;
 
 public class SwitchRadio : RadioButton
 {
-    //protected Window HostWindow { get; private set; }
-    private static readonly Dictionary<Type, FrameworkElement> s_pageMapping = new();
     private Action<FrameworkElement> _loadedAction;
     protected FrameworkElement HostWindow { get; private set; }
 
@@ -111,26 +109,15 @@ public class SwitchRadio : RadioButton
     private void Navigate(Frame frame)
     {
         FrameworkElement page;
-        if (TargetPageSingleton && s_pageMapping.TryGetValue(TargetPageType, out var value))
+        if (App.Services != null)
         {
-            page = value;
+            page = (FrameworkElement)App.Services.GetRequiredService(TargetPageType);
         }
         else
         {
-            if (App.Services != null)
-            {
-                page = (FrameworkElement)App.Services.GetRequiredService(TargetPageType);
-            }
-            else
-            {
-                page = (FrameworkElement)(TargetPageData == null
-                    ? Activator.CreateInstance(TargetPageType)
-                    : Activator.CreateInstance(TargetPageType, TargetPageData));
-            }
-            if (TargetPageSingleton)
-            {
-                s_pageMapping.Add(TargetPageType, page);
-            }
+            page = (FrameworkElement)(TargetPageData == null
+                ? Activator.CreateInstance(TargetPageType)
+                : Activator.CreateInstance(TargetPageType, TargetPageData));
         }
 
         _loadedAction?.Invoke(page);

@@ -12,6 +12,7 @@ using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.UserControls;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using NLog;
@@ -89,6 +90,7 @@ public partial class App : Application
         var lyricsInst = Services.GetRequiredService<LyricsInst>();
         var updateInst = Services.GetRequiredService<UpdateInst>();
         var osuFileScanner = Services.GetRequiredService<OsuFileScanner>();
+        var exportService = Services.GetRequiredService<IExportService>();
 
         Service.AddOrUpdateInstance(appNotificationService, (_, _) => appNotificationService);
         Service.AddOrUpdateInstance(playerDataStore, (_, _) => playerDataStore);
@@ -98,6 +100,7 @@ public partial class App : Application
         Service.TryAddInstance(lyricsInst);
         Service.TryAddInstance(updateInst);
         Service.TryAddInstance(osuFileScanner);
+        Service.TryAddInstance(exportService);
 
         Services.GetRequiredService<LyricsInst>().ReloadLyricProvider();
 
@@ -129,6 +132,7 @@ public partial class App : Application
         services.AddSingleton<LyricsInst>();
         services.AddSingleton<UpdateInst>();
         services.AddSingleton<OsuFileScanner>();
+        services.AddSingleton<IExportService, ExportService>();
 
         // 注册 ViewModels
         services.AddSingleton(_ => SharedVm.Default);
@@ -138,6 +142,7 @@ public partial class App : Application
         services.AddSingleton<LyricWindowViewModel>();
         services.AddTransient<RecentPlayPageViewModel>();
         services.AddTransient<ExportPageViewModel>();
+        services.AddTransient<PlayListControlVm>();
 
         // 注册 Windows / Pages
         services.AddSingleton<MainWindow>();

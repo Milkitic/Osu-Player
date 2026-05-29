@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="Milky.OsuPlayer.UserControls.PlayListControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -68,9 +68,7 @@
             <EventSetter Event="MouseDoubleClick" Handler="PlayListItem_MouseDoubleClick" />
         </Style>
     </UserControl.Resources>
-    <UserControl.DataContext>
-        <userControls:PlayListControlVm />
-    </UserControl.DataContext>
+
     <Grid>
         <Border Margin="10" RenderOptions.BitmapScalingMode="LowQuality">
             <Border.Background>

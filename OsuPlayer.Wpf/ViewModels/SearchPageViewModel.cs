@@ -31,6 +31,7 @@ public partial class SearchPageViewModel : ObservableObject
 {
     private readonly IPlayerDataService _playerData;
     private readonly ObservablePlayController _controller;
+    private readonly IExportService _exportService;
 
     private const int MaxListCount = 250;
     private const int QueryDelayMs = 167;
@@ -38,10 +39,11 @@ public partial class SearchPageViewModel : ObservableObject
     private CancellationTokenSource _queryCancellation;
     private int _queryVersion;
 
-    public SearchPageViewModel(IPlayerDataService playerData, ObservablePlayController controller)
+    public SearchPageViewModel(IPlayerDataService playerData, ObservablePlayController controller, IExportService exportService)
     {
         _playerData = playerData;
         _controller = controller;
+        _exportService = exportService;
     }
 
     [ObservableProperty]
@@ -243,7 +245,7 @@ public partial class SearchPageViewModel : ObservableObject
         if (beatmap == null) return;
         var map = await GetHighestSrBeatmapAsync(beatmap);
         if (map == null) return;
-        ExportPage.QueueEntry(map);
+        _exportService.QueueEntry(map);
     }
 
     [RelayCommand]

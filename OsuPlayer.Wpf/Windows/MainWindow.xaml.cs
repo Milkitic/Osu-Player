@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using Milky.OsuPlayer.Pages;
 using System.Threading.Tasks;
 using System.Windows;
 using Coosu.Beatmap;
@@ -41,18 +42,20 @@ public partial class MainWindow : WindowEx
 
     private WindowState _lastState;
 
-    private readonly IPlayerDataService _playerData = AppServices.PlayerData;
+    private readonly IPlayerDataService _playerData;
 
     private Task _searchLyricTask;
 
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+    private readonly ObservablePlayController _controller;
     private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
 
     private bool _disposed;
 
-    public MainWindow(MainWindowViewModel viewModel, LyricWindow lyricWindow)
+    public MainWindow(MainWindowViewModel viewModel, LyricWindow lyricWindow, ObservablePlayController controller, IPlayerDataService playerData)
     {
         InitializeComponent();
+        _controller = controller;
+        _playerData = playerData;
         DataContext = ViewModel = viewModel;
         ViewModel.IsNavigationCollapsed = AppSettings.Default.General.IsNavigationCollapsed;
         LyricWindow = lyricWindow;

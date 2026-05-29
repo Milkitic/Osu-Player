@@ -25,10 +25,18 @@ public partial class ExportPageViewModel : ObservableObject
     private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
     private IEnumerable<Beatmap> _entries;
     private readonly IPlayerDataService _playerData;
+    private readonly IExportService _exportService;
 
-    public ExportPageViewModel(IPlayerDataService playerData)
+    public ExportPageViewModel(IPlayerDataService playerData, IExportService exportService)
     {
         _playerData = playerData;
+        _exportService = exportService;
+        _exportService.TaskSuccess += OnExportTaskSuccess;
+    }
+
+    private void OnExportTaskSuccess(object sender, EventArgs e)
+    {
+        _ = UpdateListAsync();
     }
 
     [ObservableProperty]
@@ -74,20 +82,7 @@ public partial class ExportPageViewModel : ObservableObject
         if (obj == null) return;
         var selected = ((System.Windows.Controls.ListView)obj).SelectedItems;
         var entries = await ConvertToEntriesAsync(selected.Cast<BeatmapDataModel>());
-        foreach (var entry in entries)
-        {
-            ExportPage.QueueEntry(entry);
-        }
-
-        await Task.Run(async () =>
-        {
-            while (ExportPage.IsTaskBusy)
-            {
-                Thread.Sleep(10);
-                if (!ExportPage.HasTaskSuccess) continue;
-                await Execute.OnUiThreadAsync(InnerUpdateAsync);
-            }
-        });
+        _exportService.QueueEntries(entries);
     }
 
     [RelayCommand]

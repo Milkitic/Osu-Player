@@ -1,28 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Milky.OsuPlayer.Common;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.Windows;
-using System.Threading.Tasks;
 
 namespace Milky.OsuPlayer.UserControls;
 
 public partial class PlayListControlVm : ObservableObject
 {
-    public ObservablePlayController Controller { get; } = Service.Get<ObservablePlayController>();
+    public ObservablePlayController Controller { get; }
+    private readonly IExportService _exportService;
+
+    public PlayListControlVm(ObservablePlayController controller, IExportService exportService)
+    {
+        Controller = controller;
+        _exportService = exportService;
+    }
 
     [ObservableProperty]
     public partial Beatmap SelectedMap { get; set; }
@@ -94,7 +101,7 @@ public partial class PlayListControlVm : ObservableObject
     [RelayCommand]
     private void Export()
     {
-        ExportPage.QueueEntry(SelectedMap);
+        _exportService.QueueEntry(SelectedMap);
     }
 
     [RelayCommand]
@@ -132,6 +139,11 @@ public partial class PlayListControl : UserControl
 
     public PlayListControl()
     {
+        if (!DesignerProperties.GetIsInDesignMode(this))
+        {
+            DataContext = App.Services.GetRequiredService(typeof(PlayListControlVm));
+        }
+
         InitializeComponent();
     }
 

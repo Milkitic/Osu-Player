@@ -221,7 +221,7 @@
                                     <buttonComponent:CommonButton Click="BtnPlayAll_Click" Style="{StaticResource PlayButton}" />
                                     <buttonComponent:CommonButton
                                         x:Name="BtnExportAll"
-                                        Click="BtnExportAll_Click"
+                                        Command="{Binding ExportAllCommand}"
                                         Style="{StaticResource SettingsButton}">
                                         <StackPanel Orientation="Horizontal">
                                             <Viewbox

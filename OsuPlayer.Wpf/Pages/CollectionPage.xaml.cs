@@ -140,10 +140,6 @@ namespace Milky.OsuPlayer.Pages
             }
         }
 
-        private void BtnExportAll_Click(object sender, RoutedEventArgs e)
-        {
-            ExportPage.QueueEntries(ViewModel.Entries);
-        }
 
         private async void PlaySelected()
         {
