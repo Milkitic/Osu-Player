@@ -33,7 +33,6 @@ namespace Milky.OsuPlayer.Pages
         private readonly IPlayerDataService _playerData = AppServices.PlayerData;
 
         private readonly MainWindow _mainWindow;
-        private IEnumerable<Beatmap> _entries;
         private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
 
         private static Binding _sourceBinding = new Binding(nameof(CollectionPageViewModel.DisplayedBeatmaps))
@@ -46,36 +45,12 @@ namespace Milky.OsuPlayer.Pages
         public CollectionPageViewModel ViewModel { get; set; }
         public string Id { get; set; }
 
-        public CollectionPage()
+        public CollectionPage(CollectionPageViewModel viewModel)
         {
             InitializeComponent();
             _mainWindow = (MainWindow)Application.Current.MainWindow;
 
-            ViewModel = (CollectionPageViewModel)this.DataContext;
-        }
-
-        public CollectionPage(string colId) : this()
-        {
-            _ = UpdateView(colId);
-        }
-
-        public async Task UpdateView(string colId)
-        {
-            await Task.Delay(1);
-
-            var collectionInfo = await _playerData.GetCollectionByIdAsync(colId);
-            if (collectionInfo == null) return;
-            ViewModel.CollectionInfo = collectionInfo;
-            await UpdateListAsync();
-        }
-
-        public async Task UpdateListAsync()
-        {
-            var infos = await _playerData.GetMapsFromCollectionAsync(ViewModel.CollectionInfo);
-            _entries = await _playerData.GetBeatmapsByMapInfoAsync(infos, TimeSortMode.AddTime);
-            ViewModel.Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_entries.ToDataModelList(false));
-            ViewModel.DisplayedBeatmaps = ViewModel.Beatmaps;
-            ListCount.Content = ViewModel.Beatmaps.Count;
+            DataContext = ViewModel = viewModel;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -167,7 +142,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void BtnExportAll_Click(object sender, RoutedEventArgs e)
         {
-            ExportPage.QueueEntries(_entries);
+            ExportPage.QueueEntries(ViewModel.Entries);
         }
 
         private async void PlaySelected()
@@ -211,8 +186,8 @@ namespace Milky.OsuPlayer.Pages
 
         private async void BtnPlayAll_Click(object sender, RoutedEventArgs e)
         {
-            var beatmaps = _entries.ToList();
-            if (beatmaps.Count <= 0) return;
+            var beatmaps = ViewModel.Entries?.ToList();
+            if (beatmaps == null || beatmaps.Count <= 0) return;
 
             await _controller.PlayList.SetSongListAsync(beatmaps, true);
         }

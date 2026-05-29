@@ -1,13 +1,16 @@
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared.Dependency;
@@ -18,19 +21,15 @@ using Milky.OsuPlayer.Windows;
 
 namespace Milky.OsuPlayer.ViewModels;
 
-public partial class CollectionPageViewModel : ObservableObject
+public partial class CollectionPageViewModel : ObservableObject, INavigationAware
 {
-    private readonly ObservablePlayController _controller = Service.Get<ObservablePlayController>();
+    private readonly ObservablePlayController _controller;
     private readonly IPlayerDataService _playerData;
 
-    public CollectionPageViewModel()
-        : this(AppServices.PlayerData)
-    {
-    }
-
-    public CollectionPageViewModel(IPlayerDataService playerData)
+    public CollectionPageViewModel(IPlayerDataService playerData, ObservablePlayController controller)
     {
         _playerData = playerData;
+        _controller = controller;
     }
 
     [ObservableProperty]
@@ -41,6 +40,35 @@ public partial class CollectionPageViewModel : ObservableObject
 
     [ObservableProperty]
     public partial Collection CollectionInfo { get; set; }
+
+    public IEnumerable<Beatmap> Entries { get; private set; }
+
+    public void OnNavigatedTo(object parameter)
+    {
+        if (parameter is string colId)
+        {
+            _ = UpdateView(colId);
+        }
+    }
+
+    public async Task UpdateView(string colId)
+    {
+        var collectionInfo = await _playerData.GetCollectionByIdAsync(colId);
+        if (collectionInfo == null) return;
+        CollectionInfo = collectionInfo;
+        await UpdateListAsync();
+    }
+
+    public async Task UpdateListAsync()
+    {
+        var infos = await _playerData.GetMapsFromCollectionAsync(CollectionInfo);
+        Entries = await _playerData.GetBeatmapsByMapInfoAsync(infos, TimeSortMode.AddTime);
+        Execute.OnUiThread(() =>
+        {
+            Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(Entries.ToDataModelList(false));
+            DisplayedBeatmaps = Beatmaps;
+        });
+    }
 
     [RelayCommand]
     private void SearchByCondition(string param)

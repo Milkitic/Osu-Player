@@ -1,14 +1,17 @@
 using System;
 using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
 using Milky.OsuPlayer.Common.Configuration;
 using Milky.OsuPlayer.Common.Instances;
 using Milky.OsuPlayer.Common.Scanning;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
+using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared.Dependency;
 using Milky.OsuPlayer.Utils;
+using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using NLog;
 
@@ -19,6 +22,8 @@ namespace Milky.OsuPlayer
     /// </summary>
     public partial class App : Application
     {
+        public static IServiceProvider Services { get; private set; }
+
         [STAThread]
         public static void Main()
         {
@@ -69,22 +74,74 @@ namespace Milky.OsuPlayer
 
             await EntryStartup.StartupAsync();
 
-            var controller = new ObservablePlayController(AppServices.PlayerDataStore);
-            controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
+            // 1. 初始化依赖注入容器
+            var services = new ServiceCollection();
+            ConfigureServices(services);
+            Services = services.BuildServiceProvider();
 
+            // 2. 向后兼容 Legacy Service Locator
+            var appNotificationService = Services.GetRequiredService<IAppNotificationService>();
+            var playerDataStore = Services.GetRequiredService<IPlayerDataStore>();
+            var playerDataService = Services.GetRequiredService<IPlayerDataService>();
+            var controller = Services.GetRequiredService<ObservablePlayController>();
+            var osuDbInst = Services.GetRequiredService<OsuDbInst>();
+            var lyricsInst = Services.GetRequiredService<LyricsInst>();
+            var updateInst = Services.GetRequiredService<UpdateInst>();
+            var osuFileScanner = Services.GetRequiredService<OsuFileScanner>();
+
+            Service.AddOrUpdateInstance<IAppNotificationService>(appNotificationService, (_, _) => appNotificationService);
+            Service.AddOrUpdateInstance<IPlayerDataStore>(playerDataStore, (_, _) => playerDataStore);
+            Service.AddOrUpdateInstance<IPlayerDataService>(playerDataService, (_, _) => playerDataService);
             Service.TryAddInstance(controller);
-            Service.TryAddInstance(new OsuDbInst());
-            Service.TryAddInstance(new LyricsInst());
-            Service.TryAddInstance(new UpdateInst());
-            Service.TryAddInstance(new OsuFileScanner());
+            Service.TryAddInstance(osuDbInst);
+            Service.TryAddInstance(lyricsInst);
+            Service.TryAddInstance(updateInst);
+            Service.TryAddInstance(osuFileScanner);
 
-            Service.Get<LyricsInst>().ReloadLyricProvider();
+            Services.GetRequiredService<LyricsInst>().ReloadLyricProvider();
 
             I18NUtil.LoadI18N();
 
-            var mainWindow = new MainWindow();
+            // 3. 从容器解析并启动 MainWindow
+            var mainWindow = Services.GetRequiredService<MainWindow>();
             MainWindow = mainWindow;
             mainWindow.Show();
+        }
+
+        private void ConfigureServices(IServiceCollection services)
+        {
+            // 🌟 注册核心后台服务 (Singletons)
+            services.AddSingleton<IAppNotificationService, AppNotificationService>();
+            services.AddSingleton<IPlayerDataStore, PlayerDataService>();
+            services.AddSingleton<IPlayerDataService>(provider =>
+                new NotifyingPlayerDataService(
+                    provider.GetRequiredService<IPlayerDataStore>(),
+                    provider.GetRequiredService<IAppNotificationService>()));
+
+            services.AddSingleton<ObservablePlayController>(provider =>
+            {
+                var controller = new ObservablePlayController(provider.GetRequiredService<IPlayerDataStore>());
+                controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
+                return controller;
+            });
+            services.AddSingleton<OsuDbInst>();
+            services.AddSingleton<LyricsInst>();
+            services.AddSingleton<UpdateInst>();
+            services.AddSingleton<OsuFileScanner>();
+
+            // 🌟 注册 ViewModels
+            services.AddSingleton<MainWindowViewModel>();
+            services.AddTransient<CollectionPageViewModel>();
+            services.AddTransient<SearchPageViewModel>();
+            services.AddSingleton<LyricWindowViewModel>();
+
+            // 🌟 注册 Windows / Pages
+            services.AddSingleton<MainWindow>();
+            services.AddTransient<CollectionPage>();
+            services.AddTransient<SearchPage>();
+            services.AddTransient<RecentPlayPage>();
+            services.AddTransient<ExportPage>();
+            services.AddTransient<StoryboardPage>();
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
