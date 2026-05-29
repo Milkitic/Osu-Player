@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOLUTION_FILE: OsuPlayer.slnx
+  APP_PROJECT: OsuPlayer.Wpf/OsuPlayer.Wpf.csproj
+  TEST_PROJECT: OsuPlayer.Data.Tests/OsuPlayer.Data.Tests.csproj
+  BUILD_CONFIGURATION: Release
+  PUBLISH_RUNTIME: win-x64
+  ARTIFACT_NAME_PREFIX: OsuPlayer
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+
+      - name: Restore
+        run: dotnet restore $env:SOLUTION_FILE -m
+
+      - name: Build
+        run: dotnet build $env:SOLUTION_FILE --configuration $env:BUILD_CONFIGURATION --no-restore -p:ContinuousIntegrationBuild=true -m
+
+      - name: Test Data Layer
+        run: dotnet test $env:TEST_PROJECT --configuration $env:BUILD_CONFIGURATION --no-build --verbosity normal
+
+      - name: Publish App
+        run: dotnet publish $env:APP_PROJECT --configuration $env:BUILD_CONFIGURATION --runtime $env:PUBLISH_RUNTIME --self-contained true --no-restore --output artifacts/publish/win-x64
+
+      - name: Pack Release
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $archiveName = "${env:ARTIFACT_NAME_PREFIX}-$tag-$env:PUBLISH_RUNTIME.zip"
+          $archivePath = Join-Path "artifacts" $archiveName
+          if (Test-Path $archivePath) {
+            Remove-Item $archivePath -Force
+          }
+          Compress-Archive -Path "artifacts/publish/win-x64/*" -DestinationPath $archivePath
+          "ARCHIVE_NAME=$archiveName" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "ARCHIVE_PATH=$archivePath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Upload Release Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARCHIVE_NAME }}
+          path: ${{ env.ARCHIVE_PATH }}
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ env.ARCHIVE_NAME }}
+          files: ${{ env.ARCHIVE_PATH }}
+          generate_release_notes: true
