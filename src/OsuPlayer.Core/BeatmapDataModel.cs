@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Coosu.Beatmap;
@@ -6,7 +6,7 @@ using Coosu.Beatmap.MetaData;
 using Coosu.Beatmap.Sections.GamePlay;
 using Milky.OsuPlayer.Presentation.ObjectModel;
 
-namespace Milky.OsuPlayer.Common
+namespace Milky.OsuPlayer.Core
 {
     public class BeatmapDataModel : NumberableModel, IMapIdentifiable, INotifyPropertyChanged
     {

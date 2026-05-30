@@ -1,12 +1,12 @@
-﻿//using Milky.OsuPlayer.Common.Configuration;
-//using Milky.OsuPlayer.Common.Player;
+//using Milky.OsuPlayer.Core.Configuration;
+//using Milky.OsuPlayer.Core.Player;
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;
 //using System.Text;
 //using System.Threading.Tasks;
 //using System.Windows.Input;
-//using Milky.OsuPlayer.Common;
+//using Milky.OsuPlayer.Core;
 //using Milky.OsuPlayer.Media.Audio;
 
 //namespace Milky.OsuPlayer.ViewModels

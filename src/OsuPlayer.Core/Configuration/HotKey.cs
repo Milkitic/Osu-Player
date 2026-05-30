@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 
-namespace Milky.OsuPlayer.Common.Configuration
+namespace Milky.OsuPlayer.Core.Configuration
 {
     [JsonConverter(typeof(HotKeyConverter))]
     // 01 01 00000025

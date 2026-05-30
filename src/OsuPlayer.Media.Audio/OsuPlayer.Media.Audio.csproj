@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj" />
+    <ProjectReference Include="..\OsuPlayer.Core\OsuPlayer.Core.csproj" />
     <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj" />
     <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj" />
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />

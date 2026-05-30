@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.Devices;
-using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;

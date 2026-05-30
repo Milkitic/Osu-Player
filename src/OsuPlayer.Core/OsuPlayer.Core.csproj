@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>$(OsuPlayerWindowsTargetFramework)</TargetFramework>
-    <RootNamespace>Milky.OsuPlayer.Common</RootNamespace>
-    <AssemblyName>OsuPlayer.Common</AssemblyName>
+    <RootNamespace>Milky.OsuPlayer.Core</RootNamespace>
+    <AssemblyName>OsuPlayer.Core</AssemblyName>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <LangVersion>latest</LangVersion>

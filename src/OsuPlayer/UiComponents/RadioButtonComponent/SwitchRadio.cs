@@ -6,8 +6,8 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Microsoft.Extensions.DependencyInjection;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Core;
+using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Presentation.Dependency;
 using Milky.OsuPlayer.Presentation.Interaction;
 

@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Milky.OsuPlayer.Common.Scanning;
+namespace Milky.OsuPlayer.Core.Scanning;
 
 public partial class FileScannerViewModel : ObservableObject
 {

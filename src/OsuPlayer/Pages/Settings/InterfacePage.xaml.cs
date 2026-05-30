@@ -1,4 +1,4 @@
-﻿using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Utils;
 using System.Linq;
 using System.Windows;

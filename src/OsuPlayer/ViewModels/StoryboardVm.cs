@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Core;
 
 namespace Milky.OsuPlayer.ViewModels;
 

@@ -133,7 +133,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OsuPlayer.Common\OsuPlayer.Common.csproj" />
+    <ProjectReference Include="..\OsuPlayer.Core\OsuPlayer.Core.csproj" />
     <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj" />
     <ProjectReference Include="..\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj" />
     <ProjectReference Include="..\OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj" />

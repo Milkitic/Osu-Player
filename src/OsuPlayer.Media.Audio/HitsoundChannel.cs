@@ -11,7 +11,7 @@ using Coosu.Beatmap.Sections.Timing;
 using Milki.Extensions.MixPlayer;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.Subchannels;
-using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Core;
 
 namespace Milky.OsuPlayer.Media.Audio
 {

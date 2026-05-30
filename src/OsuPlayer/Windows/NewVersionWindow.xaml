@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
-    xmlns:common="clr-namespace:Milky.OsuPlayer.Common;assembly=OsuPlayer.Common"
+    xmlns:shared="clr-namespace:Milky.OsuPlayer.Shared;assembly=OsuPlayer.Shared"
     xmlns:converters="clr-namespace:Milky.OsuPlayer.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Milky.OsuPlayer"
@@ -21,7 +21,7 @@
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <presentation:WindowEx.DataContext>
-        <common:GithubRelease />
+        <shared:GithubRelease />
     </presentation:WindowEx.DataContext>
     <presentation:WindowEx.Resources>
         <Style TargetType="{x:Type Paragraph}">

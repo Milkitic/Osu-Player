@@ -1,4 +1,4 @@
-using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Windows;
 using System;

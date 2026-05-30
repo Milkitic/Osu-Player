@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="Milky.OsuPlayer.Pages.Settings.GeneralPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,7 +7,7 @@
     xmlns:loaderComponent="clr-namespace:Milky.OsuPlayer.UiComponents.LoaderComponent"
     xmlns:local="clr-namespace:Milky.OsuPlayer.Pages.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:scanning="clr-namespace:Milky.OsuPlayer.Common.Scanning;assembly=OsuPlayer.Common"
+    xmlns:scanning="clr-namespace:Milky.OsuPlayer.Core.Scanning;assembly=OsuPlayer.Core"
     xmlns:textBoxComponent="clr-namespace:Milky.OsuPlayer.UiComponents.TextBoxComponent"
     Title="GeneralPage"
     d:DesignHeight="450"

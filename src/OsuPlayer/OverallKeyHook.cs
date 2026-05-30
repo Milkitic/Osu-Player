@@ -1,10 +1,10 @@
-﻿using Gma.System.MouseKeyHook;
+using Gma.System.MouseKeyHook;
 using Milky.OsuPlayer.Pages.Settings;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Linq;
 using System.Windows.Forms;
-using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Core.Configuration;
 using NLog;
 
 namespace Milky.OsuPlayer

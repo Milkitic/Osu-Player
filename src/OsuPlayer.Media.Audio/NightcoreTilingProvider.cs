@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
 using Milki.Extensions.MixPlayer;
-using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Core;
 
 namespace Milky.OsuPlayer.Media.Audio
 {

@@ -1,8 +1,8 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Milky.OsuPlayer.Shared;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Pages.Settings

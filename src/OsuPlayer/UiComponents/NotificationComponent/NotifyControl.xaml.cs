@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Core;
 
 namespace Milky.OsuPlayer.UiComponents.NotificationComponent
 {

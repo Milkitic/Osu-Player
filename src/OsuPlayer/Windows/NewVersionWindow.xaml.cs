@@ -1,5 +1,5 @@
-﻿using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Presentation;
 using System.Diagnostics;
 using System.Windows;

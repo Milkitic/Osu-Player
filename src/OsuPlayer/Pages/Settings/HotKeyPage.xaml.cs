@@ -1,4 +1,4 @@
-﻿using Milky.OsuPlayer.Presentation;
+using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Core.Configuration;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {

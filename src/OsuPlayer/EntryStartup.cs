@@ -1,6 +1,6 @@
 using Dapper.FluentMap;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Core;
+using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation;

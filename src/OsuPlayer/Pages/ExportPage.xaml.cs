@@ -1,6 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.ViewModels;
 
 namespace Milky.OsuPlayer.Pages;

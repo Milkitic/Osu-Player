@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Core;
 
 namespace Milky.OsuPlayer.UiComponents.FrontDialogComponent
 {

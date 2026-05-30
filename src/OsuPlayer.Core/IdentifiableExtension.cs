@@ -8,7 +8,7 @@ using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Services;
 
-namespace Milky.OsuPlayer.Common
+namespace Milky.OsuPlayer.Core
 {
     public static class IdentifiableExtension
     {
@@ -102,30 +102,6 @@ namespace Milky.OsuPlayer.Common
 
                 return model;
             }).ToList();
-        }
-
-        public static bool TryGetValue<T>(this HashSet<T> hs, Func<T, bool> predicate, out IEnumerable<T> actualValues)
-        {
-            actualValues = hs.Where(predicate);
-            if (actualValues.Any())
-            {
-                return true;
-            }
-
-            actualValues = null;
-            return false;
-        }
-
-        public static bool TryGetValue<T>(this HashSet<T> hs, T equalValue, out T actualValue)
-        {
-            if (hs.Contains(equalValue))
-            {
-                actualValue = hs.First(k => k.Equals(equalValue));
-                return true;
-            }
-
-            actualValue = default;
-            return false;
         }
 
         public static string GetFolder(this IMapIdentifiable map, out bool isFromDb, out string freePath)

@@ -3,8 +3,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Core;
+using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Utils;
 

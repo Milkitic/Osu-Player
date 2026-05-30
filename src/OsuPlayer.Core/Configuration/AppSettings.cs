@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Coosu.Beatmap.MetaData;
 using Newtonsoft.Json;
 
-namespace Milky.OsuPlayer.Common.Configuration
+namespace Milky.OsuPlayer.Core.Configuration
 {
     public class AppSettings : IDisposable
     {

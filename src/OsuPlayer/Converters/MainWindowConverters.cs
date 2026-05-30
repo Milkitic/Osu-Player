@@ -1,4 +1,4 @@
-﻿using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.UiComponents.RadioButtonComponent;
 using Milky.OsuPlayer.Utils;
 using System;

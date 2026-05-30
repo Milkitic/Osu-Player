@@ -8,7 +8,7 @@ using Coosu.Beatmap;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Services;
 
-namespace Milky.OsuPlayer.Common.Scanning
+namespace Milky.OsuPlayer.Core.Scanning
 {
     public class OsuFileScanner
     {

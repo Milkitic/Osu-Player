@@ -1,30 +1,30 @@
-﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
-namespace Milky.OsuPlayer.Common
+namespace Milky.OsuPlayer.Shared
 {
     public class GithubRelease
     {
-        [JsonProperty("url")]
+        [JsonPropertyName("url")]
         public string Url { get; set; }
-        [JsonProperty("html_url")]
+        [JsonPropertyName("html_url")]
         public string HtmlUrl { get; set; }
-        [JsonProperty("tag_name")]
+        [JsonPropertyName("tag_name")]
         public string TagName { get; set; }
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
-        [JsonProperty("draft")]
+        [JsonPropertyName("draft")]
         public bool Draft { get; set; }
-        [JsonProperty("prerelease")]
+        [JsonPropertyName("prerelease")]
         public bool PreRelease { get; set; }
-        [JsonProperty("created_at")]
+        [JsonPropertyName("created_at")]
         public DateTime? CreatedAt { get; set; }
-        [JsonProperty("published_at")]
+        [JsonPropertyName("published_at")]
         public DateTime? PublishedAt { get; set; }
-        [JsonProperty("assets")]
+        [JsonPropertyName("assets")]
         public List<Asset> Assets { get; set; }
-        [JsonProperty("body")]
+        [JsonPropertyName("body")]
         public string Body { get; set; }
 
         [JsonIgnore]
@@ -35,13 +35,13 @@ namespace Milky.OsuPlayer.Common
 
     public class Asset
     {
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
-        [JsonProperty("created_at")]
+        [JsonPropertyName("created_at")]
         public DateTime? CreatedAt { get; set; }
-        [JsonProperty("updated_at")]
+        [JsonPropertyName("updated_at")]
         public DateTime? UpdatedAt { get; set; }
-        [JsonProperty("browser_download_url")]
+        [JsonPropertyName("browser_download_url")]
         public string BrowserDownloadUrl { get; set; }
     }
 }

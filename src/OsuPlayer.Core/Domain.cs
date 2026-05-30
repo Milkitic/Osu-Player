@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.IO;
-using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Core.Configuration;
 
-namespace Milky.OsuPlayer.Common
+namespace Milky.OsuPlayer.Core
 {
     public static class Domain
     {

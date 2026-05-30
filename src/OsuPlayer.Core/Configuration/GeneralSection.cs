@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Path = System.IO.Path;
 using Point = System.Windows.Point;
 
-namespace Milky.OsuPlayer.Common.Configuration;
+namespace Milky.OsuPlayer.Core.Configuration;
 
 public class GeneralSection
 {

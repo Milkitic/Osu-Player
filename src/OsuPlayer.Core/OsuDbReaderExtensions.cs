@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Coosu.Beatmap.Sections.GamePlay;
 using Coosu.Database;
@@ -6,7 +6,7 @@ using Coosu.Database.DataTypes;
 using Coosu.Database.Generated;
 using Beatmap = Milky.OsuPlayer.Data.Models.Beatmap;
 
-namespace Milky.OsuPlayer.Common
+namespace Milky.OsuPlayer.Core
 {
     public static class OsuDbReaderExtensions
     {

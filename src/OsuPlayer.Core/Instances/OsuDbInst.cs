@@ -9,7 +9,7 @@ using Coosu.Database;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Services;
 
-namespace Milky.OsuPlayer.Common.Instances;
+namespace Milky.OsuPlayer.Core.Instances;
 
 public partial class OsuDbInst
 {

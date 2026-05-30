@@ -4,11 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:Milky.OsuPlayer"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:viewModels="clr-namespace:Milky.OsuPlayer.ViewModels"
-    xmlns:models1="clr-namespace:Milky.OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
-    xmlns:common="clr-namespace:Milky.OsuPlayer.Common;assembly=OsuPlayer.Common"
+    xmlns:core="clr-namespace:Milky.OsuPlayer.Core;assembly=OsuPlayer.Core"
     xmlns:converters="clr-namespace:Milky.OsuPlayer.Converters"
     xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
     xmlns:panelComponent="clr-namespace:Milky.OsuPlayer.UiComponents.PanelComponent"
@@ -30,7 +28,7 @@
         <QuinticEase x:Key="QuinticEaseOut" EasingMode="EaseOut" />
         <ContextMenu x:Key="DataModelListContextMenu" Style="{StaticResource DefaultContextMenu}">
             <d:Object.DataContext>
-                <common:BeatmapDataModel />
+                <core:BeatmapDataModel />
             </d:Object.DataContext>
             <MenuItem
                 Command="{Binding DataContext.PlayCommand, Mode=OneWay, Source={viewModels:RootObject}}"

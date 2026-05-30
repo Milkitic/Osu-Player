@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;

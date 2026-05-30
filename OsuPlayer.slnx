@@ -16,7 +16,7 @@
       <BuildType Solution="Release 4.6|*" Project="Debug" />
     </Project>
   </Folder>
-  <Project Path="src/OsuPlayer.Common/OsuPlayer.Common.csproj">
+  <Project Path="src/OsuPlayer.Core/OsuPlayer.Core.csproj">
     <BuildType Solution="Analysis|Any CPU" Project="Release" />
     <BuildType Solution="Analysis|x64" Project="Debug" />
     <BuildType Solution="Analysis|x86" Project="Debug" />

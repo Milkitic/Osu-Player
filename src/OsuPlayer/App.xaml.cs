@@ -1,10 +1,11 @@
 using System;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
-using Milky.OsuPlayer.Common;
-using Milky.OsuPlayer.Common.Configuration;
-using Milky.OsuPlayer.Common.Instances;
-using Milky.OsuPlayer.Common.Scanning;
+using Milky.OsuPlayer.Core;
+using Milky.OsuPlayer.Core.Configuration;
+using Milky.OsuPlayer.Core.Instances;
+using Milky.OsuPlayer.Shared;
+using Milky.OsuPlayer.Core.Scanning;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;

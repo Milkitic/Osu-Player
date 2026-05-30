@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Coosu.Beatmap;
 using Microsoft.Extensions.DependencyInjection;
-using Milky.OsuPlayer.Common;
+using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation;

@@ -1,8 +1,8 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Milki.Extensions.MixPlayer.Devices;
-using Milky.OsuPlayer.Common.Configuration;
+using Milky.OsuPlayer.Core.Configuration;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
