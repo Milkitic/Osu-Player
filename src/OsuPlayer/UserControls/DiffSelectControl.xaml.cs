@@ -21,7 +21,7 @@ public partial class DiffSelectPageViewModel : ObservableObject
     [RelayCommand]
     private async Task SelectAsync(object obj)
     {
-        var selectedMap = Entries.FirstOrDefault(k => k.Version == (string)obj);
+        if (obj is not Beatmap selectedMap) return;
         var callbackObj = new CallbackObj();
         if (Callback != null)
             await Callback(selectedMap, callbackObj);
@@ -35,9 +35,6 @@ public class CallbackObj
     public bool Handled { get; set; } = false;
 }
 
-/// <summary>
-/// DiffSelectControl.xaml 的交互逻辑
-/// </summary>
 public partial class DiffSelectControl : UserControl
 {
     private readonly DiffSelectPageViewModel _viewModel;
@@ -47,7 +44,7 @@ public partial class DiffSelectControl : UserControl
         InitializeComponent();
 
         _viewModel = (DiffSelectPageViewModel)DataContext;
-        _viewModel.Entries = new ObservableCollection<Beatmap>(entries.OrderBy(k => k.GameMode));
+        _viewModel.Entries = new ObservableCollection<Beatmap>(entries.OrderBy(k => k.GameMode).ThenBy(k => k.DiffSrNoneStandard));
         _viewModel.Callback = onSelect;
     }
 }

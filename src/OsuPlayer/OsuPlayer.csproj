@@ -33,6 +33,7 @@
     <Page Include="UserControls\AnimationControl.xaml" />
     <Page Include="UserControls\ClosingControl.xaml" />
     <Page Include="UserControls\DiffSelectControl.xaml" />
+    <Page Include="UserControls\DifficultyBadge.xaml" />
     <Page Include="UserControls\EditCollectionControl.xaml" />
     <Page Include="UserControls\MiniPlayController.xaml" />
     <Page Include="UserControls\PlayController.xaml" />
@@ -114,6 +115,10 @@
     <Resource Include="Resources\store.jpg" />
     <Resource Include="Resources\title.png" />
     <Resource Include="Resources\title_sm.png" />
+    <Resource Include="Resources\mode_circle.png" />
+    <Resource Include="Resources\mode_taiko.png" />
+    <Resource Include="Resources\mode_fruit.png" />
+    <Resource Include="Resources\mode_mania.png" />
   </ItemGroup>
 
   <ItemGroup>

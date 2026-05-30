@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:userControls="clr-namespace:Milky.OsuPlayer.UserControls"
-    xmlns:converters="clr-namespace:Milky.OsuPlayer.Converters"
     xmlns:buttonComponent="clr-namespace:Milky.OsuPlayer.UiComponents.ButtonComponent"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -14,83 +13,35 @@
     <UserControl.DataContext>
         <userControls:DiffSelectPageViewModel />
     </UserControl.DataContext>
-    <UserControl.Resources>
-        <converters:VersionToStringConverter x:Key="VersionToStringConverter" />
-    </UserControl.Resources>
-    <ListView
-        Margin="-10"
-        Background="Transparent"
-        BorderThickness="0"
-        ItemsSource="{Binding Entries, Mode=OneWay}">
-        <ListView.Resources>
-            <ControlTemplate x:Key="NormalButton" TargetType="{x:Type ListViewItem}">
-                <Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ItemsControl Margin="5" ItemsSource="{Binding Entries, Mode=OneWay}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
                     <buttonComponent:CommonButton
-                        x:Name="BtnCollection"
-                        Height="58"
+                        Height="auto"
                         MinHeight="26"
                         Margin="0,0,0,2"
+                        Padding="5,3"
                         HorizontalContentAlignment="Left"
                         Background="#FAFAFB"
                         BorderThickness="0"
                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.SelectCommand}"
-                        CommandParameter="{Binding Version}"
+                        CommandParameter="{Binding}"
                         Cursor="Hand">
                         <Grid HorizontalAlignment="Left">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="58" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <Label
-                                Grid.Column="0"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Foreground="#9A9A9A">
-                                <TextBlock
-                                    FontSize="25"
-                                    FontWeight="Bold"
-                                    Text="{Binding GameMode, Converter={StaticResource VersionToStringConverter}}"
-                                    TextWrapping="Wrap">
-                                    <TextBlock.RenderTransform>
-                                        <RotateTransform Angle="-5" CenterX="5" CenterY="5" />
-                                    </TextBlock.RenderTransform>
-                                </TextBlock>
-                            </Label>
-                            <Grid Grid.Column="1">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Label
-                                    Grid.Row="0"
-                                    MaxWidth="236"
-                                    VerticalAlignment="Center"
-                                    Foreground="#303030">
-                                    <TextBlock
-                                        FontWeight="Bold"
-                                        Text="{Binding Version}"
-                                        TextWrapping="Wrap" />
-                                </Label>
-                                <StackPanel Grid.Row="1" Orientation="Horizontal">
-                                    <Label
-                                        VerticalAlignment="Center"
-                                        Content="{Binding DiffSrNoneStandard}"
-                                        Foreground="#303030" />
-                                    <Label
-                                        Margin="-5,0,0,0"
-                                        VerticalAlignment="Center"
-                                        Content="Stars"
-                                        Foreground="#303030" />
-                                </StackPanel>
-                            </Grid>
+                            <userControls:DifficultyBadge
+                                GameMode="{Binding GameMode}"
+                                StarRating="{Binding DiffSrNoneStandard}"
+                                Version="{Binding Version}"
+                                VersionForeground="#303030" />
                         </Grid>
                     </buttonComponent:CommonButton>
-                </Grid>
-            </ControlTemplate>
-            <Style TargetType="{x:Type ListViewItem}">
-                <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="Template" Value="{StaticResource NormalButton}" />
-            </Style>
-        </ListView.Resources>
-    </ListView>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
 </UserControl>
