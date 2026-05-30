@@ -93,7 +93,7 @@ namespace Milky.OsuPlayer
             var playerData = new PlayerDataService();
             var defCol = await playerData.GetCollectionsAsync();
             var locked = defCol.Where(k => k.LockedBool);
-            if (!locked.Any()) await playerData.TryAddCollectionAsync("Favorite");
+            if (!locked.Any()) await playerData.TryAddCollectionAsync("Favorite", true);
         }
     }
 }

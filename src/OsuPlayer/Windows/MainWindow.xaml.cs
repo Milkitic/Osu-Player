@@ -380,7 +380,7 @@ public partial class MainWindow : WindowEx
 
     private async Task AddCollectionAndRefreshAsync(string collectionName)
     {
-        if (!await _playerData.TryAddCollectionAsync(collectionName))
+        if (!await _playerData.TryAddCollectionAsync(collectionName, false))
             return;
 
         await UpdateCollectionsAsync();

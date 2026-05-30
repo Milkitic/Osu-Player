@@ -56,7 +56,7 @@ public partial class SelectCollectionControl : UserControl
 
     private async Task AddCollectionAndRefreshAsync(string collectionName)
     {
-        if (!await _playerData.TryAddCollectionAsync(collectionName))
+        if (!await _playerData.TryAddCollectionAsync(collectionName, false))
             return;
 
         await WindowEx.GetCurrentFirst<MainWindow>().UpdateCollectionsAsync();

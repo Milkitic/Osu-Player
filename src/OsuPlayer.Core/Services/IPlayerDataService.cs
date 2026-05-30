@@ -34,7 +34,7 @@ namespace Milky.OsuPlayer.Services
 
         Task<List<Collection>> GetCollectionsByMapAsync(BeatmapSettings beatmapSettings);
 
-        Task<bool> TryAddCollectionAsync(string collectionName);
+        Task<bool> TryAddCollectionAsync(string collectionName, bool isLocked);
 
         Task<List<Beatmap>> GetBeatmapsByIdentifiableAsync(IEnumerable<IMapIdentifiable> mapIdentities);
 

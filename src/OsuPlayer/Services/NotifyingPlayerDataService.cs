@@ -76,8 +76,8 @@ namespace Milky.OsuPlayer.Services
                 "Error while getting collections by map",
                 []);
 
-        public Task<bool> TryAddCollectionAsync(string collectionName)
-            => RunAsync(() => _inner.TryAddCollectionAsync(collectionName),
+        public Task<bool> TryAddCollectionAsync(string collectionName, bool isLocked)
+            => RunAsync(() => _inner.TryAddCollectionAsync(collectionName, isLocked),
                 $"Error while adding collection \"{collectionName}\"",
                 false);
 

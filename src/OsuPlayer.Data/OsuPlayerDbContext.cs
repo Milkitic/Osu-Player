@@ -321,13 +321,13 @@ namespace Milky.OsuPlayer.Data
                 .ToListAsync();
         }
 
-        public async Task AddCollectionAsync(string name, bool locked = false)
+        public async Task AddCollectionAsync(string name, bool isLocked)
         {
             Collections.Add(new Collection
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = name,
-                Locked = locked ? 1 : 0,
+                Locked = isLocked ? 1 : 0,
                 Index = 0,
                 CreateTime = DateTime.Now
             });

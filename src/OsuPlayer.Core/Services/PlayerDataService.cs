@@ -81,10 +81,10 @@ namespace Milky.OsuPlayer.Services
             return await db.GetCollectionsByMapAsync(beatmapSettings);
         }
 
-        public async Task<bool> TryAddCollectionAsync(string collectionName)
+        public async Task<bool> TryAddCollectionAsync(string collectionName, bool isLocked)
         {
             await using var db = _createDbContext();
-            await db.AddCollectionAsync(collectionName);
+            await db.AddCollectionAsync(collectionName, isLocked);
             return true;
         }
 
