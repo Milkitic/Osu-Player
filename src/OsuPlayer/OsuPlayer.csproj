@@ -151,6 +151,7 @@
     <PackageReference Include="Coosu.Beatmap" Version="$(CoosuBeatmapVersion)" />
     <PackageReference Include="Dapper" Version="2.1.79" />
     <PackageReference Include="Dapper.FluentMap" Version="2.0.0" />
+    <PackageReference Include="FFmpeg.AutoGen" Version="7.0.0" />
     <PackageReference Include="FFME.Windows" Version="7.0.361-beta.1" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
     <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />

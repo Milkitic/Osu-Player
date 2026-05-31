@@ -1,4 +1,5 @@
 using Dapper.FluentMap;
+using FFmpeg.AutoGen;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Data;
@@ -36,9 +37,24 @@ namespace Milky.OsuPlayer
 
             StyleUtilities.SetAlignment();
 
+            InitFFmpeg();
+        }
+
+        private static void InitFFmpeg()
+        {
             // Keep FFmpeg binaries separated by process architecture to avoid x86/x64 mismatches.
             var ffmpegArchitecture = Environment.Is64BitProcess ? "win-x64" : "win-x86";
-            Unosquare.FFME.Library.FFmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg", ffmpegArchitecture);
+            var ffmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg", ffmpegArchitecture);
+
+            Unosquare.FFME.Library.FFmpegDirectory = ffmpegDirectory;
+            DynamicallyLoadedBindings.FunctionResolver = new FFmpegWindowsFunctionResolver();
+
+            if (!Unosquare.FFME.Library.LoadFFmpeg())
+            {
+                throw new DllNotFoundException($"Unable to initialize FFmpeg from '{ffmpegDirectory}'.");
+            }
+
+            _ = ffmpeg.avformat_version();
         }
 
         private static bool LoadConfig()
