@@ -8,7 +8,6 @@
     <AssemblyTitle>Osu Player</AssemblyTitle>
     <Product>Osu Player</Product>
     <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
     <EnableDefaultPageItems>false</EnableDefaultPageItems>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -156,7 +155,7 @@
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
     <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
-    <PackageReference Include="MouseKeyHook" Version="5.7.1" />
+    <PackageReference Include="Milki.Extensions.MouseKeyHook" Version="0.1.5" />
     <PackageReference Include="NAudio" Version="2.3.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
     <PackageReference Include="NLog" Version="6.1.3" />

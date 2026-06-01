@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+﻿using Milki.Extensions.MouseKeyHook;
 using System.Windows.Input;
 
 namespace Milky.OsuPlayer.Utils
@@ -61,7 +61,7 @@ namespace Milky.OsuPlayer.Utils
             }
         }
 
-        public static string ConvertToString(this Keys key)
+        public static string ConvertToString(this HookKeys key)
         {
             string keyStr = key.ToString();
             if (keyStr.StartsWith("D") && keyStr.Length == 2)
@@ -72,45 +72,45 @@ namespace Milky.OsuPlayer.Utils
 
             switch (key)
             {
-                case Keys.OemMinus:
+                case HookKeys.OemMinus:
                     return "-";
-                case Keys.Oemplus:
+                case HookKeys.Oemplus:
                     return "=";
-                case Keys.OemQuestion:
+                case HookKeys.OemQuestion:
                     return "/";
-                case Keys.Oem3:
+                case HookKeys.Oem3:
                     return "`";
-                case Keys.Oemcomma:
+                case HookKeys.Oemcomma:
                     return ",";
-                case Keys.OemPeriod:
+                case HookKeys.OemPeriod:
                     return ".";
-                case Keys.Oem1:
+                case HookKeys.Oem1:
                     return ";";
-                case Keys.OemQuotes:
+                case HookKeys.OemQuotes:
                     return "'";
-                case Keys.OemOpenBrackets:
+                case HookKeys.OemOpenBrackets:
                     return "[";
-                case Keys.Oem6:
+                case HookKeys.Oem6:
                     return "]";
-                case Keys.Oem5:
+                case HookKeys.Oem5:
                     return "\\";
-                case Keys.Divide:
+                case HookKeys.Divide:
                     return "Num/";
-                case Keys.Multiply:
+                case HookKeys.Multiply:
                     return "Num*";
-                case Keys.Subtract:
+                case HookKeys.Subtract:
                     return "Num-";
-                case Keys.Add:
+                case HookKeys.Add:
                     return "Num+";
-                case Keys.Decimal:
+                case HookKeys.Decimal:
                     return "Num.";
-                case Keys.Left:
+                case HookKeys.Left:
                     return "←";
-                case Keys.Right:
+                case HookKeys.Right:
                     return "→";
-                case Keys.Up:
+                case HookKeys.Up:
                     return "↑";
-                case Keys.Down:
+                case HookKeys.Down:
                     return "↓";
                 default:
                     return keyStr;

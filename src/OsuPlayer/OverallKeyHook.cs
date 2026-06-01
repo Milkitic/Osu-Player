@@ -1,9 +1,8 @@
-using Gma.System.MouseKeyHook;
+using Milki.Extensions.MouseKeyHook;
 using Milky.OsuPlayer.Pages.Settings;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Linq;
-using System.Windows.Forms;
 using Milky.OsuPlayer.Core.Configuration;
 using NLog;
 
@@ -14,8 +13,7 @@ namespace Milky.OsuPlayer
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         private readonly MainWindow _mainWindow;
-        private readonly IKeyboardMouseEvents _globalHook;
-        private bool _holdingCtrl, _holdingAlt, _holdingShift;
+        private readonly IKeyboardHook _globalHook;
         private HotKeyType? _configType;
 
         public HotKeyType? ConfigType
@@ -30,9 +28,8 @@ namespace Milky.OsuPlayer
         public OverallKeyHook(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
-            _globalHook = Hook.GlobalEvents();
-            _globalHook.KeyDown += GlobalHookKeyDown;
-            _globalHook.KeyUp += GlobalHookKeyUp;
+            _globalHook = KeyboardHookFactory.CreateGlobal();
+            _globalHook.KeyPressed += GlobalHookKeyPressed;
         }
 
         public static void AddKeyHook(HotKeyType type, Action callback)
@@ -45,14 +42,14 @@ namespace Milky.OsuPlayer
             }
             else
             {
-                if (setHotKey.Key != Keys.None) 
+                if (setHotKey.Key != HookKeys.None) 
                 { 
                     setHotKey.Callback = callback; 
                 }
             }
         }
 
-        public static void BindHotKey(HotKeyType type, bool useCtrl, bool useAlt, bool useShift, Keys key)
+        public static void BindHotKey(HotKeyType type, bool useCtrl, bool useAlt, bool useShift, HookKeys key)
         {
             var hotKey = AppSettings.Default.HotKeys.FirstOrDefault(k => k.Type == type);
             if (hotKey == null)
@@ -67,45 +64,39 @@ namespace Milky.OsuPlayer
             hotKey.UseShiftKey = useShift;
         }
 
-        private void GlobalHookKeyDown(object sender, KeyEventArgs e)
+        private void GlobalHookKeyPressed(HookModifierKeys modifiers, HookKeys key, KeyAction action)
         {
-            if (e.KeyCode == Keys.LControlKey || e.KeyCode == Keys.RControlKey)
-                _holdingCtrl = true;
-            else if (e.KeyCode == Keys.LShiftKey || e.KeyCode == Keys.RShiftKey)
-                _holdingShift = true;
-            else if (e.KeyCode == Keys.LMenu || e.KeyCode == Keys.RMenu)
-                _holdingAlt = true;
+            if (action != KeyAction.KeyDown || IsModifierKey(key))
+            {
+                return;
+            }
+
+            var useCtrl = modifiers.HasFlag(HookModifierKeys.Control);
+            var useAlt = modifiers.HasFlag(HookModifierKeys.Alt);
+            var useShift = modifiers.HasFlag(HookModifierKeys.Shift);
+
+            if (ConfigType != null)
+            {
+                BindHotKey(ConfigType.Value, useCtrl, useAlt, useShift, key);
+            }
             else
             {
-                if (ConfigType != null)
-                {
-                    BindHotKey(ConfigType.Value, _holdingCtrl, _holdingAlt, _holdingShift, e.KeyCode);
-                }
-                else
-                    AppSettings.Default.HotKeys.FirstOrDefault(key =>
-                        _holdingCtrl == key.UseControlKey && _holdingAlt == key.UseAltKey &&
-                        _holdingShift == key.UseShiftKey && e.KeyCode == key.Key)?.Callback?.Invoke();
+                AppSettings.Default.HotKeys.FirstOrDefault(hotKey =>
+                    useCtrl == hotKey.UseControlKey && useAlt == hotKey.UseAltKey &&
+                    useShift == hotKey.UseShiftKey && key == hotKey.Key)?.Callback?.Invoke();
             }
         }
 
-        private void GlobalHookKeyUp(object sender, KeyEventArgs e)
+        private static bool IsModifierKey(HookKeys key)
         {
-            if (e.KeyCode == Keys.LControlKey || e.KeyCode == Keys.RControlKey)
-                _holdingCtrl = false;
-            else if (e.KeyCode == Keys.LShiftKey || e.KeyCode == Keys.RShiftKey)
-                _holdingShift = false;
-            else if (e.KeyCode == Keys.LMenu || e.KeyCode == Keys.RMenu)
-                _holdingAlt = false;
-            else
-            {
-                // ignore
-            }
+            return key is HookKeys.ControlKey or HookKeys.LControlKey or HookKeys.RControlKey
+                or HookKeys.ShiftKey or HookKeys.LShiftKey or HookKeys.RShiftKey
+                or HookKeys.Menu or HookKeys.LMenu or HookKeys.RMenu;
         }
 
         public void Dispose()
         {
-            _globalHook.KeyDown -= GlobalHookKeyDown;
-            _globalHook.KeyUp -= GlobalHookKeyUp;
+            _globalHook.KeyPressed -= GlobalHookKeyPressed;
             _globalHook.Dispose();
         }
     }

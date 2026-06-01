@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Windows.Forms;
+using Milki.Extensions.MouseKeyHook;
 
 namespace Milky.OsuPlayer.Core.Configuration
 {
@@ -12,7 +12,7 @@ namespace Milky.OsuPlayer.Core.Configuration
     public class HotKey
     {
         public HotKeyType Type { get; set; }
-        public Keys Key { get; set; }
+        public HookKeys Key { get; set; }
         public bool Enabled { get; set; }
         public bool UseControlKey { get; set; }
         public bool UseAltKey { get; set; }
@@ -71,7 +71,7 @@ namespace Milky.OsuPlayer.Core.Configuration
             hotKey.UseShiftKey = arr[3];
             hotKey.Type = (HotKeyType)bytes[1];
             var int32 = BitConverter.ToInt32(bytes, 2);
-            hotKey.Key = (Keys)int32;
+            hotKey.Key = (HookKeys)int32;
             return hotKey;
         }
     }

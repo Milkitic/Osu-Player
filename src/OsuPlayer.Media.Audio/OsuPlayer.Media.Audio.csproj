@@ -3,10 +3,6 @@
   <PropertyGroup>
     <TargetFramework>$(OsuPlayerWindowsTargetFramework)</TargetFramework>
     <RootNamespace>Milky.OsuPlayer.Media.Audio</RootNamespace>
-    <AssemblyName>OsuPlayer.Media.Audio</AssemblyName>
-    <UseWindowsForms>true</UseWindowsForms>
-    <AssemblyTitle>OsuPlayer.Media.Audio2</AssemblyTitle>
-    <Product>OsuPlayer.Media.Audio2</Product>
   </PropertyGroup>
 
   <ItemGroup>
