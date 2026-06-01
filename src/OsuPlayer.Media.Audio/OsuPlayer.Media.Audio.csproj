@@ -28,7 +28,6 @@
     <PackageReference Include="Coosu.Beatmap" Version="$(CoosuBeatmapVersion)" />
     <PackageReference Include="Milki.Extensions.MixPlayer" Version="0.0.9" />
     <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NLog" Version="6.1.3" />
   </ItemGroup>
 

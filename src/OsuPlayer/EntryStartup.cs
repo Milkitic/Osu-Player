@@ -7,11 +7,11 @@ using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared;
-using Newtonsoft.Json;
 using NLog;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -69,13 +69,7 @@ namespace Milky.OsuPlayer
                 try
                 {
                     var content = ConcurrentFile.ReadAllText(file);
-                    AppSettings.Load(JsonConvert.DeserializeObject<AppSettings>(content,
-                            new JsonSerializerSettings
-                            {
-                                TypeNameHandling = TypeNameHandling.Auto
-                            }
-                        )
-                    );
+                    AppSettings.Load(JsonSerializer.Deserialize<AppSettings>(content, AppSettings.JsonOptions));
                 }
                 catch (JsonException ex)
                 {

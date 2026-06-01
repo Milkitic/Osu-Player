@@ -1,6 +1,6 @@
+using System.Text.Json.Serialization;
 using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Shared.Models;
-using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Core.Configuration
 {
@@ -8,9 +8,9 @@ namespace Milky.OsuPlayer.Core.Configuration
     {
         public string MusicPath { get; set; } = Domain.MusicPath;
         public string BgPath { get; set; } = Domain.BackgroundPath;
-        [JsonProperty("NamingStyle")]
+        [JsonPropertyName("NamingStyle")]
         public ExportNamingStyle ExportNamingStyle { get; set; } = ExportNamingStyle.ArtistTitle;
-        [JsonProperty("SortStyle")]
+        [JsonPropertyName("SortStyle")]
         public ExportGroupStyle ExportGroupStyle { get; set; } = ExportGroupStyle.Artist;
     }
 }

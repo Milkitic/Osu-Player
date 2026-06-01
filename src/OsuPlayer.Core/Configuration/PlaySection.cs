@@ -1,10 +1,10 @@
 //using Milky.OsuPlayer.Core.Annotations;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 using Milki.Extensions.MixPlayer.Devices;
 using Milky.OsuPlayer.Presentation.Annotations;
 using Milky.OsuPlayer.Shared.Models;
-using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Core.Configuration
 {

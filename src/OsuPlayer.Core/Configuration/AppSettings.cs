@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Coosu.Beatmap.MetaData;
-using Newtonsoft.Json;
 
 namespace Milky.OsuPlayer.Core.Configuration
 {
@@ -26,7 +27,7 @@ namespace Milky.OsuPlayer.Core.Configuration
         public GeneralSection General { get; set; } = new GeneralSection();
         public InterfaceSection Interface { get; set; } = new InterfaceSection();
         public PlaySection Play { get; set; } = new PlaySection();
-        [JsonProperty("hot_keys")]
+        [JsonPropertyName("hot_keys")]
         public List<HotKey> HotKeys { get; set; } = new List<HotKey>();
         public LyricSection Lyric { get; set; } = new LyricSection();
         public ExportSection Export { get; set; } = new ExportSection();
@@ -43,11 +44,7 @@ namespace Milky.OsuPlayer.Core.Configuration
             lock (FileSaveLock)
             {
                 //FileStream.Value.SetLength(0);
-                var content = JsonConvert.SerializeObject(this, Formatting.Indented,
-                    new JsonSerializerSettings
-                    {
-                        TypeNameHandling = TypeNameHandling.Auto
-                    });
+                var content = JsonSerializer.Serialize(this, JsonOptions);
                 //byte[] buffer = Encoding.GetBytes(content);
                 //FileStream.Value.Write(buffer, 0, buffer.Length);
                 File.WriteAllText(Domain.ConfigFile, content);
@@ -62,6 +59,10 @@ namespace Milky.OsuPlayer.Core.Configuration
 
         private static readonly Encoding Encoding = Encoding.UTF8;
         private static readonly object FileSaveLock = new object();
+        public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
 
         public static AppSettings Default { get; private set; }
 
