@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Milki.Extensions.MixPlayer;
-using Milki.Extensions.MixPlayer.Annotations;
 using Milki.Extensions.MixPlayer.NAudioExtensions;
 using Milki.Extensions.MixPlayer.Subchannels;
 
@@ -13,7 +12,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private readonly int _delay;
         private readonly SampleControl _control;
 
-        public DirectChannel(string audioPath, int delay, [NotNull] AudioPlaybackEngine engine, SampleControl control = null) : base(engine)
+        public DirectChannel(string audioPath, int delay, AudioPlaybackEngine engine, SampleControl control = null) : base(engine)
         {
             _audioPath = audioPath;
             _delay = delay;
