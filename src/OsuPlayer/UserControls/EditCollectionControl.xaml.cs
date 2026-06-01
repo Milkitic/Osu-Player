@@ -18,13 +18,10 @@ public partial class EditCollectionControl : UserControl
     private readonly Collection _collection;
     private EditCollectionPageViewModel _viewModel;
 
-    public EditCollectionControl(Collection collection)
+    public EditCollectionControl(Collection collection, IPlayerDataService playerData)
     {
         _collection = collection;
-        if (App.Services != null)
-        {
-            _playerData = App.Services.GetRequiredService<IPlayerDataService>();
-        }
+        _playerData = playerData;
 
         InitializeComponent();
         _viewModel = (EditCollectionPageViewModel)DataContext;

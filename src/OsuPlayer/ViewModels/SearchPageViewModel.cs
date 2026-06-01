@@ -48,6 +48,9 @@ public partial class SearchPageViewModel : ObservableObject
     public partial List<BeatmapDataModel> DisplayedMaps { get; private set; } = [];
 
     [ObservableProperty]
+    public partial bool IsMinimalMode { get; set; }
+
+    [ObservableProperty]
     public partial List<ListPageViewModel> Pages { get; private set; } = [];
 
     [ObservableProperty]

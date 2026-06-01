@@ -328,8 +328,18 @@
                                     x:Name="MapList"
                                     Background="{StaticResource WhiteBrush40}"
                                     BorderThickness="0"
-                                    ItemContainerStyle="{StaticResource EventGridViewItem}"
-                                    Visibility="Collapsed">
+                                    ItemsSource="{Binding DisplayedBeatmaps, Mode=OneWay}"
+                                    ItemContainerStyle="{StaticResource EventGridViewItem}">
+                                    <ListView.Style>
+                                        <Style TargetType="ListView">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsMinimalMode}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ListView.Style>
                                     <ListView.InputBindings>
                                         <KeyBinding
                                             Key="Delete"
@@ -391,6 +401,16 @@
                                     Background="Transparent"
                                     BorderThickness="0"
                                     ItemsSource="{Binding DisplayedBeatmaps, Mode=OneWay}">
+                                    <ListBox.Style>
+                                        <Style TargetType="ListBox">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsMinimalMode}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ListBox.Style>
                                     <ListBox.InputBindings>
                                         <KeyBinding
                                             Key="Delete"

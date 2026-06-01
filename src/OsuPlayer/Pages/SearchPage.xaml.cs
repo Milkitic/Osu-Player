@@ -20,11 +20,6 @@ namespace Milky.OsuPlayer.Pages;
 public partial class SearchPage : Page
 {
     private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
-    private static readonly Binding s_sourceBinding = new(nameof(SearchPageViewModel.DisplayedMaps))
-    {
-        Mode = BindingMode.OneWay
-    };
-
     private static bool _minimal;
 
     private readonly ObservablePlayController _controller;
@@ -57,23 +52,9 @@ public partial class SearchPage : Page
     private async void SearchPage_Loaded(object sender, RoutedEventArgs e)
     {
         var minimal = AppSettings.Default.Interface.MinimalMode;
+        ViewModel.IsMinimalMode = minimal;
         if (minimal != _minimal)
         {
-            if (minimal)
-            {
-                ResultCardList.ItemsSource = null;
-                ResultList.SetBinding(ItemsControl.ItemsSourceProperty, s_sourceBinding);
-                ResultCardList.Visibility = Visibility.Collapsed;
-                ResultList.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                ResultList.ItemsSource = null;
-                ResultCardList.SetBinding(ItemsControl.ItemsSourceProperty, s_sourceBinding);
-                ResultList.Visibility = Visibility.Collapsed;
-                ResultCardList.Visibility = Visibility.Visible;
-            }
-
             _minimal = minimal;
             await ViewModel.PlayListQueryAsync(0, false);
         }

@@ -111,49 +111,52 @@ public class SwitchRadio : RadioButton
         FrameworkElement page;
         if (App.Services != null)
         {
+            var navService = App.Services.GetRequiredService<INavigationService>();
             page = (FrameworkElement)App.Services.GetRequiredService(TargetPageType);
+            
+            _loadedAction?.Invoke(page);
+            _loadedAction = null;
+
+            navService.NavigateTo(TargetPageType, TargetPageData);
         }
         else
         {
             page = (FrameworkElement)(TargetPageData == null
                 ? Activator.CreateInstance(TargetPageType)
                 : Activator.CreateInstance(TargetPageType, TargetPageData));
-        }
 
-        _loadedAction?.Invoke(page);
-        _loadedAction = null;
+            _loadedAction?.Invoke(page);
+            _loadedAction = null;
 
-        if (TargetPageData != null)
-        {
-            if (page.DataContext is INavigationAware navigationAware)
+            if (TargetPageData != null)
             {
-                navigationAware.OnNavigatedTo(TargetPageData);
+                if (page.DataContext is INavigationAware navigationAware)
+                {
+                    navigationAware.OnNavigatedTo(TargetPageData);
+                }
+                else if (page is Pages.CollectionPage collectionPage)
+                {
+                    collectionPage.Id = TargetPageData.ToString();
+                }
             }
-            else if (page is Pages.CollectionPage collectionPage)
+
+            var originTransform = page.RenderTransform;
+            page.RenderTransformOrigin = new Point(0.5, 0.5);
+            Storyboard.SetTarget(Da1, page);
+            Storyboard.SetTarget(Ta1, page);
+            Storyboard.SetTarget(Ta1Clone, page);
+            if (page.RenderTransform.GetType() != typeof(ScaleTransform))
+                page.RenderTransform = new ScaleTransform();
+            frame.NavigationService.Navigate(page);
+
+            FadeinSb.Completed += OnSbOnCompleted;
+            FadeinSb.Begin();
+
+            void OnSbOnCompleted(object sender, EventArgs e)
             {
-                collectionPage.Id = TargetPageData.ToString();
+                page.RenderTransform = originTransform;
+                FadeinSb.Completed -= OnSbOnCompleted;
             }
-        }
-        var endOpacity = page.Opacity;
-        var originTransform = page.RenderTransform;
-        page.RenderTransformOrigin = new Point(0.5, 0.5);
-        Storyboard.SetTarget(Da1, page);
-        Storyboard.SetTarget(Ta1, page);
-        Storyboard.SetTarget(Ta1Clone, page);
-        if (page.RenderTransform.GetType() != typeof(ScaleTransform))
-            page.RenderTransform = new ScaleTransform();
-        frame.NavigationService.Navigate(page);
-
-        FadeinSb.Completed += OnSbOnCompleted;
-        FadeinSb.Begin();
-
-        void OnSbOnCompleted(object sender, EventArgs e)
-        {
-            page.RenderTransform = originTransform;
-            //page.BeginAnimation(OpacityProperty, null);
-            //page.BeginAnimation(TranslateTransform.XProperty, null);
-            //var removeSb = new RemoveStoryboard { BeginStoryboardName = FadeinSb.Name };
-            FadeinSb.Completed -= OnSbOnCompleted;
         }
     }
 

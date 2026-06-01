@@ -23,11 +23,6 @@ namespace Milky.OsuPlayer.Pages;
 public partial class CollectionPage : Page
 {
     private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
-    private static readonly Binding s_sourceBinding = new(nameof(CollectionPageViewModel.DisplayedBeatmaps))
-    {
-        Mode = BindingMode.OneWay
-    };
-
     private readonly MainWindow _mainWindow;
     private readonly ObservablePlayController _controller;
 
@@ -48,23 +43,9 @@ public partial class CollectionPage : Page
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
         var minimal = AppSettings.Default.Interface.MinimalMode;
+        ViewModel.IsMinimalMode = minimal;
         if (minimal != _minimal)
         {
-            if (minimal)
-            {
-                MapCardList.ItemsSource = null;
-                MapList.SetBinding(ItemsControl.ItemsSourceProperty, s_sourceBinding);
-                MapCardList.Visibility = Visibility.Collapsed;
-                MapList.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                MapList.ItemsSource = null;
-                MapCardList.SetBinding(ItemsControl.ItemsSourceProperty, s_sourceBinding);
-                MapList.Visibility = Visibility.Collapsed;
-                MapCardList.Visibility = Visibility.Visible;
-            }
-
             _minimal = minimal;
         }
 
@@ -97,7 +78,7 @@ public partial class CollectionPage : Page
 
     private void BtnEdit_Click(object sender, RoutedEventArgs e)
     {
-        FrontDialogOverlay.Default.ShowContent(new EditCollectionControl(ViewModel.CollectionInfo),
+        FrontDialogOverlay.Default.ShowContent(new EditCollectionControl(ViewModel.CollectionInfo, ViewModel.PlayerData),
             DialogOptionFactory.EditCollectionOptions);
     }
 

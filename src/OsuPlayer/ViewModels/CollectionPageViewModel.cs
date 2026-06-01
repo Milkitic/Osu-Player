@@ -33,6 +33,8 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
         _exportService = exportService;
     }
 
+    public IPlayerDataService PlayerData => _playerData;
+
     [ObservableProperty]
     public partial NumberableObservableCollection<BeatmapDataModel> Beatmaps { get; set; }
 
@@ -41,6 +43,9 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
 
     [ObservableProperty]
     public partial Collection CollectionInfo { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsMinimalMode { get; set; }
 
     [ObservableProperty]
     private string _searchText = string.Empty;

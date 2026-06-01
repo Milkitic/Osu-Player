@@ -64,9 +64,11 @@ public partial class MainWindow : WindowEx
         LyricsInst lyricsInst,
         OsuFileScanner osuFileScanner,
         OsuDbInst osuDbInst,
-        UpdateInst updateInst)
+        UpdateInst updateInst,
+        INavigationService navigationService)
     {
         InitializeComponent();
+        navigationService.Initialize(MainFrame);
         _controller = controller;
         _playerData = playerData;
         _lyricsInst = lyricsInst;
