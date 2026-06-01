@@ -106,7 +106,6 @@ public partial class MainWindow : WindowEx
         {
             Execute.OnUiThread(() =>
             {
-                SwitchSearch.IsChecked = true;
                 if (MainFrame.Content is SearchPage searchPage)
                 {
                     searchPage.Search(m.Value);

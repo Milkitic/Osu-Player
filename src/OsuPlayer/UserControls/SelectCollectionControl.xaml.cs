@@ -117,11 +117,20 @@ public partial class SelectCollectionControl : UserControl
             return false;
         }
 
+        var currentInfo = controller.PlayList?.CurrentInfo;
+        if (!col.LockedBool || currentInfo?.Beatmap == null)
+        {
+            return true;
+        }
+
         foreach (var beatmap in entries)
         {
-            if (!controller.PlayList.CurrentInfo.Beatmap.GetIdentity().Equals(beatmap.GetIdentity()) ||
-                !col.LockedBool) continue;
-            controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite = false;
+            if (!currentInfo.Beatmap.GetIdentity().Equals(beatmap.GetIdentity())) continue;
+            if (currentInfo.BeatmapDetail?.Metadata != null)
+            {
+                currentInfo.BeatmapDetail.Metadata.IsFavorite = false;
+            }
+
             break;
         }
 

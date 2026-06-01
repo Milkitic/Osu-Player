@@ -62,7 +62,7 @@ namespace Milky.OsuPlayer.Services
             }
         }
 
-        public void NavigateTo(Type pageType, object parameter = null)
+        public void NavigateTo(Type pageType, object parameter = null, Action<FrameworkElement> pagePrepared = null)
         {
             if (_frame == null)
             {
@@ -70,6 +70,7 @@ namespace Milky.OsuPlayer.Services
             }
 
             var page = (FrameworkElement)_serviceProvider.GetRequiredService(pageType);
+            pagePrepared?.Invoke(page);
 
             if (parameter != null)
             {

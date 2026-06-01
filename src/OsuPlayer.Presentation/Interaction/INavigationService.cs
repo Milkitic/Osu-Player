@@ -1,4 +1,5 @@
 using System;
+using System.Windows;
 
 namespace Milky.OsuPlayer.Presentation.Interaction
 {
@@ -10,7 +11,7 @@ namespace Milky.OsuPlayer.Presentation.Interaction
         /// <summary>
         /// 导航到指定页面类型
         /// </summary>
-        void NavigateTo(Type pageType, object parameter = null);
+        void NavigateTo(Type pageType, object parameter = null, Action<FrameworkElement> pagePrepared = null);
 
         /// <summary>
         /// 注册导航的主 Frame

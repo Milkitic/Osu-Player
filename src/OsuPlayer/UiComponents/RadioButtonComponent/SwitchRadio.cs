@@ -108,20 +108,17 @@ public class SwitchRadio : RadioButton
 
     private void Navigate(Frame frame)
     {
-        FrameworkElement page;
         if (App.Services != null)
         {
             var navService = App.Services.GetRequiredService<INavigationService>();
-            page = (FrameworkElement)App.Services.GetRequiredService(TargetPageType);
-            
-            _loadedAction?.Invoke(page);
+            var loadedAction = _loadedAction;
             _loadedAction = null;
 
-            navService.NavigateTo(TargetPageType, TargetPageData);
+            navService.NavigateTo(TargetPageType, TargetPageData, page => loadedAction?.Invoke(page));
         }
         else
         {
-            page = (FrameworkElement)(TargetPageData == null
+            var page = (FrameworkElement)(TargetPageData == null
                 ? Activator.CreateInstance(TargetPageType)
                 : Activator.CreateInstance(TargetPageType, TargetPageData));
 
