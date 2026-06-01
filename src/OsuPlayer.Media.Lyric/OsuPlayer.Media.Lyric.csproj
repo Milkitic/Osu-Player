@@ -5,8 +5,4 @@
     <RootNamespace>Milky.OsuPlayer.Media.Lyric</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-  </ItemGroup>
-
 </Project>

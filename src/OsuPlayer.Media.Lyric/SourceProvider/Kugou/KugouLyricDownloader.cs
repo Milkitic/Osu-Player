@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using System;
 using System.IO;
 using System.Net;
@@ -29,10 +29,10 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Kugou
                 content = reader.ReadToEnd();
             }
 
-            JObject obj = JObject.Parse(content);
-            if ((int)obj["err_code"] != 0)
+            var obj = JsonNode.Parse(content);
+            if (obj["err_code"].GetValue<int>() != 0)
                 return null;
-            var rawLyric = obj["data"]["lyrics"].ToString();
+            var rawLyric = obj["data"]["lyrics"].GetValue<string>();
             var lyrics = rawLyric.Replace("\r\n", "\n");
 
             return lyrics;

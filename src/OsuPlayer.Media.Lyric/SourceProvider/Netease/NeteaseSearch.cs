@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
 {
@@ -75,16 +76,16 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
                 content = reader.ReadToEnd();
             }
 
-            JObject json = JObject.Parse(content);
+            var json = JsonNode.Parse(content);
 
-            var count = json["result"]["songCount"]?.ToObject<int>();
+            var count = json["result"]["songCount"]?.GetValue<int>();
 
             if (count == 0)
             {
                 return new List<Song>();
             }
 
-            var result = json["result"]["songs"].ToObject<List<Song>>();
+            var result = json["result"]["songs"].Deserialize<List<Song>>();
 
             return result;
         }

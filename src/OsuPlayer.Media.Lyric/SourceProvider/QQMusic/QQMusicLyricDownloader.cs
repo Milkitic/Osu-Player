@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net;
+using System.Text.Json.Nodes;
 
 namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic
 {
@@ -44,13 +44,13 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic
             }
 
             content = System.Web.HttpUtility.HtmlDecode(content);
-            JObject json = JObject.Parse(content);
+            var json = JsonNode.Parse(content);
 
-            int result = json["retcode"].ToObject<int>();
+            int result = json["retcode"].GetValue<int>();
             if (result < 0)
                 return null;
 
-            content = json[requestTransLyrics ? "trans" : "lyric"]?.ToString();
+            content = json[requestTransLyrics ? "trans" : "lyric"]?.GetValue<string>();
             if (string.IsNullOrWhiteSpace(content))
                 return null;
 

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -49,12 +50,12 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Kugou
                 content = reader.ReadToEnd();
             }
 
-            var json = JObject.Parse(content);
+            var json = JsonNode.Parse(content);
 
-            if (!string.IsNullOrWhiteSpace(json["error"].ToString()))
+            if (!string.IsNullOrWhiteSpace(json["error"].GetValue<string>()))
                 return new List<KugouSearchResultSong>();
 
-            return json["data"]["info"].ToObject<List<KugouSearchResultSong>>();
+            return json["data"]["info"].Deserialize<List<KugouSearchResultSong>>();
         }
     }
 }

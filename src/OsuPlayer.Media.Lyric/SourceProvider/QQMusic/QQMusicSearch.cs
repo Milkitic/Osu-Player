@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic
 {
@@ -69,10 +70,10 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic
                 content = reader.ReadToEnd();
             }
 
-            var json = JObject.Parse(content);
+            var json = JsonNode.Parse(content);
             var arr = json["data"]["song"]["list"];
 
-            var songs = (arr.ToObject<List<Song>>());
+            var songs = arr.Deserialize<List<Song>>();
 
             return songs;
         }

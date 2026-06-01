@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Net;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
 {
@@ -24,9 +24,9 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
                 content = reader.ReadToEnd();
             }
 
-            JObject json = JObject.Parse(content);
+            var json = JsonNode.Parse(content);
 
-            return json[requestTransLyrics ? "tlyric": "lrc"]["lyric"].ToString();
+            return json[requestTransLyrics ? "tlyric": "lrc"]["lyric"].GetValue<string>();
         }
     }
 }

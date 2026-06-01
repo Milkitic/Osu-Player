@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 
 namespace Milky.OsuPlayer.Media.Lyric.SourceProvider
 {
@@ -35,7 +36,7 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider
                 {
                     //output lyrics search result
                     var contentObj = new { DateTime = DateTime.Now, pickedResult.ID, pickedResult.Artist, pickedResult.Title, pickedResult.Duration, Raw_Title = title, Raw_Artist = artist, Raw_Duration = time };
-                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(contentObj, Newtonsoft.Json.Formatting.None);
+                    string json = JsonSerializer.Serialize(contentObj);
                     if (!Directory.Exists(@"..\lyric_cache"))
                         Directory.CreateDirectory(@"..\lyric_cache");
                     string filePath = $@"..\lyric_cache\{this.GetType().Name}.txt";
