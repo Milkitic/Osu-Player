@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using Milki.Extensions.MixPlayer.Devices;
+using KeyAsio.Core.Audio;
 using Milky.OsuPlayer.Utils;
 
 namespace Milky.OsuPlayer.Converters
@@ -11,7 +11,7 @@ namespace Milky.OsuPlayer.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is DeviceDescription b)) return value;
-            if (b.Equals(DeviceDescription.WasapiDefault))
+            if (DeviceComparer.Instance.Equals(b, DeviceDescription.WasapiDefault))
             {
                 return I18NUtil.GetString("ui-sets-content-systemDefault");
             }

@@ -13,6 +13,7 @@
     <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj" />
     <ProjectReference Include="..\OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj" />
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
+    <ProjectReference Include="..\..\dependencies\KeyASIO.Net\src\Core\KeyAsio.Core.Audio\KeyAsio.Core.Audio.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,10 +23,6 @@
     <PackageReference Include="Dapper.FluentMap" Version="2.0.0" />
     <PackageReference Include="Milki.Extensions.MouseKeyHook" Version="0.1.5" />
     <PackageReference Include="NLog" Version="6.1.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\dependencies\Milki.Extensions\src\Milki.Extensions.MixPlayer\Milki.Extensions.MixPlayer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

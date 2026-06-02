@@ -11,8 +11,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
-using Milki.Extensions.MixPlayer;
-using Milki.Extensions.MixPlayer.Devices;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
@@ -21,6 +19,7 @@ using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
 using NAudio.Wave;
+using NAudio.Wave.Asio;
 
 namespace Milky.OsuPlayer.UserControls;
 
@@ -111,7 +110,7 @@ public partial class PlayControllerVm : ObservableObject
             TotalTimeMs = Controller.Player.Duration.TotalMilliseconds;
             TotalTimeText = Controller.Player.Duration.ToString(@"mm\:ss");
 
-            var device = DeviceCreationHelper.CurrentDevice;
+            var device = Controller.Player.Device;
             AsioVisible = device is AsioOut ? Visibility.Visible : Visibility.Collapsed;
         });
     }
@@ -162,7 +161,7 @@ public partial class PlayControllerVm : ObservableObject
     [RelayCommand]
     private void Asio()
     {
-        if (DeviceCreationHelper.CurrentDevice is AsioOut asio)
+        if (Controller.Player?.Device is AsioOut asio)
         {
             asio.ShowControlPanel();
         }

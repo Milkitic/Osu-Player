@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Coosu.Beatmap;
 using Coosu.Beatmap.MetaData;
-using Milki.Extensions.MixPlayer;
-using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Data.Models;
@@ -55,12 +53,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
     private CancellationTokenSource _cts = new CancellationTokenSource();
     private bool _isHandlingLoadFailure;
 
-    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
-    public ObservablePlayController()
-        : this(new PlayerDataService())
-    {
-    }
+    private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
 
     public ObservablePlayController(IPlayerDataStore playerData)
     {
@@ -124,12 +117,12 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
     {
         if (ctx.BeatmapDetail != null)
         {
-            Logger.Error(ex, "Load error while loading beatmap: {0}",
+            s_logger.Error(ex, "Load error while loading beatmap: {0}",
                 Path.Combine(ctx.BeatmapDetail.BaseFolder ?? "", ctx.BeatmapDetail.MapPath ?? ""));
         }
         else
         {
-            Logger.Error(ex, "Load error while loading beatmap.");
+            s_logger.Error(ex, "Load error while loading beatmap.");
         }
     }
 
@@ -154,7 +147,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
             if (!File.Exists(path))
                 throw new FileNotFoundException("cannot locate file", path);
 
-            Logger.Info("Start load new song from path: {0}", path);
+            s_logger.Info("Start load new song from path: {0}", path);
             if (PlayList.CurrentInfo == null)
             {
                 PlayList.InitializeEmptyCurrentInfo();
@@ -192,7 +185,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
         {
             var currentInfo = PlayList.CurrentInfo;
             LoadError?.Invoke(currentInfo, ex);
-            Logger.Error(ex, "Error while loading new beatmap. BeatmapId: {0}; BeatmapSetId: {1}",
+            s_logger.Error(ex, "Error while loading new beatmap. BeatmapId: {0}; BeatmapSetId: {1}",
                 currentInfo?.Beatmap?.BeatmapId, currentInfo?.Beatmap?.BeatmapSetId);
         }
         finally
@@ -235,7 +228,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
             var folder = beatmap.GetFolder(out var isFromDb, out var freePath)?.Trim();
             if (osuFile == null)
             {
-                Logger.Info("Start load new song from db: {0}", beatmap.BeatmapFileName);
+                s_logger.Info("Start load new song from db: {0}", beatmap.BeatmapFileName);
                 var path = ResolveBeatmapPath(folder, beatmap.BeatmapFileName, isFromDb, freePath);
                 beatmapDetail.MapPath = path;
                 beatmapDetail.BaseFolder = Path.GetDirectoryName(path);
@@ -290,11 +283,6 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
             // music
             beatmapDetail.MusicPath = ResolveChildPath(beatmapDetail.BaseFolder, osuFile.General.AudioFilename);
 
-            if (PlayList.PreInfo?.BeatmapDetail?.BaseFolder != PlayList.CurrentInfo?.BeatmapDetail?.BaseFolder)
-            {
-                CachedSoundFactory.ClearCacheSounds();
-            }
-
             Player = new OsuMixPlayer(osuFile, beatmapDetail.BaseFolder);
             Player.PlayStatusChanged += Player_PlayStatusChanged;
             Player.PositionUpdated += Player_PositionUpdated;
@@ -346,7 +334,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
         {
             var currentInfo = PlayList.CurrentInfo;
             LoadError?.Invoke(currentInfo, ex);
-            Logger.Error(ex, "Error while loading new beatmap. BeatmapId: {0}; BeatmapSetId: {1}",
+            s_logger.Error(ex, "Error while loading new beatmap. BeatmapId: {0}; BeatmapSetId: {1}",
                 currentInfo?.Beatmap?.BeatmapId, currentInfo?.Beatmap?.BeatmapSetId);
 
             if (!isReading)
@@ -391,7 +379,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
         }
         catch (ObjectDisposedException ex)
         {
-            Logger.Warn(ex, "Player was already disposed while stopping.");
+            s_logger.Warn(ex, "Player was already disposed while stopping.");
         }
 
         try
@@ -400,7 +388,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
         }
         catch (ObjectDisposedException ex)
         {
-            Logger.Warn(ex, "Player was already disposed while disposing.");
+            s_logger.Warn(ex, "Player was already disposed while disposing.");
         }
     }
 
@@ -461,7 +449,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while auto changing song.");
+            s_logger.Error(ex, "Error while auto changing song.");
         }
     }
 
@@ -528,7 +516,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while changing song.");
+            s_logger.Error(ex, "Error while changing song.");
         }
     }
 
@@ -599,7 +587,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Error while setting synchronized playback position.");
+                s_logger.Error(ex, "Error while setting synchronized playback position.");
             }
         }
     }
@@ -615,8 +603,8 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
     {
         if (Player != null) await Player.DisposeAsync().ConfigureAwait(false);
         _readLock?.Dispose();
-        Logger.Debug($"Disposed {nameof(_readLock)}");
+        s_logger.Debug($"Disposed {nameof(_readLock)}");
         _cts?.Dispose();
-        Logger.Debug($"Disposed {nameof(_cts)}");
+        s_logger.Debug($"Disposed {nameof(_cts)}");
     }
 }

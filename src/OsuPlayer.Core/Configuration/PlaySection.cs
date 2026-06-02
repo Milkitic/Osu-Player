@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
-using Milki.Extensions.MixPlayer.Devices;
+using KeyAsio.Core.Audio;
 using Milky.OsuPlayer.Presentation.Annotations;
 using Milky.OsuPlayer.Shared.Models;
 

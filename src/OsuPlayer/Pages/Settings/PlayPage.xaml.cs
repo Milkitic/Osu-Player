@@ -1,7 +1,8 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Milki.Extensions.MixPlayer.Devices;
+using KeyAsio.Core.Audio;
+using Microsoft.Extensions.Logging.Abstractions;
 using Milky.OsuPlayer.Core.Configuration;
 
 namespace Milky.OsuPlayer.Pages.Settings
@@ -11,6 +12,8 @@ namespace Milky.OsuPlayer.Pages.Settings
     /// </summary>
     public partial class PlayPage : Page
     {
+        private readonly AudioDeviceManager _audioDeviceManager = new(NullLogger<AudioDeviceManager>.Instance);
+
         public PlayPage()
         {
             InitializeComponent();
@@ -85,11 +88,12 @@ namespace Milky.OsuPlayer.Pages.Settings
             ChkMemory.IsChecked = AppSettings.Default.Play.Memory;
             SliderLatency.Value = AppSettings.Default.Play.DesiredLatency;
             BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
-            var itemsSource = DeviceCreationHelper.GetCachedAvailableDevices();
+            var itemsSource = _audioDeviceManager.GetCachedAvailableDevicesAsync().GetAwaiter().GetResult();
             DeviceInfoCombo.ItemsSource = itemsSource;
-            if (itemsSource.Contains(AppSettings.Default.Play.DeviceDescription))
+            if (itemsSource.Contains(AppSettings.Default.Play.DeviceDescription, DeviceComparer.Instance))
             {
-                DeviceInfoCombo.SelectedItem = AppSettings.Default.Play.DeviceDescription;
+                DeviceInfoCombo.SelectedItem = itemsSource.First(k =>
+                    DeviceComparer.Instance.Equals(k, AppSettings.Default.Play.DeviceDescription));
             }
             else
             {
@@ -118,6 +122,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             }
 
             AppSettings.Default.Play.DesiredLatency = num;
+            UpdateSelectedDeviceLatency();
             SliderLatency.Value = AppSettings.Default.Play.DesiredLatency;
             AppSettings.SaveDefault();
         }
@@ -125,6 +130,7 @@ namespace Milky.OsuPlayer.Pages.Settings
         private void SliderLatency_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             AppSettings.Default.Play.DesiredLatency = (int)SliderLatency.Value;
+            UpdateSelectedDeviceLatency();
             BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
             AppSettings.SaveDefault();
         }
@@ -133,10 +139,24 @@ namespace Milky.OsuPlayer.Pages.Settings
         {
             var newVal = (DeviceDescription)e.AddedItems[0];
             SliderLatency.IsEnabled = newVal.WavePlayerType != WavePlayerType.ASIO;
-            AppSettings.Default.Play.DeviceDescription = newVal;
+            AppSettings.Default.Play.DeviceDescription = newVal with
+            {
+                Latency = AppSettings.Default.Play.DesiredLatency,
+                IsExclusive = AppSettings.Default.Play.IsExclusive
+            };
             AppSettings.SaveDefault();
             //CheckExclusive.Visibility =
             //    newVal.OutputMethod == OutputMethod.Wasapi ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        private static void UpdateSelectedDeviceLatency()
+        {
+            if (AppSettings.Default.Play.DeviceDescription == null) return;
+            AppSettings.Default.Play.DeviceDescription = AppSettings.Default.Play.DeviceDescription with
+            {
+                Latency = AppSettings.Default.Play.DesiredLatency,
+                IsExclusive = AppSettings.Default.Play.IsExclusive
+            };
         }
     }
 }

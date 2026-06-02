@@ -9,7 +9,6 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using Milki.Extensions.MixPlayer;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Media.Audio;
