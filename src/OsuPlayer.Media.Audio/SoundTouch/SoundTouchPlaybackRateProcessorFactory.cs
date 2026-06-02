@@ -30,6 +30,8 @@ internal sealed class SoundTouchPlaybackRateProcessorFactory : IPlaybackRateProc
         _logger = logger ?? NullLogger<SoundTouchPlaybackRateProcessorFactory>.Instance;
     }
 
+    public bool IsSupported => true;
+
     public IPlaybackRateProcessor Create(ISampleProvider source, PlaybackRateState initialState)
     {
         return new SoundTouchPlaybackRateProcessor(
