@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Coosu.Beatmap;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
-using KeyAsio.Core.OsuPlayback;
 using Microsoft.Extensions.Logging.Abstractions;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
