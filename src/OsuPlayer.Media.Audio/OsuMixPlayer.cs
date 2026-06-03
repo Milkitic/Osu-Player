@@ -24,9 +24,9 @@ namespace Milky.OsuPlayer.Media.Audio
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         private readonly IPlaybackEngine _engine;
-        private readonly StandaloneMusicTransport _musicTransport;
+        private StandaloneMusicTransport _musicTransport;
         private readonly AudioCacheManager _audioCacheManager;
-        private readonly OsuBeatmapAudioSession _session;
+        private OsuBeatmapAudioSession _session;
 
         private OsuFile _osuFile;
         private string _sourceFolder;
@@ -39,23 +39,13 @@ namespace Milky.OsuPlayer.Media.Audio
         public event Action<PlayStatus> PlayStatusChanged;
         public event Action<TimeSpan> PositionUpdated;
 
-        public OsuMixPlayer(LocalOsuFile osuFile)
-            : this(osuFile, Path.GetDirectoryName(osuFile.OriginalPath))
-        {
-        }
-
-        public OsuMixPlayer(OsuFile osuFile, string sourceFolder)
+        public OsuMixPlayer(OsuFile osuFile, string sourceFolder, IPlaybackEngine engine, IAudioDeviceManager deviceManager, AudioCacheManager audioCacheManager)
         {
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
 
-            var deviceManager = new AudioDeviceManager(NullLogger<AudioDeviceManager>.Instance);
-            _engine = new AudioEngine(deviceManager);
-            _musicTransport = new StandaloneMusicTransport(_engine);
-            _audioCacheManager = new AudioCacheManager(NullLogger<AudioCacheManager>.Instance);
-            _session = new OsuBeatmapAudioSession(_engine, _musicTransport, _audioCacheManager,
-                new SoundTouchPlaybackRateProcessorFactory());
-            _session.Finished += Session_Finished;
+            _engine = engine;
+            _audioCacheManager = audioCacheManager;
 
             Current = this;
         }
@@ -103,6 +93,10 @@ namespace Milky.OsuPlayer.Media.Audio
             {
                 ConfigureSoundTouchRuntime();
                 StartAudioEngine();
+                _musicTransport = new StandaloneMusicTransport(_engine);
+                _session = new OsuBeatmapAudioSession(_engine, _musicTransport, _audioCacheManager,
+                    new SoundTouchPlaybackRateProcessorFactory());
+                _session.Finished += Session_Finished;
                 _sessionOptions = CreateSessionOptions();
                 ApplyVolumeSettings();
 
@@ -238,7 +232,6 @@ namespace Milky.OsuPlayer.Media.Audio
             StopPositionPump();
             _session.Finished -= Session_Finished;
             await _session.DisposeAsync().ConfigureAwait(false);
-            _engine.Dispose();
             _positionPumpCts?.Dispose();
         }
 

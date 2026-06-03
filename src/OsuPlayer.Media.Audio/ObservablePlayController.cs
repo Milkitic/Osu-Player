@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Coosu.Beatmap;
 using Coosu.Beatmap.MetaData;
+using KeyAsio.Core.Audio;
+using KeyAsio.Core.Audio.Caching;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Data.Models;
@@ -49,21 +51,36 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
     public bool IsPlayerReady => Player != null && Player.PlayStatus != PlayStatus.Unknown;
 
     private readonly IPlayerDataStore _playerData;
+    private readonly IPlaybackEngine _playbackEngine;
+    private readonly IAudioDeviceManager _audioDeviceManager;
+    private readonly AudioCacheManager _audioCacheManager;
+    private readonly Action<Exception> _audioDeviceErrorHandler;
     private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
     private CancellationTokenSource _cts = new CancellationTokenSource();
     private bool _isHandlingLoadFailure;
 
     private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
 
-    public ObservablePlayController(IPlayerDataStore playerData)
+    public ObservablePlayController(IPlayerDataStore playerData, IPlaybackEngine playbackEngine, IAudioDeviceManager audioDeviceManager, AudioCacheManager audioCacheManager, Action<Exception> audioDeviceErrorHandler)
     {
         _playerData = playerData;
+        _playbackEngine = playbackEngine;
+        _audioDeviceManager = audioDeviceManager;
+        _audioCacheManager = audioCacheManager;
+        _audioDeviceErrorHandler = audioDeviceErrorHandler;
+        _playbackEngine.DeviceError += PlaybackEngine_DeviceError;
         PlayList = new PlayList(playerData);
         PlayList.AutoSwitched += PlayList_AutoSwitched;
         PlayList.SongListChanged += PlayList_SongListChanged;
 #if DEBUG
         LoadError += ObservablePlayController_LoadError;
 #endif
+    }
+
+    private void PlaybackEngine_DeviceError(Exception ex)
+    {
+        s_logger.Error(ex, "Audio device error.");
+        Execute.ToUiThread(() => _audioDeviceErrorHandler?.Invoke(ex));
     }
 
     public async Task PlayAsync()
@@ -283,7 +300,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
             // music
             beatmapDetail.MusicPath = ResolveChildPath(beatmapDetail.BaseFolder, osuFile.General.AudioFilename);
 
-            Player = new OsuMixPlayer(osuFile, beatmapDetail.BaseFolder);
+            Player = new OsuMixPlayer(osuFile, beatmapDetail.BaseFolder, _playbackEngine, _audioDeviceManager, _audioCacheManager);
             Player.PlayStatusChanged += Player_PlayStatusChanged;
             Player.PositionUpdated += Player_PositionUpdated;
             await Player.Initialize().ConfigureAwait(false); //700 ms
@@ -601,6 +618,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
 
     public async ValueTask DisposeAsync()
     {
+        _playbackEngine.DeviceError -= PlaybackEngine_DeviceError;
         if (Player != null) await Player.DisposeAsync().ConfigureAwait(false);
         _readLock?.Dispose();
         s_logger.Debug($"Disposed {nameof(_readLock)}");
