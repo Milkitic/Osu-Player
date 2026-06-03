@@ -1,9 +1,8 @@
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using KeyAsio.Core.Audio;
 using Milky.OsuPlayer.Core.Configuration;
-using NAudio.Wave;
+using Milky.OsuPlayer.Media.Audio;
 
 namespace Milky.OsuPlayer.Pages.Settings
 {
@@ -94,22 +93,17 @@ namespace Milky.OsuPlayer.Pages.Settings
                     RadioInsert.IsChecked = true;
                 ChkAutoPlay.IsChecked = AppSettings.Default.Play.AutoPlay;
                 ChkMemory.IsChecked = AppSettings.Default.Play.Memory;
-                SliderLatency.Value = AppSettings.Default.Play.DesiredLatency;
-                BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
-                var itemsSource = _audioDeviceManager.GetCachedAvailableDevicesAsync().GetAwaiter().GetResult();
-                DeviceInfoCombo.ItemsSource = itemsSource;
-                if (itemsSource.Contains(AppSettings.Default.Play.DeviceDescription, DeviceComparer.Instance))
-                {
-                    DeviceInfoCombo.SelectedItem = itemsSource.First(k =>
-                        DeviceComparer.Instance.Equals(k, AppSettings.Default.Play.DeviceDescription));
-                }
-                else
-                {
-                    DeviceInfoCombo.SelectedIndex = 0;
-                }
+                ApplyFixedAudioDevicePolicy();
 
-                var selectedItem = (DeviceDescription)DeviceInfoCombo.SelectedItem;
-                SliderLatency.IsEnabled = selectedItem.WavePlayerType != WavePlayerType.ASIO;
+                var itemsSource = OsuPlayerAudioDevicePolicy.GetAvailableDevicesAsync(_audioDeviceManager)
+                    .GetAwaiter()
+                    .GetResult();
+                DeviceInfoCombo.ItemsSource = itemsSource;
+                var selectedDevice = OsuPlayerAudioDevicePolicy.SelectOrDefault(
+                    itemsSource,
+                    AppSettings.Default.Play.DeviceDescription);
+                DeviceInfoCombo.SelectedItem = selectedDevice;
+                AppSettings.Default.Play.DeviceDescription = selectedDevice;
             }
             finally
             {
@@ -117,67 +111,23 @@ namespace Milky.OsuPlayer.Pages.Settings
             }
         }
 
-        private void BoxLatency_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (_isLoadingSettings) return;
-            if (!int.TryParse(BoxLatency.Text, out var num))
-                return;
-            if (num > SliderLatency.Maximum)
-            {
-                num = (int)SliderLatency.Maximum;
-                AppSettings.Default.Play.DesiredLatency = num;
-                BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
-            }
-            else if (num < SliderLatency.Minimum)
-            {
-                num = (int)SliderLatency.Minimum;
-                AppSettings.Default.Play.DesiredLatency = num;
-                BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
-            }
-
-            AppSettings.Default.Play.DesiredLatency = num;
-            UpdateSelectedDeviceLatency();
-            SliderLatency.Value = AppSettings.Default.Play.DesiredLatency;
-            AppSettings.SaveDefault();
-
-            ApplyDeviceSettingsToEngine(AppSettings.Default.Play.DeviceDescription);
-        }
-
-        private void SliderLatency_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (_isLoadingSettings) return;
-            AppSettings.Default.Play.DesiredLatency = (int)SliderLatency.Value;
-            UpdateSelectedDeviceLatency();
-            BoxLatency.Text = AppSettings.Default.Play.DesiredLatency.ToString();
-            AppSettings.SaveDefault();
-
-            ApplyDeviceSettingsToEngine(AppSettings.Default.Play.DeviceDescription);
-        }
-
         private void DeviceInfoCombo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_isLoadingSettings || e.AddedItems.Count == 0) return;
-            var newVal = (DeviceDescription)e.AddedItems[0];
-            SliderLatency.IsEnabled = newVal.WavePlayerType != WavePlayerType.ASIO;
-            var deviceDescription = newVal with
-            {
-                Latency = AppSettings.Default.Play.DesiredLatency,
-                IsExclusive = AppSettings.Default.Play.IsExclusive
-            };
+            var deviceDescription = OsuPlayerAudioDevicePolicy.Normalize((DeviceDescription)e.AddedItems[0]);
+            ApplyFixedAudioDevicePolicy();
             AppSettings.Default.Play.DeviceDescription = deviceDescription;
             AppSettings.SaveDefault();
 
             ApplyDeviceSettingsToEngine(deviceDescription);
         }
 
-        private static void UpdateSelectedDeviceLatency()
+        private static void ApplyFixedAudioDevicePolicy()
         {
-            if (AppSettings.Default.Play.DeviceDescription == null) return;
-            AppSettings.Default.Play.DeviceDescription = AppSettings.Default.Play.DeviceDescription with
-            {
-                Latency = AppSettings.Default.Play.DesiredLatency,
-                IsExclusive = AppSettings.Default.Play.IsExclusive
-            };
+            AppSettings.Default.Play.DesiredLatency = OsuPlayerAudioDevicePolicy.FixedLatency;
+            AppSettings.Default.Play.IsExclusive = OsuPlayerAudioDevicePolicy.UseExclusiveMode;
+            AppSettings.Default.Play.DeviceDescription =
+                OsuPlayerAudioDevicePolicy.Normalize(AppSettings.Default.Play.DeviceDescription);
         }
 
         private void ApplyDeviceSettingsToEngine(DeviceDescription deviceDescription)
@@ -185,7 +135,7 @@ namespace Milky.OsuPlayer.Pages.Settings
             if (deviceDescription == null) return;
             try
             {
-                _playbackEngine.StartDevice(deviceDescription, new WaveFormat(44100, 2));
+                OsuPlayerAudioDevicePolicy.StartDevice(_playbackEngine, deviceDescription);
             }
             catch (System.Exception ex)
             {

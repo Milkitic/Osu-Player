@@ -243,17 +243,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private void StartAudioEngine()
         {
-            var deviceDescription = AppSettings.Default?.Play?.DeviceDescription;
-            if (deviceDescription != null)
-            {
-                deviceDescription = deviceDescription with
-                {
-                    Latency = AppSettings.Default.Play.DesiredLatency,
-                    IsExclusive = AppSettings.Default.Play.IsExclusive
-                };
-            }
-
-            _engine.StartDevice(deviceDescription, new WaveFormat(44100, 2));
+            OsuPlayerAudioDevicePolicy.StartDevice(_engine, AppSettings.Default?.Play?.DeviceDescription);
         }
 
         private OsuAudioSessionOptions CreateSessionOptions()

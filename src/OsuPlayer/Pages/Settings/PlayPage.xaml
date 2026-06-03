@@ -96,26 +96,6 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <Label
-                    HorizontalAlignment="Left"
-                    Content="{DynamicResource ui-sets-title-audioDelayExperimental}"
-                    Style="{StaticResource ConfigTitleStyle}" />
-                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                    <Slider
-                        x:Name="SliderLatency"
-                        Width="300"
-                        Margin="8,0"
-                        Maximum="200"
-                        Minimum="0"
-                        Style="{StaticResource HorizontalSliderWhiteStyle}"
-                        ValueChanged="SliderLatency_ValueChanged" />
-                    <textBoxComponent:CommonTextBox
-                        x:Name="BoxLatency"
-                        Width="35"
-                        Background="White"
-                        TextAlignment="Center"
-                        TextChanged="BoxLatency_TextChanged" />
-                </StackPanel>
             </StackPanel>
         </ScrollViewer>
     </Grid>

@@ -44,7 +44,7 @@ namespace Milky.OsuPlayer.Core.Configuration
         public bool AutoPlay { get; set; } = false;
         public bool Memory { get; set; } = true;
         public DeviceDescription DeviceDescription { get; set; } = null;
-        public int DesiredLatency { get; set; } = 5;
+        public int DesiredLatency { get; set; } = 1;
         public bool IsExclusive { get; set; } = false;
         public PlaylistMode PlayListMode { get; set; } = PlaylistMode.Normal;
         public event PropertyChangedEventHandler PropertyChanged;
