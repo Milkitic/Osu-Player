@@ -8,16 +8,20 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
 {
     public class BeatmapContext
     {
+        private static readonly IPlaybackController NoOpController = new NoOpPlaybackController();
+
         public BeatmapContext()
         {
             Beatmap = new Beatmap();
             BeatmapDetail = new BeatmapDetail(Beatmap);
+            PlaybackController = NoOpController;
         }
 
         private BeatmapContext(Beatmap beatmap)
         {
             Beatmap = beatmap;
             BeatmapDetail = new BeatmapDetail(beatmap);
+            PlaybackController = NoOpController;
         }
 
         public static async Task<BeatmapContext> CreateAsync(Beatmap beatmap, IPlayerDataStore playerData)
@@ -34,12 +38,13 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         public BeatmapDetail BeatmapDetail { get; }
         public LocalOsuFile OsuFile { get; set; }
         public bool PlayInstantly { get; set; }
-        public Func<Task> PlayHandle { get; set; }
-        public Func<Task> PauseHandle { get; set; }
-        public Func<Task> StopHandle { get; set; }
-        public Func<Task> TogglePlayHandle { get; set; }
-        public Func<double, bool, Task> SetTimeHandle { get; set; }
-        public Func<Task> RestartHandle { get; set; }
+
+        /// <summary>
+        /// Provides playback control operations for this beatmap context.
+        /// Defaults to a no-op controller; set by <see cref="ObservablePlayController.InitializeContextHandle"/>
+        /// once the player is ready.
+        /// </summary>
+        public IPlaybackController PlaybackController { get; set; }
 
         public static bool operator ==(BeatmapContext bc1, BeatmapContext bc2)
         {
@@ -68,6 +73,20 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         public override int GetHashCode()
         {
             return Beatmap != null ? Beatmap.GetHashCode() : 0;
+        }
+
+        /// <summary>
+        /// Null Object implementation that safely discards all playback operations.
+        /// Used before the real controller is injected, preventing <c>NullReferenceException</c>.
+        /// </summary>
+        private sealed class NoOpPlaybackController : IPlaybackController
+        {
+            public Task PlayAsync() => Task.CompletedTask;
+            public Task PauseAsync() => Task.CompletedTask;
+            public Task StopAsync() => Task.CompletedTask;
+            public Task RestartAsync() => Task.CompletedTask;
+            public Task TogglePlayAsync() => Task.CompletedTask;
+            public Task SetTimeAsync(double time, bool play) => Task.CompletedTask;
         }
     }
 }

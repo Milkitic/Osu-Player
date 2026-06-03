@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Coosu.Beatmap;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
-using Microsoft.Extensions.Logging.Abstractions;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Media.Audio.Playlist;
@@ -38,7 +37,7 @@ namespace Milky.OsuPlayer.Media.Audio
         public event Action<PlayStatus> PlayStatusChanged;
         public event Action<TimeSpan> PositionUpdated;
 
-        public OsuMixPlayer(OsuFile osuFile, string sourceFolder, IPlaybackEngine engine, IAudioDeviceManager deviceManager, AudioCacheManager audioCacheManager)
+        public OsuMixPlayer(OsuFile osuFile, string sourceFolder, IPlaybackEngine engine, AudioCacheManager audioCacheManager)
         {
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;

@@ -19,7 +19,7 @@ using Milky.OsuPlayer.Services;
 
 namespace Milky.OsuPlayer.Media.Audio;
 
-public sealed partial class ObservablePlayController : ObservableObject, IAsyncDisposable
+public sealed partial class ObservablePlayController : ObservableObject, IPlaybackController, IAsyncDisposable
 {
     public event Action<PlayStatus> PlayStatusChanged;
     public event Action<TimeSpan> PositionUpdated;
@@ -55,6 +55,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
     private readonly IAudioDeviceManager _audioDeviceManager;
     private readonly AudioCacheManager _audioCacheManager;
     private readonly Action<Exception> _audioDeviceErrorHandler;
+    private readonly BeatmapLoader _beatmapLoader;
     private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
     private CancellationTokenSource _cts = new CancellationTokenSource();
     private bool _isHandlingLoadFailure;
@@ -68,6 +69,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
         _audioDeviceManager = audioDeviceManager;
         _audioCacheManager = audioCacheManager;
         _audioDeviceErrorHandler = audioDeviceErrorHandler;
+        _beatmapLoader = new BeatmapLoader(playerData);
         _playbackEngine.DeviceError += PlaybackEngine_DeviceError;
         PlayList = new PlayList(playerData);
         PlayList.AutoSwitched += PlayList_AutoSwitched;
@@ -150,7 +152,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
         InitializeContextHandle(PlayList.CurrentInfo);
         if (await LoadAsync(false, playInstantly).ConfigureAwait(false))
         {
-            if (playInstantly) await PlayList.CurrentInfo.PlayHandle.Invoke();
+            if (playInstantly) await PlayList.CurrentInfo.PlaybackController.PlayAsync();
         }
     }
 
@@ -162,7 +164,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
             IsFileLoading = true;
 
             if (!File.Exists(path))
-                throw new FileNotFoundException("cannot locate file", path);
+                throw new FileNotFoundException("Cannot locate file", path);
 
             s_logger.Info("Start load new song from path: {0}", path);
             if (PlayList.CurrentInfo == null)
@@ -176,26 +178,22 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
 
             await ClearPlayer().ConfigureAwait(false);
             Execute.OnUiThread(() => PreLoadStarted?.Invoke(path, _cts.Token));
-            var osuFile = await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
-                .ConfigureAwait(false); //50 ms
 
+            // Pre-read the .osu file so LoadAsync(skipFileRead: true) can skip the I/O
+            var osuFile = await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
+                .ConfigureAwait(false);
             context.OsuFile = osuFile;
 
-            var beatmap = BeatmapExtension.ParseFromOSharp(osuFile);
-            var trueBeatmap = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
+            var loadResult = await _beatmapLoader.LoadFromOsuFileAsync(
+                osuFile, path, context.BeatmapSettings, _cts.Token).ConfigureAwait(false);
 
-            if (trueBeatmap == null)
-            {
-                trueBeatmap = beatmap;
-                trueBeatmap.FolderName = path; // I forgot why I did this but there should be some reasons.
-            }
-
+            var trueBeatmap = loadResult.Beatmap;
             await PlayList.AddOrSwitchToAsync(trueBeatmap);
 
             InitializeContextHandle(context);
             if (await LoadAsync(true, playInstantly).ConfigureAwait(false))
             {
-                if (playInstantly) await context.PlayHandle.Invoke().ConfigureAwait(false);
+                if (playInstantly) await context.PlaybackController.PlayAsync().ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -238,100 +236,56 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
             var beatmap = context.Beatmap;
             Execute.OnUiThread(() => LoadStarted?.Invoke(context, _cts.Token));
 
-            // meta
-            var osuFile = context.OsuFile;
-            var beatmapDetail = context.BeatmapDetail;
-
-            var folder = beatmap.GetFolder(out var isFromDb, out var freePath)?.Trim();
-            if (osuFile == null)
+            // Load beatmap data through BeatmapLoader
+            BeatmapLoadResult loadResult;
+            if (context.OsuFile == null)
             {
-                s_logger.Info("Start load new song from db: {0}", beatmap.BeatmapFileName);
-                var path = ResolveBeatmapPath(folder, beatmap.BeatmapFileName, isFromDb, freePath);
-                beatmapDetail.MapPath = path;
-                beatmapDetail.BaseFolder = Path.GetDirectoryName(path);
-
-                osuFile = await OsuFile.ReadFromFileAsync(path).ConfigureAwait(false);
-                context.OsuFile = osuFile;
-            }
-
-            var album = await _playerData.GetCollectionsByMapAsync(context.BeatmapSettings);
-
-            bool isFavorite = album != null && album.Count > 0 && album.Any(k => k.LockedBool);
-            var metadata = beatmapDetail.Metadata;
-            metadata.IsFavorite = isFavorite;
-
-            metadata.Artist = osuFile.Metadata.ArtistMeta;
-            metadata.Title = osuFile.Metadata.TitleMeta;
-            metadata.BeatmapId = osuFile.Metadata.BeatmapId;
-            metadata.BeatmapsetId = osuFile.Metadata.BeatmapSetId;
-            metadata.Creator = osuFile.Metadata.Creator;
-            metadata.Version = osuFile.Metadata.Version;
-            metadata.Source = osuFile.Metadata.Source;
-            metadata.Tags = osuFile.Metadata.TagList;
-
-            metadata.HP = osuFile.Difficulty.HpDrainRate;
-            metadata.CS = osuFile.Difficulty.CircleSize;
-            metadata.AR = osuFile.Difficulty.ApproachRate;
-            metadata.OD = osuFile.Difficulty.OverallDifficulty;
-
-            Execute.OnUiThread(() => MetaLoaded?.Invoke(context, _cts.Token));
-
-            // background
-            var defaultPath = Path.Combine(Domain.ResourcePath, "official", "registration.jpg");
-
-            if (osuFile.Events.BackgroundInfo != null)
-            {
-                var bgPath = TryResolveChildPath(beatmapDetail.BaseFolder, osuFile.Events.BackgroundInfo.Filename);
-                beatmapDetail.BackgroundPath = File.Exists(bgPath)
-                    ? bgPath
-                    : File.Exists(defaultPath)
-                        ? defaultPath
-                        : null;
+                loadResult = await _beatmapLoader.LoadFromBeatmapAsync(
+                    beatmap, context.BeatmapSettings, _cts.Token).ConfigureAwait(false);
+                context.OsuFile = loadResult.OsuFile;
             }
             else
             {
-                beatmapDetail.BackgroundPath = File.Exists(defaultPath)
-                    ? defaultPath
-                    : null;
+                loadResult = await _beatmapLoader.LoadFromOsuFileAsync(
+                    context.OsuFile, context.BeatmapDetail.MapPath,
+                    context.BeatmapSettings, _cts.Token).ConfigureAwait(false);
             }
+
+            // Apply metadata
+            var metadata = context.BeatmapDetail.Metadata;
+            metadata.IsFavorite = loadResult.IsFavorite;
+            metadata.ApplyFrom(loadResult.OsuFile);
+
+            Execute.OnUiThread(() => MetaLoaded?.Invoke(context, _cts.Token));
+
+            // Apply resolved paths
+            context.BeatmapDetail.BaseFolder = loadResult.BaseFolder;
+            context.BeatmapDetail.MapPath = loadResult.MapPath;
+            context.BeatmapDetail.BackgroundPath = loadResult.BackgroundPath;
+            context.BeatmapDetail.MusicPath = loadResult.MusicPath;
 
             Execute.OnUiThread(() => BackgroundInfoLoaded?.Invoke(context, _cts.Token));
 
             // music
-            beatmapDetail.MusicPath = ResolveChildPath(beatmapDetail.BaseFolder, osuFile.General.AudioFilename);
-
-            Player = new OsuMixPlayer(osuFile, beatmapDetail.BaseFolder, _playbackEngine, _audioDeviceManager, _audioCacheManager);
+            Player = new OsuMixPlayer(loadResult.OsuFile, loadResult.BaseFolder, _playbackEngine, _audioCacheManager);
             Player.PlayStatusChanged += Player_PlayStatusChanged;
             Player.PositionUpdated += Player_PositionUpdated;
-            await Player.Initialize().ConfigureAwait(false); //700 ms
+            await Player.Initialize().ConfigureAwait(false);
             Player.ManualOffset = context.BeatmapSettings.Offset;
 
             Execute.OnUiThread(() => MusicLoaded?.Invoke(context, _cts.Token));
 
             // video
-            var videoName = osuFile.Events.VideoInfo?.Filename;
-
-            if (videoName != null)
+            if (loadResult.VideoPath != null)
             {
-                var videoPath = TryResolveChildPath(beatmapDetail.BaseFolder, videoName);
-                if (File.Exists(videoPath))
-                {
-                    beatmapDetail.VideoPath = videoPath;
-                    Execute.OnUiThread(() => VideoLoadRequested?.Invoke(context, _cts.Token));
-                }
+                context.BeatmapDetail.VideoPath = loadResult.VideoPath;
+                Execute.OnUiThread(() => VideoLoadRequested?.Invoke(context, _cts.Token));
             }
 
             // storyboard
-            if (!string.IsNullOrWhiteSpace(osuFile.Events.StoryboardText))
+            if (loadResult.HasStoryboard)
             {
                 Execute.OnUiThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
-            }
-            else
-            {
-                if (StoryboardFileHelper.HasOsbStoryboard(osuFile, beatmapDetail.MapPath))
-                {
-                    Execute.OnUiThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
-                }
             }
 
             context.FullLoaded = true;
@@ -436,8 +390,8 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
 
             if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
             {
-                await context.SetTimeHandle(0, playInstantly ||
-                                               controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play)
+                await context.PlaybackController.SetTimeAsync(0, playInstantly ||
+                                                controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play)
                     .ConfigureAwait(false);
             }
             else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default ||
@@ -449,10 +403,10 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
                     switch (controlResult.PlayStatus)
                     {
                         case PlayControlResult.PlayControlStatus.Play:
-                            if (playInstantly) await context.PlayHandle().ConfigureAwait(false);
+                            if (playInstantly) await context.PlaybackController.PlayAsync();
                             break;
                         case PlayControlResult.PlayControlStatus.Stop:
-                            await context.StopHandle().ConfigureAwait(false);
+                            await context.PlaybackController.StopAsync();
                             break;
                     }
                 }
@@ -501,15 +455,15 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
 
                 if (preInfo == PlayList.CurrentInfo)
                 {
-                    await PlayList.CurrentInfo.StopHandle().ConfigureAwait(false);
-                    await PlayList.CurrentInfo.PlayHandle().ConfigureAwait(false);
+                    await PlayList.CurrentInfo.PlaybackController.StopAsync().ConfigureAwait(false);
+                    await PlayList.CurrentInfo.PlaybackController.PlayAsync().ConfigureAwait(false);
                     return;
                 }
 
                 InitializeContextHandle(PlayList.CurrentInfo);
                 if (await LoadAsync(false, true).ConfigureAwait(false))
                 {
-                    await PlayList.CurrentInfo.PlayHandle.Invoke().ConfigureAwait(false);
+                    await PlayList.CurrentInfo.PlaybackController.PlayAsync().ConfigureAwait(false);
                 }
             }
             else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
@@ -517,10 +471,10 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
                 switch (controlResult.PlayStatus)
                 {
                     case PlayControlResult.PlayControlStatus.Play:
-                        await PlayList.CurrentInfo.RestartHandle.Invoke().ConfigureAwait(false);
+                        await PlayList.CurrentInfo.PlaybackController.RestartAsync().ConfigureAwait(false);
                         break;
                     case PlayControlResult.PlayControlStatus.Stop:
-                        await PlayList.CurrentInfo.StopHandle.Invoke().ConfigureAwait(false);
+                        await PlayList.CurrentInfo.PlaybackController.StopAsync().ConfigureAwait(false);
                         break;
                 }
             }
@@ -539,12 +493,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
 
     private void InitializeContextHandle(BeatmapContext context)
     {
-        context.PlayHandle = PlayAsync;
-        context.PauseHandle = PauseAsync;
-        context.StopHandle = StopAsync;
-        context.RestartHandle = RestartAsync;
-        context.TogglePlayHandle = TogglePlayAsync;
-        context.SetTimeHandle = SetTimeAsync;
+        context.PlaybackController = this;
     }
 
     private bool TryGetReadyPlayer(out BeatmapContext context, out OsuMixPlayer player)
@@ -552,43 +501,6 @@ public sealed partial class ObservablePlayController : ObservableObject, IAsyncD
         context = PlayList.CurrentInfo;
         player = Player;
         return context != null && player != null && player.PlayStatus != PlayStatus.Unknown;
-    }
-
-    private static string ResolveBeatmapPath(string folder, string beatmapFileName, bool isFromDb, string freePath)
-    {
-        if (!isFromDb)
-        {
-            if (string.IsNullOrWhiteSpace(freePath))
-            {
-                throw new InvalidDataException("Beatmap path is empty.");
-            }
-
-            return freePath;
-        }
-
-        return ResolveChildPath(folder, beatmapFileName);
-    }
-
-    private static string ResolveChildPath(string baseFolder, string childPath)
-    {
-        if (string.IsNullOrWhiteSpace(baseFolder))
-        {
-            throw new InvalidDataException("Beatmap base folder is empty.");
-        }
-
-        if (string.IsNullOrWhiteSpace(childPath))
-        {
-            throw new InvalidDataException("Beatmap referenced file path is empty.");
-        }
-
-        return Path.Combine(baseFolder, childPath);
-    }
-
-    private static string TryResolveChildPath(string baseFolder, string childPath)
-    {
-        return string.IsNullOrWhiteSpace(baseFolder) || string.IsNullOrWhiteSpace(childPath)
-            ? null
-            : Path.Combine(baseFolder, childPath);
     }
 
     private async Task RaisePositionSetRequestedAsync(BeatmapContext context, double time, bool play)
