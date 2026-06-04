@@ -65,7 +65,7 @@ public partial class PlayControllerVm : ObservableObject
 
     private void Controller_LoadError(BeatmapContext ctx, Exception ex)
     {
-        if (ctx.BeatmapDetail != null)
+        if (ctx?.BeatmapDetail != null)
         {
             var path = Path.Combine(ctx.BeatmapDetail.BaseFolder ?? "", ctx.BeatmapDetail.MapPath ?? "");
             Notification.Push($"{I18NUtil.GetString("err-beatmap-load")}: {path}");

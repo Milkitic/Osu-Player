@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
@@ -15,27 +14,31 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist;
 
 public partial class PlayList : ObservableObject
 {
-    public event Action SongListChanged;
-    public event Func<PlayControlResult, Beatmap, bool, Task> AutoSwitched;
+    public event Action? SongListChanged;
+    public event Func<PlayControlResult, Beatmap?, bool, Task>? AutoSwitched;
     private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
     private readonly IPlayerDataStore _playerData;
     private readonly IUiThreadDispatcher _uiThreadDispatcher;
+    private readonly Action? _onSongListChanged;
+    private readonly Action<PlaylistMode>? _onModeChanged;
 
     public PlayList()
-        : this(new PlayerDataService(), Execute.UiThreadDispatcher)
+        : this(new PlayerDataService(), Execute.UiThreadDispatcher, null)
     {
     }
 
     public PlayList(IPlayerDataStore playerData)
-        : this(playerData, Execute.UiThreadDispatcher)
+        : this(playerData, Execute.UiThreadDispatcher, null)
     {
     }
 
-    public PlayList(IPlayerDataStore playerData, IUiThreadDispatcher uiThreadDispatcher)
+    public PlayList(IPlayerDataStore playerData, IUiThreadDispatcher uiThreadDispatcher, Action? onSongListChanged, Action<PlaylistMode>? onModeChanged = null)
     {
         _playerData = playerData;
         _uiThreadDispatcher = uiThreadDispatcher;
         SongList = new ObservableCollection<Beatmap>();
+        _onSongListChanged = onSongListChanged;
+        _onModeChanged = onModeChanged;
         SongList.CollectionChanged += SongList_CollectionChanged;
     }
 
@@ -44,15 +47,15 @@ public partial class PlayList : ObservableObject
 
     partial void OnSongListChanged(ObservableCollection<Beatmap> value)
     {
-        SongListChanged?.Invoke();
+        NotifySongListChanged();
     }
 
     [ObservableProperty]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0032", Justification = "ObservableProperty")]
-    public partial BeatmapContext CurrentInfo { get; private set; }
+    public partial BeatmapContext? CurrentInfo { get; private set; }
 
     [ObservableProperty]
-    public partial BeatmapContext PreInfo { get; set; }
+    public partial BeatmapContext? PreInfo { get; set; }
 
     public PlaylistMode Mode
     {
@@ -72,7 +75,7 @@ public partial class PlayList : ObservableObject
     private bool IsRandom => _mode == PlaylistMode.Random || _mode == PlaylistMode.LoopRandom;
     private bool IsLoop => _mode == PlaylistMode.Loop || _mode == PlaylistMode.LoopRandom;
 
-    private Func<int, int> _temporaryPointerChanged;
+    private Func<int, int>? _temporaryPointerChanged;
     private PlaylistMode _mode;
     private List<int> _songIndexList = new List<int>();
 
@@ -88,8 +91,9 @@ public partial class PlayList : ObservableObject
         bool playInstantly = true, bool autoSetSong = true)
     {
         if (SongList != null) SongList.CollectionChanged -= SongList_CollectionChanged;
-        _uiThreadDispatcher.Send(() => SongList = new ObservableCollection<Beatmap>(value.Where(k => k != null)));
-        SongList.CollectionChanged += SongList_CollectionChanged;
+        var nonNull = value.Where(k => k != null).ToList();
+        _uiThreadDispatcher.Send(() => SongList = new ObservableCollection<Beatmap>(nonNull));
+        SongList!.CollectionChanged += SongList_CollectionChanged;
 
         var changed = await RearrangeIndexesAndRepositionAsync(startAnew ? (int?)0 : null);
         PlayControlResult result; // 这里可能混入空/不空的情况
@@ -137,18 +141,19 @@ public partial class PlayList : ObservableObject
         {
             var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Unknown,
                 PlayControlResult.PointerControlStatus.Default);
-            if (AutoSwitched != null)
-                await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, playInstantly)
+            var handler = AutoSwitched;
+            if (handler != null)
+                await handler.Invoke(playControlResult, CurrentInfo.Beatmap, playInstantly)
                     .ConfigureAwait(false);
             return playControlResult;
         }
 
-        // 播放列表空
         await SetIndexPointerAsync(-1);
         var controlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
             PlayControlResult.PointerControlStatus.Clear);
-        if (AutoSwitched != null)
-            await AutoSwitched.Invoke(controlResult, null, playInstantly).ConfigureAwait(false);
+        var clearedHandler = AutoSwitched;
+        if (clearedHandler != null)
+            await clearedHandler.Invoke(controlResult, null, playInstantly).ConfigureAwait(false);
         return controlResult;
     }
 
@@ -232,6 +237,11 @@ public partial class PlayList : ObservableObject
             return currentInfo != CurrentInfo; // force return false
         }
 
+        if (CurrentInfo == null)
+        {
+            await SetIndexPointerAsync(0);
+            return true;
+        }
         var indexOf = SongList.IndexOf(CurrentInfo.Beatmap);
         if (indexOf == -1)
         {
@@ -256,12 +266,10 @@ public partial class PlayList : ObservableObject
             if (b)
             {
                 s_logger.Warn("PlayMode changing causes CurrentInfo changed.");
-                //throw new Exception("PlayMode changes cause current info changed");
             }
         }
 
-        AppSettings.Default.Play.PlayListMode = _mode;
-        AppSettings.SaveDefault();
+        _onModeChanged?.Invoke(_mode);
         OnPropertyChanged(nameof(Mode));
     }
 
@@ -288,10 +296,10 @@ public partial class PlayList : ObservableObject
     }
 
     // 如果随机，改变集合是否重排？
-    private async void SongList_CollectionChanged(object sender,
+    private async void SongList_CollectionChanged(object? sender,
         System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        SongListChanged?.Invoke();
+        NotifySongListChanged();
         if ((e.NewItems?.Count ?? 0) + (e.OldItems?.Count ?? 0) > 1 || _temporaryPointerChanged != null ||
             SongList.Count == 0)
         {
@@ -374,5 +382,11 @@ public partial class PlayList : ObservableObject
     private bool CheckCount()
     {
         return _temporaryPointerChanged != null || SongList.Count == _songIndexList.Count;
+    }
+
+    private void NotifySongListChanged()
+    {
+        SongListChanged?.Invoke();
+        _onSongListChanged?.Invoke();
     }
 }
