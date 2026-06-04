@@ -35,6 +35,11 @@
       <BuildType Solution="Release 4.5|*" Project="Debug" />
       <BuildType Solution="Release 4.6|*" Project="Debug" />
     </Project>
+    <Project Path="tests/OsuPlayer.Media.Audio.Tests/OsuPlayer.Media.Audio.Tests.csproj">
+      <BuildType Solution="Analysis|*" Project="Debug" />
+      <BuildType Solution="Release 4.5|*" Project="Debug" />
+      <BuildType Solution="Release 4.6|*" Project="Debug" />
+    </Project>
   </Folder>
   <Project Path="src/OsuPlayer.Core/OsuPlayer.Core.csproj">
     <BuildType Solution="Analysis|Any CPU" Project="Release" />
