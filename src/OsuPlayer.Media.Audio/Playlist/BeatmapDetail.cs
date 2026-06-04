@@ -22,9 +22,9 @@ public partial class BeatmapDetail : ObservableObject
         [NotifyPropertyChangedFor(nameof(TitleUnicode))]
         public partial MetaString Title { get; set; }
 
-        public string Creator { get; set; }
-        public string Version { get; set; }
-        public string Source { get; set; }
+        public string? Creator { get; set; }
+        public string? Version { get; set; }
+        public string? Source { get; set; }
 
         [ObservableProperty]
         public partial List<string> Tags { get; set; }
@@ -34,7 +34,7 @@ public partial class BeatmapDetail : ObservableObject
             TagString = value == null ? string.Empty : string.Join(" ", value);
         }
 
-        public string TagString { get; set; }
+        public string TagString { get; set; } = string.Empty;
         public int BeatmapId { get; set; }
         public int BeatmapsetId { get; set; }
 
@@ -61,6 +61,7 @@ public partial class BeatmapDetail : ObservableObject
         /// </summary>
         public void ApplyFrom(OsuFile osuFile)
         {
+            if (osuFile?.Metadata == null || osuFile.Difficulty == null) return;
             Artist = osuFile.Metadata.ArtistMeta;
             Title = osuFile.Metadata.TitleMeta;
             BeatmapId = osuFile.Metadata.BeatmapId;

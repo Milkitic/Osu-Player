@@ -56,6 +56,7 @@ internal static class StoryboardFileHelper
 
     private static string GetOsbFilename(OsuFile osuFile)
     {
+        if (osuFile?.Metadata == null) return string.Empty;
         var fileName = $"{osuFile.Metadata.Artist} - {osuFile.Metadata.Title} ({osuFile.Metadata.Creator}).osb";
         foreach (var invalidChar in Path.GetInvalidFileNameChars())
         {

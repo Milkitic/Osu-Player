@@ -6,7 +6,7 @@ namespace Milky.OsuPlayer.Media.Audio.SoundTouch;
 internal sealed class SoundTouchProcessor : IDisposable
 {
     private readonly SoundTouchHandle _handle;
-    private string _versionString;
+    private string? _versionString;
 
     public SoundTouchProcessor()
     {

@@ -1,12 +1,16 @@
 namespace Milky.OsuPlayer.Media.Audio;
 
+/// <summary>
+/// Mutable, session-level audio configuration. Path-resolution lives in
+/// <see cref="BeatmapResources"/>; this type only owns the values that
+/// change during a session (volumes, offsets, mods).
+/// </summary>
 public sealed class OsuAudioSessionOptions
 {
-    public string BeatmapFolder { get; init; } = "";
-    public string BeatmapFilename { get; init; } = "";
-    public string AudioFilename { get; init; } = "";
-    public string UserSkinFolder { get; init; } = "";
-    public string DefaultHitsoundFolder { get; init; } = "";
+    /// <summary>
+    /// Resolved on-disk resources the session should read from.
+    /// </summary>
+    public required BeatmapResources Resources { get; init; }
 
     public int ManualOffsetMilliseconds { get; set; }
     public int GeneralOffsetMilliseconds { get; set; }

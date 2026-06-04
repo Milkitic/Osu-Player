@@ -34,7 +34,7 @@ public sealed class BeatmapLoader
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var folder = beatmap.GetFolder(out var isFromDb, out var freePath)?.Trim();
+        var folder = (beatmap.GetFolder(out var isFromDb, out var freePath) ?? string.Empty).Trim();
         var mapPath = BeatmapPathResolver.ResolveBeatmapPath(folder, beatmap.BeatmapFileName, isFromDb, freePath);
         var baseFolder = Path.GetDirectoryName(mapPath) ?? string.Empty;
 
@@ -81,13 +81,14 @@ public sealed class BeatmapLoader
 
         var isFavorite = await CheckIsFavoriteAsync(beatmapSettings).ConfigureAwait(false);
 
-        var musicPath = BeatmapPathResolver.ResolveChildPath(baseFolder, osuFile.General.AudioFilename);
+        var audioFilename = osuFile.General?.AudioFilename ?? string.Empty;
+        var musicPath = BeatmapPathResolver.ResolveChildPath(baseFolder, audioFilename);
         var defaultImagePath = BeatmapPathResolver.GetDefaultImagePath(Domain.ResourcePath);
         var backgroundPath = BeatmapPathResolver.ResolveBackgroundPath(
-            baseFolder, osuFile.Events.BackgroundInfo?.Filename, defaultImagePath);
+            baseFolder, osuFile.Events?.BackgroundInfo?.Filename, defaultImagePath);
 
         string? videoPath = null;
-        var videoFilename = osuFile.Events.VideoInfo?.Filename;
+        var videoFilename = osuFile.Events?.VideoInfo?.Filename;
         if (videoFilename != null)
         {
             var resolved = BeatmapPathResolver.TryResolveChildPath(baseFolder, videoFilename);
@@ -97,7 +98,7 @@ public sealed class BeatmapLoader
             }
         }
 
-        var hasStoryboard = !string.IsNullOrWhiteSpace(osuFile.Events.StoryboardText) ||
+        var hasStoryboard = !string.IsNullOrWhiteSpace(osuFile.Events?.StoryboardText) ||
                             StoryboardFileHelper.HasOsbStoryboard(osuFile, mapPath);
 
         return new BeatmapLoadResult

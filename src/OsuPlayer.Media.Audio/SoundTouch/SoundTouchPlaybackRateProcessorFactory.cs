@@ -17,7 +17,7 @@ internal sealed class SoundTouchPlaybackRateProcessorFactory : IPlaybackRateProc
         int readDurationMilliseconds = 10,
         bool useAntiAliasing = false,
         bool useQuickSeek = true,
-        ILogger<SoundTouchPlaybackRateProcessorFactory> logger = null)
+        ILogger<SoundTouchPlaybackRateProcessorFactory>? logger = null)
     {
         if (readDurationMilliseconds <= 0)
         {

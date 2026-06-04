@@ -17,7 +17,7 @@ public sealed class OsuPlaybackEventAudioCache
 
     private readonly AudioCacheManager _audioCacheManager;
     private readonly ILogger? _logger;
-    private readonly Dictionary<PlaybackEvent, CachedAudio> _eventCache = new();
+    private readonly Dictionary<PlaybackEvent, CachedAudio?> _eventCache = new();
     private readonly Dictionary<string, CachedAudio?> _resourceCache = new(StringComparer.OrdinalIgnoreCase);
 
     private string _beatmapFolder = "";
@@ -41,7 +41,7 @@ public sealed class OsuPlaybackEventAudioCache
         _resourceCache.Clear();
     }
 
-    public async Task<CachedAudio> GetOrCreateAsync(PlaybackEvent playbackEvent,
+    public async Task<CachedAudio?> GetOrCreateAsync(PlaybackEvent playbackEvent,
         CancellationToken cancellationToken = default)
     {
         if (_eventCache.TryGetValue(playbackEvent, out var cachedAudio))
@@ -50,9 +50,9 @@ public sealed class OsuPlaybackEventAudioCache
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        cachedAudio = await LoadAsync(playbackEvent, cancellationToken).ConfigureAwait(false);
-        _eventCache[playbackEvent] = cachedAudio;
-        return cachedAudio;
+        var loaded = await LoadAsync(playbackEvent, cancellationToken).ConfigureAwait(false);
+        _eventCache[playbackEvent] = loaded;
+        return loaded;
     }
 
     public async Task PrecacheRangeAsync(IEnumerable<PlaybackEvent> events, double startMilliseconds,

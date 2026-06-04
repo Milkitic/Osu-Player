@@ -31,7 +31,7 @@ internal sealed class OsuPlaybackEventDispatcher : IDisposable
     public float BalanceFactor { get; set; } = 0.35f;
     public BalanceMode BalanceMode { get; set; } = BalanceMode.ConstantPower;
 
-    public void Dispatch(PlaybackEvent playbackEvent, CachedAudio cachedAudio)
+    public void Dispatch(PlaybackEvent playbackEvent, CachedAudio? cachedAudio)
     {
         switch (playbackEvent)
         {
@@ -54,7 +54,7 @@ internal sealed class OsuPlaybackEventDispatcher : IDisposable
         _playbackBus.Dispose();
     }
 
-    private void PlaySample(SampleEvent sampleEvent, CachedAudio cachedAudio)
+    private void PlaySample(SampleEvent sampleEvent, CachedAudio? cachedAudio)
     {
         if (cachedAudio == null)
         {
@@ -83,7 +83,7 @@ internal sealed class OsuPlaybackEventDispatcher : IDisposable
         }
     }
 
-    private void PlayControl(ControlEvent controlEvent, CachedAudio cachedAudio)
+    private void PlayControl(ControlEvent controlEvent, CachedAudio? cachedAudio)
     {
         switch (controlEvent.ControlEventType)
         {

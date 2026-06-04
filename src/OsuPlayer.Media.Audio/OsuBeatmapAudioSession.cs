@@ -10,8 +10,8 @@ using KeyAsio.Core.Audio.Caching;
 using KeyAsio.Core.OsuAudio.Hitsounds;
 using KeyAsio.Core.OsuAudio.Hitsounds.Playback;
 using KeyAsio.Core.OsuAudio.Timeline;
-using Milky.OsuPlayer.Media.Audio.Infrastructure;
 using Microsoft.Extensions.Logging;
+using Milky.OsuPlayer.Media.Audio.Infrastructure;
 
 namespace Milky.OsuPlayer.Media.Audio;
 
@@ -31,19 +31,19 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     private readonly PlaybackEventTimelineScheduler _timelineScheduler = new();
     private readonly List<PlaybackEvent> _eventBuffer = new(128);
     private readonly CancellableAsyncLoop _schedulerLoop = new();
-    private readonly ILogger _logger;
+    private readonly ILogger? _logger;
 
     private IReadOnlyList<PlaybackEvent> _playbackEvents = [];
-    private OsuFile _osuFile;
-    private OsuAudioSessionOptions _options;
+    private OsuFile _osuFile = null!;
+    private OsuAudioSessionOptions _options = null!;
     private int _nextCacheStart;
 
     public OsuBeatmapAudioSession(
         IPlaybackEngine playbackEngine,
         StandaloneMusicTransport musicTransport,
         AudioCacheManager audioCacheManager,
-        IPlaybackRateProcessorFactory rateProcessorFactory = null,
-        ILogger logger = null)
+        IPlaybackRateProcessorFactory? rateProcessorFactory = null,
+        ILogger? logger = null)
     {
         _playbackEngine = playbackEngine;
         _musicTransport = musicTransport;
@@ -55,7 +55,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         _eventAudioCache = new OsuPlaybackEventAudioCache(audioCacheManager, logger);
     }
 
-    public event Action Finished;
+    public event Action? Finished;
 
     public TimeSpan Position => _musicTransport.Position;
     public TimeSpan Duration => _musicTransport.Duration;
@@ -85,8 +85,9 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
         _osuFile = osuFile;
         _options = options;
+        var resources = options.Resources;
 
-        var musicPath = Path.Combine(options.BeatmapFolder, options.AudioFilename);
+        var musicPath = Path.Combine(resources.BeatmapFolder, resources.AudioFilename);
         var musicSource = await AudioFileMusicPlaybackSource.CreateAsync(
             _audioCacheManager,
             musicPath,
@@ -96,8 +97,8 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
         await _musicTransport.LoadAsync(musicSource, ownsSource: true, cancellationToken).ConfigureAwait(false);
 
-        _eventAudioCache.SetContext(options.BeatmapFolder, options.UserSkinFolder,
-            options.DefaultHitsoundFolder, _playbackEngine.SourceWaveFormat);
+        _eventAudioCache.SetContext(resources.BeatmapFolder, resources.UserSkinFolder,
+            resources.DefaultHitsoundFolder, _playbackEngine.SourceWaveFormat);
         ApplyOptions(options);
 
         _playbackEvents = await BuildPlaybackEventsAsync(osuFile, options, cancellationToken).ConfigureAwait(false);
@@ -130,8 +131,9 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     {
         _eventDispatcher.ClearLoops();
         await _musicTransport.SeekAsync(position, cancellationToken).ConfigureAwait(false);
-        _timelineScheduler.Seek(ToEventClock(position));
-        await PrecacheWindowAsync((int)ToEventClock(position).TotalMilliseconds, cancellationToken)
+        var eventClock = ToEventClock(position);
+        _timelineScheduler.Seek(eventClock);
+        await PrecacheWindowAsync((int)eventClock.TotalMilliseconds, cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -148,12 +150,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         }
 
         _options.EnableNightcoreBeats = enabled;
-        _playbackEvents = await BuildPlaybackEventsAsync(_osuFile, _options, cancellationToken).ConfigureAwait(false);
-        _timelineScheduler.Load(_playbackEvents);
-        _timelineScheduler.Seek(ToEventClock(Position));
-        _nextCacheStart = 0;
-        await PrecacheWindowAsync((int)ToEventClock(Position).TotalMilliseconds, cancellationToken)
-            .ConfigureAwait(false);
+        await ReloadPlaybackEventsAsync(Position, cancellationToken).ConfigureAwait(false);
     }
 
     public void ApplyOptions(OsuAudioSessionOptions options)
@@ -185,14 +182,27 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         await _schedulerLoop.DisposeAsync().ConfigureAwait(false);
     }
 
+    private async Task ReloadPlaybackEventsAsync(TimeSpan seekTo, CancellationToken cancellationToken)
+    {
+        _playbackEvents = await BuildPlaybackEventsAsync(_osuFile, _options, cancellationToken)
+            .ConfigureAwait(false);
+        _timelineScheduler.Load(_playbackEvents);
+        _timelineScheduler.Seek(ToEventClock(seekTo));
+        _nextCacheStart = 0;
+        await PrecacheWindowAsync((int)ToEventClock(seekTo).TotalMilliseconds, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
     private async Task<IReadOnlyList<PlaybackEvent>> BuildPlaybackEventsAsync(OsuFile osuFile,
         OsuAudioSessionOptions options, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var beatmapSetContext = new BeatmapSetContext(options.BeatmapFolder);
+        var beatmapSetContext = new BeatmapSetContext(options.Resources.BeatmapFolder);
         await beatmapSetContext.InitializeAsync(
-            string.IsNullOrWhiteSpace(options.BeatmapFilename) ? null : options.BeatmapFilename).ConfigureAwait(false);
+            string.IsNullOrWhiteSpace(options.Resources.BeatmapFilename)
+                ? null
+                : options.Resources.BeatmapFilename).ConfigureAwait(false);
 
         var events = await beatmapSetContext.GetHitsoundNodesAsync(osuFile).ConfigureAwait(false);
         if (options.DisableStoryboardSamples)
@@ -213,8 +223,9 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         while (!cancellationToken.IsCancellationRequested)
         {
             var position = Position;
-            await DispatchDueEventsAsync(ToEventClock(position), cancellationToken).ConfigureAwait(false);
-            StartCacheWindowIfNeeded((int)ToEventClock(position).TotalMilliseconds);
+            var eventClock = ToEventClock(position);
+            await DispatchDueEventsAsync(eventClock, cancellationToken).ConfigureAwait(false);
+            StartCacheWindowIfNeeded((int)eventClock.TotalMilliseconds);
 
             if (Duration > TimeSpan.Zero && position >= Duration)
             {
@@ -224,7 +235,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
                 break;
             }
 
-            await Task.Delay(GetNextSchedulerDelay(ToEventClock(position)), cancellationToken)
+            await Task.Delay(GetNextSchedulerDelay(eventClock), cancellationToken)
                 .ConfigureAwait(false);
         }
     }
@@ -282,6 +293,10 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
             {
                 await PrecacheWindowAsync(start).ConfigureAwait(false);
             }
+            catch (OperationCanceledException)
+            {
+                // Precache window abandoned — expected during teardown.
+            }
             catch (Exception ex)
             {
                 _logger?.LogWarning(ex, "Failed to precache osu audio window.");
@@ -299,14 +314,13 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
     private TimeSpan ToEventClock(TimeSpan musicPosition)
     {
-        var options = _options;
-        if (options == null)
+        if (_options == null)
         {
             return musicPosition;
         }
 
         return musicPosition
-               - TimeSpan.FromMilliseconds(options.ManualOffsetMilliseconds)
-               + TimeSpan.FromMilliseconds(options.GeneralOffsetMilliseconds);
+               - TimeSpan.FromMilliseconds(_options.ManualOffsetMilliseconds)
+               + TimeSpan.FromMilliseconds(_options.GeneralOffsetMilliseconds);
     }
 }
