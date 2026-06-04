@@ -164,7 +164,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
 
     private void OnSongListChanged()
     {
-        AppSettings.Default.CurrentList = new HashSet<MapIdentity>(PlayList.SongList.Select(k => k.GetIdentity()));
+        AppSettings.Default.CurrentList = PlayList.SongList.Select(k => k.GetIdentity()).ToHashSet();
         AppSettings.SaveDefault();
     }
 
