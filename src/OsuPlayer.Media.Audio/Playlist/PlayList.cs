@@ -158,38 +158,30 @@ public partial class PlayList : ObservableObject
         {
             if (Mode == PlaylistMode.Single)
             {
-                return await RaiseAutoSwitchedAsync(
-                    new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
-                        PlayControlResult.PointerControlStatus.Keep),
-                    CurrentInfo.Beatmap, false);
+                return new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+                    PlayControlResult.PointerControlStatus.Keep);
             }
 
             if (Mode == PlaylistMode.SingleLoop)
             {
-                return await RaiseAutoSwitchedAsync(
-                    new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
-                        PlayControlResult.PointerControlStatus.Keep),
-                    CurrentInfo.Beatmap, true);
+                return new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
+                    PlayControlResult.PointerControlStatus.Keep);
             }
 
             if (!IsLoop)
             {
                 if (SongList.Count == 0)
                 {
-                    return await RaiseAutoSwitchedAsync(
-                        new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
-                            PlayControlResult.PointerControlStatus.Clear),
-                        CurrentInfo.Beatmap, true);
+                    return new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+                        PlayControlResult.PointerControlStatus.Clear);
                 }
 
                 if (IndexPointer == 0 && !isNext ||
                     IndexPointer == _songIndexList.Count - 1 && isNext)
                 {
                     await SetIndexPointerAsync(0);
-                    return await RaiseAutoSwitchedAsync(
-                        new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
-                            PlayControlResult.PointerControlStatus.Reset),
-                        CurrentInfo.Beatmap, true);
+                    return new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+                        PlayControlResult.PointerControlStatus.Reset);
                 }
             }
         }
@@ -217,14 +209,6 @@ public partial class PlayList : ObservableObject
 
         return new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
             PlayControlResult.PointerControlStatus.Default);
-    }
-
-    private async Task<PlayControlResult> RaiseAutoSwitchedAsync(
-        PlayControlResult result, Beatmap beatmap, bool playInstantly)
-    {
-        if (AutoSwitched != null)
-            await AutoSwitched.Invoke(result, beatmap, playInstantly).ConfigureAwait(false);
-        return result;
     }
 
     // returns CurrentInfo changed?

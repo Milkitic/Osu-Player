@@ -172,7 +172,12 @@ namespace Milky.OsuPlayer.Media.Audio
             }
             else
             {
-                PlayStatus = previousStatus == PlayStatus.Unknown ? PlayStatus.Ready : previousStatus;
+                PlayStatus = previousStatus switch
+                {
+                    PlayStatus.Unknown => PlayStatus.Ready,
+                    PlayStatus.Finished => PlayStatus.Paused,
+                    _ => previousStatus,
+                };
             }
         }
 

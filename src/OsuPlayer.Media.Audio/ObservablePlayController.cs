@@ -60,6 +60,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
     private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
     private CancellationTokenSource _cts = new CancellationTokenSource();
     private bool _isHandlingLoadFailure;
+    private int _isHandlingPlaybackFinished;
 
     private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
 
@@ -388,7 +389,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
         }
     }
 
-    private async void Player_PlayStatusChanged(PlayStatus obj)
+    private void Player_PlayStatusChanged(PlayStatus obj)
     {
         _uiThreadDispatcher.Post(() =>
         {
@@ -397,7 +398,31 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
         });
 
         if (obj == PlayStatus.Finished)
+        {
+            _ = HandlePlaybackFinishedAsync();
+        }
+    }
+
+    private async Task HandlePlaybackFinishedAsync()
+    {
+        if (Interlocked.Exchange(ref _isHandlingPlaybackFinished, 1) == 1)
+        {
+            return;
+        }
+
+        try
+        {
+            await Task.Yield();
             await PlayByControl(PlayControlType.Next, true).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            s_logger.Error(ex, "Error while handling playback finished.");
+        }
+        finally
+        {
+            Volatile.Write(ref _isHandlingPlaybackFinished, 0);
+        }
     }
 
     private void Player_PositionUpdated(TimeSpan position)
@@ -409,35 +434,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
     {
         try
         {
-            var context = PlayList.CurrentInfo;
-
-            if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
-            {
-                await context.PlaybackController.SetTimeAsync(0, playInstantly ||
-                                                controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play)
-                    .ConfigureAwait(false);
-            }
-            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default ||
-                     controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Reset)
-            {
-                InitializeContextHandle(context);
-                if (await LoadCoreAsync(false).ConfigureAwait(false))
-                {
-                    switch (controlResult.PlayStatus)
-                    {
-                        case PlayControlResult.PlayControlStatus.Play:
-                            if (playInstantly) await context.PlaybackController.PlayAsync();
-                            break;
-                        case PlayControlResult.PlayControlStatus.Stop:
-                            await context.PlaybackController.StopAsync();
-                            break;
-                    }
-                }
-            }
-            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
-            {
-                _uiThreadDispatcher.Send(() => InterfaceClearRequest?.Invoke());
-            }
+            await ApplyPlayControlResultAsync(controlResult, PlayList.PreInfo, playInstantly).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -464,51 +461,82 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
             var controlResult = auto
                 ? await PlayList.InvokeAutoNext().ConfigureAwait(false)
                 : await PlayList.SwitchByControl(control).ConfigureAwait(false);
-            if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default &&
-                controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play)
-            {
-                if (PlayList.CurrentInfo == null)
-                {
-                    await ClearPlayer().ConfigureAwait(false);
-                    _uiThreadDispatcher.Send(() => InterfaceClearRequest?.Invoke());
-                    return;
-                }
 
-                if (preInfo == PlayList.CurrentInfo)
-                {
-                    await PlayList.CurrentInfo.PlaybackController.StopAsync().ConfigureAwait(false);
-                    await PlayList.CurrentInfo.PlaybackController.PlayAsync().ConfigureAwait(false);
-                    return;
-                }
-
-                InitializeContextHandle(PlayList.CurrentInfo);
-                if (await LoadCoreAsync(false).ConfigureAwait(false))
-                {
-                    await PlayList.CurrentInfo.PlaybackController.PlayAsync().ConfigureAwait(false);
-                }
-            }
-            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
-            {
-                switch (controlResult.PlayStatus)
-                {
-                    case PlayControlResult.PlayControlStatus.Play:
-                        await PlayList.CurrentInfo.PlaybackController.RestartAsync().ConfigureAwait(false);
-                        break;
-                    case PlayControlResult.PlayControlStatus.Stop:
-                        await PlayList.CurrentInfo.PlaybackController.StopAsync().ConfigureAwait(false);
-                        break;
-                }
-            }
-            else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
-            {
-                await ClearPlayer().ConfigureAwait(false);
-                _uiThreadDispatcher.Send(() => InterfaceClearRequest?.Invoke());
-                return;
-            }
+            await ApplyPlayControlResultAsync(controlResult, preInfo, true).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             s_logger.Error(ex, "Error while changing song.");
+        }
+    }
+
+    private async Task ApplyPlayControlResultAsync(
+        PlayControlResult controlResult,
+        BeatmapContext? previousContext,
+        bool playInstantly)
+    {
+        var context = PlayList.CurrentInfo;
+
+        if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear || context is null)
+        {
+            await ClearPlayer().ConfigureAwait(false);
+            _uiThreadDispatcher.Send(() => InterfaceClearRequest?.Invoke());
+            return;
+        }
+
+        if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
+        {
+            await ApplyCurrentPlaybackStatusAsync(context, controlResult.PlayStatus).ConfigureAwait(false);
+            return;
+        }
+
+        if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default &&
+            controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play &&
+            ReferenceEquals(previousContext, context))
+        {
+            await context.PlaybackController.RestartAsync().ConfigureAwait(false);
+            return;
+        }
+
+        InitializeContextHandle(context);
+        if (await LoadCoreAsync(false).ConfigureAwait(false))
+        {
+            await ApplyLoadedPlaybackStatusAsync(context, controlResult.PlayStatus, playInstantly).ConfigureAwait(false);
+        }
+    }
+
+    private static async Task ApplyCurrentPlaybackStatusAsync(
+        BeatmapContext context,
+        PlayControlResult.PlayControlStatus playStatus)
+    {
+        switch (playStatus)
+        {
+            case PlayControlResult.PlayControlStatus.Play:
+                await context.PlaybackController.RestartAsync().ConfigureAwait(false);
+                break;
+            case PlayControlResult.PlayControlStatus.Stop:
+                await context.PlaybackController.StopAsync().ConfigureAwait(false);
+                break;
+        }
+    }
+
+    private static async Task ApplyLoadedPlaybackStatusAsync(
+        BeatmapContext context,
+        PlayControlResult.PlayControlStatus playStatus,
+        bool playInstantly)
+    {
+        switch (playStatus)
+        {
+            case PlayControlResult.PlayControlStatus.Play:
+                if (playInstantly)
+                {
+                    await context.PlaybackController.PlayAsync().ConfigureAwait(false);
+                }
+
+                break;
+            case PlayControlResult.PlayControlStatus.Stop:
+                await context.PlaybackController.StopAsync().ConfigureAwait(false);
+                break;
         }
     }
 
