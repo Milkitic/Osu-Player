@@ -9,19 +9,14 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
     public class BeatmapContext
     {
         private static readonly IPlaybackController NoOpController = new NoOpPlaybackController();
+        private IPlaybackController _playbackController = NoOpController;
 
-        public BeatmapContext()
-        {
-            Beatmap = new Beatmap();
-            BeatmapDetail = new BeatmapDetail(Beatmap);
-            PlaybackController = NoOpController;
-        }
+        public BeatmapContext() : this(new Beatmap()) { }
 
         private BeatmapContext(Beatmap beatmap)
         {
             Beatmap = beatmap;
             BeatmapDetail = new BeatmapDetail(beatmap);
-            PlaybackController = NoOpController;
         }
 
         public static async Task<BeatmapContext> CreateAsync(Beatmap beatmap, IPlayerDataStore playerData)
@@ -39,24 +34,23 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
         public LocalOsuFile OsuFile { get; set; }
         public bool PlayInstantly { get; set; }
 
-        /// <summary>
-        /// Provides playback control operations for this beatmap context.
-        /// Defaults to a no-op controller; set by <see cref="ObservablePlayController.InitializeContextHandle"/>
-        /// once the player is ready.
-        /// </summary>
-        public IPlaybackController PlaybackController { get; set; }
+        public IPlaybackController PlaybackController
+        {
+            get => _playbackController;
+            internal set => _playbackController = value ?? NoOpController;
+        }
 
-        public static bool operator ==(BeatmapContext bc1, BeatmapContext bc2)
+        public static bool operator ==(BeatmapContext? bc1, BeatmapContext? bc2)
         {
             return Equals(bc1, bc2);
         }
 
-        public static bool operator !=(BeatmapContext bc1, BeatmapContext bc2)
+        public static bool operator !=(BeatmapContext? bc1, BeatmapContext? bc2)
         {
             return !(bc1 == bc2);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
                 return false;
@@ -75,10 +69,6 @@ namespace Milky.OsuPlayer.Media.Audio.Playlist
             return Beatmap != null ? Beatmap.GetHashCode() : 0;
         }
 
-        /// <summary>
-        /// Null Object implementation that safely discards all playback operations.
-        /// Used before the real controller is injected, preventing <c>NullReferenceException</c>.
-        /// </summary>
         private sealed class NoOpPlaybackController : IPlaybackController
         {
             public Task PlayAsync() => Task.CompletedTask;

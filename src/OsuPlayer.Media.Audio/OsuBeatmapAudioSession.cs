@@ -114,15 +114,13 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
     public async Task PauseAsync(CancellationToken cancellationToken = default)
     {
-        await _schedulerLoop.StopAsync().ConfigureAwait(false);
-        _eventDispatcher.ClearLoops();
+        await StopSchedulerAsync().ConfigureAwait(false);
         await _musicTransport.PauseAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken = default)
     {
-        await _schedulerLoop.StopAsync().ConfigureAwait(false);
-        _eventDispatcher.ClearLoops();
+        await StopSchedulerAsync().ConfigureAwait(false);
         await _musicTransport.StopAsync(cancellationToken).ConfigureAwait(false);
         _timelineScheduler.Reset();
         _nextCacheStart = 0;
@@ -167,12 +165,17 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
     public async Task ClearAsync(CancellationToken cancellationToken = default)
     {
-        await _schedulerLoop.StopAsync().ConfigureAwait(false);
-        _eventDispatcher.ClearLoops();
+        await StopSchedulerAsync().ConfigureAwait(false);
         await _musicTransport.ClearAsync(cancellationToken).ConfigureAwait(false);
         _timelineScheduler.Reset();
         _playbackEvents = [];
         _eventBuffer.Clear();
+    }
+
+    private async Task StopSchedulerAsync()
+    {
+        await _schedulerLoop.StopAsync().ConfigureAwait(false);
+        _eventDispatcher.ClearLoops();
     }
 
     public async ValueTask DisposeAsync()

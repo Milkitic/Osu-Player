@@ -154,48 +154,42 @@ public partial class PlayList : ObservableObject
 
     private async Task<PlayControlResult> SwitchByControl(bool isNext, bool isManual)
     {
-        if (!isManual) // auto
+        if (!isManual)
         {
             if (Mode == PlaylistMode.Single)
             {
-                var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
-                    PlayControlResult.PointerControlStatus.Keep);
-                if (AutoSwitched != null)
-                    await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, false).ConfigureAwait(false);
-                return playControlResult;
+                return await RaiseAutoSwitchedAsync(
+                    new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+                        PlayControlResult.PointerControlStatus.Keep),
+                    CurrentInfo.Beatmap, false);
             }
 
             if (Mode == PlaylistMode.SingleLoop)
             {
-                var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
-                    PlayControlResult.PointerControlStatus.Keep);
-                if (AutoSwitched != null)
-                    await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true).ConfigureAwait(false);
-                return playControlResult;
+                return await RaiseAutoSwitchedAsync(
+                    new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
+                        PlayControlResult.PointerControlStatus.Keep),
+                    CurrentInfo.Beatmap, true);
             }
 
             if (!IsLoop)
             {
                 if (SongList.Count == 0)
                 {
-                    var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
-                        PlayControlResult.PointerControlStatus.Clear);
-                    if (AutoSwitched != null)
-                        await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true)
-                            .ConfigureAwait(false);
-                    return playControlResult;
+                    return await RaiseAutoSwitchedAsync(
+                        new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+                            PlayControlResult.PointerControlStatus.Clear),
+                        CurrentInfo.Beatmap, true);
                 }
 
                 if (IndexPointer == 0 && !isNext ||
                     IndexPointer == _songIndexList.Count - 1 && isNext)
                 {
                     await SetIndexPointerAsync(0);
-                    var playControlResult = new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
-                        PlayControlResult.PointerControlStatus.Reset);
-                    if (AutoSwitched != null)
-                        await AutoSwitched.Invoke(playControlResult, CurrentInfo.Beatmap, true)
-                            .ConfigureAwait(false);
-                    return playControlResult;
+                    return await RaiseAutoSwitchedAsync(
+                        new PlayControlResult(PlayControlResult.PlayControlStatus.Stop,
+                            PlayControlResult.PointerControlStatus.Reset),
+                        CurrentInfo.Beatmap, true);
                 }
             }
         }
@@ -221,8 +215,15 @@ public partial class PlayList : ObservableObject
                 await SetIndexPointerAsync(IndexPointer - 1);
         }
 
-        var result = new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
+        return new PlayControlResult(PlayControlResult.PlayControlStatus.Play,
             PlayControlResult.PointerControlStatus.Default);
+    }
+
+    private async Task<PlayControlResult> RaiseAutoSwitchedAsync(
+        PlayControlResult result, Beatmap beatmap, bool playInstantly)
+    {
+        if (AutoSwitched != null)
+            await AutoSwitched.Invoke(result, beatmap, playInstantly).ConfigureAwait(false);
         return result;
     }
 

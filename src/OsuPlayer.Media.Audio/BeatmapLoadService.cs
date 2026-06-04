@@ -51,7 +51,7 @@ internal sealed class BeatmapLoadService
         return loadResult;
     }
 
-    private static void ApplyToContext(
+    internal static void ApplyToContext(
         BeatmapContext context,
         BeatmapLoadResult loadResult,
         CancellationToken cancellationToken)

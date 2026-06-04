@@ -18,8 +18,6 @@ namespace Milky.OsuPlayer.Media.Audio
 {
     public sealed class OsuMixPlayer : IAsyncDisposable
     {
-        public static OsuMixPlayer Current { get; private set; }
-
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         private readonly IPlaybackEngine _engine;
@@ -44,8 +42,6 @@ namespace Milky.OsuPlayer.Media.Audio
 
             _engine = engine;
             _audioCacheManager = audioCacheManager;
-
-            Current = this;
         }
 
         public IWavePlayer Device => _engine.CurrentDevice;
@@ -78,10 +74,6 @@ namespace Milky.OsuPlayer.Media.Audio
             {
                 _manualOffset = value;
                 _session.ManualOffsetMilliseconds = value;
-                if (_sessionOptions != null)
-                {
-                    _sessionOptions.ManualOffsetMilliseconds = value;
-                }
             }
         }
 
@@ -96,7 +88,7 @@ namespace Milky.OsuPlayer.Media.Audio
                     new SoundTouchPlaybackRateProcessorFactory());
                 _session.Finished += Session_Finished;
                 _sessionOptions = CreateSessionOptions();
-                ApplyVolumeSettings();
+                SynchronizeVolumeSettings();
 
                 await _session.LoadAsync(_osuFile, _sessionOptions).ConfigureAwait(false);
                 await SetPlaybackRate(AppSettings.Default?.Play?.PlaybackRate ?? 1,
@@ -122,7 +114,7 @@ namespace Milky.OsuPlayer.Media.Audio
             _osuFile = osuFile;
             _sourceFolder = sourceFolder;
             _sessionOptions = CreateSessionOptions();
-            ApplyVolumeSettings();
+            SynchronizeVolumeSettings();
             await _session.LoadAsync(_osuFile, _sessionOptions).ConfigureAwait(false);
             PlayStatus = PlayStatus.Ready;
         }
@@ -267,36 +259,24 @@ namespace Milky.OsuPlayer.Media.Audio
             };
         }
 
-        private void ApplyVolumeSettings()
+        private void SynchronizeVolumeSettings()
         {
-            if (AppSettings.Default?.Volume == null || _sessionOptions == null) return;
+            var volume = AppSettings.Default?.Volume;
+            if (volume == null || _sessionOptions == null) return;
 
-            _engine.MainVolume = AppSettings.Default.Volume.Main;
-            _engine.MusicVolume = AppSettings.Default.Volume.Music;
+            _engine.MainVolume = volume.Main;
+            _engine.MusicVolume = volume.Music;
             _engine.EffectVolume = 1;
 
-            _sessionOptions.HitsoundVolume = AppSettings.Default.Volume.Hitsound;
-            _sessionOptions.SampleVolume = AppSettings.Default.Volume.Sample;
-            _sessionOptions.BalanceFactor = AppSettings.Default.Volume.BalanceFactor / 100;
+            _sessionOptions.HitsoundVolume = volume.Hitsound;
+            _sessionOptions.SampleVolume = volume.Sample;
+            _sessionOptions.BalanceFactor = volume.BalanceFactor / 100;
             _session.ApplyOptions(_sessionOptions);
         }
 
         private void Volume_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            switch (e.PropertyName)
-            {
-                case nameof(AppSettings.Default.Volume.Main):
-                    _engine.MainVolume = AppSettings.Default.Volume.Main;
-                    break;
-                case nameof(AppSettings.Default.Volume.Music):
-                    _engine.MusicVolume = AppSettings.Default.Volume.Music;
-                    break;
-                case nameof(AppSettings.Default.Volume.Hitsound):
-                case nameof(AppSettings.Default.Volume.Sample):
-                case nameof(AppSettings.Default.Volume.BalanceFactor):
-                    ApplyVolumeSettings();
-                    break;
-            }
+            SynchronizeVolumeSettings();
         }
 
         private void StartPositionPump()
