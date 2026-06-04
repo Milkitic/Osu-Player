@@ -17,6 +17,7 @@ public sealed class OsuPlaybackEventAudioCache
 
     private readonly AudioCacheManager _audioCacheManager;
     private readonly ILogger? _logger;
+    private readonly Lock _gate = new();
     private readonly Dictionary<PlaybackEvent, CachedAudio?> _eventCache = new();
     private readonly Dictionary<string, CachedAudio?> _resourceCache = new(StringComparer.OrdinalIgnoreCase);
 
@@ -24,6 +25,7 @@ public sealed class OsuPlaybackEventAudioCache
     private string _userSkinFolder = "";
     private string _defaultHitsoundFolder = "";
     private WaveFormat _waveFormat = null!;
+    private int _contextVersion;
 
     public OsuPlaybackEventAudioCache(AudioCacheManager audioCacheManager, ILogger? logger = null)
     {
@@ -31,27 +33,54 @@ public sealed class OsuPlaybackEventAudioCache
         _logger = logger;
     }
 
-    public void SetContext(string beatmapFolder, string userSkinFolder, string defaultHitsoundFolder, WaveFormat waveFormat)
+    public void SetContext(string beatmapFolder, string userSkinFolder, string defaultHitsoundFolder,
+        WaveFormat waveFormat)
     {
-        _beatmapFolder = beatmapFolder;
-        _userSkinFolder = userSkinFolder;
-        _defaultHitsoundFolder = defaultHitsoundFolder;
-        _waveFormat = waveFormat;
-        _eventCache.Clear();
-        _resourceCache.Clear();
+        lock (_gate)
+        {
+            _beatmapFolder = beatmapFolder;
+            _userSkinFolder = userSkinFolder;
+            _defaultHitsoundFolder = defaultHitsoundFolder;
+            _waveFormat = waveFormat;
+            _contextVersion++;
+            _eventCache.Clear();
+            _resourceCache.Clear();
+        }
+    }
+
+    public void Clear()
+    {
+        lock (_gate)
+        {
+            _contextVersion++;
+            _eventCache.Clear();
+            _resourceCache.Clear();
+        }
     }
 
     public async Task<CachedAudio?> GetOrCreateAsync(PlaybackEvent playbackEvent,
         CancellationToken cancellationToken = default)
     {
-        if (_eventCache.TryGetValue(playbackEvent, out var cachedAudio))
+        CacheContext context;
+        lock (_gate)
         {
-            return cachedAudio;
+            if (_eventCache.TryGetValue(playbackEvent, out var cachedAudio))
+            {
+                return cachedAudio;
+            }
+
+            context = CreateContextSnapshot();
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        var loaded = await LoadAsync(playbackEvent, cancellationToken).ConfigureAwait(false);
-        _eventCache[playbackEvent] = loaded;
+        var loaded = await LoadAsync(playbackEvent, context, cancellationToken).ConfigureAwait(false);
+
+        lock (_gate)
+        {
+            ThrowIfContextChanged(context);
+            _eventCache[playbackEvent] = loaded;
+        }
+
         return loaded;
     }
 
@@ -66,18 +95,19 @@ public sealed class OsuPlaybackEventAudioCache
                 continue;
             }
 
-            if (_eventCache.ContainsKey(playbackEvent))
-            {
-                continue;
-            }
-
             _ = await GetOrCreateAsync(playbackEvent, cancellationToken).ConfigureAwait(false);
         }
     }
 
-    private Task<CachedAudio?> LoadAsync(PlaybackEvent playbackEvent, CancellationToken cancellationToken)
+    private Task<CachedAudio?> LoadAsync(
+        PlaybackEvent playbackEvent,
+        CacheContext context,
+        CancellationToken cancellationToken)
     {
-        if (playbackEvent is ControlEvent { ControlEventType: ControlEventType.LoopStop or ControlEventType.Volume or ControlEventType.Balance })
+        if (playbackEvent is ControlEvent
+            {
+                ControlEventType: ControlEventType.LoopStop or ControlEventType.Volume or ControlEventType.Balance
+            })
         {
             return Task.FromResult<CachedAudio?>(null);
         }
@@ -87,55 +117,68 @@ public sealed class OsuPlaybackEventAudioCache
             return Task.FromResult<CachedAudio?>(null);
         }
 
-        var (path, category) = ResolvePath(playbackEvent);
+        var (path, category) = ResolvePath(playbackEvent, context);
         if (path == null)
         {
             _logger?.LogWarning("Audio resource not found: {Filename}", playbackEvent.Filename);
             return Task.FromResult<CachedAudio?>(null);
         }
 
-        if (_resourceCache.TryGetValue(path, out var cachedAudio))
+        lock (_gate)
         {
-            return Task.FromResult(cachedAudio);
+            ThrowIfContextChanged(context);
+            if (_resourceCache.TryGetValue(path, out var cachedAudio))
+            {
+                return Task.FromResult(cachedAudio);
+            }
         }
 
-        return LoadAndRememberAsync(path, category, cancellationToken);
+        return LoadAndRememberAsync(path, category, context, cancellationToken);
     }
 
-    private async Task<CachedAudio?> LoadAndRememberAsync(string path, string category, CancellationToken cancellationToken)
+    private async Task<CachedAudio?> LoadAndRememberAsync(
+        string path,
+        string category,
+        CacheContext context,
+        CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var (cachedAudio, status) =
-            await _audioCacheManager.GetOrCreateOrEmptyFromFileAsync(path, _waveFormat, category).ConfigureAwait(false);
+        var (cachedAudio, status) = await _audioCacheManager
+            .GetOrCreateOrEmptyFromFileAsync(path, context.WaveFormat, category).ConfigureAwait(false);
 
         if (status == CacheGetStatus.Failed)
         {
             _logger?.LogWarning("Failed to cache osu audio resource: {Path}", path);
         }
 
-        _resourceCache[path] = cachedAudio;
+        lock (_gate)
+        {
+            ThrowIfContextChanged(context);
+            _resourceCache[path] = cachedAudio;
+        }
+
         return cachedAudio;
     }
 
-    private (string? Path, string Category) ResolvePath(PlaybackEvent playbackEvent)
+    private (string? Path, string Category) ResolvePath(PlaybackEvent playbackEvent, CacheContext context)
     {
         var filename = playbackEvent.Filename!;
         if (playbackEvent.ResourceOwner == ResourceOwner.Beatmap)
         {
-            var beatmapPath = Path.Combine(_beatmapFolder, filename);
+            var beatmapPath = Path.Combine(context.BeatmapFolder, filename);
             if (File.Exists(beatmapPath))
             {
                 return (beatmapPath, BeatmapCategory);
             }
         }
 
-        var skinPath = ResolveFromFolder(_userSkinFolder, filename);
+        var skinPath = ResolveFromFolder(context.UserSkinFolder, filename);
         if (skinPath != null)
         {
             return (skinPath, SkinCategory);
         }
 
-        var defaultPath = ResolveFromFolder(_defaultHitsoundFolder, filename);
+        var defaultPath = ResolveFromFolder(context.DefaultHitsoundFolder, filename);
         return (defaultPath, SkinCategory);
     }
 
@@ -164,4 +207,29 @@ public sealed class OsuPlaybackEventAudioCache
 
         return null;
     }
+
+    private CacheContext CreateContextSnapshot()
+    {
+        return new CacheContext(
+            _contextVersion,
+            _beatmapFolder,
+            _userSkinFolder,
+            _defaultHitsoundFolder,
+            _waveFormat);
+    }
+
+    private void ThrowIfContextChanged(CacheContext context)
+    {
+        if (context.Version != _contextVersion)
+        {
+            throw new OperationCanceledException("The osu audio cache context changed while loading a resource.");
+        }
+    }
+
+    private readonly record struct CacheContext(
+        int Version,
+        string BeatmapFolder,
+        string UserSkinFolder,
+        string DefaultHitsoundFolder,
+        WaveFormat WaveFormat);
 }

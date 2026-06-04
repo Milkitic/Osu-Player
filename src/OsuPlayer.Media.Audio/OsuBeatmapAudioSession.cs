@@ -32,10 +32,13 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     private readonly List<PlaybackEvent> _eventBuffer = new(128);
     private readonly CancellableAsyncLoop _schedulerLoop = new();
     private readonly ILogger? _logger;
+    private readonly object _precacheGate = new();
+    private readonly HashSet<Task> _precacheTasks = new();
 
     private IReadOnlyList<PlaybackEvent> _playbackEvents = [];
     private OsuFile _osuFile = null!;
     private OsuAudioSessionOptions _options = null!;
+    private CancellationTokenSource _precacheCts = new();
     private int _nextCacheStart;
 
     public OsuBeatmapAudioSession(
@@ -163,10 +166,12 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     public async Task ClearAsync(CancellationToken cancellationToken = default)
     {
         await StopSchedulerAsync().ConfigureAwait(false);
+        await StopPrecacheAsync().ConfigureAwait(false);
         await _musicTransport.ClearAsync(cancellationToken).ConfigureAwait(false);
         _timelineScheduler.Reset();
         _playbackEvents = [];
         _eventBuffer.Clear();
+        _eventAudioCache.Clear();
     }
 
     private async Task StopSchedulerAsync()
@@ -180,10 +185,12 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         await ClearAsync().ConfigureAwait(false);
         _eventDispatcher.Dispose();
         await _schedulerLoop.DisposeAsync().ConfigureAwait(false);
+        _precacheCts.Dispose();
     }
 
     private async Task ReloadPlaybackEventsAsync(TimeSpan seekTo, CancellationToken cancellationToken)
     {
+        await StopPrecacheAsync().ConfigureAwait(false);
         _playbackEvents = await BuildPlaybackEventsAsync(_osuFile, _options, cancellationToken)
             .ConfigureAwait(false);
         _timelineScheduler.Load(_playbackEvents);
@@ -287,11 +294,13 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
         var start = _nextCacheStart;
         _nextCacheStart += CacheAdvanceMilliseconds;
-        _ = Task.Run(async () =>
+        var events = _playbackEvents;
+        var token = GetPrecacheToken();
+        var task = Task.Run(async () =>
         {
             try
             {
-                await PrecacheWindowAsync(start).ConfigureAwait(false);
+                await PrecacheWindowAsync(events, start, token).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
@@ -302,14 +311,90 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
                 _logger?.LogWarning(ex, "Failed to precache osu audio window.");
             }
         });
+
+        TrackPrecacheTask(task);
     }
 
     private Task PrecacheWindowAsync(int startMilliseconds, CancellationToken cancellationToken = default)
     {
-        return _eventAudioCache.PrecacheRangeAsync(_playbackEvents,
+        return PrecacheWindowAsync(_playbackEvents, startMilliseconds, cancellationToken);
+    }
+
+    private Task PrecacheWindowAsync(
+        IReadOnlyList<PlaybackEvent> playbackEvents,
+        int startMilliseconds,
+        CancellationToken cancellationToken)
+    {
+        return _eventAudioCache.PrecacheRangeAsync(playbackEvents,
             startMilliseconds,
             startMilliseconds + CacheWindowMilliseconds,
             cancellationToken);
+    }
+
+    private CancellationToken GetPrecacheToken()
+    {
+        lock (_precacheGate)
+        {
+            return _precacheCts.Token;
+        }
+    }
+
+    private void TrackPrecacheTask(Task task)
+    {
+        lock (_precacheGate)
+        {
+            _precacheTasks.Add(task);
+        }
+
+        _ = task.ContinueWith(static (completedTask, state) =>
+        {
+            var session = (OsuBeatmapAudioSession)state!;
+            lock (session._precacheGate)
+            {
+                session._precacheTasks.Remove(completedTask);
+            }
+        }, this, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+    }
+
+    private async Task StopPrecacheAsync()
+    {
+        CancellationTokenSource cts;
+        Task[] tasks;
+
+        lock (_precacheGate)
+        {
+            cts = _precacheCts;
+            _precacheCts = new CancellationTokenSource();
+            tasks = _precacheTasks.ToArray();
+            _precacheTasks.Clear();
+        }
+
+        try
+        {
+            cts.Cancel();
+        }
+        catch (ObjectDisposedException)
+        {
+            // Shutdown can race with a previous cancellation path.
+        }
+
+        if (tasks.Length > 0)
+        {
+            try
+            {
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when abandoning an in-flight precache window.
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Failed while stopping osu audio precache tasks.");
+            }
+        }
+
+        cts.Dispose();
     }
 
     private TimeSpan ToEventClock(TimeSpan musicPosition)

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using NAudio.Wave;
 
@@ -8,11 +9,13 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
 {
     private readonly ISampleProvider _sourceProvider;
     private readonly SoundTouchProcessor _soundTouch;
+    private readonly Lock _gate = new();
     private readonly float[] _sourceReadBuffer;
     private readonly float[] _soundTouchReadBuffer;
     private readonly int _channelCount;
     private float _playbackRate = 1.0f;
     private bool _repositionRequested;
+    private bool _disposed;
 
     public VariableSpeedSampleProvider(
         ISampleProvider sourceProvider,
@@ -42,88 +45,128 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
 
     public float PlaybackRate
     {
-        get => _playbackRate;
+        get
+        {
+            lock (_gate)
+            {
+                return _playbackRate;
+            }
+        }
         set
         {
-            if (_playbackRate.Equals(value)) return;
-            UpdatePlaybackRate(value);
-            _playbackRate = value;
+            lock (_gate)
+            {
+                ThrowIfDisposed();
+                if (_playbackRate.Equals(value)) return;
+                UpdatePlaybackRate(value);
+                _playbackRate = value;
+            }
         }
     }
 
     public int Read(float[] buffer, int offset, int count)
     {
-        if (_playbackRate.Equals(0))
+        lock (_gate)
         {
-            Array.Clear(buffer, offset, count);
-            return count;
-        }
+            if (_disposed) return 0;
 
-        if (_repositionRequested)
-        {
-            _soundTouch.Clear();
-            _repositionRequested = false;
-        }
-
-        var samplesRead = 0;
-        var reachedEndOfSource = false;
-        while (samplesRead < count)
-        {
-            if (_soundTouch.NumberOfSamplesAvailable == 0)
+            if (_playbackRate.Equals(0))
             {
-                var readFromSource = _sourceProvider.Read(_sourceReadBuffer, 0, _sourceReadBuffer.Length);
-                if (readFromSource > 0)
-                {
-                    _soundTouch.PutSamples(_sourceReadBuffer, readFromSource / _channelCount);
-                }
-                else
-                {
-                    reachedEndOfSource = true;
-                    _soundTouch.Flush();
-                }
+                Array.Clear(buffer, offset, count);
+                return count;
             }
 
-            var desiredSampleFrames = (count - samplesRead) / _channelCount;
-            var received = _soundTouch.ReceiveSamples(_soundTouchReadBuffer, desiredSampleFrames) * _channelCount;
-            Array.Copy(_soundTouchReadBuffer, 0, buffer, offset + samplesRead, received);
-            samplesRead += received;
+            var alignedCount = count - count % _channelCount;
+            if (alignedCount <= 0)
+            {
+                return 0;
+            }
 
-            if (received == 0 && reachedEndOfSource) break;
+            if (_repositionRequested)
+            {
+                _soundTouch.Clear();
+                _repositionRequested = false;
+            }
+
+            var samplesRead = 0;
+            var reachedEndOfSource = false;
+            var maxOutputFrames = _soundTouchReadBuffer.Length / _channelCount;
+            while (samplesRead < alignedCount)
+            {
+                if (_soundTouch.NumberOfSamplesAvailable == 0)
+                {
+                    var readFromSource = _sourceProvider.Read(_sourceReadBuffer, 0, _sourceReadBuffer.Length);
+                    if (readFromSource > 0)
+                    {
+                        _soundTouch.PutSamples(_sourceReadBuffer, readFromSource / _channelCount);
+                    }
+                    else
+                    {
+                        reachedEndOfSource = true;
+                        _soundTouch.Flush();
+                    }
+                }
+
+                var desiredSampleFrames = Math.Min((alignedCount - samplesRead) / _channelCount, maxOutputFrames);
+                if (desiredSampleFrames <= 0)
+                {
+                    break;
+                }
+
+                var received = _soundTouch.ReceiveSamples(_soundTouchReadBuffer, desiredSampleFrames) * _channelCount;
+                Array.Copy(_soundTouchReadBuffer, 0, buffer, offset + samplesRead, received);
+                samplesRead += received;
+
+                if (received == 0 && reachedEndOfSource) break;
+            }
+
+            return samplesRead;
         }
-
-        return samplesRead;
     }
 
     public void SetSoundTouchProfile(SoundTouchRateOptions options)
     {
-        if (CurrentOptions.PreservePitch != options.PreservePitch && !_playbackRate.Equals(1))
+        lock (_gate)
         {
-            if (options.PreservePitch)
+            ThrowIfDisposed();
+            if (CurrentOptions.PreservePitch != options.PreservePitch && !_playbackRate.Equals(1))
             {
-                _soundTouch.SetRate(1.0f);
-                _soundTouch.SetPitchOctaves(0f);
-                _soundTouch.SetTempo(_playbackRate);
+                if (options.PreservePitch)
+                {
+                    _soundTouch.SetRate(1.0f);
+                    _soundTouch.SetPitchOctaves(0f);
+                    _soundTouch.SetTempo(_playbackRate);
+                }
+                else
+                {
+                    _soundTouch.SetTempo(1.0f);
+                    _soundTouch.SetRate(_playbackRate);
+                }
             }
-            else
-            {
-                _soundTouch.SetTempo(1.0f);
-                _soundTouch.SetRate(_playbackRate);
-            }
-        }
 
-        CurrentOptions = options;
-        _soundTouch.SetUseAntiAliasing(options.UseAntiAliasing);
-        _soundTouch.SetUseQuickSeek(options.UseQuickSeek);
+            CurrentOptions = options;
+            _soundTouch.SetUseAntiAliasing(options.UseAntiAliasing);
+            _soundTouch.SetUseQuickSeek(options.UseQuickSeek);
+        }
     }
 
     public void Reposition()
     {
-        _repositionRequested = true;
+        lock (_gate)
+        {
+            ThrowIfDisposed();
+            _repositionRequested = true;
+        }
     }
 
     public void Dispose()
     {
-        _soundTouch.Dispose();
+        lock (_gate)
+        {
+            if (_disposed) return;
+            _disposed = true;
+            _soundTouch.Dispose();
+        }
     }
 
     private void UpdatePlaybackRate(float value)
@@ -138,5 +181,10 @@ internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
         {
             _soundTouch.SetRate(value);
         }
+    }
+
+    private void ThrowIfDisposed()
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
     }
 }
