@@ -1,5 +1,6 @@
 using Milki.Extensions.MouseKeyHook;
 using Milky.OsuPlayer.Pages.Settings;
+using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Linq;
@@ -71,13 +72,19 @@ namespace Milky.OsuPlayer
                 return;
             }
 
+            Execute.ToUiThread(() => HandleKeyPressed(modifiers, key));
+        }
+
+        private void HandleKeyPressed(HookModifierKeys modifiers, HookKeys key)
+        {
             var useCtrl = modifiers.HasFlag(HookModifierKeys.Control);
             var useAlt = modifiers.HasFlag(HookModifierKeys.Alt);
             var useShift = modifiers.HasFlag(HookModifierKeys.Shift);
 
-            if (ConfigType != null)
+            var configType = ConfigType;
+            if (configType != null)
             {
-                BindHotKey(ConfigType.Value, useCtrl, useAlt, useShift, key);
+                BindHotKey(configType.Value, useCtrl, useAlt, useShift, key);
             }
             else
             {
