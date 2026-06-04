@@ -5,7 +5,6 @@ namespace Milky.OsuPlayer.Media.Audio;
 
 /// <summary>
 /// Resolves file paths for beatmap resources (map files, audio, backgrounds, video).
-/// Extracted from <c>ObservablePlayController</c> to centralize path resolution logic.
 /// </summary>
 public static class BeatmapPathResolver
 {

@@ -89,10 +89,10 @@ public partial class BeatmapDetail : ObservableObject
     public long SongLength { get; set; }
     public MapIdentity Identity => Beatmap.GetIdentity();
 
-    public string BaseFolder { get; set; }
-    public string MapPath { get; set; }
-    public string BackgroundPath { get; set; }
-    public string MusicPath { get; set; }
-    public string VideoPath { get; set; }
-    public string StoryboardPath { get; set; }
+    public string BaseFolder { get; set; } = string.Empty;
+    public string MapPath { get; set; } = string.Empty;
+    public string? BackgroundPath { get; set; }
+    public string MusicPath { get; set; } = string.Empty;
+    public string? VideoPath { get; set; }
+    public string? StoryboardPath { get; set; }
 }

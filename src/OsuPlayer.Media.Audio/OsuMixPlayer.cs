@@ -9,6 +9,7 @@ using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
+using Milky.OsuPlayer.Media.Audio.Infrastructure;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Media.Audio.SoundTouch;
 using NAudio.Wave;
@@ -29,8 +30,7 @@ namespace Milky.OsuPlayer.Media.Audio
         private OsuFile _osuFile;
         private string _sourceFolder;
         private OsuAudioSessionOptions _sessionOptions;
-        private CancellationTokenSource _positionPumpCts;
-        private Task _positionPumpTask;
+        private readonly CancellableAsyncLoop _positionPumpLoop = new();
         private PlayStatus _playStatus = PlayStatus.Unknown;
         private int _manualOffset;
 
@@ -145,7 +145,7 @@ namespace Milky.OsuPlayer.Media.Audio
         {
             if (PlayStatus == PlayStatus.Paused) return;
 
-            StopPositionPump();
+            await StopPositionPumpAsync().ConfigureAwait(false);
             await _session.PauseAsync().ConfigureAwait(false);
             RaisePositionUpdated(Position);
             PlayStatus = PlayStatus.Paused;
@@ -153,7 +153,7 @@ namespace Milky.OsuPlayer.Media.Audio
 
         public async Task Stop()
         {
-            StopPositionPump();
+            await StopPositionPumpAsync().ConfigureAwait(false);
             await _session.StopAsync().ConfigureAwait(false);
             RaisePositionUpdated(TimeSpan.Zero);
             PlayStatus = PlayStatus.Paused;
@@ -227,10 +227,10 @@ namespace Milky.OsuPlayer.Media.Audio
                 AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
             }
 
-            StopPositionPump();
+            await StopPositionPumpAsync().ConfigureAwait(false);
+            await _positionPumpLoop.DisposeAsync().ConfigureAwait(false);
             _session.Finished -= Session_Finished;
             await _session.DisposeAsync().ConfigureAwait(false);
-            _positionPumpCts?.Dispose();
         }
 
         private void Session_Finished()
@@ -301,30 +301,24 @@ namespace Milky.OsuPlayer.Media.Audio
 
         private void StartPositionPump()
         {
-            if (_positionPumpTask is { IsCompleted: false }) return;
-
-            _positionPumpCts?.Dispose();
-            _positionPumpCts = new CancellationTokenSource();
-            var token = _positionPumpCts.Token;
-            _positionPumpTask = Task.Run(async () =>
+            _positionPumpLoop.Start(async ct =>
             {
-                while (!token.IsCancellationRequested)
+                while (!ct.IsCancellationRequested)
                 {
                     RaisePositionUpdated(Position);
-                    await Task.Delay(250, token).ConfigureAwait(false);
+                    await Task.Delay(250, ct).ConfigureAwait(false);
                 }
-            }, token);
+            });
         }
 
         private void StopPositionPump()
         {
-            try
-            {
-                _positionPumpCts?.Cancel();
-            }
-            catch (ObjectDisposedException)
-            {
-            }
+            _positionPumpLoop.Stop();
+        }
+
+        private ValueTask StopPositionPumpAsync()
+        {
+            return _positionPumpLoop.StopAsync();
         }
 
         private void RaisePositionUpdated(TimeSpan position)

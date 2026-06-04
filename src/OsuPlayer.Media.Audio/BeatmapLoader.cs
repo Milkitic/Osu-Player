@@ -11,8 +11,7 @@ namespace Milky.OsuPlayer.Media.Audio;
 
 /// <summary>
 /// Handles beatmap data loading: file I/O, metadata parsing, path resolution,
-/// and favorite status lookup. Extracted from <c>ObservablePlayController</c>
-/// to isolate I/O and data-mapping concerns from UI orchestration.
+/// and favorite status lookup.
 /// </summary>
 public sealed class BeatmapLoader
 {

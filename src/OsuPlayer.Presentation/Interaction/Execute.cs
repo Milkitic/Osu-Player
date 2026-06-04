@@ -11,6 +11,12 @@ namespace Milky.OsuPlayer.Presentation.Interaction
         private static Dispatcher _uiDispatcher;
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
+        /// <summary>
+        /// Returns a singleton <see cref="IUiThreadDispatcher"/> backed by
+        /// WPF's <see cref="Dispatcher"/>. Safe to cache.
+        /// </summary>
+        public static IUiThreadDispatcher UiThreadDispatcher { get; } = new DispatcherUiThreadDispatcher();
+
         public static void SetMainThreadContext()
         {
             if (_uiDispatcher != null) Logger.Warn("Current dispatcher may be replaced.");
@@ -97,6 +103,12 @@ namespace Milky.OsuPlayer.Presentation.Interaction
                 Logger.Error(ex, "UiContext execute error.");
                 throw;
             }
+        }
+
+        private sealed class DispatcherUiThreadDispatcher : IUiThreadDispatcher
+        {
+            public void Send(Action action) => OnUiThread(action);
+            public void Post(Action action) => ToUiThread(action);
         }
     }
 }

@@ -102,6 +102,7 @@ public partial class App : Application
         // 注册核心后台服务 (Singletons)
         services.AddSingleton<IAppNotificationService, AppNotificationService>();
         services.AddSingleton<INavigationService, FrameNavigationService>();
+        services.AddSingleton<IUiThreadDispatcher>(_ => Execute.UiThreadDispatcher);
         services.AddSingleton<IPlayerDataStore, PlayerDataService>();
         services.AddSingleton<IPlayerDataService>(provider =>
             new NotifyingPlayerDataService(
@@ -115,7 +116,8 @@ public partial class App : Application
                 provider.GetRequiredService<IPlaybackEngine>(),
                 provider.GetRequiredService<IAudioDeviceManager>(),
                 provider.GetRequiredService<AudioCacheManager>(),
-                ex => provider.GetRequiredService<IAppNotificationService>().Push(ex.Message, "Audio Device Error"));
+                ex => provider.GetRequiredService<IAppNotificationService>().Push(ex.Message, "Audio Device Error"),
+                provider.GetRequiredService<IUiThreadDispatcher>());
             controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
             return controller;
         });

@@ -13,7 +13,6 @@ using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Presentation.Annotations;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
 
@@ -55,23 +54,33 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
     private readonly IAudioDeviceManager _audioDeviceManager;
     private readonly AudioCacheManager _audioCacheManager;
     private readonly Action<Exception> _audioDeviceErrorHandler;
+    private readonly IUiThreadDispatcher _uiThreadDispatcher;
     private readonly BeatmapLoader _beatmapLoader;
+    private readonly BeatmapLoadService _loadService;
     private SemaphoreSlim _readLock = new SemaphoreSlim(1, 1);
     private CancellationTokenSource _cts = new CancellationTokenSource();
     private bool _isHandlingLoadFailure;
 
     private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
 
-    public ObservablePlayController(IPlayerDataStore playerData, IPlaybackEngine playbackEngine, IAudioDeviceManager audioDeviceManager, AudioCacheManager audioCacheManager, Action<Exception> audioDeviceErrorHandler)
+    public ObservablePlayController(
+        IPlayerDataStore playerData,
+        IPlaybackEngine playbackEngine,
+        IAudioDeviceManager audioDeviceManager,
+        AudioCacheManager audioCacheManager,
+        Action<Exception> audioDeviceErrorHandler,
+        IUiThreadDispatcher uiThreadDispatcher)
     {
         _playerData = playerData;
         _playbackEngine = playbackEngine;
         _audioDeviceManager = audioDeviceManager;
         _audioCacheManager = audioCacheManager;
         _audioDeviceErrorHandler = audioDeviceErrorHandler;
+        _uiThreadDispatcher = uiThreadDispatcher;
         _beatmapLoader = new BeatmapLoader(playerData);
+        _loadService = new BeatmapLoadService(_beatmapLoader);
         _playbackEngine.DeviceError += PlaybackEngine_DeviceError;
-        PlayList = new PlayList(playerData);
+        PlayList = new PlayList(playerData, uiThreadDispatcher);
         PlayList.AutoSwitched += PlayList_AutoSwitched;
         PlayList.SongListChanged += PlayList_SongListChanged;
 #if DEBUG
@@ -82,7 +91,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
     private void PlaybackEngine_DeviceError(Exception ex)
     {
         s_logger.Error(ex, "Audio device error.");
-        Execute.ToUiThread(() => _audioDeviceErrorHandler?.Invoke(ex));
+        _uiThreadDispatcher.Post(() => _audioDeviceErrorHandler?.Invoke(ex));
     }
 
     public async Task PlayAsync()
@@ -145,7 +154,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
         }
     }
 
-    public async Task PlayNewAsync([CanBeNull] Beatmap beatmap, bool playInstantly = true)
+    public async Task PlayNewAsync(Beatmap? beatmap, bool playInstantly = true)
     {
         if (beatmap is null) return;
         await PlayList.AddOrSwitchToAsync(beatmap);
@@ -174,10 +183,10 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
 
             var context = PlayList.CurrentInfo;
             context.BeatmapDetail.MapPath = path;
-            context.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path);
+            context.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path) ?? string.Empty;
 
             await ClearPlayer().ConfigureAwait(false);
-            Execute.OnUiThread(() => PreLoadStarted?.Invoke(path, _cts.Token));
+            _uiThreadDispatcher.Send(() => PreLoadStarted?.Invoke(path, _cts.Token));
 
             // Pre-read the .osu file so LoadAsync(skipFileRead: true) can skip the I/O
             var osuFile = await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
@@ -233,65 +242,47 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
                 await ClearPlayer().ConfigureAwait(false);
             }
 
-            var beatmap = context.Beatmap;
-            Execute.OnUiThread(() => LoadStarted?.Invoke(context, _cts.Token));
+            _uiThreadDispatcher.Send(() => LoadStarted?.Invoke(context, _cts.Token));
 
-            // Load beatmap data through BeatmapLoader
             BeatmapLoadResult loadResult;
             if (context.OsuFile == null)
             {
-                loadResult = await _beatmapLoader.LoadFromBeatmapAsync(
-                    beatmap, context.BeatmapSettings, _cts.Token).ConfigureAwait(false);
-                context.OsuFile = loadResult.OsuFile;
+                loadResult = await _loadService.LoadFromBeatmapAsync(context, _cts.Token).ConfigureAwait(false);
             }
             else
             {
-                loadResult = await _beatmapLoader.LoadFromOsuFileAsync(
-                    context.OsuFile, context.BeatmapDetail.MapPath,
-                    context.BeatmapSettings, _cts.Token).ConfigureAwait(false);
+                loadResult = await _loadService.LoadFromOsuFileAsync(
+                    context, context.BeatmapDetail.MapPath, _cts.Token).ConfigureAwait(false);
             }
 
-            // Apply metadata
-            var metadata = context.BeatmapDetail.Metadata;
-            metadata.IsFavorite = loadResult.IsFavorite;
-            metadata.ApplyFrom(loadResult.OsuFile);
+            _uiThreadDispatcher.Send(() => MetaLoaded?.Invoke(context, _cts.Token));
+            _uiThreadDispatcher.Send(() => BackgroundInfoLoaded?.Invoke(context, _cts.Token));
 
-            Execute.OnUiThread(() => MetaLoaded?.Invoke(context, _cts.Token));
+            var player = new OsuMixPlayer(loadResult.OsuFile, loadResult.BaseFolder, _playbackEngine, _audioCacheManager);
+            Player = player;
+            player.PlayStatusChanged += Player_PlayStatusChanged;
+            player.PositionUpdated += Player_PositionUpdated;
+            await player.Initialize().ConfigureAwait(false);
+            player.ManualOffset = context.BeatmapSettings.Offset;
 
-            // Apply resolved paths
-            context.BeatmapDetail.BaseFolder = loadResult.BaseFolder;
-            context.BeatmapDetail.MapPath = loadResult.MapPath;
-            context.BeatmapDetail.BackgroundPath = loadResult.BackgroundPath;
-            context.BeatmapDetail.MusicPath = loadResult.MusicPath;
-
-            Execute.OnUiThread(() => BackgroundInfoLoaded?.Invoke(context, _cts.Token));
-
-            // music
-            Player = new OsuMixPlayer(loadResult.OsuFile, loadResult.BaseFolder, _playbackEngine, _audioCacheManager);
-            Player.PlayStatusChanged += Player_PlayStatusChanged;
-            Player.PositionUpdated += Player_PositionUpdated;
-            await Player.Initialize().ConfigureAwait(false);
-            Player.ManualOffset = context.BeatmapSettings.Offset;
-
-            Execute.OnUiThread(() => MusicLoaded?.Invoke(context, _cts.Token));
+            _uiThreadDispatcher.Send(() => MusicLoaded?.Invoke(context, _cts.Token));
 
             // video
             if (loadResult.VideoPath != null)
             {
                 context.BeatmapDetail.VideoPath = loadResult.VideoPath;
-                Execute.OnUiThread(() => VideoLoadRequested?.Invoke(context, _cts.Token));
+                _uiThreadDispatcher.Send(() => VideoLoadRequested?.Invoke(context, _cts.Token));
             }
 
             // storyboard
             if (loadResult.HasStoryboard)
             {
-                Execute.OnUiThread(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
+                _uiThreadDispatcher.Send(() => StoryboardLoadRequested?.Invoke(context, _cts.Token));
             }
 
             context.FullLoaded = true;
-            // load finished
-            Execute.OnUiThread(() => LoadFinished?.Invoke(context, _cts.Token));
-            AppSettings.Default.CurrentMap = beatmap.GetIdentity();
+            _uiThreadDispatcher.Send(() => LoadFinished?.Invoke(context, _cts.Token));
+            AppSettings.Default.CurrentMap = context.Beatmap.GetIdentity();
             AppSettings.SaveDefault();
             if (!isReading)
             {
@@ -366,7 +357,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
     private async void Player_PlayStatusChanged(PlayStatus obj)
     {
         // MixPlayer raises this through its audio STA. Posting to UI avoids UI<->audio Send deadlocks.
-        Execute.ToUiThread(() =>
+        _uiThreadDispatcher.Post(() =>
         {
             PlayStatusChanged?.Invoke(obj);
             SharedVm.Default.IsPlaying = obj == PlayStatus.Playing;
@@ -379,7 +370,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
     private void Player_PositionUpdated(TimeSpan position)
     {
         // MixPlayer raises this through its audio STA. Posting to UI avoids UI<->audio Send deadlocks.
-        Execute.ToUiThread(() => PositionUpdated?.Invoke(position));
+        _uiThreadDispatcher.Post(() => PositionUpdated?.Invoke(position));
     }
 
     private async Task PlayList_AutoSwitched(PlayControlResult controlResult, Beatmap beatmap, bool playInstantly)
@@ -413,7 +404,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
             }
             else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
             {
-                Execute.OnUiThread(() => InterfaceClearRequest?.Invoke());
+                _uiThreadDispatcher.Send(() => InterfaceClearRequest?.Invoke());
             }
 
             await Task.CompletedTask;
@@ -449,7 +440,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
                 if (PlayList.CurrentInfo == null)
                 {
                     await ClearPlayer().ConfigureAwait(false);
-                    Execute.OnUiThread(() => InterfaceClearRequest?.Invoke());
+                    _uiThreadDispatcher.Send(() => InterfaceClearRequest?.Invoke());
                     return;
                 }
 
@@ -481,7 +472,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
             else if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear)
             {
                 await ClearPlayer().ConfigureAwait(false);
-                Execute.OnUiThread(() => InterfaceClearRequest?.Invoke());
+                _uiThreadDispatcher.Send(() => InterfaceClearRequest?.Invoke());
                 return;
             }
         }

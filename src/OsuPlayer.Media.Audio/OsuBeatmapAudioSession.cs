@@ -10,6 +10,7 @@ using KeyAsio.Core.Audio.Caching;
 using KeyAsio.Core.OsuAudio.Hitsounds;
 using KeyAsio.Core.OsuAudio.Hitsounds.Playback;
 using KeyAsio.Core.OsuAudio.Timeline;
+using Milky.OsuPlayer.Media.Audio.Infrastructure;
 using Microsoft.Extensions.Logging;
 
 namespace Milky.OsuPlayer.Media.Audio;
@@ -29,14 +30,12 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     private readonly OsuPlaybackEventAudioCache _eventAudioCache;
     private readonly PlaybackEventTimelineScheduler _timelineScheduler = new();
     private readonly List<PlaybackEvent> _eventBuffer = new(128);
-    private readonly Lock _gate = new();
+    private readonly CancellableAsyncLoop _schedulerLoop = new();
     private readonly ILogger _logger;
 
     private IReadOnlyList<PlaybackEvent> _playbackEvents = [];
     private OsuFile _osuFile;
     private OsuAudioSessionOptions _options;
-    private CancellationTokenSource _schedulerCts;
-    private Task _schedulerTask;
     private int _nextCacheStart;
 
     public OsuBeatmapAudioSession(
@@ -110,19 +109,19 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     public async Task PlayAsync(CancellationToken cancellationToken = default)
     {
         await _musicTransport.PlayAsync(cancellationToken).ConfigureAwait(false);
-        StartScheduler();
+        _schedulerLoop.Start(SchedulerLoopAsync, ex => _logger?.LogError(ex, "Error in osu playback scheduler."));
     }
 
     public async Task PauseAsync(CancellationToken cancellationToken = default)
     {
-        StopScheduler();
+        await _schedulerLoop.StopAsync().ConfigureAwait(false);
         _eventDispatcher.ClearLoops();
         await _musicTransport.PauseAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken = default)
     {
-        StopScheduler();
+        await _schedulerLoop.StopAsync().ConfigureAwait(false);
         _eventDispatcher.ClearLoops();
         await _musicTransport.StopAsync(cancellationToken).ConfigureAwait(false);
         _timelineScheduler.Reset();
@@ -168,7 +167,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
     public async Task ClearAsync(CancellationToken cancellationToken = default)
     {
-        StopScheduler();
+        await _schedulerLoop.StopAsync().ConfigureAwait(false);
         _eventDispatcher.ClearLoops();
         await _musicTransport.ClearAsync(cancellationToken).ConfigureAwait(false);
         _timelineScheduler.Reset();
@@ -180,6 +179,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     {
         await ClearAsync().ConfigureAwait(false);
         _eventDispatcher.Dispose();
+        await _schedulerLoop.DisposeAsync().ConfigureAwait(false);
     }
 
     private async Task<IReadOnlyList<PlaybackEvent>> BuildPlaybackEventsAsync(OsuFile osuFile,
@@ -205,67 +205,24 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         return events.OrderBy(static k => k.Offset).ToArray();
     }
 
-    private void StartScheduler()
-    {
-        lock (_gate)
-        {
-            if (_schedulerTask is { IsCompleted: false })
-            {
-                return;
-            }
-
-            _schedulerCts = new CancellationTokenSource();
-            var token = _schedulerCts.Token;
-            _schedulerTask = Task.Run(() => SchedulerLoopAsync(token), token);
-        }
-    }
-
-    private void StopScheduler()
-    {
-        CancellationTokenSource cts;
-        lock (_gate)
-        {
-            cts = _schedulerCts;
-            _schedulerCts = null;
-        }
-
-        try
-        {
-            cts?.Cancel();
-        }
-        catch (ObjectDisposedException)
-        {
-        }
-    }
-
     private async Task SchedulerLoopAsync(CancellationToken cancellationToken)
     {
-        try
+        while (!cancellationToken.IsCancellationRequested)
         {
-            while (!cancellationToken.IsCancellationRequested)
+            var position = Position;
+            await DispatchDueEventsAsync(ToEventClock(position), cancellationToken).ConfigureAwait(false);
+            StartCacheWindowIfNeeded((int)ToEventClock(position).TotalMilliseconds);
+
+            if (Duration > TimeSpan.Zero && position >= Duration)
             {
-                var position = Position;
-                await DispatchDueEventsAsync(ToEventClock(position), cancellationToken).ConfigureAwait(false);
-                StartCacheWindowIfNeeded((int)ToEventClock(position).TotalMilliseconds);
-
-                if (Duration > TimeSpan.Zero && position >= Duration)
-                {
-                    StopScheduler();
-                    _eventDispatcher.ClearLoops();
-                    Finished?.Invoke();
-                    break;
-                }
-
-                await Task.Delay(GetNextSchedulerDelay(ToEventClock(position)), cancellationToken)
-                    .ConfigureAwait(false);
+                _schedulerLoop.Stop();
+                _eventDispatcher.ClearLoops();
+                Finished?.Invoke();
+                break;
             }
-        }
-        catch (OperationCanceledException)
-        {
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error in osu playback scheduler.");
+
+            await Task.Delay(GetNextSchedulerDelay(ToEventClock(position)), cancellationToken)
+                .ConfigureAwait(false);
         }
     }
 

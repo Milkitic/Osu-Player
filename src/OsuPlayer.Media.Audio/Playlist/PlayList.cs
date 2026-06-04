@@ -19,18 +19,24 @@ public partial class PlayList : ObservableObject
     public event Func<PlayControlResult, Beatmap, bool, Task> AutoSwitched;
     private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
     private readonly IPlayerDataStore _playerData;
+    private readonly IUiThreadDispatcher _uiThreadDispatcher;
 
     public PlayList()
-        : this(new PlayerDataService())
+        : this(new PlayerDataService(), Execute.UiThreadDispatcher)
     {
     }
 
     public PlayList(IPlayerDataStore playerData)
+        : this(playerData, Execute.UiThreadDispatcher)
+    {
+    }
+
+    public PlayList(IPlayerDataStore playerData, IUiThreadDispatcher uiThreadDispatcher)
     {
         _playerData = playerData;
+        _uiThreadDispatcher = uiThreadDispatcher;
         SongList = new ObservableCollection<Beatmap>();
         SongList.CollectionChanged += SongList_CollectionChanged;
-        //PlayerMixer = new ObservablePlayerMixer(this);
     }
 
     [ObservableProperty]
@@ -82,7 +88,7 @@ public partial class PlayList : ObservableObject
         bool playInstantly = true, bool autoSetSong = true)
     {
         if (SongList != null) SongList.CollectionChanged -= SongList_CollectionChanged;
-        Execute.OnUiThread(() => SongList = new ObservableCollection<Beatmap>(value.Where(k => k != null)));
+        _uiThreadDispatcher.Send(() => SongList = new ObservableCollection<Beatmap>(value.Where(k => k != null)));
         SongList.CollectionChanged += SongList_CollectionChanged;
 
         var changed = await RearrangeIndexesAndRepositionAsync(startAnew ? (int?)0 : null);
@@ -106,7 +112,7 @@ public partial class PlayList : ObservableObject
     {
         if (beatmap is null) return;
         if (!SongList.Contains(beatmap))
-            Execute.OnUiThread(() => SongList.Add(beatmap));
+            _uiThreadDispatcher.Send(() => SongList.Add(beatmap));
         await SetIndexPointerAsync(_songIndexList.IndexOf(SongList.IndexOf(beatmap)));
     }
 
