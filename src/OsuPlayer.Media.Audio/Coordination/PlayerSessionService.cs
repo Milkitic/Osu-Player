@@ -167,54 +167,27 @@ internal sealed class PlayerSessionService : IAsyncDisposable
 
     public Task PlayByControlAsync(PlayControlType control) => PlayByControlAsync(control, autoAdvance: false);
 
-    public async Task PlayByControlAsync(PlayControlType control, bool autoAdvance)
-    {
-        using var operation = autoAdvance
-            ? TryBeginCurrentOperation()
-            : TryBeginInterruptingOperation();
-        if (operation == null) return;
+    public Task PlayByControlAsync(PlayControlType control, bool autoAdvance)
+        => RunOperationAsync(
+            autoAdvance ? TryBeginCurrentOperation() : TryBeginInterruptingOperation(),
+            async operationToken =>
+            {
+                var preInfo = _playList.CurrentInfo;
+                var controlResult = autoAdvance
+                    ? await _playList.InvokeAutoNext().ConfigureAwait(false)
+                    : await _playList.SwitchByControl(control).ConfigureAwait(false);
 
-        var operationToken = operation.Token;
-        try
-        {
-            var preInfo = _playList.CurrentInfo;
-            var controlResult = autoAdvance
-                ? await _playList.InvokeAutoNext().ConfigureAwait(false)
-                : await _playList.SwitchByControl(control).ConfigureAwait(false);
+                await ApplyPlayControlResultAsync(controlResult, preInfo, playInstantly: true, operationToken)
+                    .ConfigureAwait(false);
+            },
+            "Error while changing song.");
 
-            await ApplyPlayControlResultAsync(controlResult, preInfo, playInstantly: true, operationToken)
-                .ConfigureAwait(false);
-        }
-        catch (OperationCanceledException) when (operationToken.IsCancellationRequested)
-        {
-            // Superseded by a newer playback operation.
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error while changing song.");
-        }
-    }
-
-    public async Task HandleAutoSwitchedAsync(PlayControlResult controlResult, Beatmap? beatmap, bool playInstantly)
-    {
-        using var operation = TryBeginCurrentOperation();
-        if (operation == null) return;
-
-        var operationToken = operation.Token;
-        try
-        {
-            await ApplyPlayControlResultAsync(controlResult, _playList.PreInfo, playInstantly, operationToken)
-                .ConfigureAwait(false);
-        }
-        catch (OperationCanceledException) when (operationToken.IsCancellationRequested)
-        {
-            // Superseded by a newer playback operation.
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Error while auto changing song.");
-        }
-    }
+    public Task HandleAutoSwitchedAsync(PlayControlResult controlResult, Beatmap? beatmap, bool playInstantly)
+        => RunOperationAsync(
+            TryBeginCurrentOperation(),
+            operationToken => ApplyPlayControlResultAsync(
+                controlResult, _playList.PreInfo, playInstantly, operationToken),
+            "Error while auto changing song.");
 
     public async ValueTask DisposeAsync()
     {
@@ -279,6 +252,31 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         if (playInstantly && !operationToken.IsCancellationRequested && loaded && _pump.Player != null)
         {
             await _pump.Player.PlayAsync().ConfigureAwait(false);
+        }
+    }
+
+    private async Task RunOperationAsync(
+        SessionOperation? operation,
+        Func<CancellationToken, Task> action,
+        string errorMessage)
+    {
+        using (operation)
+        {
+            if (operation == null) return;
+
+            var operationToken = operation.Token;
+            try
+            {
+                await action(operationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (operationToken.IsCancellationRequested)
+            {
+                // Superseded by a newer playback operation.
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, errorMessage);
+            }
         }
     }
 

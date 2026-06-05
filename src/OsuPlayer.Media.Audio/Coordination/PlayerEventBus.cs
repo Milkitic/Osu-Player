@@ -36,9 +36,9 @@ internal sealed class PlayerEventBus
     public event Action<BeatmapContext, CancellationToken>? LoadFinished;
     public event Action<BeatmapContext, Exception>? LoadError;
 
-    public void RaisePlayStatusChanged(PlayStatus status) => Send(PlayStatusChanged, status);
+    public void RaisePlayStatusChanged(PlayStatus status) => Post(PlayStatusChanged, status);
     public void RaisePositionUpdated(TimeSpan position) => Post(PositionUpdated, position);
-    public void RaiseInterfaceClearRequest() => _dispatcher.Send(InterfaceClearRequest);
+    public void RaiseInterfaceClearRequest() => Send(InterfaceClearRequest);
     public void RaisePreLoadStarted(string path, CancellationToken token) => Send(PreLoadStarted, path, token);
     public void RaiseLoadStarted(BeatmapContext ctx, CancellationToken token) => Send(LoadStarted, ctx, token);
     public void RaiseMetaLoaded(BeatmapContext ctx, CancellationToken token) => Send(MetaLoaded, ctx, token);
