@@ -24,44 +24,33 @@ namespace Milky.OsuPlayer.Media.Audio.Coordination;
 /// manual previous/next commands cancel superseded work, while auto-advance
 /// continues the current operation. It serializes load/clear work with the
 /// supplied <see cref="SemaphoreSlim"/>, attaches and detaches the active
-/// <see cref="OsuMixPlayer"/> through <see cref="PlayerStatePump"/>, and
-/// translates playlist cursor changes into player commands.
+/// <see cref="OsuMixPlayer"/> through <see cref="PlayerEventBus"/>, and translates
+/// playlist cursor changes into player commands.
 /// </remarks>
 internal sealed class PlayerSessionService : IAsyncDisposable
 {
     private readonly PlayerEventBus _bus;
-    private readonly PlayerStatePump _pump;
     private readonly PlayList _playList;
     private readonly BeatmapLoader _beatmapLoader;
-    private readonly BeatmapLoadService _loadService;
     private readonly SemaphoreSlim _readLock;
     private readonly IPlayerDataStore _playerData;
     private readonly IPlaybackEngine _playbackEngine;
     private readonly AudioCacheManager _audioCacheManager;
     private readonly NLog.Logger _logger;
-
-    private readonly Lock _operationGate = new();
-
-    // Retired sources stay alive until all operations drain; in-flight awaits may
-    // still register callbacks on tokens captured before a newer operation won.
-    private readonly List<CancellationTokenSource> _retiredOperationSources = new();
+    private readonly SessionOperationManager _operations = new();
+    private readonly Lock _disposeGate = new();
 
     private readonly TaskCompletionSource<object?> _disposeFinished =
         new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-    private CancellationTokenSource _cts = new();
-    private TaskCompletionSource<object?> _operationsDrained = CreateCompletedSource();
-    private int _activeOperations;
     private bool _isHandlingLoadFailure;
     private int _isHandlingPlaybackFinished;
     private bool _disposeStarted;
 
     public PlayerSessionService(
         PlayerEventBus bus,
-        PlayerStatePump pump,
         PlayList playList,
         BeatmapLoader beatmapLoader,
-        BeatmapLoadService loadService,
         SemaphoreSlim readLock,
         IPlayerDataStore playerData,
         IPlaybackEngine playbackEngine,
@@ -69,22 +58,20 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         NLog.Logger logger)
     {
         _bus = bus;
-        _pump = pump;
         _playList = playList;
         _beatmapLoader = beatmapLoader;
-        _loadService = loadService;
         _readLock = readLock;
         _playerData = playerData;
         _playbackEngine = playbackEngine;
         _audioCacheManager = audioCacheManager;
         _logger = logger;
 
-        _pump.PlayStatusChanged += OnPlayerPlayStatusChanged;
+        _bus.PlayStatusChanged += OnPlayerPlayStatusChanged;
     }
 
     public async Task PlayNewFromBeatmapAsync(Beatmap beatmap, bool playInstantly)
     {
-        using var operation = TryBeginInterruptingOperation();
+        using var operation = _operations.BeginInterruptingOperation();
         if (operation == null) return;
 
         await LoadAndPlayAsync(async token =>
@@ -96,16 +83,12 @@ internal sealed class PlayerSessionService : IAsyncDisposable
 
     public async Task PlayNewFromPathAsync(string path, bool playInstantly)
     {
-        using var operation = TryBeginInterruptingOperation();
+        using var operation = _operations.BeginInterruptingOperation();
         if (operation == null) return;
 
         var operationToken = operation.Token;
-        BeatmapContext? contextToUpdate = null;
-        LoadScope? scope = null;
         try
         {
-            scope = await LoadScope.AcquireAsync(_readLock, operationToken).ConfigureAwait(false);
-
             if (!File.Exists(path))
             {
                 throw new FileNotFoundException("Cannot locate file", path);
@@ -120,32 +103,16 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             setupContext.BeatmapDetail.MapPath = path;
             setupContext.BeatmapDetail.BaseFolder = Path.GetDirectoryName(path) ?? string.Empty;
 
-            await ClearPlayerAsync().ConfigureAwait(false);
             _bus.RaisePreLoadStarted(path, operationToken);
 
-            var osuFile = await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
-                .ConfigureAwait(false);
-            operationToken.ThrowIfCancellationRequested();
-            setupContext.OsuFile = osuFile;
+            var loaded = await LoadCoreAsync(
+                operationToken,
+                async (context, token) => await LoadOpenedPathAsync(context, path, token).ConfigureAwait(false),
+                raiseLoadStartedBeforeLoad: false).ConfigureAwait(false);
 
-            var loadResult = await _beatmapLoader.LoadFromOsuFileAsync(
-                osuFile, path, setupContext.BeatmapSettings, operationToken).ConfigureAwait(false);
-            operationToken.ThrowIfCancellationRequested();
-
-            var trueBeatmap = loadResult.Beatmap;
-            await _playList.AddOrSwitchToAsync(trueBeatmap).ConfigureAwait(false);
-
-            var newContext = _playList.CurrentInfo ??
-                             throw new InvalidOperationException("Playlist did not create a current beatmap context.");
-            BeatmapLoadService.ApplyToContext(newContext, loadResult, operationToken);
-            contextToUpdate = newContext;
-
-            _bus.RaiseLoadStarted(newContext, operationToken);
-            await FinishLoadAsync(newContext, loadResult, operationToken).ConfigureAwait(false);
-
-            if (!operationToken.IsCancellationRequested && playInstantly && _pump.Player != null)
+            if (!operationToken.IsCancellationRequested && playInstantly && loaded && _bus.Player != null)
             {
-                await _pump.Player.PlayAsync().ConfigureAwait(false);
+                await _bus.Player.PlayAsync().ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException) when (operationToken.IsCancellationRequested)
@@ -156,19 +123,11 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         {
             HandleLoadFailure(_playList.CurrentInfo, ex);
         }
-        finally
-        {
-            scope?.Dispose();
-            if (contextToUpdate is not null && !operationToken.IsCancellationRequested)
-            {
-                await _playerData.TryUpdateMapAsync(contextToUpdate.Beatmap.GetIdentity()).ConfigureAwait(false);
-            }
-        }
     }
 
     public Task PlayPreviousAsync()
         => RunOperationAsync(
-            TryBeginInterruptingOperation(),
+            _operations.BeginInterruptingOperation(),
             async operationToken =>
             {
                 await _playList.MovePreviousAsync(wrap: true).ConfigureAwait(false);
@@ -178,7 +137,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
 
     public Task PlayNextAsync(bool autoAdvance = false)
         => RunOperationAsync(
-            autoAdvance ? TryBeginCurrentOperation() : TryBeginInterruptingOperation(),
+            autoAdvance ? _operations.BeginCurrentOperation() : _operations.BeginInterruptingOperation(),
             autoAdvance ? AutoAdvanceAsync : ManualNextAsync,
             "Error while changing song.");
 
@@ -188,7 +147,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         bool playInstantly,
         bool autoLoad)
         => RunOperationAsync(
-            TryBeginInterruptingOperation(),
+            _operations.BeginInterruptingOperation(),
             async operationToken =>
             {
                 await _playList.ReplaceAsync(beatmaps, startAnew).ConfigureAwait(false);
@@ -201,7 +160,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
 
     public Task RemoveFromPlaylistAsync(IEnumerable<Beatmap> beatmaps)
         => RunOperationAsync(
-            TryBeginInterruptingOperation(),
+            _operations.BeginInterruptingOperation(),
             async operationToken =>
             {
                 var change = await _playList.RemoveAsync(beatmaps).ConfigureAwait(false);
@@ -215,7 +174,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         bool ownsDispose;
-        lock (_operationGate)
+        lock (_disposeGate)
         {
             ownsDispose = !_disposeStarted;
             _disposeStarted = true;
@@ -227,26 +186,17 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             return;
         }
 
-        _pump.PlayStatusChanged -= OnPlayerPlayStatusChanged;
-        CancellationTokenSource cts;
-        Task operationsDrained;
-        lock (_operationGate)
-        {
-            cts = _cts;
-            operationsDrained = _operationsDrained.Task;
-        }
-
-        SafeCancel(cts);
+        _bus.PlayStatusChanged -= OnPlayerPlayStatusChanged;
 
         try
         {
-            await operationsDrained.ConfigureAwait(false);
+            await _operations.CancelAndDrainAsync().ConfigureAwait(false);
             await ClearPlayerAsync().ConfigureAwait(false);
             _readLock.Dispose();
         }
         finally
         {
-            DisposeOperationSources();
+            await _operations.DisposeAsync().ConfigureAwait(false);
             _disposeFinished.TrySetResult(null);
         }
     }
@@ -272,14 +222,14 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         }
 
         var loaded = await LoadCoreAsync(operationToken).ConfigureAwait(false);
-        if (playInstantly && !operationToken.IsCancellationRequested && loaded && _pump.Player != null)
+        if (playInstantly && !operationToken.IsCancellationRequested && loaded && _bus.Player != null)
         {
-            await _pump.Player.PlayAsync().ConfigureAwait(false);
+            await _bus.Player.PlayAsync().ConfigureAwait(false);
         }
     }
 
     private async Task RunOperationAsync(
-        SessionOperation? operation,
+        SessionOperationManager.Operation? operation,
         Func<CancellationToken, Task> action,
         string errorMessage)
     {
@@ -303,7 +253,10 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         }
     }
 
-    private async Task<bool> LoadCoreAsync(CancellationToken operationToken)
+    private async Task<bool> LoadCoreAsync(
+        CancellationToken operationToken,
+        Func<BeatmapContext, CancellationToken, Task<LoadedBeatmap>>? loadOverride = null,
+        bool raiseLoadStartedBeforeLoad = true)
     {
         var context = _playList.CurrentInfo;
         if (context == null)
@@ -321,12 +274,22 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             await ClearPlayerAsync().ConfigureAwait(false);
 
             operationToken.ThrowIfCancellationRequested();
-            _bus.RaiseLoadStarted(context, operationToken);
+            if (raiseLoadStartedBeforeLoad)
+            {
+                _bus.RaiseLoadStarted(context, operationToken);
+            }
 
-            BeatmapLoadResult loadResult = context.OsuFile is null
-                ? await _loadService.LoadFromBeatmapAsync(context, operationToken).ConfigureAwait(false)
-                : await _loadService.LoadFromOsuFileAsync(context, context.BeatmapDetail.MapPath, operationToken)
-                    .ConfigureAwait(false);
+            var loadedBeatmap = loadOverride == null
+                ? new LoadedBeatmap(context, await LoadBeatmapAsync(context, operationToken).ConfigureAwait(false))
+                : await loadOverride(context, operationToken).ConfigureAwait(false);
+            context = loadedBeatmap.Context;
+
+            var loadResult = loadedBeatmap.LoadResult;
+            context.ApplyLoadResult(loadResult, operationToken);
+            if (!raiseLoadStartedBeforeLoad)
+            {
+                _bus.RaiseLoadStarted(context, operationToken);
+            }
 
             await FinishLoadAsync(context, loadResult, operationToken).ConfigureAwait(false);
             loaded = true;
@@ -339,7 +302,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         {
             HandleLoadFailure(_playList.CurrentInfo, ex);
             shouldTryFallback = !_isHandlingLoadFailure
-                                && _pump.Player?.PlayStatus != PlayStatus.Playing;
+                                && _bus.Player?.PlayStatus != PlayStatus.Playing;
         }
         finally
         {
@@ -366,6 +329,49 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         return loaded;
     }
 
+    private async Task<LoadedBeatmap> LoadOpenedPathAsync(
+        BeatmapContext context,
+        string path,
+        CancellationToken operationToken)
+    {
+        var osuFile = await OsuFile.ReadFromFileAsync(path, options => options.ExcludeSection("Editor"))
+            .ConfigureAwait(false);
+        operationToken.ThrowIfCancellationRequested();
+        context.OsuFile = osuFile;
+
+        var loadResult = await _beatmapLoader.LoadFromOsuFileAsync(
+            osuFile,
+            path,
+            context.BeatmapSettings,
+            operationToken).ConfigureAwait(false);
+        operationToken.ThrowIfCancellationRequested();
+
+        await _playList.AddOrSwitchToAsync(loadResult.Beatmap).ConfigureAwait(false);
+
+        var loadedContext = _playList.CurrentInfo ??
+                            throw new InvalidOperationException("Playlist did not create a current beatmap context.");
+        return new LoadedBeatmap(loadedContext, loadResult);
+    }
+
+    private async Task<BeatmapLoadResult> LoadBeatmapAsync(
+        BeatmapContext context,
+        CancellationToken operationToken)
+    {
+        if (context.OsuFile == null)
+        {
+            return await _beatmapLoader.LoadFromBeatmapAsync(
+                context.Beatmap,
+                context.BeatmapSettings,
+                operationToken).ConfigureAwait(false);
+        }
+
+        return await _beatmapLoader.LoadFromOsuFileAsync(
+            context.OsuFile,
+            context.BeatmapDetail.MapPath,
+            context.BeatmapSettings,
+            operationToken).ConfigureAwait(false);
+    }
+
     private async Task FinishLoadAsync(
         BeatmapContext context,
         BeatmapLoadResult loadResult,
@@ -382,15 +388,15 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             await player.Initialize().ConfigureAwait(false);
             operationToken.ThrowIfCancellationRequested();
             player.ManualOffset = context.BeatmapSettings?.Offset ?? 0;
-            _pump.AttachPlayer(player);
+            _bus.AttachPlayer(player);
             attached = true;
             operationToken.ThrowIfCancellationRequested();
         }
         catch
         {
-            if (attached && ReferenceEquals(_pump.Player, player))
+            if (attached && ReferenceEquals(_bus.Player, player))
             {
-                _pump.DetachPlayer();
+                _bus.DetachPlayer();
             }
 
             await SafeStopExtensions.TryAsync(
@@ -473,15 +479,15 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         }
 
         var loaded = await LoadCoreAsync(operationToken).ConfigureAwait(false);
-        if (playInstantly && !operationToken.IsCancellationRequested && loaded && _pump.Player != null)
+        if (playInstantly && !operationToken.IsCancellationRequested && loaded && _bus.Player != null)
         {
-            await _pump.Player.PlayAsync().ConfigureAwait(false);
+            await _bus.Player.PlayAsync().ConfigureAwait(false);
         }
     }
 
     private async Task RestartCurrentAsync(CancellationToken operationToken)
     {
-        var player = _pump.Player;
+        var player = _bus.Player;
         if (player == null) return;
 
         operationToken.ThrowIfCancellationRequested();
@@ -490,7 +496,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
 
     private async Task StopCurrentAsync()
     {
-        var player = _pump.Player;
+        var player = _bus.Player;
         if (player != null)
         {
             await player.StopAsync().ConfigureAwait(false);
@@ -505,127 +511,16 @@ internal sealed class PlayerSessionService : IAsyncDisposable
 
     private async Task ClearPlayerAsync()
     {
-        var player = _pump.Player;
+        var player = _bus.Player;
         if (player == null) return;
 
-        _pump.DetachPlayer();
+        _bus.DetachPlayer();
 
         await SafeStopExtensions.TryAsync(
             player.StopAsync, _logger, "Error while stopping player during clear.").ConfigureAwait(false);
         await SafeStopExtensions.TryAsync(
             async () => await player.DisposeAsync().ConfigureAwait(false),
             _logger, "Error while disposing player during clear.").ConfigureAwait(false);
-    }
-
-    private SessionOperation? TryBeginCurrentOperation()
-    {
-        lock (_operationGate)
-        {
-            if (_disposeStarted) return null;
-
-            TrackActiveOperationLocked();
-            return new SessionOperation(this, _cts.Token);
-        }
-    }
-
-    private SessionOperation? TryBeginInterruptingOperation()
-    {
-        var next = new CancellationTokenSource();
-        CancellationTokenSource previous;
-        lock (_operationGate)
-        {
-            if (_disposeStarted)
-            {
-                next.Dispose();
-                return null;
-            }
-
-            previous = _cts;
-            _cts = next;
-            _retiredOperationSources.Add(previous);
-            TrackActiveOperationLocked();
-        }
-
-        SafeCancel(previous);
-
-        return new SessionOperation(this, next.Token);
-    }
-
-    private void TrackActiveOperationLocked()
-    {
-        if (_activeOperations == 0)
-        {
-            _operationsDrained = new TaskCompletionSource<object?>(
-                TaskCreationOptions.RunContinuationsAsynchronously);
-        }
-
-        _activeOperations++;
-    }
-
-    private void CompleteOperation()
-    {
-        List<CancellationTokenSource>? sourcesToDispose = null;
-        lock (_operationGate)
-        {
-            _activeOperations--;
-            if (_activeOperations != 0)
-            {
-                return;
-            }
-
-            _operationsDrained.TrySetResult(null);
-            if (!_disposeStarted && _retiredOperationSources.Count > 0)
-            {
-                sourcesToDispose = new List<CancellationTokenSource>(_retiredOperationSources);
-                _retiredOperationSources.Clear();
-            }
-        }
-
-        DisposeSources(sourcesToDispose);
-    }
-
-    private void DisposeOperationSources()
-    {
-        List<CancellationTokenSource> sources;
-        lock (_operationGate)
-        {
-            sources = new List<CancellationTokenSource>(_retiredOperationSources)
-            {
-                _cts
-            };
-            _retiredOperationSources.Clear();
-        }
-
-        DisposeSources(sources);
-    }
-
-    private static void DisposeSources(List<CancellationTokenSource>? sources)
-    {
-        if (sources == null) return;
-
-        foreach (var source in sources)
-        {
-            source.Dispose();
-        }
-    }
-
-    private static void SafeCancel(CancellationTokenSource? cts)
-    {
-        try
-        {
-            cts?.Cancel();
-        }
-        catch (ObjectDisposedException)
-        {
-        }
-    }
-
-    private static TaskCompletionSource<object?> CreateCompletedSource()
-    {
-        var source = new TaskCompletionSource<object?>(
-            TaskCreationOptions.RunContinuationsAsynchronously);
-        source.SetResult(null);
-        return source;
     }
 
     private void OnPlayerPlayStatusChanged(PlayStatus status)
@@ -656,21 +551,5 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         }
     }
 
-    private sealed class SessionOperation : IDisposable
-    {
-        private PlayerSessionService? _owner;
-
-        public SessionOperation(PlayerSessionService owner, CancellationToken token)
-        {
-            _owner = owner;
-            Token = token;
-        }
-
-        public CancellationToken Token { get; }
-
-        public void Dispose()
-        {
-            Interlocked.Exchange(ref _owner, null)?.CompleteOperation();
-        }
-    }
+    private readonly record struct LoadedBeatmap(BeatmapContext Context, BeatmapLoadResult LoadResult);
 }

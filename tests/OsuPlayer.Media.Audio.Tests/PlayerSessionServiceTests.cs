@@ -58,15 +58,12 @@ public class PlayerSessionServiceTests
         var dispatcher = new ImmediateUiThreadDispatcher();
         var logger = NLog.LogManager.GetCurrentClassLogger();
         var bus = new PlayerEventBus(dispatcher, logger);
-        var pump = new PlayerStatePump(bus, _ => { }, dispatcher, logger);
         var beatmapLoader = new BeatmapLoader(playerData);
 
         return new PlayerSessionService(
             bus,
-            pump,
             new PlayList(playerData, dispatcher, null),
             beatmapLoader,
-            new BeatmapLoadService(beatmapLoader),
             new SemaphoreSlim(1, 1),
             playerData,
             new FakePlaybackEngine(),

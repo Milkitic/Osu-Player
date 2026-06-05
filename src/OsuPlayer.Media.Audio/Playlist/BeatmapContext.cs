@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
 using Milky.OsuPlayer.Data.Models;
@@ -35,6 +36,22 @@ public class BeatmapContext
     public BeatmapDetail BeatmapDetail { get; }
     public LocalOsuFile? OsuFile { get; set; }
     public bool PlayInstantly { get; set; }
+
+    public void ApplyLoadResult(BeatmapLoadResult loadResult, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        OsuFile = loadResult.OsuFile;
+
+        var metadata = BeatmapDetail.Metadata;
+        metadata.IsFavorite = loadResult.IsFavorite;
+        metadata.ApplyFrom(loadResult.OsuFile);
+
+        BeatmapDetail.BaseFolder = loadResult.BaseFolder;
+        BeatmapDetail.MapPath = loadResult.MapPath;
+        BeatmapDetail.BackgroundPath = loadResult.BackgroundPath;
+        BeatmapDetail.MusicPath = loadResult.MusicPath;
+    }
 
     public static bool operator ==(BeatmapContext? bc1, BeatmapContext? bc2)
     {

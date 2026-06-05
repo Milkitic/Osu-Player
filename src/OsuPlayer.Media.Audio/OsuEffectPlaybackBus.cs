@@ -4,6 +4,9 @@ using KeyAsio.Core.Audio.Caching;
 using KeyAsio.Core.Audio.SampleProviders;
 using KeyAsio.Core.Audio.SampleProviders.BalancePans;
 using KeyAsio.Core.Audio.Utils;
+using KeyAsio.Core.OsuAudio.Hitsounds.Playback;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Milky.OsuPlayer.Media.Audio;
 
@@ -16,15 +19,17 @@ internal enum OsuEffectTrack
 internal sealed class OsuEffectPlaybackBus : IDisposable
 {
     private readonly IMixingSampleProvider _parentMixer;
+    private readonly ILogger _logger;
     private readonly QueueMixingSampleProvider _backgroundMixer;
     private readonly QueueMixingSampleProvider _hitsoundMixer;
     private readonly EnhancedVolumeSampleProvider _backgroundVolumeProvider;
     private readonly EnhancedVolumeSampleProvider _hitsoundVolumeProvider;
     private readonly LoopProviderManager _backgroundLoopProviderManager = new();
 
-    public OsuEffectPlaybackBus(IMixingSampleProvider parentMixer)
+    public OsuEffectPlaybackBus(IMixingSampleProvider parentMixer, ILogger? logger = null)
     {
         _parentMixer = parentMixer;
+        _logger = logger ?? NullLogger<OsuEffectPlaybackBus>.Instance;
 
         _backgroundMixer = CreateChildMixer(parentMixer.WaveFormat);
         _hitsoundMixer = CreateChildMixer(parentMixer.WaveFormat);
@@ -50,6 +55,32 @@ internal sealed class OsuEffectPlaybackBus : IDisposable
     public float BackgroundVolume
     {
         set => _backgroundVolumeProvider.Volume = value;
+    }
+
+    public float SampleVolume
+    {
+        set => BackgroundVolume = value;
+    }
+
+    public float BalanceFactor { get; set; } = 0.35f;
+    public BalanceMode BalanceMode { get; set; } = BalanceMode.ConstantPower;
+
+    public void Dispatch(PlaybackEvent playbackEvent, CachedAudio? cachedAudio)
+    {
+        switch (playbackEvent)
+        {
+            case SampleEvent sampleEvent:
+                PlaySample(sampleEvent, cachedAudio);
+                break;
+            case ControlEvent controlEvent:
+                PlayControl(controlEvent, cachedAudio);
+                break;
+        }
+    }
+
+    public void ClearLoops()
+    {
+        StopAllBackgroundLoops();
     }
 
     public void PlayOneShot(OsuEffectTrack track, CachedAudio cachedAudio, float volume, float balance,
@@ -122,6 +153,70 @@ internal sealed class OsuEffectPlaybackBus : IDisposable
     private IMixingSampleProvider GetMixer(OsuEffectTrack track)
     {
         return track == OsuEffectTrack.Background ? _backgroundMixer : _hitsoundMixer;
+    }
+
+    private void PlaySample(SampleEvent sampleEvent, CachedAudio? cachedAudio)
+    {
+        if (cachedAudio == null)
+        {
+            _logger.LogWarning("Skip osu sample because cached audio is missing: {Filename}", sampleEvent.Filename);
+            return;
+        }
+
+        var track = sampleEvent.Layer == SampleLayer.Sampling
+            ? OsuEffectTrack.Background
+            : OsuEffectTrack.Hitsound;
+
+        var volume = sampleEvent.Volume;
+        if (sampleEvent.Layer == SampleLayer.Effects)
+        {
+            volume *= 1.25f;
+        }
+
+        try
+        {
+            PlayOneShot(track, cachedAudio, volume, sampleEvent.Balance, BalanceMode, BalanceFactor);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while playing osu sample: {Filename}", sampleEvent.Filename);
+        }
+    }
+
+    private void PlayControl(ControlEvent controlEvent, CachedAudio? cachedAudio)
+    {
+        switch (controlEvent.ControlEventType)
+        {
+            case ControlEventType.LoopStart:
+                if (cachedAudio == null)
+                {
+                    _logger.LogWarning("Skip osu loop because cached audio is missing: {Filename}",
+                        controlEvent.Filename);
+                    return;
+                }
+
+                if (HasBackgroundLoop((int)controlEvent.LoopChannel))
+                {
+                    StopAllBackgroundLoops();
+                }
+
+                StartBackgroundLoop((int)controlEvent.LoopChannel,
+                    cachedAudio,
+                    controlEvent.Volume,
+                    controlEvent.Balance,
+                    BalanceMode,
+                    BalanceFactor);
+                break;
+            case ControlEventType.LoopStop:
+                StopBackgroundLoop((int)controlEvent.LoopChannel);
+                break;
+            case ControlEventType.Volume:
+                ChangeAllBackgroundLoopVolumes(controlEvent.Volume);
+                break;
+            case ControlEventType.Balance:
+                ChangeAllBackgroundLoopBalances(controlEvent.Balance, BalanceFactor);
+                break;
+        }
     }
 
     private static QueueMixingSampleProvider CreateChildMixer(NAudio.Wave.WaveFormat waveFormat)

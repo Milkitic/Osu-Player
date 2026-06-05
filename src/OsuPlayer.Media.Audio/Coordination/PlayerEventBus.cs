@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using KeyAsio.Core.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
 
@@ -11,19 +12,26 @@ namespace Milky.OsuPlayer.Media.Audio.Coordination;
 /// raised on the UI thread; subscribers therefore never have to marshal
 /// themselves.
 /// </summary>
-internal sealed class PlayerEventBus
+internal sealed class PlayerEventBus : IDisposable
 {
     private readonly IUiThreadDispatcher _dispatcher;
     private readonly NLog.Logger _logger;
+    private readonly Action<Exception> _audioDeviceErrorHandler;
+    private OsuMixPlayer? _player;
 
-    public PlayerEventBus(IUiThreadDispatcher dispatcher, NLog.Logger logger)
+    public PlayerEventBus(
+        IUiThreadDispatcher dispatcher,
+        NLog.Logger logger,
+        Action<Exception>? audioDeviceErrorHandler = null)
     {
         _dispatcher = dispatcher;
         _logger = logger;
+        _audioDeviceErrorHandler = audioDeviceErrorHandler ?? (_ => { });
     }
 
     public event Action<PlayStatus>? PlayStatusChanged;
     public event Action<TimeSpan>? PositionUpdated;
+    public event Action? PlayerChanged;
     public event Func<BeatmapContext, double, bool, Task>? PositionSetRequested;
     public event Action? InterfaceClearRequest;
     public event Action<string, CancellationToken>? PreLoadStarted;
@@ -36,8 +44,46 @@ internal sealed class PlayerEventBus
     public event Action<BeatmapContext, CancellationToken>? LoadFinished;
     public event Action<BeatmapContext, Exception>? LoadError;
 
-    public void RaisePlayStatusChanged(PlayStatus status) => Post(PlayStatusChanged, status);
-    public void RaisePositionUpdated(TimeSpan position) => Post(PositionUpdated, position);
+    public OsuMixPlayer? Player => _player;
+    public bool IsPlayerReady => _player != null && _player.PlayStatus != PlayStatus.Unknown;
+
+    public void AttachPlayer(OsuMixPlayer player)
+    {
+        if (_player != null)
+        {
+            DetachPlayer();
+        }
+
+        _player = player;
+        _player.PlayStatusChanged += OnPlayerPlayStatusChanged;
+        _player.PositionUpdated += OnPlayerPositionUpdated;
+        PlayerChanged?.Invoke();
+
+        if (player.PlayStatus != PlayStatus.Unknown)
+        {
+            OnPlayerPlayStatusChanged(player.PlayStatus);
+        }
+    }
+
+    public void DetachPlayer()
+    {
+        var existing = _player;
+        if (existing == null) return;
+
+        _player = null;
+        existing.PlayStatusChanged -= OnPlayerPlayStatusChanged;
+        existing.PositionUpdated -= OnPlayerPositionUpdated;
+        PlayerChanged?.Invoke();
+    }
+
+    public void OnPlaybackEngineDeviceError(Exception ex)
+    {
+        _logger.Error(ex, "Audio device error.");
+        _dispatcher.Post(() => _audioDeviceErrorHandler(ex));
+    }
+
+    public void Dispose() => DetachPlayer();
+
     public void RaiseInterfaceClearRequest() => Send(InterfaceClearRequest);
     public void RaisePreLoadStarted(string path, CancellationToken token) => Send(PreLoadStarted, path, token);
     public void RaiseLoadStarted(BeatmapContext ctx, CancellationToken token) => Send(LoadStarted, ctx, token);
@@ -80,4 +126,10 @@ internal sealed class PlayerEventBus
     private void Send<T>(Action<T>? handler, T arg) => _dispatcher.Send(() => handler?.Invoke(arg));
     private void Send<T1, T2>(Action<T1, T2>? handler, T1 a1, T2 a2) => _dispatcher.Send(() => handler?.Invoke(a1, a2));
     private void Post<T>(Action<T>? handler, T arg) => _dispatcher.Post(() => handler?.Invoke(arg));
+
+    private void OnPlayerPlayStatusChanged(PlayStatus status)
+        => Post(PlayStatusChanged, status);
+
+    private void OnPlayerPositionUpdated(TimeSpan position)
+        => Post(PositionUpdated, position);
 }

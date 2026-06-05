@@ -21,8 +21,7 @@ namespace Milky.OsuPlayer.Media.Audio;
 
 /// <summary>
 /// Top-level facade that the UI binds to. Delegates all real work to
-/// <see cref="PlayerEventBus"/>, <see cref="PlayerSessionService"/>, and
-/// <see cref="PlayerStatePump"/>; this class only wires them together and
+/// <see cref="PlayerEventBus"/> and <see cref="PlayerSessionService"/>; this class only wires them together and
 /// surfaces the historical public surface so existing consumers keep
 /// compiling.
 /// </summary>
@@ -32,7 +31,6 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
 
     private readonly IPlaybackEngine _playbackEngine;
     private readonly PlayerEventBus _bus;
-    private readonly PlayerStatePump _pump;
     private readonly PlayerSessionService _session;
 
     private static readonly NullPlaybackController s_nullController = new();
@@ -47,28 +45,24 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
     {
         _playbackEngine = playbackEngine;
 
-        _bus = new PlayerEventBus(uiThreadDispatcher, s_logger);
-        _pump = new PlayerStatePump(_bus, audioDeviceErrorHandler, uiThreadDispatcher, s_logger);
-        _pump.PlayStatusChanged += OnPumpPlayStatusChanged;
-        _pump.PositionUpdated += position => PositionUpdated?.Invoke(position);
-        _pump.PlayerChanged += OnPumpPlayerChanged;
+        _bus = new PlayerEventBus(uiThreadDispatcher, s_logger, audioDeviceErrorHandler);
+        _bus.PlayStatusChanged += OnBusPlayStatusChanged;
+        _bus.PositionUpdated += position => PositionUpdated?.Invoke(position);
+        _bus.PlayerChanged += OnBusPlayerChanged;
 
         var beatmapLoader = new BeatmapLoader(playerData);
-        var loadService = new BeatmapLoadService(beatmapLoader);
         PlayList = new PlayList(playerData, uiThreadDispatcher, OnSongListChanged, OnModeChanged);
         _session = new PlayerSessionService(
             _bus,
-            _pump,
             PlayList,
             beatmapLoader,
-            loadService,
             new SemaphoreSlim(1, 1),
             playerData,
             playbackEngine,
             audioCacheManager,
             s_logger);
 
-        _playbackEngine.DeviceError += _pump.OnPlaybackEngineDeviceError;
+        _playbackEngine.DeviceError += _bus.OnPlaybackEngineDeviceError;
 
         // Re-export bus events onto the facade surface for legacy subscribers.
         _bus.PreLoadStarted += (path, ct) => PreLoadStarted?.Invoke(path, ct);
@@ -90,9 +84,9 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
 
     public PlayList PlayList { get; }
 
-    public OsuMixPlayer? Player => _pump.Player;
+    public OsuMixPlayer? Player => _bus.Player;
 
-    public bool IsPlayerReady => _pump.IsPlayerReady;
+    public bool IsPlayerReady => _bus.IsPlayerReady;
 
     public event Action<PlayStatus>? PlayStatusChanged;
     public event Action<TimeSpan>? PositionUpdated;
@@ -147,24 +141,24 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
 
     public async ValueTask DisposeAsync()
     {
-        _playbackEngine.DeviceError -= _pump.OnPlaybackEngineDeviceError;
-        _pump.PlayStatusChanged -= OnPumpPlayStatusChanged;
-        _pump.PlayerChanged -= OnPumpPlayerChanged;
+        _playbackEngine.DeviceError -= _bus.OnPlaybackEngineDeviceError;
+        _bus.PlayStatusChanged -= OnBusPlayStatusChanged;
+        _bus.PlayerChanged -= OnBusPlayerChanged;
         await _session.DisposeAsync().ConfigureAwait(false);
-        _pump.Dispose();
+        _bus.Dispose();
     }
 
     private IPlaybackController ActiveController()
-        => _pump.IsPlayerReady ? _pump.Player! : s_nullController;
+        => _bus.IsPlayerReady ? _bus.Player! : s_nullController;
 
-    private void OnPumpPlayStatusChanged(PlayStatus status)
+    private void OnBusPlayStatusChanged(PlayStatus status)
     {
         SharedVm.Default.IsPlaying = status == PlayStatus.Playing;
         OnPropertyChanged(nameof(IsPlayerReady));
         PlayStatusChanged?.Invoke(status);
     }
 
-    private void OnPumpPlayerChanged()
+    private void OnBusPlayerChanged()
     {
         OnPropertyChanged(nameof(Player));
         OnPropertyChanged(nameof(IsPlayerReady));

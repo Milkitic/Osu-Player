@@ -23,7 +23,7 @@ public class ObservablePlayControllerTests
             null!,
             _ => { },
             new ImmediateUiThreadDispatcher());
-        var pump = GetPump(controller);
+        var bus = GetBus(controller);
         var player = new OsuMixPlayer(null!, string.Empty, null!, null!);
         var notified = false;
 
@@ -35,7 +35,7 @@ public class ObservablePlayControllerTests
             }
         };
 
-        pump.AttachPlayer(player);
+        bus.AttachPlayer(player);
 
         Assert.Same(player, controller.Player);
         Assert.True(notified);
@@ -51,10 +51,10 @@ public class ObservablePlayControllerTests
             null!,
             _ => { },
             new ImmediateUiThreadDispatcher());
-        var pump = GetPump(controller);
+        var bus = GetBus(controller);
         var player = new OsuMixPlayer(null!, string.Empty, null!, null!);
 
-        pump.AttachPlayer(player);
+        bus.AttachPlayer(player);
 
         await controller.PlayAsync();
     }
@@ -69,25 +69,25 @@ public class ObservablePlayControllerTests
             null!,
             _ => { },
             new ImmediateUiThreadDispatcher());
-        var pump = GetPump(controller);
+        var bus = GetBus(controller);
         var player = new OsuMixPlayer(null!, string.Empty, null!, null!);
         SetPlayStatus(player, PlayStatus.Ready);
         PlayStatus? observed = null;
 
         controller.PlayStatusChanged += status => observed = status;
 
-        pump.AttachPlayer(player);
+        bus.AttachPlayer(player);
 
         Assert.Equal(PlayStatus.Ready, observed);
         Assert.True(controller.IsPlayerReady);
     }
 
-    private static PlayerStatePump GetPump(ObservablePlayController controller)
+    private static PlayerEventBus GetBus(ObservablePlayController controller)
     {
         var field = typeof(ObservablePlayController)
-            .GetField("_pump", BindingFlags.Instance | BindingFlags.NonPublic);
+            .GetField("_bus", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(field);
-        return Assert.IsType<PlayerStatePump>(field.GetValue(controller));
+        return Assert.IsType<PlayerEventBus>(field.GetValue(controller));
     }
 
     private static void SetPlayStatus(OsuMixPlayer player, PlayStatus status)

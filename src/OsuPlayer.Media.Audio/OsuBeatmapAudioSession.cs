@@ -26,7 +26,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     private readonly StandaloneMusicTransport _musicTransport;
     private readonly AudioCacheManager _audioCacheManager;
     private readonly IPlaybackRateProcessorFactory _rateProcessorFactory;
-    private readonly OsuPlaybackEventDispatcher _eventDispatcher;
+    private readonly OsuEffectPlaybackBus _effectBus;
     private readonly OsuPlaybackEventAudioCache _eventAudioCache;
     private readonly PlaybackEventTimelineScheduler _timelineScheduler = new();
     private readonly List<PlaybackEvent> _eventBuffer = new(128);
@@ -54,8 +54,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         _audioCacheManager = audioCacheManager;
         _rateProcessorFactory = rateProcessorFactory ?? NoPlaybackRateProcessorFactory.Instance;
         _logger = logger;
-        var effectBus = new OsuEffectPlaybackBus(playbackEngine.EffectMixer);
-        _eventDispatcher = new OsuPlaybackEventDispatcher(effectBus, logger);
+        _effectBus = new OsuEffectPlaybackBus(playbackEngine.EffectMixer, logger);
         _eventAudioCache = new OsuPlaybackEventAudioCache(audioCacheManager, logger);
     }
 
@@ -141,17 +140,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
     public async Task SeekAsync(TimeSpan position, CancellationToken cancellationToken = default)
     {
-        var wasRunning = _schedulerLoop.IsRunning;
-        if (wasRunning)
-        {
-            await StopSchedulerAsync().ConfigureAwait(false);
-        }
-        else
-        {
-            _eventDispatcher.ClearLoops();
-        }
-
-        try
+        await RunWithSchedulerStoppedAsync(async () =>
         {
             await _musicTransport.SeekAsync(position, cancellationToken).ConfigureAwait(false);
             var eventClock = ToEventClock(position);
@@ -165,14 +154,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
             }
 
             await PrecacheWindowAsync(playbackEvents, cacheStart, cancellationToken).ConfigureAwait(false);
-        }
-        finally
-        {
-            if (wasRunning && IsRunning)
-            {
-                StartSchedulerLoop();
-            }
-        }
+        }, clearLoopsWhenStopped: true).ConfigureAwait(false);
     }
 
     public Task SetPlaybackRateAsync(PlaybackRateState rateState, CancellationToken cancellationToken = default)
@@ -193,9 +175,9 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
     public void ApplyOptions(OsuAudioSessionOptions options)
     {
-        _eventDispatcher.HitsoundVolume = options.HitsoundVolume;
-        _eventDispatcher.SampleVolume = options.SampleVolume;
-        _eventDispatcher.BalanceFactor = options.BalanceFactor;
+        _effectBus.HitsoundVolume = options.HitsoundVolume;
+        _effectBus.SampleVolume = options.SampleVolume;
+        _effectBus.BalanceFactor = options.BalanceFactor;
     }
 
     public async Task ClearAsync(CancellationToken cancellationToken = default)
@@ -217,26 +199,20 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
     private async Task StopSchedulerAsync()
     {
         await _schedulerLoop.StopAsync().ConfigureAwait(false);
-        _eventDispatcher.ClearLoops();
+        _effectBus.ClearLoops();
     }
 
     public async ValueTask DisposeAsync()
     {
         await ClearAsync().ConfigureAwait(false);
-        _eventDispatcher.Dispose();
+        _effectBus.Dispose();
         await _schedulerLoop.DisposeAsync().ConfigureAwait(false);
         _precacheCts.Dispose();
     }
 
     private async Task ReloadPlaybackEventsAsync(CancellationToken cancellationToken)
     {
-        var restartScheduler = _schedulerLoop.IsRunning;
-        if (restartScheduler)
-        {
-            await StopSchedulerAsync().ConfigureAwait(false);
-        }
-
-        try
+        await RunWithSchedulerStoppedAsync(async () =>
         {
             await StopPrecacheAsync().ConfigureAwait(false);
             var playbackEvents = await BuildPlaybackEventsAsync(_osuFile, _options, cancellationToken)
@@ -253,6 +229,24 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
             }
 
             await PrecacheWindowAsync(playbackEvents, cacheStart, cancellationToken).ConfigureAwait(false);
+        }).ConfigureAwait(false);
+    }
+
+    private async Task RunWithSchedulerStoppedAsync(Func<Task> work, bool clearLoopsWhenStopped = false)
+    {
+        var restartScheduler = _schedulerLoop.IsRunning;
+        if (restartScheduler)
+        {
+            await StopSchedulerAsync().ConfigureAwait(false);
+        }
+        else if (clearLoopsWhenStopped)
+        {
+            _effectBus.ClearLoops();
+        }
+
+        try
+        {
+            await work().ConfigureAwait(false);
         }
         finally
         {
@@ -300,7 +294,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
             if (Duration > TimeSpan.Zero && position >= Duration)
             {
                 _schedulerLoop.Stop();
-                _eventDispatcher.ClearLoops();
+                _effectBus.ClearLoops();
                 Finished?.Invoke();
                 break;
             }
@@ -322,7 +316,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         {
             var cachedAudio = await _eventAudioCache.GetOrCreateAsync(playbackEvent, cancellationToken)
                 .ConfigureAwait(false);
-            _eventDispatcher.Dispatch(playbackEvent, cachedAudio);
+            _effectBus.Dispatch(playbackEvent, cachedAudio);
         }
     }
 
