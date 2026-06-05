@@ -119,7 +119,7 @@ public partial class RecentPlayPageViewModel : ObservableObject
         var recentBeatmaps = await _playerData.GetBeatmapsByMapInfoAsync(recentList, TimeSortMode.PlayTime);
         if (recentBeatmaps == null || !recentBeatmaps.Any()) return;
 
-        await _controller.PlayList.SetSongListAsync(recentBeatmaps, true);
+        await _controller.SetPlaylistAsync(recentBeatmaps, true);
     }
 
     [RelayCommand]

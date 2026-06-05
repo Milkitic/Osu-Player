@@ -11,6 +11,7 @@ using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio.Infrastructure;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Services;
+using Milky.OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Media.Audio.Coordination;
 
@@ -24,7 +25,7 @@ namespace Milky.OsuPlayer.Media.Audio.Coordination;
 /// continues the current operation. It serializes load/clear work with the
 /// supplied <see cref="SemaphoreSlim"/>, attaches and detaches the active
 /// <see cref="OsuMixPlayer"/> through <see cref="PlayerStatePump"/>, and
-/// translates <see cref="PlayControlResult"/> values into player commands.
+/// translates playlist cursor changes into player commands.
 /// </remarks>
 internal sealed class PlayerSessionService : IAsyncDisposable
 {
@@ -81,7 +82,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         _pump.PlayStatusChanged += OnPlayerPlayStatusChanged;
     }
 
-    public async Task PlayNewFromBeatmapAsync(Milky.OsuPlayer.Data.Models.Beatmap beatmap, bool playInstantly)
+    public async Task PlayNewFromBeatmapAsync(Beatmap beatmap, bool playInstantly)
     {
         using var operation = TryBeginInterruptingOperation();
         if (operation == null) return;
@@ -165,29 +166,51 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         }
     }
 
-    public Task PlayByControlAsync(PlayControlType control) => PlayByControlAsync(control, autoAdvance: false);
-
-    public Task PlayByControlAsync(PlayControlType control, bool autoAdvance)
+    public Task PlayPreviousAsync()
         => RunOperationAsync(
-            autoAdvance ? TryBeginCurrentOperation() : TryBeginInterruptingOperation(),
+            TryBeginInterruptingOperation(),
             async operationToken =>
             {
-                var preInfo = _playList.CurrentInfo;
-                var controlResult = autoAdvance
-                    ? await _playList.InvokeAutoNext().ConfigureAwait(false)
-                    : await _playList.SwitchByControl(control).ConfigureAwait(false);
-
-                await ApplyPlayControlResultAsync(controlResult, preInfo, playInstantly: true, operationToken)
-                    .ConfigureAwait(false);
+                await _playList.MovePreviousAsync(wrap: true).ConfigureAwait(false);
+                await LoadCurrentAsync(playInstantly: true, operationToken).ConfigureAwait(false);
             },
             "Error while changing song.");
 
-    public Task HandleAutoSwitchedAsync(PlayControlResult controlResult, Beatmap? beatmap, bool playInstantly)
+    public Task PlayNextAsync(bool autoAdvance = false)
         => RunOperationAsync(
-            TryBeginCurrentOperation(),
-            operationToken => ApplyPlayControlResultAsync(
-                controlResult, _playList.PreInfo, playInstantly, operationToken),
-            "Error while auto changing song.");
+            autoAdvance ? TryBeginCurrentOperation() : TryBeginInterruptingOperation(),
+            autoAdvance ? AutoAdvanceAsync : ManualNextAsync,
+            "Error while changing song.");
+
+    public Task ReplacePlaylistAsync(
+        IEnumerable<Beatmap> beatmaps,
+        bool startAnew,
+        bool playInstantly,
+        bool autoLoad)
+        => RunOperationAsync(
+            TryBeginInterruptingOperation(),
+            async operationToken =>
+            {
+                await _playList.ReplaceAsync(beatmaps, startAnew).ConfigureAwait(false);
+                if (autoLoad)
+                {
+                    await LoadCurrentAsync(playInstantly, operationToken).ConfigureAwait(false);
+                }
+            },
+            "Error while replacing playlist.");
+
+    public Task RemoveFromPlaylistAsync(IEnumerable<Beatmap> beatmaps)
+        => RunOperationAsync(
+            TryBeginInterruptingOperation(),
+            async operationToken =>
+            {
+                var change = await _playList.RemoveAsync(beatmaps).ConfigureAwait(false);
+                if (change.Changed)
+                {
+                    await LoadCurrentAsync(playInstantly: true, operationToken).ConfigureAwait(false);
+                }
+            },
+            "Error while removing playlist entries.");
 
     public async ValueTask DisposeAsync()
     {
@@ -332,7 +355,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             _isHandlingLoadFailure = true;
             try
             {
-                await PlayByControlAsync(PlayControlType.Next).ConfigureAwait(false);
+                await PlayNextAsync().ConfigureAwait(false);
             }
             finally
             {
@@ -403,77 +426,81 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             context?.Beatmap?.BeatmapId, context?.Beatmap?.BeatmapSetId);
     }
 
-    private async Task ApplyPlayControlResultAsync(
-        PlayControlResult controlResult,
-        BeatmapContext? previousContext,
-        bool playInstantly,
-        CancellationToken operationToken)
+    private async Task ManualNextAsync(CancellationToken operationToken)
+    {
+        await _playList.MoveNextAsync(wrap: true).ConfigureAwait(false);
+        await LoadCurrentAsync(playInstantly: true, operationToken).ConfigureAwait(false);
+    }
+
+    private async Task AutoAdvanceAsync(CancellationToken operationToken)
+    {
+        if (_playList.Mode == PlaylistMode.Single)
+        {
+            await StopCurrentAsync().ConfigureAwait(false);
+            return;
+        }
+
+        if (_playList.Mode == PlaylistMode.SingleLoop)
+        {
+            await RestartCurrentAsync(operationToken).ConfigureAwait(false);
+            return;
+        }
+
+        if (!_playList.HasItems)
+        {
+            await ClearPlaybackAndInterfaceAsync().ConfigureAwait(false);
+            return;
+        }
+
+        if (!_playList.IsLoop && _playList.IsLast)
+        {
+            await _playList.SelectFirstAsync().ConfigureAwait(false);
+            await LoadCurrentAsync(playInstantly: false, operationToken).ConfigureAwait(false);
+            return;
+        }
+
+        await _playList.MoveNextAsync(wrap: _playList.IsLoop).ConfigureAwait(false);
+        await LoadCurrentAsync(playInstantly: true, operationToken).ConfigureAwait(false);
+    }
+
+    private async Task LoadCurrentAsync(bool playInstantly, CancellationToken operationToken)
     {
         operationToken.ThrowIfCancellationRequested();
-        var context = _playList.CurrentInfo;
-
-        if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Clear || context is null)
+        if (_playList.CurrentInfo == null)
         {
-            await ClearPlayerAsync().ConfigureAwait(false);
-            _bus.RaiseInterfaceClearRequest();
+            await ClearPlaybackAndInterfaceAsync().ConfigureAwait(false);
             return;
         }
 
-        if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
+        var loaded = await LoadCoreAsync(operationToken).ConfigureAwait(false);
+        if (playInstantly && !operationToken.IsCancellationRequested && loaded && _pump.Player != null)
         {
-            operationToken.ThrowIfCancellationRequested();
-            await ApplyPlaybackStatusAsync(controlResult.PlayStatus, restart: true, playInstantly: true)
-                .ConfigureAwait(false);
-            return;
-        }
-
-        if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Default &&
-            controlResult.PlayStatus == PlayControlResult.PlayControlStatus.Play &&
-            ReferenceEquals(previousContext, context))
-        {
-            var player = _pump.Player;
-            if (player != null)
-            {
-                operationToken.ThrowIfCancellationRequested();
-                await player.RestartAsync().ConfigureAwait(false);
-            }
-
-            return;
-        }
-
-        if (await LoadCoreAsync(operationToken).ConfigureAwait(false))
-        {
-            operationToken.ThrowIfCancellationRequested();
-            await ApplyPlaybackStatusAsync(controlResult.PlayStatus, restart: false, playInstantly)
-                .ConfigureAwait(false);
+            await _pump.Player.PlayAsync().ConfigureAwait(false);
         }
     }
 
-    private async Task ApplyPlaybackStatusAsync(
-        PlayControlResult.PlayControlStatus playStatus,
-        bool restart,
-        bool playInstantly)
+    private async Task RestartCurrentAsync(CancellationToken operationToken)
     {
         var player = _pump.Player;
         if (player == null) return;
 
-        switch (playStatus)
-        {
-            case PlayControlResult.PlayControlStatus.Play:
-                if (restart)
-                {
-                    await player.RestartAsync().ConfigureAwait(false);
-                }
-                else if (playInstantly)
-                {
-                    await player.PlayAsync().ConfigureAwait(false);
-                }
+        operationToken.ThrowIfCancellationRequested();
+        await player.RestartAsync().ConfigureAwait(false);
+    }
 
-                break;
-            case PlayControlResult.PlayControlStatus.Stop:
-                await player.StopAsync().ConfigureAwait(false);
-                break;
+    private async Task StopCurrentAsync()
+    {
+        var player = _pump.Player;
+        if (player != null)
+        {
+            await player.StopAsync().ConfigureAwait(false);
         }
+    }
+
+    private async Task ClearPlaybackAndInterfaceAsync()
+    {
+        await ClearPlayerAsync().ConfigureAwait(false);
+        _bus.RaiseInterfaceClearRequest();
     }
 
     private async Task ClearPlayerAsync()
@@ -617,7 +644,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         try
         {
             await Task.Yield();
-            await PlayByControlAsync(PlayControlType.Next, autoAdvance: true).ConfigureAwait(false);
+            await PlayNextAsync(autoAdvance: true).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

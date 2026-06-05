@@ -208,7 +208,7 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
         var beatmaps = Entries.ToList();
         if (beatmaps.Count <= 0) return;
 
-        await _controller.PlayList.SetSongListAsync(beatmaps, true);
+        await _controller.SetPlaylistAsync(beatmaps, true);
     }
 
     [RelayCommand]

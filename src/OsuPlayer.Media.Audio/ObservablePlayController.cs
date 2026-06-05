@@ -69,7 +69,6 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
             s_logger);
 
         _playbackEngine.DeviceError += _pump.OnPlaybackEngineDeviceError;
-        PlayList.AutoSwitched += _session.HandleAutoSwitchedAsync;
 
         // Re-export bus events onto the facade surface for legacy subscribers.
         _bus.PreLoadStarted += (path, ct) => PreLoadStarted?.Invoke(path, ct);
@@ -133,15 +132,24 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
     public Task PlayNewAsync(string path, bool playInstantly = true)
         => _session.PlayNewFromPathAsync(path, playInstantly);
 
-    public Task PlayPrevAsync() => _session.PlayByControlAsync(PlayControlType.Previous);
-    public Task PlayNextAsync() => _session.PlayByControlAsync(PlayControlType.Next);
+    public Task PlayPrevAsync() => _session.PlayPreviousAsync();
+    public Task PlayNextAsync() => _session.PlayNextAsync();
+
+    public Task SetPlaylistAsync(
+        IEnumerable<Beatmap> beatmaps,
+        bool startAnew,
+        bool playInstantly = true,
+        bool autoLoad = true)
+        => _session.ReplacePlaylistAsync(beatmaps, startAnew, playInstantly, autoLoad);
+
+    public Task RemoveFromPlaylistAsync(IEnumerable<Beatmap> beatmaps)
+        => _session.RemoveFromPlaylistAsync(beatmaps);
 
     public async ValueTask DisposeAsync()
     {
         _playbackEngine.DeviceError -= _pump.OnPlaybackEngineDeviceError;
         _pump.PlayStatusChanged -= OnPumpPlayStatusChanged;
         _pump.PlayerChanged -= OnPumpPlayerChanged;
-        PlayList.AutoSwitched -= _session.HandleAutoSwitchedAsync;
         await _session.DisposeAsync().ConfigureAwait(false);
         _pump.Dispose();
     }

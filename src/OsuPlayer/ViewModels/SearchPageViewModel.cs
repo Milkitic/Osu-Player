@@ -271,7 +271,7 @@ public partial class SearchPageViewModel : ObservableObject
             .Select(k => k.GetHighestDiff())
             .ToList();
 
-        await _controller.PlayList.SetSongListAsync(newBeatmaps, true);
+        await _controller.SetPlaylistAsync(newBeatmaps, true);
     }
 
     [RelayCommand]

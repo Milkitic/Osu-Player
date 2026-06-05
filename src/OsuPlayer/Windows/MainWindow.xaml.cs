@@ -357,7 +357,7 @@ public partial class MainWindow : WindowEx
             await _playerData.GetBeatmapsByIdentifiableAsync(
                 AppSettings.Default.CurrentList.Cast<IMapIdentifiable>());
 
-        await _controller.PlayList.SetSongListAsync(entries, true, false, false);
+        await _controller.SetPlaylistAsync(entries, true, playInstantly: false, autoLoad: false);
 
         bool play = AppSettings.Default.Play.AutoPlay;
         if (AppSettings.Default.CurrentMap.IsMapTemporary())
