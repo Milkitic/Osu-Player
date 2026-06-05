@@ -228,12 +228,19 @@ public partial class PlayController : UserControl
     {
         if (DataContext is PlayControllerVm vm)
         {
-            if (vm.Controller.PlayList?.CurrentInfo != null)
+            try
             {
-                await vm.Controller.SetTimeAsync(PlayProgress.Value,
-                    vm.Controller.Player.PlayStatus == PlayStatus.Playing);
+                var player = vm.Controller.Player;
+                if (vm.Controller.PlayList?.CurrentInfo != null && player != null)
+                {
+                    await vm.Controller.SetTimeAsync(PlayProgress.Value,
+                        player.PlayStatus == PlayStatus.Playing);
+                }
             }
-            vm.IsDragging = false;
+            finally
+            {
+                vm.IsDragging = false;
+            }
         }
     }
 
