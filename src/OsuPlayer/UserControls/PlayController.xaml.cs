@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using NAudio.Asio;
+using NAudio.Wave;
 using OsuPlayer.Core;
 using OsuPlayer.Media.Audio;
 using OsuPlayer.Media.Audio.Playlist;
