@@ -1,7 +1,7 @@
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Data.Models;
+using OsuPlayer.Data.Models;
 
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 /// <summary>
 /// Carries the result of a beatmap loading pipeline. Contains all resolved

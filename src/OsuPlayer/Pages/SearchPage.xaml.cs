@@ -2,18 +2,16 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.UiComponents.PanelComponent;
-using Milky.OsuPlayer.ViewModels;
 using NLog;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.UiComponents.PanelComponent;
+using OsuPlayer.ViewModels;
 
-namespace Milky.OsuPlayer.Pages;
+namespace OsuPlayer.Pages;
 
 /// <summary>
 ///     SearchPage.xaml 的交互逻辑

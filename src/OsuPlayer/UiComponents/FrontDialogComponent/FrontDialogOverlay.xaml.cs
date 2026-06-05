@@ -3,9 +3,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-using Milky.OsuPlayer.Core;
+using OsuPlayer.Core;
 
-namespace Milky.OsuPlayer.UiComponents.FrontDialogComponent
+namespace OsuPlayer.UiComponents.FrontDialogComponent
 {
     /// <summary>
     /// FrontDialogOverlay.xaml 的交互逻辑

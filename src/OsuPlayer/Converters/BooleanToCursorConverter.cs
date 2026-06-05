@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace Milky.OsuPlayer.Converters
+namespace OsuPlayer.Converters
 {
     class BooleanToCursorConverter : IValueConverter
     {

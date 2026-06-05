@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Milky.OsuPlayer.Data.Models;
+using OsuPlayer.Data.Models;
 
-namespace Milky.OsuPlayer.ViewModels;
+namespace OsuPlayer.ViewModels;
 
 public partial class SelectCollectionPageViewModel : ObservableObject
 {

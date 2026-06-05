@@ -3,19 +3,18 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponents.PanelComponent;
-using Milky.OsuPlayer.UserControls;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.UiComponents.FrontDialogComponent;
+using OsuPlayer.UiComponents.PanelComponent;
+using OsuPlayer.UserControls;
+using OsuPlayer.Utils;
+using OsuPlayer.ViewModels;
+using OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Pages;
+namespace OsuPlayer.Pages;
 
 /// <summary>
 /// CollectionPage.xaml 的交互逻辑

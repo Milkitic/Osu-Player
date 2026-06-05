@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Milky.OsuPlayer.Media.Audio.Infrastructure;
+namespace OsuPlayer.Media.Audio.Infrastructure;
 
 /// <summary>
 /// Safe teardown helper for async operations that may race with disposal.

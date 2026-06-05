@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using Coosu.Beatmap;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio.Infrastructure;
-using Milky.OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
+using OsuPlayer.Media.Audio.Infrastructure;
+using OsuPlayer.Media.Audio.Playlist;
 using OsuPlayer.Shared.Models;
 
-namespace Milky.OsuPlayer.Media.Audio.Coordination;
+namespace OsuPlayer.Media.Audio.Coordination;
 
 /// <summary>
 /// Coordinates beatmap selection, loading, and playback commands for the

@@ -1,11 +1,11 @@
-﻿using Milky.OsuPlayer.Media.Lyric.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using OsuPlayer.Media.Lyric.Models;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider
+namespace OsuPlayer.Media.Lyric.SourceProvider
 {
     public abstract class SourceProviderBase
     {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider
+namespace OsuPlayer.Media.Lyric.SourceProvider
 {
     public abstract class SearchSongResultBase
     {

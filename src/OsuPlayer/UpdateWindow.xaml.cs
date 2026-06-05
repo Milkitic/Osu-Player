@@ -1,14 +1,14 @@
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Windows;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using OsuPlayer.Core;
 using OsuPlayer.Shared;
+using OsuPlayer.Windows;
 using Path = System.IO.Path;
 
-namespace Milky.OsuPlayer
+namespace OsuPlayer
 {
     /// <summary>
     /// UpdateWindow.xaml 的交互逻辑

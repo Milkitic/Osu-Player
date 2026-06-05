@@ -1,9 +1,7 @@
-using System;
 using System.Reflection;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Coordination;
-using Milky.OsuPlayer.Presentation.Interaction;
 using NLog;
+using OsuPlayer.Media.Audio.Coordination;
+using OsuPlayer.Presentation.Interaction;
 using Xunit;
 
 namespace OsuPlayer.Media.Audio.Tests;

@@ -4,11 +4,11 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
 using OsuPlayer.Shared;
 
-namespace Milky.OsuPlayer.Core
+namespace OsuPlayer.Core
 {
     public static class IdentifiableExtension
     {

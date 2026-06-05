@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,9 +6,9 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
+namespace OsuPlayer.Media.Lyric.SourceProvider.Netease
 {
-    public class NeteaseSearch:SongSearchBase<NeteaseSearch.Song>
+    public class NeteaseSearch : SongSearchBase<NeteaseSearch.Song>
     {
         #region Search Result
         public class Artist
@@ -30,7 +30,7 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
             public int size { get; set; }
         }
 
-        public class Song:SearchSongResultBase
+        public class Song : SearchSongResultBase
         {
             public Album album { get; set; }
             public int status { get; set; }
@@ -44,11 +44,11 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
 
             public override int Duration => duration;
 
-            public override string ID =>id.ToString();
+            public override string ID => id.ToString();
 
             public override string Title => name;
 
-            public override string Artist =>artists?.First().name;
+            public override string Artist => artists?.First().name;
         }
 
         #endregion

@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using System.Text.Json.Nodes;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic
+namespace OsuPlayer.Media.Lyric.SourceProvider.QQMusic
 {
 
     public class QQMusicLyricDownloader : LyricDownloaderBase

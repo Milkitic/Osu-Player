@@ -8,18 +8,17 @@ using System.Windows;
 using System.Windows.Controls;
 using Coosu.Beatmap;
 using Microsoft.Extensions.DependencyInjection;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Presentation.Properties;
-using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Presentation;
+using OsuPlayer.Presentation.Properties;
+using OsuPlayer.UiComponents.FrontDialogComponent;
+using OsuPlayer.ViewModels;
+using OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.UserControls;
+namespace OsuPlayer.UserControls;
 
 /// <summary>
 /// SelectCollectionControl.xaml 的交互逻辑

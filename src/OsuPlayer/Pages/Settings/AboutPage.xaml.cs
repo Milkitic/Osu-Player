@@ -2,13 +2,13 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.Windows;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Presentation;
 using OsuPlayer.Shared;
+using OsuPlayer.Utils;
+using OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Pages.Settings;
+namespace OsuPlayer.Pages.Settings;
 
 /// <summary>
 /// AboutPage.xaml 的交互逻辑

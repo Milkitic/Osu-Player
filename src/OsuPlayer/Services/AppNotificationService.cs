@@ -1,6 +1,6 @@
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using OsuPlayer.UiComponents.NotificationComponent;
 
-namespace Milky.OsuPlayer.Services
+namespace OsuPlayer.Services
 {
     public sealed class AppNotificationService : IAppNotificationService
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.Utils;
+namespace OsuPlayer.Utils;
 
 public static class DifficultyUtils
 {

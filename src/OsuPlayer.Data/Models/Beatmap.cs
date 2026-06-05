@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Coosu.Beatmap;
 using Coosu.Database.DataTypes;
 using Dapper.FluentMap.Mapping;
 using OsuPlayer.Shared;
 
-namespace Milky.OsuPlayer.Data.Models
+namespace OsuPlayer.Data.Models
 {
     public class BeatmapMap : EntityMap<Beatmap>
     {

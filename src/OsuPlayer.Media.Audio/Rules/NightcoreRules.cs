@@ -1,6 +1,6 @@
 using System;
 
-namespace Milky.OsuPlayer.Media.Audio.Rules;
+namespace OsuPlayer.Media.Audio.Rules;
 
 /// <summary>
 /// Centralises osu! playback-rate business rules. Previously expressed as

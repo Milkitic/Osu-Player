@@ -1,4 +1,4 @@
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 /// <summary>
 /// Mutable, session-level audio configuration. Path-resolution lives in

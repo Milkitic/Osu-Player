@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Milki.Extensions.MouseKeyHook;
 
-namespace Milky.OsuPlayer.Core.Configuration
+namespace OsuPlayer.Core.Configuration
 {
     [JsonConverter(typeof(HotKeyConverter))]
     // 01 01 00000025

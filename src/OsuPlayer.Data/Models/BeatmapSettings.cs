@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using Dapper.FluentMap.Mapping;
 using OsuPlayer.Shared;
 
-namespace Milky.OsuPlayer.Data.Models
+namespace OsuPlayer.Data.Models
 {
     public class BeatmapSettingsMap : EntityMap<BeatmapSettings>
     {

@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows.Data;
 using Coosu.Beatmap.Sections.GamePlay;
 
-namespace Milky.OsuPlayer.Converters
+namespace OsuPlayer.Converters
 {
     class VersionToStringConverter : IValueConverter
     {

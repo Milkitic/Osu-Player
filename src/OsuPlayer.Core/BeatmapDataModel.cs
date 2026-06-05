@@ -3,10 +3,10 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Coosu.Beatmap;
 using Coosu.Beatmap.Sections.GamePlay;
-using Milky.OsuPlayer.Presentation.ObjectModel;
+using OsuPlayer.Presentation.ObjectModel;
 using OsuPlayer.Shared;
 
-namespace Milky.OsuPlayer.Core
+namespace OsuPlayer.Core
 {
     public class BeatmapDataModel : NumberableModel, IMapIdentifiable, INotifyPropertyChanged
     {

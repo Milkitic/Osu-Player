@@ -1,12 +1,12 @@
-//using Milky.OsuPlayer.Core.Annotations;
+//using OsuPlayer.Core.Annotations;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using KeyAsio.Core.Audio;
-using Milky.OsuPlayer.Presentation.Properties;
+using OsuPlayer.Presentation.Properties;
 using OsuPlayer.Shared.Models;
 
-namespace Milky.OsuPlayer.Core.Configuration
+namespace OsuPlayer.Core.Configuration
 {
     public class PlaySection : INotifyPropertyChanged
     {

@@ -1,9 +1,9 @@
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.ViewModels;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.ViewModels;
 
-namespace Milky.OsuPlayer.Pages;
+namespace OsuPlayer.Pages;
 
 /// <summary>
 /// ExportPage.xaml 的交互逻辑

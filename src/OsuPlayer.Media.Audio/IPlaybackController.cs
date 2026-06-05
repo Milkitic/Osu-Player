@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Media.Audio.Playlist;
 
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 /// <summary>
 /// Defines playback control operations for a beatmap session.

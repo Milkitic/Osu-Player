@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Data.Sqlite;
 
-namespace Milky.OsuPlayer.Data
+namespace OsuPlayer.Data
 {
     internal static class LegacyPlayerDatabaseMigrator
     {

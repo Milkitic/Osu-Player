@@ -6,10 +6,10 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using Coosu.Beatmap;
 using Microsoft.Win32;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Core.Services;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Core.Services;
 
-namespace Milky.OsuPlayer.Core
+namespace OsuPlayer.Core
 {
     public static class CommonUtils
     {

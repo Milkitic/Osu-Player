@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Milky.OsuPlayer.Media.Lyric.Models;
+using OsuPlayer.Media.Lyric.Models;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
+namespace OsuPlayer.Media.Lyric.SourceProvider.Netease
 {
-    public class NeteaseLyricParser:LyricParserBase
+    public class NeteaseLyricParser : LyricParserBase
     {
         private static readonly Regex LyricRegex = new Regex(@"\[(\d{2}\d*)\:(\d{2})\.(\d*)?\](.*?)(\r)?\n");
 

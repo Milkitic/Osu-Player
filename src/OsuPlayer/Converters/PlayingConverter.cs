@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Milky.OsuPlayer.UiComponents.ButtonComponent;
-using Milky.OsuPlayer.Windows;
 using OsuPlayer.Shared.Models;
+using OsuPlayer.UiComponents.ButtonComponent;
+using OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Converters
+namespace OsuPlayer.Converters
 {
     public class PlayingConverter : IMultiValueConverter
     {

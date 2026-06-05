@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Coosu.Beatmap;
 using OsuPlayer.Shared;
 using OSharpGameMode = Coosu.Beatmap.Sections.GamePlay.GameMode;
 
-namespace Milky.OsuPlayer.Data.Models
+namespace OsuPlayer.Data.Models
 {
     public static class BeatmapExtension
     {

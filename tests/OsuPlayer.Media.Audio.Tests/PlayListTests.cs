@@ -1,10 +1,8 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data;
+using OsuPlayer.Data.Models;
+using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 using Xunit;

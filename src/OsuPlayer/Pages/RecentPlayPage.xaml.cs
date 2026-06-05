@@ -1,13 +1,13 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
+using OsuPlayer.Core;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Utils;
+using OsuPlayer.ViewModels;
+using OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Pages;
+namespace OsuPlayer.Pages;
 
 /// <summary>
 /// RecentPlayPage.xaml 的交互逻辑

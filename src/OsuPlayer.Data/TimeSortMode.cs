@@ -1,4 +1,4 @@
-namespace Milky.OsuPlayer.Data
+namespace OsuPlayer.Data
 {
     public enum TimeSortMode
     {

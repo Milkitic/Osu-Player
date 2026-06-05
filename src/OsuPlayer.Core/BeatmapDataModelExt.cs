@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OsuPlayer.Shared;
 
-namespace Milky.OsuPlayer.Core
+namespace OsuPlayer.Core
 {
     public static class BeatmapDataModelExt
     {

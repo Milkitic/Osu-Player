@@ -1,10 +1,10 @@
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Presentation;
 using System.Diagnostics;
 using System.Windows;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Presentation;
 using OsuPlayer.Shared;
 
-namespace Milky.OsuPlayer.Windows
+namespace OsuPlayer.Windows
 {
     /// <summary>
     /// NewVersionWindow.xaml 的交互逻辑

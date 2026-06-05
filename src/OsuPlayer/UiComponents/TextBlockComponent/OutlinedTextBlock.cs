@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
@@ -6,7 +6,7 @@ using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.UiComponents.TextBlockComponent
+namespace OsuPlayer.UiComponents.TextBlockComponent
 {
     /// <summary>
     /// https://stackoverflow.com/questions/93650/apply-stroke-to-a-textblock-in-wpf

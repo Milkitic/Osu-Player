@@ -11,17 +11,16 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.Windows;
 using NAudio.Asio;
-using NAudio.Wave;
+using OsuPlayer.Core;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.UiComponents.NotificationComponent;
+using OsuPlayer.Utils;
+using OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.UserControls;
+namespace OsuPlayer.UserControls;
 
 public partial class PlayControllerVm : ObservableObject
 {
@@ -53,7 +52,7 @@ public partial class PlayControllerVm : ObservableObject
         if (App.Services != null)
         {
             Controller = App.Services.GetRequiredService<ObservablePlayController>();
-            
+
             Controller.PreLoadStarted += Controller_PreLoadStarted;
             Controller.LoadStarted += Controller_LoadStarted;
             Controller.BackgroundInfoLoaded += Controller_BackgroundInfoLoaded;

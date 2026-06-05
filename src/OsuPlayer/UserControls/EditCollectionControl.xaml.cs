@@ -1,14 +1,12 @@
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.ViewModels;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
+using OsuPlayer.UiComponents.FrontDialogComponent;
+using OsuPlayer.ViewModels;
 
-namespace Milky.OsuPlayer.UserControls;
+namespace OsuPlayer.UserControls;
 
 /// <summary>
 /// EditCollectionControl.xaml 的交互逻辑

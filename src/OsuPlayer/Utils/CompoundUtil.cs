@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Utils
+namespace OsuPlayer.Utils
 {
     class CompoundUtil
     {

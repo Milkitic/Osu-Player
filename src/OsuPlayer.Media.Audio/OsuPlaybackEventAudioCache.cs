@@ -8,7 +8,7 @@ using KeyAsio.Core.OsuAudio.Hitsounds.Playback;
 using Microsoft.Extensions.Logging;
 using NAudio.Wave;
 
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 public sealed class OsuPlaybackEventAudioCache
 {

@@ -1,8 +1,8 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Windows;
-using Milky.OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Media.Audio.Playlist;
 
-namespace Milky.OsuPlayer.Windows
+namespace OsuPlayer.Windows
 {
     /// <summary>
     /// BeatmapInfoWindow.xaml 的交互逻辑

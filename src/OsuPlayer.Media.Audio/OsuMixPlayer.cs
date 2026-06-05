@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using Coosu.Beatmap;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Media.Audio.Infrastructure;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Media.Audio.Rules;
-using Milky.OsuPlayer.Media.Audio.SoundTouch;
 using NAudio.Wave;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Media.Audio.Infrastructure;
+using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Media.Audio.Rules;
+using OsuPlayer.Media.Audio.SoundTouch;
 
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 /// <summary>
 /// Concrete player that wires the KeyAsio engine to an

@@ -3,22 +3,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Presentation.ObjectModel;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.Utils;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
+using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Presentation.ObjectModel;
+using OsuPlayer.Services;
 using OsuPlayer.Shared;
+using OsuPlayer.UiComponents.NotificationComponent;
+using OsuPlayer.Utils;
 
-namespace Milky.OsuPlayer.ViewModels;
+namespace OsuPlayer.ViewModels;
 
 public partial class ExportPageViewModel : ObservableObject
 {

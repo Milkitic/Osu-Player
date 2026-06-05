@@ -1,9 +1,9 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Milky.OsuPlayer.UiComponents.NotificationComponent
+namespace OsuPlayer.UiComponents.NotificationComponent
 {
     /// <summary>
     /// NotifyOverlay.xaml 的交互逻辑

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NAudio.Wave;
 
-namespace Milky.OsuPlayer.Media.Audio.SoundTouch;
+namespace OsuPlayer.Media.Audio.SoundTouch;
 
 internal sealed class SoundTouchPlaybackRateProcessorFactory : IPlaybackRateProcessorFactory
 {

@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.Utils;
+namespace OsuPlayer.Utils;
 
 public static class GradientStopCollectionExtensions
 {

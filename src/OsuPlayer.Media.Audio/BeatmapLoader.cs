@@ -3,11 +3,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
 
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 /// <summary>
 /// Handles beatmap data loading: file I/O, metadata parsing, path resolution,

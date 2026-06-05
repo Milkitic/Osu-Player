@@ -1,7 +1,7 @@
-﻿using Dapper.FluentMap.Mapping;
+using Dapper.FluentMap.Mapping;
 using OsuPlayer.Shared;
 
-namespace Milky.OsuPlayer.Data.Models
+namespace OsuPlayer.Data.Models
 {
     public class StoryboardInfoMap : EntityMap<StoryboardInfo>
     {

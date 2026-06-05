@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
-namespace Milky.OsuPlayer.Windows
+namespace OsuPlayer.Windows
 {
     public partial class LyricWindow
     {

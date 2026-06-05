@@ -1,7 +1,7 @@
-﻿using Milki.Extensions.MouseKeyHook;
 using System.Windows.Input;
+using Milki.Extensions.MouseKeyHook;
 
-namespace Milky.OsuPlayer.Utils
+namespace OsuPlayer.Utils
 {
     internal static class KeyConverter
     {

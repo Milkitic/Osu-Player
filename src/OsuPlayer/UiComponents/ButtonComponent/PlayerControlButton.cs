@@ -1,10 +1,10 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.UiComponents.ButtonComponent
+namespace OsuPlayer.UiComponents.ButtonComponent
 {
     public class PlayerControlButton : Button, INotifyPropertyChanged
     {

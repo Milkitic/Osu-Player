@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
 using OsuPlayer.Shared.Models;
+using OsuPlayer.UiComponents.NotificationComponent;
 using Path = System.IO.Path;
 
-namespace Milky.OsuPlayer.Services
+namespace OsuPlayer.Services
 {
     public class ExportService : IExportService
     {

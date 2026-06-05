@@ -1,8 +1,8 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.UiComponents.ButtonComponent
+namespace OsuPlayer.UiComponents.ButtonComponent
 {
     public class SystemButton : Button
     {

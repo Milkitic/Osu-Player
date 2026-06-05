@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Milky.OsuPlayer.Core;
+using OsuPlayer.Core;
 
-namespace Milky.OsuPlayer.ViewModels;
+namespace OsuPlayer.ViewModels;
 
 internal partial class StoryboardVm : ObservableObject
 {

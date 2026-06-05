@@ -1,7 +1,4 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Milky.OsuPlayer.Media.Audio.Infrastructure;
+using OsuPlayer.Media.Audio.Infrastructure;
 using Xunit;
 
 namespace OsuPlayer.Media.Audio.Tests;

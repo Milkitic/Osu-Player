@@ -1,6 +1,7 @@
-﻿using Milky.OsuPlayer.Pages;
+using OsuPlayer.Pages;
 
-namespace Milky.OsuPlayer.Windows {
+namespace OsuPlayer.Windows
+{
     public class PageParts
     {
         public SearchPage SearchPage { get; set; }

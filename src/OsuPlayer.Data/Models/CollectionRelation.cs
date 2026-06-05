@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using Dapper.FluentMap.Mapping;
 
-namespace Milky.OsuPlayer.Data.Models
+namespace OsuPlayer.Data.Models
 {
     public class CollectionRelationMap : EntityMap<CollectionRelation>
     {

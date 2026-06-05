@@ -1,3 +1,3 @@
-namespace Milky.OsuPlayer.Presentation.Interaction;
+namespace OsuPlayer.Presentation.Interaction;
 
 public class CollectionDeletedMessage;

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace Milky.OsuPlayer.Presentation.Interaction
+namespace OsuPlayer.Presentation.Interaction
 {
     public static class Execute
     {

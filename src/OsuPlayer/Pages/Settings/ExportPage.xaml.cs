@@ -1,10 +1,10 @@
-using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Core.Configuration;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using OsuPlayer.Core.Configuration;
 using OsuPlayer.Shared.Models;
 
-namespace Milky.OsuPlayer.Pages.Settings
+namespace OsuPlayer.Pages.Settings
 {
     /// <summary>
     /// ExportPage.xaml 的交互逻辑

@@ -4,16 +4,16 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Presentation.ObjectModel;
-using Milky.OsuPlayer.Services;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data;
+using OsuPlayer.Data.Models;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Presentation.ObjectModel;
+using OsuPlayer.Services;
 
-namespace Milky.OsuPlayer.ViewModels;
+namespace OsuPlayer.ViewModels;
 
 public partial class CollectionPageViewModel : ObservableObject, INavigationAware
 {

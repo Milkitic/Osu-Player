@@ -4,15 +4,15 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Core.Instances;
-using Milky.OsuPlayer.Core.Scanning;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.Windows;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Core.Instances;
+using OsuPlayer.Core.Scanning;
+using OsuPlayer.Presentation;
+using OsuPlayer.Utils;
+using OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Pages.Settings;
+namespace OsuPlayer.Pages.Settings;
 
 /// <summary>
 /// GeneralPage.xaml 的交互逻辑

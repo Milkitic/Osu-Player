@@ -5,10 +5,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
 
-namespace Milky.OsuPlayer.Core.Scanning
+namespace OsuPlayer.Core.Scanning
 {
     public class OsuFileScanner
     {

@@ -5,12 +5,11 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.UserControls;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
+using OsuPlayer.UserControls;
 
-namespace Milky.OsuPlayer.ViewModels;
+namespace OsuPlayer.ViewModels;
 
 public partial class CollectionViewModel : ObservableObject
 {

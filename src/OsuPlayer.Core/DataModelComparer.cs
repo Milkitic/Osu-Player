@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Milky.OsuPlayer.Core
+namespace OsuPlayer.Core
 {
     public class DataModelComparer : IEqualityComparer<BeatmapDataModel>
     {

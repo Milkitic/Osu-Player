@@ -1,10 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
 
-namespace Milky.OsuPlayer.Media.Audio.Playlist;
+namespace OsuPlayer.Media.Audio.Playlist;
 
 /// <summary>
 /// Anemic model holding the currently-selected beatmap plus all of its

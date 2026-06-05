@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio.Coordination;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
+using OsuPlayer.Media.Audio.Coordination;
+using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Shared.Models;
 
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 /// <summary>
 /// Top-level facade that the UI binds to. Delegates all real work to

@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using Milky.OsuPlayer.Core.Configuration;
+using OsuPlayer.Core.Configuration;
 
-namespace Milky.OsuPlayer.Core;
+namespace OsuPlayer.Core;
 
 public partial class SharedVm : ObservableObject
 {

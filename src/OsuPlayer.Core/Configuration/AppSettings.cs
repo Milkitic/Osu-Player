@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using OsuPlayer.Shared;
 
-namespace Milky.OsuPlayer.Core.Configuration
+namespace OsuPlayer.Core.Configuration
 {
     public class AppSettings : IDisposable
     {

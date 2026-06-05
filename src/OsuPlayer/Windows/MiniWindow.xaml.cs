@@ -1,20 +1,18 @@
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Utils;
 using System;
 using System.Drawing;
-using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Presentation;
+using OsuPlayer.Presentation.Interaction;
 using Timer = System.Threading.Timer;
 
-namespace Milky.OsuPlayer.Windows
+namespace OsuPlayer.Windows
 {
     /// <summary>
     /// MiniWindow.xaml 的交互逻辑

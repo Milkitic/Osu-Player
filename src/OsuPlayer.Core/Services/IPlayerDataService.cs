@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
+using OsuPlayer.Data;
+using OsuPlayer.Data.Models;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 
-namespace Milky.OsuPlayer.Core.Services
+namespace OsuPlayer.Core.Services
 {
     public interface IPlayerDataService : IPlayerDataStore
     {

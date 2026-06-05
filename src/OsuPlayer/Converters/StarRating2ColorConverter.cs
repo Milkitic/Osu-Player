@@ -1,9 +1,9 @@
 using System;
 using System.Globalization;
 using System.Windows.Data;
-using Milky.OsuPlayer.Utils;
+using OsuPlayer.Utils;
 
-namespace Milky.OsuPlayer.Converters;
+namespace OsuPlayer.Converters;
 
 public class StarRating2ColorConverter : IValueConverter
 {

@@ -1,7 +1,7 @@
 # DI Migration Guide
 
 This project is currently prepared for dependency injection, but it still uses the lightweight
-`Milky.OsuPlayer.Shared.Dependency.Service` registry in several places. This document exists to
+`OsuPlayer.Shared.Dependency.Service` registry in several places. This document exists to
 guide the future migration to a real DI container, preferably `Microsoft.Extensions.DependencyInjection`.
 
 When the migration is fully completed, either:
@@ -74,7 +74,7 @@ dependency graph.
 These are expected during the transition:
 
 - `AppServices`
-- `Milky.OsuPlayer.Shared.Dependency.Service`
+- `OsuPlayer.Shared.Dependency.Service`
 - parameterless constructors that delegate to fallback service access for XAML compatibility
 
 These should be removed or minimized once DI owns object creation.

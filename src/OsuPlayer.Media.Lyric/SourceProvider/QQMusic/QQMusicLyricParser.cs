@@ -1,10 +1,10 @@
-﻿using Milky.OsuPlayer.Media.Lyric.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using OsuPlayer.Media.Lyric.Models;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.QQMusic
+namespace OsuPlayer.Media.Lyric.SourceProvider.QQMusic
 {
     public class QQMusicLyricParser : LyricParserBase
     {

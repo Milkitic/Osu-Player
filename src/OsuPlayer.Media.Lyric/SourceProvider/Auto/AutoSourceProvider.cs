@@ -1,10 +1,7 @@
-﻿using Milky.OsuPlayer.Media.Lyric.Models;
-using System;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
+using OsuPlayer.Media.Lyric.Models;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Auto
+namespace OsuPlayer.Media.Lyric.SourceProvider.Auto
 {
     [SourceProviderName("auto", "DarkProjector")]
     public class AutoSourceProvider : SourceProviderBase

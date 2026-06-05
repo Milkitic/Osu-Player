@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
-namespace Milky.OsuPlayer.Media.Lyric.Models
+namespace OsuPlayer.Media.Lyric.Models
 {
     public class Lyrics
     {
@@ -43,7 +43,7 @@ namespace Milky.OsuPlayer.Media.Lyric.Models
             if (b == null)
                 return a;
 
-            if (a.IsTranslatedLyrics==b.IsTranslatedLyrics)
+            if (a.IsTranslatedLyrics == b.IsTranslatedLyrics)
             {
                 return a;
             }

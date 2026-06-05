@@ -1,15 +1,15 @@
-//using Milky.OsuPlayer.Core.Configuration;
-//using Milky.OsuPlayer.Core.Player;
+//using OsuPlayer.Core.Configuration;
+//using OsuPlayer.Core.Player;
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;
 //using System.Text;
 //using System.Threading.Tasks;
 //using System.Windows.Input;
-//using Milky.OsuPlayer.Core;
-//using Milky.OsuPlayer.Media.Audio;
+//using OsuPlayer.Core;
+//using OsuPlayer.Media.Audio;
 
-//namespace Milky.OsuPlayer.ViewModels
+//namespace OsuPlayer.ViewModels
 //{
 //    public class PlayerViewModel : VmBase
 //    {

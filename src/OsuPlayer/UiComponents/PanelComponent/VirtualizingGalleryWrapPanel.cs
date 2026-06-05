@@ -5,9 +5,9 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Milky.OsuPlayer.Core;
+using OsuPlayer.Core;
 
-namespace Milky.OsuPlayer.UiComponents.PanelComponent
+namespace OsuPlayer.UiComponents.PanelComponent
 {
     public class VirtualizingGalleryWrapPanel : VirtualizingPanel, IScrollInfo
     {
@@ -127,7 +127,7 @@ namespace Milky.OsuPlayer.UiComponents.PanelComponent
                             if (!child.Equals(children[childIndex]))
                                 RemoveInternalChildRange(childIndex, 1);
                         }
-                        
+
                         itemIndex++;
                         childIndex++;
                     }
@@ -396,8 +396,8 @@ namespace Milky.OsuPlayer.UiComponents.PanelComponent
             if (offset < 0 || _viewPort.Height >= _extent.Height)
                 offset = 0;
             else
-            if (offset + _viewPort.Height >= _extent.Height)
-                offset = _extent.Height - _viewPort.Height;
+                if (offset + _viewPort.Height >= _extent.Height)
+                    offset = _extent.Height - _viewPort.Height;
 
             _offset.Y = offset;
             ScrollOwner?.InvalidateScrollInfo();

@@ -3,7 +3,7 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using NAudio.Wave;
 
-namespace Milky.OsuPlayer.Media.Audio.SoundTouch;
+namespace OsuPlayer.Media.Audio.SoundTouch;
 
 internal sealed class VariableSpeedSampleProvider : ISampleProvider, IDisposable
 {

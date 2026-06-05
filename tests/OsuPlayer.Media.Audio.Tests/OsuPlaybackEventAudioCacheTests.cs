@@ -1,12 +1,6 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using KeyAsio.Core.Audio.Caching;
 using KeyAsio.Core.OsuAudio.Hitsounds.Playback;
 using Microsoft.Extensions.Logging.Abstractions;
-using Milky.OsuPlayer.Media.Audio;
 using NAudio.Wave;
 using Xunit;
 

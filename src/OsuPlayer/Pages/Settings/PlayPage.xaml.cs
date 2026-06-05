@@ -1,10 +1,10 @@
 using System.Windows;
 using System.Windows.Controls;
 using KeyAsio.Core.Audio;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Media.Audio;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Media.Audio;
 
-namespace Milky.OsuPlayer.Pages.Settings
+namespace OsuPlayer.Pages.Settings
 {
     /// <summary>
     /// PlayPage.xaml 的交互逻辑

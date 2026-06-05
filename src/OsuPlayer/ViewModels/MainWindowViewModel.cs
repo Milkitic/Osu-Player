@@ -1,11 +1,11 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Data.Models;
+using OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.ViewModels;
+namespace OsuPlayer.ViewModels;
 
 public partial class MainWindowViewModel : ObservableObject
 {

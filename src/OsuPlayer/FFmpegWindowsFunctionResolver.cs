@@ -1,8 +1,8 @@
-using FFmpeg.AutoGen;
 using System;
 using System.Runtime.InteropServices;
+using FFmpeg.AutoGen;
 
-namespace Milky.OsuPlayer
+namespace OsuPlayer
 {
     internal sealed class FFmpegWindowsFunctionResolver : FunctionResolverBase
     {

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using KeyAsio.Core.Audio;
 using NAudio.Wave;
 
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 public static class OsuPlayerAudioDevicePolicy
 {

@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.Converters
+namespace OsuPlayer.Converters
 {
     public class NavigationColorConverter : IValueConverter
     {

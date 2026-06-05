@@ -1,10 +1,10 @@
-﻿using System.IO;
+using System.IO;
 using System.Net;
 using System.Text.Json.Nodes;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
+namespace OsuPlayer.Media.Lyric.SourceProvider.Netease
 {
-    public class NeteaseLyricDownloader:LyricDownloaderBase
+    public class NeteaseLyricDownloader : LyricDownloaderBase
     {
         //tv=-1 是翻译版本的歌词
         //lv=1 是源版本歌词
@@ -12,7 +12,7 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
 
         public override string DownloadLyric(SearchSongResultBase song, bool requestTransLyrics = false)
         {
-            HttpWebRequest request = WebRequest.CreateHttp(string.Format(LYRIC_API_URL,song.ID, requestTransLyrics ? "tv=-1":"lv=1"));
+            HttpWebRequest request = WebRequest.CreateHttp(string.Format(LYRIC_API_URL, song.ID, requestTransLyrics ? "tv=-1" : "lv=1"));
             request.Timeout = Settings.SearchAndDownloadTimeout;
 
             var response = request.GetResponse();
@@ -26,7 +26,7 @@ namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Netease
 
             var json = JsonNode.Parse(content);
 
-            return json[requestTransLyrics ? "tlyric": "lrc"]["lyric"].GetValue<string>();
+            return json[requestTransLyrics ? "tlyric" : "lrc"]["lyric"].GetValue<string>();
         }
     }
 }

@@ -1,6 +1,6 @@
 using Microsoft.Win32.SafeHandles;
 
-namespace Milky.OsuPlayer.Media.Audio.SoundTouch;
+namespace OsuPlayer.Media.Audio.SoundTouch;
 
 internal sealed class SoundTouchHandle : SafeHandleZeroOrMinusOneIsInvalid
 {

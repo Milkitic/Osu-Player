@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
-namespace Milky.OsuPlayer.Presentation.ObjectModel
+namespace OsuPlayer.Presentation.ObjectModel
 {
     public sealed class NumberableObservableCollection<T> : ObservableCollection<T> where T : NumberableModel
     {

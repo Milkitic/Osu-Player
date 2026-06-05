@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
-using Milky.OsuPlayer.Data.Models;
+using OsuPlayer.Data.Models;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 
-namespace Milky.OsuPlayer.Data
+namespace OsuPlayer.Data
 {
     public class OsuPlayerDbContext : DbContext
     {

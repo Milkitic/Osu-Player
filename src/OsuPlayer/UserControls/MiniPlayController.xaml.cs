@@ -7,13 +7,12 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Services;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Media.Audio.Playlist;
 
-namespace Milky.OsuPlayer.UserControls;
+namespace OsuPlayer.UserControls;
 
 public partial class MiniPlayListControlVm : ObservableObject
 {

@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Milky.OsuPlayer.Media.Audio.SoundTouch;
+namespace OsuPlayer.Media.Audio.SoundTouch;
 
 internal sealed class SoundTouchProcessor : IDisposable
 {

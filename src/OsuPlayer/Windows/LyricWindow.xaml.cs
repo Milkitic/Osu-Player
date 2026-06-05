@@ -13,12 +13,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Lyric.Models;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.ViewModels;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Media.Lyric.Models;
+using OsuPlayer.Presentation;
+using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.ViewModels;
 
 //using Brush = System.Drawing.Brush;
 //using Color = System.Drawing.Color;
@@ -26,7 +26,7 @@ using Milky.OsuPlayer.ViewModels;
 //using Image = System.Drawing.Image;
 //using Pen = System.Drawing.Pen;
 
-namespace Milky.OsuPlayer.Windows
+namespace OsuPlayer.Windows
 {
     /// <summary>
     /// LyricWindow.xaml 的交互逻辑

@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Media.Audio.Playlist
+namespace OsuPlayer.Media.Audio.Playlist
 {
     public enum PlayModifier
     {

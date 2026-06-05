@@ -1,7 +1,7 @@
 using System;
 using System.Windows;
 
-namespace Milky.OsuPlayer.Presentation.Interaction
+namespace OsuPlayer.Presentation.Interaction
 {
     /// <summary>
     /// 统一的导航服务接口，用于解耦 View 与 ViewModel

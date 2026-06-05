@@ -9,16 +9,16 @@ using System.Xaml;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.UiComponents.PanelComponent;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Services;
 using OsuPlayer.Shared.Models;
+using OsuPlayer.UiComponents.PanelComponent;
 
-namespace Milky.OsuPlayer.ViewModels;
+namespace OsuPlayer.ViewModels;
 
 public partial class SearchPageViewModel : ObservableObject
 {

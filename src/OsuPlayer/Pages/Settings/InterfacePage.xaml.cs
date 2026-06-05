@@ -1,10 +1,10 @@
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Utils;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Utils;
 
-namespace Milky.OsuPlayer.Pages.Settings
+namespace OsuPlayer.Pages.Settings
 {
     /// <summary>
     /// InterfacePage.xaml 的交互逻辑

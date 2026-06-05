@@ -9,15 +9,15 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.UiComponents.NotificationComponent;
 using Unosquare.FFME.Common;
 
-namespace Milky.OsuPlayer.UserControls;
+namespace OsuPlayer.UserControls;
 
 public partial class AnimationControlVm : ObservableObject
 {

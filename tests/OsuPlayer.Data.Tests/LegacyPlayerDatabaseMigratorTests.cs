@@ -1,6 +1,5 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Milky.OsuPlayer.Data;
 using Xunit;
 
 namespace OsuPlayer.Data.Tests;

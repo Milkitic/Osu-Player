@@ -1,4 +1,4 @@
-using Milky.OsuPlayer.Media.Audio.Rules;
+using OsuPlayer.Media.Audio.Rules;
 using Xunit;
 
 namespace OsuPlayer.Media.Audio.Tests;

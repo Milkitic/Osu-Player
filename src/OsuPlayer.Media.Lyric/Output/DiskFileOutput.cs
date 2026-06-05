@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.IO;
 
-namespace Milky.OsuPlayer.Media.Lyric.Output
+namespace OsuPlayer.Media.Lyric.Output
 {
     public class DiskFileOutput : OutputBase
     {

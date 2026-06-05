@@ -5,13 +5,13 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
+using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 
-namespace Milky.OsuPlayer.Media.Audio.Playlist;
+namespace OsuPlayer.Media.Audio.Playlist;
 
 public readonly record struct PlaylistSelectionChange(
     BeatmapContext? Previous,

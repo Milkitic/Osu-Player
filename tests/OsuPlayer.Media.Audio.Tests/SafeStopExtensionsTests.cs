@@ -1,5 +1,5 @@
-using Milky.OsuPlayer.Media.Audio.Infrastructure;
 using NLog;
+using OsuPlayer.Media.Audio.Infrastructure;
 using Xunit;
 
 namespace OsuPlayer.Media.Audio.Tests;

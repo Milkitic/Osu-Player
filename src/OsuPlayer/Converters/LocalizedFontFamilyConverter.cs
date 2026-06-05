@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.Converters
+namespace OsuPlayer.Converters
 {
     public class LocalizedFontFamilyConverter : IValueConverter
     {

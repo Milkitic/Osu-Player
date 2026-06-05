@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Utils;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data;
+using OsuPlayer.Data.Models;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
+using OsuPlayer.Utils;
 
-namespace Milky.OsuPlayer.Services
+namespace OsuPlayer.Services
 {
     public sealed class NotifyingPlayerDataService : IPlayerDataService
     {

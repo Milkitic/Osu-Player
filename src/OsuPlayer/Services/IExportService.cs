@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Milky.OsuPlayer.Data.Models;
+using OsuPlayer.Data.Models;
 
-namespace Milky.OsuPlayer.Services
+namespace OsuPlayer.Services
 {
     public interface IExportService
     {

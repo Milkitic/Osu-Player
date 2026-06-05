@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Milky.OsuPlayer.Media.Audio.Coordination;
+namespace OsuPlayer.Media.Audio.Coordination;
 
 internal sealed class SessionOperationManager : IAsyncDisposable
 {

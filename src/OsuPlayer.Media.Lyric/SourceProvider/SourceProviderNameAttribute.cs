@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider
+namespace OsuPlayer.Media.Lyric.SourceProvider
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class SourceProviderNameAttribute : Attribute

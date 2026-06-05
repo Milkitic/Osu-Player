@@ -1,22 +1,21 @@
-using Dapper.FluentMap;
-using FFmpeg.AutoGen;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Data;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Services;
-using NLog;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using Milky.OsuPlayer.Core.Services;
+using Dapper.FluentMap;
+using FFmpeg.AutoGen;
+using NLog;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data;
+using OsuPlayer.Data.Models;
+using OsuPlayer.Presentation;
 using OsuPlayer.Shared;
 
-namespace Milky.OsuPlayer
+namespace OsuPlayer
 {
     public static class EntryStartup
     {

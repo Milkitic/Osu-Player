@@ -1,5 +1,3 @@
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,9 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Xaml;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Configuration;
 using OsuPlayer.Shared;
 
-namespace Milky.OsuPlayer.Utils
+namespace OsuPlayer.Utils
 {
     public static class I18NUtil
     {

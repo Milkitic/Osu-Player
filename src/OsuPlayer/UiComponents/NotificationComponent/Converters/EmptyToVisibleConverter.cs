@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Milky.OsuPlayer.UiComponents.NotificationComponent.Converters
+namespace OsuPlayer.UiComponents.NotificationComponent.Converters
 {
     internal class EmptyToVisibleConverter : IValueConverter
     {

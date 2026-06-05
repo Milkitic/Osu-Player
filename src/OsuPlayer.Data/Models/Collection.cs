@@ -2,7 +2,7 @@ using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Dapper.FluentMap.Mapping;
 
-namespace Milky.OsuPlayer.Data.Models;
+namespace OsuPlayer.Data.Models;
 
 public class CollectionMap : EntityMap<Collection>
 {

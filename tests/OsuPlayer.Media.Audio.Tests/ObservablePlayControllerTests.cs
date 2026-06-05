@@ -1,12 +1,9 @@
-using System;
 using System.Reflection;
-using System.Threading.Tasks;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.SampleProviders;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Coordination;
-using Milky.OsuPlayer.Presentation.Interaction;
 using NAudio.Wave;
+using OsuPlayer.Media.Audio.Coordination;
+using OsuPlayer.Presentation.Interaction;
 using Xunit;
 
 namespace OsuPlayer.Media.Audio.Tests;

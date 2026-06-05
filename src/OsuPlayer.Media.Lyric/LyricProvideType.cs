@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Media.Lyric
+namespace OsuPlayer.Media.Lyric
 {
     public enum LyricProvideType
     {

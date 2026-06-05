@@ -8,7 +8,7 @@ using KeyAsio.Core.OsuAudio.Hitsounds.Playback;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 internal enum OsuEffectTrack
 {

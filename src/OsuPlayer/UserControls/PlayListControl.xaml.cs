@@ -11,15 +11,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using OsuPlayer.Core;
+using OsuPlayer.Data.Models;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Services;
+using OsuPlayer.UiComponents.FrontDialogComponent;
 
-namespace Milky.OsuPlayer.UserControls;
+namespace OsuPlayer.UserControls;
 
 public partial class PlayListControlVm : ObservableObject
 {

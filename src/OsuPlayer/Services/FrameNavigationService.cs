@@ -4,10 +4,10 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Microsoft.Extensions.DependencyInjection;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Core;
+using OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.Services
+namespace OsuPlayer.Services
 {
     public class FrameNavigationService : INavigationService
     {

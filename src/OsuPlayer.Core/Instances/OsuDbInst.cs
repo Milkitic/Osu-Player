@@ -6,10 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Coosu.Database;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Data.Models;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Data.Models;
 
-namespace Milky.OsuPlayer.Core.Instances;
+namespace OsuPlayer.Core.Instances;
 
 public partial class OsuDbInst
 {

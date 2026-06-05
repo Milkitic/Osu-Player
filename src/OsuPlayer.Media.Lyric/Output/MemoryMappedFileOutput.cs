@@ -1,7 +1,7 @@
-﻿using System.IO;
+using System.IO;
 using System.IO.MemoryMappedFiles;
 
-namespace Milky.OsuPlayer.Media.Lyric.Output
+namespace OsuPlayer.Media.Lyric.Output
 {
     internal class MemoryMappedFileOutput : OutputBase
     {

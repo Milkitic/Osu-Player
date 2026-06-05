@@ -1,10 +1,10 @@
 #nullable enable
 
 using System.Threading.Tasks;
-using Milky.OsuPlayer.Data.Models;
+using OsuPlayer.Data.Models;
 using OsuPlayer.Shared;
 
-namespace Milky.OsuPlayer.Services;
+namespace OsuPlayer.Services;
 
 public interface IBeatmapActionService
 {

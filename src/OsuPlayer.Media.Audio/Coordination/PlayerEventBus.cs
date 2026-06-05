@@ -1,11 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using KeyAsio.Core.Audio;
-using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.Media.Audio.Coordination;
+namespace OsuPlayer.Media.Audio.Coordination;
 
 /// <summary>
 /// Centralises the publication of controller-level events. All events are

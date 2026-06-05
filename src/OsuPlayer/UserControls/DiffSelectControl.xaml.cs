@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
+using OsuPlayer.Data.Models;
+using OsuPlayer.UiComponents.FrontDialogComponent;
 
-namespace Milky.OsuPlayer.UserControls;
+namespace OsuPlayer.UserControls;
 
 public partial class DiffSelectPageViewModel : ObservableObject
 {

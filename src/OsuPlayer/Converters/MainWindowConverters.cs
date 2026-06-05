@@ -1,14 +1,14 @@
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.UiComponents.RadioButtonComponent;
-using Milky.OsuPlayer.Utils;
 using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Animation;
+using OsuPlayer.Core;
+using OsuPlayer.UiComponents.RadioButtonComponent;
+using OsuPlayer.Utils;
 
-namespace Milky.OsuPlayer.Converters
+namespace OsuPlayer.Converters
 {
     public class WindowMarginConverter : IValueConverter
     {

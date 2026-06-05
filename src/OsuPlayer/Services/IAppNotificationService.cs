@@ -1,4 +1,4 @@
-namespace Milky.OsuPlayer.Services
+namespace OsuPlayer.Services
 {
     public interface IAppNotificationService
     {

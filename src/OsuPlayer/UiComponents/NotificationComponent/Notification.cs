@@ -1,7 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using Milky.OsuPlayer.Presentation.Interaction;
+using System.Collections.ObjectModel;
+using OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.UiComponents.NotificationComponent
+namespace OsuPlayer.UiComponents.NotificationComponent
 {
     public static class Notification
     {

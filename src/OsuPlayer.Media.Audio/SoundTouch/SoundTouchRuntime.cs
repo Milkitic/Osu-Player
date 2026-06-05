@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Milky.OsuPlayer.Media.Audio.SoundTouch;
+namespace OsuPlayer.Media.Audio.SoundTouch;
 
 internal static class SoundTouchRuntime
 {

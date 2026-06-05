@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Milky.OsuPlayer.Core.Configuration
+namespace OsuPlayer.Core.Configuration
 {
     public class VolumeSection : INotifyPropertyChanged
     {

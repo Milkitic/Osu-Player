@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Text;
 
-namespace Milky.OsuPlayer.Media.Lyric
+namespace OsuPlayer.Media.Lyric
 {
     public static class Utils
     {

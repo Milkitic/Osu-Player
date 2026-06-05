@@ -1,4 +1,4 @@
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 /// <summary>
 /// Immutable description of a beatmap's on-disk resources. Used to wire

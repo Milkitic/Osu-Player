@@ -1,27 +1,26 @@
 using System;
 using System.Windows;
-using Microsoft.Extensions.DependencyInjection;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
-using Microsoft.Extensions.Logging;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Core.Instances;
-using Milky.OsuPlayer.Core.Scanning;
-using Milky.OsuPlayer.Core.Services;
-using Milky.OsuPlayer.Instances;
-using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Pages;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.UserControls;
-using Milky.OsuPlayer.Utils;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
+using Microsoft.Extensions.DependencyInjection;
 using NLog;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Core.Instances;
+using OsuPlayer.Core.Scanning;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Instances;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Pages;
+using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Services;
 using OsuPlayer.Shared;
+using OsuPlayer.UserControls;
+using OsuPlayer.Utils;
+using OsuPlayer.ViewModels;
+using OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer;
+namespace OsuPlayer;
 
 /// <summary>
 /// App.xaml 的交互逻辑

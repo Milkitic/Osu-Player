@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Milky.OsuPlayer.Data
+namespace OsuPlayer.Data
 {
     public sealed class OsuPlayerDbContextFactory : IDesignTimeDbContextFactory<OsuPlayerDbContext>
     {

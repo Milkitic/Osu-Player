@@ -1,6 +1,6 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 
-namespace Milky.OsuPlayer.UserControls
+namespace OsuPlayer.UserControls
 {
     /// <summary>
     /// ClosingControl.xaml 的交互逻辑

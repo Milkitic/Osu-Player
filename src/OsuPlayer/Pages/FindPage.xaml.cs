@@ -1,8 +1,8 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Windows;
+using OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Pages
+namespace OsuPlayer.Pages
 {
     /// <summary>
     /// FindPage.xaml 的交互逻辑
@@ -14,7 +14,7 @@ namespace Milky.OsuPlayer.Pages
         public FindPage()
         {
             InitializeComponent();
-            _mainWindow = (MainWindow)Application.Current.MainWindow; 
+            _mainWindow = (MainWindow)Application.Current.MainWindow;
         }
     }
 }

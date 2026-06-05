@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Presentation.Interaction
+namespace OsuPlayer.Presentation.Interaction
 {
     /// <summary>
     /// The definition of the converter used to convert an EventArgs

@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Milky.OsuPlayer.Media.Audio.Infrastructure;
+namespace OsuPlayer.Media.Audio.Infrastructure;
 
 /// <summary>
 /// Encapsulates the start/stop lifecycle of an asynchronous loop driven by

@@ -1,6 +1,6 @@
-﻿using Milky.OsuPlayer.Presentation;
+using OsuPlayer.Presentation;
 
-namespace Milky.OsuPlayer.Windows
+namespace OsuPlayer.Windows
 {
     /// <summary>
     /// ConfigWindow.xaml 的交互逻辑

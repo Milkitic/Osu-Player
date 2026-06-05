@@ -6,12 +6,12 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Microsoft.Extensions.DependencyInjection;
-using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Presentation.Dependency;
-using Milky.OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Presentation.Dependency;
+using OsuPlayer.Presentation.Interaction;
 
-namespace Milky.OsuPlayer.UiComponents.RadioButtonComponent;
+namespace OsuPlayer.UiComponents.RadioButtonComponent;
 
 public class SwitchRadio : RadioButton
 {

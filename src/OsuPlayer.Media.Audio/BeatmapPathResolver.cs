@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 /// <summary>
 /// Resolves file paths for beatmap resources (map files, audio, backgrounds, video).

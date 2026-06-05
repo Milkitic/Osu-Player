@@ -1,9 +1,8 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.ViewModels;
-using Milky.OsuPlayer.Windows;
+using OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Pages
+namespace OsuPlayer.Pages
 {
     /// <summary>
     /// StoryboardPage.xaml 的交互逻辑
@@ -20,7 +19,7 @@ namespace Milky.OsuPlayer.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-//if(StoryboardVm.Default.BeatmapModels)
+            //if(StoryboardVm.Default.BeatmapModels)
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)

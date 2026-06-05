@@ -1,7 +1,6 @@
 using System;
-using System.Threading.Tasks;
 
-namespace Milky.OsuPlayer.Presentation.Interaction;
+namespace OsuPlayer.Presentation.Interaction;
 
 /// <summary>
 /// Abstracts UI-thread dispatching, decoupling consumers from WPF's

@@ -1,12 +1,12 @@
 using System.Windows;
 using System.Windows.Controls;
-using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Instances;
-using Milky.OsuPlayer.Media.Lyric;
-using Milky.OsuPlayer.Presentation;
-using Milky.OsuPlayer.Windows;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Instances;
+using OsuPlayer.Media.Lyric;
+using OsuPlayer.Presentation;
+using OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer.Pages.Settings;
+namespace OsuPlayer.Pages.Settings;
 
 /// <summary>
 /// LyricPage.xaml 的交互逻辑

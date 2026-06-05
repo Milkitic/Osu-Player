@@ -1,6 +1,6 @@
-﻿using System.Windows;
+using System.Windows;
 
-namespace Milky.OsuPlayer.UiComponents.ButtonComponent
+namespace OsuPlayer.UiComponents.ButtonComponent
 {
     public class CloseButton : SystemButton
     {

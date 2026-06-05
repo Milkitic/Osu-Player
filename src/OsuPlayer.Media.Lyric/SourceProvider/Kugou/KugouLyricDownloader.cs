@@ -1,9 +1,9 @@
-using System.Text.Json.Nodes;
 using System;
 using System.IO;
 using System.Net;
+using System.Text.Json.Nodes;
 
-namespace Milky.OsuPlayer.Media.Lyric.SourceProvider.Kugou
+namespace OsuPlayer.Media.Lyric.SourceProvider.Kugou
 {
     public class KugouLyricDownloader : LyricDownloaderBase
     {

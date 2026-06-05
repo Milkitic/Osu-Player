@@ -11,9 +11,9 @@ using KeyAsio.Core.OsuAudio.Hitsounds;
 using KeyAsio.Core.OsuAudio.Hitsounds.Playback;
 using KeyAsio.Core.OsuAudio.Timeline;
 using Microsoft.Extensions.Logging;
-using Milky.OsuPlayer.Media.Audio.Infrastructure;
+using OsuPlayer.Media.Audio.Infrastructure;
 
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 {

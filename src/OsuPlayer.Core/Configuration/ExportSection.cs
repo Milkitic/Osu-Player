@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using OsuPlayer.Shared.Models;
 
-namespace Milky.OsuPlayer.Core.Configuration
+namespace OsuPlayer.Core.Configuration
 {
     public class ExportSection
     {

@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 
-namespace Milky.OsuPlayer.UiComponents.NotificationComponent
+namespace OsuPlayer.UiComponents.NotificationComponent
 {
     public class NotificationOption : INotifyPropertyChanged
     {

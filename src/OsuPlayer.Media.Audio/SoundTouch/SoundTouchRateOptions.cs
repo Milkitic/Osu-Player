@@ -1,4 +1,4 @@
-namespace Milky.OsuPlayer.Media.Audio.SoundTouch;
+namespace OsuPlayer.Media.Audio.SoundTouch;
 
 internal sealed class SoundTouchRateOptions
 {

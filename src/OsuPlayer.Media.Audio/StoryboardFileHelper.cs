@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Coosu.Beatmap;
 
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 internal static class StoryboardFileHelper
 {

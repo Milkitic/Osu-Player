@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Coosu.Beatmap.Sections.GamePlay;
 
-namespace Milky.OsuPlayer.UserControls;
+namespace OsuPlayer.UserControls;
 
 public partial class DifficultyBadge : UserControl
 {

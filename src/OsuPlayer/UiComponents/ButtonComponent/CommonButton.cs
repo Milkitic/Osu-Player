@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Milky.OsuPlayer.UiComponents.ButtonComponent
+namespace OsuPlayer.UiComponents.ButtonComponent
 {
     public class CommonButton : Button
     {

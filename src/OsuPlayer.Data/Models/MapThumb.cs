@@ -1,6 +1,6 @@
 using System;
 
-namespace Milky.OsuPlayer.Data.Models
+namespace OsuPlayer.Data.Models
 {
     public class MapThumb
     {

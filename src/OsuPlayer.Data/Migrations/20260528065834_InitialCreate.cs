@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Milky.OsuPlayer.Data.Migrations
+namespace OsuPlayer.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

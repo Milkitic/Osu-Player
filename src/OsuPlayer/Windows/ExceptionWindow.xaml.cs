@@ -2,7 +2,7 @@ using System;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Milky.OsuPlayer.Windows;
+namespace OsuPlayer.Windows;
 
 internal partial class ExceptionWindowViewModel : ObservableObject
 {

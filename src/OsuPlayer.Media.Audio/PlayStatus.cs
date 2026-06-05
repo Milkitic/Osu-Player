@@ -1,4 +1,4 @@
-namespace Milky.OsuPlayer.Media.Audio;
+namespace OsuPlayer.Media.Audio;
 
 public enum PlayStatus
 {

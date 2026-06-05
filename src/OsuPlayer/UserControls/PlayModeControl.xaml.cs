@@ -2,10 +2,10 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using Milky.OsuPlayer.Media.Audio;
+using OsuPlayer.Media.Audio;
 using OsuPlayer.Shared.Models;
 
-namespace Milky.OsuPlayer.UserControls;
+namespace OsuPlayer.UserControls;
 
 /// <summary>
 /// PlayModeControl.xaml 的交互逻辑

@@ -1,13 +1,13 @@
-using Milki.Extensions.MouseKeyHook;
-using Milky.OsuPlayer.Pages.Settings;
-using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Windows;
 using System;
 using System.Linq;
-using Milky.OsuPlayer.Core.Configuration;
+using Milki.Extensions.MouseKeyHook;
 using NLog;
+using OsuPlayer.Core.Configuration;
+using OsuPlayer.Pages.Settings;
+using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Windows;
 
-namespace Milky.OsuPlayer
+namespace OsuPlayer
 {
     public sealed class OverallKeyHook : IDisposable
     {
@@ -43,9 +43,9 @@ namespace Milky.OsuPlayer
             }
             else
             {
-                if (setHotKey.Key != HookKeys.None) 
-                { 
-                    setHotKey.Callback = callback; 
+                if (setHotKey.Key != HookKeys.None)
+                {
+                    setHotKey.Callback = callback;
                 }
             }
         }

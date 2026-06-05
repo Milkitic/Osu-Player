@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.Messaging.Messages;
 
-namespace Milky.OsuPlayer.Presentation.Interaction;
+namespace OsuPlayer.Presentation.Interaction;
 
 /// <summary>
 /// 用于解耦跨页面检索的事件消息
