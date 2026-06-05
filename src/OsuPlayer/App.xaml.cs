@@ -126,6 +126,7 @@ public partial class App : Application
         services.AddSingleton<UpdateInst>();
         services.AddSingleton<OsuFileScanner>();
         services.AddSingleton<IExportService, ExportService>();
+        services.AddSingleton<IBeatmapActionService, BeatmapActionService>();
 
         // 注册 ViewModels
         services.AddSingleton(_ => SharedVm.Default);

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,10 +16,7 @@ using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.Shared.Models;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UiComponents.PanelComponent;
-using Milky.OsuPlayer.UserControls;
 
 namespace Milky.OsuPlayer.ViewModels;
 
@@ -29,7 +24,7 @@ public partial class SearchPageViewModel : ObservableObject
 {
     private readonly IPlayerDataService _playerData;
     private readonly ObservablePlayController _controller;
-    private readonly IExportService _exportService;
+    private readonly IBeatmapActionService _beatmapActions;
 
     private const int MaxListCount = 250;
     private const int QueryDelayMs = 167;
@@ -37,11 +32,14 @@ public partial class SearchPageViewModel : ObservableObject
     private CancellationTokenSource _queryCancellation;
     private int _queryVersion;
 
-    public SearchPageViewModel(IPlayerDataService playerData, ObservablePlayController controller, IExportService exportService)
+    public SearchPageViewModel(
+        IPlayerDataService playerData,
+        ObservablePlayController controller,
+        IBeatmapActionService beatmapActions)
     {
         _playerData = playerData;
         _controller = controller;
-        _exportService = exportService;
+        _beatmapActions = beatmapActions;
     }
 
     [ObservableProperty]
@@ -204,61 +202,31 @@ public partial class SearchPageViewModel : ObservableObject
     [RelayCommand]
     private async Task OpenSourceFolderAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await GetHighestSrBeatmapAsync(beatmap);
-        if (map == null) return;
-        var folderName = beatmap.GetFolder(out _, out _);
-        if (!Directory.Exists(folderName))
-        {
-            Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
-            return;
-        }
-
-        Process.Start(folderName);
+        await _beatmapActions.OpenSourceFolderAsync(beatmap, highestDifficulty: true);
     }
 
     [RelayCommand]
     private async Task OpenScorePageAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await GetHighestSrBeatmapAsync(beatmap);
-        if (map == null) return;
-        Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
+        await _beatmapActions.OpenScorePageAsync(beatmap, highestDifficulty: true);
     }
 
     [RelayCommand]
     private async Task SaveCollectionAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var control = new DiffSelectControl(
-            await _playerData.GetBeatmapsFromFolderAsync(beatmap.GetIdentity().FolderName),
-            async (selected, arg) =>
-            {
-                arg.Handled = true;
-                var entry = (await _playerData.GetBeatmapsFromFolderAsync(selected.FolderName))
-                    .FirstOrDefault(k => k.Version == selected.Version);
-                FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(entry),
-                    DialogOptionFactory.SelectCollectionOptions);
-            });
-        FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
+        await _beatmapActions.SaveToCollectionWithDifficultyPickerAsync(beatmap);
     }
 
     [RelayCommand]
     private async Task ExportAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await GetHighestSrBeatmapAsync(beatmap);
-        if (map == null) return;
-        _exportService.QueueEntry(map);
+        await _beatmapActions.ExportAsync(beatmap, highestDifficulty: true);
     }
 
     [RelayCommand]
     public async Task DirectPlayAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await GetHighestSrBeatmapAsync(beatmap);
-        if (map == null) return;
-        await _controller.PlayNewAsync(map);
+        await _beatmapActions.PlayAsync(beatmap, highestDifficulty: true);
     }
 
     [RelayCommand]
@@ -277,24 +245,7 @@ public partial class SearchPageViewModel : ObservableObject
     [RelayCommand]
     private async Task PlayAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var beatmaps = await _playerData.GetBeatmapsFromFolderAsync(beatmap.GetIdentity().FolderName);
-        var control = new DiffSelectControl(
-            beatmaps,
-            async (selected, arg) =>
-            {
-                var map = await _playerData.GetBeatmapByIdentifiableAsync(selected);
-                if (map == null) return;
-                await _controller.PlayNewAsync(map, true);
-            });
-        FrontDialogOverlay.Default.ShowContent(control, DialogOptionFactory.DiffSelectOptions);
-    }
-
-    private async Task<Beatmap> GetHighestSrBeatmapAsync(IMapIdentifiable beatmap)
-    {
-        if (beatmap == null) return null;
-        var map = (await _playerData.GetBeatmapsFromFolderAsync(beatmap.FolderName)).GetHighestDiff();
-        return map;
+        await _beatmapActions.PlayWithDifficultyPickerAsync(beatmap);
     }
 
     private CancellationTokenSource BeginQuery()
