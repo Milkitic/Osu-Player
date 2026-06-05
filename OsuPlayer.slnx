@@ -29,6 +29,13 @@
       <BuildType Solution="Release 4.6|*" Project="Release" />
     </Project>
   </Folder>
+  <Folder Name="/Milki.Extensions/">
+    <Project Path="dependencies/KeyASIO.Net/dependencies/Milki.Extensions/src/Milki.Extensions.Threading/Milki.Extensions.Threading.csproj">
+      <BuildType Solution="Analysis|*" Project="Debug" />
+      <BuildType Solution="Release 4.5|*" Project="Release" />
+      <BuildType Solution="Release 4.6|*" Project="Release" />
+    </Project>
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="tests/OsuPlayer.Data.Tests/OsuPlayer.Data.Tests.csproj">
       <BuildType Solution="Analysis|*" Project="Debug" />
