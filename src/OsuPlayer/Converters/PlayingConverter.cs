@@ -4,9 +4,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Milky.OsuPlayer.Shared.Models;
 using Milky.OsuPlayer.UiComponents.ButtonComponent;
 using Milky.OsuPlayer.Windows;
+using OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Converters
 {

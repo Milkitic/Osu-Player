@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Services;

@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Coosu.Beatmap.MetaData;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Services;
+using OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Core
 {

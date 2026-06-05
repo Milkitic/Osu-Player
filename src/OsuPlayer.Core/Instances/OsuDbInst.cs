@@ -6,8 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Coosu.Database;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Services;
 
 namespace Milky.OsuPlayer.Core.Instances;
 

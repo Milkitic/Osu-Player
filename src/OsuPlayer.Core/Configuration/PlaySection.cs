@@ -3,8 +3,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using KeyAsio.Core.Audio;
-using Milky.OsuPlayer.Presentation.Annotations;
-using Milky.OsuPlayer.Shared.Models;
+using Milky.OsuPlayer.Presentation.Properties;
+using OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Core.Configuration
 {

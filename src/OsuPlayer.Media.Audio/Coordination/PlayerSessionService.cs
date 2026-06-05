@@ -7,11 +7,11 @@ using Coosu.Beatmap;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
 using Milky.OsuPlayer.Core.Configuration;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio.Infrastructure;
 using Milky.OsuPlayer.Media.Audio.Playlist;
-using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared.Models;
+using OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Media.Audio.Coordination;
 

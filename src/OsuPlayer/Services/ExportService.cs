@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using Coosu.Beatmap;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Shared.Models;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
+using OsuPlayer.Shared.Models;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer.Services

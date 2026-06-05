@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Milky.OsuPlayer.Shared;
+namespace OsuPlayer.Shared;
 
 public sealed record DownloadProgress(long TotalBytes, long DownloadedBytes, long BytesPerSecond)
 {

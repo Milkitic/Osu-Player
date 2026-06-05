@@ -1,8 +1,8 @@
-using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Presentation;
 using System.Diagnostics;
 using System.Windows;
+using OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Windows
 {

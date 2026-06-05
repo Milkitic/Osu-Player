@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>$(OsuPlayerLibraryTargetFramework)</TargetFramework>
-    <RootNamespace>Milky.OsuPlayer.Media.Lyric</RootNamespace>
   </PropertyGroup>
 
 </Project>

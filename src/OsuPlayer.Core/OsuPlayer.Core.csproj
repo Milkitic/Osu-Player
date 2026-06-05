@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>$(OsuPlayerWindowsTargetFramework)</TargetFramework>
-    <RootNamespace>Milky.OsuPlayer.Core</RootNamespace>
-    <AssemblyName>OsuPlayer.Core</AssemblyName>
     <UseWPF>true</UseWPF>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>

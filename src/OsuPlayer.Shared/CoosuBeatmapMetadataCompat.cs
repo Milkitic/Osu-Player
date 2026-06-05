@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.Json.Serialization;
 
-namespace Coosu.Beatmap.MetaData
+namespace OsuPlayer.Shared
 {
     public interface IMapIdentifiable
     {

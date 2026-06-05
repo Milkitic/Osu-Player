@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;

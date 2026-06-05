@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Coosu.Beatmap.MetaData;
+using OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Core.Configuration
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Milky.OsuPlayer.Shared
+namespace OsuPlayer.Shared
 {
     public class ConcurrentRandom
     {

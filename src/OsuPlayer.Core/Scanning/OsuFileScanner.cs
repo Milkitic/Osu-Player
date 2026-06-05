@@ -5,8 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Services;
 
 namespace Milky.OsuPlayer.Core.Scanning
 {

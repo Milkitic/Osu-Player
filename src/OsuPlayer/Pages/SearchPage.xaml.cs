@@ -6,6 +6,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Services;
 using Milky.OsuPlayer.UiComponents.PanelComponent;

@@ -5,17 +5,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Coosu.Beatmap.MetaData;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio.Coordination;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared.Models;
+using OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Media.Audio;
 

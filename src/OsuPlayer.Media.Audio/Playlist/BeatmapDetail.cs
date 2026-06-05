@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Coosu.Beatmap;
-using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Data.Models;
+using OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Media.Audio.Playlist;
 

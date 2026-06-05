@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace Milky.OsuPlayer.Shared
+namespace OsuPlayer.Shared
 {
     public class MyCancellationTokenSource : CancellationTokenSource
     {

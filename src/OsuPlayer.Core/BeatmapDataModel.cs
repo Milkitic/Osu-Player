@@ -2,9 +2,9 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Coosu.Beatmap;
-using Coosu.Beatmap.MetaData;
 using Coosu.Beatmap.Sections.GamePlay;
 using Milky.OsuPlayer.Presentation.ObjectModel;
+using OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Core
 {

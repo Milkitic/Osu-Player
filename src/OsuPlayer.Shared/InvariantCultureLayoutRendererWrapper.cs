@@ -1,12 +1,12 @@
-﻿using NLog;
+﻿using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
+using NLog;
 using NLog.Config;
 using NLog.LayoutRenderers;
 using NLog.LayoutRenderers.Wrappers;
-using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Milky.OsuPlayer.Shared
+namespace OsuPlayer.Shared
 {
     [LayoutRenderer("InvariantCulture")]
     [ThreadAgnostic]

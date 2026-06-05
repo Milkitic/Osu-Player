@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Milky.OsuPlayer.Shared
+namespace OsuPlayer.Shared
 {
     public class VariableStopwatch : Stopwatch
     {

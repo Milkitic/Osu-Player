@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Coosu.Beatmap.MetaData;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Shared.Models;
 using Milky.OsuPlayer.Utils;
+using OsuPlayer.Shared;
+using OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Services
 {

@@ -3,10 +3,10 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
+using OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Pages.Settings;
 

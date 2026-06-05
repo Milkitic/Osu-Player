@@ -6,7 +6,6 @@ using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared;
 using NLog;
 using System;
 using System.IO;
@@ -14,6 +13,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using Milky.OsuPlayer.Core.Services;
+using OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer
 {

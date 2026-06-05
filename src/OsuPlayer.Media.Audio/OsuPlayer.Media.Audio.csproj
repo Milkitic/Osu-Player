@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>$(OsuPlayerWindowsTargetFramework)</TargetFramework>
     <Nullable>enable</Nullable>
-    <RootNamespace>Milky.OsuPlayer.Media.Audio</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

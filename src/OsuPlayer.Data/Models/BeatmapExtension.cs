@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Coosu.Beatmap;
-using Milky.OsuPlayer.Shared;
+using OsuPlayer.Shared;
 using OSharpGameMode = Coosu.Beatmap.Sections.GamePlay.GameMode;
 
 namespace Milky.OsuPlayer.Data.Models

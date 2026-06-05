@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Coosu.Beatmap.MetaData;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Shared.Models;
+using OsuPlayer.Shared;
+using OsuPlayer.Shared.Models;
 using Xunit;
 
 namespace OsuPlayer.Media.Audio.Tests;

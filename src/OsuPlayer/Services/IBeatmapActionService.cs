@@ -1,8 +1,8 @@
 #nullable enable
 
 using System.Threading.Tasks;
-using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Data.Models;
+using OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Services;
 

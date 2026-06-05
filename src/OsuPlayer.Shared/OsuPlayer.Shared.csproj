@@ -2,12 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>$(OsuPlayerWindowsTargetFramework)</TargetFramework>
-    <RootNamespace>Milky.OsuPlayer.Shared</RootNamespace>
-    <AssemblyName>OsuPlayer.Shared</AssemblyName>
     <UseWPF>true</UseWPF>
-    <Copyright>Copyright ©  2020</Copyright>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

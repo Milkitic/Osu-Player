@@ -1,11 +1,11 @@
 using Milky.OsuPlayer.Core;
-using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Windows;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using OsuPlayer.Shared;
 using Path = System.IO.Path;
 
 namespace Milky.OsuPlayer

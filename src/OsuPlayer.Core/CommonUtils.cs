@@ -7,7 +7,7 @@ using System.Windows.Media.Imaging;
 using Coosu.Beatmap;
 using Microsoft.Win32;
 using Milky.OsuPlayer.Core.Configuration;
-using Milky.OsuPlayer.Services;
+using Milky.OsuPlayer.Core.Services;
 
 namespace Milky.OsuPlayer.Core
 {

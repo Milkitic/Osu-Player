@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Milky.OsuPlayer.Shared.Models
+namespace OsuPlayer.Shared.Models
 {
     public sealed class PaginationQueryResult<T>
     {

@@ -18,8 +18,8 @@ using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.Windows;
+using NAudio.Asio;
 using NAudio.Wave;
-using NAudio.Wave.Asio;
 
 namespace Milky.OsuPlayer.UserControls;
 

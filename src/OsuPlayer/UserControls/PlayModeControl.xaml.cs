@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Milky.OsuPlayer.Media.Audio;
-using Milky.OsuPlayer.Shared.Models;
+using OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.UserControls;
 

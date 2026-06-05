@@ -3,8 +3,6 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>$(OsuPlayerWindowsTargetFramework)</TargetFramework>
-    <RootNamespace>Milky.OsuPlayer</RootNamespace>
-    <AssemblyName>OsuPlayer</AssemblyName>
     <AssemblyTitle>Osu Player</AssemblyTitle>
     <Product>Osu Player</Product>
     <UseWPF>true</UseWPF>

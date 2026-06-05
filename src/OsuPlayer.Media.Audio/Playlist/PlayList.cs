@@ -5,11 +5,11 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Presentation.Interaction;
-using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Shared.Models;
+using OsuPlayer.Shared;
+using OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Media.Audio.Playlist;
 

@@ -1,8 +1,7 @@
-using System;
 using System.Net.Http.Headers;
 using System.Reflection;
 
-namespace Milky.OsuPlayer.Shared;
+namespace OsuPlayer.Shared;
 
 public static class HttpRequestHeaderUtilities
 {

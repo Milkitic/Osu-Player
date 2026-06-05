@@ -7,11 +7,11 @@ using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using CommunityToolkit.Mvvm.Messaging;
 using Coosu.Beatmap;
-using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Core.Instances;
 using Milky.OsuPlayer.Core.Scanning;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
@@ -20,12 +20,12 @@ using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UserControls;
 using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
+using OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Windows;
 

@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Milky.OsuPlayer.Core;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Pages;
 using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.Utils;
-using Coosu.Beatmap.MetaData;
+using OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.ViewModels;
 
@@ -128,7 +128,7 @@ public partial class ExportPageViewModel : ObservableObject
     private async Task InnerUpdateAsync()
     {
         var maps = await _playerData.GetExportedMapsAsync();
-        List<(MapIdentity MapIdentity, string path, string time, string size)> list =
+        List<(global::OsuPlayer.Shared.MapIdentity MapIdentity, string path, string time, string size)> list =
             new List<(MapIdentity, string, string, string)>();
         foreach (var map in maps)
         {

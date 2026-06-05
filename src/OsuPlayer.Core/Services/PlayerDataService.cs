@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Data;
 using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Shared.Models;
+using OsuPlayer.Shared;
+using OsuPlayer.Shared.Models;
 
-namespace Milky.OsuPlayer.Services
+namespace Milky.OsuPlayer.Core.Services
 {
     public sealed class PlayerDataService : IPlayerDataStore
     {

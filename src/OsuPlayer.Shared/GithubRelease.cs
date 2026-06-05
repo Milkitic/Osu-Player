@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Milky.OsuPlayer.Shared
+namespace OsuPlayer.Shared
 {
     public class GithubRelease
     {

@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
-using Milky.OsuPlayer.Shared;
-using Milky.OsuPlayer.Shared.Models;
+using OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Core.Configuration
 {

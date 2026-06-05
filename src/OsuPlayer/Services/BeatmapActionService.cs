@@ -5,13 +5,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Coosu.Beatmap.MetaData;
 using Milky.OsuPlayer.Core;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
 using Milky.OsuPlayer.UiComponents.NotificationComponent;
 using Milky.OsuPlayer.UserControls;
+using OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Services;
 

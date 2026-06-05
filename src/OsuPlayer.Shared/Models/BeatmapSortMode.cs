@@ -1,4 +1,4 @@
-﻿namespace Milky.OsuPlayer.Shared.Models
+﻿namespace OsuPlayer.Shared.Models
 {
     public enum BeatmapSortMode
     {

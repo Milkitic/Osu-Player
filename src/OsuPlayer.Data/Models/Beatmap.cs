@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Coosu.Beatmap;
-using Coosu.Beatmap.MetaData;
 using Coosu.Database.DataTypes;
 using Dapper.FluentMap.Mapping;
+using OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer.Data.Models
 {

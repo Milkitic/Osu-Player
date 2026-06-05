@@ -7,8 +7,8 @@ using Microsoft.Extensions.Logging;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Core.Instances;
-using Milky.OsuPlayer.Shared;
 using Milky.OsuPlayer.Core.Scanning;
+using Milky.OsuPlayer.Core.Services;
 using Milky.OsuPlayer.Instances;
 using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Pages;
@@ -19,6 +19,7 @@ using Milky.OsuPlayer.Utils;
 using Milky.OsuPlayer.ViewModels;
 using Milky.OsuPlayer.Windows;
 using NLog;
+using OsuPlayer.Shared;
 
 namespace Milky.OsuPlayer;
 

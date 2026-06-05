@@ -6,11 +6,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Coosu.Beatmap.MetaData;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Milky.OsuPlayer.Data.Models;
-using Milky.OsuPlayer.Shared.Models;
+using OsuPlayer.Shared;
+using OsuPlayer.Shared.Models;
 
 namespace Milky.OsuPlayer.Data
 {

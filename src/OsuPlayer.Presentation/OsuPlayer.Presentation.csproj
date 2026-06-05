@@ -2,11 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>$(OsuPlayerWindowsTargetFramework)</TargetFramework>
-    <RootNamespace>Milky.OsuPlayer.Presentation</RootNamespace>
-    <AssemblyName>OsuPlayer.Presentation</AssemblyName>
     <UseWPF>true</UseWPF>
-    <AssemblyTitle>OsuPlayer.Interaction</AssemblyTitle>
-    <Product>OsuPlayer.Interaction</Product>
   </PropertyGroup>
 
   <ItemGroup>
