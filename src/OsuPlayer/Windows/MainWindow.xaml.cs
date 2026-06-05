@@ -352,7 +352,10 @@ public partial class MainWindow : WindowEx
         if (AppSettings.Default.CurrentMap == null || !AppSettings.Default.Play.Memory)
             return;
 
-        // 加至播放列表
+        var currentMap = AppSettings.Default.CurrentMap.Value;
+        if (string.IsNullOrEmpty(currentMap.FolderName) || string.IsNullOrEmpty(currentMap.Version))
+            return;
+
         var entries =
             await _playerData.GetBeatmapsByIdentifiableAsync(
                 AppSettings.Default.CurrentList.Cast<IMapIdentifiable>());
@@ -360,13 +363,13 @@ public partial class MainWindow : WindowEx
         await _controller.SetPlaylistAsync(entries, true, playInstantly: false, autoLoad: false);
 
         bool play = AppSettings.Default.Play.AutoPlay;
-        if (AppSettings.Default.CurrentMap.IsMapTemporary())
+        if (currentMap.IsMapTemporary())
         {
-            await _controller.PlayNewAsync(AppSettings.Default.CurrentMap.Value.FolderName, play);
+            await _controller.PlayNewAsync(currentMap.FolderName, play);
         }
         else
         {
-            var current = await _playerData.GetBeatmapByIdentifiableAsync(AppSettings.Default.CurrentMap);
+            var current = await _playerData.GetBeatmapByIdentifiableAsync(currentMap);
             if (current == null) return;
             await _controller.PlayNewAsync(current, play);
         }

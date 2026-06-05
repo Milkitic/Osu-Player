@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.Json.Serialization;
 
 namespace Coosu.Beatmap.MetaData
 {
@@ -18,6 +19,7 @@ namespace Coosu.Beatmap.MetaData
     {
         private static readonly MapIdentity s_default;
 
+        [JsonConstructor]
         public MapIdentity(string folderName, string version, bool inOwnDb)
         {
             this = default;

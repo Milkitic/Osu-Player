@@ -26,13 +26,7 @@ namespace Milky.OsuPlayer.Services
         {
             try
             {
-                var map = await _inner.GetBeatmapByIdentifiableAsync(beatmap);
-                if (map is null)
-                {
-                    _notifications.Push(I18NUtil.GetString("err-mapNotInDb"), I18NUtil.GetString("text-error"));
-                }
-
-                return map;
+                return await _inner.GetBeatmapByIdentifiableAsync(beatmap);
             }
             catch (Exception ex)
             {
