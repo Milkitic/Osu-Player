@@ -3,149 +3,149 @@ using System.Collections.Generic;
 using System.Threading;
 using SysIO = System.IO;
 
-namespace OsuPlayer.Shared
+namespace OsuPlayer.Shared;
+
+public static class ConcurrentFile
 {
-    public static class ConcurrentFile
+    private static readonly ConcurrentDictionary<string, ReaderWriterLockSlim> LockDic =
+        new ConcurrentDictionary<string, ReaderWriterLockSlim>();
+
+    public static int Count => LockDic.Count;
+
+    public static byte[] ReadAllBytes(string path)
     {
-        private static readonly ConcurrentDictionary<string, ReaderWriterLockSlim> LockDic =
-            new ConcurrentDictionary<string, ReaderWriterLockSlim>();
-
-        public static int Count => LockDic.Count;
-
-        public static byte[] ReadAllBytes(string path)
+        path = GetFormattedPath(path);
+        var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
+        cacheLock.EnterReadLock();
+        try
         {
-            path = GetFormattedPath(path);
-            var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
-            cacheLock.EnterReadLock();
-            try
-            {
-                return SysIO.File.ReadAllBytes(path);
-            }
-            finally
-            {
-                cacheLock.ExitReadLock();
-            }
+            return SysIO.File.ReadAllBytes(path);
         }
-
-        public static string[] ReadAllLines(string path)
+        finally
         {
-            path = GetFormattedPath(path);
-            var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
-            cacheLock.EnterReadLock();
-            try
-            {
-                return SysIO.File.ReadAllLines(path);
-            }
-            finally
-            {
-                cacheLock.ExitReadLock();
-            }
+            cacheLock.ExitReadLock();
         }
+    }
 
-        public static string ReadAllText(string path)
+    public static string[] ReadAllLines(string path)
+    {
+        path = GetFormattedPath(path);
+        var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
+        cacheLock.EnterReadLock();
+        try
         {
-            path = GetFormattedPath(path);
-            var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
-            cacheLock.EnterReadLock();
-            try
-            {
-                return SysIO.File.ReadAllText(path);
-            }
-            finally
-            {
-                cacheLock.ExitReadLock();
-            }
+            return SysIO.File.ReadAllLines(path);
         }
+        finally
+        {
+            cacheLock.ExitReadLock();
+        }
+    }
 
-        public static void WriteAllBytes(string path, byte[] bytes)
+    public static string ReadAllText(string path)
+    {
+        path = GetFormattedPath(path);
+        var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
+        cacheLock.EnterReadLock();
+        try
         {
-            path = GetFormattedPath(path);
-            var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
-            cacheLock.EnterWriteLock();
-            try
-            {
-                SysIO.File.WriteAllBytes(path, bytes);
-            }
-            finally
-            {
-                cacheLock.ExitWriteLock();
-            }
+            return SysIO.File.ReadAllText(path);
         }
+        finally
+        {
+            cacheLock.ExitReadLock();
+        }
+    }
 
-        public static void WriteAllLines(string path, IEnumerable<string> contents)
+    public static void WriteAllBytes(string path, byte[] bytes)
+    {
+        path = GetFormattedPath(path);
+        var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
+        cacheLock.EnterWriteLock();
+        try
         {
-            path = GetFormattedPath(path);
-            var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
-            cacheLock.EnterWriteLock();
-            try
-            {
-                SysIO.File.WriteAllLines(path, contents);
-            }
-            finally
-            {
-                cacheLock.ExitWriteLock();
-            }
+            SysIO.File.WriteAllBytes(path, bytes);
         }
+        finally
+        {
+            cacheLock.ExitWriteLock();
+        }
+    }
 
-        public static void WriteAllText(string path, string contents)
+    public static void WriteAllLines(string path, IEnumerable<string> contents)
+    {
+        path = GetFormattedPath(path);
+        var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
+        cacheLock.EnterWriteLock();
+        try
         {
-            path = GetFormattedPath(path);
-            var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
-            cacheLock.EnterWriteLock();
-            try
-            {
-                SysIO.File.WriteAllText(path, contents);
-            }
-            finally
-            {
-                cacheLock.ExitWriteLock();
-            }
+            SysIO.File.WriteAllLines(path, contents);
         }
+        finally
+        {
+            cacheLock.ExitWriteLock();
+        }
+    }
 
-        public static void AppendAllLines(string path, IEnumerable<string> contents)
+    public static void WriteAllText(string path, string contents)
+    {
+        path = GetFormattedPath(path);
+        var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
+        cacheLock.EnterWriteLock();
+        try
         {
-            path = GetFormattedPath(path);
-            var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
-            cacheLock.EnterWriteLock();
-            try
-            {
-                SysIO.File.AppendAllLines(path, contents);
-            }
-            finally
-            {
-                cacheLock.ExitWriteLock();
-            }
+            SysIO.File.WriteAllText(path, contents);
         }
+        finally
+        {
+            cacheLock.ExitWriteLock();
+        }
+    }
 
-        public static void AppendAllText(string path, string contents)
+    public static void AppendAllLines(string path, IEnumerable<string> contents)
+    {
+        path = GetFormattedPath(path);
+        var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
+        cacheLock.EnterWriteLock();
+        try
         {
-            path = GetFormattedPath(path);
-            var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
-            cacheLock.EnterWriteLock();
-            try
-            {
-                SysIO.File.AppendAllText(path, contents);
-            }
-            finally
-            {
-                cacheLock.ExitWriteLock();
-            }
+            SysIO.File.AppendAllLines(path, contents);
         }
+        finally
+        {
+            cacheLock.ExitWriteLock();
+        }
+    }
 
-        public static void Delete(string path)
+    public static void AppendAllText(string path, string contents)
+    {
+        path = GetFormattedPath(path);
+        var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
+        cacheLock.EnterWriteLock();
+        try
         {
-            path = GetFormattedPath(path);
-            var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
-            cacheLock.EnterWriteLock();
-            try
-            {
-                SysIO.File.Delete(path);
-            }
-            finally
-            {
-                cacheLock.ExitWriteLock();
-            }
+            SysIO.File.AppendAllText(path, contents);
         }
+        finally
+        {
+            cacheLock.ExitWriteLock();
+        }
+    }
+
+    public static void Delete(string path)
+    {
+        path = GetFormattedPath(path);
+        var cacheLock = LockDic.GetOrAdd(path, new ReaderWriterLockSlim());
+        cacheLock.EnterWriteLock();
+        try
+        {
+            SysIO.File.Delete(path);
+        }
+        finally
+        {
+            cacheLock.ExitWriteLock();
+        }
+    }
 
 #if NETCOREAPP && NETCOREAPP2_1
         public static async Task<byte[]> ReadAllBytesAsync(string path)
@@ -269,6 +269,5 @@ namespace OsuPlayer.Shared
         }
 #endif
 
-        private static string GetFormattedPath(string path) => new SysIO.FileInfo(path).FullName;
-    }
+    private static string GetFormattedPath(string path) => new SysIO.FileInfo(path).FullName;
 }

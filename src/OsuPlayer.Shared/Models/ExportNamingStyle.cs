@@ -1,7 +1,6 @@
-﻿namespace OsuPlayer.Shared.Models
+﻿namespace OsuPlayer.Shared.Models;
+
+public enum ExportNamingStyle
 {
-    public enum ExportNamingStyle
-    {
-        Title, ArtistTitle, TitleArtist
-    }
+    Title, ArtistTitle, TitleArtist
 }

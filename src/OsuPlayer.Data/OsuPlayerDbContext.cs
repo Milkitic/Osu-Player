@@ -12,436 +12,436 @@ using OsuPlayer.Data.Models;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 
-namespace OsuPlayer.Data
+namespace OsuPlayer.Data;
+
+public class OsuPlayerDbContext : DbContext
 {
-    public class OsuPlayerDbContext : DbContext
+    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+    private const int MaxIdentitiesPerQuery = 300;
+
+    public static string DefaultDatabasePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.db");
+    public static string LegacyDatabasePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "player.db");
+    public static string DefaultConnectionString => $"Data Source={DefaultDatabasePath}";
+
+    static OsuPlayerDbContext()
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private const int MaxIdentitiesPerQuery = 300;
+        ConfigureDapperCompatibility();
+    }
 
-        public static string DefaultDatabasePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.db");
-        public static string LegacyDatabasePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "player.db");
-        public static string DefaultConnectionString => $"Data Source={DefaultDatabasePath}";
+    public OsuPlayerDbContext()
+    {
+    }
 
-        static OsuPlayerDbContext()
+    public OsuPlayerDbContext(DbContextOptions<OsuPlayerDbContext> options)
+        : base(options)
+    {
+    }
+
+    public DbSet<Beatmap> Beatmaps { get; set; }
+    public DbSet<BeatmapSettings> BeatmapSettings { get; set; }
+    public DbSet<Collection> Collections { get; set; }
+    public DbSet<CollectionRelation> CollectionRelations { get; set; }
+    public DbSet<MapThumb> MapThumbs { get; set; }
+    public DbSet<StoryboardInfo> StoryboardInfos { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
         {
-            ConfigureDapperCompatibility();
+            optionsBuilder.UseSqlite(DefaultConnectionString);
         }
+    }
 
-        public OsuPlayerDbContext()
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        ConfigureBeatmap(modelBuilder);
+        ConfigureBeatmapSettings(modelBuilder);
+        ConfigureCollection(modelBuilder);
+        ConfigureCollectionRelation(modelBuilder);
+        ConfigureMapThumb(modelBuilder);
+        ConfigureStoryboardInfo(modelBuilder);
+    }
+
+    private static void ConfigureBeatmap(ModelBuilder modelBuilder)
+    {
+        var entity = modelBuilder.Entity<Beatmap>();
+
+        entity.ToTable("beatmaps");
+        entity.HasKey(k => k.Id);
+        entity.HasIndex(k => new { k.FolderName, k.Version, k.InOwnDb })
+            .IsUnique()
+            .HasDatabaseName("ux_beatmaps_identity");
+        entity.HasIndex(k => k.FolderName).HasDatabaseName("ix_beatmaps_folder_name");
+        entity.HasIndex(k => k.BeatmapSetId).HasDatabaseName("ix_beatmaps_osu_beatmapset_id");
+        entity.Property(k => k.Id).HasColumnName("id");
+        entity.Property(k => k.Artist).HasColumnName("artist");
+        entity.Property(k => k.ArtistUnicode).HasColumnName("artist_unicode");
+        entity.Property(k => k.Title).HasColumnName("title");
+        entity.Property(k => k.TitleUnicode).HasColumnName("title_unicode");
+        entity.Property(k => k.Creator).HasColumnName("creator");
+        entity.Property(k => k.Version).HasColumnName("difficulty_name");
+        entity.Property(k => k.BeatmapFileName).HasColumnName("beatmap_file_name");
+        entity.Property(k => k.LastModifiedTime).HasColumnName("last_modified_at");
+        entity.Property(k => k.DiffSrNoneStandard).HasColumnName("star_rating_standard");
+        entity.Property(k => k.DiffSrNoneTaiko).HasColumnName("star_rating_taiko");
+        entity.Property(k => k.DiffSrNoneCtB).HasColumnName("star_rating_catch");
+        entity.Property(k => k.DiffSrNoneMania).HasColumnName("star_rating_mania");
+        entity.Property(k => k.DrainTimeSeconds).HasColumnName("drain_time_seconds");
+        entity.Property(k => k.TotalTime).HasColumnName("total_time_ms");
+        entity.Property(k => k.AudioPreviewTime).HasColumnName("preview_time_ms");
+        entity.Property(k => k.BeatmapId).HasColumnName("osu_beatmap_id");
+        entity.Property(k => k.BeatmapSetId).HasColumnName("osu_beatmapset_id");
+        entity.Property(k => k.GameMode).HasColumnName("game_mode");
+        entity.Property(k => k.SongSource).HasColumnName("source");
+        entity.Property(k => k.SongTags).HasColumnName("tags");
+        entity.Property(k => k.FolderName).HasColumnName("folder_name");
+        entity.Property(k => k.AudioFileName).HasColumnName("audio_file_name");
+        entity.Property(k => k.InOwnDb).HasColumnName("is_local");
+
+        entity.Ignore(k => k.StarRatingStd);
+        entity.Ignore(k => k.StarRatingTaiko);
+        entity.Ignore(k => k.StarRatingCtb);
+        entity.Ignore(k => k.StarRatingMania);
+        entity.Ignore(k => k.AutoTitle);
+        entity.Ignore(k => k.AutoArtist);
+    }
+
+    private static void ConfigureBeatmapSettings(ModelBuilder modelBuilder)
+    {
+        var entity = modelBuilder.Entity<BeatmapSettings>();
+
+        entity.ToTable("beatmap_play_settings");
+        entity.HasKey(k => k.Id);
+        entity.HasIndex(k => new { k.FolderName, k.Version, k.InOwnDb })
+            .IsUnique()
+            .HasDatabaseName("ux_beatmap_play_settings_identity");
+        entity.HasIndex(k => k.LastPlayTime).HasDatabaseName("ix_beatmap_play_settings_last_played_at");
+        entity.HasIndex(k => k.ExportFile).HasDatabaseName("ix_beatmap_play_settings_exported_file_path");
+        entity.Property(k => k.Id).HasColumnName("id");
+        entity.Property(k => k.Version).HasColumnName("difficulty_name").IsRequired();
+        entity.Property(k => k.FolderName).HasColumnName("folder_name").IsRequired();
+        entity.Property(k => k.InOwnDb).HasColumnName("is_local");
+        entity.Property(k => k.Offset).HasColumnName("audio_offset_ms");
+        entity.Property(k => k.LastPlayTime).HasColumnName("last_played_at");
+        entity.Property(k => k.ExportFile).HasColumnName("exported_file_path");
+
+        entity.Ignore(k => k.AddTime);
+    }
+
+    private static void ConfigureCollection(ModelBuilder modelBuilder)
+    {
+        var entity = modelBuilder.Entity<Collection>();
+
+        entity.ToTable("collections");
+        entity.HasKey(k => k.Id);
+        entity.HasIndex(k => k.Name).HasDatabaseName("ix_collections_name");
+        entity.HasIndex(k => k.Index).HasDatabaseName("ix_collections_sort_order");
+        entity.Property(k => k.Id).HasColumnName("id");
+        entity.Property(k => k.Name).HasColumnName("name").IsRequired().HasMaxLength(100);
+        entity.Property(k => k.Locked).HasColumnName("is_locked");
+        entity.Property(k => k.Index).HasColumnName("sort_order");
+        entity.Property(k => k.ImagePath).HasColumnName("cover_image_path").HasMaxLength(700);
+        entity.Property(k => k.Description).HasColumnName("description").HasMaxLength(700);
+        entity.Property(k => k.CreateTime).HasColumnName("created_at");
+
+        entity.Ignore(k => k.LockedBool);
+    }
+
+    private static void ConfigureCollectionRelation(ModelBuilder modelBuilder)
+    {
+        var entity = modelBuilder.Entity<CollectionRelation>();
+
+        entity.ToTable("collection_beatmaps");
+        entity.HasKey(k => k.Id);
+        entity.HasIndex(k => new { k.CollectionId, k.MapId })
+            .IsUnique()
+            .HasDatabaseName("ux_collection_beatmaps_collection_map");
+        entity.HasIndex(k => k.MapId).HasDatabaseName("ix_collection_beatmaps_beatmap_settings_id");
+        entity.Property(k => k.Id).HasColumnName("id");
+        entity.Property(k => k.CollectionId).HasColumnName("collection_id").IsRequired();
+        entity.Property(k => k.MapId).HasColumnName("beatmap_settings_id").IsRequired();
+        entity.Property(k => k.AddTime).HasColumnName("added_at");
+
+        entity.HasOne<Collection>()
+            .WithMany()
+            .HasForeignKey(k => k.CollectionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        entity.HasOne<BeatmapSettings>()
+            .WithMany()
+            .HasForeignKey(k => k.MapId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+
+    private static void ConfigureMapThumb(ModelBuilder modelBuilder)
+    {
+        var entity = modelBuilder.Entity<MapThumb>();
+
+        entity.ToTable("beatmap_thumbnails");
+        entity.HasKey(k => k.Id);
+        entity.HasIndex(k => k.MapId)
+            .IsUnique()
+            .HasDatabaseName("ux_beatmap_thumbnails_beatmap_id");
+        entity.Property(k => k.Id).HasColumnName("id");
+        entity.Property(k => k.MapId)
+            .HasColumnName("beatmap_id")
+            .HasConversion(
+                value => value.ToString("D"),
+                value => Guid.Parse(value));
+        entity.Property(k => k.ThumbPath).HasColumnName("thumbnail_path");
+    }
+
+    private static void ConfigureStoryboardInfo(ModelBuilder modelBuilder)
+    {
+        var entity = modelBuilder.Entity<StoryboardInfo>();
+
+        entity.ToTable("storyboard_assets");
+        entity.HasKey(k => k.Id);
+        entity.HasIndex(k => k.MapId)
+            .IsUnique()
+            .HasDatabaseName("ux_storyboard_assets_beatmap_id");
+        entity.Property(k => k.Id).HasColumnName("id");
+        entity.Property(k => k.MapId).HasColumnName("beatmap_id").IsRequired();
+        entity.Property(k => k.SbThumbPath).HasColumnName("thumbnail_path").IsRequired();
+        entity.Property(k => k.SbThumbVideoPath).HasColumnName("preview_video_path").IsRequired();
+        entity.Property(k => k.Version).HasColumnName("difficulty_name").IsRequired();
+        entity.Property(k => k.FolderName).HasColumnName("folder_name").IsRequired();
+        entity.Property(k => k.InOwnDb).HasColumnName("is_local");
+    }
+
+    public static async Task InitializeDatabaseAsync()
+    {
+        try
         {
+            await using var db = new OsuPlayerDbContext();
+            await db.Database.MigrateAsync();
+            await db.Database.ExecuteSqlRawAsync("PRAGMA journal_mode=WAL");
+            await db.Database.ExecuteSqlRawAsync("PRAGMA busy_timeout=5000");
+            LegacyPlayerDatabaseMigrator.MigrateIfRequired(DefaultDatabasePath, LegacyDatabasePath);
         }
-
-        public OsuPlayerDbContext(DbContextOptions<OsuPlayerDbContext> options)
-            : base(options)
+        catch (Exception ex)
         {
+            Logger.Error(ex, "Error while initializing local database.");
+            throw;
         }
+    }
 
-        public DbSet<Beatmap> Beatmaps { get; set; }
-        public DbSet<BeatmapSettings> BeatmapSettings { get; set; }
-        public DbSet<Collection> Collections { get; set; }
-        public DbSet<CollectionRelation> CollectionRelations { get; set; }
-        public DbSet<MapThumb> MapThumbs { get; set; }
-        public DbSet<StoryboardInfo> StoryboardInfos { get; set; }
+    public static async Task ValidateDbAsync()
+    {
+        await InitializeDatabaseAsync();
+    }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public async Task<BeatmapSettings> GetMapFromDbAsync(IMapIdentifiable id)
+    {
+        try
         {
-            if (!optionsBuilder.IsConfigured)
+            LogTemporaryMap(id);
+
+            var map = await BeatmapSettings.FirstOrDefaultAsync(k =>
+                k.Version == id.Version &&
+                k.FolderName == id.FolderName &&
+                k.InOwnDb == id.InOwnDb);
+
+            if (map != null)
             {
-                optionsBuilder.UseSqlite(DefaultConnectionString);
+                return map;
             }
-        }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            ConfigureBeatmap(modelBuilder);
-            ConfigureBeatmapSettings(modelBuilder);
-            ConfigureCollection(modelBuilder);
-            ConfigureCollectionRelation(modelBuilder);
-            ConfigureMapThumb(modelBuilder);
-            ConfigureStoryboardInfo(modelBuilder);
-        }
-
-        private static void ConfigureBeatmap(ModelBuilder modelBuilder)
-        {
-            var entity = modelBuilder.Entity<Beatmap>();
-
-            entity.ToTable("beatmaps");
-            entity.HasKey(k => k.Id);
-            entity.HasIndex(k => new { k.FolderName, k.Version, k.InOwnDb })
-                .IsUnique()
-                .HasDatabaseName("ux_beatmaps_identity");
-            entity.HasIndex(k => k.FolderName).HasDatabaseName("ix_beatmaps_folder_name");
-            entity.HasIndex(k => k.BeatmapSetId).HasDatabaseName("ix_beatmaps_osu_beatmapset_id");
-            entity.Property(k => k.Id).HasColumnName("id");
-            entity.Property(k => k.Artist).HasColumnName("artist");
-            entity.Property(k => k.ArtistUnicode).HasColumnName("artist_unicode");
-            entity.Property(k => k.Title).HasColumnName("title");
-            entity.Property(k => k.TitleUnicode).HasColumnName("title_unicode");
-            entity.Property(k => k.Creator).HasColumnName("creator");
-            entity.Property(k => k.Version).HasColumnName("difficulty_name");
-            entity.Property(k => k.BeatmapFileName).HasColumnName("beatmap_file_name");
-            entity.Property(k => k.LastModifiedTime).HasColumnName("last_modified_at");
-            entity.Property(k => k.DiffSrNoneStandard).HasColumnName("star_rating_standard");
-            entity.Property(k => k.DiffSrNoneTaiko).HasColumnName("star_rating_taiko");
-            entity.Property(k => k.DiffSrNoneCtB).HasColumnName("star_rating_catch");
-            entity.Property(k => k.DiffSrNoneMania).HasColumnName("star_rating_mania");
-            entity.Property(k => k.DrainTimeSeconds).HasColumnName("drain_time_seconds");
-            entity.Property(k => k.TotalTime).HasColumnName("total_time_ms");
-            entity.Property(k => k.AudioPreviewTime).HasColumnName("preview_time_ms");
-            entity.Property(k => k.BeatmapId).HasColumnName("osu_beatmap_id");
-            entity.Property(k => k.BeatmapSetId).HasColumnName("osu_beatmapset_id");
-            entity.Property(k => k.GameMode).HasColumnName("game_mode");
-            entity.Property(k => k.SongSource).HasColumnName("source");
-            entity.Property(k => k.SongTags).HasColumnName("tags");
-            entity.Property(k => k.FolderName).HasColumnName("folder_name");
-            entity.Property(k => k.AudioFileName).HasColumnName("audio_file_name");
-            entity.Property(k => k.InOwnDb).HasColumnName("is_local");
-
-            entity.Ignore(k => k.StarRatingStd);
-            entity.Ignore(k => k.StarRatingTaiko);
-            entity.Ignore(k => k.StarRatingCtb);
-            entity.Ignore(k => k.StarRatingMania);
-            entity.Ignore(k => k.AutoTitle);
-            entity.Ignore(k => k.AutoArtist);
-        }
-
-        private static void ConfigureBeatmapSettings(ModelBuilder modelBuilder)
-        {
-            var entity = modelBuilder.Entity<BeatmapSettings>();
-
-            entity.ToTable("beatmap_play_settings");
-            entity.HasKey(k => k.Id);
-            entity.HasIndex(k => new { k.FolderName, k.Version, k.InOwnDb })
-                .IsUnique()
-                .HasDatabaseName("ux_beatmap_play_settings_identity");
-            entity.HasIndex(k => k.LastPlayTime).HasDatabaseName("ix_beatmap_play_settings_last_played_at");
-            entity.HasIndex(k => k.ExportFile).HasDatabaseName("ix_beatmap_play_settings_exported_file_path");
-            entity.Property(k => k.Id).HasColumnName("id");
-            entity.Property(k => k.Version).HasColumnName("difficulty_name").IsRequired();
-            entity.Property(k => k.FolderName).HasColumnName("folder_name").IsRequired();
-            entity.Property(k => k.InOwnDb).HasColumnName("is_local");
-            entity.Property(k => k.Offset).HasColumnName("audio_offset_ms");
-            entity.Property(k => k.LastPlayTime).HasColumnName("last_played_at");
-            entity.Property(k => k.ExportFile).HasColumnName("exported_file_path");
-
-            entity.Ignore(k => k.AddTime);
-        }
-
-        private static void ConfigureCollection(ModelBuilder modelBuilder)
-        {
-            var entity = modelBuilder.Entity<Collection>();
-
-            entity.ToTable("collections");
-            entity.HasKey(k => k.Id);
-            entity.HasIndex(k => k.Name).HasDatabaseName("ix_collections_name");
-            entity.HasIndex(k => k.Index).HasDatabaseName("ix_collections_sort_order");
-            entity.Property(k => k.Id).HasColumnName("id");
-            entity.Property(k => k.Name).HasColumnName("name").IsRequired().HasMaxLength(100);
-            entity.Property(k => k.Locked).HasColumnName("is_locked");
-            entity.Property(k => k.Index).HasColumnName("sort_order");
-            entity.Property(k => k.ImagePath).HasColumnName("cover_image_path").HasMaxLength(700);
-            entity.Property(k => k.Description).HasColumnName("description").HasMaxLength(700);
-            entity.Property(k => k.CreateTime).HasColumnName("created_at");
-
-            entity.Ignore(k => k.LockedBool);
-        }
-
-        private static void ConfigureCollectionRelation(ModelBuilder modelBuilder)
-        {
-            var entity = modelBuilder.Entity<CollectionRelation>();
-
-            entity.ToTable("collection_beatmaps");
-            entity.HasKey(k => k.Id);
-            entity.HasIndex(k => new { k.CollectionId, k.MapId })
-                .IsUnique()
-                .HasDatabaseName("ux_collection_beatmaps_collection_map");
-            entity.HasIndex(k => k.MapId).HasDatabaseName("ix_collection_beatmaps_beatmap_settings_id");
-            entity.Property(k => k.Id).HasColumnName("id");
-            entity.Property(k => k.CollectionId).HasColumnName("collection_id").IsRequired();
-            entity.Property(k => k.MapId).HasColumnName("beatmap_settings_id").IsRequired();
-            entity.Property(k => k.AddTime).HasColumnName("added_at");
-
-            entity.HasOne<Collection>()
-                .WithMany()
-                .HasForeignKey(k => k.CollectionId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasOne<BeatmapSettings>()
-                .WithMany()
-                .HasForeignKey(k => k.MapId)
-                .OnDelete(DeleteBehavior.Cascade);
-        }
-
-        private static void ConfigureMapThumb(ModelBuilder modelBuilder)
-        {
-            var entity = modelBuilder.Entity<MapThumb>();
-
-            entity.ToTable("beatmap_thumbnails");
-            entity.HasKey(k => k.Id);
-            entity.HasIndex(k => k.MapId)
-                .IsUnique()
-                .HasDatabaseName("ux_beatmap_thumbnails_beatmap_id");
-            entity.Property(k => k.Id).HasColumnName("id");
-            entity.Property(k => k.MapId)
-                .HasColumnName("beatmap_id")
-                .HasConversion(
-                    value => value.ToString("D"),
-                    value => Guid.Parse(value));
-            entity.Property(k => k.ThumbPath).HasColumnName("thumbnail_path");
-        }
-
-        private static void ConfigureStoryboardInfo(ModelBuilder modelBuilder)
-        {
-            var entity = modelBuilder.Entity<StoryboardInfo>();
-
-            entity.ToTable("storyboard_assets");
-            entity.HasKey(k => k.Id);
-            entity.HasIndex(k => k.MapId)
-                .IsUnique()
-                .HasDatabaseName("ux_storyboard_assets_beatmap_id");
-            entity.Property(k => k.Id).HasColumnName("id");
-            entity.Property(k => k.MapId).HasColumnName("beatmap_id").IsRequired();
-            entity.Property(k => k.SbThumbPath).HasColumnName("thumbnail_path").IsRequired();
-            entity.Property(k => k.SbThumbVideoPath).HasColumnName("preview_video_path").IsRequired();
-            entity.Property(k => k.Version).HasColumnName("difficulty_name").IsRequired();
-            entity.Property(k => k.FolderName).HasColumnName("folder_name").IsRequired();
-            entity.Property(k => k.InOwnDb).HasColumnName("is_local");
-        }
-
-        public static async Task InitializeDatabaseAsync()
-        {
-            try
+            map = new BeatmapSettings
             {
-                await using var db = new OsuPlayerDbContext();
-                await db.Database.MigrateAsync();
-                await db.Database.ExecuteSqlRawAsync("PRAGMA journal_mode=WAL");
-                await db.Database.ExecuteSqlRawAsync("PRAGMA busy_timeout=5000");
-                LegacyPlayerDatabaseMigrator.MigrateIfRequired(DefaultDatabasePath, LegacyDatabasePath);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error while initializing local database.");
-                throw;
-            }
+                Id = Guid.NewGuid().ToString(),
+                Version = id.Version,
+                FolderName = id.FolderName,
+                InOwnDb = id.InOwnDb,
+                Offset = 0
+            };
+
+            BeatmapSettings.Add(map);
+            await SaveChangesAsync();
+            return map;
         }
-
-        public static async Task ValidateDbAsync()
+        catch (Exception ex)
         {
-            await InitializeDatabaseAsync();
+            Logger.Error(ex, "Error while calling GetMapFromDbAsync().");
+            throw;
         }
+    }
 
-        public async Task<BeatmapSettings> GetMapFromDbAsync(IMapIdentifiable id)
-        {
-            try
-            {
-                LogTemporaryMap(id);
+    public async Task<List<BeatmapSettings>> GetRecentListAsync()
+    {
+        return await BeatmapSettings
+            .Where(k => k.LastPlayTime != null)
+            .OrderBy(k => k.LastPlayTime)
+            .ToListAsync();
+    }
 
-                var map = await BeatmapSettings.FirstOrDefaultAsync(k =>
-                    k.Version == id.Version &&
-                    k.FolderName == id.FolderName &&
-                    k.InOwnDb == id.InOwnDb);
+    public async Task<List<BeatmapSettings>> GetExportedMapsAsync()
+    {
+        return await BeatmapSettings
+            .Where(k => k.ExportFile != null && k.ExportFile != "")
+            .ToListAsync();
+    }
 
-                if (map != null)
+    public async Task<List<BeatmapSettings>> GetMapsFromCollectionAsync(Collection collection)
+    {
+        return await CollectionRelations
+            .Where(relation => relation.CollectionId == collection.Id)
+            .Join(BeatmapSettings,
+                relation => relation.MapId,
+                map => map.Id,
+                (relation, map) => new BeatmapSettings(
+                    map.Id,
+                    map.Version,
+                    map.FolderName,
+                    map.Offset,
+                    map.LastPlayTime,
+                    map.ExportFile,
+                    relation.AddTime)
                 {
-                    return map;
-                }
+                    InOwnDb = map.InOwnDb
+                })
+            .ToListAsync();
+    }
 
+    public async Task<List<Collection>> GetCollectionsAsync()
+    {
+        return await Collections.ToListAsync();
+    }
+
+    public async Task<List<Collection>> GetCollectionsByMapAsync(BeatmapSettings beatmapSettings)
+    {
+        LogTemporaryMap(beatmapSettings);
+
+        return await CollectionRelations
+            .Where(relation => relation.MapId == beatmapSettings.Id)
+            .Join(Collections,
+                relation => relation.CollectionId,
+                collection => collection.Id,
+                (_, collection) => collection)
+            .ToListAsync();
+    }
+
+    public async Task AddCollectionAsync(string name, bool isLocked)
+    {
+        Collections.Add(new Collection
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = name,
+            Locked = isLocked ? 1 : 0,
+            Index = 0,
+            CreateTime = DateTime.Now
+        });
+        await SaveChangesAsync();
+    }
+
+    public async Task<Collection> GetCollectionByIdAsync(string id)
+    {
+        return await Collections.FirstOrDefaultAsync(k => k.Id == id);
+    }
+
+    public async Task AddMapsToCollectionAsync(IList<Beatmap> beatmaps, Collection collection)
+    {
+        if (beatmaps.Count < 1) return;
+
+        var relations = new List<CollectionRelation>(beatmaps.Count);
+        var addTime = DateTime.Now;
+        var existingMapIds = await CollectionRelations
+            .Where(k => k.CollectionId == collection.Id)
+            .Select(k => k.MapId)
+            .ToHashSetAsync();
+
+        var settingsLookup = await GetBeatmapSettingsLookupAsync(beatmaps);
+
+        var newSettings = new List<BeatmapSettings>();
+        foreach (var beatmap in beatmaps)
+        {
+            LogTemporaryMap(beatmap);
+            var key = $"{beatmap.FolderName}|{beatmap.Version}|{beatmap.InOwnDb}";
+
+            if (!settingsLookup.TryGetValue(key, out var map))
+            {
                 map = new BeatmapSettings
                 {
                     Id = Guid.NewGuid().ToString(),
-                    Version = id.Version,
-                    FolderName = id.FolderName,
-                    InOwnDb = id.InOwnDb,
+                    Version = beatmap.Version,
+                    FolderName = beatmap.FolderName,
+                    InOwnDb = beatmap.InOwnDb,
                     Offset = 0
                 };
-
-                BeatmapSettings.Add(map);
-                await SaveChangesAsync();
-                return map;
+                newSettings.Add(map);
+                settingsLookup[key] = map;
             }
-            catch (Exception ex)
+
+            if (existingMapIds.Contains(map.Id))
             {
-                Logger.Error(ex, "Error while calling GetMapFromDbAsync().");
-                throw;
+                continue;
             }
-        }
 
-        public async Task<List<BeatmapSettings>> GetRecentListAsync()
-        {
-            return await BeatmapSettings
-                .Where(k => k.LastPlayTime != null)
-                .OrderBy(k => k.LastPlayTime)
-                .ToListAsync();
-        }
-
-        public async Task<List<BeatmapSettings>> GetExportedMapsAsync()
-        {
-            return await BeatmapSettings
-                .Where(k => k.ExportFile != null && k.ExportFile != "")
-                .ToListAsync();
-        }
-
-        public async Task<List<BeatmapSettings>> GetMapsFromCollectionAsync(Collection collection)
-        {
-            return await CollectionRelations
-                .Where(relation => relation.CollectionId == collection.Id)
-                .Join(BeatmapSettings,
-                    relation => relation.MapId,
-                    map => map.Id,
-                    (relation, map) => new BeatmapSettings(
-                        map.Id,
-                        map.Version,
-                        map.FolderName,
-                        map.Offset,
-                        map.LastPlayTime,
-                        map.ExportFile,
-                        relation.AddTime)
-                    {
-                        InOwnDb = map.InOwnDb
-                    })
-                .ToListAsync();
-        }
-
-        public async Task<List<Collection>> GetCollectionsAsync()
-        {
-            return await Collections.ToListAsync();
-        }
-
-        public async Task<List<Collection>> GetCollectionsByMapAsync(BeatmapSettings beatmapSettings)
-        {
-            LogTemporaryMap(beatmapSettings);
-
-            return await CollectionRelations
-                .Where(relation => relation.MapId == beatmapSettings.Id)
-                .Join(Collections,
-                    relation => relation.CollectionId,
-                    collection => collection.Id,
-                    (_, collection) => collection)
-                .ToListAsync();
-        }
-
-        public async Task AddCollectionAsync(string name, bool isLocked)
-        {
-            Collections.Add(new Collection
+            relations.Add(new CollectionRelation
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = name,
-                Locked = isLocked ? 1 : 0,
-                Index = 0,
-                CreateTime = DateTime.Now
+                CollectionId = collection.Id,
+                MapId = map.Id,
+                AddTime = addTime
             });
-            await SaveChangesAsync();
+            existingMapIds.Add(map.Id);
         }
 
-        public async Task<Collection> GetCollectionByIdAsync(string id)
+        if (newSettings.Count > 0)
         {
-            return await Collections.FirstOrDefaultAsync(k => k.Id == id);
+            BeatmapSettings.AddRange(newSettings);
         }
 
-        public async Task AddMapsToCollectionAsync(IList<Beatmap> beatmaps, Collection collection)
+        CollectionRelations.AddRange(relations);
+        await SaveChangesAsync();
+    }
+
+    private async Task<Dictionary<string, BeatmapSettings>> GetBeatmapSettingsLookupAsync(
+        IEnumerable<Beatmap> beatmaps)
+    {
+        var identities = beatmaps
+            .Select(k => new
+            {
+                k.FolderName,
+                k.Version,
+                OwnDb = k.InOwnDb ? 1 : 0
+            })
+            .Distinct()
+            .ToList();
+
+        var lookup = new Dictionary<string, BeatmapSettings>(identities.Count);
+        if (identities.Count == 0) return lookup;
+
+        var dbConnection = Database.GetDbConnection();
+        var shouldClose = dbConnection.State != ConnectionState.Open;
+        if (shouldClose)
         {
-            if (beatmaps.Count < 1) return;
-
-            var relations = new List<CollectionRelation>(beatmaps.Count);
-            var addTime = DateTime.Now;
-            var existingMapIds = await CollectionRelations
-                .Where(k => k.CollectionId == collection.Id)
-                .Select(k => k.MapId)
-                .ToHashSetAsync();
-
-            var settingsLookup = await GetBeatmapSettingsLookupAsync(beatmaps);
-
-            var newSettings = new List<BeatmapSettings>();
-            foreach (var beatmap in beatmaps)
-            {
-                LogTemporaryMap(beatmap);
-                var key = $"{beatmap.FolderName}|{beatmap.Version}|{beatmap.InOwnDb}";
-
-                if (!settingsLookup.TryGetValue(key, out var map))
-                {
-                    map = new BeatmapSettings
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        Version = beatmap.Version,
-                        FolderName = beatmap.FolderName,
-                        InOwnDb = beatmap.InOwnDb,
-                        Offset = 0
-                    };
-                    newSettings.Add(map);
-                    settingsLookup[key] = map;
-                }
-
-                if (existingMapIds.Contains(map.Id))
-                {
-                    continue;
-                }
-
-                relations.Add(new CollectionRelation
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    CollectionId = collection.Id,
-                    MapId = map.Id,
-                    AddTime = addTime
-                });
-                existingMapIds.Add(map.Id);
-            }
-
-            if (newSettings.Count > 0)
-            {
-                BeatmapSettings.AddRange(newSettings);
-            }
-
-            CollectionRelations.AddRange(relations);
-            await SaveChangesAsync();
+            await dbConnection.OpenAsync();
         }
 
-        private async Task<Dictionary<string, BeatmapSettings>> GetBeatmapSettingsLookupAsync(
-            IEnumerable<Beatmap> beatmaps)
+        try
         {
-            var identities = beatmaps
-                .Select(k => new
-                {
-                    k.FolderName,
-                    k.Version,
-                    OwnDb = k.InOwnDb ? 1 : 0
-                })
-                .Distinct()
-                .ToList();
-
-            var lookup = new Dictionary<string, BeatmapSettings>(identities.Count);
-            if (identities.Count == 0) return lookup;
-
-            var dbConnection = Database.GetDbConnection();
-            var shouldClose = dbConnection.State != ConnectionState.Open;
-            if (shouldClose)
+            foreach (var chunk in identities.Chunk(MaxIdentitiesPerQuery))
             {
-                await dbConnection.OpenAsync();
-            }
-
-            try
-            {
-                foreach (var chunk in identities.Chunk(MaxIdentitiesPerQuery))
-                {
-                    var sql = new StringBuilder(@"
+                var sql = new StringBuilder(@"
  WITH ids(folder_name, difficulty_name, is_local) AS (
      VALUES ");
-                    var parameters = new DynamicParameters();
+                var parameters = new DynamicParameters();
 
-                    for (var i = 0; i < chunk.Length; i++)
+                for (var i = 0; i < chunk.Length; i++)
+                {
+                    if (i > 0)
                     {
-                        if (i > 0)
-                        {
-                            sql.Append(", ");
-                        }
-
-                        sql.Append($"(@folder{i}, @version{i}, @ownDb{i})");
-                        parameters.Add($"folder{i}", chunk[i].FolderName);
-                        parameters.Add($"version{i}", chunk[i].Version);
-                        parameters.Add($"ownDb{i}", chunk[i].OwnDb);
+                        sql.Append(", ");
                     }
 
-                    sql.Append(@"
+                    sql.Append($"(@folder{i}, @version{i}, @ownDb{i})");
+                    parameters.Add($"folder{i}", chunk[i].FolderName);
+                    parameters.Add($"version{i}", chunk[i].Version);
+                    parameters.Add($"ownDb{i}", chunk[i].OwnDb);
+                }
+
+                sql.Append(@"
  )
  SELECT b.id AS Id,
         b.difficulty_name AS Version,
@@ -456,154 +456,154 @@ namespace OsuPlayer.Data
                                       b.difficulty_name = ids.difficulty_name AND
                                       b.is_local = ids.is_local;");
 
-                    foreach (var settings in await dbConnection.QueryAsync<BeatmapSettings>(sql.ToString(), parameters))
-                    {
-                        lookup[$"{settings.FolderName}|{settings.Version}|{settings.InOwnDb}"] = settings;
-                    }
-                }
-
-                return lookup;
-            }
-            finally
-            {
-                if (shouldClose)
+                foreach (var settings in await dbConnection.QueryAsync<BeatmapSettings>(sql.ToString(), parameters))
                 {
-                    await dbConnection.CloseAsync();
+                    lookup[$"{settings.FolderName}|{settings.Version}|{settings.InOwnDb}"] = settings;
                 }
             }
+
+            return lookup;
         }
-
-        public async Task UpdateCollectionAsync(Collection collection)
+        finally
         {
-            var result = await Collections.FirstOrDefaultAsync(k => k.Id == collection.Id);
-            if (result == null)
-            {
-                await AddCollectionAsync(collection);
-                return;
-            }
-
-            result.Name = collection.Name;
-            result.Locked = collection.LockedBool ? 1 : 0;
-            result.Index = collection.Index;
-            result.ImagePath = collection.ImagePath;
-            result.Description = collection.Description;
-            result.CreateTime = collection.CreateTime;
-            await SaveChangesAsync();
-        }
-
-        public async Task UpdateMapAsync(IMapIdentifiable id, int? offset = null)
-        {
-            var updateColumns = new Action<BeatmapSettings>(map => map.LastPlayTime = DateTime.Now);
-            if (offset != null)
-            {
-                updateColumns += map => map.Offset = offset.Value;
-            }
-
-            await InnerUpdateMapAsync(id, updateColumns);
-        }
-
-        public async Task AddMapExportAsync(IMapIdentifiable id, string exportFilePath)
-        {
-            await InnerUpdateMapAsync(id, map => map.ExportFile = exportFilePath);
-        }
-
-        public async Task RemoveMapExportAsync(IMapIdentifiable id)
-        {
-            await InnerUpdateMapAsync(id, map => map.ExportFile = null);
-        }
-
-        public async Task RemoveFromRecentAsync(IMapIdentifiable id)
-        {
-            await InnerUpdateMapAsync(id, map => map.LastPlayTime = null);
-        }
-
-        public async Task ClearRecentAsync()
-        {
-            await BeatmapSettings.ExecuteUpdateAsync(setters =>
-                setters.SetProperty(map => map.LastPlayTime, (DateTime?)null));
-        }
-
-        public async Task RemoveCollectionAsync(Collection collection)
-        {
-            using var transaction = await Database.BeginTransactionAsync();
-            await Collections.Where(k => k.Id == collection.Id).ExecuteDeleteAsync();
-            await CollectionRelations.Where(k => k.CollectionId == collection.Id).ExecuteDeleteAsync();
-            await transaction.CommitAsync();
-        }
-
-        public async Task RemoveMapFromCollectionAsync(IMapIdentifiable id, Collection collection)
-        {
-            LogTemporaryMap(id);
-
-            var map = await GetMapFromDbAsync(id);
-            await CollectionRelations
-                .Where(k => k.CollectionId == collection.Id && k.MapId == map.Id)
-                .ExecuteDeleteAsync();
-        }
-
-        public async Task<(bool found, string thumbPath)> GetMapThumbAsync(Guid beatmapDbId)
-        {
-            var thumb = await MapThumbs.FirstOrDefaultAsync(k => k.MapId == beatmapDbId);
-            return (thumb != null, thumb?.ThumbPath);
-        }
-
-        public async Task<(bool found, string thumbPath)> GetMapThumbAsync(Beatmap beatmap)
-        {
-            LogTemporaryMap(beatmap);
-            return await GetMapThumbAsync(beatmap.Id);
-        }
-
-        public async Task SetMapThumbAsync(Guid beatmapDbId, string thumbPath)
-        {
-            var dbConnection = Database.GetDbConnection();
-            var shouldClose = dbConnection.State != ConnectionState.Open;
             if (shouldClose)
             {
-                await dbConnection.OpenAsync();
+                await dbConnection.CloseAsync();
             }
+        }
+    }
 
-            try
-            {
-                const string sql = @"
+    public async Task UpdateCollectionAsync(Collection collection)
+    {
+        var result = await Collections.FirstOrDefaultAsync(k => k.Id == collection.Id);
+        if (result == null)
+        {
+            await AddCollectionAsync(collection);
+            return;
+        }
+
+        result.Name = collection.Name;
+        result.Locked = collection.LockedBool ? 1 : 0;
+        result.Index = collection.Index;
+        result.ImagePath = collection.ImagePath;
+        result.Description = collection.Description;
+        result.CreateTime = collection.CreateTime;
+        await SaveChangesAsync();
+    }
+
+    public async Task UpdateMapAsync(IMapIdentifiable id, int? offset = null)
+    {
+        var updateColumns = new Action<BeatmapSettings>(map => map.LastPlayTime = DateTime.Now);
+        if (offset != null)
+        {
+            updateColumns += map => map.Offset = offset.Value;
+        }
+
+        await InnerUpdateMapAsync(id, updateColumns);
+    }
+
+    public async Task AddMapExportAsync(IMapIdentifiable id, string exportFilePath)
+    {
+        await InnerUpdateMapAsync(id, map => map.ExportFile = exportFilePath);
+    }
+
+    public async Task RemoveMapExportAsync(IMapIdentifiable id)
+    {
+        await InnerUpdateMapAsync(id, map => map.ExportFile = null);
+    }
+
+    public async Task RemoveFromRecentAsync(IMapIdentifiable id)
+    {
+        await InnerUpdateMapAsync(id, map => map.LastPlayTime = null);
+    }
+
+    public async Task ClearRecentAsync()
+    {
+        await BeatmapSettings.ExecuteUpdateAsync(setters =>
+            setters.SetProperty(map => map.LastPlayTime, (DateTime?)null));
+    }
+
+    public async Task RemoveCollectionAsync(Collection collection)
+    {
+        using var transaction = await Database.BeginTransactionAsync();
+        await Collections.Where(k => k.Id == collection.Id).ExecuteDeleteAsync();
+        await CollectionRelations.Where(k => k.CollectionId == collection.Id).ExecuteDeleteAsync();
+        await transaction.CommitAsync();
+    }
+
+    public async Task RemoveMapFromCollectionAsync(IMapIdentifiable id, Collection collection)
+    {
+        LogTemporaryMap(id);
+
+        var map = await GetMapFromDbAsync(id);
+        await CollectionRelations
+            .Where(k => k.CollectionId == collection.Id && k.MapId == map.Id)
+            .ExecuteDeleteAsync();
+    }
+
+    public async Task<(bool found, string thumbPath)> GetMapThumbAsync(Guid beatmapDbId)
+    {
+        var thumb = await MapThumbs.FirstOrDefaultAsync(k => k.MapId == beatmapDbId);
+        return (thumb != null, thumb?.ThumbPath);
+    }
+
+    public async Task<(bool found, string thumbPath)> GetMapThumbAsync(Beatmap beatmap)
+    {
+        LogTemporaryMap(beatmap);
+        return await GetMapThumbAsync(beatmap.Id);
+    }
+
+    public async Task SetMapThumbAsync(Guid beatmapDbId, string thumbPath)
+    {
+        var dbConnection = Database.GetDbConnection();
+        var shouldClose = dbConnection.State != ConnectionState.Open;
+        if (shouldClose)
+        {
+            await dbConnection.OpenAsync();
+        }
+
+        try
+        {
+            const string sql = @"
 INSERT INTO beatmap_thumbnails (id, beatmap_id, thumbnail_path)
 VALUES (@Id, @MapId, @ThumbPath)
 ON CONFLICT(beatmap_id) DO UPDATE SET
     thumbnail_path = excluded.thumbnail_path;";
-                await dbConnection.ExecuteAsync(sql, new
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    MapId = beatmapDbId.ToString("D"),
-                    ThumbPath = thumbPath
-                });
-            }
-            finally
+            await dbConnection.ExecuteAsync(sql, new
             {
-                if (shouldClose)
-                {
-                    await dbConnection.CloseAsync();
-                }
-            }
+                Id = Guid.NewGuid().ToString(),
+                MapId = beatmapDbId.ToString("D"),
+                ThumbPath = thumbPath
+            });
         }
-
-        public async Task SetMapThumbAsync(Beatmap beatmap, string thumbPath)
+        finally
         {
-            await SetMapThumbAsync(beatmap.Id, thumbPath);
-        }
-
-        public async Task SetMapSbInfoAsync(Guid beatmapDbId, StoryboardInfo sbInfo)
-        {
-            LogTemporaryMap(sbInfo);
-
-            var dbConnection = Database.GetDbConnection();
-            var shouldClose = dbConnection.State != ConnectionState.Open;
             if (shouldClose)
             {
-                await dbConnection.OpenAsync();
+                await dbConnection.CloseAsync();
             }
+        }
+    }
 
-            try
-            {
-                const string sql = @"
+    public async Task SetMapThumbAsync(Beatmap beatmap, string thumbPath)
+    {
+        await SetMapThumbAsync(beatmap.Id, thumbPath);
+    }
+
+    public async Task SetMapSbInfoAsync(Guid beatmapDbId, StoryboardInfo sbInfo)
+    {
+        LogTemporaryMap(sbInfo);
+
+        var dbConnection = Database.GetDbConnection();
+        var shouldClose = dbConnection.State != ConnectionState.Open;
+        if (shouldClose)
+        {
+            await dbConnection.OpenAsync();
+        }
+
+        try
+        {
+            const string sql = @"
 INSERT INTO storyboard_assets (id, beatmap_id, thumbnail_path, preview_video_path, difficulty_name, folder_name, is_local)
 VALUES (@Id, @MapId, @SbThumbPath, @SbThumbVideoPath, @Version, @FolderName, @InOwnDb)
 ON CONFLICT(beatmap_id) DO UPDATE SET
@@ -612,249 +612,249 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
     difficulty_name = excluded.difficulty_name,
     folder_name = excluded.folder_name,
     is_local = excluded.is_local;";
-                await dbConnection.ExecuteAsync(sql, new
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    MapId = beatmapDbId.ToString(),
-                    SbThumbPath = sbInfo.SbThumbPath,
-                    SbThumbVideoPath = sbInfo.SbThumbVideoPath,
-                    sbInfo.Version,
-                    sbInfo.FolderName,
-                    InOwnDb = sbInfo.InOwnDb ? 1 : 0
-                });
-            }
-            finally
+            await dbConnection.ExecuteAsync(sql, new
             {
-                if (shouldClose)
-                {
-                    await dbConnection.CloseAsync();
-                }
+                Id = Guid.NewGuid().ToString(),
+                MapId = beatmapDbId.ToString(),
+                SbThumbPath = sbInfo.SbThumbPath,
+                SbThumbVideoPath = sbInfo.SbThumbVideoPath,
+                sbInfo.Version,
+                sbInfo.FolderName,
+                InOwnDb = sbInfo.InOwnDb ? 1 : 0
+            });
+        }
+        finally
+        {
+            if (shouldClose)
+            {
+                await dbConnection.CloseAsync();
             }
         }
+    }
 
-        public async Task SetMapSbInfoAsync(Beatmap beatmap, StoryboardInfo sbInfo)
+    public async Task SetMapSbInfoAsync(Beatmap beatmap, StoryboardInfo sbInfo)
+    {
+        await SetMapSbInfoAsync(beatmap.Id, sbInfo);
+    }
+
+    public async Task<PaginationQueryResult<Beatmap>> SearchBeatmapPageAsync(string searchText,
+        BeatmapSortMode beatmapSortMode, int startIndex, int count)
+    {
+        var sw = Stopwatch.StartNew();
+        try
         {
-            await SetMapSbInfoAsync(beatmap.Id, sbInfo);
-        }
+            startIndex = Math.Max(0, startIndex);
+            count = Math.Max(0, count);
 
-        public async Task<PaginationQueryResult<Beatmap>> SearchBeatmapPageAsync(string searchText,
-            BeatmapSortMode beatmapSortMode, int startIndex, int count)
-        {
-            var sw = Stopwatch.StartNew();
-            try
-            {
-                startIndex = Math.Max(0, startIndex);
-                count = Math.Max(0, count);
-
-                var query = ApplyBeatmapSearchFilters(Beatmaps.AsNoTracking(), searchText);
-                var totalCount = await query.CountAsync();
-                var results = (count == 0 || totalCount == 0)
-                    ? []
-                    : await ApplyBeatmapSort(query, beatmapSortMode)
-                        .Skip(startIndex)
-                        .Take(count)
-                        .ToListAsync();
-
-                return new PaginationQueryResult<Beatmap>(results, totalCount);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error while calling SearchBeatmapPageAsync().");
-                throw;
-            }
-            finally
-            {
-                Logger.Debug("查询花费: {0}", sw.ElapsedMilliseconds);
-                sw.Stop();
-            }
-        }
-
-        public async Task<List<Beatmap>> SearchBeatmapByOptionsAsync(string searchText, BeatmapSortMode beatmapSortMode,
-            int startIndex, int count)
-        {
-            var sw = Stopwatch.StartNew();
-            try
-            {
-                startIndex = Math.Max(0, startIndex);
-                count = Math.Max(0, count);
-
-                if (count == 0)
-                {
-                    return [];
-                }
-
-                var query = ApplyBeatmapSearchFilters(Beatmaps.AsNoTracking(), searchText);
-                return await ApplyBeatmapSort(query, beatmapSortMode)
+            var query = ApplyBeatmapSearchFilters(Beatmaps.AsNoTracking(), searchText);
+            var totalCount = await query.CountAsync();
+            var results = (count == 0 || totalCount == 0)
+                ? []
+                : await ApplyBeatmapSort(query, beatmapSortMode)
                     .Skip(startIndex)
                     .Take(count)
                     .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error while calling SearchBeatmapByOptionsAsync().");
-                throw;
-            }
-            finally
-            {
-                Logger.Debug("查询花费: {0}", sw.ElapsedMilliseconds);
-                sw.Stop();
-            }
+
+            return new PaginationQueryResult<Beatmap>(results, totalCount);
         }
-
-        private static IQueryable<Beatmap> ApplyBeatmapSearchFilters(IQueryable<Beatmap> query, string searchText)
+        catch (Exception ex)
         {
-            var keywords = searchText?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (keywords == null || keywords.Length == 0)
+            Logger.Error(ex, "Error while calling SearchBeatmapPageAsync().");
+            throw;
+        }
+        finally
+        {
+            Logger.Debug("查询花费: {0}", sw.ElapsedMilliseconds);
+            sw.Stop();
+        }
+    }
+
+    public async Task<List<Beatmap>> SearchBeatmapByOptionsAsync(string searchText, BeatmapSortMode beatmapSortMode,
+        int startIndex, int count)
+    {
+        var sw = Stopwatch.StartNew();
+        try
+        {
+            startIndex = Math.Max(0, startIndex);
+            count = Math.Max(0, count);
+
+            if (count == 0)
             {
-                return query;
+                return [];
             }
 
-            foreach (var keyword in keywords)
-            {
-                var pattern = $"%{keyword}%";
-                query = query.Where(k =>
-                    EF.Functions.Like(k.Artist, pattern) ||
-                    EF.Functions.Like(k.ArtistUnicode, pattern) ||
-                    EF.Functions.Like(k.Title, pattern) ||
-                    EF.Functions.Like(k.TitleUnicode, pattern) ||
-                    EF.Functions.Like(k.SongTags, pattern) ||
-                    EF.Functions.Like(k.SongSource, pattern) ||
-                    EF.Functions.Like(k.Creator, pattern) ||
-                    EF.Functions.Like(k.Version, pattern));
-            }
+            var query = ApplyBeatmapSearchFilters(Beatmaps.AsNoTracking(), searchText);
+            return await ApplyBeatmapSort(query, beatmapSortMode)
+                .Skip(startIndex)
+                .Take(count)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Error while calling SearchBeatmapByOptionsAsync().");
+            throw;
+        }
+        finally
+        {
+            Logger.Debug("查询花费: {0}", sw.ElapsedMilliseconds);
+            sw.Stop();
+        }
+    }
 
+    private static IQueryable<Beatmap> ApplyBeatmapSearchFilters(IQueryable<Beatmap> query, string searchText)
+    {
+        var keywords = searchText?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (keywords == null || keywords.Length == 0)
+        {
             return query;
         }
 
-        private static IOrderedQueryable<Beatmap> ApplyBeatmapSort(IQueryable<Beatmap> query,
-            BeatmapSortMode beatmapSortMode)
+        foreach (var keyword in keywords)
         {
-            return beatmapSortMode switch
-            {
-                BeatmapSortMode.Title => query
-                    .OrderBy(k => k.TitleUnicode)
-                    .ThenBy(k => k.Title),
-                _ => query
-                    .OrderBy(k => k.ArtistUnicode)
-                    .ThenBy(k => k.Artist)
-            };
+            var pattern = $"%{keyword}%";
+            query = query.Where(k =>
+                EF.Functions.Like(k.Artist, pattern) ||
+                EF.Functions.Like(k.ArtistUnicode, pattern) ||
+                EF.Functions.Like(k.Title, pattern) ||
+                EF.Functions.Like(k.TitleUnicode, pattern) ||
+                EF.Functions.Like(k.SongTags, pattern) ||
+                EF.Functions.Like(k.SongSource, pattern) ||
+                EF.Functions.Like(k.Creator, pattern) ||
+                EF.Functions.Like(k.Version, pattern));
         }
 
-        public async Task<List<Beatmap>> GetAllBeatmapsAsync()
+        return query;
+    }
+
+    private static IOrderedQueryable<Beatmap> ApplyBeatmapSort(IQueryable<Beatmap> query,
+        BeatmapSortMode beatmapSortMode)
+    {
+        return beatmapSortMode switch
         {
+            BeatmapSortMode.Title => query
+                .OrderBy(k => k.TitleUnicode)
+                .ThenBy(k => k.Title),
+            _ => query
+                .OrderBy(k => k.ArtistUnicode)
+                .ThenBy(k => k.Artist)
+        };
+    }
+
+    public async Task<List<Beatmap>> GetAllBeatmapsAsync()
+    {
+        try
+        {
+            return await Beatmaps.AsNoTracking().ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Error while calling GetAllBeatmapsAsync().");
+            throw;
+        }
+    }
+
+    public async Task<Beatmap> GetBeatmapByIdentifiableAsync(IMapIdentifiable id)
+    {
+        try
+        {
+            return await Beatmaps.AsNoTracking()
+                .Where(k => k.Version == id.Version && k.FolderName == id.FolderName)
+                .OrderByDescending(k => k.InOwnDb == id.InOwnDb)
+                .FirstOrDefaultAsync() ?? await Beatmaps.AsNoTracking()
+                .Where(k => k.Version == id.Version && k.FolderName == id.FolderName)
+                .FirstOrDefaultAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Error while calling GetBeatmapByIdentifiableAsync().");
+            throw;
+        }
+    }
+
+    public async Task<List<Beatmap>> GetBeatmapsByMapInfoAsync(List<BeatmapSettings> reqList, TimeSortMode sortMode)
+    {
+        var entities = await GetBeatmapsByIdentifiableAsync(reqList);
+
+        var newList = reqList.Join(entities,
+            mapInfo => mapInfo.GetIdentity(),
+            entry => entry.GetIdentity(),
+            (mapInfo, entry) => new
+            {
+                entry,
+                playTime = mapInfo.LastPlayTime ?? new DateTime(),
+                addTime = mapInfo.AddTime ?? new DateTime()
+            });
+
+        return sortMode == TimeSortMode.PlayTime
+            ? newList.OrderByDescending(k => k.playTime).Select(k => k.entry).ToList()
+            : newList.OrderByDescending(k => k.addTime).Select(k => k.entry).ToList();
+    }
+
+    public async Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folder)
+    {
+        try
+        {
+            return await Beatmaps.AsNoTracking()
+                .Where(k => k.FolderName == folder)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Error while calling GetBeatmapsFromFolderAsync().");
+            throw;
+        }
+    }
+
+    public async Task<List<Beatmap>> GetBeatmapsByIdentifiableAsync<T>(IEnumerable<T> reqList)
+        where T : IMapIdentifiable
+    {
+        var identities = reqList
+            .Where(k => !k.IsMapTemporary())
+            .Where(k => !(k is MapIdentity mi && mi.Equals(MapIdentity.Default)))
+            .Select(k => new
+            {
+                k.FolderName,
+                k.Version,
+                OwnDb = k.InOwnDb ? 1 : 0
+            })
+            .ToList();
+
+        if (identities.Count == 0) return new List<Beatmap>();
+
+        try
+        {
+            var dbConnection = Database.GetDbConnection();
+            var shouldClose = dbConnection.State != ConnectionState.Open;
+            if (shouldClose)
+            {
+                await dbConnection.OpenAsync();
+            }
+
             try
             {
-                return await Beatmaps.AsNoTracking().ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error while calling GetAllBeatmapsAsync().");
-                throw;
-            }
-        }
-
-        public async Task<Beatmap> GetBeatmapByIdentifiableAsync(IMapIdentifiable id)
-        {
-            try
-            {
-                return await Beatmaps.AsNoTracking()
-                    .Where(k => k.Version == id.Version && k.FolderName == id.FolderName)
-                    .OrderByDescending(k => k.InOwnDb == id.InOwnDb)
-                    .FirstOrDefaultAsync() ?? await Beatmaps.AsNoTracking()
-                    .Where(k => k.Version == id.Version && k.FolderName == id.FolderName)
-                    .FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error while calling GetBeatmapByIdentifiableAsync().");
-                throw;
-            }
-        }
-
-        public async Task<List<Beatmap>> GetBeatmapsByMapInfoAsync(List<BeatmapSettings> reqList, TimeSortMode sortMode)
-        {
-            var entities = await GetBeatmapsByIdentifiableAsync(reqList);
-
-            var newList = reqList.Join(entities,
-                mapInfo => mapInfo.GetIdentity(),
-                entry => entry.GetIdentity(),
-                (mapInfo, entry) => new
+                var result = new List<Beatmap>(identities.Count);
+                foreach (var chunk in identities.Chunk(MaxIdentitiesPerQuery))
                 {
-                    entry,
-                    playTime = mapInfo.LastPlayTime ?? new DateTime(),
-                    addTime = mapInfo.AddTime ?? new DateTime()
-                });
-
-            return sortMode == TimeSortMode.PlayTime
-                ? newList.OrderByDescending(k => k.playTime).Select(k => k.entry).ToList()
-                : newList.OrderByDescending(k => k.addTime).Select(k => k.entry).ToList();
-        }
-
-        public async Task<List<Beatmap>> GetBeatmapsFromFolderAsync(string folder)
-        {
-            try
-            {
-                return await Beatmaps.AsNoTracking()
-                    .Where(k => k.FolderName == folder)
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error while calling GetBeatmapsFromFolderAsync().");
-                throw;
-            }
-        }
-
-        public async Task<List<Beatmap>> GetBeatmapsByIdentifiableAsync<T>(IEnumerable<T> reqList)
-            where T : IMapIdentifiable
-        {
-            var identities = reqList
-                .Where(k => !k.IsMapTemporary())
-                .Where(k => !(k is MapIdentity mi && mi.Equals(MapIdentity.Default)))
-                .Select(k => new
-                {
-                    k.FolderName,
-                    k.Version,
-                    OwnDb = k.InOwnDb ? 1 : 0
-                })
-                .ToList();
-
-            if (identities.Count == 0) return new List<Beatmap>();
-
-            try
-            {
-                var dbConnection = Database.GetDbConnection();
-                var shouldClose = dbConnection.State != ConnectionState.Open;
-                if (shouldClose)
-                {
-                    await dbConnection.OpenAsync();
-                }
-
-                try
-                {
-                    var result = new List<Beatmap>(identities.Count);
-                    foreach (var chunk in identities.Chunk(MaxIdentitiesPerQuery))
-                    {
-                        var sql = new StringBuilder(@"
+                    var sql = new StringBuilder(@"
  WITH ids(folder_name, difficulty_name, is_local, ord) AS (
      VALUES ");
-                        var parameters = new DynamicParameters();
+                    var parameters = new DynamicParameters();
 
-                        for (var i = 0; i < chunk.Length; i++)
+                    for (var i = 0; i < chunk.Length; i++)
+                    {
+                        if (i > 0)
                         {
-                            if (i > 0)
-                            {
-                                sql.Append(", ");
-                            }
-
-                            sql.Append($"(@folder{i}, @version{i}, @ownDb{i}, @ord{i})");
-                            parameters.Add($"folder{i}", chunk[i].FolderName);
-                            parameters.Add($"version{i}", chunk[i].Version);
-                            parameters.Add($"ownDb{i}", chunk[i].OwnDb);
-                            parameters.Add($"ord{i}", i);
+                            sql.Append(", ");
                         }
 
-                        sql.Append(@"
+                        sql.Append($"(@folder{i}, @version{i}, @ownDb{i}, @ord{i})");
+                        parameters.Add($"folder{i}", chunk[i].FolderName);
+                        parameters.Add($"version{i}", chunk[i].Version);
+                        parameters.Add($"ownDb{i}", chunk[i].OwnDb);
+                        parameters.Add($"ord{i}", i);
+                    }
+
+                    sql.Append(@"
  )
  SELECT b.*
    FROM ids
@@ -864,57 +864,57 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
                         b.is_local = ids.is_local
   ORDER BY ids.ord;");
 
-                        result.AddRange(await dbConnection.QueryAsync<Beatmap>(sql.ToString(), parameters));
-                    }
+                    result.AddRange(await dbConnection.QueryAsync<Beatmap>(sql.ToString(), parameters));
+                }
 
-                    return result;
-                }
-                finally
-                {
-                    if (shouldClose)
-                    {
-                        await dbConnection.CloseAsync();
-                    }
-                }
+                return result;
             }
-            catch (Exception ex)
+            finally
             {
-                Logger.Error(ex, "Error while calling GetBeatmapsByIdentifiableAsync().");
-                throw;
+                if (shouldClose)
+                {
+                    await dbConnection.CloseAsync();
+                }
             }
         }
-
-        public async Task SyncMapsFromOsuDbAsync(IEnumerable<Beatmap> newList, bool addOnly)
+        catch (Exception ex)
         {
-            try
-            {
-                if (addOnly)
-                {
-                    var dbMaps = await Beatmaps.AsNoTracking()
-                        .Where(k => !k.InOwnDb)
-                        .ToListAsync();
-                    var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
+            Logger.Error(ex, "Error while calling GetBeatmapsByIdentifiableAsync().");
+            throw;
+        }
+    }
 
-                    await AddNewMapsAsync(except);
-                }
-                else
-                {
-                    await RemoveSyncedAllAsync();
-                    await AddNewMapsAsync(newList);
-                }
-            }
-            catch (Exception ex)
+    public async Task SyncMapsFromOsuDbAsync(IEnumerable<Beatmap> newList, bool addOnly)
+    {
+        try
+        {
+            if (addOnly)
             {
-                Logger.Error(ex, addOnly
-                    ? "Error while calling SyncMapsFromHoLLyAsync(addonly)."
-                    : "Error while calling SyncMapsFromHoLLyAsync().");
-                throw;
+                var dbMaps = await Beatmaps.AsNoTracking()
+                    .Where(k => !k.InOwnDb)
+                    .ToListAsync();
+                var except = newList.Except(dbMaps, new Beatmap.Comparer(true));
+
+                await AddNewMapsAsync(except);
+            }
+            else
+            {
+                await RemoveSyncedAllAsync();
+                await AddNewMapsAsync(newList);
             }
         }
-
-        public async Task AddNewMapsAsync(IEnumerable<Beatmap> beatmaps)
+        catch (Exception ex)
         {
-            const string sql = @"
+            Logger.Error(ex, addOnly
+                ? "Error while calling SyncMapsFromHoLLyAsync(addonly)."
+                : "Error while calling SyncMapsFromHoLLyAsync().");
+            throw;
+        }
+    }
+
+    public async Task AddNewMapsAsync(IEnumerable<Beatmap> beatmaps)
+    {
+        const string sql = @"
 INSERT OR IGNORE INTO beatmaps (
     id,
     artist,
@@ -967,156 +967,155 @@ INSERT OR IGNORE INTO beatmaps (
     @InOwnDb
 );";
 
-            var rows = beatmaps.Select(k => new
-            {
-                k.Id,
-                k.Artist,
-                k.ArtistUnicode,
-                k.Title,
-                k.TitleUnicode,
-                k.Creator,
-                k.Version,
-                k.BeatmapFileName,
-                k.LastModifiedTime,
-                k.DiffSrNoneStandard,
-                k.DiffSrNoneTaiko,
-                k.DiffSrNoneCtB,
-                k.DiffSrNoneMania,
-                k.DrainTimeSeconds,
-                k.TotalTime,
-                k.AudioPreviewTime,
-                k.BeatmapId,
-                k.BeatmapSetId,
-                GameMode = (int)k.GameMode,
-                k.SongSource,
-                k.SongTags,
-                k.FolderName,
-                k.AudioFileName,
-                k.InOwnDb
-            }).ToList();
+        var rows = beatmaps.Select(k => new
+        {
+            k.Id,
+            k.Artist,
+            k.ArtistUnicode,
+            k.Title,
+            k.TitleUnicode,
+            k.Creator,
+            k.Version,
+            k.BeatmapFileName,
+            k.LastModifiedTime,
+            k.DiffSrNoneStandard,
+            k.DiffSrNoneTaiko,
+            k.DiffSrNoneCtB,
+            k.DiffSrNoneMania,
+            k.DrainTimeSeconds,
+            k.TotalTime,
+            k.AudioPreviewTime,
+            k.BeatmapId,
+            k.BeatmapSetId,
+            GameMode = (int)k.GameMode,
+            k.SongSource,
+            k.SongTags,
+            k.FolderName,
+            k.AudioFileName,
+            k.InOwnDb
+        }).ToList();
 
-            if (rows.Count == 0)
-            {
-                return;
-            }
+        if (rows.Count == 0)
+        {
+            return;
+        }
 
-            var dbConnection = Database.GetDbConnection();
-            var shouldClose = dbConnection.State != ConnectionState.Open;
+        var dbConnection = Database.GetDbConnection();
+        var shouldClose = dbConnection.State != ConnectionState.Open;
+        if (shouldClose)
+        {
+            await dbConnection.OpenAsync();
+        }
+
+        try
+        {
+            using var transaction = await dbConnection.BeginTransactionAsync();
+            await dbConnection.ExecuteAsync(sql, rows, transaction);
+            await transaction.CommitAsync();
+        }
+        finally
+        {
             if (shouldClose)
             {
-                await dbConnection.OpenAsync();
+                await dbConnection.CloseAsync();
             }
+        }
+    }
 
-            try
+    public async Task AddNewMapsAsync(params Beatmap[] beatmaps)
+    {
+        await AddNewMapsAsync((IEnumerable<Beatmap>)beatmaps);
+    }
+
+    public async Task RemoveLocalAllAsync()
+    {
+        await Beatmaps.Where(k => k.InOwnDb).ExecuteDeleteAsync();
+    }
+
+    public async Task RemoveSyncedAllAsync()
+    {
+        await Beatmaps.Where(k => !k.InOwnDb).ExecuteDeleteAsync();
+    }
+
+    private async Task AddCollectionAsync(Collection collection)
+    {
+        Collections.Add(new Collection
+        {
+            Id = string.IsNullOrWhiteSpace(collection.Id) ? Guid.NewGuid().ToString() : collection.Id,
+            Name = collection.Name,
+            Locked = collection.LockedBool ? 1 : 0,
+            Index = collection.Index,
+            ImagePath = collection.ImagePath,
+            Description = collection.Description,
+            CreateTime = collection.CreateTime == default ? DateTime.Now : collection.CreateTime
+        });
+        await SaveChangesAsync();
+    }
+
+    private async Task InnerUpdateMapAsync(IMapIdentifiable id, Action<BeatmapSettings> updateAction)
+    {
+        LogTemporaryMap(id);
+
+        try
+        {
+            var map = await BeatmapSettings.FirstOrDefaultAsync(k =>
+                k.Version == id.Version &&
+                k.FolderName == id.FolderName &&
+                k.InOwnDb == id.InOwnDb);
+
+            if (map == null)
             {
-                using var transaction = await dbConnection.BeginTransactionAsync();
-                await dbConnection.ExecuteAsync(sql, rows, transaction);
-                await transaction.CommitAsync();
-            }
-            finally
-            {
-                if (shouldClose)
+                map = new BeatmapSettings
                 {
-                    await dbConnection.CloseAsync();
-                }
+                    Id = Guid.NewGuid().ToString(),
+                    Version = id.Version,
+                    FolderName = id.FolderName,
+                    InOwnDb = id.InOwnDb,
+                    Offset = 0
+                };
+                BeatmapSettings.Add(map);
             }
-        }
 
-        public async Task AddNewMapsAsync(params Beatmap[] beatmaps)
-        {
-            await AddNewMapsAsync((IEnumerable<Beatmap>)beatmaps);
-        }
-
-        public async Task RemoveLocalAllAsync()
-        {
-            await Beatmaps.Where(k => k.InOwnDb).ExecuteDeleteAsync();
-        }
-
-        public async Task RemoveSyncedAllAsync()
-        {
-            await Beatmaps.Where(k => !k.InOwnDb).ExecuteDeleteAsync();
-        }
-
-        private async Task AddCollectionAsync(Collection collection)
-        {
-            Collections.Add(new Collection
-            {
-                Id = string.IsNullOrWhiteSpace(collection.Id) ? Guid.NewGuid().ToString() : collection.Id,
-                Name = collection.Name,
-                Locked = collection.LockedBool ? 1 : 0,
-                Index = collection.Index,
-                ImagePath = collection.ImagePath,
-                Description = collection.Description,
-                CreateTime = collection.CreateTime == default ? DateTime.Now : collection.CreateTime
-            });
+            updateAction(map);
             await SaveChangesAsync();
         }
-
-        private async Task InnerUpdateMapAsync(IMapIdentifiable id, Action<BeatmapSettings> updateAction)
+        catch (Exception ex)
         {
-            LogTemporaryMap(id);
+            Logger.Error(ex, "Error while calling InnerUpdateMapAsync().");
+            throw;
+        }
+    }
 
-            try
-            {
-                var map = await BeatmapSettings.FirstOrDefaultAsync(k =>
-                    k.Version == id.Version &&
-                    k.FolderName == id.FolderName &&
-                    k.InOwnDb == id.InOwnDb);
+    private static void LogTemporaryMap(IMapIdentifiable id)
+    {
+        if (id.IsMapTemporary())
+        {
+            Logger.Debug("需确认加入自定义目录后才可继续");
+        }
+    }
 
-                if (map == null)
-                {
-                    map = new BeatmapSettings
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        Version = id.Version,
-                        FolderName = id.FolderName,
-                        InOwnDb = id.InOwnDb,
-                        Offset = 0
-                    };
-                    BeatmapSettings.Add(map);
-                }
+    private static void ConfigureDapperCompatibility()
+    {
+        DefaultTypeMap.MatchNamesWithUnderscores = true;
+        SqlMapper.AddTypeHandler(new GuidTypeHandler());
+    }
 
-                updateAction(map);
-                await SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error while calling InnerUpdateMapAsync().");
-                throw;
-            }
+    private sealed class GuidTypeHandler : SqlMapper.TypeHandler<Guid>
+    {
+        public override void SetValue(IDbDataParameter parameter, Guid value)
+        {
+            parameter.Value = value.ToString();
         }
 
-        private static void LogTemporaryMap(IMapIdentifiable id)
+        public override Guid Parse(object value)
         {
-            if (id.IsMapTemporary())
+            return value switch
             {
-                Logger.Debug("需确认加入自定义目录后才可继续");
-            }
-        }
-
-        private static void ConfigureDapperCompatibility()
-        {
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
-            SqlMapper.AddTypeHandler(new GuidTypeHandler());
-        }
-
-        private sealed class GuidTypeHandler : SqlMapper.TypeHandler<Guid>
-        {
-            public override void SetValue(IDbDataParameter parameter, Guid value)
-            {
-                parameter.Value = value.ToString();
-            }
-
-            public override Guid Parse(object value)
-            {
-                return value switch
-                {
-                    Guid guid => guid,
-                    string text => Guid.Parse(text),
-                    byte[] bytes => new Guid(bytes),
-                    _ => Guid.Parse(value.ToString())
-                };
-            }
+                Guid guid => guid,
+                string text => Guid.Parse(text),
+                byte[] bytes => new Guid(bytes),
+                _ => Guid.Parse(value.ToString())
+            };
         }
     }
 }

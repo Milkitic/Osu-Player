@@ -1,6 +1,5 @@
-namespace OsuPlayer.Utils
+namespace OsuPlayer.Utils;
+
+class CompoundUtil
 {
-    class CompoundUtil
-    {
-    }
 }

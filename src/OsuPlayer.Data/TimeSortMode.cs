@@ -1,8 +1,7 @@
-namespace OsuPlayer.Data
+namespace OsuPlayer.Data;
+
+public enum TimeSortMode
 {
-    public enum TimeSortMode
-    {
-        PlayTime,
-        AddTime
-    }
+    PlayTime,
+    AddTime
 }

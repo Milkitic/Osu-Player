@@ -15,95 +15,94 @@ using OsuPlayer.Data.Models;
 using OsuPlayer.Presentation;
 using OsuPlayer.Shared;
 
-namespace OsuPlayer
+namespace OsuPlayer;
+
+public static class EntryStartup
 {
-    public static class EntryStartup
+    public static async Task StartupAsync()
     {
-        public static async Task StartupAsync()
+        LogManager.Setup().SetupExtensions(setup =>
+            setup.RegisterLayoutRenderer<InvariantCultureLayoutRendererWrapper>("InvariantCulture"));
+        if (!LoadConfig())
         {
-            LogManager.Setup().SetupExtensions(setup =>
-                setup.RegisterLayoutRenderer<InvariantCultureLayoutRendererWrapper>("InvariantCulture"));
-            if (!LoadConfig())
-            {
-                Environment.Exit(0);
-                return;
-            }
+            Environment.Exit(0);
+            return;
+        }
 
 #if DEBUG
-            //ConsoleManager.Show();
+        //ConsoleManager.Show();
 #endif
 
-            await InitLocalDbAsync();
+        await InitLocalDbAsync();
 
-            StyleUtilities.SetAlignment();
+        StyleUtilities.SetAlignment();
 
-            InitFFmpeg();
+        InitFFmpeg();
+    }
+
+    private static void InitFFmpeg()
+    {
+        // Keep FFmpeg binaries separated by process architecture to avoid x86/x64 mismatches.
+        var ffmpegArchitecture = Environment.Is64BitProcess ? "win-x64" : "win-x86";
+        var ffmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg", ffmpegArchitecture);
+
+        Unosquare.FFME.Library.FFmpegDirectory = ffmpegDirectory;
+        DynamicallyLoadedBindings.FunctionResolver = new FFmpegWindowsFunctionResolver();
+
+        if (!Unosquare.FFME.Library.LoadFFmpeg())
+        {
+            throw new DllNotFoundException($"Unable to initialize FFmpeg from '{ffmpegDirectory}'.");
         }
 
-        private static void InitFFmpeg()
+        _ = ffmpeg.avformat_version();
+    }
+
+    private static bool LoadConfig()
+    {
+        var file = Domain.ConfigFile;
+        if (!File.Exists(file))
         {
-            // Keep FFmpeg binaries separated by process architecture to avoid x86/x64 mismatches.
-            var ffmpegArchitecture = Environment.Is64BitProcess ? "win-x64" : "win-x86";
-            var ffmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg", ffmpegArchitecture);
-
-            Unosquare.FFME.Library.FFmpegDirectory = ffmpegDirectory;
-            DynamicallyLoadedBindings.FunctionResolver = new FFmpegWindowsFunctionResolver();
-
-            if (!Unosquare.FFME.Library.LoadFFmpeg())
-            {
-                throw new DllNotFoundException($"Unable to initialize FFmpeg from '{ffmpegDirectory}'.");
-            }
-
-            _ = ffmpeg.avformat_version();
+            AppSettings.CreateNewConfig();
         }
-
-        private static bool LoadConfig()
+        else
         {
-            var file = Domain.ConfigFile;
-            if (!File.Exists(file))
+            try
             {
-                AppSettings.CreateNewConfig();
+                var content = ConcurrentFile.ReadAllText(file);
+                AppSettings.Load(JsonSerializer.Deserialize<AppSettings>(content, AppSettings.JsonOptions));
             }
-            else
+            catch (JsonException ex)
             {
-                try
+                var result = MessageBox.Show("载入配置文件时失败，用默认配置覆盖继续打开吗？" + Environment.NewLine + ex.Message,
+                    "Osu Player", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
                 {
-                    var content = ConcurrentFile.ReadAllText(file);
-                    AppSettings.Load(JsonSerializer.Deserialize<AppSettings>(content, AppSettings.JsonOptions));
+                    AppSettings.CreateNewConfig();
                 }
-                catch (JsonException ex)
-                {
-                    var result = MessageBox.Show("载入配置文件时失败，用默认配置覆盖继续打开吗？" + Environment.NewLine + ex.Message,
-                        "Osu Player", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        AppSettings.CreateNewConfig();
-                    }
-                    else
-                        return false;
-                }
+                else
+                    return false;
             }
-
-            return true;
         }
 
-        private static async Task InitLocalDbAsync()
+        return true;
+    }
+
+    private static async Task InitLocalDbAsync()
+    {
+        FluentMapper.Initialize(config =>
         {
-            FluentMapper.Initialize(config =>
-            {
-                config.AddMap(new StoryboardInfoMap());
-                config.AddMap(new BeatmapMap());
-                config.AddMap(new BeatmapSettingsMap());
-                config.AddMap(new CollectionMap());
-                config.AddMap(new CollectionRelationMap());
-            });
+            config.AddMap(new StoryboardInfoMap());
+            config.AddMap(new BeatmapMap());
+            config.AddMap(new BeatmapSettingsMap());
+            config.AddMap(new CollectionMap());
+            config.AddMap(new CollectionRelationMap());
+        });
 
-            await OsuPlayerDbContext.InitializeDatabaseAsync();
+        await OsuPlayerDbContext.InitializeDatabaseAsync();
 
-            var playerData = new PlayerDataService();
-            var defCol = await playerData.GetCollectionsAsync();
-            var locked = defCol.Where(k => k.LockedBool);
-            if (!locked.Any()) await playerData.TryAddCollectionAsync("Favorite", true);
-        }
+        var playerData = new PlayerDataService();
+        var defCol = await playerData.GetCollectionsAsync();
+        var locked = defCol.Where(k => k.LockedBool);
+        if (!locked.Any()) await playerData.TryAddCollectionAsync("Favorite", true);
     }
 }

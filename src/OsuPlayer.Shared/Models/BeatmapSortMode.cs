@@ -1,7 +1,6 @@
-﻿namespace OsuPlayer.Shared.Models
+﻿namespace OsuPlayer.Shared.Models;
+
+public enum BeatmapSortMode
 {
-    public enum BeatmapSortMode
-    {
-        Artist, Title
-    }
+    Artist, Title
 }

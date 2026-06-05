@@ -1,7 +1,6 @@
-namespace OsuPlayer.Media.Lyric.SourceProvider
+namespace OsuPlayer.Media.Lyric.SourceProvider;
+
+public abstract class LyricDownloaderBase
 {
-    public abstract class LyricDownloaderBase
-    {
-        public abstract string DownloadLyric(SearchSongResultBase song, bool requestTransLyrics = false);
-    }
+    public abstract string DownloadLyric(SearchSongResultBase song, bool requestTransLyrics = false);
 }

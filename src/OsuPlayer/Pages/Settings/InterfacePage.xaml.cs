@@ -4,40 +4,39 @@ using System.Windows.Controls;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Utils;
 
-namespace OsuPlayer.Pages.Settings
+namespace OsuPlayer.Pages.Settings;
+
+/// <summary>
+/// InterfacePage.xaml 的交互逻辑
+/// </summary>
+public partial class InterfacePage : Page
 {
-    /// <summary>
-    /// InterfacePage.xaml 的交互逻辑
-    /// </summary>
-    public partial class InterfacePage : Page
+    public InterfacePage()
     {
-        public InterfacePage()
-        {
-            InitializeComponent();
+        InitializeComponent();
 
-            var @interface = AppSettings.Default.Interface;
-            this.DataContext = @interface;
-            @interface.PropertyChanged += interface_PropertyChanged;
-        }
+        var @interface = AppSettings.Default.Interface;
+        this.DataContext = @interface;
+        @interface.PropertyChanged += interface_PropertyChanged;
+    }
 
-        private void interface_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            AppSettings.SaveDefault();
-        }
+    private void interface_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        AppSettings.SaveDefault();
+    }
 
-        private void InterfacePage_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            var l = I18NUtil.AvailableLangDic.Keys.ToList();
-            LanguageComboBox.ItemsSource = l;
-            LanguageComboBox.SelectedItem = I18NUtil.CurrentLocale.Key;
-        }
+    private void InterfacePage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        var l = I18NUtil.AvailableLangDic.Keys.ToList();
+        LanguageComboBox.ItemsSource = l;
+        LanguageComboBox.SelectedItem = I18NUtil.CurrentLocale.Key;
+    }
 
-        private void Language_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var locale = I18NUtil.AvailableLangDic[(string)e.AddedItems[0]];
-            I18NUtil.SwitchToLang(locale);
-            AppSettings.Default.Interface.Locale = locale;
-            AppSettings.SaveDefault();
-        }
+    private void Language_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var locale = I18NUtil.AvailableLangDic[(string)e.AddedItems[0]];
+        I18NUtil.SwitchToLang(locale);
+        AppSettings.Default.Interface.Locale = locale;
+        AppSettings.SaveDefault();
     }
 }

@@ -6,88 +6,87 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace OsuPlayer.Media.Lyric.SourceProvider.Netease
+namespace OsuPlayer.Media.Lyric.SourceProvider.Netease;
+
+public class NeteaseSearch : SongSearchBase<NeteaseSearch.Song>
 {
-    public class NeteaseSearch : SongSearchBase<NeteaseSearch.Song>
+    #region Search Result
+    public class Artist
     {
-        #region Search Result
-        public class Artist
+        public List<string> alias { get; set; }
+        public string picUrl { get; set; }
+        public int id { get; set; }
+        public string name { get; set; }
+    }
+
+    public class Album
+    {
+        public int status { get; set; }
+        public int copyrightId { get; set; }
+        public string name { get; set; }
+        public Artist artist { get; set; }
+        public ulong publishTime { get; set; }
+        public int id { get; set; }
+        public int size { get; set; }
+    }
+
+    public class Song : SearchSongResultBase
+    {
+        public Album album { get; set; }
+        public int status { get; set; }
+        public int copyrightId { get; set; }
+        public string name { get; set; }
+        public int mvid { get; set; }
+        public List<string> Alias { get; set; }
+        public List<Artist> artists { get; set; }
+        public int duration { get; set; }
+        public int id { get; set; }
+
+        public override int Duration => duration;
+
+        public override string ID => id.ToString();
+
+        public override string Title => name;
+
+        public override string Artist => artists?.First().name;
+    }
+
+    #endregion
+
+    private static readonly string API_URL = "http://music.163.com/api/search/get/";
+    private static readonly int SEARCH_LIMIT = 5;
+
+    public override List<Song> Search(params string[] param_arr)
+    {
+        string title = param_arr[0], artist = param_arr[1];
+        Uri url = new Uri($"{API_URL}?s={artist} {title}&limit={SEARCH_LIMIT}&type=1&offset=0");
+
+        HttpWebRequest request = HttpWebRequest.CreateHttp(url);
+        request.Method = "POST";
+        request.Timeout = Settings.SearchAndDownloadTimeout;
+        request.Referer = "http://music.163.com";
+        request.Headers["appver"] = $"2.0.2";
+
+        var response = request.GetResponse();
+
+        string content = string.Empty;
+
+        using (var reader = new StreamReader(response.GetResponseStream()))
         {
-            public List<string> alias { get; set; }
-            public string picUrl { get; set; }
-            public int id { get; set; }
-            public string name { get; set; }
+            content = reader.ReadToEnd();
         }
 
-        public class Album
+        var json = JsonNode.Parse(content);
+
+        var count = json["result"]["songCount"]?.GetValue<int>();
+
+        if (count == 0)
         {
-            public int status { get; set; }
-            public int copyrightId { get; set; }
-            public string name { get; set; }
-            public Artist artist { get; set; }
-            public ulong publishTime { get; set; }
-            public int id { get; set; }
-            public int size { get; set; }
+            return new List<Song>();
         }
 
-        public class Song : SearchSongResultBase
-        {
-            public Album album { get; set; }
-            public int status { get; set; }
-            public int copyrightId { get; set; }
-            public string name { get; set; }
-            public int mvid { get; set; }
-            public List<string> Alias { get; set; }
-            public List<Artist> artists { get; set; }
-            public int duration { get; set; }
-            public int id { get; set; }
+        var result = json["result"]["songs"].Deserialize<List<Song>>();
 
-            public override int Duration => duration;
-
-            public override string ID => id.ToString();
-
-            public override string Title => name;
-
-            public override string Artist => artists?.First().name;
-        }
-
-        #endregion
-
-        private static readonly string API_URL = "http://music.163.com/api/search/get/";
-        private static readonly int SEARCH_LIMIT = 5;
-
-        public override List<Song> Search(params string[] param_arr)
-        {
-            string title = param_arr[0], artist = param_arr[1];
-            Uri url = new Uri($"{API_URL}?s={artist} {title}&limit={SEARCH_LIMIT}&type=1&offset=0");
-
-            HttpWebRequest request = HttpWebRequest.CreateHttp(url);
-            request.Method = "POST";
-            request.Timeout = Settings.SearchAndDownloadTimeout;
-            request.Referer = "http://music.163.com";
-            request.Headers["appver"] = $"2.0.2";
-
-            var response = request.GetResponse();
-
-            string content = string.Empty;
-
-            using (var reader = new StreamReader(response.GetResponseStream()))
-            {
-                content = reader.ReadToEnd();
-            }
-
-            var json = JsonNode.Parse(content);
-
-            var count = json["result"]["songCount"]?.GetValue<int>();
-
-            if (count == 0)
-            {
-                return new List<Song>();
-            }
-
-            var result = json["result"]["songs"].Deserialize<List<Song>>();
-
-            return result;
-        }
+        return result;
     }
 }

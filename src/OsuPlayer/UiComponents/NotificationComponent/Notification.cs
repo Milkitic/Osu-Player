@@ -1,28 +1,27 @@
 using System.Collections.ObjectModel;
 using OsuPlayer.Presentation.Interaction;
 
-namespace OsuPlayer.UiComponents.NotificationComponent
+namespace OsuPlayer.UiComponents.NotificationComponent;
+
+public static class Notification
 {
-    public static class Notification
+    public static ObservableCollection<NotificationOption> NotificationList { get; } =
+        new ObservableCollection<NotificationOption>();
+
+    public static void Push(string content, string title = null)
     {
-        public static ObservableCollection<NotificationOption> NotificationList { get; } =
-            new ObservableCollection<NotificationOption>();
-
-        public static void Push(string content, string title = null)
+        Execute.ToUiThread(() =>
         {
-            Execute.ToUiThread(() =>
+            NotificationList?.Add(new NotificationOption
             {
-                NotificationList?.Add(new NotificationOption
-                {
-                    Content = content,
-                    Title = title
-                });
+                Content = content,
+                Title = title
             });
-        }
+        });
+    }
 
-        public static void Push(NotificationOption notification)
-        {
-            Execute.ToUiThread(() => { NotificationList?.Add(notification); });
-        }
+    public static void Push(NotificationOption notification)
+    {
+        Execute.ToUiThread(() => { NotificationList?.Add(notification); });
     }
 }

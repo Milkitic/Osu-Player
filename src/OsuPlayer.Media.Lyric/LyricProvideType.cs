@@ -1,7 +1,6 @@
-namespace OsuPlayer.Media.Lyric
+namespace OsuPlayer.Media.Lyric;
+
+public enum LyricProvideType
 {
-    public enum LyricProvideType
-    {
-        Original, PreferTranslated, PreferBoth
-    }
+    Original, PreferTranslated, PreferBoth
 }

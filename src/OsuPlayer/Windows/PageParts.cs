@@ -1,14 +1,13 @@
 using OsuPlayer.Pages;
 
-namespace OsuPlayer.Windows
+namespace OsuPlayer.Windows;
+
+public class PageParts
 {
-    public class PageParts
-    {
-        public SearchPage SearchPage { get; set; }
-        public StoryboardPage StoryboardPage { get; set; }
-        public RecentPlayPage RecentPlayPage { get; set; }
-        public FindPage FindPage { get; set; }
-        public ExportPage ExportPage { get; set; }
-        public CollectionPage CollectionPage { get; set; }
-    }
+    public SearchPage SearchPage { get; set; }
+    public StoryboardPage StoryboardPage { get; set; }
+    public RecentPlayPage RecentPlayPage { get; set; }
+    public FindPage FindPage { get; set; }
+    public ExportPage ExportPage { get; set; }
+    public CollectionPage CollectionPage { get; set; }
 }

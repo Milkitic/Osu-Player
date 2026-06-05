@@ -1,6 +1,5 @@
-namespace OsuPlayer.Media.Lyric.SourceProvider.Kugou
+namespace OsuPlayer.Media.Lyric.SourceProvider.Kugou;
+
+class KugouLyricsParser
 {
-    class KugouLyricsParser
-    {
-    }
 }

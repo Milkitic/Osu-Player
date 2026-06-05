@@ -1,8 +1,7 @@
 
-namespace OsuPlayer.Presentation
+namespace OsuPlayer.Presentation;
+
+public interface IWindowBase
 {
-    public interface IWindowBase
-    {
-        bool IsClosed { get; set; }
-    }
+    bool IsClosed { get; set; }
 }

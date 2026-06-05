@@ -4,111 +4,110 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace OsuPlayer.Presentation.Interaction
+namespace OsuPlayer.Presentation.Interaction;
+
+public static class Execute
 {
-    public static class Execute
+    private static Dispatcher _uiDispatcher;
+    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
+    /// <summary>
+    /// Returns a singleton <see cref="IUiThreadDispatcher"/> backed by
+    /// WPF's <see cref="Dispatcher"/>. Safe to cache.
+    /// </summary>
+    public static IUiThreadDispatcher UiThreadDispatcher { get; } = new DispatcherUiThreadDispatcher();
+
+    public static void SetMainThreadContext()
     {
-        private static Dispatcher _uiDispatcher;
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        if (_uiDispatcher != null) Logger.Warn("Current dispatcher may be replaced.");
+        _uiDispatcher = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
+    }
 
-        /// <summary>
-        /// Returns a singleton <see cref="IUiThreadDispatcher"/> backed by
-        /// WPF's <see cref="Dispatcher"/>. Safe to cache.
-        /// </summary>
-        public static IUiThreadDispatcher UiThreadDispatcher { get; } = new DispatcherUiThreadDispatcher();
+    public static void OnUiThread(this Action action)
+    {
+        var dispatcher = GetDispatcher();
+        if (dispatcher == null || dispatcher.CheckAccess())
+            SafeInvoke(action);
+        else
+            dispatcher.Invoke(() => SafeInvoke(action));
+    }
 
-        public static void SetMainThreadContext()
+    public static void ToUiThread(this Action action)
+    {
+        var dispatcher = GetDispatcher();
+        if (dispatcher == null)
         {
-            if (_uiDispatcher != null) Logger.Warn("Current dispatcher may be replaced.");
-            _uiDispatcher = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
+            SafeInvoke(action);
+            return;
         }
 
-        public static void OnUiThread(this Action action)
-        {
-            var dispatcher = GetDispatcher();
-            if (dispatcher == null || dispatcher.CheckAccess())
-                SafeInvoke(action);
-            else
-                dispatcher.Invoke(() => SafeInvoke(action));
-        }
+        dispatcher.BeginInvoke(new Action(() => SafeInvoke(action)), DispatcherPriority.Normal);
+    }
 
-        public static void ToUiThread(this Action action)
-        {
-            var dispatcher = GetDispatcher();
-            if (dispatcher == null)
-            {
-                SafeInvoke(action);
-                return;
-            }
+    public static Task OnUiThreadAsync(Func<Task> action)
+    {
+        var dispatcher = GetDispatcher();
+        if (dispatcher == null || dispatcher.CheckAccess())
+            return SafeInvokeAsync(action);
 
-            dispatcher.BeginInvoke(new Action(() => SafeInvoke(action)), DispatcherPriority.Normal);
-        }
-
-        public static Task OnUiThreadAsync(Func<Task> action)
-        {
-            var dispatcher = GetDispatcher();
-            if (dispatcher == null || dispatcher.CheckAccess())
-                return SafeInvokeAsync(action);
-
-            var tcs = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
-            dispatcher.BeginInvoke(new Action(async () =>
-            {
-                try
-                {
-                    await SafeInvokeAsync(action);
-                    tcs.TrySetResult(null);
-                }
-                catch (Exception ex)
-                {
-                    tcs.TrySetException(ex);
-                }
-            }), DispatcherPriority.Normal);
-            return tcs.Task;
-        }
-
-        public static bool CheckDispatcherAccess()
-        {
-            var dispatcher = GetDispatcher();
-            return dispatcher == null
-                ? Thread.CurrentThread.ManagedThreadId == 1
-                : dispatcher.CheckAccess();
-        }
-
-        private static Dispatcher GetDispatcher()
-        {
-            return _uiDispatcher ?? Application.Current?.Dispatcher;
-        }
-
-        private static void SafeInvoke(Action action)
+        var tcs = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+        dispatcher.BeginInvoke(new Action(async () =>
         {
             try
             {
-                action?.Invoke();
+                await SafeInvokeAsync(action);
+                tcs.TrySetResult(null);
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "UiContext execute error.");
+                tcs.TrySetException(ex);
             }
-        }
+        }), DispatcherPriority.Normal);
+        return tcs.Task;
+    }
 
-        private static async Task SafeInvokeAsync(Func<Task> action)
-        {
-            try
-            {
-                if (action != null)
-                    await action();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "UiContext execute error.");
-                throw;
-            }
-        }
+    public static bool CheckDispatcherAccess()
+    {
+        var dispatcher = GetDispatcher();
+        return dispatcher == null
+            ? Thread.CurrentThread.ManagedThreadId == 1
+            : dispatcher.CheckAccess();
+    }
 
-        private sealed class DispatcherUiThreadDispatcher : IUiThreadDispatcher
+    private static Dispatcher GetDispatcher()
+    {
+        return _uiDispatcher ?? Application.Current?.Dispatcher;
+    }
+
+    private static void SafeInvoke(Action action)
+    {
+        try
         {
-            public void Send(Action action) => OnUiThread(action);
-            public void Post(Action action) => ToUiThread(action);
+            action?.Invoke();
         }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "UiContext execute error.");
+        }
+    }
+
+    private static async Task SafeInvokeAsync(Func<Task> action)
+    {
+        try
+        {
+            if (action != null)
+                await action();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "UiContext execute error.");
+            throw;
+        }
+    }
+
+    private sealed class DispatcherUiThreadDispatcher : IUiThreadDispatcher
+    {
+        public void Send(Action action) => OnUiThread(action);
+        public void Post(Action action) => ToUiThread(action);
     }
 }

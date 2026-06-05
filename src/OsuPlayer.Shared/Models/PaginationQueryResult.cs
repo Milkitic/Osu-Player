@@ -1,17 +1,16 @@
 using System.Collections.Generic;
 
-namespace OsuPlayer.Shared.Models
+namespace OsuPlayer.Shared.Models;
+
+public sealed class PaginationQueryResult<T>
 {
-    public sealed class PaginationQueryResult<T>
+    public PaginationQueryResult(IReadOnlyList<T> results, int totalCount)
     {
-        public PaginationQueryResult(IReadOnlyList<T> results, int totalCount)
-        {
-            Results = results ?? [];
-            TotalCount = totalCount < 0 ? 0 : totalCount;
-        }
-
-        public IReadOnlyList<T> Results { get; }
-
-        public int TotalCount { get; }
+        Results = results ?? [];
+        TotalCount = totalCount < 0 ? 0 : totalCount;
     }
+
+    public IReadOnlyList<T> Results { get; }
+
+    public int TotalCount { get; }
 }

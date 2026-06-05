@@ -1,17 +1,16 @@
 using System;
 
-namespace OsuPlayer.Media.Lyric.SourceProvider
-{
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class SourceProviderNameAttribute : Attribute
-    {
-        public SourceProviderNameAttribute(string name, string author)
-        {
-            Name = name;
-            Author = author;
-        }
+namespace OsuPlayer.Media.Lyric.SourceProvider;
 
-        public string Name { get; }
-        public string Author { get; }
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+public class SourceProviderNameAttribute : Attribute
+{
+    public SourceProviderNameAttribute(string name, string author)
+    {
+        Name = name;
+        Author = author;
     }
+
+    public string Name { get; }
+    public string Author { get; }
 }

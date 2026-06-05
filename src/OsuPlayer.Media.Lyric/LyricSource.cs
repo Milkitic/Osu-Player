@@ -1,7 +1,6 @@
-namespace OsuPlayer.Media.Lyric
+namespace OsuPlayer.Media.Lyric;
+
+public enum LyricSource
 {
-    public enum LyricSource
-    {
-        Auto, Netease, Kugou, QqMusic
-    }
+    Auto, Netease, Kugou, QqMusic
 }

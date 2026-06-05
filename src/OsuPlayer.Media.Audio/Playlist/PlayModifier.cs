@@ -1,7 +1,6 @@
-namespace OsuPlayer.Media.Audio.Playlist
+namespace OsuPlayer.Media.Audio.Playlist;
+
+public enum PlayModifier
 {
-    public enum PlayModifier
-    {
-        None, DoubleTime, NightCore, HalfTime, DayCore
-    }
+    None, DoubleTime, NightCore, HalfTime, DayCore
 }

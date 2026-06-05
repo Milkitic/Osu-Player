@@ -1,9 +1,8 @@
 using OsuPlayer.Media.Lyric.Models;
 
-namespace OsuPlayer.Media.Lyric.SourceProvider
+namespace OsuPlayer.Media.Lyric.SourceProvider;
+
+public abstract class LyricParserBase
 {
-    public abstract class LyricParserBase
-    {
-        public abstract Lyrics Parse(string content);
-    }
+    public abstract Lyrics Parse(string content);
 }

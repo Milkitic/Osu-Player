@@ -2,19 +2,18 @@ using System;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace OsuPlayer.Converters
-{
-    public class NegativeBooleanConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            var b = (bool)value;
-            return !b;
-        }
+namespace OsuPlayer.Converters;
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+public class NegativeBooleanConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        var b = (bool)value;
+        return !b;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
     }
 }

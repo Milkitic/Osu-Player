@@ -4,81 +4,80 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace OsuPlayer.Shared
+namespace OsuPlayer.Shared;
+
+[SuppressUnmanagedCodeSecurity]
+public static class ConsoleManager
 {
-    [SuppressUnmanagedCodeSecurity]
-    public static class ConsoleManager
+    public static bool HasConsole => GetConsoleWindow() != IntPtr.Zero;
+
+    private const string Kernel32_DllName = "kernel32.dll";
+
+    [DllImport(Kernel32_DllName)]
+    private static extern bool AllocConsole();
+
+    [DllImport(Kernel32_DllName)]
+    private static extern bool FreeConsole();
+
+    [DllImport(Kernel32_DllName)]
+    private static extern IntPtr GetConsoleWindow();
+
+    [DllImport(Kernel32_DllName)]
+    private static extern int GetConsoleOutputCP();
+
+    /// <summary>
+    /// Creates a new console instance if the process is not attached to a console already.
+    /// </summary>
+    public static void Show()
     {
-        public static bool HasConsole => GetConsoleWindow() != IntPtr.Zero;
+        if (HasConsole) return;
+        AllocConsole();
+        InvalidateOutAndError();
+    }
 
-        private const string Kernel32_DllName = "kernel32.dll";
+    /// <summary>
+    /// If the process has a console attached to it, it will be detached and no longer visible. Writing to the System.Console is still possible, but no output will be shown.
+    /// </summary>
+    public static void Hide()
+    {
+        if (!HasConsole) return;
+        SetOutAndErrorNull();
+        FreeConsole();
+    }
 
-        [DllImport(Kernel32_DllName)]
-        private static extern bool AllocConsole();
+    public static void Toggle()
+    {
+        if (HasConsole) Hide();
+        else Show();
+    }
 
-        [DllImport(Kernel32_DllName)]
-        private static extern bool FreeConsole();
+    private static void InvalidateOutAndError()
+    {
+        Type type = typeof(System.Console);
 
-        [DllImport(Kernel32_DllName)]
-        private static extern IntPtr GetConsoleWindow();
+        System.Reflection.FieldInfo _out = type.GetField("_out",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
 
-        [DllImport(Kernel32_DllName)]
-        private static extern int GetConsoleOutputCP();
+        System.Reflection.FieldInfo _error = type.GetField("_error",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
 
-        /// <summary>
-        /// Creates a new console instance if the process is not attached to a console already.
-        /// </summary>
-        public static void Show()
-        {
-            if (HasConsole) return;
-            AllocConsole();
-            InvalidateOutAndError();
-        }
+        System.Reflection.MethodInfo _InitializeStdOutError = type.GetMethod("InitializeStdOutError",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
 
-        /// <summary>
-        /// If the process has a console attached to it, it will be detached and no longer visible. Writing to the System.Console is still possible, but no output will be shown.
-        /// </summary>
-        public static void Hide()
-        {
-            if (!HasConsole) return;
-            SetOutAndErrorNull();
-            FreeConsole();
-        }
+        Debug.Assert(_out != null);
+        Debug.Assert(_error != null);
 
-        public static void Toggle()
-        {
-            if (HasConsole) Hide();
-            else Show();
-        }
+        Debug.Assert(_InitializeStdOutError != null);
 
-        private static void InvalidateOutAndError()
-        {
-            Type type = typeof(System.Console);
+        _out.SetValue(null, null);
+        _error.SetValue(null, null);
 
-            System.Reflection.FieldInfo _out = type.GetField("_out",
-                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+        _InitializeStdOutError.Invoke(null, new object[] { true });
+    }
 
-            System.Reflection.FieldInfo _error = type.GetField("_error",
-                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-
-            System.Reflection.MethodInfo _InitializeStdOutError = type.GetMethod("InitializeStdOutError",
-                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-
-            Debug.Assert(_out != null);
-            Debug.Assert(_error != null);
-
-            Debug.Assert(_InitializeStdOutError != null);
-
-            _out.SetValue(null, null);
-            _error.SetValue(null, null);
-
-            _InitializeStdOutError.Invoke(null, new object[] { true });
-        }
-
-        private static void SetOutAndErrorNull()
-        {
-            Console.SetOut(TextWriter.Null);
-            Console.SetError(TextWriter.Null);
-        }
+    private static void SetOutAndErrorNull()
+    {
+        Console.SetOut(TextWriter.Null);
+        Console.SetError(TextWriter.Null);
     }
 }

@@ -1,7 +1,6 @@
-namespace OsuPlayer.Presentation.ObjectModel
+namespace OsuPlayer.Presentation.ObjectModel;
+
+public class NumberableModel
 {
-    public class NumberableModel
-    {
-        public int Index { get; internal set; }
-    }
+    public int Index { get; internal set; }
 }

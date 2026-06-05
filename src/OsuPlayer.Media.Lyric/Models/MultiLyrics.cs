@@ -2,37 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OsuPlayer.Media.Lyric.Models
+namespace OsuPlayer.Media.Lyric.Models;
+
+public class MultiLyrics : Lyrics
 {
-    public class MultiLyrics : Lyrics
+    private readonly IEnumerable<Lyrics> lyricses;
+
+    public MultiLyrics(params Lyrics[] lyricses)
     {
-        private readonly IEnumerable<Lyrics> lyricses;
+        this.lyricses = lyricses.OfType<Lyrics>();
+    }
 
-        public MultiLyrics(params Lyrics[] lyricses)
+    public override (Sentence, int) GetCurrentSentence(int time)
+    {
+        int min_index = int.MaxValue;
+        Sentence sentence = Sentence.Empty;
+
+        foreach (var lyrics in lyricses)
         {
-            this.lyricses = lyricses.OfType<Lyrics>();
+            var result = lyrics.GetCurrentSentence(time);
+
+            if (result.Item1.Equals(Sentence.Empty))
+                continue;
+
+            sentence = sentence + result.Item1;
+            min_index = Math.Min(min_index, result.Item2);
         }
 
-        public override (Sentence, int) GetCurrentSentence(int time)
-        {
-            int min_index = int.MaxValue;
-            Sentence sentence = Sentence.Empty;
+        //trim newline in sentence content
+        sentence.Content = sentence.Content.Trim('\n', '\r');
 
-            foreach (var lyrics in lyricses)
-            {
-                var result = lyrics.GetCurrentSentence(time);
-
-                if (result.Item1.Equals(Sentence.Empty))
-                    continue;
-
-                sentence = sentence + result.Item1;
-                min_index = Math.Min(min_index, result.Item2);
-            }
-
-            //trim newline in sentence content
-            sentence.Content = sentence.Content.Trim('\n', '\r');
-
-            return (sentence, min_index);
-        }
+        return (sentence, min_index);
     }
 }

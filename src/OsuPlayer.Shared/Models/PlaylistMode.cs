@@ -1,7 +1,6 @@
-﻿namespace OsuPlayer.Shared.Models
+﻿namespace OsuPlayer.Shared.Models;
+
+public enum PlaylistMode
 {
-    public enum PlaylistMode
-    {
-        Normal, Random, Loop, LoopRandom, Single, SingleLoop,
-    }
+    Normal, Random, Loop, LoopRandom, Single, SingleLoop,
 }

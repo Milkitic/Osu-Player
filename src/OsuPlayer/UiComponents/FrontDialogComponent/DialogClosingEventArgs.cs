@@ -1,9 +1,8 @@
 using System;
 
-namespace OsuPlayer.UiComponents.FrontDialogComponent
+namespace OsuPlayer.UiComponents.FrontDialogComponent;
+
+public class DialogClosingEventArgs : EventArgs
 {
-    public class DialogClosingEventArgs : EventArgs
-    {
-        public bool Cancel { get; set; }
-    }
+    public bool Cancel { get; set; }
 }

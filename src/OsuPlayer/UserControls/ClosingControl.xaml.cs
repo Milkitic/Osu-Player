@@ -1,15 +1,14 @@
 using System.Windows.Controls;
 
-namespace OsuPlayer.UserControls
+namespace OsuPlayer.UserControls;
+
+/// <summary>
+/// ClosingControl.xaml 的交互逻辑
+/// </summary>
+public partial class ClosingControl : UserControl
 {
-    /// <summary>
-    /// ClosingControl.xaml 的交互逻辑
-    /// </summary>
-    public partial class ClosingControl : UserControl
+    public ClosingControl()
     {
-        public ClosingControl()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

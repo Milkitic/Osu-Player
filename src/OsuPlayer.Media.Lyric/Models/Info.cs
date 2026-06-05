@@ -1,9 +1,8 @@
-namespace OsuPlayer.Media.Lyric.Models
+namespace OsuPlayer.Media.Lyric.Models;
+
+public struct Info
 {
-    public struct Info
-    {
-        public string Artist;
-        public string Title;
-        public string ID;
-    }
+    public string Artist;
+    public string Title;
+    public string ID;
 }

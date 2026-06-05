@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Threading;
 
-namespace OsuPlayer.Shared
-{
-    public class MyCancellationTokenSource : CancellationTokenSource
-    {
-        public Guid Guid { get; }
+namespace OsuPlayer.Shared;
 
-        public MyCancellationTokenSource()
-        {
-            Guid = Guid.NewGuid();
-        }
+public class MyCancellationTokenSource : CancellationTokenSource
+{
+    public Guid Guid { get; }
+
+    public MyCancellationTokenSource()
+    {
+        Guid = Guid.NewGuid();
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace OsuPlayer.Shared.Models
+﻿namespace OsuPlayer.Shared.Models;
+
+public enum ExportGroupStyle
 {
-    public enum ExportGroupStyle
-    {
-        None, Artist, Mapper, Source
-    }
+    None, Artist, Mapper, Source
 }
