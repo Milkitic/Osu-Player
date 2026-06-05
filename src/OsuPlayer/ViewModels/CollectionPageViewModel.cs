@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -13,9 +11,6 @@ using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.UserControls;
 
 namespace Milky.OsuPlayer.ViewModels;
 
@@ -24,13 +19,16 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
     private readonly ObservablePlayController _controller;
     private readonly IPlayerDataService _playerData;
     private readonly IExportService _exportService;
+    private readonly IBeatmapActionService _beatmapActions;
 
     public CollectionPageViewModel(IPlayerDataService playerData, ObservablePlayController controller,
-        IExportService exportService)
+        IExportService exportService,
+        IBeatmapActionService beatmapActions)
     {
         _playerData = playerData;
         _controller = controller;
         _exportService = exportService;
+        _beatmapActions = beatmapActions;
     }
 
     public IPlayerDataService PlayerData => _playerData;
@@ -96,45 +94,25 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
     [RelayCommand]
     private async Task OpenSourceFolderAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        var folderName = beatmap.GetFolder(out _, out _);
-        if (!Directory.Exists(folderName))
-        {
-            Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
-            return;
-        }
-
-        Process.Start(folderName);
+        await _beatmapActions.OpenSourceFolderAsync(beatmap);
     }
 
     [RelayCommand]
     private async Task OpenScorePageAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
+        await _beatmapActions.OpenScorePageAsync(beatmap);
     }
 
     [RelayCommand]
     private async Task SaveCollectionAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(map),
-            DialogOptionFactory.SelectCollectionOptions);
+        await _beatmapActions.SaveToCollectionAsync(beatmap);
     }
 
     [RelayCommand]
     private async Task ExportAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        _exportService.QueueEntry(map);
+        await _beatmapActions.ExportAsync(beatmap);
     }
 
     [RelayCommand]
@@ -147,19 +125,13 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
     [RelayCommand]
     public async Task DirectPlayAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        await _controller.PlayNewAsync(map);
+        await _beatmapActions.PlayAsync(beatmap);
     }
 
     [RelayCommand]
     private async Task PlayAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        await _controller.PlayNewAsync(map);
+        await _beatmapActions.PlayAsync(beatmap);
     }
 
     [RelayCommand]
@@ -168,7 +140,7 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
         if (beatmap == null) return;
         if (!await _playerData.TryRemoveMapFromCollectionAsync(beatmap.GetIdentity(), CollectionInfo))
             return;
-        if (_controller.PlayList.CurrentInfo.Beatmap.GetIdentity().Equals(beatmap.GetIdentity()) &&
+        if (_controller.PlayList.CurrentInfo?.Beatmap?.GetIdentity().Equals(beatmap.GetIdentity()) == true &&
             CollectionInfo.LockedBool)
         {
             _controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite = false;
@@ -208,7 +180,7 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
         var beatmaps = Entries.ToList();
         if (beatmaps.Count <= 0) return;
 
-        await _controller.PlayList.SetSongListAsync(beatmaps, true);
+        await _controller.SetPlaylistAsync(beatmaps, true);
     }
 
     [RelayCommand]

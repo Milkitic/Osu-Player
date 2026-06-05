@@ -132,7 +132,6 @@
     <sys:String x:Key="ui-sets-content-dirNoGroup">No grouping</sys:String>
     <sys:String x:Key="ui-sets-content-privacyPolicy">Privacy Policy</sys:String>
     <sys:String x:Key="ui-sets-content-setAsDefaultOptions">Set as Default</sys:String>
-    <sys:String x:Key="ui-sets-title-audioDelayExperimental">Audio Delay (EXPERIMENTAL)</sys:String>
     <sys:String x:Key="ui-sets-title-desktopLyric">Lyric</sys:String>
     <sys:String x:Key="ui-sets-title-matchMode">Match Mode</sys:String>
     <sys:String x:Key="ui-sets-title-directoryGrouping">Directory Grouping</sys:String>

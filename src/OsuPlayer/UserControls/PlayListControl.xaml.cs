@@ -41,7 +41,7 @@ public partial class PlayListControlVm : ObservableObject
     [RelayCommand]
     private async Task ClearPlayListAsync()
     {
-        await Controller.PlayList.SetSongListAsync(Array.Empty<Beatmap>(), false);
+        await Controller.SetPlaylistAsync(Array.Empty<Beatmap>(), false);
     }
 
     [RelayCommand]
@@ -105,12 +105,7 @@ public partial class PlayListControlVm : ObservableObject
     [RelayCommand]
     private async Task RemoveAsync()
     {
-        foreach (var beatmap in SelectedMaps)
-        {
-            Controller.PlayList.SongList.Remove(beatmap);
-        }
-
-        await Task.CompletedTask;
+        await Controller.RemoveFromPlaylistAsync(SelectedMaps);
     }
 }
 

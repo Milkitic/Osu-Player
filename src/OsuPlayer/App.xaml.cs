@@ -1,6 +1,9 @@
 using System;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using KeyAsio.Core.Audio;
+using KeyAsio.Core.Audio.Caching;
+using Microsoft.Extensions.Logging;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
 using Milky.OsuPlayer.Core.Instances;
@@ -93,9 +96,13 @@ public partial class App : Application
 
     private void ConfigureServices(IServiceCollection services)
     {
+        services.AddLogging();
+        services.AddAudioModule();
+
         // 注册核心后台服务 (Singletons)
         services.AddSingleton<IAppNotificationService, AppNotificationService>();
         services.AddSingleton<INavigationService, FrameNavigationService>();
+        services.AddSingleton<IUiThreadDispatcher>(_ => Execute.UiThreadDispatcher);
         services.AddSingleton<IPlayerDataStore, PlayerDataService>();
         services.AddSingleton<IPlayerDataService>(provider =>
             new NotifyingPlayerDataService(
@@ -104,7 +111,13 @@ public partial class App : Application
 
         services.AddSingleton(provider =>
         {
-            var controller = new ObservablePlayController(provider.GetRequiredService<IPlayerDataStore>());
+            var controller = new ObservablePlayController(
+                provider.GetRequiredService<IPlayerDataStore>(),
+                provider.GetRequiredService<IPlaybackEngine>(),
+                provider.GetRequiredService<IAudioDeviceManager>(),
+                provider.GetRequiredService<AudioCacheManager>(),
+                ex => provider.GetRequiredService<IAppNotificationService>().Push(ex.Message, "Audio Device Error"),
+                provider.GetRequiredService<IUiThreadDispatcher>());
             controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
             return controller;
         });
@@ -113,6 +126,7 @@ public partial class App : Application
         services.AddSingleton<UpdateInst>();
         services.AddSingleton<OsuFileScanner>();
         services.AddSingleton<IExportService, ExportService>();
+        services.AddSingleton<IBeatmapActionService, BeatmapActionService>();
 
         // 注册 ViewModels
         services.AddSingleton(_ => SharedVm.Default);

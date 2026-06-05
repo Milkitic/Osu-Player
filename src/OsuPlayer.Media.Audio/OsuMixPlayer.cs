@@ -1,201 +1,392 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
-using Milki.Extensions.MixPlayer;
-using Milki.Extensions.MixPlayer.NAudioExtensions.Wave;
-using Milki.Extensions.MixPlayer.Subchannels;
+using KeyAsio.Core.Audio;
+using KeyAsio.Core.Audio.Caching;
 using Milky.OsuPlayer.Core;
 using Milky.OsuPlayer.Core.Configuration;
+using Milky.OsuPlayer.Media.Audio.Infrastructure;
 using Milky.OsuPlayer.Media.Audio.Playlist;
+using Milky.OsuPlayer.Media.Audio.Rules;
+using Milky.OsuPlayer.Media.Audio.SoundTouch;
 using NAudio.Wave;
 
-namespace Milky.OsuPlayer.Media.Audio
+namespace Milky.OsuPlayer.Media.Audio;
+
+/// <summary>
+/// Concrete player that wires the KeyAsio engine to an
+/// <see cref="OsuBeatmapAudioSession"/>. Exposes a flat
+/// <see cref="IPlaybackController"/>-style API and an observable play status.
+/// </summary>
+/// <remarks>
+/// Intentionally thin: business rules live in <see cref="Rules.NightcoreRules"/>,
+/// persistence lives in <c>AppSettings</c>, and the previous direct write to
+/// <c>SharedVm.Default</c> has been removed — the controller relays status
+/// through <see cref="PlayStatusChanged"/> and the UI binds directly.
+/// </remarks>
+public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
 {
-    public class OsuMixPlayer : MultichannelPlayer
+    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
+    private readonly IPlaybackEngine _engine;
+    private StandaloneMusicTransport? _musicTransport;
+    private readonly AudioCacheManager _audioCacheManager;
+    private OsuBeatmapAudioSession? _session;
+
+    private OsuFile _osuFile;
+    private string _sourceFolder;
+    private OsuAudioSessionOptions? _sessionOptions;
+    private readonly CancellableAsyncLoop _positionPumpLoop = new();
+    private PlayStatus _playStatus = PlayStatus.Unknown;
+    private int _manualOffset;
+
+    public event Action<PlayStatus>? PlayStatusChanged;
+    public event Action<TimeSpan>? PositionUpdated;
+
+    public OsuMixPlayer(OsuFile osuFile, string sourceFolder, IPlaybackEngine engine, AudioCacheManager audioCacheManager)
     {
-        public static OsuMixPlayer Current { get; private set; }
+        _osuFile = osuFile;
+        _sourceFolder = sourceFolder;
+        _engine = engine;
+        _audioCacheManager = audioCacheManager;
+    }
 
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private HitsoundFileCache _fileCache;
+    public IWavePlayer? Device => _engine.CurrentDevice;
+    public TimeSpan Duration => _session?.Duration ?? TimeSpan.Zero;
+    public TimeSpan Position => _session?.Position ?? TimeSpan.Zero;
+    public float PlaybackRate => _musicTransport?.RateState.Rate ?? 1f;
+    public bool KeepTune => _musicTransport?.RateState.PreservePitch ?? false;
 
-        private OsuFile _osuFile;
-        private string _sourceFolder;
-        private int _manualOffset;
-
-        public override string Description { get; } = "OsuPlayer";
-
-        public SingleMediaChannel MusicChannel { get; private set; }
-        public HitsoundChannel HitsoundChannel { get; private set; }
-        public SampleChannel SampleChannel { get; private set; }
-        public IWavePlayer Device => Engine.OutputDevice;
-        public int ManualOffset
+    public PlayStatus PlayStatus
+    {
+        get => _playStatus;
+        private set
         {
-            get => _manualOffset;
-            set
-            {
-                if (HitsoundChannel != null) HitsoundChannel.ManualOffset = value;
-                if (SampleChannel != null) SampleChannel.ManualOffset = value;
-                _manualOffset = value;
-            }
+            if (_playStatus == value) return;
+            _playStatus = value;
+            PlayStatusChanged?.Invoke(value);
         }
+    }
 
-        public OsuMixPlayer(LocalOsuFile osuFile) : base(AppSettings.Default?.Play?.DeviceDescription)
+    public float Volume
+    {
+        get => _engine.MainVolume;
+        set => _engine.MainVolume = value;
+    }
+
+    public int ManualOffset
+    {
+        get => _manualOffset;
+        set
         {
-            _osuFile = osuFile;
-            _sourceFolder = Path.GetDirectoryName(osuFile.OriginalPath);
-            Current = this;
+            _manualOffset = value;
+            _session?.ManualOffsetMilliseconds = value;
         }
+    }
 
-        public OsuMixPlayer(OsuFile osuFile, string sourceFolder) : base(AppSettings.Default.Play.DeviceDescription)
+    public async Task Initialize()
+    {
+        try
         {
-            _osuFile = osuFile;
-            _sourceFolder = sourceFolder;
-            Current = this;
-        }
+            ConfigureSoundTouchRuntime();
+            StartAudioEngine();
+            _musicTransport = new StandaloneMusicTransport(_engine);
+            _session = new OsuBeatmapAudioSession(_engine, _musicTransport, _audioCacheManager,
+                new SoundTouchPlaybackRateProcessorFactory());
+            _session.Finished += Session_Finished;
+            _sessionOptions = CreateSessionOptions();
+            SynchronizeVolumeSettings();
 
-        public override async Task Initialize()
-        {
-            _fileCache = new HitsoundFileCache();
-            try
-            {
-                if (CachedSoundFactory.GetCount("internal") == 0)
-                {
-                    var files = new DirectoryInfo(Domain.DefaultPath).GetFiles("*.wav");
-                    foreach (var file in files.Select(k => k.FullName))
-                    {
-                        await CachedSoundFactory.GetOrCreateCacheSound(Engine.WaveFormat, file).ConfigureAwait(false);
-                    }
-                }
+            await _session.LoadAsync(_osuFile, _sessionOptions).ConfigureAwait(false);
+            await SetPlaybackRate(AppSettings.Default?.Play?.PlaybackRate ?? 1,
+                AppSettings.Default?.Play?.PlayUseTempo ?? false).ConfigureAwait(false);
 
-                await InnerLoad().ConfigureAwait(false);
-                await base.Initialize().ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error while Initializing players.");
-                throw;
-            }
-        }
-
-        public async Task Reload(OsuFile osuFile, string sourceFolder)
-        {
-            await DisposeSubChannelsAsync();
-            _osuFile = osuFile;
-            _sourceFolder = sourceFolder;
-
-            await InnerLoad().ConfigureAwait(false);
-            await base.Initialize().ConfigureAwait(false);
-        }
-
-        private async Task InnerLoad()
-        {
-            var mp3Path = Path.Combine(_sourceFolder, _osuFile?.General.AudioFilename ?? ".");
-            MusicChannel = new SingleMediaChannel(Engine, mp3Path,
-                AppSettings.Default?.Play?.PlaybackRate ?? 1,
-                AppSettings.Default?.Play?.PlayUseTempo ?? true)
-            {
-                Description = "Music",
-                IsReferenced = true
-            };
-
-            AddSubchannel(MusicChannel);
-            await MusicChannel.Initialize().ConfigureAwait(false);
-
-            HitsoundChannel = new HitsoundChannel(_osuFile, _sourceFolder, Engine, _fileCache);
-            AddSubchannel(HitsoundChannel);
-            await HitsoundChannel.Initialize().ConfigureAwait(false);
-
-            SampleChannel = new SampleChannel(_osuFile, _sourceFolder, Engine, new Subchannel[]
-            {
-                MusicChannel, HitsoundChannel
-            }, _fileCache);
-            AddSubchannel(SampleChannel);
-            await SampleChannel.Initialize().ConfigureAwait(false);
-            //await CachedSound.CreateCacheSounds(HitsoundChannel.SoundElementCollection
-            //    .Where(k => k.FilePath != null)
-            //    .Select(k => k.FilePath)
-            //    .Concat(SampleChannel.SoundElementCollection
-            //        .Where(k => k.FilePath != null)
-            //        .Select(k => k.FilePath))
-            //    .Concat(new[] { mp3Path })
-            //).ConfigureAwait(false);
-            foreach (var channel in Subchannels)
-            {
-                channel.PlayStatusChanged += status => Logger.Debug($"{channel.Description}: {status}");
-            }
-
-            InitVolume();
-
-            await CachedSoundFactory.GetOrCreateCacheSound(Engine.WaveFormat, mp3Path);
-            await BufferSoundElementsAsync();
-        }
-
-        private void InitVolume()
-        {
-            MusicChannel.Volume = AppSettings.Default?.Volume?.Music ?? 1;
-            HitsoundChannel.Volume = AppSettings.Default?.Volume?.Hitsound ?? 1;
-            HitsoundChannel.BalanceFactor = AppSettings.Default?.Volume?.BalanceFactor / 100 ?? 0;
-            SampleChannel.Volume = AppSettings.Default?.Volume?.Sample ?? 1;
-            Volume = AppSettings.Default?.Volume?.Main ?? 1;
             if (AppSettings.Default?.Volume != null)
+            {
                 AppSettings.Default.Volume.PropertyChanged += Volume_PropertyChanged;
-        }
-
-        private void Volume_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(AppSettings.Default.Volume.Music):
-                    MusicChannel.Volume = AppSettings.Default.Volume.Music;
-                    break;
-                case nameof(AppSettings.Default.Volume.Hitsound):
-                    HitsoundChannel.Volume = AppSettings.Default.Volume.Hitsound;
-                    break;
-                case nameof(AppSettings.Default.Volume.BalanceFactor):
-                    HitsoundChannel.BalanceFactor = AppSettings.Default.Volume.BalanceFactor / 100;
-                    break;
-                case nameof(AppSettings.Default.Volume.Sample):
-                    SampleChannel.Volume = AppSettings.Default.Volume.Sample;
-                    break;
-                case nameof(AppSettings.Default.Volume.Main):
-                    Volume = AppSettings.Default.Volume.Main;
-                    break;
-            }
-        }
-
-        public async Task SetPlayMod(PlayModifier modifier)
-        {
-            switch (modifier)
-            {
-                case PlayModifier.None:
-                    await SetPlaybackRate(1, false).ConfigureAwait(false);
-                    break;
-                case PlayModifier.DoubleTime:
-                    await SetPlaybackRate(1.5f, true).ConfigureAwait(false);
-                    break;
-                case PlayModifier.NightCore:
-                    await SetPlaybackRate(1.5f, false).ConfigureAwait(false);
-                    break;
-                case PlayModifier.HalfTime:
-                    await SetPlaybackRate(0.75f, true).ConfigureAwait(false);
-                    break;
-                case PlayModifier.DayCore:
-                    await SetPlaybackRate(0.75f, false).ConfigureAwait(false);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(modifier), modifier, null);
             }
 
-            AppSettings.SaveDefault();
+            PlayStatus = PlayStatus.Ready;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Error while initializing KeyAsio osu player.");
+            throw;
+        }
+    }
+
+    public async Task Reload(OsuFile osuFile, string sourceFolder)
+    {
+        await StopAsync().ConfigureAwait(false);
+        _osuFile = osuFile;
+        _sourceFolder = sourceFolder;
+        _sessionOptions = CreateSessionOptions();
+        SynchronizeVolumeSettings();
+        var session = RequireSession();
+        await session.LoadAsync(_osuFile, _sessionOptions).ConfigureAwait(false);
+        PlayStatus = PlayStatus.Ready;
+    }
+
+    public async Task PlayAsync()
+    {
+        var session = RequireSession();
+        if (PlayStatus == PlayStatus.Playing) return;
+        if (PlayStatus == PlayStatus.Finished)
+        {
+            await SkipToAsync(TimeSpan.Zero).ConfigureAwait(false);
         }
 
-        public override ValueTask DisposeAsync()
+        await session.PlayAsync().ConfigureAwait(false);
+        StartPositionPump();
+        RaisePositionUpdated(Position);
+        PlayStatus = PlayStatus.Playing;
+    }
+
+    public Task PauseAsync()
+    {
+        if (PlayStatus == PlayStatus.Paused) return Task.CompletedTask;
+
+        return PauseCoreAsync();
+    }
+
+    private async Task PauseCoreAsync()
+    {
+        var session = RequireSession();
+        await StopPositionPumpAsync().ConfigureAwait(false);
+        await session.PauseAsync().ConfigureAwait(false);
+        RaisePositionUpdated(Position);
+        PlayStatus = PlayStatus.Paused;
+    }
+
+    public Task StopAsync()
+    {
+        return StopCoreAsync();
+    }
+
+    private async Task StopCoreAsync()
+    {
+        var session = RequireSession();
+        await StopPositionPumpAsync().ConfigureAwait(false);
+        await session.StopAsync().ConfigureAwait(false);
+        RaisePositionUpdated(TimeSpan.Zero);
+        PlayStatus = PlayStatus.Paused;
+    }
+
+    public async Task RestartAsync()
+    {
+        await StopAsync().ConfigureAwait(false);
+        await PlayAsync().ConfigureAwait(false);
+    }
+
+    public Task TogglePlayAsync()
+    {
+        return PlayStatus switch
         {
-            if (AppSettings.Default?.Volume != null)
-                AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
-            return base.DisposeAsync();
+            PlayStatus.Ready or PlayStatus.Finished or PlayStatus.Paused => PlayAsync(),
+            PlayStatus.Playing => PauseAsync(),
+            _ => Task.CompletedTask,
+        };
+    }
+
+    public async Task SetTimeAsync(double time, bool play)
+    {
+        await SkipToAsync(TimeSpan.FromMilliseconds(time)).ConfigureAwait(false);
+        if (play && PlayStatus != PlayStatus.Playing)
+        {
+            await PlayAsync().ConfigureAwait(false);
         }
+    }
+
+    public async Task SkipToAsync(TimeSpan time)
+    {
+        var session = RequireSession();
+        var previousStatus = PlayStatus;
+        PlayStatus = PlayStatus.Reposition;
+        await session.SeekAsync(time).ConfigureAwait(false);
+        RaisePositionUpdated(time);
+
+        if (previousStatus == PlayStatus.Playing)
+        {
+            await session.PlayAsync().ConfigureAwait(false);
+            StartPositionPump();
+            PlayStatus = PlayStatus.Playing;
+        }
+        else
+        {
+            PlayStatus = previousStatus switch
+            {
+                PlayStatus.Unknown => PlayStatus.Ready,
+                PlayStatus.Finished => PlayStatus.Paused,
+                _ => previousStatus,
+            };
+        }
+    }
+
+    public async Task SetPlaybackRate(float rate, bool keepTune)
+    {
+        AppSettings.Default.Play.PlaybackRate = rate;
+        AppSettings.Default.Play.PlayUseTempo = keepTune;
+
+        var session = RequireSession();
+        var enableNightcoreBeats = NightcoreRules.ShouldEnableNightcoreBeats(rate, keepTune);
+        await session.SetNightcoreBeatsAsync(enableNightcoreBeats).ConfigureAwait(false);
+        await session.SetPlaybackRateAsync(new PlaybackRateState(rate, keepTune)).ConfigureAwait(false);
+    }
+
+    public async Task SetPlayMod(PlayModifier modifier)
+    {
+        switch (modifier)
+        {
+            case PlayModifier.None:
+                await SetPlaybackRate(1, false).ConfigureAwait(false);
+                break;
+            case PlayModifier.DoubleTime:
+                await SetPlaybackRate(NightcoreRules.NightcoreRate, true).ConfigureAwait(false);
+                break;
+            case PlayModifier.NightCore:
+                await SetPlaybackRate(NightcoreRules.NightcoreRate, false).ConfigureAwait(false);
+                break;
+            case PlayModifier.HalfTime:
+                await SetPlaybackRate(0.75f, true).ConfigureAwait(false);
+                break;
+            case PlayModifier.DayCore:
+                await SetPlaybackRate(0.75f, false).ConfigureAwait(false);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(modifier), modifier, null);
+        }
+
+        AppSettings.SaveDefault();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (AppSettings.Default?.Volume != null)
+        {
+            AppSettings.Default.Volume.PropertyChanged -= Volume_PropertyChanged;
+        }
+
+        var session = _session;
+        await SafeStopExtensions.TryAsync(
+            async () =>
+            {
+                await StopPositionPumpAsync().ConfigureAwait(false);
+                await _positionPumpLoop.DisposeAsync().ConfigureAwait(false);
+                if (session != null)
+                {
+                    session.Finished -= Session_Finished;
+                    await session.DisposeAsync().ConfigureAwait(false);
+                }
+            },
+            Logger,
+            "Error while disposing OsuMixPlayer.").ConfigureAwait(false);
+    }
+
+    private OsuBeatmapAudioSession RequireSession()
+    {
+        return _session ?? throw new InvalidOperationException(
+            $"{nameof(OsuMixPlayer)}.{nameof(Initialize)} must be called before using playback operations.");
+    }
+
+    private void Session_Finished()
+    {
+        StopPositionPump();
+        RaisePositionUpdated(Duration);
+        PlayStatus = PlayStatus.Finished;
+    }
+
+    private void StartAudioEngine()
+    {
+        OsuPlayerAudioDevicePolicy.StartDevice(_engine, AppSettings.Default?.Play?.DeviceDescription);
+    }
+
+    private OsuAudioSessionOptions CreateSessionOptions()
+    {
+        var beatmapFilename = ResolveBeatmapFilename();
+        var playSection = AppSettings.Default?.Play;
+
+        return new OsuAudioSessionOptions
+        {
+            Resources = new BeatmapResources
+            {
+                BeatmapFolder = _sourceFolder,
+                BeatmapFilename = beatmapFilename,
+                AudioFilename = _osuFile.General?.AudioFilename ?? string.Empty,
+                DefaultHitsoundFolder = Domain.DefaultPath,
+                UserSkinFolder = Domain.DefaultPath,
+            },
+            GeneralOffsetMilliseconds = playSection?.GeneralActualOffset ?? 0,
+            ManualOffsetMilliseconds = ManualOffset,
+            EnableNightcoreBeats = NightcoreRules.ShouldEnableNightcoreBeats(
+                playSection?.PlaybackRate ?? 1,
+                playSection?.PlayUseTempo ?? false),
+        };
+    }
+
+    private string ResolveBeatmapFilename()
+    {
+        if (_osuFile is LocalOsuFile localOsuFile)
+        {
+            return Path.GetFileName(localOsuFile.OriginalPath) ?? string.Empty;
+        }
+
+        return Directory.EnumerateFiles(_sourceFolder, "*.osu", SearchOption.TopDirectoryOnly)
+            .Select(Path.GetFileName)
+            .FirstOrDefault() ?? string.Empty;
+    }
+
+    private void SynchronizeVolumeSettings()
+    {
+        var volume = AppSettings.Default?.Volume;
+        if (volume == null || _sessionOptions == null) return;
+
+        _engine.MainVolume = volume.Main;
+        _engine.MusicVolume = volume.Music;
+        _engine.EffectVolume = 1;
+
+        _sessionOptions.HitsoundVolume = volume.Hitsound;
+        _sessionOptions.SampleVolume = volume.Sample;
+        _sessionOptions.BalanceFactor = volume.BalanceFactor / 100;
+        _session?.ApplyOptions(_sessionOptions);
+    }
+
+    private void Volume_PropertyChanged(object? sender, PropertyChangedEventArgs? e)
+    {
+        SynchronizeVolumeSettings();
+    }
+
+    private void StartPositionPump()
+    {
+        _positionPumpLoop.Start(async ct =>
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                RaisePositionUpdated(Position);
+                await Task.Delay(250, ct).ConfigureAwait(false);
+            }
+        });
+    }
+
+    private void StopPositionPump()
+    {
+        _positionPumpLoop.Stop();
+    }
+
+    private ValueTask StopPositionPumpAsync()
+    {
+        return _positionPumpLoop.StopAsync();
+    }
+
+    private void RaisePositionUpdated(TimeSpan position)
+    {
+        PositionUpdated?.Invoke(position);
+    }
+
+    private static void ConfigureSoundTouchRuntime()
+    {
+        SoundTouchRuntime.Configure(Path.Combine(AppContext.BaseDirectory, "runtimes"));
     }
 }

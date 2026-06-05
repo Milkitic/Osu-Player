@@ -1,73 +1,82 @@
-using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Coosu.Beatmap;
 using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Services;
 
-namespace Milky.OsuPlayer.Media.Audio.Playlist
+namespace Milky.OsuPlayer.Media.Audio.Playlist;
+
+/// <summary>
+/// Anemic model holding the currently-selected beatmap plus all of its
+/// derived metadata. Knows nothing about playback — call sites that need
+/// to drive the player obtain one from the controller that produced this
+/// context.
+/// </summary>
+public class BeatmapContext
 {
-    public class BeatmapContext
+    public BeatmapContext() : this(new Beatmap()) { }
+
+    private BeatmapContext(Beatmap beatmap)
     {
-        public BeatmapContext()
-        {
-            Beatmap = new Beatmap();
-            BeatmapDetail = new BeatmapDetail(Beatmap);
-        }
+        Beatmap = beatmap;
+        BeatmapDetail = new BeatmapDetail(beatmap);
+    }
 
-        private BeatmapContext(Beatmap beatmap)
+    public static async Task<BeatmapContext> CreateAsync(Beatmap beatmap, IPlayerDataStore playerData)
+    {
+        return new BeatmapContext(beatmap)
         {
-            Beatmap = beatmap;
-            BeatmapDetail = new BeatmapDetail(beatmap);
-        }
+            BeatmapSettings = await playerData.GetMapFromDbAsync(beatmap.GetIdentity()),
+        };
+    }
 
-        public static async Task<BeatmapContext> CreateAsync(Beatmap beatmap, IPlayerDataStore playerData)
-        {
-            return new BeatmapContext(beatmap)
-            {
-                BeatmapSettings = await playerData.GetMapFromDbAsync(beatmap.GetIdentity()),
-            };
-        }
+    public bool FullLoaded { get; set; } = false;
+    public Beatmap Beatmap { get; }
+    public BeatmapSettings? BeatmapSettings { get; private set; }
+    public BeatmapDetail BeatmapDetail { get; }
+    public LocalOsuFile? OsuFile { get; set; }
+    public bool PlayInstantly { get; set; }
 
-        public bool FullLoaded { get; set; } = false;
-        public Beatmap Beatmap { get; }
-        public BeatmapSettings BeatmapSettings { get; private set; }
-        public BeatmapDetail BeatmapDetail { get; }
-        public LocalOsuFile OsuFile { get; set; }
-        public bool PlayInstantly { get; set; }
-        public Func<Task> PlayHandle { get; set; }
-        public Func<Task> PauseHandle { get; set; }
-        public Func<Task> StopHandle { get; set; }
-        public Func<Task> TogglePlayHandle { get; set; }
-        public Func<double, bool, Task> SetTimeHandle { get; set; }
-        public Func<Task> RestartHandle { get; set; }
+    public void ApplyLoadResult(BeatmapLoadResult loadResult, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
 
-        public static bool operator ==(BeatmapContext bc1, BeatmapContext bc2)
-        {
-            return Equals(bc1, bc2);
-        }
+        OsuFile = loadResult.OsuFile;
 
-        public static bool operator !=(BeatmapContext bc1, BeatmapContext bc2)
-        {
-            return !(bc1 == bc2);
-        }
+        var metadata = BeatmapDetail.Metadata;
+        metadata.IsFavorite = loadResult.IsFavorite;
+        metadata.ApplyFrom(loadResult.OsuFile);
 
-        public override bool Equals(object obj)
-        {
-            if (obj is null)
-                return false;
-            if (!(obj is BeatmapContext bc))
-                return false;
-            return Equals(bc);
-        }
+        BeatmapDetail.BaseFolder = loadResult.BaseFolder;
+        BeatmapDetail.MapPath = loadResult.MapPath;
+        BeatmapDetail.BackgroundPath = loadResult.BackgroundPath;
+        BeatmapDetail.MusicPath = loadResult.MusicPath;
+    }
 
-        protected bool Equals(BeatmapContext other)
-        {
-            return Equals(Beatmap, other.Beatmap);
-        }
+    public static bool operator ==(BeatmapContext? bc1, BeatmapContext? bc2)
+    {
+        return Equals(bc1, bc2);
+    }
 
-        public override int GetHashCode()
-        {
-            return Beatmap != null ? Beatmap.GetHashCode() : 0;
-        }
+    public static bool operator !=(BeatmapContext? bc1, BeatmapContext? bc2)
+    {
+        return !(bc1 == bc2);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is null) return false;
+        if (obj is not BeatmapContext bc) return false;
+        return Equals(bc);
+    }
+
+    protected bool Equals(BeatmapContext other)
+    {
+        return Equals(Beatmap, other.Beatmap);
+    }
+
+    public override int GetHashCode()
+    {
+        return Beatmap != null ? Beatmap.GetHashCode() : 0;
     }
 }

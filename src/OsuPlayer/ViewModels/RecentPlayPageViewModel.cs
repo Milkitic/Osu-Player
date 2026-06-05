@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,9 +9,6 @@ using Milky.OsuPlayer.Media.Audio;
 using Milky.OsuPlayer.Presentation.Interaction;
 using Milky.OsuPlayer.Presentation.ObjectModel;
 using Milky.OsuPlayer.Services;
-using Milky.OsuPlayer.UiComponents.FrontDialogComponent;
-using Milky.OsuPlayer.UiComponents.NotificationComponent;
-using Milky.OsuPlayer.UserControls;
 
 namespace Milky.OsuPlayer.ViewModels;
 
@@ -21,13 +16,16 @@ public partial class RecentPlayPageViewModel : ObservableObject
 {
     private readonly IPlayerDataService _playerData;
     private readonly ObservablePlayController _controller;
-    private readonly IExportService _exportService;
+    private readonly IBeatmapActionService _beatmapActions;
 
-    public RecentPlayPageViewModel(IPlayerDataService playerData, ObservablePlayController controller, IExportService exportService)
+    public RecentPlayPageViewModel(
+        IPlayerDataService playerData,
+        ObservablePlayController controller,
+        IBeatmapActionService beatmapActions)
     {
         _playerData = playerData;
         _controller = controller;
-        _exportService = exportService;
+        _beatmapActions = beatmapActions;
     }
 
     [ObservableProperty]
@@ -42,64 +40,37 @@ public partial class RecentPlayPageViewModel : ObservableObject
     [RelayCommand]
     private async Task OpenSourceFolderAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-
-        if (map == null) return;
-        var folder = beatmap.GetFolder(out _, out _);
-        if (!Directory.Exists(folder))
-        {
-            Notification.Push(@"所选文件不存在，可能没有及时同步。请尝试手动同步osuDB后重试。");
-            return;
-        }
-
-        Process.Start(folder);
+        await _beatmapActions.OpenSourceFolderAsync(beatmap);
     }
 
     [RelayCommand]
     private async Task OpenScorePageAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        Process.Start($"https://osu.ppy.sh/s/{map.BeatmapSetId}");
+        await _beatmapActions.OpenScorePageAsync(beatmap);
     }
 
     [RelayCommand]
     private async Task SaveCollectionAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        FrontDialogOverlay.Default.ShowContent(new SelectCollectionControl(map),
-            DialogOptionFactory.SelectCollectionOptions);
+        await _beatmapActions.SaveToCollectionAsync(beatmap);
     }
 
     [RelayCommand]
     private async Task ExportAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        _exportService.QueueEntry(map);
+        await _beatmapActions.ExportAsync(beatmap);
     }
 
     [RelayCommand]
     private async Task DirectPlayAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        await _controller.PlayNewAsync(map);
+        await _beatmapActions.PlayAsync(beatmap);
     }
 
     [RelayCommand]
     public async Task PlayAsync(BeatmapDataModel beatmap)
     {
-        if (beatmap == null) return;
-        var map = await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
-        if (map == null) return;
-        await _controller.PlayNewAsync(map);
+        await _beatmapActions.PlayAsync(beatmap);
     }
 
     [RelayCommand]
@@ -119,7 +90,7 @@ public partial class RecentPlayPageViewModel : ObservableObject
         var recentBeatmaps = await _playerData.GetBeatmapsByMapInfoAsync(recentList, TimeSortMode.PlayTime);
         if (recentBeatmaps == null || !recentBeatmaps.Any()) return;
 
-        await _controller.PlayList.SetSongListAsync(recentBeatmaps, true);
+        await _controller.SetPlaylistAsync(recentBeatmaps, true);
     }
 
     [RelayCommand]

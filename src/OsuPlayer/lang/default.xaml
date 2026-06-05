@@ -122,7 +122,6 @@
     <sys:String x:Key="ui-sets-title-autoPlay">自动播放</sys:String>
     <sys:String x:Key="ui-sets-title-playProgress">播放进度</sys:String>
     <sys:String x:Key="ui-sets-title-audioPlayDevice">音频播放设备</sys:String>
-    <sys:String x:Key="ui-sets-title-audioDelayExperimental">音频延迟（实验性）</sys:String>
     <sys:String x:Key="ui-sets-title-language">语言</sys:String>
     <sys:String x:Key="ui-sets-title-minimalEffectMode">低配模式</sys:String>
     <sys:String x:Key="ui-sets-title-hotKeySettings">热键设置</sys:String>

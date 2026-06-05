@@ -155,7 +155,6 @@
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
     <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
-    <PackageReference Include="Milki.Extensions.MouseKeyHook" Version="0.1.5" />
     <PackageReference Include="NAudio" Version="2.3.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
     <PackageReference Include="NLog" Version="6.1.3" />

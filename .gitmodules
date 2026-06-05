@@ -1,6 +1,3 @@
-[submodule "dependencies/Milki.Extensions"]
-	path = dependencies/Milki.Extensions
-	url = https://github.com/Milkitic/Milki.Extensions.git
 [submodule "dependencies/KeyASIO.Net"]
 	path = dependencies/KeyASIO.Net
 	url = https://github.com/Milkitic/KeyASIO.Net.git
