@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,10 +38,18 @@ internal sealed class PlayerSessionService : IAsyncDisposable
     private readonly AudioCacheManager _audioCacheManager;
     private readonly NLog.Logger _logger;
     private readonly Lock _operationGate = new();
+    // Retired sources stay alive until all operations drain; in-flight awaits may
+    // still register callbacks on tokens captured before a newer operation won.
+    private readonly List<CancellationTokenSource> _retiredOperationSources = new();
+    private readonly TaskCompletionSource<object?> _disposeFinished =
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     private CancellationTokenSource _cts = new();
+    private TaskCompletionSource<object?> _operationsDrained = CreateCompletedSource();
+    private int _activeOperations;
     private bool _isHandlingLoadFailure;
     private int _isHandlingPlaybackFinished;
+    private bool _disposeStarted;
 
     public PlayerSessionService(
         PlayerEventBus bus,
@@ -68,19 +77,24 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         _pump.PlayStatusChanged += OnPlayerPlayStatusChanged;
     }
 
-    public Task PlayNewFromBeatmapAsync(Milky.OsuPlayer.Data.Models.Beatmap beatmap, bool playInstantly)
+    public async Task PlayNewFromBeatmapAsync(Milky.OsuPlayer.Data.Models.Beatmap beatmap, bool playInstantly)
     {
-        var operationToken = InterruptPrevOperation();
-        return LoadAndPlayAsync(async token =>
+        using var operation = TryBeginInterruptingOperation();
+        if (operation == null) return;
+
+        await LoadAndPlayAsync(async token =>
         {
             token.ThrowIfCancellationRequested();
             await _playList.AddOrSwitchToAsync(beatmap).ConfigureAwait(false);
-        }, playInstantly, operationToken);
+        }, playInstantly, operation.Token).ConfigureAwait(false);
     }
 
     public async Task PlayNewFromPathAsync(string path, bool playInstantly)
     {
-        var operationToken = InterruptPrevOperation();
+        using var operation = TryBeginInterruptingOperation();
+        if (operation == null) return;
+
+        var operationToken = operation.Token;
         BeatmapContext? contextToUpdate = null;
         LoadScope? scope = null;
         try
@@ -151,18 +165,14 @@ internal sealed class PlayerSessionService : IAsyncDisposable
 
     public async Task PlayByControlAsync(PlayControlType control, bool autoAdvance)
     {
-        CancellationToken operationToken = default;
+        using var operation = autoAdvance
+            ? TryBeginCurrentOperation()
+            : TryBeginInterruptingOperation();
+        if (operation == null) return;
+
+        var operationToken = operation.Token;
         try
         {
-            operationToken = autoAdvance
-                ? GetCurrentOperationToken()
-                : InterruptPrevOperation();
-
-            if (!autoAdvance)
-            {
-                operationToken.ThrowIfCancellationRequested();
-            }
-
             var preInfo = _playList.CurrentInfo;
             var controlResult = autoAdvance
                 ? await _playList.InvokeAutoNext().ConfigureAwait(false)
@@ -183,7 +193,10 @@ internal sealed class PlayerSessionService : IAsyncDisposable
 
     public async Task HandleAutoSwitchedAsync(PlayControlResult controlResult, Milky.OsuPlayer.Data.Models.Beatmap? beatmap, bool playInstantly)
     {
-        var operationToken = GetCurrentOperationToken();
+        using var operation = TryBeginCurrentOperation();
+        if (operation == null) return;
+
+        var operationToken = operation.Token;
         try
         {
             await ApplyPlayControlResultAsync(controlResult, _playList.PreInfo, playInstantly, operationToken)
@@ -201,11 +214,26 @@ internal sealed class PlayerSessionService : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        bool ownsDispose;
+        lock (_operationGate)
+        {
+            ownsDispose = !_disposeStarted;
+            _disposeStarted = true;
+        }
+
+        if (!ownsDispose)
+        {
+            await _disposeFinished.Task.ConfigureAwait(false);
+            return;
+        }
+
         _pump.PlayStatusChanged -= OnPlayerPlayStatusChanged;
         CancellationTokenSource cts;
+        Task operationsDrained;
         lock (_operationGate)
         {
             cts = _cts;
+            operationsDrained = _operationsDrained.Task;
         }
 
         try
@@ -217,9 +245,17 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             // Already disposed by a racing shutdown path.
         }
 
-        await ClearPlayerAsync().ConfigureAwait(false);
-        _readLock.Dispose();
-        cts.Dispose();
+        try
+        {
+            await operationsDrained.ConfigureAwait(false);
+            await ClearPlayerAsync().ConfigureAwait(false);
+            _readLock.Dispose();
+        }
+        finally
+        {
+            DisposeOperationSources();
+            _disposeFinished.TrySetResult(null);
+        }
     }
 
     private async Task LoadAndPlayAsync(
@@ -492,22 +528,33 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             _logger, "Error while disposing player during clear.").ConfigureAwait(false);
     }
 
-    private CancellationToken GetCurrentOperationToken()
+    private SessionOperation? TryBeginCurrentOperation()
     {
         lock (_operationGate)
         {
-            return _cts.Token;
+            if (_disposeStarted) return null;
+
+            TrackActiveOperationLocked();
+            return new SessionOperation(this, _cts.Token);
         }
     }
 
-    private CancellationToken InterruptPrevOperation()
+    private SessionOperation? TryBeginInterruptingOperation()
     {
-        CancellationTokenSource previous;
         var next = new CancellationTokenSource();
+        CancellationTokenSource previous;
         lock (_operationGate)
         {
+            if (_disposeStarted)
+            {
+                next.Dispose();
+                return null;
+            }
+
             previous = _cts;
             _cts = next;
+            _retiredOperationSources.Add(previous);
+            TrackActiveOperationLocked();
         }
 
         try
@@ -516,11 +563,76 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         }
         catch (ObjectDisposedException)
         {
-            // Race with Dispose — recreate below.
+            // Already disposed by a racing shutdown path.
         }
 
-        previous.Dispose();
-        return next.Token;
+        return new SessionOperation(this, next.Token);
+    }
+
+    private void TrackActiveOperationLocked()
+    {
+        if (_activeOperations == 0)
+        {
+            _operationsDrained = new TaskCompletionSource<object?>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+        }
+
+        _activeOperations++;
+    }
+
+    private void CompleteOperation()
+    {
+        List<CancellationTokenSource>? sourcesToDispose = null;
+        lock (_operationGate)
+        {
+            _activeOperations--;
+            if (_activeOperations != 0)
+            {
+                return;
+            }
+
+            _operationsDrained.TrySetResult(null);
+            if (!_disposeStarted && _retiredOperationSources.Count > 0)
+            {
+                sourcesToDispose = new List<CancellationTokenSource>(_retiredOperationSources);
+                _retiredOperationSources.Clear();
+            }
+        }
+
+        DisposeSources(sourcesToDispose);
+    }
+
+    private void DisposeOperationSources()
+    {
+        List<CancellationTokenSource> sources;
+        lock (_operationGate)
+        {
+            sources = new List<CancellationTokenSource>(_retiredOperationSources)
+            {
+                _cts
+            };
+            _retiredOperationSources.Clear();
+        }
+
+        DisposeSources(sources);
+    }
+
+    private static void DisposeSources(List<CancellationTokenSource>? sources)
+    {
+        if (sources == null) return;
+
+        foreach (var source in sources)
+        {
+            source.Dispose();
+        }
+    }
+
+    private static TaskCompletionSource<object?> CreateCompletedSource()
+    {
+        var source = new TaskCompletionSource<object?>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        source.SetResult(null);
+        return source;
     }
 
     private void OnPlayerPlayStatusChanged(PlayStatus status)
@@ -548,6 +660,24 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         finally
         {
             Interlocked.Exchange(ref _isHandlingPlaybackFinished, 0);
+        }
+    }
+
+    private sealed class SessionOperation : IDisposable
+    {
+        private PlayerSessionService? _owner;
+
+        public SessionOperation(PlayerSessionService owner, CancellationToken token)
+        {
+            _owner = owner;
+            Token = token;
+        }
+
+        public CancellationToken Token { get; }
+
+        public void Dispose()
+        {
+            Interlocked.Exchange(ref _owner, null)?.CompleteOperation();
         }
     }
 }

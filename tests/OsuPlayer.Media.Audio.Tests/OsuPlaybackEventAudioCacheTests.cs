@@ -1,8 +1,11 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using KeyAsio.Core.Audio.Caching;
 using KeyAsio.Core.OsuAudio.Hitsounds.Playback;
+using Microsoft.Extensions.Logging.Abstractions;
 using Milky.OsuPlayer.Media.Audio;
 using NAudio.Wave;
 using Xunit;
@@ -65,6 +68,49 @@ public class OsuPlaybackEventAudioCacheTests
         await Task.WhenAll(tasks);
     }
 
+    [Fact]
+    public async Task SetContext_SameBeatmapFilename_DoesNotReusePreviousResource()
+    {
+        var root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        var beatmapA = Path.Combine(root, "beatmap-a");
+        var beatmapB = Path.Combine(root, "beatmap-b");
+        Directory.CreateDirectory(beatmapA);
+        Directory.CreateDirectory(beatmapB);
+
+        var audioCacheManager = new AudioCacheManager(NullLogger<AudioCacheManager>.Instance);
+        try
+        {
+            WriteWave(Path.Combine(beatmapA, "normal-hitnormal.wav"), 0.2f);
+            WriteWave(Path.Combine(beatmapB, "normal-hitnormal.wav"), 0.8f);
+
+            var cache = new OsuPlaybackEventAudioCache(audioCacheManager);
+            var waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(44_100, 2);
+            var playbackEvent = PlaybackEvent.Create(
+                Guid.NewGuid(),
+                0,
+                1,
+                0,
+                "normal-hitnormal.wav",
+                ResourceOwner.Beatmap,
+                SampleLayer.Primary);
+
+            cache.SetContext(beatmapA, "", "", waveFormat);
+            var first = await cache.GetOrCreateAsync(playbackEvent);
+
+            cache.SetContext(beatmapB, "", "", waveFormat);
+            var second = await cache.GetOrCreateAsync(playbackEvent);
+
+            Assert.NotNull(first);
+            Assert.NotNull(second);
+            Assert.NotEqual(first.SourceHash, second.SourceHash);
+        }
+        finally
+        {
+            audioCacheManager.ClearAll();
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     private static async Task IgnoreContextCancellationAsync(Func<Task> action)
     {
         try
@@ -74,6 +120,16 @@ public class OsuPlaybackEventAudioCacheTests
         catch (OperationCanceledException)
         {
             // A context change intentionally cancels in-flight cache work.
+        }
+    }
+
+    private static void WriteWave(string path, float sample)
+    {
+        using var writer = new WaveFileWriter(path, new WaveFormat(44_100, 16, 2));
+        for (var i = 0; i < 256; i++)
+        {
+            writer.WriteSample(sample);
+            writer.WriteSample(sample);
         }
     }
 }
