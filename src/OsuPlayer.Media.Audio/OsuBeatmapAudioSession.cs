@@ -141,8 +141,8 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
 
     public async Task SeekAsync(TimeSpan position, CancellationToken cancellationToken = default)
     {
-        var restartScheduler = _schedulerLoop.IsRunning;
-        if (restartScheduler)
+        var wasRunning = _schedulerLoop.IsRunning;
+        if (wasRunning)
         {
             await StopSchedulerAsync().ConfigureAwait(false);
         }
@@ -168,7 +168,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         }
         finally
         {
-            if (restartScheduler && IsRunning)
+            if (wasRunning && IsRunning)
             {
                 StartSchedulerLoop();
             }

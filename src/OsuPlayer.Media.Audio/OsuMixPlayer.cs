@@ -270,7 +270,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
         }
 
         var session = _session;
-        await SafeStopExtensions.TryDisposeAsync(
+        await SafeStopExtensions.TryAsync(
             async () =>
             {
                 await StopPositionPumpAsync().ConfigureAwait(false);

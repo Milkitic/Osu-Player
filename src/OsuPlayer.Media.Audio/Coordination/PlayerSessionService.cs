@@ -7,6 +7,7 @@ using Coosu.Beatmap;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
 using Milky.OsuPlayer.Core.Configuration;
+using Milky.OsuPlayer.Data.Models;
 using Milky.OsuPlayer.Media.Audio.Infrastructure;
 using Milky.OsuPlayer.Media.Audio.Playlist;
 using Milky.OsuPlayer.Services;
@@ -37,10 +38,13 @@ internal sealed class PlayerSessionService : IAsyncDisposable
     private readonly IPlaybackEngine _playbackEngine;
     private readonly AudioCacheManager _audioCacheManager;
     private readonly NLog.Logger _logger;
+
     private readonly Lock _operationGate = new();
+
     // Retired sources stay alive until all operations drain; in-flight awaits may
     // still register callbacks on tokens captured before a newer operation won.
     private readonly List<CancellationTokenSource> _retiredOperationSources = new();
+
     private readonly TaskCompletionSource<object?> _disposeFinished =
         new(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -130,8 +134,8 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             var trueBeatmap = loadResult.Beatmap;
             await _playList.AddOrSwitchToAsync(trueBeatmap).ConfigureAwait(false);
 
-            var newContext = _playList.CurrentInfo
-                ?? throw new InvalidOperationException("Playlist did not create a current beatmap context.");
+            var newContext = _playList.CurrentInfo ??
+                             throw new InvalidOperationException("Playlist did not create a current beatmap context.");
             BeatmapLoadService.ApplyToContext(newContext, loadResult, operationToken);
             contextToUpdate = newContext;
 
@@ -191,7 +195,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         }
     }
 
-    public async Task HandleAutoSwitchedAsync(PlayControlResult controlResult, Milky.OsuPlayer.Data.Models.Beatmap? beatmap, bool playInstantly)
+    public async Task HandleAutoSwitchedAsync(PlayControlResult controlResult, Beatmap? beatmap, bool playInstantly)
     {
         using var operation = TryBeginCurrentOperation();
         if (operation == null) return;
@@ -236,14 +240,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             operationsDrained = _operationsDrained.Task;
         }
 
-        try
-        {
-            cts.Cancel();
-        }
-        catch (ObjectDisposedException)
-        {
-            // Already disposed by a racing shutdown path.
-        }
+        SafeCancel(cts);
 
         try
         {
@@ -261,17 +258,10 @@ internal sealed class PlayerSessionService : IAsyncDisposable
     private async Task LoadAndPlayAsync(
         Func<CancellationToken, Task> setup,
         bool playInstantly,
-        CancellationToken operationToken,
-        bool ownsLock = false)
+        CancellationToken operationToken)
     {
-        LoadScope? scope = null;
         try
         {
-            if (ownsLock)
-            {
-                scope = await LoadScope.AcquireAsync(_readLock, operationToken).ConfigureAwait(false);
-            }
-
             await setup(operationToken).ConfigureAwait(false);
             operationToken.ThrowIfCancellationRequested();
         }
@@ -284,26 +274,15 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             HandleLoadFailure(_playList.CurrentInfo, ex);
             return;
         }
-        finally
-        {
-            scope?.Dispose();
-        }
 
-        if (playInstantly)
+        var loaded = await LoadCoreAsync(operationToken).ConfigureAwait(false);
+        if (playInstantly && !operationToken.IsCancellationRequested && loaded && _pump.Player != null)
         {
-            var loaded = await LoadCoreAsync(lockAlreadyHeld: false, operationToken).ConfigureAwait(false);
-            if (!operationToken.IsCancellationRequested && loaded && _pump.Player != null)
-            {
-                await _pump.Player.PlayAsync().ConfigureAwait(false);
-            }
-        }
-        else
-        {
-            await LoadCoreAsync(lockAlreadyHeld: false, operationToken).ConfigureAwait(false);
+            await _pump.Player.PlayAsync().ConfigureAwait(false);
         }
     }
 
-    private async Task<bool> LoadCoreAsync(bool lockAlreadyHeld, CancellationToken operationToken)
+    private async Task<bool> LoadCoreAsync(CancellationToken operationToken)
     {
         var context = _playList.CurrentInfo;
         if (context == null)
@@ -317,11 +296,8 @@ internal sealed class PlayerSessionService : IAsyncDisposable
 
         try
         {
-            if (!lockAlreadyHeld)
-            {
-                scope = await LoadScope.AcquireAsync(_readLock, operationToken).ConfigureAwait(false);
-                await ClearPlayerAsync().ConfigureAwait(false);
-            }
+            scope = await LoadScope.AcquireAsync(_readLock, operationToken).ConfigureAwait(false);
+            await ClearPlayerAsync().ConfigureAwait(false);
 
             operationToken.ThrowIfCancellationRequested();
             _bus.RaiseLoadStarted(context, operationToken);
@@ -341,8 +317,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         catch (Exception ex)
         {
             HandleLoadFailure(_playList.CurrentInfo, ex);
-            shouldTryFallback = !lockAlreadyHeld
-                                && !_isHandlingLoadFailure
+            shouldTryFallback = !_isHandlingLoadFailure
                                 && _pump.Player?.PlayStatus != PlayStatus.Playing;
         }
         finally
@@ -397,7 +372,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
                 _pump.DetachPlayer();
             }
 
-            await SafeStopExtensions.TryDisposeAsync(
+            await SafeStopExtensions.TryAsync(
                 async () => await player.DisposeAsync().ConfigureAwait(false),
                 _logger,
                 "Error while disposing failed player initialization.").ConfigureAwait(false);
@@ -449,7 +424,8 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         if (controlResult.PointerStatus == PlayControlResult.PointerControlStatus.Keep)
         {
             operationToken.ThrowIfCancellationRequested();
-            await ApplyCurrentPlaybackStatusAsync(context, controlResult.PlayStatus).ConfigureAwait(false);
+            await ApplyPlaybackStatusAsync(controlResult.PlayStatus, restart: true, playInstantly: true)
+                .ConfigureAwait(false);
             return;
         }
 
@@ -463,38 +439,21 @@ internal sealed class PlayerSessionService : IAsyncDisposable
                 operationToken.ThrowIfCancellationRequested();
                 await player.RestartAsync().ConfigureAwait(false);
             }
+
             return;
         }
 
-        if (await LoadCoreAsync(lockAlreadyHeld: false, operationToken).ConfigureAwait(false))
+        if (await LoadCoreAsync(operationToken).ConfigureAwait(false))
         {
             operationToken.ThrowIfCancellationRequested();
-            await ApplyLoadedPlaybackStatusAsync(context, controlResult.PlayStatus, playInstantly)
+            await ApplyPlaybackStatusAsync(controlResult.PlayStatus, restart: false, playInstantly)
                 .ConfigureAwait(false);
         }
     }
 
-    private async Task ApplyCurrentPlaybackStatusAsync(
-        BeatmapContext context,
-        PlayControlResult.PlayControlStatus playStatus)
-    {
-        var player = _pump.Player;
-        if (player == null) return;
-
-        switch (playStatus)
-        {
-            case PlayControlResult.PlayControlStatus.Play:
-                await player.RestartAsync().ConfigureAwait(false);
-                break;
-            case PlayControlResult.PlayControlStatus.Stop:
-                await player.StopAsync().ConfigureAwait(false);
-                break;
-        }
-    }
-
-    private async Task ApplyLoadedPlaybackStatusAsync(
-        BeatmapContext context,
+    private async Task ApplyPlaybackStatusAsync(
         PlayControlResult.PlayControlStatus playStatus,
+        bool restart,
         bool playInstantly)
     {
         var player = _pump.Player;
@@ -503,10 +462,15 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         switch (playStatus)
         {
             case PlayControlResult.PlayControlStatus.Play:
-                if (playInstantly)
+                if (restart)
+                {
+                    await player.RestartAsync().ConfigureAwait(false);
+                }
+                else if (playInstantly)
                 {
                     await player.PlayAsync().ConfigureAwait(false);
                 }
+
                 break;
             case PlayControlResult.PlayControlStatus.Stop:
                 await player.StopAsync().ConfigureAwait(false);
@@ -521,9 +485,9 @@ internal sealed class PlayerSessionService : IAsyncDisposable
 
         _pump.DetachPlayer();
 
-        await SafeStopExtensions.TryStopAsync(
+        await SafeStopExtensions.TryAsync(
             player.StopAsync, _logger, "Error while stopping player during clear.").ConfigureAwait(false);
-        await SafeStopExtensions.TryDisposeAsync(
+        await SafeStopExtensions.TryAsync(
             async () => await player.DisposeAsync().ConfigureAwait(false),
             _logger, "Error while disposing player during clear.").ConfigureAwait(false);
     }
@@ -557,14 +521,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             TrackActiveOperationLocked();
         }
 
-        try
-        {
-            previous.Cancel();
-        }
-        catch (ObjectDisposedException)
-        {
-            // Already disposed by a racing shutdown path.
-        }
+        SafeCancel(previous);
 
         return new SessionOperation(this, next.Token);
     }
@@ -624,6 +581,17 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         foreach (var source in sources)
         {
             source.Dispose();
+        }
+    }
+
+    private static void SafeCancel(CancellationTokenSource? cts)
+    {
+        try
+        {
+            cts?.Cancel();
+        }
+        catch (ObjectDisposedException)
+        {
         }
     }
 

@@ -11,12 +11,6 @@ namespace Milky.OsuPlayer.Media.Audio.Coordination;
 /// raised on the UI thread; subscribers therefore never have to marshal
 /// themselves.
 /// </summary>
-/// <remarks>
-/// Replaces the nine loose <c>event</c> fields previously declared on
-/// <see cref="ObservablePlayController"/> plus their seven
-/// <c>_uiThreadDispatcher.Send(() =&gt; ...)</c> call-sites. Subscribing
-/// through this bus is a drop-in replacement for the old event surface.
-/// </remarks>
 internal sealed class PlayerEventBus
 {
     private readonly IUiThreadDispatcher _dispatcher;
@@ -42,11 +36,27 @@ internal sealed class PlayerEventBus
     public event Action<BeatmapContext, CancellationToken>? LoadFinished;
     public event Action<BeatmapContext, Exception>? LoadError;
 
-    public void RaisePlayStatusChanged(PlayStatus status)
-        => _dispatcher.Post(() => PlayStatusChanged?.Invoke(status));
+    public void RaisePlayStatusChanged(PlayStatus status) => Send(PlayStatusChanged, status);
+    public void RaisePositionUpdated(TimeSpan position) => Post(PositionUpdated, position);
+    public void RaiseInterfaceClearRequest() => _dispatcher.Send(InterfaceClearRequest);
+    public void RaisePreLoadStarted(string path, CancellationToken token) => Send(PreLoadStarted, path, token);
+    public void RaiseLoadStarted(BeatmapContext ctx, CancellationToken token) => Send(LoadStarted, ctx, token);
+    public void RaiseMetaLoaded(BeatmapContext ctx, CancellationToken token) => Send(MetaLoaded, ctx, token);
+    public void RaiseBackgroundInfoLoaded(BeatmapContext ctx, CancellationToken token) => Send(BackgroundInfoLoaded, ctx, token);
+    public void RaiseMusicLoaded(BeatmapContext ctx, CancellationToken token) => Send(MusicLoaded, ctx, token);
+    public void RaiseVideoLoadRequested(BeatmapContext ctx, CancellationToken token) => Send(VideoLoadRequested, ctx, token);
+    public void RaiseStoryboardLoadRequested(BeatmapContext ctx, CancellationToken token) => Send(StoryboardLoadRequested, ctx, token);
+    public void RaiseLoadFinished(BeatmapContext ctx, CancellationToken token) => Send(LoadFinished, ctx, token);
 
-    public void RaisePositionUpdated(TimeSpan position)
-        => _dispatcher.Post(() => PositionUpdated?.Invoke(position));
+    public void RaiseLoadError(BeatmapContext? context, Exception ex)
+    {
+        if (context == null)
+        {
+            _logger.Error(ex, "Load error with no current beatmap context.");
+            return;
+        }
+        Send(LoadError, context, ex);
+    }
 
     public async Task RaisePositionSetRequestedAsync(BeatmapContext context, double time, bool play)
     {
@@ -66,44 +76,8 @@ internal sealed class PlayerEventBus
         }
     }
 
-    public void RaiseInterfaceClearRequest()
-        => _dispatcher.Send(() => InterfaceClearRequest?.Invoke());
-
-    public void RaisePreLoadStarted(string path, CancellationToken token)
-        => _dispatcher.Send(() => PreLoadStarted?.Invoke(path, token));
-
-    public void RaiseLoadStarted(BeatmapContext context, CancellationToken token)
-        => _dispatcher.Send(() => LoadStarted?.Invoke(context, token));
-
-    public void RaiseMetaLoaded(BeatmapContext context, CancellationToken token)
-        => _dispatcher.Send(() => MetaLoaded?.Invoke(context, token));
-
-    public void RaiseBackgroundInfoLoaded(BeatmapContext context, CancellationToken token)
-        => _dispatcher.Send(() => BackgroundInfoLoaded?.Invoke(context, token));
-
-    public void RaiseMusicLoaded(BeatmapContext context, CancellationToken token)
-        => _dispatcher.Send(() => MusicLoaded?.Invoke(context, token));
-
-    public void RaiseVideoLoadRequested(BeatmapContext context, CancellationToken token)
-        => _dispatcher.Send(() => VideoLoadRequested?.Invoke(context, token));
-
-    public void RaiseStoryboardLoadRequested(BeatmapContext context, CancellationToken token)
-        => _dispatcher.Send(() => StoryboardLoadRequested?.Invoke(context, token));
-
-    public void RaiseLoadFinished(BeatmapContext context, CancellationToken token)
-        => _dispatcher.Send(() => LoadFinished?.Invoke(context, token));
-
-    public void RaiseLoadError(BeatmapContext? context, Exception ex)
-    {
-        // The event signature is non-nullable for compatibility with
-        // assemblies that don't enable nullable reference types; the few
-        // call sites that pass null (e.g. when the playlist is empty) log
-        // here and skip the broadcast instead of synthesising a placeholder.
-        if (context == null)
-        {
-            _logger.Error(ex, "Load error with no current beatmap context.");
-            return;
-        }
-        _dispatcher.Send(() => LoadError?.Invoke(context, ex));
-    }
+    private void Send(Action? handler) => _dispatcher.Send(() => handler?.Invoke());
+    private void Send<T>(Action<T>? handler, T arg) => _dispatcher.Send(() => handler?.Invoke(arg));
+    private void Send<T1, T2>(Action<T1, T2>? handler, T1 a1, T2 a2) => _dispatcher.Send(() => handler?.Invoke(a1, a2));
+    private void Post<T>(Action<T>? handler, T arg) => _dispatcher.Post(() => handler?.Invoke(arg));
 }
