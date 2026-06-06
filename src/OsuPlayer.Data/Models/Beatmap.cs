@@ -166,10 +166,3 @@ public class Beatmap : IMapIdentifiable, IEquatable<Beatmap>
         return Equals((Beatmap)obj);
     }
 }
-
-public class JoinedBeatmap : Beatmap
-{
-    public string FileSize { get; set; }
-    public string ExportTime { get; set; }
-    public string ExportFile { get; set; }
-}

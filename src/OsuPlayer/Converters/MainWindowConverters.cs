@@ -149,6 +149,7 @@ public class NavigationWidthConverter : IMultiValueConverter
         throw new NotImplementedException();
     }
 }
+
 public class SwitchRadioChangeConverter : IMultiValueConverter
 {
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -163,7 +164,8 @@ public class SwitchRadioChangeConverter : IMultiValueConverter
                     : new Thickness(0, 0, 8, 0), CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300)))
                 {
                     From = sr.IconMargin,
-                    EasingFunction = new QuarticEase() { EasingMode = isNavigationCollapsed ? EasingMode.EaseInOut : EasingMode.EaseOut }
+                    EasingFunction = new QuarticEase()
+                        { EasingMode = isNavigationCollapsed ? EasingMode.EaseInOut : EasingMode.EaseOut }
                 };
 
                 Storyboard.SetTargetProperty(da, new PropertyPath(SwitchRadio.IconMarginProperty));
@@ -197,18 +199,6 @@ public class SwitchRadioChangeConverter : IMultiValueConverter
     }
 
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
-}
-public class MiniEnabledConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        return value is null;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }
