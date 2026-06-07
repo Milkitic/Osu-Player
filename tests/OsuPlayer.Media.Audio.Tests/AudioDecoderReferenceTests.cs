@@ -12,7 +12,6 @@ namespace OsuPlayer.Media.Audio.Tests;
 public sealed class AudioDecoderReferenceTests
 {
     private const string FixtureRootEnvironmentVariable = "OSUPLAYER_AUDIO_SYNC_FIXTURES";
-    private const string CalibrationOutputEnvironmentVariable = "OSUPLAYER_AUDIO_SYNC_CALIBRATION_OUTPUT";
     private const int OutputChannels = 2;
 
     private readonly ITestOutputHelper _output;
@@ -41,38 +40,26 @@ public sealed class AudioDecoderReferenceTests
         }
 
         var failures = new List<string>();
-        var calibrations = new List<AudioDecodeCalibration>();
         foreach (var testCase in cases)
         {
             try
             {
                 var measured = await EvaluateCaseAsync(
                     testCase,
-                    calibrationProvider: null,
                     validate: false,
                     useAutomaticMp3GaplessCorrection: false);
-                var calibration = await CreateCalibrationAsync(testCase, measured);
                 var corrected = await EvaluateCaseAsync(
                     testCase,
-                    AudioDecodeCalibrationStore.FromCalibrations([calibration]),
                     validate: true,
-                    useAutomaticMp3GaplessCorrection: false);
-                var automatic = await TryEvaluateAutomaticMp3GaplessCorrectionAsync(testCase);
-
-                calibrations.Add(calibration);
+                    useAutomaticMp3GaplessCorrection: true);
 
                 var rawOffsetMilliseconds = measured.OffsetFrames * 1000.0 / measured.SampleRate;
                 var correctedOffsetMilliseconds = corrected.OffsetFrames * 1000.0 / corrected.SampleRate;
-                var automaticSummary = automatic is null
-                    ? string.Empty
-                    : $", automaticOffset={automatic.OffsetFrames} frames, " +
-                      $"automaticLengthDelta={automatic.DurationDeltaFrames} frames";
                 _output.WriteLine(
                     $"{testCase.Name}: rawOffset={measured.OffsetFrames} frames ({rawOffsetMilliseconds:N3}ms), " +
                     $"rawLengthDelta={measured.DurationDeltaFrames} frames, " +
                     $"correctedOffset={corrected.OffsetFrames} frames ({correctedOffsetMilliseconds:N3}ms), " +
-                    $"corr={corrected.Correlation:N5}, correctedLengthDelta={corrected.DurationDeltaFrames} frames" +
-                    automaticSummary);
+                    $"corr={corrected.Correlation:N5}, correctedLengthDelta={corrected.DurationDeltaFrames} frames");
             }
             catch (Exception ex)
             {
@@ -81,13 +68,6 @@ public sealed class AudioDecoderReferenceTests
         }
 
         Assert.Empty(failures);
-
-        var calibrationOutput = Environment.GetEnvironmentVariable(CalibrationOutputEnvironmentVariable);
-        if (!string.IsNullOrWhiteSpace(calibrationOutput))
-        {
-            AudioDecodeCalibrationStore.Save(calibrationOutput, calibrations);
-            _output.WriteLine($"Wrote {calibrations.Count} audio decode calibrations to {calibrationOutput}.");
-        }
     }
 
     [Fact]
@@ -126,64 +106,6 @@ public sealed class AudioDecoderReferenceTests
         Assert.True(result.Correlation > 0.99);
     }
 
-    [Fact]
-    public async Task CalibrationStore_CorrectsEarlyCandidateAndLengthDelta()
-    {
-        const int sampleRate = 44_100;
-        var reference = CreateSyntheticSignal(sampleRate, leadingFrames: 2_000, totalFrames: 20_000);
-        var candidate = CreateSyntheticSignal(sampleRate, leadingFrames: 1_500, totalFrames: 19_000);
-        var candidateWave = CreateStereoPcm16Wave(candidate, sampleRate);
-        var calibration = new AudioDecodeCalibration
-        {
-            SourceHash = AudioSourceHash.Compute(candidateWave),
-            SampleRate = sampleRate,
-            OffsetFrames = -500,
-            DurationDeltaFrames = -1_000,
-            Correlation = 1,
-            Name = nameof(CalibrationStore_CorrectsEarlyCandidateAndLengthDelta)
-        };
-
-        var decoded = await DecodeWithCalibrationAsync(candidateWave, sampleRate, calibration);
-        var result = AudioAlignmentEstimator.Estimate(
-            reference,
-            decoded.ToMono(),
-            sampleRate,
-            new AudioReferenceOptions());
-
-        Assert.Equal(reference.Length, decoded.FrameCount);
-        Assert.InRange(result.OffsetFrames, -1, 1);
-        Assert.True(result.Correlation > 0.99);
-    }
-
-    [Fact]
-    public async Task CalibrationStore_CorrectsLateCandidate()
-    {
-        const int sampleRate = 44_100;
-        var reference = CreateSyntheticSignal(sampleRate, leadingFrames: 1_500, totalFrames: 20_000);
-        var candidate = CreateSyntheticSignal(sampleRate, leadingFrames: 2_000, totalFrames: 20_000);
-        var candidateWave = CreateStereoPcm16Wave(candidate, sampleRate);
-        var calibration = new AudioDecodeCalibration
-        {
-            SourceHash = AudioSourceHash.Compute(candidateWave),
-            SampleRate = sampleRate,
-            OffsetFrames = 500,
-            DurationDeltaFrames = 0,
-            Correlation = 1,
-            Name = nameof(CalibrationStore_CorrectsLateCandidate)
-        };
-
-        var decoded = await DecodeWithCalibrationAsync(candidateWave, sampleRate, calibration);
-        var result = AudioAlignmentEstimator.Estimate(
-            reference,
-            decoded.ToMono(),
-            sampleRate,
-            new AudioReferenceOptions());
-
-        Assert.Equal(reference.Length, decoded.FrameCount);
-        Assert.InRange(result.OffsetFrames, -1, 1);
-        Assert.True(result.Correlation > 0.99);
-    }
-
     [Theory]
     [InlineData(576, 0, 1_105, 0, 1_105)]
     [InlineData(576, 600, 1_105, 71, 1_176)]
@@ -203,23 +125,8 @@ public sealed class AudioDecoderReferenceTests
         Assert.Equal(expectedTotalDiscard, info.TotalDiscardSamples);
     }
 
-    private static async Task<AudioAlignmentResult?> TryEvaluateAutomaticMp3GaplessCorrectionAsync(
-        AudioReferenceCase testCase)
-    {
-        var fileData = File.ReadAllBytes(testCase.InputPath);
-        if (!Mp3GaplessInfo.TryRead(fileData, out _))
-            return null;
-
-        return await EvaluateCaseAsync(
-            testCase,
-            calibrationProvider: null,
-            validate: true,
-            useAutomaticMp3GaplessCorrection: true);
-    }
-
     private static async Task<AudioAlignmentResult> EvaluateCaseAsync(
         AudioReferenceCase testCase,
-        IAudioDecodeCalibrationProvider? calibrationProvider,
         bool validate,
         bool useAutomaticMp3GaplessCorrection)
     {
@@ -233,7 +140,6 @@ public sealed class AudioDecoderReferenceTests
 
         var cacheManager = new AudioCacheManager(
             NullLogger<AudioCacheManager>.Instance,
-            calibrationProvider,
             useAutomaticMp3GaplessCorrection);
         try
         {
@@ -309,61 +215,6 @@ public sealed class AudioDecoderReferenceTests
         }
     }
 
-    private static async Task<AudioDecodeCalibration> CreateCalibrationAsync(AudioReferenceCase testCase,
-        AudioAlignmentResult measured)
-    {
-        return new AudioDecodeCalibration
-        {
-            SourceHash = await AudioSourceHash.ComputeFileAsync(testCase.InputPath),
-            SampleRate = measured.SampleRate,
-            OffsetFrames = measured.OffsetFrames,
-            DurationDeltaFrames = measured.DurationDeltaFrames,
-            Correlation = measured.Correlation,
-            Name = testCase.Name
-        };
-    }
-
-    private static async Task<Pcm16Audio> DecodeWithCalibrationAsync(byte[] fileBytes, int sampleRate,
-        AudioDecodeCalibration calibration)
-    {
-        var cacheManager = new AudioCacheManager(
-            NullLogger<AudioCacheManager>.Instance,
-            AudioDecodeCalibrationStore.FromCalibrations([calibration]),
-            useAutomaticMp3GaplessCorrection: false);
-
-        try
-        {
-            using var stream = new MemoryStream(fileBytes);
-            var cacheResult = await cacheManager.TryGetOrCreateAsync(
-                "synthetic-" + Guid.NewGuid(),
-                stream,
-                new WaveFormat(sampleRate, OutputChannels));
-
-            var cachedAudio = cacheResult.CachedAudio ??
-                              throw new InvalidOperationException("Decoder returned no cached audio.");
-
-            byte[] decodedBytes;
-            if (!cachedAudio.TryAcquireSpan(out var span))
-                throw new InvalidOperationException("Could not acquire decoded PCM span.");
-
-            try
-            {
-                decodedBytes = span.ToArray();
-            }
-            finally
-            {
-                cachedAudio.ReleaseSpan();
-            }
-
-            return Pcm16Audio.FromBytes(decodedBytes, cachedAudio.WaveFormat.SampleRate,
-                cachedAudio.WaveFormat.Channels);
-        }
-        finally
-        {
-            cacheManager.ClearAll();
-        }
-    }
-
     private static string DescribeOffset(int offsetFrames)
     {
         if (offsetFrames == 0)
@@ -386,38 +237,6 @@ public sealed class AudioDecoderReferenceTests
             data[i] = (float)(0.55 * noise +
                               0.25 * Math.Sin(2 * Math.PI * 997 * t) +
                               0.20 * Math.Sin(2 * Math.PI * 3211 * t));
-        }
-
-        return data;
-    }
-
-    private static byte[] CreateStereoPcm16Wave(float[] mono, int sampleRate)
-    {
-        using var output = new MemoryStream();
-        using (var writer = new WaveFileWriter(output, new WaveFormat(sampleRate, 16, OutputChannels)))
-        {
-            var bytes = CreateStereoPcm16Bytes(mono);
-            writer.Write(bytes, 0, bytes.Length);
-        }
-
-        return output.ToArray();
-    }
-
-    private static byte[] CreateStereoPcm16Bytes(float[] mono)
-    {
-        var data = new byte[mono.Length * OutputChannels * sizeof(short)];
-        for (var frame = 0; frame < mono.Length; frame++)
-        {
-            var value = (short)Math.Clamp(
-                (int)Math.Round(mono[frame] * short.MaxValue),
-                short.MinValue,
-                short.MaxValue);
-
-            for (var channel = 0; channel < OutputChannels; channel++)
-            {
-                var offset = (frame * OutputChannels + channel) * sizeof(short);
-                BinaryPrimitives.WriteInt16LittleEndian(data.AsSpan(offset, sizeof(short)), value);
-            }
         }
 
         return data;

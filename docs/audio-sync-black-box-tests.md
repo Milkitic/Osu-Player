@@ -6,13 +6,10 @@ that was generated outside this repository by an accepted oracle.
 
 ## Running
 
-Set `OSUPLAYER_AUDIO_SYNC_FIXTURES` to a fixture directory, optionally set
-`OSUPLAYER_AUDIO_SYNC_CALIBRATION_OUTPUT` to write the measured calibration
-manifest, then run:
+Set `OSUPLAYER_AUDIO_SYNC_FIXTURES` to a fixture directory, then run:
 
 ```powershell
 $env:OSUPLAYER_AUDIO_SYNC_FIXTURES = "D:\audio-sync-fixtures"
-$env:OSUPLAYER_AUDIO_SYNC_CALIBRATION_OUTPUT = "D:\audio-sync-fixtures\audio-decode-calibrations.json"
 dotnet test tests\OsuPlayer.Media.Audio.Tests\OsuPlayer.Media.Audio.Tests.csproj -c Debug --no-restore
 ```
 
@@ -21,40 +18,22 @@ The offset-estimator self-tests still run.
 
 The corpus test decodes each fixture twice:
 
-1. Decode with the runtime decoder and measure its raw offset/length delta against
-   `reference.wav`.
-2. Build a per-file calibration entry from that black-box measurement, decode
-   again through `AudioCacheManager`, and assert the corrected PCM is within the
-   offset/correlation budgets.
-
-For MP3 files with parseable Xing/Info LAME/Lavf/Lavc gapless metadata, the test
-also runs the default automatic correction path against the same reference. This
-keeps the no-manifest runtime behavior covered by the same oracle fixtures.
-
-To apply a generated manifest at runtime, set:
-
-```powershell
-$env:OSUPLAYER_AUDIO_DECODE_CALIBRATIONS = "D:\audio-sync-fixtures\audio-decode-calibrations.json"
-```
-
-The manifest is keyed by the compressed audio content hash, not by path, so moving
-or rescanning a song folder does not invalidate the calibration.
+1. Decode with MP3 gapless correction disabled and report the raw offset/length
+   delta against `reference.wav`.
+2. Decode through the default runtime path and assert the corrected PCM is within
+   the offset/correlation budgets.
 
 ## Runtime Auto-Correction
 
 `AudioCacheManager` also has a BASS-compatible automatic MP3 gapless correction
-path. If no explicit manifest entry exists, it parses the MP3 Xing/Info
-LAME/Lavf/Lavc extension and applies the same PCM correction shape as a measured
-manifest entry:
+path. It parses the MP3 Xing/Info LAME/Lavf/Lavc extension and applies a direct
+PCM trim:
 
 - skip `encoderDelay + 529` samples from the start
 - discard trailing padding when the header declares padding beyond the decoder
   delay
 - rescale the correction if the cached output sample rate differs from the MP3
   source sample rate
-
-An explicit manifest entry wins over the automatic rule. This keeps black-box
-calibration available as the final authority for unusual files.
 
 ## Fixture Layout
 
@@ -85,29 +64,6 @@ Optional `case.json`:
   "minCorrelation": 0.985
 }
 ```
-
-Generated calibration manifest:
-
-```json
-{
-  "version": 1,
-  "calibrations": [
-    {
-      "sourceHash": "4f57...",
-      "sampleRate": 44100,
-      "offsetFrames": -529,
-      "durationDeltaFrames": -1058,
-      "correlation": 0.99991,
-      "name": "lame-vbr-xing"
-    }
-  ]
-}
-```
-
-Negative `offsetFrames` means the runtime decoder is early relative to the
-reference. The runtime correction inserts leading silence, then uses
-`durationDeltaFrames` to trim or append trailing silence until the measured
-reference length is matched.
 
 ## Reference Generation
 

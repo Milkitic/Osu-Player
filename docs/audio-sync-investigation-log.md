@@ -140,6 +140,12 @@
 - 仍需要外部 reference corpus 才能为真实 MP3 生成 manifest。
 - 本仓库没有现成 MP3 fixture；扫描到的主要是 WAV 和少量 OGG。
 
+撤回状态：
+
+- 后续 Aihana 实测证明主问题可以直接由 MP3 Xing/Info LAME/Lavf/Lavc gapless header 修复。
+- 动态 manifest 校准对当前问题没有实际收益，且会把运行时行为变复杂。
+- 因此该方向已撤回，不再作为当前代码方案保留。
+
 ## 当前样本：Junk - Aihana
 
 用户反馈：
@@ -281,9 +287,8 @@ FFmpeg 源码中的 MP3 demuxer 逻辑说明：
 
 运行时策略：
 
-- 显式 manifest 优先。
-- 如果 manifest 没有命中，则尝试解析 MP3 Xing/Info LAME/Lavf/Lavc gapless 信息。
-- 自动生成等价校准：
+- 尝试解析 MP3 Xing/Info LAME/Lavf/Lavc gapless 信息。
+- 按 header 自动计算：
   - `OffsetFrames = encoderDelay + 529`
   - `DurationDeltaFrames = OffsetFrames + max(0, encoderPadding - 529)`
 - 在 PCM cache 阶段裁剪开头并修正长度。
@@ -317,8 +322,7 @@ FFmpeg 源码中的 MP3 demuxer 逻辑说明：
 同时增强了 fixture corpus test：
 
 - raw decode 仍然关闭自动修正，用来测原始偏移。
-- manifest corrected decode 仍然关闭自动修正，用来验证黑盒校准能力。
-- 如果输入 MP3 可解析 Xing/Info gapless 信息，会额外用默认自动修正路径再跑一次 reference 对齐验证。
+- 默认 decode 开启 MP3 header 修正，用来验证当前运行时路径。
 
 验证结果：
 
@@ -330,8 +334,36 @@ FFmpeg 源码中的 MP3 demuxer 逻辑说明：
   - `rawLengthDelta=1105 frames`
   - `correctedOffset=0 frames`
   - `correctedLengthDelta=0 frames`
-  - `automaticOffset=0 frames`
-  - `automaticLengthDelta=0 frames`
+
+## 尝试 8：撤回动态校准，保留 MP3 header 修复
+
+用户判断：
+
+- 中间的动态校准实测价值不大。
+- 针对 MP3 头的修复有效。
+- 因此撤回动态校准相关运行时能力。
+
+已撤回：
+
+- `AudioDecodeCalibration`
+- `IAudioDecodeCalibrationProvider`
+- `AudioDecodeCalibrationStore`
+- `AudioDecodeCalibrationApplier`
+- `AudioSourceHash`
+- 环境变量 `OSUPLAYER_AUDIO_DECODE_CALIBRATIONS`
+- corpus test 中“测 raw -> 生成 manifest -> 回放 manifest”的流程
+
+当前保留：
+
+- `Mp3GaplessInfo`：解析 ID3v2 后第一帧里的 Xing/Info LAME/Lavf/Lavc gapless 信息。
+- `Mp3GaplessAudioTrimmer`：只根据 MP3 header 的 start skip / end discard 裁剪 PCM。
+- `AudioCacheManager` 的默认自动 MP3 gapless 修正。
+- 测试用 `useAutomaticMp3GaplessCorrection=false` 开关，用于黑盒测试输出 raw offset，不进入产品配置面。
+
+新的 fixture corpus test 语义：
+
+1. 关闭 MP3 header 修正，测 raw offset/length delta，作为诊断输出。
+2. 开启默认运行时 MP3 header 修正，直接对齐 `reference.wav` 并验证阈值。
 
 ## 当前代码状态
 
@@ -352,12 +384,8 @@ FFmpeg 源码中的 MP3 demuxer 逻辑说明：
 - 删除：
   - `src/Core/KeyAsio.Core.Audio/Wave/BassAudioDecoder.cs`
 - 新增：
-  - `src/Core/KeyAsio.Core.Audio/Caching/AudioSourceHash.cs`
-  - `src/Core/KeyAsio.Core.Audio/Caching/AudioDecodeCalibration.cs`
-  - `src/Core/KeyAsio.Core.Audio/Caching/IAudioDecodeCalibrationProvider.cs`
-  - `src/Core/KeyAsio.Core.Audio/Caching/AudioDecodeCalibrationStore.cs`
-  - `src/Core/KeyAsio.Core.Audio/Caching/AudioDecodeCalibrationApplier.cs`
   - `src/Core/KeyAsio.Core.Audio/Caching/Mp3GaplessInfo.cs`
+  - `src/Core/KeyAsio.Core.Audio/Caching/Mp3GaplessAudioTrimmer.cs`
   - `src/Core/KeyAsio.Core.Audio/Properties/AssemblyInfo.cs`
 
 BASS runtime 依赖状态：
@@ -373,10 +401,9 @@ BASS runtime 依赖状态：
 2. 需要知道 BASS/osu 对具体文件的可观察输出行为。
 3. 当前最稳的无 BASS 运行时方案是：
    - 外部 oracle 生成 `reference.wav`。
-   - 黑盒测试测出 NAudio 相对 reference 的 per-file offset/length delta。
-   - 生成内容 hash keyed calibration manifest。
-   - 运行时读取 manifest 并修正 PCM。
-4. 对标准 Xing/Info LAME/Lavf/Lavc gapless metadata，可以自动解析并修正，不需要 manifest。
+   - 黑盒测试测出 raw offset/length delta 作为诊断。
+   - 运行时解析 MP3 header 并直接修正 PCM。
+4. 对标准 Xing/Info LAME/Lavf/Lavc gapless metadata，可以自动解析并修正。
 5. 对 `Junk - Aihana/audio.mp3`，最终确认的差异是 1105 samples，即 23.021ms。
 6. 当前默认运行时自动修正已能让该样本的 decoded length 和 BASS reference 对齐。
 
@@ -386,4 +413,4 @@ BASS runtime 依赖状态：
 
 1. 收集更多真实 MP3 样本，尤其是 LAME VBR、iTunes iTunSMPB、无 gapless metadata 的老 MP3。
 2. 用 BASS oracle 批量生成 reference WAV，跑 `OSUPLAYER_AUDIO_SYNC_FIXTURES`，确认自动规则覆盖率。
-3. 对自动规则无法覆盖的文件，保留 manifest 校准作为兜底。
+3. 对自动规则无法覆盖的文件，优先补对应 header/metadata 解析或 decoder 行为修复，不再走动态 manifest 校准。
