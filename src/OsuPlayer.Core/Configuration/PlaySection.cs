@@ -1,4 +1,5 @@
 //using OsuPlayer.Core.Annotations;
+
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
@@ -13,9 +14,11 @@ public class PlaySection : INotifyPropertyChanged
     private bool _playUseTempo;
     private float _playbackRate = 1;
 
-    public int GeneralOffset { get; set; }
+    public int GeneralOffset { get; set; } = -23;
+
     [JsonIgnore]
     public int GeneralActualOffset => GeneralOffset + 0;
+
     public bool ReplacePlayList { get; set; } = true;
     public bool UsePlayerV2 { get; set; } = false;
 
