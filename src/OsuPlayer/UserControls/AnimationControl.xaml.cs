@@ -249,9 +249,11 @@ public partial class AnimationControl : UserControl
     private async Task SeekVideoAsync(double audioPosition, bool play)
     {
         var videoPosition = audioPosition + _videoOffset;
+
+        await PauseVideo();
+
         if (videoPosition < 0)
         {
-            await PauseVideo();
             VideoElement.Position = TimeSpan.Zero;
             if (!play) return;
 
@@ -265,8 +267,6 @@ public partial class AnimationControl : UserControl
         VideoElement.Position = TimeSpan.FromMilliseconds(Math.Max(0, videoPosition));
         if (play)
             await PlayVideo();
-        else
-            await PauseVideo();
     }
 
     private async void OnMediaOpened(object sender, MediaOpenedEventArgs e)
