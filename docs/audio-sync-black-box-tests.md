@@ -26,12 +26,13 @@ The corpus test decodes each fixture twice:
 ## Runtime Auto-Correction
 
 `AudioCacheManager` also has a BASS-compatible automatic MP3 gapless correction
-path. It parses the MP3 Xing/Info LAME/Lavf/Lavc extension and applies a direct
-PCM trim:
+path. It parses MP3 Xing/Info LAME/Lavf/Lavc headers and VBRI headers, then
+applies a direct PCM trim:
 
 - skip `encoderDelay + 529` samples from the start
 - discard trailing padding when the header declares padding beyond the decoder
   delay
+- for VBRI, skip `vbriDelay - samplesPerFrame` samples from the start
 - rescale the correction if the cached output sample rate differs from the MP3
   source sample rate
 
@@ -86,6 +87,7 @@ Keep the corpus small enough for CI but broad enough to cover MP3 timing traps:
 
 - LAME VBR with Xing/LAME header
 - LAME CBR with Info/LAME header
+- Fraunhofer VBR with VBRI header
 - MP3 with no gapless/encoder-delay metadata
 - MP3 with iTunes `iTunSMPB`
 - ID3v2 tags with different sizes before the first frame

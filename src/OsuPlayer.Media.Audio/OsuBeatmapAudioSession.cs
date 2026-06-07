@@ -78,6 +78,18 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         }
     }
 
+    public int GeneralOffsetMilliseconds
+    {
+        get => _options?.GeneralOffsetMilliseconds ?? 0;
+        set
+        {
+            if (_options != null)
+            {
+                _options.GeneralOffsetMilliseconds = value;
+            }
+        }
+    }
+
     public async Task LoadAsync(OsuFile osuFile, OsuAudioSessionOptions options,
         CancellationToken cancellationToken = default)
     {

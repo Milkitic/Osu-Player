@@ -13,21 +13,25 @@ public partial class PlayPage : Page
 {
     private readonly IAudioDeviceManager _audioDeviceManager;
     private readonly IPlaybackEngine _playbackEngine;
+    private readonly ObservablePlayController _controller;
     private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private bool _isLoadingSettings;
 
-    public PlayPage(IAudioDeviceManager audioDeviceManager, IPlaybackEngine playbackEngine)
+    public PlayPage(IAudioDeviceManager audioDeviceManager, IPlaybackEngine playbackEngine, ObservablePlayController controller)
     {
         _audioDeviceManager = audioDeviceManager;
         _playbackEngine = playbackEngine;
+        _controller = controller;
         InitializeComponent();
     }
 
     private void SliderOffset_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-        AppSettings.Default.Play.GeneralOffset = (int)SliderOffset.Value;
-        BoxOffset.Text = AppSettings.Default.Play.GeneralOffset.ToString();
+        var value = (int)SliderOffset.Value;
+        AppSettings.Default.Play.GeneralOffset = value;
+        BoxOffset.Text = value.ToString();
         AppSettings.SaveDefault();
+        _controller.Player?.GeneralOffset = value;
     }
 
     private void BoxOffset_TextChanged(object sender, TextChangedEventArgs e)
@@ -50,6 +54,7 @@ public partial class PlayPage : Page
         AppSettings.Default.Play.GeneralOffset = num;
         SliderOffset.Value = AppSettings.Default.Play.GeneralOffset;
         AppSettings.SaveDefault();
+        _controller.Player?.GeneralOffset = num;
     }
 
     private void RadioReplace_Checked(object sender, RoutedEventArgs e)

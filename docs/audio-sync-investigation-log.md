@@ -414,3 +414,116 @@ BASS runtime 依赖状态：
 1. 收集更多真实 MP3 样本，尤其是 LAME VBR、iTunes iTunSMPB、无 gapless metadata 的老 MP3。
 2. 用 BASS oracle 批量生成 reference WAV，跑 `OSUPLAYER_AUDIO_SYNC_FIXTURES`，确认自动规则覆盖率。
 3. 对自动规则无法覆盖的文件，优先补对应 header/metadata 解析或 decoder 行为修复，不再走动态 manifest 校准。
+
+## 尝试 9：追加样本覆盖检查
+
+用户追加样本：
+
+- `E:\Games\osu!\Songs\37292 Chata - Remind`
+- `E:\Games\osu!\Songs\23615 Chata - Miren`
+- `E:\Games\osu!\Songs\13235 COOL&CREATE - Rapid Ensembleosz`
+- `E:\Games\osu!\Songs\Wanashi VS Amuro - Tsugaru Setsu long ver feat Iwasaki Aiko`
+
+检查结果：
+
+| 样本 | MP3 header | encoder | start skip | end discard | BASS 对齐结果 |
+| --- | --- | --- | ---: | ---: | --- |
+| Remind | `Info` | `LAME3.98r` | 1105 | 47 | pass |
+| Miren | `Info` | `LAME3.98r` | 1105 | 47 | pass |
+| Rapid Ensemble | `Xing` | `LAME3.97b` | 1105 | 1007 | pass |
+| Tsugaru Setsu | `Info` | `Lavc58.13` | 1105 | 731 | pass |
+
+黑盒测试输出：
+
+- `13235-Rapid-Ensemble: rawOffset=1105 frames (25.057ms), rawLengthDelta=2112 frames, correctedOffset=0 frames`
+- `23615-Miren: rawOffset=1105 frames (25.057ms), rawLengthDelta=1152 frames, correctedOffset=0 frames`
+- `37292-Remind: rawOffset=1105 frames (25.057ms), rawLengthDelta=1152 frames, correctedOffset=0 frames`
+- `Tsugaru-Setsu: rawOffset=1105 frames (25.057ms), rawLengthDelta=1836 frames, correctedOffset=0 frames`
+
+静态扫描本机 osu! 曲库：
+
+- `.osu` 文件数：39,215
+- 被 `.osu` 的 `AudioFilename` 引用的唯一 MP3 主音轨数：9,028
+- 当前 Xing/Info LAME/Lavf/Lavc 规则可解析：4,227
+- 静态解析覆盖率：46.82%
+- 未覆盖主要类别：
+  - `no-xing`: 4,387
+  - `unsupported-encoder`: 233
+  - `VBRI`: 41
+  - `zero-delay`: 43
+
+边界抽样 BASS 对齐：
+
+| 类别 | 样本 | 结果 |
+| --- | --- | --- |
+| no-xing | `Good Time.mp3` | raw/corrected 都是 0，当前无需修 |
+| unsupported-encoder | `Vivid.mp3` | raw/corrected 都是 0，当前无需修 |
+| zero-delay | `Hitogata/audio.mp3` | raw/corrected 都是 0，当前无需修 |
+| VBRI | `only my railgun (TV Size).mp3` | rawOffset=1276 frames，rawLengthDelta=1276 frames，当前未修 |
+
+追加 VBRI 抽样：
+
+| 样本 | rawOffset | rawLengthDelta |
+| --- | ---: | ---: |
+| Endless Tears | 1276 | 1276 |
+| late in autumn | 1276 | 1276 |
+| Marisa wa Taihen na Kanbu de Tomatte Ikimashita | 1290 | 1290 |
+| only my railgun | 1276 | 1276 |
+
+结论：
+
+- 当前 Xing/Info LAME/Lavf/Lavc 修复能覆盖这次用户列出的样本，并覆盖本机曲库中大量常见 LAME/Lavf/Lavc MP3。
+- 但它不能宣称覆盖“大部分所有历史 MP3 主音轨”，因为静态解析覆盖率约 46.82%。
+- 未解析类别里不少样本和 BASS 本来一致，不需要修。
+- 真正已经确认需要继续补的是 VBRI；但 VBRI 偏移并非所有文件同一常数，不能直接硬编码 1276 frames。
+
+## 尝试 10：补 VBRI 修复
+
+VBRI 样本进一步分析：
+
+- `only my railgun`、`Endless Tears`、`late in autumn` 的 VBRI `delay` 字段是 2428。
+- `Marisa wa Taihen...` 的 VBRI `delay` 字段是 2442。
+- MPEG1 Layer3 每帧 1152 samples。
+- 观测到的 BASS/NAudio raw offset 满足：
+  - `2428 - 1152 = 1276`
+  - `2442 - 1152 = 1290`
+
+因此新增规则：
+
+- 如果第一帧固定 VBRI 位置存在 `VBRI` marker：
+  - 读取 `delay` 字段。
+  - `StartSkipSamples = max(0, delay - samplesPerFrame)`。
+  - `EndDiscardSamples = 0`。
+
+修改：
+
+- `Mp3GaplessInfo` 增加 VBRI 分支。
+- `AudioDecoderReferenceTests` 增加合成 VBRI header 测试：
+  - `delay=2428 -> startSkip=1276`
+  - `delay=2442 -> startSkip=1290`
+
+验证：
+
+- 普通音频测试：
+  - `dotnet test tests\OsuPlayer.Media.Audio.Tests\OsuPlayer.Media.Audio.Tests.csproj -c Debug --no-restore`
+  - 通过：51/51。
+- VBRI fixture，默认严格阈值：
+  - `EndlessTears: rawOffset=1276 frames, correctedOffset=0 frames`
+  - `LateInAutumn: rawOffset=1276 frames, correctedOffset=0 frames`
+  - `Marisa: rawOffset=1290 frames, correctedOffset=0 frames`
+  - `Railgun: rawOffset=1276 frames, correctedOffset=0 frames`
+- 边界混合 fixture：
+  - `NoXing-GoodTime`: 0 -> 0
+  - `Unsupported-Vivid`: 0 -> 0
+  - `VBRI-Railgun`: 1276 -> 0
+  - `ZeroDelay-Hitogata`: 0 -> 0
+- 用户追加的四个 Xing/Info 样本仍然全部 1105 -> 0。
+
+更新后的覆盖判断：
+
+- 当前已覆盖：
+  - Xing/LAME
+  - Info/LAME
+  - Info/Lavf/Lavc
+  - VBRI
+- 本机静态扫描中，VBRI 主音轨约 41 个；加上 VBRI 后，可解析主音轨从约 4227 提升到约 4268。

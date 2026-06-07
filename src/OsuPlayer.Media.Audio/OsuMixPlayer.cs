@@ -87,6 +87,12 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
         }
     }
 
+    public int GeneralOffset
+    {
+        get => _session?.GeneralOffsetMilliseconds ?? 0;
+        set => _session?.GeneralOffsetMilliseconds = value;
+    }
+
     public async Task Initialize()
     {
         try

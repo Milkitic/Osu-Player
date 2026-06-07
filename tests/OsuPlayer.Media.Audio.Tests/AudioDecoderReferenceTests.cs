@@ -125,6 +125,20 @@ public sealed class AudioDecoderReferenceTests
         Assert.Equal(expectedTotalDiscard, info.TotalDiscardSamples);
     }
 
+    [Theory]
+    [InlineData(2_428, 1_276)]
+    [InlineData(2_442, 1_290)]
+    public void Mp3GaplessInfo_ReadsVbriDelay(int vbriDelay, int expectedStartSkip)
+    {
+        var mp3 = CreateVbriMp3Frame(vbriDelay);
+
+        Assert.True(Mp3GaplessInfo.TryRead(mp3, out var info));
+        Assert.Equal(44_100, info.SampleRate);
+        Assert.Equal(expectedStartSkip, info.StartSkipSamples);
+        Assert.Equal(0, info.EndDiscardSamples);
+        Assert.Equal(expectedStartSkip, info.TotalDiscardSamples);
+    }
+
     private static async Task<AudioAlignmentResult> EvaluateCaseAsync(
         AudioReferenceCase testCase,
         bool validate,
@@ -238,6 +252,51 @@ public sealed class AudioDecoderReferenceTests
                               0.25 * Math.Sin(2 * Math.PI * 997 * t) +
                               0.20 * Math.Sin(2 * Math.PI * 3211 * t));
         }
+
+        return data;
+    }
+
+    private static byte[] CreateVbriMp3Frame(int vbriDelay)
+    {
+        if ((uint)vbriDelay > ushort.MaxValue)
+            throw new ArgumentOutOfRangeException(nameof(vbriDelay));
+
+        const int frameLength = 522;
+        const int vbriOffset = 36;
+        const int id3PayloadLength = 5;
+
+        var frame = new byte[frameLength];
+        frame[0] = 0xFF;
+        frame[1] = 0xFB;
+        frame[2] = 0xA0;
+        frame[3] = 0x00;
+
+        var cursor = vbriOffset;
+        Encoding.ASCII.GetBytes("VBRI").CopyTo(frame.AsSpan(cursor));
+        cursor += 4;
+        BinaryPrimitives.WriteUInt16BigEndian(frame.AsSpan(cursor, sizeof(ushort)), 1);
+        cursor += 2;
+        BinaryPrimitives.WriteUInt16BigEndian(frame.AsSpan(cursor, sizeof(ushort)), (ushort)vbriDelay);
+        cursor += 2;
+        BinaryPrimitives.WriteUInt16BigEndian(frame.AsSpan(cursor, sizeof(ushort)), 75);
+        cursor += 2;
+        BinaryPrimitives.WriteUInt32BigEndian(frame.AsSpan(cursor, sizeof(uint)), 2_527_172);
+        cursor += 4;
+        BinaryPrimitives.WriteUInt32BigEndian(frame.AsSpan(cursor, sizeof(uint)), 3_472);
+        cursor += 4;
+        BinaryPrimitives.WriteUInt16BigEndian(frame.AsSpan(cursor, sizeof(ushort)), 108);
+        cursor += 2;
+        BinaryPrimitives.WriteUInt16BigEndian(frame.AsSpan(cursor, sizeof(ushort)), 1);
+        cursor += 2;
+        BinaryPrimitives.WriteUInt16BigEndian(frame.AsSpan(cursor, sizeof(ushort)), 2);
+        cursor += 2;
+        BinaryPrimitives.WriteUInt16BigEndian(frame.AsSpan(cursor, sizeof(ushort)), 32);
+
+        var data = new byte[10 + id3PayloadLength + frame.Length];
+        Encoding.ASCII.GetBytes("ID3").CopyTo(data.AsSpan(0));
+        data[3] = 4;
+        data[9] = id3PayloadLength;
+        frame.CopyTo(data.AsSpan(10 + id3PayloadLength));
 
         return data;
     }
