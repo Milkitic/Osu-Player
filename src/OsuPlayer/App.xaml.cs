@@ -101,7 +101,7 @@ public partial class App : Application
 
         // 注册核心后台服务 (Singletons)
         services.AddSingleton<IAppNotificationService, AppNotificationService>();
-        services.AddSingleton<INavigationService, FrameNavigationService>();
+        services.AddTransient<INavigationService, FrameNavigationService>();
         services.AddSingleton<IUiThreadDispatcher>(_ => Execute.UiThreadDispatcher);
         services.AddSingleton<IPlayerDataStore, PlayerDataService>();
         services.AddSingleton<IPlayerDataService>(provider =>

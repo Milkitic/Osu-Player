@@ -111,6 +111,7 @@ public class SwitchRadio : RadioButton
         if (App.Services != null)
         {
             var navService = App.Services.GetRequiredService<INavigationService>();
+            navService.Initialize(frame);
             var loadedAction = _loadedAction;
             _loadedAction = null;
 
