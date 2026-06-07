@@ -1,12 +1,11 @@
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace OsuPlayer.UiComponents.ButtonComponent;
 
-public class PlayerControlButton : Button, INotifyPropertyChanged
+public class PlayerControlButton : Button
 {
     //public new static readonly DependencyProperty BorderThicknessProperty =
     //    DependencyProperty.Register("BorderThickness", typeof(Thickness), typeof(PlayerControlButton),
@@ -41,11 +40,7 @@ public class PlayerControlButton : Button, INotifyPropertyChanged
     public double ImageWidth
     {
         get => (double)GetValue(ImageWidthProperty);
-        set
-        {
-            SetValue(ImageWidthProperty, value);
-            OnPropertyChanged();
-        }
+        set => SetValue(ImageWidthProperty, value);
     }
 
     public static readonly DependencyProperty ImageWidthProperty =
@@ -56,11 +51,7 @@ public class PlayerControlButton : Button, INotifyPropertyChanged
     public double ImageHeight
     {
         get => (double)GetValue(ImageHeightProperty);
-        set
-        {
-            SetValue(ImageHeightProperty, value);
-            OnPropertyChanged();
-        }
+        set => SetValue(ImageHeightProperty, value);
     }
 
     public static readonly DependencyProperty ImageHeightProperty =
@@ -71,11 +62,7 @@ public class PlayerControlButton : Button, INotifyPropertyChanged
     public Thickness ImageMargin
     {
         get => (Thickness)GetValue(ImageMarginProperty);
-        set
-        {
-            SetValue(ImageMarginProperty, value);
-            OnPropertyChanged();
-        }
+        set => SetValue(ImageMarginProperty, value);
     }
 
     public static readonly DependencyProperty ImageMarginProperty =
@@ -87,11 +74,7 @@ public class PlayerControlButton : Button, INotifyPropertyChanged
     public double BorderRadius
     {
         get => (double)GetValue(BorderRadiusProperty);
-        set
-        {
-            SetValue(BorderRadiusProperty, value);
-            OnPropertyChanged();
-        }
+        set => SetValue(BorderRadiusProperty, value);
     }
 
     public static readonly DependencyProperty BorderRadiusProperty =
@@ -101,12 +84,5 @@ public class PlayerControlButton : Button, INotifyPropertyChanged
     static PlayerControlButton()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(PlayerControlButton), new FrameworkPropertyMetadata(typeof(PlayerControlButton)));
-    }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

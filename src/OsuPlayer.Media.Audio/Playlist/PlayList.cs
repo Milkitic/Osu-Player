@@ -30,7 +30,6 @@ public partial class PlayList : ObservableObject
     private readonly Action<PlaylistMode>? _onModeChanged;
 
     private readonly List<int> _playOrder = new();
-    private PlaylistMode _mode;
 
     public PlayList()
         : this(new PlayerDataService(), Execute.UiThreadDispatcher, null)
@@ -78,30 +77,25 @@ public partial class PlayList : ObservableObject
     [ObservableProperty]
     public partial int IndexPointer { get; private set; } = -1;
 
-    public PlaylistMode Mode
+    [ObservableProperty]
+    public partial PlaylistMode Mode { get; set; }
+
+    partial void OnModeChanged(PlaylistMode oldValue, PlaylistMode newValue)
     {
-        get => _mode;
-        set
+        var randomModeChanged = IsRandomMode(newValue) != IsRandomMode(oldValue);
+        if (randomModeChanged)
         {
-            if (value == _mode) return;
-
-            var randomModeChanged = IsRandomMode(value) != IsRandom;
-            _mode = value;
-            if (randomModeChanged)
-            {
-                RebuildPlayOrder();
-                SyncPointerToCurrent();
-            }
-
-            _onModeChanged?.Invoke(_mode);
-            OnPropertyChanged(nameof(Mode));
+            RebuildPlayOrder();
+            SyncPointerToCurrent();
         }
+
+        _onModeChanged?.Invoke(newValue);
     }
 
     public bool HasCurrent => CurrentInfo != null;
     public bool HasItems => SongList.Count > 0;
-    public bool IsLoop => _mode is PlaylistMode.Loop or PlaylistMode.LoopRandom;
-    public bool IsRandom => IsRandomMode(_mode);
+    public bool IsLoop => Mode is PlaylistMode.Loop or PlaylistMode.LoopRandom;
+    public bool IsRandom => IsRandomMode(Mode);
     public bool IsFirst => IndexPointer <= 0;
     public bool IsLast => _playOrder.Count == 0 || IndexPointer >= _playOrder.Count - 1;
 

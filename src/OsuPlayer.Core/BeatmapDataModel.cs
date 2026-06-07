@@ -1,16 +1,14 @@
 using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using Coosu.Beatmap;
 using Coosu.Beatmap.Sections.GamePlay;
+using CommunityToolkit.Mvvm.ComponentModel;
 using OsuPlayer.Presentation.ObjectModel;
 using OsuPlayer.Shared;
 
 namespace OsuPlayer.Core;
 
-public class BeatmapDataModel : NumberableModel, IMapIdentifiable, INotifyPropertyChanged
+public partial class BeatmapDataModel : NumberableModel, IMapIdentifiable
 {
-    private string _thumbPath;
     public string Artist { get; set; }
     public string ArtistUnicode { get; set; }
     public string Title { get; set; }
@@ -41,27 +39,14 @@ public class BeatmapDataModel : NumberableModel, IMapIdentifiable, INotifyProper
 
     public Guid BeatmapDbId { get; set; }
 
-    public string ThumbPath
-    {
-        get => _thumbPath;
-        set
-        {
-            _thumbPath = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    public partial string ThumbPath { get; set; }
+
     public string SbThumbPath { get; set; }
     public string SbThumbVideoPath { get; set; }
 
     public MapIdentity GetIdentity()
     {
         return new MapIdentity(FolderName, Version, InOwnDb);
-    }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

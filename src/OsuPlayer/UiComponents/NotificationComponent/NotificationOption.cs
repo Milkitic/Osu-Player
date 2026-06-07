@@ -1,82 +1,32 @@
 using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace OsuPlayer.UiComponents.NotificationComponent;
 
-public class NotificationOption : INotifyPropertyChanged
+public partial class NotificationOption : ObservableObject
 {
     public enum NotificationLevel
     {
-        Alert, Confirm, Prompt
-    }
-    #region Notify property
-
-    private ControlTemplate _iconTemplate;
-    private string _title = "Title";
-    private string _content = "This is your content here";
-    private TimeSpan _fadeoutTime;
-    private NotificationLevel _level;
-
-    public ControlTemplate IconTemplate
-    {
-        get => _iconTemplate;
-        set
-        {
-            _iconTemplate = value;
-            OnPropertyChanged();
-        }
+        Alert,
+        Confirm,
+        Prompt
     }
 
-    public string Title
-    {
-        get => _title;
-        set
-        {
-            _title = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    public partial ControlTemplate IconTemplate { get; set; }
 
-    public string Content
-    {
-        get => _content;
-        set
-        {
-            _content = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    public partial string Title { get; set; } = "Title";
 
-    public TimeSpan FadeoutTime
-    {
-        get => _fadeoutTime;
-        set
-        {
-            _fadeoutTime = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    public partial string Content { get; set; } = "This is your content here";
 
-    public NotificationLevel Level
-    {
-        get => _level;
-        set
-        {
-            _level = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    public partial TimeSpan FadeoutTime { get; set; }
 
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    #endregion
+    [ObservableProperty]
+    public partial NotificationLevel Level { get; set; }
 
     public string NotificationTypeString => Level.ToString();
 
