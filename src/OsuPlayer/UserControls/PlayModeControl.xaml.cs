@@ -12,17 +12,10 @@ namespace OsuPlayer.UserControls;
 /// </summary>
 public partial class PlayModeControl : UserControl
 {
-    public static readonly RoutedEvent CloseRequestedEvent =
-        EventManager.RegisterRoutedEvent("CloseRequested",
-            RoutingStrategy.Bubble,
-            typeof(RoutedEventHandler),
-            typeof(PlayModeControl));
-
-    public event RoutedEventHandler CloseRequested
-    {
-        add => AddHandler(CloseRequestedEvent, value);
-        remove => RemoveHandler(CloseRequestedEvent, value);
-    }
+    /// <summary>
+    /// Occurs when the user has selected a play mode and the popup should close.
+    /// </summary>
+    public event EventHandler? CloseRequested;
 
     private readonly ObservablePlayController _controller;
 
@@ -83,7 +76,7 @@ public partial class PlayModeControl : UserControl
         if (e.OriginalSource is RadioButton radio)
         {
             _controller.PlayList.Mode = (PlaylistMode)radio.Tag;
-            RaiseEvent(new RoutedEventArgs(CloseRequestedEvent, this));
+            CloseRequested?.Invoke(this, EventArgs.Empty);
         }
     }
 }

@@ -460,12 +460,12 @@ public partial class MainWindow : WindowEx
         });
     }
 
-    private void Controller_ThumbClicked(object sender, RoutedEventArgs e)
+    private void Controller_ThumbClicked(object? sender, EventArgs e)
     {
         MainFrame.Content = null;
     }
 
-    private async void Controller_LikeClicked(object sender, RoutedEventArgs e)
+    private async void Controller_LikeClicked(object? sender, EventArgs e)
     {
         if (_controller.PlayList.CurrentInfo == null) return;
         var detail = _controller.PlayList.CurrentInfo.Beatmap;

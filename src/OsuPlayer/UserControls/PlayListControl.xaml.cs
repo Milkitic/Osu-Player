@@ -114,17 +114,10 @@ public partial class PlayListControlVm : ObservableObject
 /// </summary>
 public partial class PlayListControl : UserControl
 {
-    public static readonly RoutedEvent CloseRequestedEvent =
-        EventManager.RegisterRoutedEvent("CloseRequested",
-            RoutingStrategy.Bubble,
-            typeof(RoutedEventHandler),
-            typeof(PlayListControl));
-
-    public event RoutedEventHandler CloseRequested
-    {
-        add => AddHandler(CloseRequestedEvent, value);
-        remove => RemoveHandler(CloseRequestedEvent, value);
-    }
+    /// <summary>
+    /// Occurs when the close button on the playlist popup is clicked.
+    /// </summary>
+    public event EventHandler? CloseRequested;
 
     private bool _signed;
     private readonly ObservablePlayController _controller;
@@ -163,8 +156,7 @@ public partial class PlayListControl : UserControl
 
     private void CloseButton_Click(object sender, RoutedEventArgs e)
     {
-        RaiseEvent(new RoutedEventArgs(CloseRequestedEvent, this));
-        //RaiseEvent(e);
+        CloseRequested?.Invoke(this, EventArgs.Empty);
     }
 
     private void PlayList_SelectionChanged(object sender, SelectionChangedEventArgs e)

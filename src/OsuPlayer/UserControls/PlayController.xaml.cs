@@ -175,29 +175,15 @@ public partial class PlayController : UserControl
 {
     #region Events
 
-    public static readonly RoutedEvent ThumbClickedEvent = EventManager.RegisterRoutedEvent(
-        "ThumbClicked",
-        RoutingStrategy.Bubble,
-        typeof(RoutedPropertyChangedEventArgs<object>),
-        typeof(PlayController));
+    /// <summary>
+    /// Occurs when the thumbnail (cover art) is clicked.
+    /// </summary>
+    public event EventHandler? ThumbClicked;
 
-    public event RoutedEventHandler ThumbClicked
-    {
-        add => AddHandler(ThumbClickedEvent, value);
-        remove => RemoveHandler(ThumbClickedEvent, value);
-    }
-
-    public static readonly RoutedEvent LikeClickedEvent = EventManager.RegisterRoutedEvent(
-        "LikeClicked",
-        RoutingStrategy.Bubble,
-        typeof(RoutedPropertyChangedEventArgs<object>),
-        typeof(PlayController));
-
-    public event RoutedEventHandler LikeClicked
-    {
-        add => AddHandler(LikeClickedEvent, value);
-        remove => RemoveHandler(LikeClickedEvent, value);
-    }
+    /// <summary>
+    /// Occurs when the like/favorite button is clicked.
+    /// </summary>
+    public event EventHandler? LikeClicked;
 
     #endregion
 
@@ -213,7 +199,7 @@ public partial class PlayController : UserControl
 
     private void ThumbButton_Click(object sender, RoutedEventArgs e)
     {
-        RaiseEvent(new RoutedEventArgs(ThumbClickedEvent, this));
+        ThumbClicked?.Invoke(this, EventArgs.Empty);
     }
 
     private void PlayProgress_DragStarted(object sender, DragStartedEventArgs e)
@@ -251,7 +237,7 @@ public partial class PlayController : UserControl
 
     private void LikeButton_Click(object sender, RoutedEventArgs e)
     {
-        RaiseEvent(new RoutedEventArgs(LikeClickedEvent, this));
+        LikeClicked?.Invoke(this, EventArgs.Empty);
     }
 
     private void VolumeButton_Click(object sender, RoutedEventArgs e)
@@ -264,7 +250,7 @@ public partial class PlayController : UserControl
         PopPlayList.IsOpen = true;
     }
 
-    private void PlayListControl_CloseRequested(object sender, RoutedEventArgs e)
+    private void PlayListControl_CloseRequested(object sender, EventArgs e)
     {
         PopPlayList.IsOpen = false;
     }

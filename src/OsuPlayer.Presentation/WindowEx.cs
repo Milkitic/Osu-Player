@@ -11,23 +11,13 @@ namespace OsuPlayer.Presentation;
 /// </summary>
 public abstract class WindowEx : Window, IWindowBase
 {
-    private static readonly List<WindowEx> Current = new List<WindowEx>();
+    private static readonly List<WindowEx> s_current = new List<WindowEx>();
     private bool _shown;
-
-    /// <summary>
-    /// 窗体显示事件
-    /// </summary>
-    public static readonly RoutedEvent ShownEvent = EventManager.RegisterRoutedEvent
-        ("Shown", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(WindowEx));
 
     /// <summary>
     /// 当窗体显示时发生。
     /// </summary>
-    public event RoutedEventHandler Shown
-    {
-        add => AddHandler(ShownEvent, value);
-        remove => RemoveHandler(ShownEvent, value);
-    }
+    public event EventHandler? Shown;
 
     /// <summary>
     /// 窗体是否已经关闭。
@@ -37,7 +27,7 @@ public abstract class WindowEx : Window, IWindowBase
     /// <summary>
     /// 当前活跃的窗口。
     /// </summary>
-    public static IEnumerable<WindowEx> CurrentWindows => new ReadOnlyCollection<WindowEx>(Current);
+    public static IEnumerable<WindowEx> CurrentWindows => new ReadOnlyCollection<WindowEx>(s_current);
 
     /// <summary>
     /// 初始化 <see cref="WindowEx" /> 类的新实例。
@@ -46,7 +36,7 @@ public abstract class WindowEx : Window, IWindowBase
     {
         Closing += WindowEx_Closing;
         Closed += WindowEx_Closed;
-        Current.Add(this);
+        s_current.Add(this);
     }
 
     /// <summary>
@@ -111,7 +101,7 @@ public abstract class WindowEx : Window, IWindowBase
         IsClosed = true;
         Closed -= WindowEx_Closed;
         Closing -= WindowEx_Closing;
-        Current.Remove(this);
+        s_current.Remove(this);
     }
 
     /// <summary>
@@ -129,7 +119,6 @@ public abstract class WindowEx : Window, IWindowBase
 
         _shown = true;
 
-        var args = new RoutedEventArgs(ShownEvent, this);
-        RaiseEvent(args);
+        Shown?.Invoke(this, EventArgs.Empty);
     }
 }

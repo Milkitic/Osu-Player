@@ -19,17 +19,10 @@ public class VirtualizingGalleryWrapPanel : VirtualizingPanel, IScrollInfo
         RenderTransform = _translate;
     }
 
-    public static readonly RoutedEvent ItemLoadedEvent = EventManager.RegisterRoutedEvent(
-        "ItemLoaded",
-        RoutingStrategy.Bubble,
-        typeof(VirtualizingGalleryRoutedEventHandler),
-        typeof(VirtualizingGalleryWrapPanel));
-
-    public event VirtualizingGalleryRoutedEventHandler ItemLoaded
-    {
-        add => AddHandler(ItemLoadedEvent, value);
-        remove => RemoveHandler(ItemLoadedEvent, value);
-    }
+    /// <summary>
+    /// Occurs when a virtualized item container is realized and loaded into the panel.
+    /// </summary>
+    public event EventHandler<ItemLoadedEventArgs>? ItemLoaded;
 
     public static readonly DependencyProperty ChildWidthProperty = DependencyProperty.RegisterAttached("ChildWidth",
         typeof(double),
@@ -106,7 +99,7 @@ public class VirtualizingGalleryWrapPanel : VirtualizingPanel, IScrollInfo
                     if (!_loadedIndex.Contains(itemIndex))
                     {
                         _loadedIndex.Add(itemIndex);
-                        RaiseEvent(new VirtualizingGalleryRoutedEventArgs(ItemLoadedEvent, this) { Index = itemIndex });
+                        ItemLoaded?.Invoke(this, new ItemLoadedEventArgs(itemIndex));
                     }
 
                     var child = (UIElement)generator.GenerateNext(out var isNewlyRealized);
@@ -449,13 +442,12 @@ public class VirtualizingGalleryWrapPanel : VirtualizingPanel, IScrollInfo
     #endregion
 }
 
-public class VirtualizingGalleryRoutedEventArgs : RoutedEventArgs
+public sealed class ItemLoadedEventArgs : EventArgs
 {
-    public VirtualizingGalleryRoutedEventArgs(RoutedEvent routedEvent, object source) : base(routedEvent, source)
+    public ItemLoadedEventArgs(int index)
     {
+        Index = index;
     }
 
-    public int Index { get; set; }
+    public int Index { get; }
 }
-
-public delegate void VirtualizingGalleryRoutedEventHandler(object sender, VirtualizingGalleryRoutedEventArgs e);

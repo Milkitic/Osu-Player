@@ -70,7 +70,7 @@ public partial class SearchPage : Page
     }
 
     private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender,
-        VirtualizingGalleryRoutedEventArgs e)
+        ItemLoadedEventArgs e)
     {
         var dataModel = ViewModel.DisplayedMaps[e.Index];
         try
