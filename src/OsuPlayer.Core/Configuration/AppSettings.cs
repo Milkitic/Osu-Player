@@ -37,6 +37,8 @@ public class AppSettings : IUserPreferences, IDisposable
             else if (e.PropertyName == nameof(VolumeSection.Hitsound)) OnPropertyChanged(nameof(VolumeHitsound));
             else if (e.PropertyName == nameof(VolumeSection.Sample)) OnPropertyChanged(nameof(VolumeSample));
             else if (e.PropertyName == nameof(VolumeSection.BalanceFactor)) OnPropertyChanged(nameof(VolumeBalanceFactor));
+            else if (e.PropertyName == nameof(VolumeSection.BalanceMode)) OnPropertyChanged(nameof(VolumeBalanceMode));
+            else if (e.PropertyName == nameof(VolumeSection.LimiterType)) OnPropertyChanged(nameof(VolumeLimiterType));
         };
 
         Play.PropertyChanged += (s, e) => {
@@ -92,6 +94,20 @@ public class AppSettings : IUserPreferences, IDisposable
     {
         get => Volume.BalanceFactor;
         set { if (Volume.BalanceFactor != value) { Volume.BalanceFactor = value; OnPropertyChanged(); } }
+    }
+
+    [JsonIgnore]
+    public BalanceModeSetting VolumeBalanceMode
+    {
+        get => Volume.BalanceMode;
+        set { if (Volume.BalanceMode != value) { Volume.BalanceMode = value; OnPropertyChanged(); } }
+    }
+
+    [JsonIgnore]
+    public LimiterTypeSetting VolumeLimiterType
+    {
+        get => Volume.LimiterType;
+        set { if (Volume.LimiterType != value) { Volume.LimiterType = value; OnPropertyChanged(); } }
     }
 
     [JsonIgnore]

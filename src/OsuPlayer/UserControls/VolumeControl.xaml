@@ -6,7 +6,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:OsuPlayer.Shared.Models;assembly=OsuPlayer.Shared"
     xmlns:userControls="clr-namespace:OsuPlayer.UserControls"
-    d:DesignHeight="241"
+    xmlns:configuration="clr-namespace:OsuPlayer.Core.Configuration;assembly=OsuPlayer.Core"
+    xmlns:converters="clr-namespace:OsuPlayer.Converters"
+    d:DesignHeight="300"
     d:DesignWidth="170"
     FontFamily="{StaticResource SspRegular}"
     Loaded="VolumeControl_OnLoaded"
@@ -133,6 +135,29 @@
                             HorizontalAlignment="Center"
                             Content="{DynamicResource ui-3dSoundEffect}"
                             Foreground="#303030" />
+                        <Grid Margin="10,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Label
+                                VerticalAlignment="Center"
+                                Content="{DynamicResource ui-balanceMode}"
+                                Foreground="#303030" />
+                            <ComboBox
+                                Grid.Column="1"
+                                Height="22"
+                                VerticalContentAlignment="Center"
+                                ItemsSource="{Binding AvailableBalanceModes}"
+                                SelectedItem="{Binding Shared.AppSettings.Volume.BalanceMode, Mode=TwoWay}"
+                                SelectionChanged="BalanceMode_SelectionChanged">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </Grid>
                         <Slider
                             x:Name="Offset"
                             Margin="10,5"
@@ -151,6 +176,29 @@
                             HorizontalAlignment="Center"
                             Content="{DynamicResource ui-currentMapOffset}"
                             Foreground="#303030" />
+                        <Grid Margin="10,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Label
+                                VerticalAlignment="Center"
+                                Content="{DynamicResource ui-limiterType}"
+                                Foreground="#303030" />
+                            <ComboBox
+                                Grid.Column="1"
+                                Height="22"
+                                VerticalContentAlignment="Center"
+                                ItemsSource="{Binding AvailableLimiterTypes}"
+                                SelectedItem="{Binding Shared.AppSettings.Volume.LimiterType, Mode=TwoWay}"
+                                SelectionChanged="LimiterType_SelectionChanged">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </Grid>
                     </StackPanel>
                 </Grid>
                 <Grid Grid.Row="2" Margin="0,0,0,5">

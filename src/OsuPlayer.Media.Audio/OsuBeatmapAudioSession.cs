@@ -190,6 +190,7 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         _effectBus.HitsoundVolume = options.HitsoundVolume;
         _effectBus.SampleVolume = options.SampleVolume;
         _effectBus.BalanceFactor = options.BalanceFactor;
+        _effectBus.BalanceMode = options.BalanceMode;
     }
 
     public async Task ClearAsync(CancellationToken cancellationToken = default)

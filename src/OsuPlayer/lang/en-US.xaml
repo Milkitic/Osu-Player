@@ -38,6 +38,8 @@
     <sys:String x:Key="ui-volumeMaster">Master</sys:String>
     <sys:String x:Key="ui-volumeSound">Hitsound</sys:String>
     <sys:String x:Key="ui-3dSoundEffect">3D Effect</sys:String>
+    <sys:String x:Key="ui-balanceMode">3D Effect Method</sys:String>
+    <sys:String x:Key="ui-limiterType">Limiter Method</sys:String>
     <sys:String x:Key="ui-currentMapOffset">Map Offset</sys:String>
     <sys:String x:Key="ui-volumeMusic">Music</sys:String>
     <sys:String x:Key="ui-songsClassifier"></sys:String>

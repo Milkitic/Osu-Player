@@ -62,6 +62,8 @@
     <sys:String x:Key="ui-volumeSound">音效</sys:String>
     <sys:String x:Key="ui-volumeSample">音轨</sys:String>
     <sys:String x:Key="ui-3dSoundEffect">3D音效</sys:String>
+    <sys:String x:Key="ui-balanceMode">3D音效方法</sys:String>
+    <sys:String x:Key="ui-limiterType">限频器方法</sys:String>
     <sys:String x:Key="ui-currentMapOffset">单曲偏移</sys:String>
     <sys:String x:Key="ui-openDesktopLyric">打开桌面歌词</sys:String>
     <sys:String x:Key="ui-closeDesktopLyric">关闭桌面歌词</sys:String>

@@ -309,6 +309,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
     private void StartAudioEngine()
     {
         OsuPlayerAudioDevicePolicy.StartDevice(_engine, AppSettings.Default?.Play?.DeviceDescription);
+        _engine.LimiterType = (KeyAsio.Core.Audio.LimiterType)(AppSettings.Default?.Volume.LimiterType ?? Core.Configuration.LimiterTypeSetting.Master);
     }
 
     private OsuAudioSessionOptions CreateSessionOptions()
@@ -323,8 +324,8 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
                 BeatmapFolder = _sourceFolder,
                 BeatmapFilename = beatmapFilename,
                 AudioFilename = _osuFile.General?.AudioFilename ?? string.Empty,
-                DefaultHitsoundFolder = Domain.DefaultPath,
-                UserSkinFolder = Domain.DefaultPath,
+                DefaultHitsoundFolder = AppPaths.Current.DefaultPath,
+                UserSkinFolder = AppPaths.Current.DefaultPath,
             },
             GeneralOffsetMilliseconds = playSection?.GeneralActualOffset ?? 0,
             ManualOffsetMilliseconds = ManualOffset,
@@ -354,10 +355,12 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
         _engine.MainVolume = volume.Main;
         _engine.MusicVolume = volume.Music;
         _engine.EffectVolume = 1;
+        _engine.LimiterType = (KeyAsio.Core.Audio.LimiterType)volume.LimiterType;
 
         _sessionOptions.HitsoundVolume = volume.Hitsound;
         _sessionOptions.SampleVolume = volume.Sample;
         _sessionOptions.BalanceFactor = volume.BalanceFactor / 100;
+        _sessionOptions.BalanceMode = (KeyAsio.Core.Audio.SampleProviders.BalancePans.BalanceMode)volume.BalanceMode;
         _session?.ApplyOptions(_sessionOptions);
     }
 

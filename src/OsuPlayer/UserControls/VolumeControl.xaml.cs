@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -15,6 +16,8 @@ namespace OsuPlayer.UserControls;
 public partial class VolumeControlVm : ObservableObject
 {
     public SharedVm Shared { get; } = SharedVm.Default;
+    public BalanceModeSetting[] AvailableBalanceModes { get; } = Enum.GetValues<BalanceModeSetting>();
+    public LimiterTypeSetting[] AvailableLimiterTypes { get; } = Enum.GetValues<LimiterTypeSetting>();
 }
 
 /// <summary>
@@ -71,6 +74,16 @@ public partial class VolumeControl : UserControl
     }
 
     private void Balance_DragComplete(object sender, DragCompletedEventArgs e)
+    {
+        AppSettings.SaveDefault();
+    }
+
+    private void BalanceMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        AppSettings.SaveDefault();
+    }
+
+    private void LimiterType_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         AppSettings.SaveDefault();
     }
