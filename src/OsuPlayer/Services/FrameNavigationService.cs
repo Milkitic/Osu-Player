@@ -14,15 +14,15 @@ public class FrameNavigationService : INavigationService
     private readonly IServiceProvider _serviceProvider;
     private Frame _frame;
 
-    private static readonly Storyboard FadeinSb;
-    private static readonly DoubleAnimation Da1;
-    private static readonly DoubleAnimation Ta1;
-    private static readonly DoubleAnimation Ta1Clone;
+    private static readonly Storyboard s_fadeinSb;
+    private static readonly DoubleAnimation s_da1;
+    private static readonly DoubleAnimation s_ta1;
+    private static readonly DoubleAnimation s_ta1Clone;
 
     static FrameNavigationService()
     {
-        FadeinSb = new Storyboard { Name = "FadeinSb" };
-        Da1 = new DoubleAnimation
+        s_fadeinSb = new Storyboard { Name = "FadeinSb" };
+        s_da1 = new DoubleAnimation
         {
             From = 0,
             To = 1,
@@ -30,9 +30,9 @@ public class FrameNavigationService : INavigationService
             BeginTime = TimeSpan.Zero,
             Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300))
         };
-        Storyboard.SetTargetProperty(Da1, new PropertyPath(UIElement.OpacityProperty));
+        Storyboard.SetTargetProperty(s_da1, new PropertyPath(UIElement.OpacityProperty));
 
-        Ta1 = new DoubleAnimation
+        s_ta1 = new DoubleAnimation
         {
             From = 0.95,
             To = 1,
@@ -40,13 +40,13 @@ public class FrameNavigationService : INavigationService
             BeginTime = TimeSpan.Zero,
             Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300))
         };
-        Ta1Clone = Ta1.Clone();
-        Storyboard.SetTargetProperty(Ta1, new PropertyPath("RenderTransform.ScaleX"));
-        Storyboard.SetTargetProperty(Ta1Clone, new PropertyPath("RenderTransform.ScaleY"));
+        s_ta1Clone = s_ta1.Clone();
+        Storyboard.SetTargetProperty(s_ta1, new PropertyPath("RenderTransform.ScaleX"));
+        Storyboard.SetTargetProperty(s_ta1Clone, new PropertyPath("RenderTransform.ScaleY"));
 
-        FadeinSb.Children.Add(Da1);
-        FadeinSb.Children.Add(Ta1);
-        FadeinSb.Children.Add(Ta1Clone);
+        s_fadeinSb.Children.Add(s_da1);
+        s_fadeinSb.Children.Add(s_ta1);
+        s_fadeinSb.Children.Add(s_ta1Clone);
     }
 
     public FrameNavigationService(IServiceProvider serviceProvider)
@@ -62,19 +62,19 @@ public class FrameNavigationService : INavigationService
         }
     }
 
-    public void NavigateTo(Type pageType, object parameter = null, Action<FrameworkElement> pagePrepared = null)
+    public void NavigateTo(Type pageType, object parameter = null, Action<object> pagePrepared = null)
     {
         if (_frame == null)
         {
             throw new InvalidOperationException("NavigationService has not been initialized with a Frame.");
         }
 
-        var page = (FrameworkElement)_serviceProvider.GetRequiredService(pageType);
+        var page = _serviceProvider.GetRequiredService(pageType);
         pagePrepared?.Invoke(page);
 
         if (parameter != null)
         {
-            if (page.DataContext is INavigationAware navigationAware)
+            if (page is FrameworkElement { DataContext: INavigationAware navigationAware })
             {
                 navigationAware.OnNavigatedTo(parameter);
             }
@@ -84,26 +84,33 @@ public class FrameNavigationService : INavigationService
             }
         }
 
-        var originTransform = page.RenderTransform;
-        page.RenderTransformOrigin = new Point(0.5, 0.5);
-        Storyboard.SetTarget(Da1, page);
-        Storyboard.SetTarget(Ta1, page);
-        Storyboard.SetTarget(Ta1Clone, page);
-
-        if (page.RenderTransform.GetType() != typeof(ScaleTransform))
+        if (page is FrameworkElement fe)
         {
-            page.RenderTransform = new ScaleTransform();
+            var originTransform = fe.RenderTransform;
+            fe.RenderTransformOrigin = new System.Windows.Point(0.5, 0.5);
+            Storyboard.SetTarget(s_da1, fe);
+            Storyboard.SetTarget(s_ta1, fe);
+            Storyboard.SetTarget(s_ta1Clone, fe);
+
+            if (fe.RenderTransform.GetType() != typeof(ScaleTransform))
+            {
+                fe.RenderTransform = new ScaleTransform();
+            }
+
+            _frame.Navigate(fe);
+
+            void OnSbOnCompleted(object sender, EventArgs e)
+            {
+                fe.RenderTransform = originTransform;
+                s_fadeinSb.Completed -= OnSbOnCompleted;
+            }
+
+            s_fadeinSb.Completed += OnSbOnCompleted;
+            s_fadeinSb.Begin();
         }
-
-        _frame.Navigate(page);
-
-        void OnSbOnCompleted(object sender, EventArgs e)
+        else
         {
-            page.RenderTransform = originTransform;
-            FadeinSb.Completed -= OnSbOnCompleted;
+            _frame.Navigate(page);
         }
-
-        FadeinSb.Completed += OnSbOnCompleted;
-        FadeinSb.Begin();
     }
 }

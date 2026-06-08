@@ -1,5 +1,4 @@
 using System;
-using System.Windows;
 
 namespace OsuPlayer.Presentation.Interaction;
 
@@ -11,7 +10,7 @@ public interface INavigationService
     /// <summary>
     /// 导航到指定页面类型
     /// </summary>
-    void NavigateTo(Type pageType, object parameter = null, Action<FrameworkElement> pagePrepared = null);
+    void NavigateTo(Type pageType, object parameter = null, Action<object> pagePrepared = null);
 
     /// <summary>
     /// 注册导航的主 Frame

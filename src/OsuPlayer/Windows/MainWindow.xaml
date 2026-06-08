@@ -38,14 +38,120 @@
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
     <presentation:WindowEx.Resources>
-        <converters:NavigationWidthConverter x:Key="CvtNavigationWidth" />
         <!--<converter:IconMarginConverter x:Key="CvtIconMargin" />-->
         <converters:TitleIconConverter x:Key="CvtTitleIcon" />
-        <converters:TitleVisibleConverter x:Key="CvtTitleVisible" />
         <converters:LyricWindowShownConverter x:Key="CvtLyricWindowShown" />
         <converters:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
         <converters:MsToStringConverter x:Key="MsToStringConverter" />
-        <converters:SwitchRadioChangeConverter x:Key="SwitchRadioChangeConverter" />
+        <Style
+            x:Key="AnimatedNavigationLabelStyle"
+            BasedOn="{StaticResource NavigationLabelStyle}"
+            TargetType="Label">
+            <Setter Property="Height" Value="30" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsNavigationCollapsed}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Height"
+                                    To="0"
+                                    Duration="0:0:0.3">
+                                    <DoubleAnimation.EasingFunction>
+                                        <QuarticEase EasingMode="EaseInOut" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <ThicknessAnimation
+                                    Storyboard.TargetProperty="Margin"
+                                    To="0"
+                                    Duration="0:0:0.3">
+                                    <ThicknessAnimation.EasingFunction>
+                                        <QuarticEase EasingMode="EaseInOut" />
+                                    </ThicknessAnimation.EasingFunction>
+                                </ThicknessAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Height"
+                                    To="30"
+                                    Duration="0:0:0.3">
+                                    <DoubleAnimation.EasingFunction>
+                                        <QuarticEase EasingMode="EaseInOut" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <ThicknessAnimation
+                                    Storyboard.TargetProperty="Margin"
+                                    To="0,10,0,0"
+                                    Duration="0:0:0.3">
+                                    <ThicknessAnimation.EasingFunction>
+                                        <QuarticEase EasingMode="EaseInOut" />
+                                    </ThicknessAnimation.EasingFunction>
+                                </ThicknessAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style
+            x:Key="AnimatedSwitchRadioStyle"
+            BasedOn="{StaticResource OsuSwitchRadio}"
+            TargetType="radioButtonComponent:SwitchRadio">
+            <Setter Property="IconMargin" Value="0,0,8,0" />
+            <Setter Property="Padding" Value="20,0,0,0" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsNavigationCollapsed}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation
+                                    Storyboard.TargetProperty="IconMargin"
+                                    To="0,0,150,0"
+                                    Duration="0:0:0.3">
+                                    <ThicknessAnimation.EasingFunction>
+                                        <QuarticEase EasingMode="EaseInOut" />
+                                    </ThicknessAnimation.EasingFunction>
+                                </ThicknessAnimation>
+                                <ThicknessAnimation
+                                    Storyboard.TargetProperty="Padding"
+                                    To="13,0,0,0"
+                                    Duration="0:0:0.3">
+                                    <ThicknessAnimation.EasingFunction>
+                                        <QuarticEase EasingMode="EaseInOut" />
+                                    </ThicknessAnimation.EasingFunction>
+                                </ThicknessAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation
+                                    Storyboard.TargetProperty="IconMargin"
+                                    To="0,0,8,0"
+                                    Duration="0:0:0.3">
+                                    <ThicknessAnimation.EasingFunction>
+                                        <QuarticEase EasingMode="EaseOut" />
+                                    </ThicknessAnimation.EasingFunction>
+                                </ThicknessAnimation>
+                                <ThicknessAnimation
+                                    Storyboard.TargetProperty="Padding"
+                                    To="20,0,0,0"
+                                    Duration="0:0:0.3">
+                                    <ThicknessAnimation.EasingFunction>
+                                        <QuarticEase EasingMode="EaseInOut" />
+                                    </ThicknessAnimation.EasingFunction>
+                                </ThicknessAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </presentation:WindowEx.Resources>
     <Grid Margin="{Binding WindowState, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource WindowMarginConverter}}">
         <Grid.Background>
@@ -93,12 +199,43 @@
                 Margin="0,0,1,0">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
-                        <StackPanel.Tag>
-                            <MultiBinding Converter="{StaticResource CvtNavigationWidth}">
-                                <Binding Path="IsNavigationCollapsed" />
-                                <Binding RelativeSource="{RelativeSource Self}" />
-                            </MultiBinding>
-                        </StackPanel.Tag>
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Width" Value="170" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsNavigationCollapsed}" Value="True">
+                                        <DataTrigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation
+                                                        Storyboard.TargetProperty="Width"
+                                                        To="48"
+                                                        Duration="0:0:0.3">
+                                                        <DoubleAnimation.EasingFunction>
+                                                            <QuarticEase EasingMode="EaseInOut" />
+                                                        </DoubleAnimation.EasingFunction>
+                                                    </DoubleAnimation>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.EnterActions>
+                                        <DataTrigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation
+                                                        Storyboard.TargetProperty="Width"
+                                                        To="170"
+                                                        Duration="0:0:0.3">
+                                                        <DoubleAnimation.EasingFunction>
+                                                            <QuarticEase EasingMode="EaseInOut" />
+                                                        </DoubleAnimation.EasingFunction>
+                                                    </DoubleAnimation>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.ExitActions>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
                         <buttonComponent:CommonButton
                             Width="28"
                             Height="28"
@@ -109,16 +246,7 @@
                             IconSize="19"
                             IconTemplate="{StaticResource NavigationTempl}"
                             Style="{StaticResource NavButton}" />
-                        <Label
-                            Height="30"
-                            FontWeight="SemiBold"
-                            Style="{StaticResource NavigationLabelStyle}">
-                            <Label.Tag>
-                                <MultiBinding Converter="{StaticResource CvtTitleVisible}">
-                                    <Binding Path="IsNavigationCollapsed" />
-                                    <Binding RelativeSource="{RelativeSource Self}" />
-                                </MultiBinding>
-                            </Label.Tag>
+                        <Label FontWeight="SemiBold" Style="{StaticResource AnimatedNavigationLabelStyle}">
                             <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-library}" />
                         </Label>
                         <radioButtonComponent:SwitchRadio
@@ -126,41 +254,18 @@
                             CheckedIconColor="#4050A0"
                             Content="{DynamicResource ui-nav-search}"
                             IconTemplate="{StaticResource NavSearchTempl}"
-                            Style="{StaticResource OsuSwitchRadio}"
+                            Style="{StaticResource AnimatedSwitchRadioStyle}"
                             TargetFrameControl="MainFrame"
-                            TargetPageType="{x:Type pages:SearchPage}">
-                            <radioButtonComponent:SwitchRadio.Tag>
-                                <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
-                                    <Binding Path="IsNavigationCollapsed" />
-                                    <Binding RelativeSource="{RelativeSource Self}" />
-                                </MultiBinding>
-                            </radioButtonComponent:SwitchRadio.Tag>
-                        </radioButtonComponent:SwitchRadio>
+                            TargetPageType="{x:Type pages:SearchPage}" />
                         <radioButtonComponent:SwitchRadio
                             CheckedIconColor="#508030"
                             Content="{DynamicResource ui-nav-storyboard}"
                             IconTemplate="{StaticResource NavStoryboardTempl}"
-                            Style="{StaticResource OsuSwitchRadio}"
+                            Style="{StaticResource AnimatedSwitchRadioStyle}"
                             TargetFrameControl="MainFrame"
                             TargetPageType="{x:Type pages:StoryboardPage}"
-                            Visibility="Collapsed">
-                            <radioButtonComponent:SwitchRadio.Tag>
-                                <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
-                                    <Binding Path="IsNavigationCollapsed" />
-                                    <Binding RelativeSource="{RelativeSource Self}" />
-                                </MultiBinding>
-                            </radioButtonComponent:SwitchRadio.Tag>
-                        </radioButtonComponent:SwitchRadio>
-                        <Label
-                            Height="30"
-                            FontWeight="SemiBold"
-                            Style="{StaticResource NavigationLabelStyle}">
-                            <Label.Tag>
-                                <MultiBinding Converter="{StaticResource CvtTitleVisible}">
-                                    <Binding Path="IsNavigationCollapsed" />
-                                    <Binding RelativeSource="{RelativeSource Self}" />
-                                </MultiBinding>
-                            </Label.Tag>
+                            Visibility="Collapsed" />
+                        <Label FontWeight="SemiBold" Style="{StaticResource AnimatedNavigationLabelStyle}">
                             <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-mine}" />
                         </Label>
                         <radioButtonComponent:SwitchRadio
@@ -168,41 +273,55 @@
                             CheckedIconColor="#A04090"
                             Content="{DynamicResource ui-nav-recent}"
                             IconTemplate="{StaticResource NavHistoryTempl}"
-                            Style="{StaticResource OsuSwitchRadio}"
+                            Style="{StaticResource AnimatedSwitchRadioStyle}"
                             TargetFrameControl="MainFrame"
-                            TargetPageType="{x:Type pages:RecentPlayPage}">
-                            <radioButtonComponent:SwitchRadio.Tag>
-                                <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
-                                    <Binding Path="IsNavigationCollapsed" />
-                                    <Binding RelativeSource="{RelativeSource Self}" />
-                                </MultiBinding>
-                            </radioButtonComponent:SwitchRadio.Tag>
-                        </radioButtonComponent:SwitchRadio>
+                            TargetPageType="{x:Type pages:RecentPlayPage}" />
                         <radioButtonComponent:SwitchRadio
                             CheckedIconColor="#A09040"
                             Content="{DynamicResource ui-nav-export}"
                             IconTemplate="{StaticResource NavExportTempl}"
-                            Style="{StaticResource OsuSwitchRadio}"
+                            Style="{StaticResource AnimatedSwitchRadioStyle}"
                             TargetFrameControl="MainFrame"
-                            TargetPageType="{x:Type pages:ExportPage}">
-                            <radioButtonComponent:SwitchRadio.Tag>
-                                <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}">
-                                    <Binding Path="IsNavigationCollapsed" />
-                                    <Binding RelativeSource="{RelativeSource Self}" />
-                                </MultiBinding>
-                            </radioButtonComponent:SwitchRadio.Tag>
-                        </radioButtonComponent:SwitchRadio>
+                            TargetPageType="{x:Type pages:ExportPage}" />
                         <DockPanel>
-                            <DockPanel.Tag>
-                                <MultiBinding Converter="{StaticResource CvtTitleVisible}" ConverterParameter="0">
-                                    <Binding Path="IsNavigationCollapsed" />
-                                    <Binding RelativeSource="{RelativeSource Self}" />
-                                </MultiBinding>
-                            </DockPanel.Tag>
-                            <Label
-                                Height="30"
-                                FontWeight="SemiBold"
-                                Style="{StaticResource NavigationLabelStyle}">
+                            <DockPanel.Style>
+                                <Style TargetType="DockPanel">
+                                    <Setter Property="Height" Value="40" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsNavigationCollapsed}" Value="True">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetProperty="Height"
+                                                            To="0"
+                                                            Duration="0:0:0.3">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <QuarticEase EasingMode="EaseInOut" />
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <DataTrigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetProperty="Height"
+                                                            To="40"
+                                                            Duration="0:0:0.3">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <QuarticEase EasingMode="EaseInOut" />
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DockPanel.Style>
+                            <Label FontWeight="SemiBold" Style="{StaticResource AnimatedNavigationLabelStyle}">
                                 <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-collection}" />
                             </Label>
                             <buttonComponent:CommonButton
@@ -239,14 +358,9 @@
                                         TargetPageData="{Binding Id}"
                                         TargetPageSingleton="False"
                                         TargetPageType="{x:Type pages:CollectionPage}">
-                                        <radioButtonComponent:SwitchRadio.Tag>
-                                            <MultiBinding Converter="{StaticResource SwitchRadioChangeConverter}" ConverterParameter="0">
-                                                <Binding Path="DataContext.IsNavigationCollapsed" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}" />
-                                                <Binding RelativeSource="{RelativeSource Self}" />
-                                            </MultiBinding>
-                                        </radioButtonComponent:SwitchRadio.Tag>
                                         <radioButtonComponent:SwitchRadio.Style>
                                             <Style BasedOn="{StaticResource OsuSwitchRadio}" TargetType="radioButtonComponent:SwitchRadio">
+                                                <Setter Property="IconMargin" Value="0,0,8,0" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding Path=DataContext.IsNavigationCollapsed, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" Value="False">
                                                         <Setter Property="IconTemplate" Value="{StaticResource CollectionTempl}" />
@@ -278,6 +392,34 @@
                                                         </Setter>
                                                         <Setter Property="Margin" Value="-2,0,0,1" />
                                                         <Setter Property="IconSize" Value="20" />
+                                                        <DataTrigger.EnterActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <ThicknessAnimation
+                                                                        Storyboard.TargetProperty="IconMargin"
+                                                                        To="0,0,150,0"
+                                                                        Duration="0:0:0.3">
+                                                                        <ThicknessAnimation.EasingFunction>
+                                                                            <QuarticEase EasingMode="EaseInOut" />
+                                                                        </ThicknessAnimation.EasingFunction>
+                                                                    </ThicknessAnimation>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.EnterActions>
+                                                        <DataTrigger.ExitActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <ThicknessAnimation
+                                                                        Storyboard.TargetProperty="IconMargin"
+                                                                        To="0,0,8,0"
+                                                                        Duration="0:0:0.3">
+                                                                        <ThicknessAnimation.EasingFunction>
+                                                                            <QuarticEase EasingMode="EaseOut" />
+                                                                        </ThicknessAnimation.EasingFunction>
+                                                                    </ThicknessAnimation>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.ExitActions>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
