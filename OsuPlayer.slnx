@@ -22,15 +22,15 @@
       <BuildType Solution="Release 4.6|*" Project="Debug" />
     </Project>
   </Folder>
-  <Folder Name="/Dependencies/NAudio/">
-    <Project Path="dependencies/KeyASIO.Net/dependencies/NAudio/NAudio.Asio/NAudio.Asio.csproj">
+  <Folder Name="/Dependencies/Milki.Extensions/">
+    <Project Path="dependencies/KeyASIO.Net/dependencies/Milki.Extensions/src/Milki.Extensions.Threading/Milki.Extensions.Threading.csproj">
       <BuildType Solution="Analysis|*" Project="Debug" />
       <BuildType Solution="Release 4.5|*" Project="Release" />
       <BuildType Solution="Release 4.6|*" Project="Release" />
     </Project>
   </Folder>
-  <Folder Name="/Milki.Extensions/">
-    <Project Path="dependencies/KeyASIO.Net/dependencies/Milki.Extensions/src/Milki.Extensions.Threading/Milki.Extensions.Threading.csproj">
+  <Folder Name="/Dependencies/NAudio/">
+    <Project Path="dependencies/KeyASIO.Net/dependencies/NAudio/NAudio.Asio/NAudio.Asio.csproj">
       <BuildType Solution="Analysis|*" Project="Debug" />
       <BuildType Solution="Release 4.5|*" Project="Release" />
       <BuildType Solution="Release 4.6|*" Project="Release" />
