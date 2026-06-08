@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using Coosu.Beatmap;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
+using Microsoft.Extensions.Logging;
 using NAudio.Wave;
-using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
-using OsuPlayer.Media.Audio.Infrastructure;
-using OsuPlayer.Media.Audio.Playlist;
 using OsuPlayer.Media.Audio.Rules;
 using OsuPlayer.Media.Audio.SoundTouch;
+using OsuPlayer.Shared;
+using OsuPlayer.Shared.Infrastructure;
+using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.Media.Audio;
 
@@ -29,7 +30,7 @@ namespace OsuPlayer.Media.Audio;
 /// </remarks>
 public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
 {
-    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+    private readonly ILogger<OsuMixPlayer> _logger;
 
     private readonly IPlaybackEngine _engine;
     private StandaloneMusicTransport? _musicTransport;
@@ -46,12 +47,13 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
     public event Action<PlayStatus>? PlayStatusChanged;
     public event Action<TimeSpan>? PositionUpdated;
 
-    public OsuMixPlayer(OsuFile osuFile, string sourceFolder, IPlaybackEngine engine, AudioCacheManager audioCacheManager)
+    public OsuMixPlayer(OsuFile osuFile, string sourceFolder, IPlaybackEngine engine, AudioCacheManager audioCacheManager, ILogger<OsuMixPlayer> logger)
     {
         _osuFile = osuFile;
         _sourceFolder = sourceFolder;
         _engine = engine;
         _audioCacheManager = audioCacheManager;
+        _logger = logger;
     }
 
     public IWavePlayer? Device => _engine.CurrentDevice;
@@ -119,7 +121,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while initializing KeyAsio osu player.");
+            _logger.LogError(ex, "Error while initializing KeyAsio osu player.");
             throw;
         }
     }
@@ -287,7 +289,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
                     await session.DisposeAsync().ConfigureAwait(false);
                 }
             },
-            Logger,
+            _logger,
             "Error while disposing OsuMixPlayer.").ConfigureAwait(false);
     }
 
@@ -307,6 +309,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
     private void StartAudioEngine()
     {
         OsuPlayerAudioDevicePolicy.StartDevice(_engine, AppSettings.Default?.Play?.DeviceDescription);
+        _engine.LimiterType = (KeyAsio.Core.Audio.LimiterType)(AppSettings.Default?.Volume.LimiterType ?? Core.Configuration.LimiterTypeSetting.Master);
     }
 
     private OsuAudioSessionOptions CreateSessionOptions()
@@ -321,8 +324,8 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
                 BeatmapFolder = _sourceFolder,
                 BeatmapFilename = beatmapFilename,
                 AudioFilename = _osuFile.General?.AudioFilename ?? string.Empty,
-                DefaultHitsoundFolder = Domain.DefaultPath,
-                UserSkinFolder = Domain.DefaultPath,
+                DefaultHitsoundFolder = AppPaths.Current.DefaultPath,
+                UserSkinFolder = AppPaths.Current.DefaultPath,
             },
             GeneralOffsetMilliseconds = playSection?.GeneralActualOffset ?? 0,
             ManualOffsetMilliseconds = ManualOffset,
@@ -352,10 +355,12 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
         _engine.MainVolume = volume.Main;
         _engine.MusicVolume = volume.Music;
         _engine.EffectVolume = 1;
+        _engine.LimiterType = (KeyAsio.Core.Audio.LimiterType)volume.LimiterType;
 
         _sessionOptions.HitsoundVolume = volume.Hitsound;
         _sessionOptions.SampleVolume = volume.Sample;
         _sessionOptions.BalanceFactor = volume.BalanceFactor / 100;
+        _sessionOptions.BalanceMode = (KeyAsio.Core.Audio.SampleProviders.BalancePans.BalanceMode)volume.BalanceMode;
         _session?.ApplyOptions(_sessionOptions);
     }
 

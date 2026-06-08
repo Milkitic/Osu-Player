@@ -4,4 +4,8 @@
     <TargetFramework>$(OsuPlayerLibraryTargetFramework)</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

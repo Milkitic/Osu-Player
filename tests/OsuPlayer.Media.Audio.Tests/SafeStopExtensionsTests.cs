@@ -1,19 +1,20 @@
-using NLog;
-using OsuPlayer.Media.Audio.Infrastructure;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using OsuPlayer.Shared.Infrastructure;
 using Xunit;
 
 namespace OsuPlayer.Media.Audio.Tests;
 
 public class SafeStopExtensionsTests
 {
-    private static readonly Logger NullLogger = LogManager.CreateNullLogger();
+    private static readonly ILogger NullLog = NullLogger.Instance;
 
     [Fact]
     public async Task TryAsync_SwallowsObjectDisposed()
     {
         await SafeStopExtensions.TryAsync(
             () => throw new ObjectDisposedException("target"),
-            NullLogger,
+            NullLog,
             "test");
     }
 
@@ -22,7 +23,7 @@ public class SafeStopExtensionsTests
     {
         await SafeStopExtensions.TryAsync(
             () => throw new InvalidOperationException("boom"),
-            NullLogger,
+            NullLog,
             "test");
     }
 
@@ -36,7 +37,7 @@ public class SafeStopExtensionsTests
                 invoked = true;
                 return Task.CompletedTask;
             },
-            NullLogger,
+            NullLog,
             "test");
 
         Assert.True(invoked);
@@ -47,7 +48,7 @@ public class SafeStopExtensionsTests
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            await SafeStopExtensions.TryAsync(null!, NullLogger, "ctx");
+            await SafeStopExtensions.TryAsync(null!, NullLog, "ctx");
         });
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
@@ -55,7 +56,7 @@ public class SafeStopExtensionsTests
         });
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            await SafeStopExtensions.TryAsync(() => Task.CompletedTask, NullLogger, null!);
+            await SafeStopExtensions.TryAsync(() => Task.CompletedTask, NullLog, null!);
         });
     }
 }

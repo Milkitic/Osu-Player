@@ -2,7 +2,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback;
 using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.UserControls;

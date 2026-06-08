@@ -1,16 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(OsuPlayerWindowsTargetFramework)</TargetFramework>
-    <UseWPF>true</UseWPF>
+    <TargetFramework>$(OsuPlayerLibraryTargetFramework)</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="NLog" Version="6.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
   </ItemGroup>
 
   <ItemGroup>

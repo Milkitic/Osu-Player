@@ -6,17 +6,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using KeyAsio.Core.Audio;
-using KeyAsio.Core.Audio.Caching;
-using OsuPlayer.Core;
+using Microsoft.Extensions.Logging;
 using OsuPlayer.Core.Configuration;
-using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Media.Audio.Coordination;
-using OsuPlayer.Media.Audio.Playlist;
-using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback.Playlist;
 using OsuPlayer.Shared.Models;
 
-namespace OsuPlayer.Media.Audio;
+namespace OsuPlayer.Playback;
 
 /// <summary>
 /// Top-level facade that the UI binds to. Delegates all real work to
@@ -26,42 +23,41 @@ namespace OsuPlayer.Media.Audio;
 /// </summary>
 public sealed partial class ObservablePlayController : ObservableObject, IPlaybackController, IAsyncDisposable
 {
-    private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+    private readonly ILogger<ObservablePlayController> _logger;
 
     private readonly IPlaybackEngine _playbackEngine;
     private readonly PlayerEventBus _bus;
+    private readonly PlayList _playList;
     private readonly PlayerSessionService _session;
 
     private static readonly NullPlaybackController s_nullController = new();
 
     public ObservablePlayController(
-        IPlayerDataStore playerData,
         IPlaybackEngine playbackEngine,
-        IAudioDeviceManager audioDeviceManager,
-        AudioCacheManager audioCacheManager,
-        Action<Exception> audioDeviceErrorHandler,
-        IUiThreadDispatcher uiThreadDispatcher)
+        PlayerEventBus bus,
+        PlayList playList,
+        PlayerSessionService session,
+        ILogger<ObservablePlayController> logger)
     {
+        _logger = logger;
         _playbackEngine = playbackEngine;
+        _bus = bus;
+        PlayList = playList;
+        _session = session;
 
-        _bus = new PlayerEventBus(uiThreadDispatcher, s_logger, audioDeviceErrorHandler);
+        if (AppSettings.Default?.Play != null)
+        {
+            PlayList.Mode = AppSettings.Default.Play.PlayListMode;
+        }
+
+        _playbackEngine.DeviceError += _bus.OnPlaybackEngineDeviceError;
+
         _bus.PlayStatusChanged += OnBusPlayStatusChanged;
         _bus.PositionUpdated += position => PositionUpdated?.Invoke(position);
         _bus.PlayerChanged += OnBusPlayerChanged;
 
-        var beatmapLoader = new BeatmapLoader(playerData);
-        PlayList = new PlayList(playerData, uiThreadDispatcher, OnSongListChanged, OnModeChanged);
-        _session = new PlayerSessionService(
-            _bus,
-            PlayList,
-            beatmapLoader,
-            new SemaphoreSlim(1, 1),
-            playerData,
-            playbackEngine,
-            audioCacheManager,
-            s_logger);
-
-        _playbackEngine.DeviceError += _bus.OnPlaybackEngineDeviceError;
+        PlayList.SongListChanged += OnSongListChanged;
+        PlayList.ModeChanged += OnModeChanged;
 
         // Re-export bus events onto the facade surface for legacy subscribers.
         _bus.PreLoadStarted += (path, ct) => PreLoadStarted?.Invoke(path, ct);
@@ -152,7 +148,6 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
 
     private void OnBusPlayStatusChanged(PlayStatus status)
     {
-        SharedVm.Default.IsPlaying = status == PlayStatus.Playing;
         OnPropertyChanged(nameof(IsPlayerReady));
         PlayStatusChanged?.Invoke(status);
     }
@@ -169,9 +164,9 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
         AppSettings.SaveDefault();
     }
 
-    private void OnModeChanged(PlaylistMode mode)
+    private void OnModeChanged(PlaylistMode oldValue, PlaylistMode newValue)
     {
-        AppSettings.Default.Play.PlayListMode = mode;
+        AppSettings.Default.Play.PlayListMode = newValue;
         AppSettings.SaveDefault();
     }
 
@@ -179,12 +174,12 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
     {
         if (ctx.BeatmapDetail != null)
         {
-            s_logger.Error(ex, "Load error while loading beatmap: {0}",
+            _logger.LogError(ex, "Load error while loading beatmap: {Path}",
                 Path.Combine(ctx.BeatmapDetail.BaseFolder ?? "", ctx.BeatmapDetail.MapPath ?? ""));
         }
         else
         {
-            s_logger.Error(ex, "Load error while loading beatmap.");
+            _logger.LogError(ex, "Load error while loading beatmap.");
         }
         LoadError?.Invoke(ctx, ex);
     }

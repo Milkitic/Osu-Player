@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
 using KeyAsio.Core.Audio.SampleProviders;
@@ -6,9 +7,8 @@ using NAudio.Wave;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Media.Audio.Coordination;
-using OsuPlayer.Media.Audio.Playlist;
-using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Playback;
+using OsuPlayer.Playback.Playlist;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 using Xunit;
@@ -51,19 +51,40 @@ public class PlayerSessionServiceTests
     private static PlayerSessionService CreateService(BlockingPlayerDataStore playerData)
     {
         var dispatcher = new ImmediateUiThreadDispatcher();
-        var logger = NLog.LogManager.GetCurrentClassLogger();
-        var bus = new PlayerEventBus(dispatcher, logger);
-        var beatmapLoader = new BeatmapLoader(playerData);
+        var logger = NullLogger<PlayerEventBus>.Instance;
+        var LoggerFactory = NullLoggerFactory.Instance;
+        var bus = new PlayerEventBus(dispatcher, logger, new StubNotificationService());
+        var playList = new PlayList(playerData, dispatcher);
+        var beatmapLoader = new BeatmapLoader(playerData, NullLogger<BeatmapLoader>.Instance);
 
         return new PlayerSessionService(
             bus,
-            new PlayList(playerData, dispatcher, null),
+            playList,
             beatmapLoader,
-            new SemaphoreSlim(1, 1),
             playerData,
             new FakePlaybackEngine(),
             new AudioCacheManager(NullLogger<AudioCacheManager>.Instance),
-            logger);
+            new StubUserPreferences(),
+            NullLogger<PlayerSessionService>.Instance,
+            LoggerFactory);
+    }
+
+    private sealed class StubUserPreferences : IUserPreferences
+    {
+        public float VolumeMain { get; set; } = 0.8f;
+        public float VolumeMusic { get; set; } = 1f;
+        public float VolumeHitsound { get; set; } = 0.9f;
+        public float VolumeSample { get; set; } = 0.85f;
+        public float VolumeBalanceFactor { get; set; } = 35f;
+        public float PlaybackRate { get; set; } = 1f;
+        public bool PlayUseTempo { get; set; }
+        public AudioDeviceDescription PlayDeviceDescription { get; set; } = null!;
+        public int PlayGeneralActualOffset { get; set; }
+        public PlaylistMode PlayListMode { get; set; } = PlaylistMode.Normal;
+        public HashSet<MapIdentity> CurrentList { get; set; } = new();
+        public MapIdentity? CurrentMap { get; set; }
+        public event PropertyChangedEventHandler? PropertyChanged;
+        public void Save() { }
     }
 
     private static Beatmap CreateBeatmap(string folderName)
@@ -204,5 +225,11 @@ public class PlayerSessionServiceTests
         public void StartDevice(DeviceDescription? deviceDescription, WaveFormat? waveFormat = null) { }
         public void StopDevice() { }
         public void Dispose() { }
+    }
+
+    private sealed class StubNotificationService : IAppNotificationService
+    {
+        public void Push(string message) { }
+        public void Push(string message, string title) { }
     }
 }

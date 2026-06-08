@@ -5,12 +5,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using OsuPlayer.Core;
+using OsuPlayer.Core.ObjectModel;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback;
 using OsuPlayer.Presentation.Interaction;
-using OsuPlayer.Presentation.ObjectModel;
 using OsuPlayer.Services;
 
 namespace OsuPlayer.ViewModels;
@@ -21,15 +21,18 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
     private readonly IPlayerDataService _playerData;
     private readonly IExportService _exportService;
     private readonly IBeatmapActionService _beatmapActions;
+    private readonly IMapModelConverter _mapModelConverter;
 
     public CollectionPageViewModel(IPlayerDataService playerData, ObservablePlayController controller,
         IExportService exportService,
-        IBeatmapActionService beatmapActions)
+        IBeatmapActionService beatmapActions,
+        IMapModelConverter mapModelConverter)
     {
         _playerData = playerData;
         _controller = controller;
         _exportService = exportService;
         _beatmapActions = beatmapActions;
+        _mapModelConverter = mapModelConverter;
     }
 
     public IPlayerDataService PlayerData => _playerData;
@@ -81,7 +84,7 @@ public partial class CollectionPageViewModel : ObservableObject, INavigationAwar
         Entries = await _playerData.GetBeatmapsByMapInfoAsync(infos, TimeSortMode.AddTime);
         Execute.OnUiThread(() =>
         {
-            Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(Entries.ToDataModelList(false));
+            Beatmaps = new NumberableObservableCollection<BeatmapDataModel>(_mapModelConverter.ToDataModelList(Entries, false));
             DisplayedBeatmaps = Beatmaps;
         });
     }

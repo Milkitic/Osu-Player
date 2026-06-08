@@ -7,8 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OsuPlayer.Core\OsuPlayer.Core.csproj" />
-    <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj" />
-    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj" />
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
     <ProjectReference Include="..\..\dependencies\KeyASIO.Net\src\Core\KeyAsio.Core.Audio\KeyAsio.Core.Audio.csproj" />
     <ProjectReference Include="..\..\dependencies\KeyASIO.Net\src\Core\KeyAsio.Core.OsuAudio\KeyAsio.Core.OsuAudio.csproj" />

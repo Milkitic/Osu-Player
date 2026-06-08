@@ -13,7 +13,8 @@ public sealed class LegacyPlayerDatabaseMigratorTests
         await CreateAppDatabaseAsync(temp.AppDatabasePath);
         CreateLegacyDapperDatabase(temp.LegacyDatabasePath, includeDuplicateBeatmap: false);
 
-        LegacyPlayerDatabaseMigrator.MigrateIfRequired(temp.AppDatabasePath, temp.LegacyDatabasePath);
+        var migrator = new LegacyPlayerDatabaseMigrator(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+        migrator.MigrateIfRequired(temp.AppDatabasePath, temp.LegacyDatabasePath);
 
         using var connection = OpenConnection(temp.AppDatabasePath);
         Assert.Equal(1, CountRows(connection, "beatmaps"));
@@ -49,7 +50,8 @@ public sealed class LegacyPlayerDatabaseMigratorTests
                 """);
         }
 
-        LegacyPlayerDatabaseMigrator.MigrateIfRequired(temp.AppDatabasePath, temp.LegacyDatabasePath);
+        var migrator = new LegacyPlayerDatabaseMigrator(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+        migrator.MigrateIfRequired(temp.AppDatabasePath, temp.LegacyDatabasePath);
 
         using var appConnection = OpenConnection(temp.AppDatabasePath);
         Assert.Equal(1, CountRows(appConnection, "beatmaps"));
@@ -63,7 +65,8 @@ public sealed class LegacyPlayerDatabaseMigratorTests
         await CreateAppDatabaseAsync(temp.AppDatabasePath);
         CreateLegacyDapperDatabase(temp.LegacyDatabasePath, includeDuplicateBeatmap: true);
 
-        LegacyPlayerDatabaseMigrator.MigrateIfRequired(temp.AppDatabasePath, temp.LegacyDatabasePath);
+        var migrator = new LegacyPlayerDatabaseMigrator(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+        migrator.MigrateIfRequired(temp.AppDatabasePath, temp.LegacyDatabasePath);
 
         using var connection = OpenConnection(temp.AppDatabasePath);
         Assert.Equal(1, CountRows(connection, "beatmaps"));

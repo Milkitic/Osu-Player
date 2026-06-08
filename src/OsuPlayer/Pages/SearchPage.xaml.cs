@@ -3,11 +3,12 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using NLog;
+using Microsoft.Extensions.Logging;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
-using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback;
+using OsuPlayer.Shared;
 using OsuPlayer.UiComponents.PanelComponent;
 using OsuPlayer.ViewModels;
 
@@ -18,30 +19,32 @@ namespace OsuPlayer.Pages;
 /// </summary>
 public partial class SearchPage : Page
 {
-    private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
+    private readonly ILogger<SearchPage> _logger;
+    private readonly IBeatmapThumbnailService _thumbnailService;
     private static bool _minimal;
 
     private readonly ObservablePlayController _controller;
     private readonly IPlayerDataService _playerData;
     private VirtualizingGalleryWrapPanel _virtualizingGalleryWrapPanel;
 
-    public SearchPage(SearchPageViewModel viewModel, IPlayerDataService playerData, ObservablePlayController controller)
+    public SearchPage(
+        SearchPageViewModel viewModel,
+        IPlayerDataService playerData,
+        ObservablePlayController controller,
+        IBeatmapThumbnailService thumbnailService,
+        ILogger<SearchPage> logger)
     {
         ViewModel = viewModel;
         _playerData = playerData;
         _controller = controller;
+        _thumbnailService = thumbnailService;
+        _logger = logger;
 
         InitializeComponent();
         DataContext = ViewModel;
     }
 
     public SearchPageViewModel ViewModel { get; set; }
-
-    public SearchPage Search(string keyword)
-    {
-        SearchBox.Text = keyword;
-        return this;
-    }
 
     private async void SearchPage_Initialized(object sender, EventArgs e)
     {
@@ -75,12 +78,12 @@ public partial class SearchPage : Page
         var dataModel = ViewModel.DisplayedMaps[e.Index];
         try
         {
-            var fileName = await CommonUtils.GetThumbByBeatmapDbId(dataModel);
-            dataModel.ThumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg");
+            var fileName = await _thumbnailService.GetThumbByBeatmapDbIdAsync(dataModel);
+            dataModel.ThumbPath = Path.Combine(AppPaths.Current.ThumbCachePath, $"{fileName}.jpg");
         }
         catch (Exception ex)
         {
-            s_logger.Error(ex, "Error while loading panel item.");
+            _logger.LogError(ex, "Error while loading panel item.");
         }
     }
 

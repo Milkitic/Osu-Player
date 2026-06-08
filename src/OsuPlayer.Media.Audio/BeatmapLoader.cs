@@ -6,6 +6,9 @@ using Coosu.Beatmap;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
+using OsuPlayer.Shared;
+
+using Microsoft.Extensions.Logging;
 
 namespace OsuPlayer.Media.Audio;
 
@@ -16,11 +19,12 @@ namespace OsuPlayer.Media.Audio;
 public sealed class BeatmapLoader
 {
     private readonly IPlayerDataStore _playerData;
-    private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+    private readonly ILogger<BeatmapLoader> _logger;
 
-    public BeatmapLoader(IPlayerDataStore playerData)
+    public BeatmapLoader(IPlayerDataStore playerData, ILogger<BeatmapLoader> logger)
     {
         _playerData = playerData;
+        _logger = logger;
     }
 
     /// <summary>
@@ -38,7 +42,7 @@ public sealed class BeatmapLoader
         var mapPath = BeatmapPathResolver.ResolveBeatmapPath(folder, beatmap.BeatmapFileName, isFromDb, freePath);
         var baseFolder = Path.GetDirectoryName(mapPath) ?? string.Empty;
 
-        s_logger.Info("Loading beatmap from database: {0}", beatmap.BeatmapFileName);
+        _logger.LogInformation("Loading beatmap from database: {BeatmapFileName}", beatmap.BeatmapFileName);
 
         var osuFile = await OsuFile.ReadFromFileAsync(mapPath, options => options.ExcludeSection("Editor"))
             .ConfigureAwait(false);
@@ -83,7 +87,7 @@ public sealed class BeatmapLoader
 
         var audioFilename = osuFile.General?.AudioFilename ?? string.Empty;
         var musicPath = BeatmapPathResolver.ResolveChildPath(baseFolder, audioFilename);
-        var defaultImagePath = BeatmapPathResolver.GetDefaultImagePath(Domain.ResourcePath);
+        var defaultImagePath = BeatmapPathResolver.GetDefaultImagePath(AppPaths.Current.ResourcePath);
         var backgroundPath = BeatmapPathResolver.ResolveBackgroundPath(
             baseFolder, osuFile.Events?.BackgroundInfo?.Filename, defaultImagePath);
 

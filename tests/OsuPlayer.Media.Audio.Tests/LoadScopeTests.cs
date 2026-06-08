@@ -1,4 +1,4 @@
-using OsuPlayer.Media.Audio.Infrastructure;
+using OsuPlayer.Shared.Infrastructure;
 using Xunit;
 
 namespace OsuPlayer.Media.Audio.Tests;

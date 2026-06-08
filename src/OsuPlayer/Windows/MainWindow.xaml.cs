@@ -14,9 +14,8 @@ using OsuPlayer.Core.Scanning;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
 using OsuPlayer.Instances;
-using OsuPlayer.Media.Audio;
-using OsuPlayer.Media.Audio.Playlist;
-using OsuPlayer.Pages;
+using OsuPlayer.Playback;
+using OsuPlayer.Playback.Playlist;
 using OsuPlayer.Presentation;
 using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Shared;
@@ -105,14 +104,7 @@ public partial class MainWindow : WindowEx
         {
             Execute.OnUiThread(() =>
             {
-                if (MainFrame.Content is SearchPage searchPage)
-                {
-                    searchPage.Search(m.Value);
-                }
-                else
-                {
-                    SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(m.Value));
-                }
+                SwitchSearch.NavigateWithData(new SearchNavigationParameter(m.Value));
             });
         });
 

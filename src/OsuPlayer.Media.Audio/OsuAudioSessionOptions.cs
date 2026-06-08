@@ -1,3 +1,5 @@
+using KeyAsio.Core.Audio.SampleProviders.BalancePans;
+
 namespace OsuPlayer.Media.Audio;
 
 /// <summary>
@@ -20,4 +22,5 @@ public sealed class OsuAudioSessionOptions
     public float HitsoundVolume { get; set; } = 1;
     public float SampleVolume { get; set; } = 1;
     public float BalanceFactor { get; set; } = 0.35f;
+    public BalanceMode BalanceMode { get; set; } = BalanceMode.MidSide;
 }

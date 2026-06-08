@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 
-namespace OsuPlayer.Media.Audio.Playlist;
+namespace OsuPlayer.Playback.Playlist;
 
 public readonly record struct PlaylistSelectionChange(
     BeatmapContext? Previous,
@@ -23,38 +22,22 @@ public readonly record struct PlaylistSelectionChange(
 public partial class PlayList : ObservableObject
 {
     public event Action? SongListChanged;
+    public event Action<PlaylistMode, PlaylistMode>? ModeChanged;
 
     private readonly IPlayerDataStore _playerData;
     private readonly IUiThreadDispatcher _uiThreadDispatcher;
-    private readonly Action? _onSongListChanged;
-    private readonly Action<PlaylistMode>? _onModeChanged;
 
     private readonly List<int> _playOrder = new();
 
-    public PlayList()
-        : this(new PlayerDataService(), Execute.UiThreadDispatcher, null)
-    {
-    }
-
-    public PlayList(IPlayerDataStore playerData)
-        : this(playerData, Execute.UiThreadDispatcher, null)
-    {
-    }
-
     public PlayList(
         IPlayerDataStore playerData,
-        IUiThreadDispatcher uiThreadDispatcher,
-        Action? onSongListChanged,
-        Action<PlaylistMode>? onModeChanged = null)
+        IUiThreadDispatcher uiThreadDispatcher)
     {
         _playerData = playerData;
         _uiThreadDispatcher = uiThreadDispatcher;
 
         SongList = new ObservableCollection<Beatmap>();
         SongList.CollectionChanged += SongList_CollectionChanged;
-
-        _onSongListChanged = onSongListChanged;
-        _onModeChanged = onModeChanged;
     }
 
     [ObservableProperty]
@@ -89,7 +72,7 @@ public partial class PlayList : ObservableObject
             SyncPointerToCurrent();
         }
 
-        _onModeChanged?.Invoke(newValue);
+        ModeChanged?.Invoke(oldValue, newValue);
     }
 
     public bool HasCurrent => CurrentInfo != null;
@@ -299,7 +282,6 @@ public partial class PlayList : ObservableObject
     private void NotifySongListChanged()
     {
         SongListChanged?.Invoke();
-        _onSongListChanged?.Invoke();
     }
 
     private static bool IsRandomMode(PlaylistMode mode)

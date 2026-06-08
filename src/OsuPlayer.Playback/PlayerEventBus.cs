@@ -1,31 +1,33 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using OsuPlayer.Media.Audio.Playlist;
-using OsuPlayer.Presentation.Interaction;
+using Microsoft.Extensions.Logging;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback.Playlist;
+using OsuPlayer.Shared;
 
-namespace OsuPlayer.Media.Audio.Coordination;
+namespace OsuPlayer.Playback;
 
 /// <summary>
 /// Centralises the publication of controller-level events. All events are
 /// raised on the UI thread; subscribers therefore never have to marshal
 /// themselves.
 /// </summary>
-internal sealed class PlayerEventBus : IDisposable
+public sealed class PlayerEventBus : IDisposable
 {
     private readonly IUiThreadDispatcher _dispatcher;
-    private readonly NLog.Logger _logger;
-    private readonly Action<Exception> _audioDeviceErrorHandler;
+    private readonly ILogger<PlayerEventBus> _logger;
+    private readonly IAppNotificationService _notifications;
     private OsuMixPlayer? _player;
 
     public PlayerEventBus(
         IUiThreadDispatcher dispatcher,
-        NLog.Logger logger,
-        Action<Exception>? audioDeviceErrorHandler = null)
+        ILogger<PlayerEventBus> logger,
+        IAppNotificationService notifications)
     {
         _dispatcher = dispatcher;
         _logger = logger;
-        _audioDeviceErrorHandler = audioDeviceErrorHandler ?? (_ => { });
+        _notifications = notifications;
     }
 
     public event Action<PlayStatus>? PlayStatusChanged;
@@ -33,6 +35,7 @@ internal sealed class PlayerEventBus : IDisposable
     public event Action? PlayerChanged;
     public event Func<BeatmapContext, double, bool, Task>? PositionSetRequested;
     public event Action? InterfaceClearRequest;
+    public event Action<Exception>? AudioDeviceError;
     public event Action<string, CancellationToken>? PreLoadStarted;
     public event Action<BeatmapContext, CancellationToken>? LoadStarted;
     public event Action<BeatmapContext, CancellationToken>? MetaLoaded;
@@ -77,8 +80,12 @@ internal sealed class PlayerEventBus : IDisposable
 
     public void OnPlaybackEngineDeviceError(Exception ex)
     {
-        _logger.Error(ex, "Audio device error.");
-        _dispatcher.Post(() => _audioDeviceErrorHandler(ex));
+        _logger.LogError(ex, "Audio device error.");
+        _dispatcher.Post(() =>
+        {
+            AudioDeviceError?.Invoke(ex);
+            _notifications.Push(ex.Message, "Audio Device Error");
+        });
     }
 
     public void Dispose() => DetachPlayer();
@@ -97,7 +104,7 @@ internal sealed class PlayerEventBus : IDisposable
     {
         if (context == null)
         {
-            _logger.Error(ex, "Load error with no current beatmap context.");
+            _logger.LogError(ex, "Load error with no current beatmap context.");
             return;
         }
         Send(LoadError, context, ex);
@@ -116,7 +123,7 @@ internal sealed class PlayerEventBus : IDisposable
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Error while raising position-set request.");
+                _logger.LogError(ex, "Error while raising position-set request.");
             }
         }
     }

@@ -20,7 +20,7 @@ public partial class UpdateWindow : Window
     private readonly GithubRelease _release;
     private readonly MainWindow _mainWindow;
     private GithubAssetsDownloader _githubAssetsDownloader;
-    private readonly string _savePath = Path.Combine(Domain.CurrentPath, "update.zip");
+    private readonly string _savePath = Path.Combine(AppPaths.Current.BasePath, "update.zip");
 
     public UpdateWindow(GithubRelease release, MainWindow mainWindow)
     {

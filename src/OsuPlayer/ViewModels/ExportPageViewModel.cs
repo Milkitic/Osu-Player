@@ -10,25 +10,30 @@ using OsuPlayer.Core;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
 using OsuPlayer.Presentation.Interaction;
-using OsuPlayer.Presentation.ObjectModel;
+using OsuPlayer.Core.ObjectModel;
 using OsuPlayer.Services;
 using OsuPlayer.Shared;
 using OsuPlayer.UiComponents.NotificationComponent;
 using OsuPlayer.Utils;
 
+using Microsoft.Extensions.Logging;
+
 namespace OsuPlayer.ViewModels;
 
 public partial class ExportPageViewModel : ObservableObject
 {
-    private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+    private readonly ILogger<ExportPageViewModel> _logger;
+    private readonly IMapModelConverter _mapModelConverter;
     private IEnumerable<Beatmap> _entries;
     private readonly IPlayerDataService _playerData;
     private readonly IExportService _exportService;
 
-    public ExportPageViewModel(IPlayerDataService playerData, IExportService exportService)
+    public ExportPageViewModel(IPlayerDataService playerData, IExportService exportService, IMapModelConverter mapModelConverter, ILogger<ExportPageViewModel> logger)
     {
         _playerData = playerData;
         _exportService = exportService;
+        _mapModelConverter = mapModelConverter;
+        _logger = logger;
         _exportService.TaskSuccess += OnExportTaskSuccess;
     }
 
@@ -141,12 +146,12 @@ public partial class ExportPageViewModel : ObservableObject
             catch (Exception ex)
             {
                 list.Add((map.GetIdentity(), map.ExportFile, new DateTime().ToString("g"), "0 B"));
-                s_logger.Error(ex, "Error while updating view item: {0}", map.GetIdentity());
+                _logger.LogError(ex, "Error while updating view item: {Identity}", map.GetIdentity());
             }
         }
 
         _entries = await _playerData.GetBeatmapsByIdentifiableAsync(maps);
-        var viewModels = _entries.ToDataModelList(true).ToList();
+        var viewModels = _mapModelConverter.ToDataModelList(_entries, true).ToList();
         for (var i = 0; i < viewModels.Count; i++)
         {
             var sb = list.First(k => k.MapIdentity.Equals(viewModels[i].GetIdentity()));

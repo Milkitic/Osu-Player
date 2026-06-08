@@ -12,11 +12,6 @@ public sealed class PlayerDataService : IPlayerDataStore
 {
     private readonly Func<OsuPlayerDbContext> _createDbContext;
 
-    public PlayerDataService()
-        : this(() => new OsuPlayerDbContext())
-    {
-    }
-
     public PlayerDataService(Func<OsuPlayerDbContext> createDbContext)
     {
         _createDbContext = createDbContext ?? throw new ArgumentNullException(nameof(createDbContext));

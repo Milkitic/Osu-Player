@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OsuPlayer.Media.Audio.Coordination;
+namespace OsuPlayer.Playback;
 
-internal sealed class SessionOperationManager : IAsyncDisposable
+public sealed class SessionOperationManager : IAsyncDisposable
 {
     private readonly Lock _gate = new();
 

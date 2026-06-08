@@ -1,8 +1,10 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
-namespace OsuPlayer.Presentation.ObjectModel;
+namespace OsuPlayer.Core.ObjectModel;
 
 public sealed class NumberableObservableCollection<T> : ObservableCollection<T> where T : NumberableModel
 {
@@ -16,7 +18,7 @@ public sealed class NumberableObservableCollection<T> : ObservableCollection<T> 
         CollectionChanged += OnCollectionChanged;
     }
 
-    private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.Action == NotifyCollectionChangedAction.Add ||
             e.Action == NotifyCollectionChangedAction.Replace)
@@ -53,14 +55,9 @@ public sealed class NumberableObservableCollection<T> : ObservableCollection<T> 
 
     public void AddRange(IEnumerable<T> items)
     {
-        foreach (var beatmapDataModel in items)
+        foreach (var item in items)
         {
-            Add(beatmapDataModel);
+            Add(item);
         }
-    }
-
-    ~NumberableObservableCollection()
-    {
-        CollectionChanged -= OnCollectionChanged;
     }
 }

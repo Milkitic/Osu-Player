@@ -1,18 +1,17 @@
+#nullable enable
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Microsoft.Extensions.DependencyInjection;
-using OsuPlayer.Core;
-using OsuPlayer.Presentation.Interaction;
 
-namespace OsuPlayer.Services;
+namespace OsuPlayer.Presentation.Interaction;
 
-public class FrameNavigationService : INavigationService
+public sealed class FrameNavigationService : INavigationService
 {
     private readonly IServiceProvider _serviceProvider;
-    private Frame _frame;
+    private Frame? _frame;
 
     private static readonly Storyboard s_fadeinSb;
     private static readonly DoubleAnimation s_da1;
@@ -28,7 +27,7 @@ public class FrameNavigationService : INavigationService
             To = 1,
             EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
             BeginTime = TimeSpan.Zero,
-            Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300))
+            Duration = AnimationOptions.GetDuration(TimeSpan.FromMilliseconds(300))
         };
         Storyboard.SetTargetProperty(s_da1, new PropertyPath(UIElement.OpacityProperty));
 
@@ -38,7 +37,7 @@ public class FrameNavigationService : INavigationService
             To = 1,
             EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
             BeginTime = TimeSpan.Zero,
-            Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300))
+            Duration = AnimationOptions.GetDuration(TimeSpan.FromMilliseconds(300))
         };
         s_ta1Clone = s_ta1.Clone();
         Storyboard.SetTargetProperty(s_ta1, new PropertyPath("RenderTransform.ScaleX"));
@@ -62,55 +61,56 @@ public class FrameNavigationService : INavigationService
         }
     }
 
-    public void NavigateTo(Type pageType, object parameter = null, Action<object> pagePrepared = null)
+    public void NavigateTo(Type pageType, object? parameter = null)
     {
         if (_frame == null)
         {
             throw new InvalidOperationException("NavigationService has not been initialized with a Frame.");
         }
 
-        var page = _serviceProvider.GetRequiredService(pageType);
-        pagePrepared?.Invoke(page);
-
-        if (parameter != null)
+        var page = _serviceProvider.GetService(pageType) ?? Activator.CreateInstance(pageType);
+        if (page == null)
         {
-            if (page is FrameworkElement { DataContext: INavigationAware navigationAware })
-            {
-                navigationAware.OnNavigatedTo(parameter);
-            }
-            else if (page is Pages.CollectionPage collectionPage)
-            {
-                collectionPage.Id = parameter.ToString();
-            }
+            throw new InvalidOperationException($"Unable to create page '{pageType.FullName}'.");
         }
 
-        if (page is FrameworkElement fe)
+        if (parameter != null && page is FrameworkElement { DataContext: INavigationAware navigationAware })
         {
-            var originTransform = fe.RenderTransform;
-            fe.RenderTransformOrigin = new System.Windows.Point(0.5, 0.5);
-            Storyboard.SetTarget(s_da1, fe);
-            Storyboard.SetTarget(s_ta1, fe);
-            Storyboard.SetTarget(s_ta1Clone, fe);
+            navigationAware.OnNavigatedTo(parameter);
+        }
 
-            if (fe.RenderTransform.GetType() != typeof(ScaleTransform))
-            {
-                fe.RenderTransform = new ScaleTransform();
-            }
-
-            _frame.Navigate(fe);
-
-            void OnSbOnCompleted(object sender, EventArgs e)
-            {
-                fe.RenderTransform = originTransform;
-                s_fadeinSb.Completed -= OnSbOnCompleted;
-            }
-
-            s_fadeinSb.Completed += OnSbOnCompleted;
-            s_fadeinSb.Begin();
+        if (page is FrameworkElement frameworkElement)
+        {
+            NavigateWithAnimation(frameworkElement);
         }
         else
         {
             _frame.Navigate(page);
         }
+    }
+
+    private void NavigateWithAnimation(FrameworkElement page)
+    {
+        var originTransform = page.RenderTransform;
+        page.RenderTransformOrigin = new Point(0.5, 0.5);
+        Storyboard.SetTarget(s_da1, page);
+        Storyboard.SetTarget(s_ta1, page);
+        Storyboard.SetTarget(s_ta1Clone, page);
+
+        if (page.RenderTransform.GetType() != typeof(ScaleTransform))
+        {
+            page.RenderTransform = new ScaleTransform();
+        }
+
+        _frame!.Navigate(page);
+
+        void OnCompleted(object? sender, EventArgs e)
+        {
+            page.RenderTransform = originTransform;
+            s_fadeinSb.Completed -= OnCompleted;
+        }
+
+        s_fadeinSb.Completed += OnCompleted;
+        s_fadeinSb.Begin();
     }
 }

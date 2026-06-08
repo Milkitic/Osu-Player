@@ -4,11 +4,12 @@ using Coosu.Beatmap;
 using OsuPlayer.Shared;
 using OSharpGameMode = Coosu.Beatmap.Sections.GamePlay.GameMode;
 
+using Microsoft.Extensions.Logging;
+
 namespace OsuPlayer.Data.Models;
 
 public static class BeatmapExtension
 {
-    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private static readonly ConcurrentRandom Random = new ConcurrentRandom();
 
 
@@ -53,7 +54,7 @@ public static class BeatmapExtension
         return (new Beatmap()).UpdateFromOSharp(osuFile);
     }
 
-    public static Beatmap GetHighestDiff(this IEnumerable<Beatmap> enumerable)
+    public static Beatmap GetHighestDiff(this IEnumerable<Beatmap> enumerable, ILogger logger = null)
     {
         var dictionary = enumerable.GroupBy(k => k.GameMode).ToDictionary(k => k.Key, k => k.ToList());
         if (dictionary.ContainsKey(OSharpGameMode.Circle))
@@ -80,7 +81,7 @@ public static class BeatmapExtension
                 .Aggregate((i1, i2) => i1.DiffSrNoneTaiko > i2.DiffSrNoneTaiko ? i1 : i2);
         }
 
-        Logger.Warn(@"Get highest difficulty failed.");
+        logger?.LogWarning("Get highest difficulty failed.");
         var randKey = dictionary.Keys.ToList()[Random.Next(dictionary.Keys.Count)];
         return dictionary[randKey][dictionary[randKey].Count];
     }

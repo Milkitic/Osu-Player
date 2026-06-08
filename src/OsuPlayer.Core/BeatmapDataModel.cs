@@ -2,7 +2,7 @@ using System;
 using Coosu.Beatmap;
 using Coosu.Beatmap.Sections.GamePlay;
 using CommunityToolkit.Mvvm.ComponentModel;
-using OsuPlayer.Presentation.ObjectModel;
+using OsuPlayer.Core.ObjectModel;
 using OsuPlayer.Shared;
 
 namespace OsuPlayer.Core;

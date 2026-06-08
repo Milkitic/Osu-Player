@@ -123,3 +123,23 @@ public class BoolFalseToVisibleConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+
+public class EnumDescriptionConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value == null) return string.Empty;
+        var type = value.GetType();
+        var name = Enum.GetName(type, value);
+        if (name == null) return value.ToString();
+        var field = type.GetField(name);
+        if (field == null) return value.ToString();
+        var attr = (System.ComponentModel.DescriptionAttribute?)System.Attribute.GetCustomAttribute(field, typeof(System.ComponentModel.DescriptionAttribute));
+        return attr?.Description ?? value.ToString();
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

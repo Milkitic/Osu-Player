@@ -8,11 +8,13 @@ using Coosu.Beatmap;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
 
+using Microsoft.Extensions.Logging;
+
 namespace OsuPlayer.Core.Scanning;
 
 public class OsuFileScanner
 {
-    private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+    private readonly ILogger<OsuFileScanner> _logger;
 
     private static readonly Lock s_scanObject = new Lock();
     private static readonly Lock s_cancelObject = new Lock();
@@ -21,14 +23,10 @@ public class OsuFileScanner
     private CancellationTokenSource _scanCts;
     private readonly IPlayerDataStore _playerData;
 
-    public OsuFileScanner()
-        : this(new PlayerDataService())
-    {
-    }
-
-    public OsuFileScanner(IPlayerDataStore playerData)
+    public OsuFileScanner(IPlayerDataStore playerData, ILogger<OsuFileScanner> logger)
     {
         _playerData = playerData;
+        _logger = logger;
     }
 
     public async Task NewScanAndAddAsync(string path)
@@ -112,7 +110,7 @@ public class OsuFileScanner
             }
             catch (Exception ex)
             {
-                s_logger.Error(ex, "Error during scanning file, ignored {0}", fileInfo.FullName);
+                _logger.LogError(ex, "Error during scanning file, ignored {FileName}", fileInfo.FullName);
             }
         }
 
@@ -122,12 +120,12 @@ public class OsuFileScanner
         }
         catch (Exception ex)
         {
-            s_logger.Error(ex);
+            _logger.LogError(ex, "Error during adding new maps to store");
             throw;
         }
     }
 
-    private static IEnumerable<FileInfo> EnumerateOsuFiles(DirectoryInfo rootFolder)
+    private IEnumerable<FileInfo> EnumerateOsuFiles(DirectoryInfo rootFolder)
     {
         try
         {
@@ -135,7 +133,7 @@ public class OsuFileScanner
         }
         catch (Exception ex)
         {
-            s_logger.Error(ex, "Error during enumerating osu files, ignored {0}", rootFolder.FullName);
+            _logger.LogError(ex, "Error during enumerating osu files, ignored {RootFolder}", rootFolder.FullName);
             return Enumerable.Empty<FileInfo>();
         }
     }

@@ -6,6 +6,7 @@ using OsuPlayer.Media.Lyric.SourceProvider.Auto;
 using OsuPlayer.Media.Lyric.SourceProvider.Kugou;
 using OsuPlayer.Media.Lyric.SourceProvider.Netease;
 using OsuPlayer.Media.Lyric.SourceProvider.QQMusic;
+using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.Instances;
 

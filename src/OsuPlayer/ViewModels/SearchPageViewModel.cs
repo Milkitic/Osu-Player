@@ -9,18 +9,19 @@ using CommunityToolkit.Mvvm.Messaging;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback;
 using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Services;
 using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.ViewModels;
 
-public partial class SearchPageViewModel : ObservableObject
+public partial class SearchPageViewModel : ObservableObject, INavigationAware
 {
     private readonly IPlayerDataService _playerData;
     private readonly ObservablePlayController _controller;
     private readonly IBeatmapActionService _beatmapActions;
+    private readonly IMapModelConverter _mapModelConverter;
 
     private const int MaxListCount = 250;
     private const int QueryDelayMs = 167;
@@ -31,11 +32,13 @@ public partial class SearchPageViewModel : ObservableObject
     public SearchPageViewModel(
         IPlayerDataService playerData,
         ObservablePlayController controller,
-        IBeatmapActionService beatmapActions)
+        IBeatmapActionService beatmapActions,
+        IMapModelConverter mapModelConverter)
     {
         _playerData = playerData;
         _controller = controller;
         _beatmapActions = beatmapActions;
+        _mapModelConverter = mapModelConverter;
     }
 
     [ObservableProperty]
@@ -58,6 +61,14 @@ public partial class SearchPageViewModel : ObservableObject
     partial void OnSearchTextChanged(string value)
     {
         _ = PlayListQueryAsync(0);
+    }
+
+    public void OnNavigatedTo(object parameter)
+    {
+        if (parameter is SearchNavigationParameter search)
+        {
+            SearchText = search.Keyword;
+        }
     }
 
     // Stores the currently displayed page results so existing page actions can reuse them.
@@ -86,7 +97,7 @@ public partial class SearchPageViewModel : ObservableObject
 
             SearchedDbMaps = result.Results.ToList();
             ClearGalleryNotifications?.Invoke();
-            DisplayedMaps = SearchedDbMaps.ToDataModelList(true);
+            DisplayedMaps = _mapModelConverter.ToDataModelList(SearchedDbMaps, true);
             SetPage(result.TotalCount, normalizedPageIndex);
         }
         catch (OperationCanceledException)

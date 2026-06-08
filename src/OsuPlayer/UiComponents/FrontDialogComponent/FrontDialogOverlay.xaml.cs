@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-using OsuPlayer.Core;
+using OsuPlayer.Presentation;
 
 namespace OsuPlayer.UiComponents.FrontDialogComponent;
 
@@ -248,7 +248,7 @@ public partial class FrontDialogOverlay : UserControl
         var circ = new CircleEase { EasingMode = EasingMode.EaseIn };
 
         var dialogTs = TimeSpan.FromMilliseconds(300);
-        var dialogDuration = CommonUtils.GetDuration(dialogTs);
+        var dialogDuration = AnimationOptions.GetDuration(dialogTs);
         var da2 = new DoubleAnimation()
         {
             From = 1,
@@ -278,7 +278,7 @@ public partial class FrontDialogOverlay : UserControl
             From = 1,
             To = 0,
             BeginTime = TimeSpan.FromMilliseconds(dialogTs.TotalMilliseconds / 2f),
-            Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(150)),
+            Duration = AnimationOptions.GetDuration(TimeSpan.FromMilliseconds(150)),
             EasingFunction = sine
         };
         Storyboard.SetTarget(da, MainCanvas);
@@ -313,7 +313,7 @@ public partial class FrontDialogOverlay : UserControl
         {
             From = 0,
             To = 1,
-            Duration = CommonUtils.GetDuration(canvasTs),
+            Duration = AnimationOptions.GetDuration(canvasTs),
             EasingFunction = sine
         };
         Storyboard.SetTarget(da, MainCanvas);
@@ -322,7 +322,7 @@ public partial class FrontDialogOverlay : UserControl
         var back = new BackEase { EasingMode = EasingMode.EaseOut, Amplitude = 0.3 };
         var circ = new CircleEase { EasingMode = EasingMode.EaseOut };
 
-        var dialogDuration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300));
+        var dialogDuration = AnimationOptions.GetDuration(TimeSpan.FromMilliseconds(300));
         var da2 = new DoubleAnimation
         {
             From = 0.7,

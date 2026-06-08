@@ -12,6 +12,7 @@ using OsuPlayer.Core;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
 using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback;
 using OsuPlayer.Presentation;
 using OsuPlayer.Presentation.Properties;
 using OsuPlayer.UiComponents.FrontDialogComponent;

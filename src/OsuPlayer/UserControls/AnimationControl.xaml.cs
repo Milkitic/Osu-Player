@@ -12,8 +12,10 @@ using Microsoft.Extensions.DependencyInjection;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Media.Audio;
-using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Playback;
+using OsuPlayer.Playback.Playlist;
 using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Shared;
 using OsuPlayer.UiComponents.NotificationComponent;
 using Unosquare.FFME.Common;
 
@@ -51,7 +53,7 @@ public partial class AnimationControl : UserControl
     {
         _viewModel = (AnimationControlVm)DataContext;
 
-        var path = Path.Combine(Domain.ResourcePath, "official", "registration.jpg");
+        var path = Path.Combine(AppPaths.Current.ResourcePath, "official", "registration.jpg");
         if (File.Exists(path))
         {
             BackImage.Source = new BitmapImage(new Uri(path));

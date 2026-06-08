@@ -9,23 +9,20 @@ using Coosu.Database;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
 
+using Microsoft.Extensions.Logging;
+
 namespace OsuPlayer.Core.Instances;
 
 public partial class OsuDbInst
 {
-    private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
-
+    private readonly ILogger<OsuDbInst> _logger;
     private readonly Lock _scanningObject = new Lock();
     private readonly IPlayerDataStore _playerData;
 
-    public OsuDbInst()
-        : this(new PlayerDataService())
-    {
-    }
-
-    public OsuDbInst(IPlayerDataStore playerData)
+    public OsuDbInst(IPlayerDataStore playerData, ILogger<OsuDbInst> logger)
     {
         _playerData = playerData;
+        _logger = logger;
     }
 
     public ViewModelClass ViewModel { get; set; } = new ViewModelClass();
@@ -39,7 +36,7 @@ public partial class OsuDbInst
         }
         catch (Exception ex)
         {
-            s_logger.Error(ex, "Error while syncing osu db."); // todo: update db file.
+            _logger.LogError(ex, "Error while syncing osu db."); // todo: update db file.
             return false;
         }
     }

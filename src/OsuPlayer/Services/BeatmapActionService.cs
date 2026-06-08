@@ -1,16 +1,14 @@
 #nullable enable
 
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback;
 using OsuPlayer.Shared;
 using OsuPlayer.UiComponents.FrontDialogComponent;
-using OsuPlayer.UiComponents.NotificationComponent;
 using OsuPlayer.UserControls;
 
 namespace OsuPlayer.Services;
@@ -22,15 +20,21 @@ public sealed class BeatmapActionService : IBeatmapActionService
     private readonly IPlayerDataService _playerData;
     private readonly ObservablePlayController _controller;
     private readonly IExportService _exportService;
+    private readonly IBeatmapDifficultyPicker _difficultyPicker;
+    private readonly IAppNotificationService _notifications;
 
     public BeatmapActionService(
         IPlayerDataService playerData,
         ObservablePlayController controller,
-        IExportService exportService)
+        IExportService exportService,
+        IBeatmapDifficultyPicker difficultyPicker,
+        IAppNotificationService notifications)
     {
         _playerData = playerData;
         _controller = controller;
         _exportService = exportService;
+        _difficultyPicker = difficultyPicker;
+        _notifications = notifications;
     }
 
     public async Task<Beatmap?> GetHighestDifficultyAsync(IMapIdentifiable? beatmap)
@@ -47,7 +51,7 @@ public sealed class BeatmapActionService : IBeatmapActionService
         var folder = beatmap.GetFolder(out _, out _);
         if (!Directory.Exists(folder))
         {
-            Notification.Push(MissingFolderMessage);
+            _notifications.Push(MissingFolderMessage);
             return;
         }
 
@@ -70,12 +74,11 @@ public sealed class BeatmapActionService : IBeatmapActionService
 
     public async Task SaveToCollectionWithDifficultyPickerAsync(IMapIdentifiable? beatmap)
     {
-        await ShowDifficultyPickerAsync(beatmap, (selected, arg) =>
+        var selected = await PickDifficultyAsync(beatmap);
+        if (selected != null)
         {
-            arg.Handled = true;
             ShowSelectCollection(selected);
-            return Task.CompletedTask;
-        });
+        }
     }
 
     public async Task ExportAsync(IMapIdentifiable? beatmap, bool highestDifficulty = false)
@@ -94,10 +97,11 @@ public sealed class BeatmapActionService : IBeatmapActionService
 
     public async Task PlayWithDifficultyPickerAsync(IMapIdentifiable? beatmap)
     {
-        await ShowDifficultyPickerAsync(beatmap, async (selected, _) =>
+        var selected = await PickDifficultyAsync(beatmap);
+        if (selected != null)
         {
             await _controller.PlayNewAsync(selected, true);
-        });
+        }
     }
 
     private async Task<Beatmap?> ResolveAsync(IMapIdentifiable? beatmap, bool highestDifficulty)
@@ -108,17 +112,11 @@ public sealed class BeatmapActionService : IBeatmapActionService
             : await _playerData.GetBeatmapByIdentifiableAsync(beatmap);
     }
 
-    private async Task ShowDifficultyPickerAsync(
-        IMapIdentifiable? beatmap,
-        Func<Beatmap, CallbackObj, Task> onSelect)
+    private async Task<Beatmap?> PickDifficultyAsync(IMapIdentifiable? beatmap)
     {
-        if (beatmap == null) return;
+        if (beatmap == null) return null;
         var beatmaps = await _playerData.GetBeatmapsFromFolderAsync(beatmap.GetIdentity().FolderName);
-        if (beatmaps.Count == 0) return;
-
-        FrontDialogOverlay.Default.ShowContent(
-            new DiffSelectControl(beatmaps, onSelect),
-            DialogOptionFactory.DiffSelectOptions);
+        return await _difficultyPicker.PickAsync(beatmaps);
     }
 
     private static void ShowSelectCollection(Beatmap map)

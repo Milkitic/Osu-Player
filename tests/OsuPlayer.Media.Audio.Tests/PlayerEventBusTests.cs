@@ -1,21 +1,21 @@
 using System.Reflection;
-using NLog;
-using OsuPlayer.Media.Audio.Coordination;
-using OsuPlayer.Presentation.Interaction;
+using Microsoft.Extensions.Logging.Abstractions;
+using OsuPlayer.Playback;
+using OsuPlayer.Shared;
 using Xunit;
 
 namespace OsuPlayer.Media.Audio.Tests;
 
 public class PlayerEventBusTests
 {
-    private static readonly Logger NullLogger = LogManager.CreateNullLogger();
+    private static readonly Microsoft.Extensions.Logging.ILogger<PlayerEventBus> NullLog = NullLogger<PlayerEventBus>.Instance;
 
     [Fact]
     public void AttachPlayer_ReplaysPlayStatusThroughDispatcher()
     {
         var dispatcher = new CountingDispatcher();
-        var bus = new PlayerEventBus(dispatcher, NullLogger);
-        var player = new OsuMixPlayer(null!, string.Empty, null!, null!);
+        var bus = new PlayerEventBus(dispatcher, NullLog, new StubNotificationService());
+        var player = new OsuMixPlayer(null!, string.Empty, null!, null!, NullLogger<OsuMixPlayer>.Instance);
         PlayStatus? observed = null;
         bus.PlayStatusChanged += status => observed = status;
 
@@ -31,7 +31,7 @@ public class PlayerEventBusTests
     public void RaiseInterfaceClearRequest_WithNoSubscribers_DoesNotDispatchNull()
     {
         var dispatcher = new CountingDispatcher();
-        var bus = new PlayerEventBus(dispatcher, NullLogger);
+        var bus = new PlayerEventBus(dispatcher, NullLog, new StubNotificationService());
 
         bus.RaiseInterfaceClearRequest();
 
@@ -62,5 +62,11 @@ public class PlayerEventBusTests
             .GetField("_playStatus", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(field);
         field.SetValue(player, status);
+    }
+
+    private sealed class StubNotificationService : IAppNotificationService
+    {
+        public void Push(string message) { }
+        public void Push(string message, string title) { }
     }
 }

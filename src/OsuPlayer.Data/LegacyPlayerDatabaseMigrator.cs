@@ -4,15 +4,16 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 
 namespace OsuPlayer.Data;
 
-internal static class LegacyPlayerDatabaseMigrator
+internal class LegacyPlayerDatabaseMigrator
 {
     private const string LegacyMigrationId = "legacy-player-db";
     private const string MigrationHistoryTable = "__OsuPlayerDataMigrationHistory";
     private const string LegacySchema = "legacy";
-    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+    private readonly ILogger _logger;
 
     private static readonly TableMigration[] TableMigrations =
     {
@@ -24,7 +25,12 @@ internal static class LegacyPlayerDatabaseMigrator
         new("sb_info", "storyboard_assets")
     };
 
-    public static void MigrateIfRequired(string appDatabasePath, string legacyDatabasePath)
+    public LegacyPlayerDatabaseMigrator(ILogger logger)
+    {
+        _logger = logger;
+    }
+
+    public void MigrateIfRequired(string appDatabasePath, string legacyDatabasePath)
     {
         if (!File.Exists(legacyDatabasePath))
         {
@@ -52,12 +58,12 @@ internal static class LegacyPlayerDatabaseMigrator
 
         if (TableExists(legacyConnection, "main", "__EFMigrationsHistory"))
         {
-            Logger.Info("Legacy player.db contains EF migration history; importing compatible tables.");
+            _logger.LogInformation("Legacy player.db contains EF migration history; importing compatible tables.");
         }
 
         if (!TableMigrations.Any(migration => migration.HasSourceTable(legacyConnection, "main")))
         {
-            Logger.Info("Skip legacy player.db import because no known legacy tables were found.");
+            _logger.LogInformation("Skip legacy player.db import because no known legacy tables were found.");
             return;
         }
 
@@ -77,8 +83,8 @@ internal static class LegacyPlayerDatabaseMigrator
 
                 if (result.SourceRows > 0 || result.IgnoredRows > 0)
                 {
-                    Logger.Info(
-                        "Imported table {0}->{1}: source={2}, inserted={3}, ignored={4}.",
+                    _logger.LogInformation(
+                        "Imported table {SourceTable}->{TargetTable}: source={SourceRows}, inserted={InsertedRows}, ignored={IgnoredRows}.",
                         result.SourceTable,
                         result.TargetTable,
                         result.SourceRows,
@@ -90,8 +96,8 @@ internal static class LegacyPlayerDatabaseMigrator
             MarkDataMigration(appConnection, transaction, legacyFullPath);
             transaction.Commit();
 
-            Logger.Info(
-                "Imported {0} rows from legacy player.db into app.db. Ignored {1} rows due to conflicts or invalid relations.",
+            _logger.LogInformation(
+                "Imported {CopiedRows} rows from legacy player.db into app.db. Ignored {IgnoredRows} rows due to conflicts or invalid relations.",
                 copiedRows,
                 ignoredRows);
         }

@@ -6,6 +6,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using OsuPlayer.Core;
+using OsuPlayer.Presentation;
 
 namespace OsuPlayer.UiComponents.PanelComponent;
 
@@ -407,7 +408,7 @@ public class VirtualizingGalleryWrapPanel : VirtualizingPanel, IScrollInfo
             To = -offset,
             EasingFunction = new CircleEase() { EasingMode = EasingMode.EaseOut },
             BeginTime = TimeSpan.Zero,
-            Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(150))
+            Duration = AnimationOptions.GetDuration(TimeSpan.FromMilliseconds(150))
         };
 
         Storyboard.SetTarget(da, this);

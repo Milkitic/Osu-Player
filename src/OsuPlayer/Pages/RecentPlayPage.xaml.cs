@@ -2,7 +2,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using OsuPlayer.Core;
-using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback;
 using OsuPlayer.Utils;
 using OsuPlayer.ViewModels;
 using OsuPlayer.Windows;

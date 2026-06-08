@@ -1,4 +1,4 @@
-using OsuPlayer.Media.Lyric;
+using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.Core.Configuration;
 

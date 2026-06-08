@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 using Coosu.Beatmap;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
-using OsuPlayer.Core.Configuration;
+using Microsoft.Extensions.Logging;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Media.Audio.Infrastructure;
-using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback.Playlist;
+using OsuPlayer.Shared;
+using OsuPlayer.Shared.Infrastructure;
 using OsuPlayer.Shared.Models;
 
-namespace OsuPlayer.Media.Audio.Coordination;
+namespace OsuPlayer.Playback;
 
 /// <summary>
 /// Coordinates beatmap selection, loading, and playback commands for the
@@ -27,16 +29,18 @@ namespace OsuPlayer.Media.Audio.Coordination;
 /// <see cref="OsuMixPlayer"/> through <see cref="PlayerEventBus"/>, and translates
 /// playlist cursor changes into player commands.
 /// </remarks>
-internal sealed class PlayerSessionService : IAsyncDisposable
+public sealed class PlayerSessionService : IAsyncDisposable
 {
     private readonly PlayerEventBus _bus;
     private readonly PlayList _playList;
     private readonly BeatmapLoader _beatmapLoader;
-    private readonly SemaphoreSlim _readLock;
+    private readonly SemaphoreSlim _readLock = new(1, 1);
     private readonly IPlayerDataStore _playerData;
     private readonly IPlaybackEngine _playbackEngine;
     private readonly AudioCacheManager _audioCacheManager;
-    private readonly NLog.Logger _logger;
+    private readonly IUserPreferences _preferences;
+    private readonly ILogger<PlayerSessionService> _logger;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly SessionOperationManager _operations = new();
     private readonly Lock _disposeGate = new();
 
@@ -51,20 +55,22 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         PlayerEventBus bus,
         PlayList playList,
         BeatmapLoader beatmapLoader,
-        SemaphoreSlim readLock,
         IPlayerDataStore playerData,
         IPlaybackEngine playbackEngine,
         AudioCacheManager audioCacheManager,
-        NLog.Logger logger)
+        IUserPreferences preferences,
+        ILogger<PlayerSessionService> logger,
+        ILoggerFactory loggerFactory)
     {
         _bus = bus;
         _playList = playList;
         _beatmapLoader = beatmapLoader;
-        _readLock = readLock;
         _playerData = playerData;
         _playbackEngine = playbackEngine;
         _audioCacheManager = audioCacheManager;
+        _preferences = preferences;
         _logger = logger;
+        _loggerFactory = loggerFactory;
 
         _bus.PlayStatusChanged += OnPlayerPlayStatusChanged;
     }
@@ -248,7 +254,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, errorMessage);
+                _logger.LogError(ex, "{ErrorMessage}", errorMessage);
             }
         }
     }
@@ -381,7 +387,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         _bus.RaiseMetaLoaded(context, operationToken);
         _bus.RaiseBackgroundInfoLoaded(context, operationToken);
 
-        var player = new OsuMixPlayer(loadResult.OsuFile, loadResult.BaseFolder, _playbackEngine, _audioCacheManager);
+        var player = new OsuMixPlayer(loadResult.OsuFile, loadResult.BaseFolder, _playbackEngine, _audioCacheManager, _loggerFactory.CreateLogger<OsuMixPlayer>());
         var attached = false;
         try
         {
@@ -421,14 +427,14 @@ internal sealed class PlayerSessionService : IAsyncDisposable
 
         context.FullLoaded = true;
         _bus.RaiseLoadFinished(context, operationToken);
-        AppSettings.Default.CurrentMap = context.Beatmap.GetIdentity();
-        AppSettings.SaveDefault();
+        _preferences.CurrentMap = context.Beatmap.GetIdentity();
+        _preferences.Save();
     }
 
     private void HandleLoadFailure(BeatmapContext? context, Exception ex)
     {
         _bus.RaiseLoadError(context, ex);
-        _logger.Error(ex, "Error while loading new beatmap. BeatmapId: {0}; BeatmapSetId: {1}",
+        _logger.LogError(ex, "Error while loading new beatmap. BeatmapId: {BeatmapId}; BeatmapSetId: {BeatmapSetId}",
             context?.Beatmap?.BeatmapId, context?.Beatmap?.BeatmapSetId);
     }
 
@@ -543,7 +549,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Error while handling playback finished.");
+            _logger.LogError(ex, "Error while handling playback finished.");
         }
         finally
         {

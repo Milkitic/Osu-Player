@@ -9,8 +9,8 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Services;
-using OsuPlayer.Media.Audio;
-using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Playback;
+using OsuPlayer.Playback.Playlist;
 
 namespace OsuPlayer.UserControls;
 

@@ -67,6 +67,13 @@
     <BuildType Solution="Release 4.5|*" Project="Release" />
     <BuildType Solution="Release 4.6|*" Project="Release" />
   </Project>
+  <Project Path="src/OsuPlayer.Playback/OsuPlayer.Playback.csproj">
+    <BuildType Solution="Analysis|Any CPU" Project="Release" />
+    <BuildType Solution="Analysis|x64" Project="Debug" />
+    <BuildType Solution="Analysis|x86" Project="Debug" />
+    <BuildType Solution="Release 4.5|*" Project="Release" />
+    <BuildType Solution="Release 4.6|*" Project="Release" />
+  </Project>
   <Project Path="src/OsuPlayer.Media.Lyric/OsuPlayer.Media.Lyric.csproj">
     <BuildType Solution="Analysis|Any CPU" Project="Debug" />
     <BuildType Solution="Analysis|x64" Project="Release" />

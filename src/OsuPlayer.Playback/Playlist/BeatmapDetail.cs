@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Coosu.Beatmap;
 using OsuPlayer.Data.Models;
 using OsuPlayer.Shared;
 
-namespace OsuPlayer.Media.Audio.Playlist;
+namespace OsuPlayer.Playback.Playlist;
 
 public partial class BeatmapDetail : ObservableObject
 {

@@ -8,8 +8,8 @@ using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
+using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
-using OsuPlayer.UiComponents.NotificationComponent;
 using Path = System.IO.Path;
 
 namespace OsuPlayer.Services;
@@ -18,6 +18,7 @@ public class ExportService : IExportService
 {
     private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private readonly IPlayerDataService _playerData;
+    private readonly IAppNotificationService _notifications;
     private readonly ConcurrentQueue<Beatmap> _taskQueue = new();
     private Task _exportTask;
     private readonly object _lock = new();
@@ -37,9 +38,10 @@ public class ExportService : IExportService
 
     public event EventHandler TaskSuccess;
 
-    public ExportService(IPlayerDataService playerData)
+    public ExportService(IPlayerDataService playerData, IAppNotificationService notifications)
     {
         _playerData = playerData;
+        _notifications = notifications;
     }
 
     public void QueueEntry(Beatmap entry)
@@ -107,8 +109,8 @@ public class ExportService : IExportService
             GetExportFolder(out var exportMp3Folder, out var exportBgFolder,
                 new MetaString(artistAsc, artistUtf), creator, source);
 
-            string exportMp3Name = ValidateFilename(escapedMp3, Domain.MusicPath, mp3FileInfo.Extension);
-            string exportBgName = ValidateFilename(escapedBg, Domain.BackgroundPath, bgFileInfo.Extension);
+            string exportMp3Name = ValidateFilename(escapedMp3, AppPaths.Current.MusicPath, mp3FileInfo.Extension);
+            string exportBgName = ValidateFilename(escapedBg, AppPaths.Current.BackgroundPath, bgFileInfo.Extension);
 
             if (mp3FileInfo.Exists)
                 Export(mp3FileInfo, exportMp3Folder, exportMp3Name);
@@ -121,7 +123,7 @@ public class ExportService : IExportService
         catch (Exception ex)
         {
             Logger.Error(ex, "Error while exporting beatmap: {0}", entry.GetIdentity());
-            Notification.Push($"Error while exporting beatmap: {entry.GetIdentity()}\r\n{ex.Message}");
+            _notifications.Push($"Error while exporting beatmap: {entry.GetIdentity()}\r\n{ex.Message}");
         }
     }
 
@@ -131,8 +133,8 @@ public class ExportService : IExportService
         switch (AppSettings.Default.Export.ExportGroupStyle)
         {
             case ExportGroupStyle.None:
-                exportMp3Folder = Domain.MusicPath;
-                exportBgFolder = Domain.BackgroundPath;
+                exportMp3Folder = AppPaths.Current.MusicPath;
+                exportBgFolder = AppPaths.Current.BackgroundPath;
                 break;
             case ExportGroupStyle.Artist:
             {
@@ -143,14 +145,14 @@ public class ExportService : IExportService
                 if (string.IsNullOrEmpty(escArtistUtf))
                     escArtistUtf = "未知艺术家";
 
-                if (Directory.Exists(Path.Combine(Domain.MusicPath, escArtistUtf)))
-                    exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistUtf);
-                else if (Directory.Exists(Path.Combine(Domain.MusicPath, escArtistAsc)))
-                    exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistAsc);
+                if (Directory.Exists(Path.Combine(AppPaths.Current.MusicPath, escArtistUtf)))
+                    exportMp3Folder = Path.Combine(AppPaths.Current.MusicPath, escArtistUtf);
+                else if (Directory.Exists(Path.Combine(AppPaths.Current.MusicPath, escArtistAsc)))
+                    exportMp3Folder = Path.Combine(AppPaths.Current.MusicPath, escArtistAsc);
                 else
-                    exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistUtf);
+                    exportMp3Folder = Path.Combine(AppPaths.Current.MusicPath, escArtistUtf);
 
-                exportBgFolder = Path.Combine(Domain.BackgroundPath, escArtistUtf);
+                exportBgFolder = Path.Combine(AppPaths.Current.BackgroundPath, escArtistUtf);
                 break;
             }
             case ExportGroupStyle.Mapper:
@@ -159,8 +161,8 @@ public class ExportService : IExportService
                 if (string.IsNullOrEmpty(escCreator))
                     escCreator = "未知作者";
 
-                exportMp3Folder = Path.Combine(Domain.MusicPath, escCreator);
-                exportBgFolder = Path.Combine(Domain.BackgroundPath, escCreator);
+                exportMp3Folder = Path.Combine(AppPaths.Current.MusicPath, escCreator);
+                exportBgFolder = Path.Combine(AppPaths.Current.BackgroundPath, escCreator);
                 break;
             }
             case ExportGroupStyle.Source:
@@ -169,8 +171,8 @@ public class ExportService : IExportService
                 if (string.IsNullOrEmpty(escSource))
                     escSource = "未知来源";
 
-                exportMp3Folder = Path.Combine(Domain.MusicPath, escSource);
-                exportBgFolder = Path.Combine(Domain.BackgroundPath, escSource);
+                exportMp3Folder = Path.Combine(AppPaths.Current.MusicPath, escSource);
+                exportBgFolder = Path.Combine(AppPaths.Current.BackgroundPath, escSource);
                 break;
             }
             default:
