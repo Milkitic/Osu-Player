@@ -103,7 +103,7 @@ public abstract class WindowEx : Window, IWindowBase
         Closing -= WindowEx_Closing;
         s_current.Remove(this);
     }
-
+     
     /// <summary>
     ///   引发 <see cref="E:System.Windows.Window.ContentRendered" /> 事件。
     /// </summary>
