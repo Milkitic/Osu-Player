@@ -1,3 +1,4 @@
+using OsuPlayer.Shared;
 using OsuPlayer.UiComponents.NotificationComponent;
 
 namespace OsuPlayer.Services;

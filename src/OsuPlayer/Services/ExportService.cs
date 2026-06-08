@@ -8,6 +8,7 @@ using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
+using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 using Path = System.IO.Path;
 

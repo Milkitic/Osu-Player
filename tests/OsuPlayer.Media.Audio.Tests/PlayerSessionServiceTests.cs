@@ -52,7 +52,7 @@ public class PlayerSessionServiceTests
         var dispatcher = new ImmediateUiThreadDispatcher();
         var logger = NullLogger<PlayerEventBus>.Instance;
         var LoggerFactory = NullLoggerFactory.Instance;
-        var bus = new PlayerEventBus(dispatcher, logger);
+        var bus = new PlayerEventBus(dispatcher, logger, new StubNotificationService());
         var playList = new PlayList(playerData, dispatcher);
         var beatmapLoader = new BeatmapLoader(playerData, NullLogger<BeatmapLoader>.Instance);
 
@@ -205,5 +205,11 @@ public class PlayerSessionServiceTests
         public void StartDevice(DeviceDescription? deviceDescription, WaveFormat? waveFormat = null) { }
         public void StopDevice() { }
         public void Dispose() { }
+    }
+
+    private sealed class StubNotificationService : IAppNotificationService
+    {
+        public void Push(string message) { }
+        public void Push(string message, string title) { }
     }
 }

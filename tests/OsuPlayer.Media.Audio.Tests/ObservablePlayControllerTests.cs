@@ -33,7 +33,7 @@ public class ObservablePlayControllerTests
     public void Player_ReturnsPumpCurrentPlayerAndRaisesChangeNotification()
     {
         var dispatcher = new ImmediateUiThreadDispatcher();
-        var bus = new PlayerEventBus(dispatcher, BusLog);
+        var bus = new PlayerEventBus(dispatcher, BusLog, new StubNotificationService());
         var playList = new PlayList(new FakePlayerDataStore(), dispatcher);
         var session = CreateSession(bus, playList);
         var controller = new ObservablePlayController(
@@ -41,8 +41,7 @@ public class ObservablePlayControllerTests
             bus,
             playList,
             session,
-            ControllerLog,
-            _ => { });
+            ControllerLog);
         var player = new OsuMixPlayer(null!, string.Empty, null!, null!, PlayerLog);
         var notified = false;
 
@@ -64,7 +63,7 @@ public class ObservablePlayControllerTests
     public async Task PlayAsync_IgnoresAttachedPlayerUntilReady()
     {
         var dispatcher = new ImmediateUiThreadDispatcher();
-        var bus = new PlayerEventBus(dispatcher, BusLog);
+        var bus = new PlayerEventBus(dispatcher, BusLog, new StubNotificationService());
         var playList = new PlayList(new FakePlayerDataStore(), dispatcher);
         var session = CreateSession(bus, playList);
         var controller = new ObservablePlayController(
@@ -72,8 +71,7 @@ public class ObservablePlayControllerTests
             bus,
             playList,
             session,
-            ControllerLog,
-            _ => { });
+            ControllerLog);
         var player = new OsuMixPlayer(null!, string.Empty, null!, null!, PlayerLog);
 
         bus.AttachPlayer(player);
@@ -85,7 +83,7 @@ public class ObservablePlayControllerTests
     public void AttachPlayer_ReplaysReadyStatusToFacade()
     {
         var dispatcher = new ImmediateUiThreadDispatcher();
-        var bus = new PlayerEventBus(dispatcher, BusLog);
+        var bus = new PlayerEventBus(dispatcher, BusLog, new StubNotificationService());
         var playList = new PlayList(new FakePlayerDataStore(), dispatcher);
         var session = CreateSession(bus, playList);
         var controller = new ObservablePlayController(
@@ -93,8 +91,7 @@ public class ObservablePlayControllerTests
             bus,
             playList,
             session,
-            ControllerLog,
-            _ => { });
+            ControllerLog);
         var player = new OsuMixPlayer(null!, string.Empty, null!, null!, PlayerLog);
         SetPlayStatus(player, PlayStatus.Ready);
         PlayStatus? observed = null;
@@ -142,6 +139,12 @@ public class ObservablePlayControllerTests
     {
         public void Post(Action action) => action();
         public void Send(Action action) => action();
+    }
+
+    private sealed class StubNotificationService : IAppNotificationService
+    {
+        public void Push(string message) { }
+        public void Push(string message, string title) { }
     }
 
     private sealed class FakePlaybackEngine : IPlaybackEngine

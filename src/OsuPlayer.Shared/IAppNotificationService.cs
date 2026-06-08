@@ -1,4 +1,4 @@
-namespace OsuPlayer.Services;
+namespace OsuPlayer.Shared;
 
 public interface IAppNotificationService
 {

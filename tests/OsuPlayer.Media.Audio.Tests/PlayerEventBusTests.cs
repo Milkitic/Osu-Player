@@ -14,7 +14,7 @@ public class PlayerEventBusTests
     public void AttachPlayer_ReplaysPlayStatusThroughDispatcher()
     {
         var dispatcher = new CountingDispatcher();
-        var bus = new PlayerEventBus(dispatcher, NullLog);
+        var bus = new PlayerEventBus(dispatcher, NullLog, new StubNotificationService());
         var player = new OsuMixPlayer(null!, string.Empty, null!, null!, NullLogger<OsuMixPlayer>.Instance);
         PlayStatus? observed = null;
         bus.PlayStatusChanged += status => observed = status;
@@ -31,7 +31,7 @@ public class PlayerEventBusTests
     public void RaiseInterfaceClearRequest_WithNoSubscribers_DoesNotDispatchNull()
     {
         var dispatcher = new CountingDispatcher();
-        var bus = new PlayerEventBus(dispatcher, NullLog);
+        var bus = new PlayerEventBus(dispatcher, NullLog, new StubNotificationService());
 
         bus.RaiseInterfaceClearRequest();
 
@@ -62,5 +62,11 @@ public class PlayerEventBusTests
             .GetField("_playStatus", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(field);
         field.SetValue(player, status);
+    }
+
+    private sealed class StubNotificationService : IAppNotificationService
+    {
+        public void Push(string message) { }
+        public void Push(string message, string title) { }
     }
 }

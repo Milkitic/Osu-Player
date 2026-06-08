@@ -40,8 +40,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
         PlayerEventBus bus,
         PlayList playList,
         PlayerSessionService session,
-        ILogger<ObservablePlayController> logger,
-        Action<Exception> audioDeviceErrorHandler)
+        ILogger<ObservablePlayController> logger)
     {
         _logger = logger;
         _playbackEngine = playbackEngine;
@@ -49,12 +48,16 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
         PlayList = playList;
         _session = session;
 
+        if (AppSettings.Default?.Play != null)
+        {
+            PlayList.Mode = AppSettings.Default.Play.PlayListMode;
+        }
+
         _playbackEngine.DeviceError += _bus.OnPlaybackEngineDeviceError;
 
         _bus.PlayStatusChanged += OnBusPlayStatusChanged;
         _bus.PositionUpdated += position => PositionUpdated?.Invoke(position);
         _bus.PlayerChanged += OnBusPlayerChanged;
-        _bus.AudioDeviceError += audioDeviceErrorHandler;
 
         PlayList.SongListChanged += OnSongListChanged;
         PlayList.ModeChanged += OnModeChanged;
