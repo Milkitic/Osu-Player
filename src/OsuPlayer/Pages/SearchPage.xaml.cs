@@ -62,7 +62,7 @@ public partial class SearchPage : Page
     private void Panel_Loaded(object sender, RoutedEventArgs e)
     {
         _virtualizingGalleryWrapPanel = sender as VirtualizingGalleryWrapPanel;
-        ViewModel.GalleryWrapPanel = _virtualizingGalleryWrapPanel;
+        ViewModel.ClearGalleryNotifications = () => _virtualizingGalleryWrapPanel.ClearNotificationCount();
     }
 
     private void BtnQueueAll_Click(object sender, RoutedEventArgs e)
