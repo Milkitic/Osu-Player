@@ -2,14 +2,14 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OsuPlayer.Media.Audio.Infrastructure;
+namespace OsuPlayer.Shared.Infrastructure;
 
 /// <summary>
 /// Encapsulates the start/stop lifecycle of an asynchronous loop driven by
 /// a <see cref="CancellationTokenSource"/>. Eliminates the repetitive
 /// CTS-create / lock-guard / cancel / ObjectDisposedException-swallow pattern.
 /// </summary>
-internal sealed class CancellableAsyncLoop : IDisposable, IAsyncDisposable
+public sealed class CancellableAsyncLoop : IDisposable, IAsyncDisposable
 {
     private readonly Lock _gate = new();
     private CancellationTokenSource? _cts;

@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.Core.Configuration;

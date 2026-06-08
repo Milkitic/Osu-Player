@@ -1,13 +1,12 @@
 #nullable enable
 
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback;
 using OsuPlayer.Shared;
 using OsuPlayer.UiComponents.FrontDialogComponent;
 using OsuPlayer.UserControls;

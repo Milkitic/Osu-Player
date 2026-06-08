@@ -6,18 +6,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using KeyAsio.Core.Audio;
-using KeyAsio.Core.Audio.Caching;
 using Microsoft.Extensions.Logging;
-using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
-using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Media.Audio.Coordination;
-using OsuPlayer.Media.Audio.Playlist;
-using OsuPlayer.Shared;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback.Playlist;
 using OsuPlayer.Shared.Models;
 
-namespace OsuPlayer.Media.Audio;
+namespace OsuPlayer.Playback;
 
 /// <summary>
 /// Top-level facade that the UI binds to. Delegates all real work to
@@ -31,6 +27,7 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
 
     private readonly IPlaybackEngine _playbackEngine;
     private readonly PlayerEventBus _bus;
+    private readonly PlayList _playList;
     private readonly PlayerSessionService _session;
 
     private static readonly NullPlaybackController s_nullController = new();
@@ -151,7 +148,6 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
 
     private void OnBusPlayStatusChanged(PlayStatus status)
     {
-        SharedVm.Default.IsPlaying = status == PlayStatus.Playing;
         OnPropertyChanged(nameof(IsPlayerReady));
         PlayStatusChanged?.Invoke(status);
     }

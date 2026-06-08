@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
-using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback;
 
 namespace OsuPlayer.ViewModels;
 

@@ -9,7 +9,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback;
 using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Services;
 using OsuPlayer.Shared.Models;

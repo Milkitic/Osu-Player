@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OsuPlayer.Media.Audio.Infrastructure;
+namespace OsuPlayer.Shared.Infrastructure;
 
 /// <summary>
 /// RAII guard that releases a <see cref="SemaphoreSlim"/> on dispose.

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Instances;
+using OsuPlayer.Playback;
 using OsuPlayer.Presentation;
 using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Utils;
@@ -76,6 +77,12 @@ public partial class App : Application
         Services.GetRequiredService<LyricsInst>().ReloadLyricProvider();
 
         I18NUtil.LoadI18N();
+
+        var controller = Services.GetRequiredService<ObservablePlayController>();
+        controller.PlayStatusChanged += status =>
+        {
+            OsuPlayer.Core.SharedVm.Default.IsPlaying = status == OsuPlayer.Media.Audio.PlayStatus.Playing;
+        };
 
         var mainWindow = Services.GetRequiredService<MainWindow>();
         MainWindow = mainWindow;

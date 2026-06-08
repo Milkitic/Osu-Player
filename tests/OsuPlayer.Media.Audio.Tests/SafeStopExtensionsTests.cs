@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using OsuPlayer.Media.Audio.Infrastructure;
+using OsuPlayer.Shared.Infrastructure;
 using Xunit;
 
 namespace OsuPlayer.Media.Audio.Tests;

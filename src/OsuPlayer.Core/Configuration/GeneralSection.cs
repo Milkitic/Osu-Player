@@ -2,6 +2,7 @@
 
 using System.Drawing;
 using CommunityToolkit.Mvvm.ComponentModel;
+using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 using Path = System.IO.Path;
 

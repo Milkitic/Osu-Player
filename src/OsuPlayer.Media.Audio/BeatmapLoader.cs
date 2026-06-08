@@ -6,6 +6,7 @@ using Coosu.Beatmap;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
+using OsuPlayer.Shared;
 
 using Microsoft.Extensions.Logging;
 

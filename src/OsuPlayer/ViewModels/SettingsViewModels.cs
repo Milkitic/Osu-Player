@@ -7,14 +7,14 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using KeyAsio.Core.Audio;
-using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Instances;
 using OsuPlayer.Core.Scanning;
 using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback;
 using OsuPlayer.Presentation;
-using OsuPlayer.Utils;
 using OsuPlayer.Shared;
+using OsuPlayer.Utils;
 using OsuPlayer.Windows;
 
 namespace OsuPlayer.ViewModels;

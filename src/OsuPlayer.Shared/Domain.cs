@@ -1,12 +1,14 @@
 using System;
 using System.IO;
-using OsuPlayer.Core.Configuration;
 
-namespace OsuPlayer.Core;
+namespace OsuPlayer.Shared;
 
 public static class Domain
 {
     private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
+    public static Func<string?>? CustomSongPathProvider { get; set; }
+    public static Func<string?>? OsuPathProvider { get; set; }
 
     static Domain()
     {
@@ -17,7 +19,7 @@ public static class Domain
             if (!item.Name.EndsWith("Path")) continue;
             try
             {
-                string path = (string)item.GetValue(null, null);
+                var path = (string?)item.GetValue(null, null);
                 if (path == null) continue;
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
@@ -44,13 +46,7 @@ public static class Domain
     public static string ResourcePath => Path.Combine(CurrentPath, "Resources");
     public static string PluginPath => Path.Combine(ExtensionPath, "plugins");
 
-    public static string CustomSongPath
-        => AppSettings.Default == null ? null : new FileInfo(AppSettings.Default.General.CustomSongsPath).FullName;
-    public static string OsuPath
-        => AppSettings.Default == null
-            ? null
-            : (AppSettings.Default.General.DbPath == null
-                ? null
-                : new FileInfo(AppSettings.Default.General.DbPath).Directory?.FullName);
-    public static string OsuSongPath => OsuPath == null ? null : Path.Combine(OsuPath, "Songs");
+    public static string? CustomSongPath => CustomSongPathProvider?.Invoke();
+    public static string? OsuPath => OsuPathProvider?.Invoke();
+    public static string? OsuSongPath => OsuPath == null ? null : Path.Combine(OsuPath, "Songs");
 }

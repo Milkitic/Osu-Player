@@ -11,7 +11,7 @@ using KeyAsio.Core.OsuAudio.Hitsounds;
 using KeyAsio.Core.OsuAudio.Hitsounds.Playback;
 using KeyAsio.Core.OsuAudio.Timeline;
 using Microsoft.Extensions.Logging;
-using OsuPlayer.Media.Audio.Infrastructure;
+using OsuPlayer.Shared.Infrastructure;
 
 namespace OsuPlayer.Media.Audio;
 

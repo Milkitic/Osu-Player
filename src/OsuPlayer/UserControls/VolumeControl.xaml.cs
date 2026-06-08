@@ -6,8 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
-using OsuPlayer.Media.Audio;
-using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Playback;
+using OsuPlayer.Playback.Playlist;
+using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.UserControls;
 

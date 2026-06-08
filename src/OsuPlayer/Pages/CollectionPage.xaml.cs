@@ -3,19 +3,19 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Extensions.Logging;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
-using OsuPlayer.Media.Audio;
+using OsuPlayer.Core.Services;
+using OsuPlayer.Playback;
 using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Shared;
 using OsuPlayer.UiComponents.FrontDialogComponent;
 using OsuPlayer.UiComponents.PanelComponent;
 using OsuPlayer.UserControls;
 using OsuPlayer.Utils;
 using OsuPlayer.ViewModels;
 using OsuPlayer.Windows;
-
-using Microsoft.Extensions.Logging;
-using OsuPlayer.Core.Services;
 
 namespace OsuPlayer.Pages;
 

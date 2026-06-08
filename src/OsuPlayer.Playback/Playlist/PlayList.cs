@@ -10,7 +10,7 @@ using OsuPlayer.Data.Models;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 
-namespace OsuPlayer.Media.Audio.Playlist;
+namespace OsuPlayer.Playback.Playlist;
 
 public readonly record struct PlaylistSelectionChange(
     BeatmapContext? Previous,

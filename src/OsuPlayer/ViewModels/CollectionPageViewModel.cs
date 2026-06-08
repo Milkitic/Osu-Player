@@ -5,12 +5,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using OsuPlayer.Core;
+using OsuPlayer.Core.ObjectModel;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback;
 using OsuPlayer.Presentation.Interaction;
-using OsuPlayer.Core.ObjectModel;
 using OsuPlayer.Services;
 
 namespace OsuPlayer.ViewModels;

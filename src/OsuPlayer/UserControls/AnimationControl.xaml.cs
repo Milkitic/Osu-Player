@@ -12,8 +12,10 @@ using Microsoft.Extensions.DependencyInjection;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Media.Audio;
-using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Playback;
+using OsuPlayer.Playback.Playlist;
 using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Shared;
 using OsuPlayer.UiComponents.NotificationComponent;
 using Unosquare.FFME.Common;
 

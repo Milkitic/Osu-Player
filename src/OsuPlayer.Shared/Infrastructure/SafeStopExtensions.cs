@@ -2,14 +2,14 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace OsuPlayer.Media.Audio.Infrastructure;
+namespace OsuPlayer.Shared.Infrastructure;
 
 /// <summary>
 /// Safe teardown helper for async operations that may race with disposal.
 /// Swallows <see cref="ObjectDisposedException"/> (expected during teardown
 /// races) and logs all other exceptions through the supplied logger.
 /// </summary>
-internal static class SafeStopExtensions
+public static class SafeStopExtensions
 {
     public static async Task TryAsync(
         Func<Task> asyncAction,

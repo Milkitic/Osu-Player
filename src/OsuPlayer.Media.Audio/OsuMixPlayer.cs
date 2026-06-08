@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 using Coosu.Beatmap;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
+using Microsoft.Extensions.Logging;
 using NAudio.Wave;
-using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
-using OsuPlayer.Media.Audio.Infrastructure;
-using OsuPlayer.Media.Audio.Playlist;
 using OsuPlayer.Media.Audio.Rules;
 using OsuPlayer.Media.Audio.SoundTouch;
-
-using Microsoft.Extensions.Logging;
+using OsuPlayer.Shared;
+using OsuPlayer.Shared.Infrastructure;
+using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.Media.Audio;
 

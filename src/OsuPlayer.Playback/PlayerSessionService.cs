@@ -7,14 +7,15 @@ using Coosu.Beatmap;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
 using Microsoft.Extensions.Logging;
-using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
-using OsuPlayer.Media.Audio.Infrastructure;
-using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback.Playlist;
+using OsuPlayer.Shared;
+using OsuPlayer.Shared.Infrastructure;
 using OsuPlayer.Shared.Models;
 
-namespace OsuPlayer.Media.Audio.Coordination;
+namespace OsuPlayer.Playback;
 
 /// <summary>
 /// Coordinates beatmap selection, loading, and playback commands for the
@@ -37,6 +38,7 @@ public sealed class PlayerSessionService : IAsyncDisposable
     private readonly IPlayerDataStore _playerData;
     private readonly IPlaybackEngine _playbackEngine;
     private readonly AudioCacheManager _audioCacheManager;
+    private readonly IUserPreferences _preferences;
     private readonly ILogger<PlayerSessionService> _logger;
     private readonly ILoggerFactory _loggerFactory;
     private readonly SessionOperationManager _operations = new();
@@ -56,6 +58,7 @@ public sealed class PlayerSessionService : IAsyncDisposable
         IPlayerDataStore playerData,
         IPlaybackEngine playbackEngine,
         AudioCacheManager audioCacheManager,
+        IUserPreferences preferences,
         ILogger<PlayerSessionService> logger,
         ILoggerFactory loggerFactory)
     {
@@ -65,6 +68,7 @@ public sealed class PlayerSessionService : IAsyncDisposable
         _playerData = playerData;
         _playbackEngine = playbackEngine;
         _audioCacheManager = audioCacheManager;
+        _preferences = preferences;
         _logger = logger;
         _loggerFactory = loggerFactory;
 
@@ -423,8 +427,8 @@ public sealed class PlayerSessionService : IAsyncDisposable
 
         context.FullLoaded = true;
         _bus.RaiseLoadFinished(context, operationToken);
-        AppSettings.Default.CurrentMap = context.Beatmap.GetIdentity();
-        AppSettings.SaveDefault();
+        _preferences.CurrentMap = context.Beatmap.GetIdentity();
+        _preferences.Save();
     }
 
     private void HandleLoadFailure(BeatmapContext? context, Exception ex)

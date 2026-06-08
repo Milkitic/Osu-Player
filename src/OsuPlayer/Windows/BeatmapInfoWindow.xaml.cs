@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Windows;
-using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Playback.Playlist;
 
 namespace OsuPlayer.Windows;
 

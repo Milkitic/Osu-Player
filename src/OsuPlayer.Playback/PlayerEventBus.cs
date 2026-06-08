@@ -2,10 +2,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using OsuPlayer.Media.Audio.Playlist;
+using OsuPlayer.Media.Audio;
+using OsuPlayer.Playback.Playlist;
 using OsuPlayer.Shared;
 
-namespace OsuPlayer.Media.Audio.Coordination;
+namespace OsuPlayer.Playback;
 
 /// <summary>
 /// Centralises the publication of controller-level events. All events are
