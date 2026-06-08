@@ -40,6 +40,7 @@ public partial class WelcomeControlVm : ObservableObject
             await App.Services.GetRequiredService<OsuDbInst>().SyncOsuDbAsync(path, false);
             AppSettings.Default.General.DbPath = path;
             AppSettings.SaveDefault();
+            EntryStartup.InitializeAppPaths();
             GuideSyncing = false;
             GuideSelectedDb = true;
             isSuccess = true;

@@ -37,7 +37,12 @@ public sealed class WpfBeatmapThumbnailService : IBeatmapThumbnailService
                 }
 
                 var folder = dataModel.GetFolder(out var isFromDb, out var freePath);
-                var osuFilePath = isFromDb ? Path.Combine(folder, dataModel.BeatmapFileName) : freePath;
+                if (isFromDb && string.IsNullOrWhiteSpace(folder))
+                {
+                    return null;
+                }
+
+                var osuFilePath = isFromDb ? Path.Combine(folder!, dataModel.BeatmapFileName) : freePath;
 
                 if (!File.Exists(osuFilePath))
                 {

@@ -86,6 +86,12 @@ public class ExportService : IExportService
         try
         {
             var folder = entry.GetFolder(out _, out _);
+            if (string.IsNullOrWhiteSpace(folder))
+            {
+                Logger.Warn("Skipping export for beatmap with empty folder: {Identity}", entry.GetIdentity());
+                return;
+            }
+
             var mp3FileInfo = new FileInfo(Path.Combine(folder, entry.AudioFileName));
             var osuFile = await OsuFile.ReadFromFileAsync(Path.Combine(folder, entry.BeatmapFileName), options =>
             {

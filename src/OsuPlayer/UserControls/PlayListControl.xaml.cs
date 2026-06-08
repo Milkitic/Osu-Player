@@ -72,7 +72,10 @@ public partial class PlayListControlVm : ObservableObject
     [RelayCommand]
     private void OpenSourceFolder()
     {
-        Process.Start(SelectedMap.GetFolder(out _, out _));
+        var folder = SelectedMap.GetFolder(out var isFromDb, out var freePath);
+        var path = isFromDb ? folder : freePath;
+        if (string.IsNullOrWhiteSpace(path)) return;
+        Process.Start(path);
     }
 
     [RelayCommand]

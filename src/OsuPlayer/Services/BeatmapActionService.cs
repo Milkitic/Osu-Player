@@ -49,7 +49,7 @@ public sealed class BeatmapActionService : IBeatmapActionService
         if (await ResolveAsync(beatmap, highestDifficulty) == null) return;
 
         var folder = beatmap.GetFolder(out _, out _);
-        if (!Directory.Exists(folder))
+        if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
         {
             _notifications.Push(MissingFolderMessage);
             return;

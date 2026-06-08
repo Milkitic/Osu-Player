@@ -111,7 +111,7 @@ public static class EntryStartup
         _ = ffmpeg.avformat_version();
     }
 
-    private static void InitializeAppPaths()
+    internal static void InitializeAppPaths()
     {
         var general = AppSettings.Default.General;
         var osuSongPath = general.DbPath == null

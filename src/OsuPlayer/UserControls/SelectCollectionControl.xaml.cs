@@ -85,7 +85,8 @@ public partial class SelectCollectionControl : UserControl
         {
             var first = entries[0];
             var dir = first.GetFolder(out var isFromDb, out var freePath);
-            var filePath = isFromDb ? Path.Combine(dir, first.BeatmapFileName) : freePath;
+            if (isFromDb && string.IsNullOrWhiteSpace(dir)) return false;
+            var filePath = isFromDb ? Path.Combine(dir!, first.BeatmapFileName) : freePath;
             try
             {
                 var osuFile = await OsuFile.ReadFromFileAsync(filePath, options =>
@@ -96,7 +97,7 @@ public partial class SelectCollectionControl : UserControl
                 });
                 if (osuFile.Events.BackgroundInfo != null)
                 {
-                    var imgPath = Path.Combine(dir, osuFile.Events.BackgroundInfo.Filename);
+                    var imgPath = Path.Combine(dir!, osuFile.Events.BackgroundInfo.Filename);
                     if (File.Exists(imgPath))
                     {
                         col.ImagePath = imgPath;

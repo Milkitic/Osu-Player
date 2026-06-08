@@ -39,6 +39,13 @@ public sealed class BeatmapLoader
         cancellationToken.ThrowIfCancellationRequested();
 
         var folder = (beatmap.GetFolder(out var isFromDb, out var freePath) ?? string.Empty).Trim();
+        if (isFromDb && string.IsNullOrWhiteSpace(folder))
+        {
+            throw new InvalidDataException(
+                $"Cannot locate beatmap folder for '{beatmap.BeatmapFileName}'. " +
+                "The osu! Songs path has not been configured or the folder name is missing.");
+        }
+
         var mapPath = BeatmapPathResolver.ResolveBeatmapPath(folder, beatmap.BeatmapFileName, isFromDb, freePath);
         var baseFolder = Path.GetDirectoryName(mapPath) ?? string.Empty;
 
