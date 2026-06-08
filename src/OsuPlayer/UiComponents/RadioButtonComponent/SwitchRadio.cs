@@ -8,6 +8,7 @@ using System.Windows.Media.Animation;
 using Microsoft.Extensions.DependencyInjection;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
+using OsuPlayer.Presentation;
 using OsuPlayer.Presentation.Dependency;
 using OsuPlayer.Presentation.Interaction;
 
@@ -15,7 +16,8 @@ namespace OsuPlayer.UiComponents.RadioButtonComponent;
 
 public class SwitchRadio : RadioButton
 {
-    private Action<object> _loadedAction;
+    private static readonly object PendingNavigationDataUnset = new();
+    private object _pendingNavigationData = PendingNavigationDataUnset;
     protected FrameworkElement HostWindow { get; private set; }
 
     public SwitchRadio()
@@ -87,52 +89,59 @@ public class SwitchRadio : RadioButton
         };
     }
 
-    public void CheckAndAction(Action<object> action)
+    public void NavigateWithData(object targetPageData)
     {
+        if (HostWindow == null)
+        {
+            _pendingNavigationData = targetPageData;
+            IsChecked = true;
+            return;
+        }
+
         if (IsChecked == true)
         {
             if (HostWindow.FindName(TargetFrameControl) is object frameControl
-                && frameControl is Frame frame && frame.Content != null)
+                && frameControl is Frame frame)
             {
-                action.Invoke(frame.Content);
+                if (frame.Content is FrameworkElement { DataContext: INavigationAware navigationAware })
+                {
+                    navigationAware.OnNavigatedTo(targetPageData);
+                }
+                else
+                {
+                    _pendingNavigationData = targetPageData;
+                    Navigate(frameControl);
+                }
             }
         }
         else
         {
-            _loadedAction = action;
+            _pendingNavigationData = targetPageData;
             IsChecked = true;
         }
     }
 
     private void Navigate(object frameControl)
     {
+        var targetPageData = ConsumeNavigationData();
         if (App.Services != null)
         {
             var navService = App.Services.GetRequiredService<INavigationService>();
             navService.Initialize(frameControl);
-            var loadedAction = _loadedAction;
-            _loadedAction = null;
 
-            navService.NavigateTo(TargetPageType, TargetPageData, page => loadedAction?.Invoke(page));
+            navService.NavigateTo(TargetPageType, targetPageData);
         }
         else if (frameControl is Frame frame)
         {
-            var page = (FrameworkElement)(TargetPageData == null
+            var page = (FrameworkElement)(targetPageData == null
                 ? Activator.CreateInstance(TargetPageType)
-                : Activator.CreateInstance(TargetPageType, TargetPageData));
+                : Activator.CreateInstance(TargetPageType, targetPageData));
 
-            _loadedAction?.Invoke(page);
-            _loadedAction = null;
-
-            if (TargetPageData != null)
+            if (targetPageData != null)
             {
                 if (page.DataContext is INavigationAware navigationAware)
                 {
-                    navigationAware.OnNavigatedTo(TargetPageData);
-                }
-                else if (page is Pages.CollectionPage collectionPage)
-                {
-                    collectionPage.Id = TargetPageData.ToString();
+                    navigationAware.OnNavigatedTo(targetPageData);
                 }
             }
 
@@ -154,6 +163,18 @@ public class SwitchRadio : RadioButton
                 s_fadeinSb.Completed -= OnSbOnCompleted;
             }
         }
+    }
+
+    private object ConsumeNavigationData()
+    {
+        if (!ReferenceEquals(_pendingNavigationData, PendingNavigationDataUnset))
+        {
+            var data = _pendingNavigationData;
+            _pendingNavigationData = PendingNavigationDataUnset;
+            return data;
+        }
+
+        return TargetPageData;
     }
 
     public object TargetPageData
@@ -439,7 +460,7 @@ public class SwitchRadio : RadioButton
             To = 1,
             EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
             BeginTime = TimeSpan.Zero,
-            Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300))
+            Duration = AnimationOptions.GetDuration(TimeSpan.FromMilliseconds(300))
         };
         Storyboard.SetTargetProperty(s_da1, new PropertyPath(OpacityProperty));
 
@@ -449,7 +470,7 @@ public class SwitchRadio : RadioButton
             To = 1,
             EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
             BeginTime = TimeSpan.Zero,
-            Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(300))
+            Duration = AnimationOptions.GetDuration(TimeSpan.FromMilliseconds(300))
         };
         s_ta1Clone = s_ta1.Clone();
         Storyboard.SetTargetProperty(s_ta1, new PropertyPath("RenderTransform.ScaleX"));
@@ -466,7 +487,7 @@ public class SwitchRadio : RadioButton
             To = 0,
             EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseOut },
             BeginTime = TimeSpan.Zero,
-            Duration = CommonUtils.GetDuration(TimeSpan.FromMilliseconds(100))
+            Duration = AnimationOptions.GetDuration(TimeSpan.FromMilliseconds(100))
         };
         s_fadeoutSb.Children.Add(s_da2);
         Storyboard.SetTargetProperty(s_da2, new PropertyPath(OpacityProperty));

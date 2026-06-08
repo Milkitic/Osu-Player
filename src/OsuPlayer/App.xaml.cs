@@ -17,6 +17,7 @@ using OsuPlayer.Media.Audio;
 using OsuPlayer.Media.Audio.Coordination;
 using OsuPlayer.Media.Audio.Playlist;
 using OsuPlayer.Pages;
+using OsuPlayer.Presentation;
 using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Services;
 using OsuPlayer.Shared;
@@ -81,6 +82,7 @@ public partial class App : Application
     private async void Application_Startup(object sender, StartupEventArgs e)
     {
         Execute.SetMainThreadContext();
+        AnimationOptions.DisableAnimations = () => AppSettings.Default?.Interface?.MinimalMode == true;
 
         var services = new ServiceCollection();
         ConfigureServices(services);
@@ -116,11 +118,12 @@ public partial class App : Application
         });
         services.AddSingleton<Func<OsuPlayerDbContext>>(provider => () => provider.GetRequiredService<OsuPlayerDbContext>());
 
-        services.AddSingleton<IBeatmapThumbnailService, BeatmapThumbnailService>();
+        services.AddSingleton<IBeatmapThumbnailService, WpfBeatmapThumbnailService>();
         services.AddSingleton<IMapModelConverter, MapModelConverter>();
         services.AddSingleton<BeatmapLoader>();
 
         services.AddSingleton<IAppNotificationService, AppNotificationService>();
+        services.AddSingleton<IBeatmapDifficultyPicker, DialogBeatmapDifficultyPicker>();
         services.AddTransient<INavigationService, FrameNavigationService>();
         services.AddSingleton<IUiThreadDispatcher>(_ => Execute.UiThreadDispatcher);
         services.AddSingleton<IPlayerDataStore, PlayerDataService>();

@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OsuPlayer.Media.Audio.Playlist;
-using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Shared;
 
 namespace OsuPlayer.Media.Audio.Coordination;
 

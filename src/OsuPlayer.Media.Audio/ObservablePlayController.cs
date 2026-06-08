@@ -14,7 +14,7 @@ using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
 using OsuPlayer.Media.Audio.Coordination;
 using OsuPlayer.Media.Audio.Playlist;
-using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.Media.Audio;

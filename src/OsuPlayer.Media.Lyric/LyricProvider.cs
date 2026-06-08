@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using OsuPlayer.Media.Lyric.Models;
 using OsuPlayer.Media.Lyric.SourceProvider;
+using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.Media.Lyric;
 

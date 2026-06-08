@@ -1,18 +1,17 @@
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
-using KeyAsio.Core.Audio;
 using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.Core.Configuration;
 
 public partial class PlaySection : ObservableObject
 {
-    public const int NAudioBassFixedOffset = -23;
+    public const int AudioBackendFixedOffset = -23;
 
     public int GeneralOffset { get; set; }
 
     [JsonIgnore]
-    public int GeneralActualOffset => GeneralOffset + NAudioBassFixedOffset;
+    public int GeneralActualOffset => GeneralOffset + AudioBackendFixedOffset;
 
     public bool ReplacePlayList { get; set; } = true;
     public bool UsePlayerV2 { get; set; } = false;
@@ -25,7 +24,7 @@ public partial class PlaySection : ObservableObject
 
     public bool AutoPlay { get; set; } = false;
     public bool Memory { get; set; } = true;
-    public DeviceDescription DeviceDescription { get; set; } = null;
+    public AudioDeviceDescription DeviceDescription { get; set; }
     public int DesiredLatency { get; set; } = 1;
     public bool IsExclusive { get; set; } = false;
     public PlaylistMode PlayListMode { get; set; } = PlaylistMode.Normal;

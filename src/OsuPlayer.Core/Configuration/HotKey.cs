@@ -17,8 +17,6 @@ public class HotKey
     public bool UseControlKey { get; set; }
     public bool UseAltKey { get; set; }
     public bool UseShiftKey { get; set; }
-    [JsonIgnore]
-    public Action Callback { get; set; }
 }
 
 public class HotKeyConverter : JsonConverter<HotKey>

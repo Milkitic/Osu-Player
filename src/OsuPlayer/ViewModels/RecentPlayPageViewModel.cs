@@ -8,7 +8,7 @@ using OsuPlayer.Core.Services;
 using OsuPlayer.Data;
 using OsuPlayer.Media.Audio;
 using OsuPlayer.Presentation.Interaction;
-using OsuPlayer.Presentation.ObjectModel;
+using OsuPlayer.Core.ObjectModel;
 using OsuPlayer.Services;
 
 using Microsoft.Extensions.Logging;

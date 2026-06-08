@@ -9,7 +9,6 @@ using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
 using OsuPlayer.Shared.Models;
-using OsuPlayer.UiComponents.NotificationComponent;
 using Path = System.IO.Path;
 
 namespace OsuPlayer.Services;
@@ -18,6 +17,7 @@ public class ExportService : IExportService
 {
     private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private readonly IPlayerDataService _playerData;
+    private readonly IAppNotificationService _notifications;
     private readonly ConcurrentQueue<Beatmap> _taskQueue = new();
     private Task _exportTask;
     private readonly object _lock = new();
@@ -37,9 +37,10 @@ public class ExportService : IExportService
 
     public event EventHandler TaskSuccess;
 
-    public ExportService(IPlayerDataService playerData)
+    public ExportService(IPlayerDataService playerData, IAppNotificationService notifications)
     {
         _playerData = playerData;
+        _notifications = notifications;
     }
 
     public void QueueEntry(Beatmap entry)
@@ -121,7 +122,7 @@ public class ExportService : IExportService
         catch (Exception ex)
         {
             Logger.Error(ex, "Error while exporting beatmap: {0}", entry.GetIdentity());
-            Notification.Push($"Error while exporting beatmap: {entry.GetIdentity()}\r\n{ex.Message}");
+            _notifications.Push($"Error while exporting beatmap: {entry.GetIdentity()}\r\n{ex.Message}");
         }
     }
 

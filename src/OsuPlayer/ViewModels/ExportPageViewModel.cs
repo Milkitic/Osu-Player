@@ -10,7 +10,7 @@ using OsuPlayer.Core;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
 using OsuPlayer.Presentation.Interaction;
-using OsuPlayer.Presentation.ObjectModel;
+using OsuPlayer.Core.ObjectModel;
 using OsuPlayer.Services;
 using OsuPlayer.Shared;
 using OsuPlayer.UiComponents.NotificationComponent;

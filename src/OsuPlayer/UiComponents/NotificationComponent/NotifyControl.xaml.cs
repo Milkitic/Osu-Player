@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using OsuPlayer.Core;
+using OsuPlayer.Presentation;
 
 namespace OsuPlayer.UiComponents.NotificationComponent;
 
@@ -76,7 +77,7 @@ public partial class NotifyControl : UserControl
             From = 0,
             To = height,
             EasingFunction = easing,
-            Duration = CommonUtils.GetDuration(timing)
+            Duration = AnimationOptions.GetDuration(timing)
         };
 
         Storyboard.SetTargetName(vector, NotifyBorder.Name);
@@ -88,7 +89,7 @@ public partial class NotifyControl : UserControl
             From = 0,
             To = 0,
             EasingFunction = easing,
-            Duration = CommonUtils.GetDuration(timing)
+            Duration = AnimationOptions.GetDuration(timing)
         };
         Storyboard.SetTargetName(fade, NotifyBorder.Name);
         Storyboard.SetTargetProperty(fade,
@@ -114,7 +115,7 @@ public partial class NotifyControl : UserControl
             From = 0,
             To = 1,
             EasingFunction = easing,
-            Duration = CommonUtils.GetDuration(timing)
+            Duration = AnimationOptions.GetDuration(timing)
         };
         Storyboard.SetTargetName(fade, NotifyBorder.Name);
         Storyboard.SetTargetProperty(fade,
@@ -125,7 +126,7 @@ public partial class NotifyControl : UserControl
             From = new Thickness(width, 0, -width, 0),
             To = new Thickness(0),
             EasingFunction = easing,
-            Duration = CommonUtils.GetDuration(timing)
+            Duration = AnimationOptions.GetDuration(timing)
         };
         Storyboard.SetTargetName(vector, NotifyBorder.Name);
         Storyboard.SetTargetProperty(vector,
@@ -153,7 +154,7 @@ public partial class NotifyControl : UserControl
             From = 1,
             To = 0,
             EasingFunction = easing,
-            Duration = CommonUtils.GetDuration(timing)
+            Duration = AnimationOptions.GetDuration(timing)
         };
         Storyboard.SetTargetName(fade, NotifyBorder.Name);
         Storyboard.SetTargetProperty(fade,
@@ -164,7 +165,7 @@ public partial class NotifyControl : UserControl
             From = new Thickness(0),
             To = new Thickness(width, 0, -width, 0),
             EasingFunction = easing,
-            Duration = CommonUtils.GetDuration(timing)
+            Duration = AnimationOptions.GetDuration(timing)
         };
         Storyboard.SetTargetName(vector, NotifyBorder.Name);
         Storyboard.SetTargetProperty(vector,
@@ -192,7 +193,7 @@ public partial class NotifyControl : UserControl
             From = height,
             To = 0,
             EasingFunction = easing,
-            Duration = CommonUtils.GetDuration(timing)
+            Duration = AnimationOptions.GetDuration(timing)
         };
 
         Storyboard.SetTargetName(vector, NotifyBorder.Name);
@@ -203,7 +204,7 @@ public partial class NotifyControl : UserControl
             From = 0,
             To = 0,
             EasingFunction = easing,
-            Duration = CommonUtils.GetDuration(timing)
+            Duration = AnimationOptions.GetDuration(timing)
         };
         Storyboard.SetTargetName(fade, NotifyBorder.Name);
         Storyboard.SetTargetProperty(fade,

@@ -1,17 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(OsuPlayerWindowsTargetFramework)</TargetFramework>
-    <UseWPF>true</UseWPF>
+    <TargetFramework>$(OsuPlayerLibraryTargetFramework)</TargetFramework>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OsuPlayer.Data\OsuPlayer.Data.csproj" />
-    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj" />
-    <ProjectReference Include="..\OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj" />
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
-    <ProjectReference Include="..\..\dependencies\KeyASIO.Net\src\Core\KeyAsio.Core.Audio\KeyAsio.Core.Audio.csproj" />
   </ItemGroup>
 
   <ItemGroup>

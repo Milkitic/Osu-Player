@@ -10,6 +10,7 @@ using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Presentation;
 using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Shared.Models;
 using Timer = System.Threading.Timer;
 
 namespace OsuPlayer.Windows;
@@ -82,8 +83,8 @@ public partial class MiniWindow : WindowEx
         var point = AppSettings.Default.General.MiniLastPosition;
         if (point != null)
         {
-            Left = point.Value.X;
-            Top = point.Value.Y;
+            Left = point.X;
+            Top = point.Y;
             if (Left > _equivalentScreenWidth - ActualWidth || Left < 0)
             {
                 IsStickEnabled = true;
@@ -211,7 +212,7 @@ public partial class MiniWindow : WindowEx
 
     private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
-        AppSettings.Default.General.MiniLastPosition = new System.Windows.Point(Left, Top);
+        AppSettings.Default.General.MiniLastPosition = new WindowPoint(Left, Top);
         AppSettings.Default.General.MiniWorkingArea = new Rectangle(
             _currentArea.X, _currentArea.Y, _currentArea.Width, _currentArea.Height
         );
@@ -253,7 +254,7 @@ public partial class MiniWindow : WindowEx
     {
         _sb?.Stop();
         _sb = new Storyboard();
-        var da = new DoubleAnimation(toValue, CommonUtils.GetDuration(TimeSpan.FromMilliseconds(800)))
+        var da = new DoubleAnimation(toValue, AnimationOptions.GetDuration(TimeSpan.FromMilliseconds(800)))
         {
             EasingFunction = new QuarticEase { EasingMode = easingMode }
         };

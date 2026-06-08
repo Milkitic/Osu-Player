@@ -9,6 +9,7 @@ using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Instances;
 using OsuPlayer.UiComponents.FrontDialogComponent;
 using OsuPlayer.UiComponents.NotificationComponent;
+using OsuPlayer.Utils;
 
 namespace OsuPlayer.UserControls;
 
@@ -25,7 +26,7 @@ public partial class WelcomeControlVm : ObservableObject
     [RelayCommand]
     private async Task SelectDbAsync()
     {
-        var result = CommonUtils.BrowseDb(out var path);
+        var result = OsuDatabaseDialog.Browse(out var path);
         if (!result.HasValue || !result.Value)
         {
             GuideSelectedDb = false;

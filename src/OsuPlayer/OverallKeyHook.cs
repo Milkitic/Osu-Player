@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Milki.Extensions.MouseKeyHook;
 using NLog;
@@ -15,6 +16,7 @@ public sealed class OverallKeyHook : IDisposable
 
     private readonly MainWindow _mainWindow;
     private readonly IKeyboardHook _globalHook;
+    private static readonly Dictionary<HotKeyType, Action> s_callbacks = new();
     private HotKeyType? _configType;
 
     public HotKeyType? ConfigType
@@ -38,16 +40,11 @@ public sealed class OverallKeyHook : IDisposable
         var setHotKey = AppSettings.Default.HotKeys.FirstOrDefault(k => k.Type == type);
         if (setHotKey == null)
         {
-            setHotKey = new HotKey { Type = type, Callback = callback };
+            setHotKey = new HotKey { Type = type };
             AppSettings.Default.HotKeys.Add(setHotKey);
         }
-        else
-        {
-            if (setHotKey.Key != HookKeys.None)
-            {
-                setHotKey.Callback = callback;
-            }
-        }
+
+        s_callbacks[type] = callback;
     }
 
     public static void BindHotKey(HotKeyType type, bool useCtrl, bool useAlt, bool useShift, HookKeys key)
@@ -88,9 +85,13 @@ public sealed class OverallKeyHook : IDisposable
         }
         else
         {
-            AppSettings.Default.HotKeys.FirstOrDefault(hotKey =>
+            var matchedHotKey = AppSettings.Default.HotKeys.FirstOrDefault(hotKey =>
                 useCtrl == hotKey.UseControlKey && useAlt == hotKey.UseAltKey &&
-                useShift == hotKey.UseShiftKey && key == hotKey.Key)?.Callback?.Invoke();
+                useShift == hotKey.UseShiftKey && key == hotKey.Key);
+            if (matchedHotKey != null && s_callbacks.TryGetValue(matchedHotKey.Type, out var callback))
+            {
+                callback.Invoke();
+            }
         }
     }
 

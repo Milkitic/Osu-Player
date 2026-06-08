@@ -12,7 +12,6 @@ using NLog;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
-using Microsoft.Extensions.Logging;
 using OsuPlayer.Data;
 using OsuPlayer.Data.Models;
 using OsuPlayer.Presentation;

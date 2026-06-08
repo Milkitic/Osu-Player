@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(OsuPlayerWindowsTargetFramework)</TargetFramework>
+    <TargetFramework>$(OsuPlayerLibraryTargetFramework)</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OsuPlayer.Presentation\OsuPlayer.Presentation.csproj" />
     <ProjectReference Include="..\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
   </ItemGroup>
 

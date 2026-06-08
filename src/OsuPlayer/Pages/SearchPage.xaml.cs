@@ -47,12 +47,6 @@ public partial class SearchPage : Page
 
     public SearchPageViewModel ViewModel { get; set; }
 
-    public SearchPage Search(string keyword)
-    {
-        SearchBox.Text = keyword;
-        return this;
-    }
-
     private async void SearchPage_Initialized(object sender, EventArgs e)
     {
         await ViewModel.PlayListQueryAsync(0, false);

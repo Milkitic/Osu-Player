@@ -105,14 +105,7 @@ public partial class MainWindow : WindowEx
         {
             Execute.OnUiThread(() =>
             {
-                if (MainFrame.Content is SearchPage searchPage)
-                {
-                    searchPage.Search(m.Value);
-                }
-                else
-                {
-                    SwitchSearch.CheckAndAction(page => ((SearchPage)page).Search(m.Value));
-                }
+                SwitchSearch.NavigateWithData(new SearchNavigationParameter(m.Value));
             });
         });
 

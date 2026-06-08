@@ -16,7 +16,7 @@ using OsuPlayer.Shared.Models;
 
 namespace OsuPlayer.ViewModels;
 
-public partial class SearchPageViewModel : ObservableObject
+public partial class SearchPageViewModel : ObservableObject, INavigationAware
 {
     private readonly IPlayerDataService _playerData;
     private readonly ObservablePlayController _controller;
@@ -61,6 +61,14 @@ public partial class SearchPageViewModel : ObservableObject
     partial void OnSearchTextChanged(string value)
     {
         _ = PlayListQueryAsync(0);
+    }
+
+    public void OnNavigatedTo(object parameter)
+    {
+        if (parameter is SearchNavigationParameter search)
+        {
+            SearchText = search.Keyword;
+        }
     }
 
     // Stores the currently displayed page results so existing page actions can reuse them.

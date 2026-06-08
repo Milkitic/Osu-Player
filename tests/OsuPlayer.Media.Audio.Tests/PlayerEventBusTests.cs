@@ -1,7 +1,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Logging.Abstractions;
 using OsuPlayer.Media.Audio.Coordination;
-using OsuPlayer.Presentation.Interaction;
+using OsuPlayer.Shared;
 using Xunit;
 
 namespace OsuPlayer.Media.Audio.Tests;

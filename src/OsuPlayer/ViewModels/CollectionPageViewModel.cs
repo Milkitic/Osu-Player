@@ -10,7 +10,7 @@ using OsuPlayer.Data;
 using OsuPlayer.Data.Models;
 using OsuPlayer.Media.Audio;
 using OsuPlayer.Presentation.Interaction;
-using OsuPlayer.Presentation.ObjectModel;
+using OsuPlayer.Core.ObjectModel;
 using OsuPlayer.Services;
 
 namespace OsuPlayer.ViewModels;

@@ -288,7 +288,7 @@ public partial class GeneralPageViewModel : ObservableObject
     [RelayCommand]
     private async Task BrowseDbAsync()
     {
-        var result = CommonUtils.BrowseDb(out var path);
+        var result = OsuDatabaseDialog.Browse(out var path);
         if (result == true)
         {
             try
@@ -468,7 +468,7 @@ public partial class PlayPageViewModel : ObservableObject
 
             var normalized = OsuPlayerAudioDevicePolicy.Normalize(value);
             ApplyFixedAudioDevicePolicy();
-            AppSettings.Default.Play.DeviceDescription = normalized;
+            AppSettings.Default.Play.DeviceDescription = OsuPlayerAudioDevicePolicy.ToConfiguration(normalized);
             AppSettings.SaveDefault();
             ApplyDeviceSettingsToEngine(normalized);
         }
@@ -495,9 +495,9 @@ public partial class PlayPageViewModel : ObservableObject
             AvailableDevices = itemsSource;
             var initial = OsuPlayerAudioDevicePolicy.SelectOrDefault(
                 itemsSource,
-                AppSettings.Default.Play.DeviceDescription);
+                OsuPlayerAudioDevicePolicy.FromConfiguration(AppSettings.Default.Play.DeviceDescription));
             SelectedDevice = initial;
-            AppSettings.Default.Play.DeviceDescription = initial;
+            AppSettings.Default.Play.DeviceDescription = OsuPlayerAudioDevicePolicy.ToConfiguration(initial);
         }
         finally
         {
@@ -510,7 +510,8 @@ public partial class PlayPageViewModel : ObservableObject
         AppSettings.Default.Play.DesiredLatency = OsuPlayerAudioDevicePolicy.FixedLatency;
         AppSettings.Default.Play.IsExclusive = OsuPlayerAudioDevicePolicy.UseExclusiveMode;
         AppSettings.Default.Play.DeviceDescription =
-            OsuPlayerAudioDevicePolicy.Normalize(AppSettings.Default.Play.DeviceDescription);
+            OsuPlayerAudioDevicePolicy.ToConfiguration(
+                OsuPlayerAudioDevicePolicy.FromConfiguration(AppSettings.Default.Play.DeviceDescription));
     }
 
     private void ApplyDeviceSettingsToEngine(DeviceDescription deviceDescription)

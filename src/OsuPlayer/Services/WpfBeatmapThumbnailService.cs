@@ -5,17 +5,18 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using Coosu.Beatmap;
 using Microsoft.Extensions.Logging;
-using OsuPlayer.Data.Models;
+using OsuPlayer.Core;
+using OsuPlayer.Core.Services;
 
-namespace OsuPlayer.Core.Services;
+namespace OsuPlayer.Services;
 
-public class BeatmapThumbnailService : IBeatmapThumbnailService
+public sealed class WpfBeatmapThumbnailService : IBeatmapThumbnailService
 {
-    private readonly ILogger<BeatmapThumbnailService> _logger;
+    private readonly ILogger<WpfBeatmapThumbnailService> _logger;
     private readonly IPlayerDataStore _playerData;
     private readonly SemaphoreSlim _lock = new(5);
 
-    public BeatmapThumbnailService(IPlayerDataStore playerData, ILogger<BeatmapThumbnailService> logger)
+    public WpfBeatmapThumbnailService(IPlayerDataStore playerData, ILogger<WpfBeatmapThumbnailService> logger)
     {
         _playerData = playerData;
         _logger = logger;
@@ -84,37 +85,31 @@ public class BeatmapThumbnailService : IBeatmapThumbnailService
 
     private static void ResizeImageAndSave(string sourcePath, string targetName, int width = 0, int height = 0)
     {
-        byte[] imageBytes = LoadImageData(sourcePath);
-        BitmapSource bitmapSource = CreateImage(imageBytes, width, height);
+        var imageBytes = LoadImageData(sourcePath);
+        var bitmapSource = CreateImage(imageBytes, width, height);
         imageBytes = GetEncodedImageData(bitmapSource, ".jpg");
         SaveImageData(imageBytes, Path.Combine(Domain.ThumbCachePath, $"{targetName}.jpg"));
     }
 
     private static byte[] LoadImageData(string filePath)
     {
-        byte[] imageBytes;
-        using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-        using (var br = new BinaryReader(fs))
-        {
-            imageBytes = br.ReadBytes((int)fs.Length);
-        }
-
-        return imageBytes;
+        using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        using var br = new BinaryReader(fs);
+        return br.ReadBytes((int)fs.Length);
     }
 
     private static void SaveImageData(byte[] imageData, string filePath)
     {
-        using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-        using (var bw = new BinaryWriter(fs))
-        {
-            bw.Write(imageData);
-        }
+        using var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+        using var bw = new BinaryWriter(fs);
+        bw.Write(imageData);
     }
 
     private static BitmapSource CreateImage(byte[] imageData, int decodePixelWidth, int decodePixelHeight)
     {
         if (imageData == null) return null;
-        BitmapImage result = new BitmapImage();
+
+        var result = new BitmapImage();
         result.BeginInit();
         if (decodePixelWidth > 0)
         {
@@ -135,47 +130,25 @@ public class BeatmapThumbnailService : IBeatmapThumbnailService
 
     private static byte[] GetEncodedImageData(BitmapSource source, string preferredFormat)
     {
-        byte[] result = null;
-        BitmapEncoder encoder;
-        switch (preferredFormat.ToLower())
+        BitmapEncoder encoder = preferredFormat.ToLower() switch
         {
-            case ".jpg":
-            case ".jpeg":
-                encoder = new JpegBitmapEncoder();
-                break;
-            case ".bmp":
-                encoder = new BmpBitmapEncoder();
-                break;
-            case ".png":
-                encoder = new PngBitmapEncoder();
-                break;
-            case ".tif":
-            case ".tiff":
-                encoder = new TiffBitmapEncoder();
-                break;
-            case ".gif":
-                encoder = new GifBitmapEncoder();
-                break;
-            case ".wmp":
-                encoder = new WmpBitmapEncoder();
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+            ".jpg" or ".jpeg" => new JpegBitmapEncoder(),
+            ".bmp" => new BmpBitmapEncoder(),
+            ".png" => new PngBitmapEncoder(),
+            ".tif" or ".tiff" => new TiffBitmapEncoder(),
+            ".gif" => new GifBitmapEncoder(),
+            ".wmp" => new WmpBitmapEncoder(),
+            _ => throw new ArgumentOutOfRangeException(nameof(preferredFormat))
+        };
 
         encoder.Frames.Add(BitmapFrame.Create(source));
 
-        using (var stream = new MemoryStream())
-        {
-            encoder.Save(stream);
-            stream.Seek(0, SeekOrigin.Begin);
-            result = new byte[stream.Length];
-            using (var br = new BinaryReader(stream))
-            {
-                br.Read(result, 0, (int)stream.Length);
-            }
-        }
-
+        using var stream = new MemoryStream();
+        encoder.Save(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+        var result = new byte[stream.Length];
+        using var br = new BinaryReader(stream);
+        br.Read(result, 0, (int)stream.Length);
         return result;
     }
 }

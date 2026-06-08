@@ -2,7 +2,6 @@ using OsuPlayer.Core.Services;
 using OsuPlayer.Data;
 using OsuPlayer.Data.Models;
 using OsuPlayer.Media.Audio.Playlist;
-using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 using Xunit;

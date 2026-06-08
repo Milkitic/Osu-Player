@@ -1,5 +1,4 @@
 using System;
-using CommunityToolkit.Mvvm.ComponentModel;
 using Dapper.FluentMap.Mapping;
 
 namespace OsuPlayer.Data.Models;
@@ -18,7 +17,7 @@ public class CollectionMap : EntityMap<Collection>
     }
 }
 
-public partial class Collection : ObservableObject
+public class Collection
 {
     public Collection()
     {
@@ -37,22 +36,17 @@ public partial class Collection : ObservableObject
 
     public string Id { get; set; }
 
-    [ObservableProperty]
-    public partial string Name { get; set; }
+    public string Name { get; set; }
 
     public int Locked { get; set; }
 
-    [ObservableProperty]
-    public partial int Index { get; set; }
+    public int Index { get; set; }
 
-    [ObservableProperty]
-    public partial string ImagePath { get; set; }
+    public string ImagePath { get; set; }
 
-    [ObservableProperty]
-    public partial string Description { get; set; }
+    public string Description { get; set; }
 
-    [ObservableProperty]
-    public partial DateTime CreateTime { get; set; }
+    public DateTime CreateTime { get; set; }
 
     public bool LockedBool => Locked == 1;
 }

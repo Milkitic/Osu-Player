@@ -2,8 +2,8 @@ using System.Windows;
 using System.Windows.Controls;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Instances;
-using OsuPlayer.Media.Lyric;
 using OsuPlayer.Presentation;
+using OsuPlayer.Shared.Models;
 using OsuPlayer.Windows;
 
 namespace OsuPlayer.Pages.Settings;

@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace OsuPlayer.Presentation.ObjectModel;
+namespace OsuPlayer.Core.ObjectModel;
 
 public class NumberableModel : ObservableObject
 {

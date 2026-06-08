@@ -2,49 +2,40 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OsuPlayer.Data.Models;
-using OsuPlayer.UiComponents.FrontDialogComponent;
 
 namespace OsuPlayer.UserControls;
 
 public partial class DiffSelectPageViewModel : ObservableObject
 {
+    public event EventHandler<Beatmap> BeatmapSelected;
+
     [ObservableProperty]
     public partial ObservableCollection<Beatmap> Entries { get; set; }
 
-    public Func<Beatmap, CallbackObj, Task> Callback { get; set; }
-
     [RelayCommand]
-    private async Task SelectAsync(object obj)
+    private void Select(object obj)
     {
         if (obj is not Beatmap selectedMap) return;
-        var callbackObj = new CallbackObj();
-        if (Callback != null)
-            await Callback(selectedMap, callbackObj);
-        if (!callbackObj.Handled)
-            FrontDialogOverlay.Default.RaiseCancel();
+        BeatmapSelected?.Invoke(this, selectedMap);
     }
-}
-
-public class CallbackObj
-{
-    public bool Handled { get; set; } = false;
 }
 
 public partial class DiffSelectControl : UserControl
 {
+    public event EventHandler<Beatmap> BeatmapSelected;
+
     private readonly DiffSelectPageViewModel _viewModel;
 
-    public DiffSelectControl(IEnumerable<Beatmap> entries, Func<Beatmap, CallbackObj, Task> onSelect)
+    public DiffSelectControl(IEnumerable<Beatmap> entries)
     {
         InitializeComponent();
 
         _viewModel = (DiffSelectPageViewModel)DataContext;
+        _viewModel.BeatmapSelected += (_, beatmap) => BeatmapSelected?.Invoke(this, beatmap);
         _viewModel.Entries = new ObservableCollection<Beatmap>(entries.OrderBy(k => k.GameMode).ThenBy(k => k.DiffSrNoneStandard));
-        _viewModel.Callback = onSelect;
     }
 }
