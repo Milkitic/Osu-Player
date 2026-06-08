@@ -14,6 +14,9 @@ using OsuPlayer.Utils;
 using OsuPlayer.ViewModels;
 using OsuPlayer.Windows;
 
+using Microsoft.Extensions.Logging;
+using OsuPlayer.Core.Services;
+
 namespace OsuPlayer.Pages;
 
 /// <summary>
@@ -21,15 +24,22 @@ namespace OsuPlayer.Pages;
 /// </summary>
 public partial class CollectionPage : Page
 {
-    private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+    private readonly ILogger<CollectionPage> _logger;
+    private readonly IBeatmapThumbnailService _thumbnailService;
     private readonly MainWindow _mainWindow;
     private readonly ObservablePlayController _controller;
 
     private bool _minimal;
 
-    public CollectionPage(CollectionPageViewModel viewModel, ObservablePlayController controller)
+    public CollectionPage(
+        CollectionPageViewModel viewModel,
+        ObservablePlayController controller,
+        IBeatmapThumbnailService thumbnailService,
+        ILogger<CollectionPage> logger)
     {
         _controller = controller;
+        _thumbnailService = thumbnailService;
+        _logger = logger;
         InitializeComponent();
         _mainWindow = (MainWindow)Application.Current.MainWindow;
 
@@ -87,12 +97,12 @@ public partial class CollectionPage : Page
         var dataModel = ViewModel.DisplayedBeatmaps[e.Index];
         try
         {
-            var fileName = await CommonUtils.GetThumbByBeatmapDbId(dataModel).ConfigureAwait(false);
+            var fileName = await _thumbnailService.GetThumbByBeatmapDbIdAsync(dataModel).ConfigureAwait(false);
             Execute.OnUiThread(() => dataModel.ThumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg"));
         }
         catch (Exception ex)
         {
-            s_logger.Error(ex, "Error while loading panel item.");
+            _logger.LogError(ex, "Error while loading panel item.");
         }
     }
 

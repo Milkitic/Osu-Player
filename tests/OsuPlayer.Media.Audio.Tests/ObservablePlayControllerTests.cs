@@ -1,6 +1,8 @@
 using System.Reflection;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.SampleProviders;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NAudio.Wave;
 using OsuPlayer.Media.Audio.Coordination;
 using OsuPlayer.Presentation.Interaction;
@@ -10,6 +12,17 @@ namespace OsuPlayer.Media.Audio.Tests;
 
 public class ObservablePlayControllerTests
 {
+    private static readonly ILogger<ObservablePlayController> ControllerLog =
+        NullLoggerFactory.Instance.CreateLogger<ObservablePlayController>();
+    private static readonly ILogger<PlayerEventBus> BusLog =
+        NullLoggerFactory.Instance.CreateLogger<PlayerEventBus>();
+    private static readonly ILogger<PlayerSessionService> SessionLog =
+        NullLoggerFactory.Instance.CreateLogger<PlayerSessionService>();
+    private static readonly ILogger<OsuMixPlayer> PlayerLog =
+        NullLoggerFactory.Instance.CreateLogger<OsuMixPlayer>();
+    private static readonly ILoggerFactory LogFactory =
+        NullLoggerFactory.Instance;
+
     [Fact]
     public void Player_ReturnsPumpCurrentPlayerAndRaisesChangeNotification()
     {
@@ -17,11 +30,15 @@ public class ObservablePlayControllerTests
             null!,
             new FakePlaybackEngine(),
             null!,
-            null!,
             _ => { },
-            new ImmediateUiThreadDispatcher());
+            new ImmediateUiThreadDispatcher(),
+            null!,
+            ControllerLog,
+            BusLog,
+            SessionLog,
+            LogFactory);
         var bus = GetBus(controller);
-        var player = new OsuMixPlayer(null!, string.Empty, null!, null!);
+        var player = new OsuMixPlayer(null!, string.Empty, null!, null!, PlayerLog);
         var notified = false;
 
         controller.PropertyChanged += (_, e) =>
@@ -45,11 +62,15 @@ public class ObservablePlayControllerTests
             null!,
             new FakePlaybackEngine(),
             null!,
-            null!,
             _ => { },
-            new ImmediateUiThreadDispatcher());
+            new ImmediateUiThreadDispatcher(),
+            null!,
+            ControllerLog,
+            BusLog,
+            SessionLog,
+            LogFactory);
         var bus = GetBus(controller);
-        var player = new OsuMixPlayer(null!, string.Empty, null!, null!);
+        var player = new OsuMixPlayer(null!, string.Empty, null!, null!, PlayerLog);
 
         bus.AttachPlayer(player);
 
@@ -63,11 +84,15 @@ public class ObservablePlayControllerTests
             null!,
             new FakePlaybackEngine(),
             null!,
-            null!,
             _ => { },
-            new ImmediateUiThreadDispatcher());
+            new ImmediateUiThreadDispatcher(),
+            null!,
+            ControllerLog,
+            BusLog,
+            SessionLog,
+            LogFactory);
         var bus = GetBus(controller);
-        var player = new OsuMixPlayer(null!, string.Empty, null!, null!);
+        var player = new OsuMixPlayer(null!, string.Empty, null!, null!, PlayerLog);
         SetPlayStatus(player, PlayStatus.Ready);
         PlayStatus? observed = null;
 

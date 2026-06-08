@@ -14,6 +14,8 @@ using OsuPlayer.Media.Audio.Playlist;
 using OsuPlayer.Media.Audio.Rules;
 using OsuPlayer.Media.Audio.SoundTouch;
 
+using Microsoft.Extensions.Logging;
+
 namespace OsuPlayer.Media.Audio;
 
 /// <summary>
@@ -29,7 +31,7 @@ namespace OsuPlayer.Media.Audio;
 /// </remarks>
 public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
 {
-    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+    private readonly ILogger<OsuMixPlayer> _logger;
 
     private readonly IPlaybackEngine _engine;
     private StandaloneMusicTransport? _musicTransport;
@@ -46,12 +48,13 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
     public event Action<PlayStatus>? PlayStatusChanged;
     public event Action<TimeSpan>? PositionUpdated;
 
-    public OsuMixPlayer(OsuFile osuFile, string sourceFolder, IPlaybackEngine engine, AudioCacheManager audioCacheManager)
+    public OsuMixPlayer(OsuFile osuFile, string sourceFolder, IPlaybackEngine engine, AudioCacheManager audioCacheManager, ILogger<OsuMixPlayer> logger)
     {
         _osuFile = osuFile;
         _sourceFolder = sourceFolder;
         _engine = engine;
         _audioCacheManager = audioCacheManager;
+        _logger = logger;
     }
 
     public IWavePlayer? Device => _engine.CurrentDevice;
@@ -119,7 +122,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while initializing KeyAsio osu player.");
+            _logger.LogError(ex, "Error while initializing KeyAsio osu player.");
             throw;
         }
     }
@@ -287,7 +290,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
                     await session.DisposeAsync().ConfigureAwait(false);
                 }
             },
-            Logger,
+            _logger,
             "Error while disposing OsuMixPlayer.").ConfigureAwait(false);
     }
 

@@ -12,11 +12,13 @@ using OsuPlayer.Data.Models;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 
+using Microsoft.Extensions.Logging;
+
 namespace OsuPlayer.Data;
 
 public class OsuPlayerDbContext : DbContext
 {
-    private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+    private readonly ILogger<OsuPlayerDbContext> _logger;
     private const int MaxIdentitiesPerQuery = 300;
 
     public static string DefaultDatabasePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.db");
@@ -30,11 +32,18 @@ public class OsuPlayerDbContext : DbContext
 
     public OsuPlayerDbContext()
     {
+        _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger<OsuPlayerDbContext>.Instance;
     }
 
     public OsuPlayerDbContext(DbContextOptions<OsuPlayerDbContext> options)
+        : this(options, Microsoft.Extensions.Logging.Abstractions.NullLogger<OsuPlayerDbContext>.Instance)
+    {
+    }
+
+    public OsuPlayerDbContext(DbContextOptions<OsuPlayerDbContext> options, ILogger<OsuPlayerDbContext> logger)
         : base(options)
     {
+        _logger = logger;
     }
 
     public DbSet<Beatmap> Beatmaps { get; set; }
@@ -217,11 +226,13 @@ public class OsuPlayerDbContext : DbContext
             await db.Database.MigrateAsync();
             await db.Database.ExecuteSqlRawAsync("PRAGMA journal_mode=WAL");
             await db.Database.ExecuteSqlRawAsync("PRAGMA busy_timeout=5000");
-            LegacyPlayerDatabaseMigrator.MigrateIfRequired(DefaultDatabasePath, LegacyDatabasePath);
+            
+            var migrator = new LegacyPlayerDatabaseMigrator(Microsoft.Extensions.Logging.Abstractions.NullLogger<LegacyPlayerDatabaseMigrator>.Instance);
+            migrator.MigrateIfRequired(DefaultDatabasePath, LegacyDatabasePath);
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while initializing local database.");
+            NLog.LogManager.GetCurrentClassLogger().Error(ex, "Error while initializing local database.");
             throw;
         }
     }
@@ -262,7 +273,7 @@ public class OsuPlayerDbContext : DbContext
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while calling GetMapFromDbAsync().");
+            _logger.LogError(ex, "Error while calling GetMapFromDbAsync().");
             throw;
         }
     }
@@ -659,12 +670,12 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while calling SearchBeatmapPageAsync().");
+            _logger.LogError(ex, "Error while calling SearchBeatmapPageAsync().");
             throw;
         }
         finally
         {
-            Logger.Debug("查询花费: {0}", sw.ElapsedMilliseconds);
+            _logger.LogDebug("查询花费: {ElapsedMilliseconds}", sw.ElapsedMilliseconds);
             sw.Stop();
         }
     }
@@ -691,12 +702,12 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while calling SearchBeatmapByOptionsAsync().");
+            _logger.LogError(ex, "Error while calling SearchBeatmapByOptionsAsync().");
             throw;
         }
         finally
         {
-            Logger.Debug("查询花费: {0}", sw.ElapsedMilliseconds);
+            _logger.LogDebug("查询花费: {ElapsedMilliseconds}", sw.ElapsedMilliseconds);
             sw.Stop();
         }
     }
@@ -748,7 +759,7 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while calling GetAllBeatmapsAsync().");
+            _logger.LogError(ex, "Error while calling GetAllBeatmapsAsync().");
             throw;
         }
     }
@@ -766,7 +777,7 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while calling GetBeatmapByIdentifiableAsync().");
+            _logger.LogError(ex, "Error while calling GetBeatmapByIdentifiableAsync().");
             throw;
         }
     }
@@ -800,7 +811,7 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while calling GetBeatmapsFromFolderAsync().");
+            _logger.LogError(ex, "Error while calling GetBeatmapsFromFolderAsync().");
             throw;
         }
     }
@@ -879,7 +890,7 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while calling GetBeatmapsByIdentifiableAsync().");
+            _logger.LogError(ex, "Error while calling GetBeatmapsByIdentifiableAsync().");
             throw;
         }
     }
@@ -905,7 +916,7 @@ ON CONFLICT(beatmap_id) DO UPDATE SET
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, addOnly
+            _logger.LogError(ex, addOnly
                 ? "Error while calling SyncMapsFromHoLLyAsync(addonly)."
                 : "Error while calling SyncMapsFromHoLLyAsync().");
             throw;
@@ -1081,16 +1092,16 @@ INSERT OR IGNORE INTO beatmaps (
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "Error while calling InnerUpdateMapAsync().");
+            _logger.LogError(ex, "Error while calling InnerUpdateMapAsync().");
             throw;
         }
     }
 
-    private static void LogTemporaryMap(IMapIdentifiable id)
+    private void LogTemporaryMap(IMapIdentifiable id)
     {
         if (id.IsMapTemporary())
         {
-            Logger.Debug("需确认加入自定义目录后才可继续");
+            _logger.LogDebug("需确认加入自定义目录后才可继续");
         }
     }
 

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
+using Microsoft.Extensions.Logging;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
@@ -26,7 +27,7 @@ namespace OsuPlayer.Media.Audio;
 /// </summary>
 public sealed partial class ObservablePlayController : ObservableObject, IPlaybackController, IAsyncDisposable
 {
-    private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
+    private readonly ILogger<ObservablePlayController> _logger;
 
     private readonly IPlaybackEngine _playbackEngine;
     private readonly PlayerEventBus _bus;
@@ -37,19 +38,23 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
     public ObservablePlayController(
         IPlayerDataStore playerData,
         IPlaybackEngine playbackEngine,
-        IAudioDeviceManager audioDeviceManager,
         AudioCacheManager audioCacheManager,
         Action<Exception> audioDeviceErrorHandler,
-        IUiThreadDispatcher uiThreadDispatcher)
+        IUiThreadDispatcher uiThreadDispatcher,
+        BeatmapLoader beatmapLoader,
+        ILogger<ObservablePlayController> logger,
+        ILogger<PlayerEventBus> busLogger,
+        ILogger<PlayerSessionService> sessionLogger,
+        ILoggerFactory loggerFactory)
     {
+        _logger = logger;
         _playbackEngine = playbackEngine;
 
-        _bus = new PlayerEventBus(uiThreadDispatcher, s_logger, audioDeviceErrorHandler);
+        _bus = new PlayerEventBus(uiThreadDispatcher, busLogger, audioDeviceErrorHandler);
         _bus.PlayStatusChanged += OnBusPlayStatusChanged;
         _bus.PositionUpdated += position => PositionUpdated?.Invoke(position);
         _bus.PlayerChanged += OnBusPlayerChanged;
 
-        var beatmapLoader = new BeatmapLoader(playerData);
         PlayList = new PlayList(playerData, uiThreadDispatcher, OnSongListChanged, OnModeChanged);
         _session = new PlayerSessionService(
             _bus,
@@ -59,7 +64,8 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
             playerData,
             playbackEngine,
             audioCacheManager,
-            s_logger);
+            sessionLogger,
+            loggerFactory);
 
         _playbackEngine.DeviceError += _bus.OnPlaybackEngineDeviceError;
 
@@ -179,12 +185,12 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
     {
         if (ctx.BeatmapDetail != null)
         {
-            s_logger.Error(ex, "Load error while loading beatmap: {0}",
+            _logger.LogError(ex, "Load error while loading beatmap: {Path}",
                 Path.Combine(ctx.BeatmapDetail.BaseFolder ?? "", ctx.BeatmapDetail.MapPath ?? ""));
         }
         else
         {
-            s_logger.Error(ex, "Load error while loading beatmap.");
+            _logger.LogError(ex, "Load error while loading beatmap.");
         }
         LoadError?.Invoke(ctx, ex);
     }

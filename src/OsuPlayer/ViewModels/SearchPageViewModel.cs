@@ -21,6 +21,7 @@ public partial class SearchPageViewModel : ObservableObject
     private readonly IPlayerDataService _playerData;
     private readonly ObservablePlayController _controller;
     private readonly IBeatmapActionService _beatmapActions;
+    private readonly IMapModelConverter _mapModelConverter;
 
     private const int MaxListCount = 250;
     private const int QueryDelayMs = 167;
@@ -31,11 +32,13 @@ public partial class SearchPageViewModel : ObservableObject
     public SearchPageViewModel(
         IPlayerDataService playerData,
         ObservablePlayController controller,
-        IBeatmapActionService beatmapActions)
+        IBeatmapActionService beatmapActions,
+        IMapModelConverter mapModelConverter)
     {
         _playerData = playerData;
         _controller = controller;
         _beatmapActions = beatmapActions;
+        _mapModelConverter = mapModelConverter;
     }
 
     [ObservableProperty]
@@ -86,7 +89,7 @@ public partial class SearchPageViewModel : ObservableObject
 
             SearchedDbMaps = result.Results.ToList();
             ClearGalleryNotifications?.Invoke();
-            DisplayedMaps = SearchedDbMaps.ToDataModelList(true);
+            DisplayedMaps = _mapModelConverter.ToDataModelList(SearchedDbMaps, true);
             SetPage(result.TotalCount, normalizedPageIndex);
         }
         catch (OperationCanceledException)

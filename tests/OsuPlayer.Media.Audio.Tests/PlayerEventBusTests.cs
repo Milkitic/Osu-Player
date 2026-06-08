@@ -1,5 +1,5 @@
 using System.Reflection;
-using NLog;
+using Microsoft.Extensions.Logging.Abstractions;
 using OsuPlayer.Media.Audio.Coordination;
 using OsuPlayer.Presentation.Interaction;
 using Xunit;
@@ -8,14 +8,14 @@ namespace OsuPlayer.Media.Audio.Tests;
 
 public class PlayerEventBusTests
 {
-    private static readonly Logger NullLogger = LogManager.CreateNullLogger();
+    private static readonly Microsoft.Extensions.Logging.ILogger<PlayerEventBus> NullLog = NullLogger<PlayerEventBus>.Instance;
 
     [Fact]
     public void AttachPlayer_ReplaysPlayStatusThroughDispatcher()
     {
         var dispatcher = new CountingDispatcher();
-        var bus = new PlayerEventBus(dispatcher, NullLogger);
-        var player = new OsuMixPlayer(null!, string.Empty, null!, null!);
+        var bus = new PlayerEventBus(dispatcher, NullLog);
+        var player = new OsuMixPlayer(null!, string.Empty, null!, null!, NullLogger<OsuMixPlayer>.Instance);
         PlayStatus? observed = null;
         bus.PlayStatusChanged += status => observed = status;
 
@@ -31,7 +31,7 @@ public class PlayerEventBusTests
     public void RaiseInterfaceClearRequest_WithNoSubscribers_DoesNotDispatchNull()
     {
         var dispatcher = new CountingDispatcher();
-        var bus = new PlayerEventBus(dispatcher, NullLogger);
+        var bus = new PlayerEventBus(dispatcher, NullLog);
 
         bus.RaiseInterfaceClearRequest();
 

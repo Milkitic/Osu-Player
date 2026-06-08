@@ -11,6 +11,8 @@ using OsuPlayer.Media.Audio;
 using OsuPlayer.UiComponents.PanelComponent;
 using OsuPlayer.ViewModels;
 
+using Microsoft.Extensions.Logging;
+
 namespace OsuPlayer.Pages;
 
 /// <summary>
@@ -18,18 +20,26 @@ namespace OsuPlayer.Pages;
 /// </summary>
 public partial class SearchPage : Page
 {
-    private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
+    private readonly ILogger<SearchPage> _logger;
+    private readonly IBeatmapThumbnailService _thumbnailService;
     private static bool _minimal;
 
     private readonly ObservablePlayController _controller;
     private readonly IPlayerDataService _playerData;
     private VirtualizingGalleryWrapPanel _virtualizingGalleryWrapPanel;
 
-    public SearchPage(SearchPageViewModel viewModel, IPlayerDataService playerData, ObservablePlayController controller)
+    public SearchPage(
+        SearchPageViewModel viewModel,
+        IPlayerDataService playerData,
+        ObservablePlayController controller,
+        IBeatmapThumbnailService thumbnailService,
+        ILogger<SearchPage> logger)
     {
         ViewModel = viewModel;
         _playerData = playerData;
         _controller = controller;
+        _thumbnailService = thumbnailService;
+        _logger = logger;
 
         InitializeComponent();
         DataContext = ViewModel;
@@ -75,12 +85,12 @@ public partial class SearchPage : Page
         var dataModel = ViewModel.DisplayedMaps[e.Index];
         try
         {
-            var fileName = await CommonUtils.GetThumbByBeatmapDbId(dataModel);
+            var fileName = await _thumbnailService.GetThumbByBeatmapDbIdAsync(dataModel);
             dataModel.ThumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg");
         }
         catch (Exception ex)
         {
-            s_logger.Error(ex, "Error while loading panel item.");
+            _logger.LogError(ex, "Error while loading panel item.");
         }
     }
 

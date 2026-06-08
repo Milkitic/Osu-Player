@@ -51,9 +51,10 @@ public class PlayerSessionServiceTests
     private static PlayerSessionService CreateService(BlockingPlayerDataStore playerData)
     {
         var dispatcher = new ImmediateUiThreadDispatcher();
-        var logger = NLog.LogManager.GetCurrentClassLogger();
+        var logger = NullLogger<PlayerEventBus>.Instance;
+        var LoggerFactory = NullLoggerFactory.Instance;
         var bus = new PlayerEventBus(dispatcher, logger);
-        var beatmapLoader = new BeatmapLoader(playerData);
+        var beatmapLoader = new BeatmapLoader(playerData, NullLogger<BeatmapLoader>.Instance);
 
         return new PlayerSessionService(
             bus,
@@ -63,7 +64,8 @@ public class PlayerSessionServiceTests
             playerData,
             new FakePlaybackEngine(),
             new AudioCacheManager(NullLogger<AudioCacheManager>.Instance),
-            logger);
+            NullLogger<PlayerSessionService>.Instance,
+            LoggerFactory);
     }
 
     private static Beatmap CreateBeatmap(string folderName)

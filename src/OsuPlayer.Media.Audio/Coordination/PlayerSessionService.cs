@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Coosu.Beatmap;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
+using Microsoft.Extensions.Logging;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
@@ -27,7 +28,7 @@ namespace OsuPlayer.Media.Audio.Coordination;
 /// <see cref="OsuMixPlayer"/> through <see cref="PlayerEventBus"/>, and translates
 /// playlist cursor changes into player commands.
 /// </remarks>
-internal sealed class PlayerSessionService : IAsyncDisposable
+public sealed class PlayerSessionService : IAsyncDisposable
 {
     private readonly PlayerEventBus _bus;
     private readonly PlayList _playList;
@@ -36,7 +37,8 @@ internal sealed class PlayerSessionService : IAsyncDisposable
     private readonly IPlayerDataStore _playerData;
     private readonly IPlaybackEngine _playbackEngine;
     private readonly AudioCacheManager _audioCacheManager;
-    private readonly NLog.Logger _logger;
+    private readonly ILogger<PlayerSessionService> _logger;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly SessionOperationManager _operations = new();
     private readonly Lock _disposeGate = new();
 
@@ -55,7 +57,8 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         IPlayerDataStore playerData,
         IPlaybackEngine playbackEngine,
         AudioCacheManager audioCacheManager,
-        NLog.Logger logger)
+        ILogger<PlayerSessionService> logger,
+        ILoggerFactory loggerFactory)
     {
         _bus = bus;
         _playList = playList;
@@ -65,6 +68,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         _playbackEngine = playbackEngine;
         _audioCacheManager = audioCacheManager;
         _logger = logger;
+        _loggerFactory = loggerFactory;
 
         _bus.PlayStatusChanged += OnPlayerPlayStatusChanged;
     }
@@ -248,7 +252,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, errorMessage);
+                _logger.LogError(ex, "{ErrorMessage}", errorMessage);
             }
         }
     }
@@ -381,7 +385,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         _bus.RaiseMetaLoaded(context, operationToken);
         _bus.RaiseBackgroundInfoLoaded(context, operationToken);
 
-        var player = new OsuMixPlayer(loadResult.OsuFile, loadResult.BaseFolder, _playbackEngine, _audioCacheManager);
+        var player = new OsuMixPlayer(loadResult.OsuFile, loadResult.BaseFolder, _playbackEngine, _audioCacheManager, _loggerFactory.CreateLogger<OsuMixPlayer>());
         var attached = false;
         try
         {
@@ -428,7 +432,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
     private void HandleLoadFailure(BeatmapContext? context, Exception ex)
     {
         _bus.RaiseLoadError(context, ex);
-        _logger.Error(ex, "Error while loading new beatmap. BeatmapId: {0}; BeatmapSetId: {1}",
+        _logger.LogError(ex, "Error while loading new beatmap. BeatmapId: {BeatmapId}; BeatmapSetId: {BeatmapSetId}",
             context?.Beatmap?.BeatmapId, context?.Beatmap?.BeatmapSetId);
     }
 
@@ -543,7 +547,7 @@ internal sealed class PlayerSessionService : IAsyncDisposable
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Error while handling playback finished.");
+            _logger.LogError(ex, "Error while handling playback finished.");
         }
         finally
         {

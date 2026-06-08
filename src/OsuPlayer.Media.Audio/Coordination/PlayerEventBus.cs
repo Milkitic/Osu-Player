@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using OsuPlayer.Media.Audio.Playlist;
 using OsuPlayer.Presentation.Interaction;
 
@@ -11,16 +12,16 @@ namespace OsuPlayer.Media.Audio.Coordination;
 /// raised on the UI thread; subscribers therefore never have to marshal
 /// themselves.
 /// </summary>
-internal sealed class PlayerEventBus : IDisposable
+public sealed class PlayerEventBus : IDisposable
 {
     private readonly IUiThreadDispatcher _dispatcher;
-    private readonly NLog.Logger _logger;
+    private readonly ILogger<PlayerEventBus> _logger;
     private readonly Action<Exception> _audioDeviceErrorHandler;
     private OsuMixPlayer? _player;
 
     public PlayerEventBus(
         IUiThreadDispatcher dispatcher,
-        NLog.Logger logger,
+        ILogger<PlayerEventBus> logger,
         Action<Exception>? audioDeviceErrorHandler = null)
     {
         _dispatcher = dispatcher;
@@ -77,7 +78,7 @@ internal sealed class PlayerEventBus : IDisposable
 
     public void OnPlaybackEngineDeviceError(Exception ex)
     {
-        _logger.Error(ex, "Audio device error.");
+        _logger.LogError(ex, "Audio device error.");
         _dispatcher.Post(() => _audioDeviceErrorHandler(ex));
     }
 
@@ -97,7 +98,7 @@ internal sealed class PlayerEventBus : IDisposable
     {
         if (context == null)
         {
-            _logger.Error(ex, "Load error with no current beatmap context.");
+            _logger.LogError(ex, "Load error with no current beatmap context.");
             return;
         }
         Send(LoadError, context, ex);
@@ -116,7 +117,7 @@ internal sealed class PlayerEventBus : IDisposable
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Error while raising position-set request.");
+                _logger.LogError(ex, "Error while raising position-set request.");
             }
         }
     }

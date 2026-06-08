@@ -2,15 +2,20 @@ using System;
 using System.Windows;
 using KeyAsio.Core.Audio;
 using KeyAsio.Core.Audio.Caching;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NLog;
+using NLog.Extensions.Logging;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Instances;
 using OsuPlayer.Core.Scanning;
 using OsuPlayer.Core.Services;
+using OsuPlayer.Data;
 using OsuPlayer.Instances;
 using OsuPlayer.Media.Audio;
+using OsuPlayer.Media.Audio.Coordination;
 using OsuPlayer.Pages;
 using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Services;
@@ -96,8 +101,28 @@ public partial class App : Application
 
     private void ConfigureServices(IServiceCollection services)
     {
-        services.AddLogging();
+        services.AddLogging(loggingBuilder =>
+        {
+            loggingBuilder.ClearProviders();
+            loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+            loggingBuilder.AddNLog();
+        });
         services.AddAudioModule();
+
+        // 注册 OsuPlayerDbContext 和 Func工厂
+        services.AddTransient<OsuPlayerDbContext>(provider =>
+        {
+            var options = new DbContextOptionsBuilder<OsuPlayerDbContext>()
+                .UseSqlite(OsuPlayerDbContext.DefaultConnectionString)
+                .Options;
+            return new OsuPlayerDbContext(options, provider.GetRequiredService<ILogger<OsuPlayerDbContext>>());
+        });
+        services.AddSingleton<Func<OsuPlayerDbContext>>(provider => () => provider.GetRequiredService<OsuPlayerDbContext>());
+
+        // 注册新添加的实例服务
+        services.AddSingleton<IBeatmapThumbnailService, BeatmapThumbnailService>();
+        services.AddSingleton<IMapModelConverter, MapModelConverter>();
+        services.AddSingleton<BeatmapLoader>();
 
         // 注册核心后台服务 (Singletons)
         services.AddSingleton<IAppNotificationService, AppNotificationService>();
@@ -114,10 +139,14 @@ public partial class App : Application
             var controller = new ObservablePlayController(
                 provider.GetRequiredService<IPlayerDataStore>(),
                 provider.GetRequiredService<IPlaybackEngine>(),
-                provider.GetRequiredService<IAudioDeviceManager>(),
                 provider.GetRequiredService<AudioCacheManager>(),
                 ex => provider.GetRequiredService<IAppNotificationService>().Push(ex.Message, "Audio Device Error"),
-                provider.GetRequiredService<IUiThreadDispatcher>());
+                provider.GetRequiredService<IUiThreadDispatcher>(),
+                provider.GetRequiredService<BeatmapLoader>(),
+                provider.GetRequiredService<ILogger<ObservablePlayController>>(),
+                provider.GetRequiredService<ILogger<PlayerEventBus>>(),
+                provider.GetRequiredService<ILogger<PlayerSessionService>>(),
+                provider.GetRequiredService<ILoggerFactory>());
             controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
             return controller;
         });
