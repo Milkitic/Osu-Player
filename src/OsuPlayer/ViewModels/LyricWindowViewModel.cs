@@ -1,12 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Media.Audio;
-using OsuPlayer.Utils;
 
 namespace OsuPlayer.ViewModels;
 
@@ -28,19 +23,13 @@ public partial class LyricWindowViewModel : ObservableObject
     public partial bool IsLyricWindowShown { get; set; }
 
     [ObservableProperty]
-    public partial object FontFamily { get; set; }
+    public partial string FontFamily { get; set; }
 
-    partial void OnFontFamilyChanged(object value)
+    partial void OnFontFamilyChanged(string value)
     {
-        AppSettings.Default.Lyric.FontFamily = value?.ToString();
+        AppSettings.Default.Lyric.FontFamily = value;
         AppSettings.SaveDefault();
     }
-
-    public ICollection<FontFamily> AllFontFamilies { get; } =
-        new SortedSet<FontFamily>(Fonts.SystemFontFamilies.Concat(new[]
-        {
-            (FontFamily)Application.Current.FindResource("SspRegular")
-        }), new FontFamilyComparer());
 
     [ObservableProperty]
     public partial double Hue { get; set; }

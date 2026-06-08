@@ -6,11 +6,13 @@
     xmlns:local="clr-namespace:OsuPlayer.Pages.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:textBoxComponent="clr-namespace:OsuPlayer.UiComponents.TextBoxComponent"
+    xmlns:viewModels="clr-namespace:OsuPlayer.ViewModels"
     Title="PlayPage"
+    d:DataContext="{d:DesignInstance viewModels:PlayPageViewModel,
+                                     IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     FontFamily="{StaticResource SspRegular}"
-    Loaded="Page_Loaded"
     mc:Ignorable="d">
 
     <Grid>
@@ -28,14 +30,14 @@
                         Maximum="200"
                         Minimum="-200"
                         Style="{StaticResource HorizontalSliderWhiteStyle}"
-                        ValueChanged="SliderOffset_ValueChanged" />
+                        Value="{Binding GeneralOffset, Mode=TwoWay}" />
                     <textBoxComponent:CommonTextBox
                         x:Name="BoxOffset"
                         Width="35"
                         Background="White"
                         CornerRadius="2"
                         TextAlignment="Center"
-                        TextChanged="BoxOffset_TextChanged" />
+                        Text="{Binding GeneralOffset, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
@@ -45,13 +47,13 @@
                 <StackPanel HorizontalAlignment="Left">
                     <RadioButton
                         x:Name="RadioReplace"
-                        Checked="RadioReplace_Checked"
+                        IsChecked="{Binding ReplacePlayList, Mode=TwoWay}"
                         Content="播放单曲时，用此单曲所在的歌曲列表替换播放列表"
                         Style="{StaticResource ConfigRadioStyle}"
                         Visibility="Collapsed" />
                     <RadioButton
                         x:Name="RadioInsert"
-                        Checked="RadioInsert_Checked"
+                        IsChecked="{Binding InsertPlayList, Mode=TwoWay}"
                         Content="播放单曲时，仅把此单曲添加到播放列表"
                         Style="{StaticResource ConfigRadioStyle}"
                         Visibility="Collapsed" />
@@ -64,10 +66,9 @@
                     x:Name="ChkAutoPlay"
                     Margin="8,0"
                     HorizontalAlignment="Left"
-                    Checked="ChkAutoPlay_CheckChanged"
+                    IsChecked="{Binding AutoPlay, Mode=TwoWay}"
                     Content="{DynamicResource ui-sets-content-autoPlayOnProgramStartup}"
-                    Style="{StaticResource CommonCheckBox}"
-                    Unchecked="ChkAutoPlay_CheckChanged" />
+                    Style="{StaticResource CommonCheckBox}" />
                 <Label
                     HorizontalAlignment="Left"
                     Content="{DynamicResource ui-sets-title-playProgress}"
@@ -76,10 +77,9 @@
                     x:Name="ChkMemory"
                     Margin="8,0"
                     HorizontalAlignment="Left"
-                    Checked="ChkMemory_CheckChanged"
+                    IsChecked="{Binding Memory, Mode=TwoWay}"
                     Content="{DynamicResource ui-sets-content-resumePlaylistOnProgramStartup}"
-                    Style="{StaticResource CommonCheckBox}"
-                    Unchecked="ChkMemory_CheckChanged" />
+                    Style="{StaticResource CommonCheckBox}" />
                 <Label
                     HorizontalAlignment="Left"
                     Content="{DynamicResource ui-sets-title-audioPlayDevice}"
@@ -89,7 +89,8 @@
                     Width="320"
                     Margin="8,0"
                     HorizontalAlignment="Left"
-                    SelectionChanged="DeviceInfoCombo_OnSelectionChanged" >
+                    ItemsSource="{Binding AvailableDevices}"
+                    SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Converter={StaticResource DeviceInfoToStringConverter}}"/> 

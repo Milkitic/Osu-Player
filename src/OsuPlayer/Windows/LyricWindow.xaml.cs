@@ -71,10 +71,31 @@ public partial class LyricWindow : WindowEx
     private void LyricWindow_Loaded(object sender, RoutedEventArgs e)
     {
         var lyricFont = AppSettings.Default.Lyric.FontFamily ??
-                        Application.Current.FindResource("SspRegular");
+                        FindResource("SspRegular")?.ToString();
         ViewModel.FontFamily = lyricFont;
         ViewModel.Hue = AppSettings.Default.Lyric.Hue;
         ViewModel.Saturation = AppSettings.Default.Lyric.Saturation;
+
+        var comparer = new OsuPlayer.Utils.FontFamilyComparer();
+        var allFonts = Fonts.SystemFontFamilies
+            .Concat(new[] { (FontFamily)FindResource("SspRegular") })
+            .DistinctBy(f => f.Source)
+            .OrderBy(f => f, comparer)
+            .ToList();
+        lvFontFamilies.ItemsSource = allFonts;
+
+        var selected = allFonts.FirstOrDefault(f => f.ToString() == lyricFont)
+                       ?? allFonts.FirstOrDefault(f => f.Source == lyricFont);
+        if (selected != null)
+            lvFontFamilies.SelectedItem = selected;
+    }
+
+    private void LvFontFamilies_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (lvFontFamilies.SelectedItem is FontFamily fontFamily)
+        {
+            ViewModel.FontFamily = fontFamily.ToString();
+        }
     }
 
     private void LyricWindow_MouseMove(object sender, MouseEventArgs e)

@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Markup;
-using System.Xaml;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -16,7 +13,6 @@ using OsuPlayer.Media.Audio;
 using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Services;
 using OsuPlayer.Shared.Models;
-using OsuPlayer.UiComponents.PanelComponent;
 
 namespace OsuPlayer.ViewModels;
 
@@ -54,7 +50,7 @@ public partial class SearchPageViewModel : ObservableObject
     [ObservableProperty]
     public partial ListPageViewModel CurrentPage { get; private set; }
 
-    public VirtualizingGalleryWrapPanel GalleryWrapPanel { get; set; }
+    public Action ClearGalleryNotifications { get; set; }
 
     [ObservableProperty]
     public partial string SearchText { get; set; }
@@ -89,7 +85,7 @@ public partial class SearchPageViewModel : ObservableObject
             }
 
             SearchedDbMaps = result.Results.ToList();
-            GalleryWrapPanel?.ClearNotificationCount();
+            ClearGalleryNotifications?.Invoke();
             DisplayedMaps = SearchedDbMaps.ToDataModelList(true);
             SetPage(result.TotalCount, normalizedPageIndex);
         }
@@ -267,15 +263,5 @@ public partial class SearchPageViewModel : ObservableObject
         {
             cancellation.Dispose();
         }
-    }
-}
-
-[MarkupExtensionReturnType(typeof(ContentControl))]
-public class RootObject : MarkupExtension
-{
-    public override object ProvideValue(IServiceProvider serviceProvider)
-    {
-        var rootObjectProvider = (IRootObjectProvider)serviceProvider.GetService(typeof(IRootObjectProvider));
-        return rootObjectProvider?.RootObject;
     }
 }

@@ -104,7 +104,7 @@ public partial class MiniPlayController : UserControl
         PopVolume.IsOpen = true;
     }
 
-    private void PlayListControl_CloseRequested(object sender, RoutedEventArgs e)
+    private void PlayListControl_CloseRequested(object sender, EventArgs e)
     {
         PopPlayList.IsOpen = false;
     }

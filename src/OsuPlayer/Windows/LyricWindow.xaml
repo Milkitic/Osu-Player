@@ -418,9 +418,8 @@
             <ListView
                 x:Name="lvFontFamilies"
                 ItemContainerStyle="{StaticResource GridView}"
-                ItemsSource="{Binding AllFontFamilies}"
                 Loaded="FrameworkElement_OnLoaded"
-                SelectedItem="{Binding FontFamily, Mode=TwoWay}"
+                SelectionChanged="LvFontFamilies_SelectionChanged"
                 Style="{StaticResource ListView}"
                 TextBlock.FontSize="16">
                 <ListView.View>

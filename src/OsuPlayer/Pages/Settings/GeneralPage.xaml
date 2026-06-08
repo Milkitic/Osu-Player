@@ -7,17 +7,15 @@
     xmlns:loaderComponent="clr-namespace:OsuPlayer.UiComponents.LoaderComponent"
     xmlns:local="clr-namespace:OsuPlayer.Pages.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:scanning="clr-namespace:OsuPlayer.Core.Scanning;assembly=OsuPlayer.Core"
     xmlns:textBoxComponent="clr-namespace:OsuPlayer.UiComponents.TextBoxComponent"
+    xmlns:viewModels="clr-namespace:OsuPlayer.ViewModels"
     Title="GeneralPage"
+    d:DataContext="{d:DesignInstance viewModels:GeneralPageViewModel,
+                                     IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     FontFamily="{StaticResource SspRegular}"
-    Loaded="Page_Loaded"
     mc:Ignorable="d">
-    <d:Page.DataContext>
-        <scanning:FileScannerViewModel />
-    </d:Page.DataContext>
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
@@ -29,10 +27,9 @@
                     x:Name="RunOnStartup"
                     Margin="8,0"
                     HorizontalAlignment="Left"
-                    Checked="RunOnStartup_CheckChanged"
+                    IsChecked="{Binding RunOnStartup, Mode=TwoWay}"
                     Content="{DynamicResource ui-sets-content-runOnStartup}"
-                    Style="{StaticResource CommonCheckBox}"
-                    Unchecked="RunOnStartup_CheckChanged" />
+                    Style="{StaticResource CommonCheckBox}" />
                 <Label
                     HorizontalAlignment="Left"
                     Content="{DynamicResource ui-sets-title-osuDbLocation}"
@@ -47,7 +44,7 @@
                         Background="White"
                         CornerRadius="5"
                         IsReadOnly="True"
-                        Text="D:\asdf\asdf" />
+                        Text="{Binding DbPath, Mode=OneWay}" />
                     <buttonComponent:CommonButton
                         x:Name="BrowseDb"
                         Width="27"
@@ -57,10 +54,10 @@
                         VerticalAlignment="Center"
                         Background="#E3E3E3"
                         BorderBrush="#B0B0B0"
-                        Click="BrowseDb_Click"
+                        Command="{Binding BrowseDbCommand}"
                         IconMargin="0"
                         IconTemplate="{StaticResource FolderTempl}"
-                        IsEnabled="{Binding IsScanning, Converter={StaticResource NegativeBooleanConverter}}"
+                        IsEnabled="{Binding ScannerViewModel.IsScanning, Converter={StaticResource NegativeBooleanConverter}}"
                         Style="{StaticResource SettingsButton}" />
                     <buttonComponent:CommonButton
                         x:Name="SyncNow"
@@ -69,9 +66,9 @@
                         Padding="5,0"
                         VerticalAlignment="Center"
                         Background="#E3E3E3"
-                        Click="SyncNow_Click"
+                        Command="{Binding SyncNowCommand}"
                         Content="{DynamicResource ui-btn-syncManually}"
-                        IsEnabled="{Binding IsScanning, Converter={StaticResource NegativeBooleanConverter}}"
+                        IsEnabled="{Binding ScannerViewModel.IsScanning, Converter={StaticResource NegativeBooleanConverter}}"
                         Style="{StaticResource SettingsButton}" />
                 </StackPanel>
                 <Label
@@ -88,7 +85,7 @@
                         Background="White"
                         CornerRadius="5"
                         IsReadOnly="True"
-                        Text="D:\asdf\asdf" />
+                        Text="{Binding CustomSongsPath, Mode=OneWay}" />
                     <buttonComponent:CommonButton
                         x:Name="BrowseCustom"
                         Width="27"
@@ -98,7 +95,7 @@
                         VerticalAlignment="Center"
                         Background="#E3E3E3"
                         BorderBrush="#B0B0B0"
-                        Click="BrowseCustom_Click"
+                        Command="{Binding BrowseCustomCommand}"
                         IconMargin="0"
                         IconTemplate="{StaticResource FolderTempl}"
                         Style="{StaticResource SettingsButton}" />
@@ -109,27 +106,27 @@
                         Padding="5,0"
                         VerticalAlignment="Center"
                         Background="#E3E3E3"
-                        Click="ScanNow_Click"
+                        Command="{Binding ScanNowCommand}"
                         Content="{DynamicResource ui-btn-scanManually}"
                         Style="{StaticResource SettingsButton}"
-                        Visibility="{Binding IsScanning, Converter={StaticResource BoolFalseToVisibleConverter}}" />
+                        Visibility="{Binding ScannerViewModel.IsScanning, Converter={StaticResource BoolFalseToVisibleConverter}}" />
                     <loaderComponent:Loader
                         Width="25"
                         Height="25"
                         FillColor="#303030"
-                        Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
+                        Visibility="{Binding ScannerViewModel.IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
                     <Label
                         Content="{DynamicResource ui-sets-content-scanning3Dot}"
                         Foreground="#303030"
-                        Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
+                        Visibility="{Binding ScannerViewModel.IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
                     <buttonComponent:CommonButton
                         x:Name="CancelScan"
                         Padding="2,0"
                         VerticalAlignment="Center"
-                        Click="CancelScan_Click"
+                        Command="{Binding CancelScanCommand}"
                         Content="{DynamicResource ui-btn-cancelScan}"
                         Style="{StaticResource LinkButton}"
-                        Visibility="{Binding IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
+                        Visibility="{Binding ScannerViewModel.IsScanning, Converter={StaticResource TrueToVisibleConverter}}" />
                 </StackPanel>
                 <Label
                     HorizontalAlignment="Left"
@@ -140,24 +137,23 @@
                         x:Name="RadioMinimum"
                         Margin="8,0"
                         HorizontalAlignment="Left"
-                        Checked="Radio_CheckChanged"
+                        IsChecked="{Binding IsMinimizeWhenClosed, Mode=TwoWay}"
                         Content="{DynamicResource ui-sets-content-minToNotificationPanel}"
                         Style="{StaticResource CommonRadioButton}" />
                     <RadioButton
                         x:Name="RadioExit"
                         Margin="8,0"
                         HorizontalAlignment="Left"
-                        Checked="Radio_CheckChanged"
+                        IsChecked="{Binding IsExitWhenClosed, Mode=TwoWay}"
                         Content="{DynamicResource ui-sets-content-exitProgram}"
                         Style="{StaticResource CommonRadioButton}" />
                     <CheckBox
                         x:Name="AsDefault"
                         Margin="8,10"
                         HorizontalAlignment="Left"
-                        Checked="AsDefault_CheckChanged"
+                        IsChecked="{Binding SetAsDefaultOptions, Mode=TwoWay}"
                         Content="{DynamicResource ui-sets-content-setAsDefaultOptions}"
-                        Style="{StaticResource CommonCheckBox}"
-                        Unchecked="AsDefault_CheckChanged" />
+                        Style="{StaticResource CommonCheckBox}" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

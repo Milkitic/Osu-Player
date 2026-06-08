@@ -62,7 +62,7 @@ public partial class SearchPage : Page
     private void Panel_Loaded(object sender, RoutedEventArgs e)
     {
         _virtualizingGalleryWrapPanel = sender as VirtualizingGalleryWrapPanel;
-        ViewModel.GalleryWrapPanel = _virtualizingGalleryWrapPanel;
+        ViewModel.ClearGalleryNotifications = () => _virtualizingGalleryWrapPanel.ClearNotificationCount();
     }
 
     private void BtnQueueAll_Click(object sender, RoutedEventArgs e)
@@ -70,7 +70,7 @@ public partial class SearchPage : Page
     }
 
     private async void VirtualizingGalleryWrapPanel_OnItemLoaded(object sender,
-        VirtualizingGalleryRoutedEventArgs e)
+        ItemLoadedEventArgs e)
     {
         var dataModel = ViewModel.DisplayedMaps[e.Index];
         try

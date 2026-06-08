@@ -137,6 +137,10 @@ public partial class App : Application
         services.AddTransient<RecentPlayPageViewModel>();
         services.AddTransient<ExportPageViewModel>();
         services.AddTransient<PlayListControlVm>();
+        services.AddTransient<InterfacePageViewModel>();
+        services.AddTransient<AboutPageViewModel>();
+        services.AddTransient<GeneralPageViewModel>();
+        services.AddTransient<PlayPageViewModel>();
 
         // 注册 Windows / Pages
         services.AddSingleton<MainWindow>();
