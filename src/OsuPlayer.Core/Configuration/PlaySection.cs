@@ -7,10 +7,12 @@ namespace OsuPlayer.Core.Configuration;
 
 public partial class PlaySection : ObservableObject
 {
-    public int GeneralOffset { get; set; } = -23;
+    public const int NAudioBassFixedOffset = -23;
+
+    public int GeneralOffset { get; set; }
 
     [JsonIgnore]
-    public int GeneralActualOffset => GeneralOffset + 0;
+    public int GeneralActualOffset => GeneralOffset + NAudioBassFixedOffset;
 
     public bool ReplacePlayList { get; set; } = true;
     public bool UsePlayerV2 { get; set; } = false;

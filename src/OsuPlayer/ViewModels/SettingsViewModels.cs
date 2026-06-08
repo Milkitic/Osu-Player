@@ -390,7 +390,7 @@ public partial class PlayPageViewModel : ObservableObject
                 AppSettings.SaveDefault();
                 if (_controller.Player != null)
                 {
-                    _controller.Player.GeneralOffset = value;
+                    _controller.Player.GeneralOffset = AppSettings.Default.Play.GeneralActualOffset;
                 }
             }
         }
