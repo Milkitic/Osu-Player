@@ -31,6 +31,15 @@ public static class EntryStartup
             return;
         }
 
+        Domain.OsuPathProvider = () =>
+            AppSettings.Default?.General?.DbPath == null
+                ? null
+                : new System.IO.FileInfo(AppSettings.Default.General.DbPath).Directory?.FullName;
+        Domain.CustomSongPathProvider = () =>
+            AppSettings.Default?.General?.CustomSongsPath == null
+                ? null
+                : new System.IO.FileInfo(AppSettings.Default.General.CustomSongsPath).FullName;
+
 #if DEBUG
         //ConsoleManager.Show();
 #endif

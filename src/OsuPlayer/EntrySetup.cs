@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using OsuPlayer.Core;
+using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Instances;
 using OsuPlayer.Core.Scanning;
 using OsuPlayer.Core.Services;
@@ -68,6 +69,7 @@ public static class EntrySetup
         services.AddSingleton<IBeatmapDifficultyPicker, DialogBeatmapDifficultyPicker>();
         services.AddTransient<INavigationService, FrameNavigationService>();
         services.AddSingleton<IUiThreadDispatcher>(_ => Execute.UiThreadDispatcher);
+        services.AddSingleton<IUserPreferences>(_ => AppSettings.Default);
 
         services.AddSingleton<PlayerDataService>();
         services.AddSingleton<IPlayerDataStore>(static provider => provider.GetRequiredService<PlayerDataService>());
