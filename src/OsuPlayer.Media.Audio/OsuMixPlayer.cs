@@ -309,7 +309,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
     private void StartAudioEngine()
     {
         OsuPlayerAudioDevicePolicy.StartDevice(_engine, AppSettings.Default?.Play?.DeviceDescription);
-        _engine.LimiterType = (KeyAsio.Core.Audio.LimiterType)(AppSettings.Default?.Volume.LimiterType ?? Core.Configuration.LimiterTypeSetting.Master);
+        _engine.LimiterType = (LimiterType)(AppSettings.Default?.Volume.LimiterType ?? LimiterTypeSetting.Master);
     }
 
     private OsuAudioSessionOptions CreateSessionOptions()
@@ -355,7 +355,7 @@ public sealed class OsuMixPlayer : IPlaybackController, IAsyncDisposable
         _engine.MainVolume = volume.Main;
         _engine.MusicVolume = volume.Music;
         _engine.EffectVolume = 1;
-        _engine.LimiterType = (KeyAsio.Core.Audio.LimiterType)volume.LimiterType;
+        _engine.LimiterType = (LimiterType)volume.LimiterType;
 
         _sessionOptions.HitsoundVolume = volume.Hitsound;
         _sessionOptions.SampleVolume = volume.Sample;

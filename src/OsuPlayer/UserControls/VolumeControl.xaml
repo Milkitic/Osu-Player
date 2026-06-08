@@ -159,6 +159,7 @@
                             </ComboBox>
                         </Grid>
                         <Slider
+                            Visibility="Collapsed"
                             x:Name="Offset"
                             Margin="10,5"
                             AutoToolTipPlacement="BottomRight"
@@ -172,6 +173,7 @@
                             Thumb.DragDelta="Offset_DragDelta"
                             TickFrequency="1" />
                         <Label
+                            Visibility="Collapsed"
                             Margin="0,-5,0,0"
                             HorizontalAlignment="Center"
                             Content="{DynamicResource ui-currentMapOffset}"

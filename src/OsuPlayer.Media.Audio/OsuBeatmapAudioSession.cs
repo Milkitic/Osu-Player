@@ -102,13 +102,23 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         _options = options;
         var resources = options.Resources;
 
-        var musicPath = Path.Combine(resources.BeatmapFolder, resources.AudioFilename);
-        var musicSource = await AudioFileMusicPlaybackSource.CreateAsync(
-            _audioCacheManager,
-            musicPath,
-            _playbackEngine.SourceWaveFormat,
-            _rateProcessorFactory,
-            cancellationToken).ConfigureAwait(false);
+        IMusicPlaybackSource musicSource;
+        if (string.IsNullOrWhiteSpace(resources.AudioFilename))
+        {
+            var duration = CalculateDurationFromBeatmap(osuFile);
+            musicSource = SilentMusicPlaybackSource.Create(duration,
+                _playbackEngine.SourceWaveFormat, _rateProcessorFactory);
+        }
+        else
+        {
+            var musicPath = Path.Combine(resources.BeatmapFolder, resources.AudioFilename);
+            musicSource = await AudioFileMusicPlaybackSource.CreateAsync(
+                _audioCacheManager,
+                musicPath,
+                _playbackEngine.SourceWaveFormat,
+                _rateProcessorFactory,
+                cancellationToken).ConfigureAwait(false);
+        }
 
         await _musicTransport.LoadAsync(musicSource, ownsSource: true, cancellationToken).ConfigureAwait(false);
 
@@ -515,5 +525,15 @@ internal sealed class OsuBeatmapAudioSession : IPlaybackClock, IAsyncDisposable
         return eventClock.TotalMilliseconds >= int.MaxValue
             ? int.MaxValue - CacheWindowMilliseconds
             : (int)eventClock.TotalMilliseconds;
+    }
+
+    private static TimeSpan CalculateDurationFromBeatmap(OsuFile osuFile)
+    {
+        double maxTimeMs = 0;
+        if (osuFile.HitObjects != null)
+            maxTimeMs = Math.Max(maxTimeMs, osuFile.HitObjects.MaxTime);
+        if (osuFile.TimingPoints != null)
+            maxTimeMs = Math.Max(maxTimeMs, osuFile.TimingPoints.MaxTime);
+        return TimeSpan.FromMilliseconds(maxTimeMs);
     }
 }

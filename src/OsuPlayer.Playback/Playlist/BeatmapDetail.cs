@@ -63,8 +63,8 @@ public partial class BeatmapDetail : ObservableObject
         public void ApplyFrom(OsuFile osuFile)
         {
             if (osuFile?.Metadata == null || osuFile.Difficulty == null) return;
-            Artist = osuFile.Metadata.ArtistMeta;
-            Title = osuFile.Metadata.TitleMeta;
+            Artist = SafeMetaString(osuFile.Metadata.Artist, osuFile.Metadata.ArtistUnicode);
+            Title = SafeMetaString(osuFile.Metadata.Title, osuFile.Metadata.TitleUnicode);
             BeatmapId = osuFile.Metadata.BeatmapId;
             BeatmapsetId = osuFile.Metadata.BeatmapSetId;
             Creator = osuFile.Metadata.Creator;
@@ -86,6 +86,11 @@ public partial class BeatmapDetail : ObservableObject
         Beatmap = beatmap;
     }
 
+    private static MetaString SafeMetaString(string? origin, string? unicode)
+    {
+        return new MetaString(origin ?? string.Empty, unicode);
+    }
+
     public Beatmap Beatmap { get; }
     public double Stars { get; set; }
     public long SongLength { get; set; }
@@ -94,7 +99,7 @@ public partial class BeatmapDetail : ObservableObject
     public string BaseFolder { get; set; } = string.Empty;
     public string MapPath { get; set; } = string.Empty;
     public string? BackgroundPath { get; set; }
-    public string MusicPath { get; set; } = string.Empty;
+    public string? MusicPath { get; set; }
     public string? VideoPath { get; set; }
     public string? StoryboardPath { get; set; }
 }

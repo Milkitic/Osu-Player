@@ -14,7 +14,7 @@ public sealed class BeatmapLoadResult
     public required Beatmap Beatmap { get; init; }
     public required string BaseFolder { get; init; }
     public required string MapPath { get; init; }
-    public required string MusicPath { get; init; }
+    public required string? MusicPath { get; init; }
     public required string? BackgroundPath { get; init; }
     public required string? VideoPath { get; init; }
     public required bool HasStoryboard { get; init; }

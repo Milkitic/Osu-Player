@@ -85,8 +85,10 @@ public sealed class BeatmapLoader
 
         var isFavorite = await CheckIsFavoriteAsync(beatmapSettings).ConfigureAwait(false);
 
-        var audioFilename = osuFile.General?.AudioFilename ?? string.Empty;
-        var musicPath = BeatmapPathResolver.ResolveChildPath(baseFolder, audioFilename);
+        var audioFilename = osuFile.General?.AudioFilename;
+        var musicPath = !string.IsNullOrWhiteSpace(audioFilename)
+            ? BeatmapPathResolver.ResolveChildPath(baseFolder, audioFilename)
+            : null;
         var defaultImagePath = BeatmapPathResolver.GetDefaultImagePath(AppPaths.Current.ResourcePath);
         var backgroundPath = BeatmapPathResolver.ResolveBackgroundPath(
             baseFolder, osuFile.Events?.BackgroundInfo?.Filename, defaultImagePath);
