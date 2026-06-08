@@ -18,8 +18,7 @@ public static class IdentifiableExtension
 
         isFromDb = true;
         freePath = null;
-        return map.InOwnDb
-            ? Path.Combine(Domain.CustomSongPath, map.FolderName)
-            : Path.Combine(Domain.OsuSongPath, map.FolderName);
+        var songPath = map.InOwnDb ? AppPaths.Current.CustomSongPath : AppPaths.Current.OsuSongPath;
+        return songPath == null ? null : Path.Combine(songPath, map.FolderName);
     }
 }

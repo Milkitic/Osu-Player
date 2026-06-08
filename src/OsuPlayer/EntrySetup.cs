@@ -70,6 +70,7 @@ public static class EntrySetup
         services.AddTransient<INavigationService, FrameNavigationService>();
         services.AddSingleton<IUiThreadDispatcher>(_ => Execute.UiThreadDispatcher);
         services.AddSingleton<IUserPreferences>(_ => AppSettings.Default);
+        services.AddSingleton<IAppPaths>(_ => AppPaths.Current);
 
         services.AddSingleton<PlayerDataService>();
         services.AddSingleton<IPlayerDataStore>(static provider => provider.GetRequiredService<PlayerDataService>());

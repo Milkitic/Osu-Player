@@ -38,7 +38,7 @@ public static class I18NUtil
         var defUiStrings = defLocale.Keys.Cast<object>()
             .ToDictionary(defKey => (string)defKey, defKey => (string)defLocale[defKey]);
 
-        foreach (var enumerateFile in SharedUtils.EnumerateFiles(Domain.LangPath, ".xaml"))
+        foreach (var enumerateFile in SharedUtils.EnumerateFiles(AppPaths.Current.LangPath, ".xaml"))
         {
             try
             {
@@ -160,7 +160,7 @@ public static class I18NUtil
             var chiUiText = string.Join("\r\n",
                 defUiStrings.Select(k => $@"    <sys:String x:Key=""{k.Key}"">{k.Value}</sys:String>"));
             var nativeName = CultureInfo.CreateSpecificCulture("zh-CN").NativeName;
-            File.WriteAllText(Path.Combine(Domain.LangPath, "zh-CN.xaml"), GetXamlTemplate(chiUiText));
+            File.WriteAllText(Path.Combine(AppPaths.Current.LangPath, "zh-CN.xaml"), GetXamlTemplate(chiUiText));
 
             AvailableLangDic.Add(nativeName, "zh-CN");
         }
@@ -176,7 +176,7 @@ public static class I18NUtil
         }
 
         ResourceDictionary langRd;
-        using (var s = new FileStream(Path.Combine(Domain.LangPath, $"{locale}.xaml"), FileMode.Open))
+        using (var s = new FileStream(Path.Combine(AppPaths.Current.LangPath, $"{locale}.xaml"), FileMode.Open))
         {
             langRd = (ResourceDictionary)System.Windows.Markup.XamlReader.Load(s);
         }

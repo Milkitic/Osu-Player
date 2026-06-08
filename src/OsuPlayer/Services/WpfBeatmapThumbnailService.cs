@@ -89,7 +89,7 @@ public sealed class WpfBeatmapThumbnailService : IBeatmapThumbnailService
         var imageBytes = LoadImageData(sourcePath);
         var bitmapSource = CreateImage(imageBytes, width, height);
         imageBytes = GetEncodedImageData(bitmapSource, ".jpg");
-        SaveImageData(imageBytes, Path.Combine(Domain.ThumbCachePath, $"{targetName}.jpg"));
+        SaveImageData(imageBytes, Path.Combine(AppPaths.Current.ThumbCachePath, $"{targetName}.jpg"));
     }
 
     private static byte[] LoadImageData(string filePath)

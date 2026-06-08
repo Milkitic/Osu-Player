@@ -109,8 +109,8 @@ public class ExportService : IExportService
             GetExportFolder(out var exportMp3Folder, out var exportBgFolder,
                 new MetaString(artistAsc, artistUtf), creator, source);
 
-            string exportMp3Name = ValidateFilename(escapedMp3, Domain.MusicPath, mp3FileInfo.Extension);
-            string exportBgName = ValidateFilename(escapedBg, Domain.BackgroundPath, bgFileInfo.Extension);
+            string exportMp3Name = ValidateFilename(escapedMp3, AppPaths.Current.MusicPath, mp3FileInfo.Extension);
+            string exportBgName = ValidateFilename(escapedBg, AppPaths.Current.BackgroundPath, bgFileInfo.Extension);
 
             if (mp3FileInfo.Exists)
                 Export(mp3FileInfo, exportMp3Folder, exportMp3Name);
@@ -133,8 +133,8 @@ public class ExportService : IExportService
         switch (AppSettings.Default.Export.ExportGroupStyle)
         {
             case ExportGroupStyle.None:
-                exportMp3Folder = Domain.MusicPath;
-                exportBgFolder = Domain.BackgroundPath;
+                exportMp3Folder = AppPaths.Current.MusicPath;
+                exportBgFolder = AppPaths.Current.BackgroundPath;
                 break;
             case ExportGroupStyle.Artist:
             {
@@ -145,14 +145,14 @@ public class ExportService : IExportService
                 if (string.IsNullOrEmpty(escArtistUtf))
                     escArtistUtf = "未知艺术家";
 
-                if (Directory.Exists(Path.Combine(Domain.MusicPath, escArtistUtf)))
-                    exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistUtf);
-                else if (Directory.Exists(Path.Combine(Domain.MusicPath, escArtistAsc)))
-                    exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistAsc);
+                if (Directory.Exists(Path.Combine(AppPaths.Current.MusicPath, escArtistUtf)))
+                    exportMp3Folder = Path.Combine(AppPaths.Current.MusicPath, escArtistUtf);
+                else if (Directory.Exists(Path.Combine(AppPaths.Current.MusicPath, escArtistAsc)))
+                    exportMp3Folder = Path.Combine(AppPaths.Current.MusicPath, escArtistAsc);
                 else
-                    exportMp3Folder = Path.Combine(Domain.MusicPath, escArtistUtf);
+                    exportMp3Folder = Path.Combine(AppPaths.Current.MusicPath, escArtistUtf);
 
-                exportBgFolder = Path.Combine(Domain.BackgroundPath, escArtistUtf);
+                exportBgFolder = Path.Combine(AppPaths.Current.BackgroundPath, escArtistUtf);
                 break;
             }
             case ExportGroupStyle.Mapper:
@@ -161,8 +161,8 @@ public class ExportService : IExportService
                 if (string.IsNullOrEmpty(escCreator))
                     escCreator = "未知作者";
 
-                exportMp3Folder = Path.Combine(Domain.MusicPath, escCreator);
-                exportBgFolder = Path.Combine(Domain.BackgroundPath, escCreator);
+                exportMp3Folder = Path.Combine(AppPaths.Current.MusicPath, escCreator);
+                exportBgFolder = Path.Combine(AppPaths.Current.BackgroundPath, escCreator);
                 break;
             }
             case ExportGroupStyle.Source:
@@ -171,8 +171,8 @@ public class ExportService : IExportService
                 if (string.IsNullOrEmpty(escSource))
                     escSource = "未知来源";
 
-                exportMp3Folder = Path.Combine(Domain.MusicPath, escSource);
-                exportBgFolder = Path.Combine(Domain.BackgroundPath, escSource);
+                exportMp3Folder = Path.Combine(AppPaths.Current.MusicPath, escSource);
+                exportBgFolder = Path.Combine(AppPaths.Current.BackgroundPath, escSource);
                 break;
             }
             default:

@@ -31,14 +31,7 @@ public static class EntryStartup
             return;
         }
 
-        Domain.OsuPathProvider = () =>
-            AppSettings.Default?.General?.DbPath == null
-                ? null
-                : new System.IO.FileInfo(AppSettings.Default.General.DbPath).Directory?.FullName;
-        Domain.CustomSongPathProvider = () =>
-            AppSettings.Default?.General?.CustomSongsPath == null
-                ? null
-                : new System.IO.FileInfo(AppSettings.Default.General.CustomSongsPath).FullName;
+        InitializeAppPaths();
 
 #if DEBUG
         //ConsoleManager.Show();
@@ -53,7 +46,7 @@ public static class EntryStartup
 
     internal static bool LoadConfig()
     {
-        var file = Domain.ConfigFile;
+        var file = AppPaths.Current.ConfigFile;
         if (!File.Exists(file))
         {
             AppSettings.CreateNewConfig();
@@ -105,7 +98,7 @@ public static class EntryStartup
     private static void InitFFmpeg()
     {
         var ffmpegArchitecture = Environment.Is64BitProcess ? "win-x64" : "win-x86";
-        var ffmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg", ffmpegArchitecture);
+        var ffmpegDirectory = Path.Combine(AppPaths.Current.PluginPath, "ffmpeg", ffmpegArchitecture);
 
         Unosquare.FFME.Library.FFmpegDirectory = ffmpegDirectory;
         DynamicallyLoadedBindings.FunctionResolver = new FFmpegWindowsFunctionResolver();
@@ -116,5 +109,17 @@ public static class EntryStartup
         }
 
         _ = ffmpeg.avformat_version();
+    }
+
+    private static void InitializeAppPaths()
+    {
+        var general = AppSettings.Default.General;
+        var osuSongPath = general.DbPath == null
+            ? null
+            : Path.Combine(new FileInfo(general.DbPath).Directory?.FullName ?? string.Empty, "Songs");
+        var customSongPath = general.CustomSongsPath == null
+            ? null
+            : new FileInfo(general.CustomSongsPath).FullName;
+        AppPaths.Current = new AppPaths(osuSongPath, customSongPath);
     }
 }

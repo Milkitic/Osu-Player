@@ -133,7 +133,7 @@ public class AppSettings : IUserPreferences, IDisposable
             var content = JsonSerializer.Serialize(this, JsonOptions);
             //byte[] buffer = Encoding.GetBytes(content);
             //FileStream.Value.Write(buffer, 0, buffer.Length);
-            File.WriteAllText(Domain.ConfigFile, content);
+            File.WriteAllText(AppPaths.Current.ConfigFile, content);
         }
     }
 
@@ -165,7 +165,7 @@ public class AppSettings : IUserPreferences, IDisposable
 
     private static void LoadNew()
     {
-        File.WriteAllText(Domain.ConfigFile, "");
+        File.WriteAllText(AppPaths.Current.ConfigFile, "");
         Load(new AppSettings());
     }
 

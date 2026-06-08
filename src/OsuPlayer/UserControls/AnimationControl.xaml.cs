@@ -53,7 +53,7 @@ public partial class AnimationControl : UserControl
     {
         _viewModel = (AnimationControlVm)DataContext;
 
-        var path = Path.Combine(Domain.ResourcePath, "official", "registration.jpg");
+        var path = Path.Combine(AppPaths.Current.ResourcePath, "official", "registration.jpg");
         if (File.Exists(path))
         {
             BackImage.Source = new BitmapImage(new Uri(path));

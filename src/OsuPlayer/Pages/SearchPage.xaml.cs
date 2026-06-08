@@ -79,7 +79,7 @@ public partial class SearchPage : Page
         try
         {
             var fileName = await _thumbnailService.GetThumbByBeatmapDbIdAsync(dataModel);
-            dataModel.ThumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg");
+            dataModel.ThumbPath = Path.Combine(AppPaths.Current.ThumbCachePath, $"{fileName}.jpg");
         }
         catch (Exception ex)
         {

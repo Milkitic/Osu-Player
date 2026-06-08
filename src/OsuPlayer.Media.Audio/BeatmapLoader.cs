@@ -87,7 +87,7 @@ public sealed class BeatmapLoader
 
         var audioFilename = osuFile.General?.AudioFilename ?? string.Empty;
         var musicPath = BeatmapPathResolver.ResolveChildPath(baseFolder, audioFilename);
-        var defaultImagePath = BeatmapPathResolver.GetDefaultImagePath(Domain.ResourcePath);
+        var defaultImagePath = BeatmapPathResolver.GetDefaultImagePath(AppPaths.Current.ResourcePath);
         var backgroundPath = BeatmapPathResolver.ResolveBackgroundPath(
             baseFolder, osuFile.Events?.BackgroundInfo?.Filename, defaultImagePath);
 

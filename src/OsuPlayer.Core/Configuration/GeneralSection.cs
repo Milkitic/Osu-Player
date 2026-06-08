@@ -12,7 +12,7 @@ public class GeneralSection
 {
     public bool RunOnStartup { get; set; } = false;
     public string? DbPath { get; set; }
-    public string CustomSongsPath { get; set; } = Path.Combine(Domain.CurrentPath, "Songs");
+    public string CustomSongsPath { get; set; } = Path.Combine(AppPaths.Current.BasePath, "Songs");
     public bool? ExitWhenClosed { get; set; } = null;
     public bool FirstOpen { get; set; } = true;
     public bool IsNavigationCollapsed { get; set; }

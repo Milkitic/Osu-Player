@@ -98,7 +98,7 @@ public partial class CollectionPage : Page
         try
         {
             var fileName = await _thumbnailService.GetThumbByBeatmapDbIdAsync(dataModel).ConfigureAwait(false);
-            Execute.OnUiThread(() => dataModel.ThumbPath = Path.Combine(Domain.ThumbCachePath, $"{fileName}.jpg"));
+            Execute.OnUiThread(() => dataModel.ThumbPath = Path.Combine(AppPaths.Current.ThumbCachePath, $"{fileName}.jpg"));
         }
         catch (Exception ex)
         {
