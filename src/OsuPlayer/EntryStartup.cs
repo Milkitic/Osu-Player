@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using Dapper.FluentMap;
 using FFmpeg.AutoGen;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NLog;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
+using Microsoft.Extensions.Logging;
 using OsuPlayer.Data;
 using OsuPlayer.Data.Models;
 using OsuPlayer.Presentation;
@@ -19,7 +22,7 @@ namespace OsuPlayer;
 
 public static class EntryStartup
 {
-    public static async Task StartupAsync()
+    public static async Task StartupAsync(IServiceProvider services)
     {
         LogManager.Setup().SetupExtensions(setup =>
             setup.RegisterLayoutRenderer<InvariantCultureLayoutRendererWrapper>("InvariantCulture"));
@@ -33,31 +36,14 @@ public static class EntryStartup
         //ConsoleManager.Show();
 #endif
 
-        await InitLocalDbAsync();
+        await InitLocalDbAsync(services);
 
         StyleUtilities.SetAlignment();
 
         InitFFmpeg();
     }
 
-    private static void InitFFmpeg()
-    {
-        // Keep FFmpeg binaries separated by process architecture to avoid x86/x64 mismatches.
-        var ffmpegArchitecture = Environment.Is64BitProcess ? "win-x64" : "win-x86";
-        var ffmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg", ffmpegArchitecture);
-
-        Unosquare.FFME.Library.FFmpegDirectory = ffmpegDirectory;
-        DynamicallyLoadedBindings.FunctionResolver = new FFmpegWindowsFunctionResolver();
-
-        if (!Unosquare.FFME.Library.LoadFFmpeg())
-        {
-            throw new DllNotFoundException($"Unable to initialize FFmpeg from '{ffmpegDirectory}'.");
-        }
-
-        _ = ffmpeg.avformat_version();
-    }
-
-    private static bool LoadConfig()
+    internal static bool LoadConfig()
     {
         var file = Domain.ConfigFile;
         if (!File.Exists(file))
@@ -87,7 +73,7 @@ public static class EntryStartup
         return true;
     }
 
-    private static async Task InitLocalDbAsync()
+    private static async Task InitLocalDbAsync(IServiceProvider services)
     {
         FluentMapper.Initialize(config =>
         {
@@ -98,11 +84,29 @@ public static class EntryStartup
             config.AddMap(new CollectionRelationMap());
         });
 
-        await OsuPlayerDbContext.InitializeDatabaseAsync();
+        await OsuPlayerDbContext.InitializeDatabaseAsync(
+            services.GetRequiredService<Func<OsuPlayerDbContext>>(),
+            services.GetRequiredService<ILogger<OsuPlayerDbContext>>());
 
-        var playerData = new PlayerDataService();
+        var playerData = services.GetRequiredService<IPlayerDataStore>();
         var defCol = await playerData.GetCollectionsAsync();
         var locked = defCol.Where(k => k.LockedBool);
         if (!locked.Any()) await playerData.TryAddCollectionAsync("Favorite", true);
+    }
+
+    private static void InitFFmpeg()
+    {
+        var ffmpegArchitecture = Environment.Is64BitProcess ? "win-x64" : "win-x86";
+        var ffmpegDirectory = Path.Combine(Domain.PluginPath, "ffmpeg", ffmpegArchitecture);
+
+        Unosquare.FFME.Library.FFmpegDirectory = ffmpegDirectory;
+        DynamicallyLoadedBindings.FunctionResolver = new FFmpegWindowsFunctionResolver();
+
+        if (!Unosquare.FFME.Library.LoadFFmpeg())
+        {
+            throw new DllNotFoundException($"Unable to initialize FFmpeg from '{ffmpegDirectory}'.");
+        }
+
+        _ = ffmpeg.avformat_version();
     }
 }

@@ -33,7 +33,7 @@ public sealed class PlayerSessionService : IAsyncDisposable
     private readonly PlayerEventBus _bus;
     private readonly PlayList _playList;
     private readonly BeatmapLoader _beatmapLoader;
-    private readonly SemaphoreSlim _readLock;
+    private readonly SemaphoreSlim _readLock = new(1, 1);
     private readonly IPlayerDataStore _playerData;
     private readonly IPlaybackEngine _playbackEngine;
     private readonly AudioCacheManager _audioCacheManager;
@@ -53,7 +53,6 @@ public sealed class PlayerSessionService : IAsyncDisposable
         PlayerEventBus bus,
         PlayList playList,
         BeatmapLoader beatmapLoader,
-        SemaphoreSlim readLock,
         IPlayerDataStore playerData,
         IPlaybackEngine playbackEngine,
         AudioCacheManager audioCacheManager,
@@ -63,7 +62,6 @@ public sealed class PlayerSessionService : IAsyncDisposable
         _bus = bus;
         _playList = playList;
         _beatmapLoader = beatmapLoader;
-        _readLock = readLock;
         _playerData = playerData;
         _playbackEngine = playbackEngine;
         _audioCacheManager = audioCacheManager;

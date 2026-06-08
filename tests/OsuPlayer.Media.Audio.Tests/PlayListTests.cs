@@ -72,7 +72,7 @@ public class PlayListTests
     }
 
     private static PlayList CreatePlayList()
-        => new(new FakePlayerDataStore(), new ImmediateUiThreadDispatcher(), null);
+        => new(new FakePlayerDataStore(), new ImmediateUiThreadDispatcher());
 
     private static Beatmap CreateBeatmap(string folderName)
         => new()

@@ -1,7 +1,6 @@
 using System;
 using System.Windows;
 using KeyAsio.Core.Audio;
-using KeyAsio.Core.Audio.Caching;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,6 +15,7 @@ using OsuPlayer.Data;
 using OsuPlayer.Instances;
 using OsuPlayer.Media.Audio;
 using OsuPlayer.Media.Audio.Coordination;
+using OsuPlayer.Media.Audio.Playlist;
 using OsuPlayer.Pages;
 using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Services;
@@ -82,18 +82,16 @@ public partial class App : Application
     {
         Execute.SetMainThreadContext();
 
-        await EntryStartup.StartupAsync();
-
-        // 1. 初始化依赖注入容器
         var services = new ServiceCollection();
         ConfigureServices(services);
         Services = services.BuildServiceProvider();
+
+        await EntryStartup.StartupAsync(Services);
 
         Services.GetRequiredService<LyricsInst>().ReloadLyricProvider();
 
         I18NUtil.LoadI18N();
 
-        // 3. 从容器解析并启动 MainWindow
         var mainWindow = Services.GetRequiredService<MainWindow>();
         MainWindow = mainWindow;
         mainWindow.Show();
@@ -109,7 +107,6 @@ public partial class App : Application
         });
         services.AddAudioModule();
 
-        // 注册 OsuPlayerDbContext 和 Func工厂
         services.AddTransient<OsuPlayerDbContext>(provider =>
         {
             var options = new DbContextOptionsBuilder<OsuPlayerDbContext>()
@@ -119,12 +116,10 @@ public partial class App : Application
         });
         services.AddSingleton<Func<OsuPlayerDbContext>>(provider => () => provider.GetRequiredService<OsuPlayerDbContext>());
 
-        // 注册新添加的实例服务
         services.AddSingleton<IBeatmapThumbnailService, BeatmapThumbnailService>();
         services.AddSingleton<IMapModelConverter, MapModelConverter>();
         services.AddSingleton<BeatmapLoader>();
 
-        // 注册核心后台服务 (Singletons)
         services.AddSingleton<IAppNotificationService, AppNotificationService>();
         services.AddTransient<INavigationService, FrameNavigationService>();
         services.AddSingleton<IUiThreadDispatcher>(_ => Execute.UiThreadDispatcher);
@@ -134,19 +129,19 @@ public partial class App : Application
                 provider.GetRequiredService<IPlayerDataStore>(),
                 provider.GetRequiredService<IAppNotificationService>()));
 
+        services.AddSingleton<PlayerEventBus>();
+        services.AddSingleton<PlayList>();
+        services.AddSingleton<PlayerSessionService>();
+
         services.AddSingleton(provider =>
         {
             var controller = new ObservablePlayController(
-                provider.GetRequiredService<IPlayerDataStore>(),
                 provider.GetRequiredService<IPlaybackEngine>(),
-                provider.GetRequiredService<AudioCacheManager>(),
-                ex => provider.GetRequiredService<IAppNotificationService>().Push(ex.Message, "Audio Device Error"),
-                provider.GetRequiredService<IUiThreadDispatcher>(),
-                provider.GetRequiredService<BeatmapLoader>(),
+                provider.GetRequiredService<PlayerEventBus>(),
+                provider.GetRequiredService<PlayList>(),
+                provider.GetRequiredService<PlayerSessionService>(),
                 provider.GetRequiredService<ILogger<ObservablePlayController>>(),
-                provider.GetRequiredService<ILogger<PlayerEventBus>>(),
-                provider.GetRequiredService<ILogger<PlayerSessionService>>(),
-                provider.GetRequiredService<ILoggerFactory>());
+                ex => provider.GetRequiredService<IAppNotificationService>().Push(ex.Message, "Audio Device Error"));
             controller.PlayList.Mode = AppSettings.Default.Play.PlayListMode;
             return controller;
         });

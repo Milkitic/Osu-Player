@@ -54,13 +54,13 @@ public class PlayerSessionServiceTests
         var logger = NullLogger<PlayerEventBus>.Instance;
         var LoggerFactory = NullLoggerFactory.Instance;
         var bus = new PlayerEventBus(dispatcher, logger);
+        var playList = new PlayList(playerData, dispatcher);
         var beatmapLoader = new BeatmapLoader(playerData, NullLogger<BeatmapLoader>.Instance);
 
         return new PlayerSessionService(
             bus,
-            new PlayList(playerData, dispatcher, null),
+            playList,
             beatmapLoader,
-            new SemaphoreSlim(1, 1),
             playerData,
             new FakePlaybackEngine(),
             new AudioCacheManager(NullLogger<AudioCacheManager>.Instance),

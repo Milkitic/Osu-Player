@@ -13,7 +13,7 @@ internal class LegacyPlayerDatabaseMigrator
     private const string LegacyMigrationId = "legacy-player-db";
     private const string MigrationHistoryTable = "__OsuPlayerDataMigrationHistory";
     private const string LegacySchema = "legacy";
-    private readonly ILogger<LegacyPlayerDatabaseMigrator> _logger;
+    private readonly ILogger _logger;
 
     private static readonly TableMigration[] TableMigrations =
     {
@@ -25,7 +25,7 @@ internal class LegacyPlayerDatabaseMigrator
         new("sb_info", "storyboard_assets")
     };
 
-    public LegacyPlayerDatabaseMigrator(ILogger<LegacyPlayerDatabaseMigrator> logger)
+    public LegacyPlayerDatabaseMigrator(ILogger logger)
     {
         _logger = logger;
     }

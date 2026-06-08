@@ -16,17 +16,14 @@ public sealed class PlayerEventBus : IDisposable
 {
     private readonly IUiThreadDispatcher _dispatcher;
     private readonly ILogger<PlayerEventBus> _logger;
-    private readonly Action<Exception> _audioDeviceErrorHandler;
     private OsuMixPlayer? _player;
 
     public PlayerEventBus(
         IUiThreadDispatcher dispatcher,
-        ILogger<PlayerEventBus> logger,
-        Action<Exception>? audioDeviceErrorHandler = null)
+        ILogger<PlayerEventBus> logger)
     {
         _dispatcher = dispatcher;
         _logger = logger;
-        _audioDeviceErrorHandler = audioDeviceErrorHandler ?? (_ => { });
     }
 
     public event Action<PlayStatus>? PlayStatusChanged;
@@ -34,6 +31,7 @@ public sealed class PlayerEventBus : IDisposable
     public event Action? PlayerChanged;
     public event Func<BeatmapContext, double, bool, Task>? PositionSetRequested;
     public event Action? InterfaceClearRequest;
+    public event Action<Exception>? AudioDeviceError;
     public event Action<string, CancellationToken>? PreLoadStarted;
     public event Action<BeatmapContext, CancellationToken>? LoadStarted;
     public event Action<BeatmapContext, CancellationToken>? MetaLoaded;
@@ -79,7 +77,7 @@ public sealed class PlayerEventBus : IDisposable
     public void OnPlaybackEngineDeviceError(Exception ex)
     {
         _logger.LogError(ex, "Audio device error.");
-        _dispatcher.Post(() => _audioDeviceErrorHandler(ex));
+        _dispatcher.Post(() => AudioDeviceError?.Invoke(ex));
     }
 
     public void Dispose() => DetachPlayer();

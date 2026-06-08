@@ -218,16 +218,18 @@ public class OsuPlayerDbContext : DbContext
         entity.Property(k => k.InOwnDb).HasColumnName("is_local");
     }
 
-    public static async Task InitializeDatabaseAsync()
+    public static async Task InitializeDatabaseAsync(
+        Func<OsuPlayerDbContext> createContext,
+        Microsoft.Extensions.Logging.ILogger migratorLogger)
     {
         try
         {
-            await using var db = new OsuPlayerDbContext();
+            await using var db = createContext();
             await db.Database.MigrateAsync();
             await db.Database.ExecuteSqlRawAsync("PRAGMA journal_mode=WAL");
             await db.Database.ExecuteSqlRawAsync("PRAGMA busy_timeout=5000");
-            
-            var migrator = new LegacyPlayerDatabaseMigrator(Microsoft.Extensions.Logging.Abstractions.NullLogger<LegacyPlayerDatabaseMigrator>.Instance);
+
+            var migrator = new LegacyPlayerDatabaseMigrator(migratorLogger);
             migrator.MigrateIfRequired(DefaultDatabasePath, LegacyDatabasePath);
         }
         catch (Exception ex)
@@ -237,9 +239,11 @@ public class OsuPlayerDbContext : DbContext
         }
     }
 
-    public static async Task ValidateDbAsync()
+    public static async Task ValidateDbAsync(
+        Func<OsuPlayerDbContext> createContext,
+        Microsoft.Extensions.Logging.ILogger migratorLogger)
     {
-        await InitializeDatabaseAsync();
+        await InitializeDatabaseAsync(createContext, migratorLogger);
     }
 
     public async Task<BeatmapSettings> GetMapFromDbAsync(IMapIdentifiable id)

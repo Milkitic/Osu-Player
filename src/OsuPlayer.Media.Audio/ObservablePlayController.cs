@@ -36,38 +36,28 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
     private static readonly NullPlaybackController s_nullController = new();
 
     public ObservablePlayController(
-        IPlayerDataStore playerData,
         IPlaybackEngine playbackEngine,
-        AudioCacheManager audioCacheManager,
-        Action<Exception> audioDeviceErrorHandler,
-        IUiThreadDispatcher uiThreadDispatcher,
-        BeatmapLoader beatmapLoader,
+        PlayerEventBus bus,
+        PlayList playList,
+        PlayerSessionService session,
         ILogger<ObservablePlayController> logger,
-        ILogger<PlayerEventBus> busLogger,
-        ILogger<PlayerSessionService> sessionLogger,
-        ILoggerFactory loggerFactory)
+        Action<Exception> audioDeviceErrorHandler)
     {
         _logger = logger;
         _playbackEngine = playbackEngine;
+        _bus = bus;
+        PlayList = playList;
+        _session = session;
 
-        _bus = new PlayerEventBus(uiThreadDispatcher, busLogger, audioDeviceErrorHandler);
+        _playbackEngine.DeviceError += _bus.OnPlaybackEngineDeviceError;
+
         _bus.PlayStatusChanged += OnBusPlayStatusChanged;
         _bus.PositionUpdated += position => PositionUpdated?.Invoke(position);
         _bus.PlayerChanged += OnBusPlayerChanged;
+        _bus.AudioDeviceError += audioDeviceErrorHandler;
 
-        PlayList = new PlayList(playerData, uiThreadDispatcher, OnSongListChanged, OnModeChanged);
-        _session = new PlayerSessionService(
-            _bus,
-            PlayList,
-            beatmapLoader,
-            new SemaphoreSlim(1, 1),
-            playerData,
-            playbackEngine,
-            audioCacheManager,
-            sessionLogger,
-            loggerFactory);
-
-        _playbackEngine.DeviceError += _bus.OnPlaybackEngineDeviceError;
+        PlayList.SongListChanged += OnSongListChanged;
+        PlayList.ModeChanged += OnModeChanged;
 
         // Re-export bus events onto the facade surface for legacy subscribers.
         _bus.PreLoadStarted += (path, ct) => PreLoadStarted?.Invoke(path, ct);
@@ -175,9 +165,9 @@ public sealed partial class ObservablePlayController : ObservableObject, IPlayba
         AppSettings.SaveDefault();
     }
 
-    private void OnModeChanged(PlaylistMode mode)
+    private void OnModeChanged(PlaylistMode oldValue, PlaylistMode newValue)
     {
-        AppSettings.Default.Play.PlayListMode = mode;
+        AppSettings.Default.Play.PlayListMode = newValue;
         AppSettings.SaveDefault();
     }
 
