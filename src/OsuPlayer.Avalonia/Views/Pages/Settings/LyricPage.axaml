@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OsuPlayer.Avalonia.ViewModels.Pages.Settings"
+             xmlns:shared="using:OsuPlayer.Shared.Models"
+             x:Class="OsuPlayer.Avalonia.Views.Pages.Settings.LyricPage"
+             x:DataType="vm:LyricPageViewModel">
+    <UserControl.Resources>
+        <vm:LyricSourceToBoolConverter x:Key="LyricSourceConv" />
+        <vm:LyricProvideTypeToBoolConverter x:Key="LyricProvideTypeConv" />
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10" Spacing="6">
+            <TextBlock Text="Desktop Lyric" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <CheckBox Margin="8,0" HorizontalAlignment="Left"
+                      Content="Enable desktop lyric"
+                      IsChecked="{Binding EnableLyric, Mode=TwoWay}" />
+
+            <TextBlock Text="Lyric Source" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <RadioButton Margin="8,0" GroupName="source" Content="Auto"
+                         IsChecked="{Binding LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.Auto}, Mode=TwoWay}" />
+            <RadioButton Margin="8,0" GroupName="source" Content="Netease"
+                         IsChecked="{Binding LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.Netease}, Mode=TwoWay}" />
+            <RadioButton Margin="8,0" GroupName="source" Content="Kugou"
+                         IsChecked="{Binding LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.Kugou}, Mode=TwoWay}" />
+            <RadioButton Margin="8,0" GroupName="source" Content="QQMusic"
+                         IsChecked="{Binding LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.QqMusic}, Mode=TwoWay}" />
+
+            <TextBlock Text="Translation" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <RadioButton Margin="8,0" GroupName="provide" Content="Display all lyrics"
+                         IsChecked="{Binding ProvideType, Converter={StaticResource LyricProvideTypeConv}, ConverterParameter={x:Static shared:LyricProvideType.PreferBoth}, Mode=TwoWay}" />
+            <RadioButton Margin="8,0" GroupName="provide" Content="Prefer origin (Netease only)"
+                         IsChecked="{Binding ProvideType, Converter={StaticResource LyricProvideTypeConv}, ConverterParameter={x:Static shared:LyricProvideType.Original}, Mode=TwoWay}" />
+            <RadioButton Margin="8,0" GroupName="provide" Content="Prefer translated (Netease only)"
+                         IsChecked="{Binding ProvideType, Converter={StaticResource LyricProvideTypeConv}, ConverterParameter={x:Static shared:LyricProvideType.PreferTranslated}, Mode=TwoWay}" />
+
+            <TextBlock Text="Match Mode" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <CheckBox Margin="8,0" HorizontalAlignment="Left"
+                      Content="Enable strict matching"
+                      IsChecked="{Binding StrictMode, Mode=TwoWay}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OsuPlayer.Avalonia.ViewModels.Pages.Settings"
+             xmlns:shared="using:OsuPlayer.Shared.Models"
+             x:Class="OsuPlayer.Avalonia.Views.Pages.Settings.ExportPage"
+             x:DataType="vm:ExportPageViewModel">
+    <UserControl.Resources>
+        <vm:ExportNamingToBoolConverter x:Key="ExportNamingConv" />
+        <vm:ExportGroupToBoolConverter x:Key="ExportGroupConv" />
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10" Spacing="6">
+            <TextBlock Text="Export Path" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="Music directory:" VerticalAlignment="Center" Foreground="#AAAAAA" />
+                <TextBox Width="250" Height="27" Text="{Binding MusicPath, Mode=OneWay}" IsReadOnly="True" />
+                <Button Content="..." Width="27" Height="27" Classes="style-collection"
+                        Command="{Binding BrowseMusicCommand}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="Background directory:" VerticalAlignment="Center" Foreground="#AAAAAA" />
+                <TextBox Width="250" Height="27" Text="{Binding BgPath, Mode=OneWay}" IsReadOnly="True" />
+                <Button Content="..." Width="27" Height="27" Classes="style-collection"
+                        Command="{Binding BrowseBgCommand}" />
+            </StackPanel>
+
+            <TextBlock Text="File Naming Format" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <RadioButton Margin="8,0" GroupName="naming" Content="Title"
+                         IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.Title}, Mode=TwoWay}" />
+            <RadioButton Margin="8,0" GroupName="naming" Content="Artist - Title"
+                         IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.ArtistTitle}, Mode=TwoWay}" />
+            <RadioButton Margin="8,0" GroupName="naming" Content="Title - Artist"
+                         IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.TitleArtist}, Mode=TwoWay}" />
+
+            <TextBlock Text="Directory Grouping" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <RadioButton Margin="8,0" GroupName="grouping" Content="No group"
+                         IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.None}, Mode=TwoWay}" />
+            <RadioButton Margin="8,0" GroupName="grouping" Content="By artist"
+                         IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Artist}, Mode=TwoWay}" />
+            <RadioButton Margin="8,0" GroupName="grouping" Content="By mapper"
+                         IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Mapper}, Mode=TwoWay}" />
+            <RadioButton Margin="8,0" GroupName="grouping" Content="By source"
+                         IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Source}, Mode=TwoWay}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

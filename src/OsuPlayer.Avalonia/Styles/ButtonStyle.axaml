@@ -1,0 +1,99 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--  Image button style (transparent background)  -->
+    <Style Selector="Button.style-image">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Content="{TemplateBinding Content}" />
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <!--  Collection button style (light background with hover)  -->
+    <Style Selector="Button.style-collection">
+        <Setter Property="Background" Value="#EEEEEE" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    x:Name="innerBorder"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="#BBBBBB"
+                    BorderThickness="1"
+                    ClipToBounds="True">
+                    <ContentPresenter
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Content="{TemplateBinding Content}"
+                        FontSize="12"
+                        Foreground="Black" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="Button.style-collection:pointerover /template/ Border#innerBorder">
+        <Setter Property="Background" Value="#F8F8F8" />
+    </Style>
+
+    <!--  Collection2 button style (semi-transparent)  -->
+    <Style Selector="Button.style-collection2">
+        <Setter Property="Background" Value="#EEEEF8" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    x:Name="innerBorder2"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="#80BBBBBB"
+                    BorderThickness="1"
+                    ClipToBounds="True"
+                    Opacity="0">
+                    <ContentPresenter
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Content="{TemplateBinding Content}"
+                        FontSize="12"
+                        Foreground="Black" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="Button.style-collection2:pointerover /template/ Border#innerBorder2">
+        <Setter Property="Opacity" Value="0.75" />
+    </Style>
+
+    <!--  Texture button (fixed 32x32)  -->
+    <Style Selector="Button.style-texture">
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Margin" Value="8" />
+    </Style>
+
+    <!--  Small texture button (24x24 with hover dimming)  -->
+    <Style Selector="Button.style-texture-small">
+        <Setter Property="Width" Value="24" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Margin" Value="8" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    x:Name="SB"
+                    Width="{TemplateBinding Width}"
+                    Height="{TemplateBinding Height}"
+                    Background="{TemplateBinding Background}"
+                    ClipToBounds="True">
+                    <ContentPresenter Content="{TemplateBinding Content}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="Button.style-texture-small:pointerover /template/ Border#SB">
+        <Setter Property="Opacity" Value="0.7" />
+    </Style>
+    <Style Selector="Button.style-texture-small:pressed /template/ Border#SB">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+</Styles>

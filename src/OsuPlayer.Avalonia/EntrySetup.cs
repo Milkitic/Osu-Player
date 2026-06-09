@@ -81,6 +81,37 @@ public static class EntrySetup
         services.AddSingleton<OsuFileScanner>();
 
         services.AddSingleton<OsuPlayer.Avalonia.ViewModels.MainWindowViewModel>();
+
+        // Settings 页面
+        services.AddTransient<OsuPlayer.Avalonia.Views.Pages.Settings.InterfacePage>();
+        services.AddTransient<OsuPlayer.Avalonia.Views.Pages.Settings.AboutPage>();
+        services.AddTransient<OsuPlayer.Avalonia.Views.Pages.Settings.GeneralPage>();
+        services.AddTransient<OsuPlayer.Avalonia.Views.Pages.Settings.PlayPage>();
+        services.AddTransient<OsuPlayer.Avalonia.Views.Pages.Settings.LyricPage>();
+        services.AddTransient<OsuPlayer.Avalonia.Views.Pages.Settings.ExportPage>();
+        services.AddTransient<OsuPlayer.Avalonia.Views.Pages.Settings.HotKeyPage>();
+
+        // Settings ViewModels
+        services.AddTransient<OsuPlayer.Avalonia.ViewModels.Pages.Settings.InterfacePageViewModel>();
+        services.AddTransient<OsuPlayer.Avalonia.ViewModels.Pages.Settings.AboutPageViewModel>();
+        services.AddTransient<OsuPlayer.Avalonia.ViewModels.Pages.Settings.GeneralPageViewModel>();
+        services.AddTransient<OsuPlayer.Avalonia.ViewModels.Pages.Settings.PlayPageViewModel>();
+        services.AddTransient<OsuPlayer.Avalonia.ViewModels.Pages.Settings.LyricPageViewModel>();
+        services.AddTransient<OsuPlayer.Avalonia.ViewModels.Pages.Settings.ExportPageViewModel>();
+        services.AddTransient<OsuPlayer.Avalonia.ViewModels.Pages.Settings.HotKeyPageViewModel>();
+
+        // 主页面
+        services.AddTransient<OsuPlayer.Avalonia.Views.Pages.CollectionPage>();
+        services.AddTransient<OsuPlayer.Avalonia.Views.Pages.RecentPlayPage>();
+        services.AddTransient<OsuPlayer.Avalonia.Views.Pages.SearchPage>();
+        services.AddTransient<OsuPlayer.Avalonia.Views.Pages.FindPage>();
+        services.AddTransient<OsuPlayer.Avalonia.Views.Pages.ExportPage>();
+
+        // 主页面 ViewModels
+        services.AddTransient<OsuPlayer.Avalonia.ViewModels.CollectionPageViewModel>();
+        services.AddTransient<OsuPlayer.Avalonia.ViewModels.RecentPlayPageViewModel>();
+        services.AddTransient<OsuPlayer.Avalonia.ViewModels.SearchPageViewModel>();
+        services.AddTransient<OsuPlayer.Avalonia.ViewModels.ExportPageViewModel>();
         return services;
     }
 }

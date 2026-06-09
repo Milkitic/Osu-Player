@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OsuPlayer.Avalonia.ViewModels.Pages.Settings"
+             x:Class="OsuPlayer.Avalonia.Views.Pages.Settings.PlayPage"
+             x:DataType="vm:PlayPageViewModel">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10" Spacing="6">
+            <TextBlock Text="Global Hitsound Delay" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <Slider Classes="osu-slider" Width="300" Margin="8,0"
+                        Minimum="-200" Maximum="200"
+                        Value="{Binding GeneralOffset, Mode=TwoWay}" />
+                <TextBox Width="35" Text="{Binding GeneralOffset, Mode=TwoWay}" />
+            </StackPanel>
+
+            <TextBlock Text="Auto Play" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <CheckBox Margin="8,0" HorizontalAlignment="Left"
+                      Content="Auto play on program startup"
+                      IsChecked="{Binding AutoPlay, Mode=TwoWay}" />
+
+            <TextBlock Text="Play Progress" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <CheckBox Margin="8,0" HorizontalAlignment="Left"
+                      Content="Resume playlist on program startup"
+                      IsChecked="{Binding Memory, Mode=TwoWay}" />
+
+            <TextBlock Text="Audio Play Device" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <ComboBox Width="320" Margin="8,0" HorizontalAlignment="Left"
+                      ItemsSource="{Binding AvailableDevices}"
+                      SelectedItem="{Binding SelectedDevice, Mode=TwoWay}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

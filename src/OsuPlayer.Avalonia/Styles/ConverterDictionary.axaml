@@ -1,0 +1,13 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:OsuPlayer.Avalonia.Converters">
+    <converters:TrueToVisibleConverter x:Key="TrueToVisibleConverter" />
+    <converters:NullToHiddenConverter x:Key="NullToHiddenConverter" />
+    <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
+    <converters:NullToFullOpacityConverter x:Key="NullToFullOpacityConverter" />
+    <converters:NullToBoolFalseConverter x:Key="NullToBoolFalseConverter" />
+    <converters:NegativeBooleanConverter x:Key="NegativeBooleanConverter" />
+    <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    <converters:MsToStringConverter x:Key="MsToStringConverter" />
+</ResourceDictionary>

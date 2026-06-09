@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OsuPlayer.Avalonia.ViewModels.Pages.Settings"
+             x:Class="OsuPlayer.Avalonia.Views.Pages.Settings.HotKeyPage"
+             x:DataType="vm:HotKeyPageViewModel">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10" Spacing="6">
+            <TextBlock Text="HotKey Settings" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <ItemsControl ItemsSource="{Binding Entries}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:HotKeyEntry">
+                        <Grid ColumnDefinitions="*,2*">
+                            <TextBlock Grid.Column="0" Text="{Binding DisplayName}"
+                                       VerticalAlignment="Center" Foreground="White" />
+                            <TextBox Grid.Column="1" Text="{Binding HotKeyText, Mode=OneWay}"
+                                     IsReadOnly="True" Width="150" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

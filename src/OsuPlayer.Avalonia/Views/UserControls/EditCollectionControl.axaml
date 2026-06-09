@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="OsuPlayer.Avalonia.Views.UserControls.EditCollectionControl">
+    <StackPanel Margin="10" Spacing="6">
+        <TextBlock Text="Edit collection" Foreground="White" FontWeight="Bold" />
+        <TextBox Watermark="Name" />
+        <CheckBox Content="Lock this collection (Favorites)" Foreground="White" />
+        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right">
+            <Button Content="Cancel" Classes="style-collection" />
+            <Button Content="Delete" Classes="style-collection" />
+            <Button Content="Save" Classes="style-collection" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

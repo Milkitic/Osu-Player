@@ -1,0 +1,7 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style Selector="Slider.osu-slider">
+        <Setter Property="Foreground" Value="{DynamicResource PinkBrushOsu}" />
+        <Setter Property="Background" Value="#EAEAEA" />
+    </Style>
+</Styles>

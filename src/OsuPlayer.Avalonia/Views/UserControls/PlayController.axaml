@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="OsuPlayer.Avalonia.Views.UserControls.PlayController">
+    <Border Background="#252526" Padding="20" CornerRadius="8">
+        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto,Auto,Auto,*,Auto" ColumnSpacing="8">
+            <!-- Thumbnail placeholder -->
+            <Border Grid.Column="0" Grid.RowSpan="2" Width="60" Height="60"
+                    Background="#404040" CornerRadius="4" />
+
+            <!-- Song info -->
+            <StackPanel Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4"
+                        Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="No song playing" Foreground="White" FontWeight="Bold" />
+                <TextBlock Text="-" Foreground="#AAAAAA" FontSize="11" />
+            </StackPanel>
+
+            <!-- Controls -->
+            <StackPanel Grid.Column="5" Grid.Row="0" Grid.ColumnSpan="2"
+                        Orientation="Horizontal" Spacing="4">
+                <Button Content="⏮" Classes="style-image" Width="32" Height="32" />
+                <Button Content="▶" Classes="style-image" Width="32" Height="32" />
+                <Button Content="⏭" Classes="style-image" Width="32" Height="32" />
+            </StackPanel>
+
+            <!-- Progress -->
+            <DockPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="7" LastChildFill="True" Margin="0,8">
+                <TextBlock Text="00:00" Foreground="#AAAAAA" DockPanel.Dock="Left" Margin="0,0,8,0" />
+                <Slider Classes="osu-slider" Minimum="0" Maximum="100" Value="30" />
+                <TextBlock Text="03:45" Foreground="#AAAAAA" DockPanel.Dock="Right" Margin="8,0,0,0" />
+            </DockPanel>
+        </Grid>
+    </Border>
+</UserControl>

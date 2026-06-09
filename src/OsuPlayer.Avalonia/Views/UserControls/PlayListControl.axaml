@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="OsuPlayer.Avalonia.Views.UserControls.PlayListControl">
+    <Border Background="#252526" Padding="8">
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="6" Margin="0,0,0,8">
+                <Button Content="Play All" Classes="style-collection" />
+                <Button Content="Clear" Classes="style-collection" />
+                <Button Content="Save" Classes="style-collection" />
+            </StackPanel>
+            <ListBox Background="Transparent">
+                <ListBoxItem>
+                    <StackPanel>
+                        <TextBlock Text="Sample Track 1" Foreground="White" />
+                        <TextBlock Text="Artist" Foreground="#AAAAAA" FontSize="11" />
+                    </StackPanel>
+                </ListBoxItem>
+            </ListBox>
+        </DockPanel>
+    </Border>
+</UserControl>

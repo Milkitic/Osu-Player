@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="OsuPlayer.Avalonia.Views.UserControls.DiffSelectControl">
+    <Border Background="#252526" Padding="16" CornerRadius="8">
+        <StackPanel Spacing="8">
+            <TextBlock Text="Select difficulty" Foreground="White" FontWeight="Bold" />
+            <ListBox Background="Transparent">
+                <ListBoxItem><TextBlock Text="Easy ★ 2.5" Foreground="White" /></ListBoxItem>
+                <ListBoxItem><TextBlock Text="Normal ★ 4.0" Foreground="White" /></ListBoxItem>
+                <ListBoxItem><TextBlock Text="Hard ★ 5.5" Foreground="White" /></ListBoxItem>
+            </ListBox>
+        </StackPanel>
+    </Border>
+</UserControl>
