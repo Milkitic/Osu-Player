@@ -42,6 +42,11 @@
       <BuildType Solution="Release 4.5|*" Project="Release" />
       <BuildType Solution="Release 4.6|*" Project="Release" />
     </Project>
+    <Project Path="src/Platforms/OsuPlayer.Presentation.Avalonia/OsuPlayer.Presentation.Avalonia.csproj">
+      <BuildType Solution="Analysis|*" Project="Debug" />
+      <BuildType Solution="Release 4.5|*" Project="Release" />
+      <BuildType Solution="Release 4.6|*" Project="Release" />
+    </Project>
     <Project Path="src/Platforms/OsuPlayer.Presentation.Wpf/OsuPlayer.Presentation.Wpf.csproj">
       <BuildType Solution="Analysis|*" Project="Release" />
       <BuildType Solution="Release 4.5|*" Project="Release" />

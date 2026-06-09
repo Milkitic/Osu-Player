@@ -1,12 +1,10 @@
 using Avalonia.Controls;
-using Avalonia.Layout;
-using Avalonia.Media;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
-using OsuPlayer.Avalonia.Interaction;
 using OsuPlayer.Avalonia.ViewModels;
 using OsuPlayer.Avalonia.Views.Pages.Settings;
+using OsuPlayer.Presentation.Interaction;
 
 namespace OsuPlayer.Avalonia.Windows;
 

@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.Messaging.Messages;
 
-namespace OsuPlayer.Avalonia.Interaction;
+namespace OsuPlayer.Presentation.Interaction;
 
 /// <summary>
 /// 用于解耦跨页面检索的事件消息

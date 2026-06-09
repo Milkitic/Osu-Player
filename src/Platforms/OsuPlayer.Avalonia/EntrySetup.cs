@@ -3,10 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using OsuPlayer.Avalonia.AnimationOptions;
-using OsuPlayer.Avalonia.Interaction;
 using OsuPlayer.Avalonia.Services;
-using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Instances;
 using OsuPlayer.Core.Scanning;
@@ -15,6 +12,7 @@ using OsuPlayer.Data;
 using OsuPlayer.Media.Audio;
 using OsuPlayer.Playback;
 using OsuPlayer.Playback.Playlist;
+using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Shared;
 
 namespace OsuPlayer.Avalonia;

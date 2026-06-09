@@ -2,7 +2,7 @@
 
 using System;
 
-namespace OsuPlayer.Avalonia.Interaction;
+namespace OsuPlayer.Presentation.Interaction;
 
 /// <summary>
 /// 统一的导航服务接口，用于解耦 View 与 ViewModel
@@ -15,7 +15,7 @@ public interface INavigationService
     void NavigateTo(Type pageType, object? parameter = null);
 
     /// <summary>
-    /// 注册导航的主 Frame (Avalonia 端为 ContentControl)
+    /// 注册导航的主 Frame
     /// </summary>
     void Initialize(object frameControl);
 }

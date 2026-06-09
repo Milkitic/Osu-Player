@@ -7,11 +7,11 @@ using Dapper.FluentMap;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog;
-using OsuPlayer.Avalonia.AnimationOptions;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data;
 using OsuPlayer.Data.Models;
+using OsuPlayer.Presentation;
 using OsuPlayer.Shared;
 
 namespace OsuPlayer.Avalonia;
@@ -33,7 +33,7 @@ public static class EntryStartup
         await InitLocalDbAsync(services);
 
         // 替代 WPF StyleUtilities.SetAlignment() - Avalonia 不需要此操作
-        AnimationOptionsHelper.DisableAnimations = () => AppSettings.Default?.Interface?.MinimalMode == true;
+        AnimationOptions.DisableAnimations = () => AppSettings.Default?.Interface?.MinimalMode == true;
     }
 
     internal static bool LoadConfig()

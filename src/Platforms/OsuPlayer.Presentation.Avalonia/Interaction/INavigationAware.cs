@@ -1,9 +1,9 @@
-namespace OsuPlayer.Avalonia.Interaction;
+namespace OsuPlayer.Presentation.Interaction;
 
 /// <summary>
 /// 允许 ViewModel 在导航发生时接收上下文参数
 /// </summary>
 public interface INavigationAware
 {
-    void OnNavigatedTo(object? parameter);
+    void OnNavigatedTo(object parameter);
 }

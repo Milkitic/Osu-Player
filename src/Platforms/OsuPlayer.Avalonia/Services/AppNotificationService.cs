@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Avalonia.Controls;
 using Avalonia.Threading;
-using OsuPlayer.Avalonia.Interaction;
 using OsuPlayer.Shared;
 
 namespace OsuPlayer.Avalonia.Services;

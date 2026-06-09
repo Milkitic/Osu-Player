@@ -1,9 +1,8 @@
 using System;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
-using OsuPlayer.Avalonia.Interaction;
 using OsuPlayer.Core;
-using OsuPlayer.Shared;
+using OsuPlayer.Presentation.Interaction;
 
 namespace OsuPlayer.Avalonia.ViewModels;
 

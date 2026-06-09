@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework>$(OsuPlayerLibraryTargetFramework)</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
@@ -44,7 +44,7 @@
     <ProjectReference Include="..\..\Core\OsuPlayer.Data\OsuPlayer.Data.csproj" />
     <ProjectReference Include="..\..\Core\OsuPlayer.Media.Audio\OsuPlayer.Media.Audio.csproj" />
     <ProjectReference Include="..\..\Core\OsuPlayer.Media.Lyric\OsuPlayer.Media.Lyric.csproj" />
-    <!--<ProjectReference Include="..\OsuPlayer.Presentation.Avalonia\OsuPlayer.Presentation.Avalonia.csproj" />-->
+    <ProjectReference Include="..\OsuPlayer.Presentation.Avalonia\OsuPlayer.Presentation.Avalonia.csproj" />
     <ProjectReference Include="..\..\Core\OsuPlayer.Shared\OsuPlayer.Shared.csproj" />
   </ItemGroup>
 

@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OsuPlayer.Avalonia.Interaction;
 using OsuPlayer.Avalonia.Services;
 
 namespace OsuPlayer.Avalonia.ViewModels.Pages.Settings;

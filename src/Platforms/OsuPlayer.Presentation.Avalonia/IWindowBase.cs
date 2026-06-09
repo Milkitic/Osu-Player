@@ -1,4 +1,5 @@
-namespace OsuPlayer.Avalonia;
+
+namespace OsuPlayer.Presentation;
 
 public interface IWindowBase
 {

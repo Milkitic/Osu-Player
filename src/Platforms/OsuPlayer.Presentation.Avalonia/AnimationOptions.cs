@@ -1,12 +1,10 @@
 #nullable enable
+
 using System;
 
-namespace OsuPlayer.Avalonia.AnimationOptions;
+namespace OsuPlayer.Presentation;
 
-/// <summary>
-/// 全局动画选项(替代 WPF AnimationOptions)
-/// </summary>
-public static class AnimationOptionsHelper
+public static class AnimationOptions
 {
     public static Func<bool>? DisableAnimations { get; set; }
 

@@ -1,10 +1,9 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using OsuPlayer.Shared;
 
-namespace OsuPlayer.Avalonia.Interaction;
+namespace OsuPlayer.Presentation.Interaction;
 
 public static class Execute
 {

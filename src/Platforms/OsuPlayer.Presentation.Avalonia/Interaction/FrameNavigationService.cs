@@ -1,25 +1,26 @@
 #nullable enable
 
 using System;
-using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
-using OsuPlayer.Avalonia.AnimationOptions;
 
-namespace OsuPlayer.Avalonia.Interaction;
+namespace OsuPlayer.Presentation.Interaction;
 
 public sealed class FrameNavigationService : INavigationService
 {
     private readonly IServiceProvider _serviceProvider;
     private ContentControl? _content;
 
+    private readonly TimeSpan _animationDuration;
+
     public FrameNavigationService(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        _animationDuration = AnimationOptions.GetDuration(TimeSpan.FromMilliseconds(300));
     }
 
     public void Initialize(object frameControl)
@@ -60,11 +61,42 @@ public sealed class FrameNavigationService : INavigationService
 
     private void NavigateWithAnimation(Control control)
     {
-        // 简化: 简单设置内容,使用 Transitions 进行淡入
-        _content!.Content = control;
-        control.Opacity = 0;
+        var previousContent = _content!.Content as Control;
+        _content.Content = control;
 
-        // 触发一次 Opacity 过渡
-        control.Opacity = 1;
+        control.SetValue(Control.OpacityProperty, 0d);
+        control.SetValue(ScaleTransform.ScaleXProperty, 0.95);
+        control.SetValue(ScaleTransform.ScaleYProperty, 0.95);
+
+        var animation = new Avalonia.Animation.Animation
+        {
+            Duration = _animationDuration,
+            Easing = new ExponentialEaseOut(),
+            Children =
+            {
+                new KeyFrame
+                {
+                    Cue = new Cue(0d),
+                    Setters =
+                    {
+                        new Setter(Control.OpacityProperty, 0d),
+                        new Setter(ScaleTransform.ScaleXProperty, 0.95),
+                        new Setter(ScaleTransform.ScaleYProperty, 0.95),
+                    }
+                },
+                new KeyFrame
+                {
+                    Cue = new Cue(1d),
+                    Setters =
+                    {
+                        new Setter(Control.OpacityProperty, 1d),
+                        new Setter(ScaleTransform.ScaleXProperty, 1d),
+                        new Setter(ScaleTransform.ScaleYProperty, 1d),
+                    }
+                }
+            }
+        };
+
+        animation.RunAsync(control);
     }
 }
