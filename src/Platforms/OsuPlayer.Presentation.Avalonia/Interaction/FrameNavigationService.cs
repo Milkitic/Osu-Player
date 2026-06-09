@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
@@ -61,12 +62,12 @@ public sealed class FrameNavigationService : INavigationService
 
     private void NavigateWithAnimation(Control control)
     {
-        var previousContent = _content!.Content as Control;
-        _content.Content = control;
+        _content!.Content = control;
 
+        var scale = new ScaleTransform(0.95, 0.95);
         control.SetValue(Control.OpacityProperty, 0d);
-        control.SetValue(ScaleTransform.ScaleXProperty, 0.95);
-        control.SetValue(ScaleTransform.ScaleYProperty, 0.95);
+        control.RenderTransform = scale;
+        control.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
 
         var animation = new Avalonia.Animation.Animation
         {

@@ -1,13 +1,16 @@
 using System;
+using KeyAsio.Core.Audio;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
 using OsuPlayer.Core.Instances;
 using OsuPlayer.Core.Scanning;
 using OsuPlayer.Core.Services;
 using OsuPlayer.Data;
+using OsuPlayer.Instances;
 using OsuPlayer.Media.Audio;
 using OsuPlayer.Playback;
 using OsuPlayer.Playback.Playlist;
@@ -15,11 +18,9 @@ using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.Services;
 using OsuPlayer.Shared;
 using OsuPlayer.ViewModels;
-using OsuPlayer.ViewModels.Pages.Settings;
 using OsuPlayer.Views.Pages;
 using OsuPlayer.Views.Pages.Settings;
-using ExportPage = OsuPlayer.Views.Pages.Settings.ExportPage;
-using ExportPageViewModel = OsuPlayer.ViewModels.Pages.Settings.ExportPageViewModel;
+using OsuPlayer.Windows;
 
 namespace OsuPlayer;
 
@@ -36,8 +37,10 @@ public static class EntrySetup
             loggingBuilder.AddNLog();
         });
 
+        services.AddAudioModule();
         services.AddDatabaseServices();
         services.AddApplicationServices();
+        services.AddViewModels();
         return services;
     }
 
@@ -82,41 +85,50 @@ public static class EntrySetup
             provider.GetRequiredService<ObservablePlayController>());
 
         services.AddSingleton<OsuDbInst>();
+        services.AddSingleton<LyricsInst>();
         services.AddSingleton<UpdateInst>();
         services.AddSingleton<OsuFileScanner>();
+        services.AddSingleton<IExportService, ExportService>();
+        services.AddSingleton<IBeatmapDifficultyPicker, BeatmapDifficultyPicker>();
+        services.AddSingleton<IBeatmapActionService, BeatmapActionService>();
 
+        return services;
+    }
+
+    private static IServiceCollection AddViewModels(this IServiceCollection services)
+    {
+        services.AddSingleton(_ => SharedVm.Default);
         services.AddSingleton<MainWindowViewModel>();
 
-        // Settings 页面
-        services.AddTransient<InterfacePage>();
+        services.AddTransient<CollectionPageViewModel>();
+        services.AddTransient<SearchPageViewModel>();
+        services.AddTransient<RecentPlayPageViewModel>();
+        services.AddTransient<ExportPageViewModel>();
+
+        services.AddTransient<OsuPlayer.ViewModels.Pages.Settings.InterfacePageViewModel>();
+        services.AddTransient<OsuPlayer.ViewModels.Pages.Settings.AboutPageViewModel>();
+        services.AddTransient<OsuPlayer.ViewModels.Pages.Settings.GeneralPageViewModel>();
+        services.AddTransient<OsuPlayer.ViewModels.Pages.Settings.PlayPageViewModel>();
+        services.AddTransient<OsuPlayer.ViewModels.Pages.Settings.LyricPageViewModel>();
+        services.AddTransient<OsuPlayer.ViewModels.Pages.Settings.ExportPageViewModel>();
+        services.AddTransient<OsuPlayer.ViewModels.Pages.Settings.HotKeyPageViewModel>();
+
+        // 页面 View 注册
+        services.AddTransient<MainWindow>();
+        services.AddTransient<CollectionPage>();
+        services.AddTransient<SearchPage>();
+        services.AddTransient<RecentPlayPage>();
+        services.AddTransient<FindPage>();
+        services.AddTransient<OsuPlayer.Views.Pages.ExportPage>();
+
         services.AddTransient<AboutPage>();
         services.AddTransient<GeneralPage>();
+        services.AddTransient<InterfacePage>();
         services.AddTransient<PlayPage>();
         services.AddTransient<LyricPage>();
-        services.AddTransient<ExportPage>();
+        services.AddTransient<OsuPlayer.Views.Pages.Settings.ExportPage>();
         services.AddTransient<HotKeyPage>();
 
-        // Settings ViewModels
-        services.AddTransient<InterfacePageViewModel>();
-        services.AddTransient<AboutPageViewModel>();
-        services.AddTransient<GeneralPageViewModel>();
-        services.AddTransient<PlayPageViewModel>();
-        services.AddTransient<LyricPageViewModel>();
-        services.AddTransient<ExportPageViewModel>();
-        services.AddTransient<HotKeyPageViewModel>();
-
-        // 主页面
-        services.AddTransient<CollectionPage>();
-        services.AddTransient<RecentPlayPage>();
-        services.AddTransient<SearchPage>();
-        services.AddTransient<FindPage>();
-        services.AddTransient<Views.Pages.ExportPage>();
-
-        // 主页面 ViewModels
-        services.AddTransient<CollectionPageViewModel>();
-        services.AddTransient<RecentPlayPageViewModel>();
-        services.AddTransient<SearchPageViewModel>();
-        services.AddTransient<ViewModels.ExportPageViewModel>();
         return services;
     }
 }
