@@ -1,7 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vlc="clr-namespace:Avalonia.VlcVideoPlayer;assembly=Avalonia.VlcVideoPlayer"
-             x:Class="OsuPlayer.Avalonia.Views.UserControls.AnimationControl">
+             x:Class="OsuPlayer.Views.UserControls.AnimationControl">
     <Border Background="Black">
         <vlc:VideoPlayerControl ShowControls="True" />
     </Border>

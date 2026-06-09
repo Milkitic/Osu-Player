@@ -10,7 +10,7 @@ using OsuPlayer.Shared;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
-namespace OsuPlayer.Avalonia.Services;
+namespace OsuPlayer.Services;
 
 public sealed class BeatmapThumbnailService : IBeatmapThumbnailService
 {

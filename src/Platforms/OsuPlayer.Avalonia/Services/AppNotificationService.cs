@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Avalonia.Threading;
 using OsuPlayer.Shared;
 
-namespace OsuPlayer.Avalonia.Services;
+namespace OsuPlayer.Services;
 
 /// <summary>
 /// Avalonia 版本的 AppNotificationService - 维护通知队列,等待 NotifyOverlay 在 UI 中显示

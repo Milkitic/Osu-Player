@@ -1,54 +1,68 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:OsuPlayer.Avalonia.ViewModels.Pages.Settings"
-             x:Class="OsuPlayer.Avalonia.Views.Pages.Settings.AboutPage"
-             x:DataType="vm:AboutPageViewModel">
+<UserControl
+    x:Class="OsuPlayer.Views.Pages.Settings.AboutPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
+    x:DataType="vm:AboutPageViewModel">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
-            <TextBlock Text="Software Update" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <TextBlock
+                FontSize="14"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Software Update" />
 
             <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBlock Text="Current version:" Foreground="#AAAAAA" />
-                <TextBlock Text="{Binding CurrentVersion}" Foreground="White" />
+                <TextBlock Foreground="#AAAAAA" Text="Current version:" />
+                <TextBlock Foreground="White" Text="{Binding CurrentVersion}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBlock Text="Last check:" Foreground="#AAAAAA" />
-                <TextBlock Text="{Binding LastUpdateCheckText}" Foreground="White" />
+                <TextBlock Foreground="#AAAAAA" Text="Last check:" />
+                <TextBlock Foreground="White" Text="{Binding LastUpdateCheckText}" />
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8">
-                <Button Content="Check Update"
-                        Classes="style-collection"
-                        Command="{Binding CheckUpdateCommand}" />
-                <Button Content="New version available!"
-                        Classes="style-collection"
-                        Foreground="#FE5472"
-                        IsVisible="{Binding HasUpdate}"
-                        Command="{Binding ShowNewVersionDialogCommand}" />
+            <StackPanel
+                Margin="0,8"
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button
+                    Classes="style-collection"
+                    Command="{Binding CheckUpdateCommand}"
+                    Content="Check Update" />
+                <Button
+                    Classes="style-collection"
+                    Command="{Binding ShowNewVersionDialogCommand}"
+                    Content="New version available!"
+                    Foreground="#FE5472"
+                    IsVisible="{Binding HasUpdate}" />
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Spacing="8">
-                <Button Content="Project URL"
-                        Classes="style-image"
-                        Foreground="#5472FE"
-                        Command="{Binding OpenUrlCommand}"
-                        CommandParameter="https://github.com/Milkitic/Osu-Player" />
-                <Button Content="Feedback"
-                        Classes="style-image"
-                        Foreground="#5472FE"
-                        Command="{Binding OpenUrlCommand}"
-                        CommandParameter="https://github.com/Milkitic/Osu-Player/issues/new" />
+                <Button
+                    Classes="style-image"
+                    Command="{Binding OpenUrlCommand}"
+                    CommandParameter="https://github.com/Milkitic/Osu-Player"
+                    Content="Project URL"
+                    Foreground="#5472FE" />
+                <Button
+                    Classes="style-image"
+                    Command="{Binding OpenUrlCommand}"
+                    CommandParameter="https://github.com/Milkitic/Osu-Player/issues/new"
+                    Content="Feedback"
+                    Foreground="#5472FE" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="8">
-                <Button Content="License"
-                        Classes="style-image"
-                        Foreground="#5472FE"
-                        Command="{Binding OpenUrlCommand}"
-                        CommandParameter="https://github.com/Milkitic/Osu-Player/blob/master/LICENSE" />
-                <Button Content="Privacy Policy"
-                        Classes="style-image"
-                        Foreground="#5472FE"
-                        Command="{Binding ShowPrivacyPolicyCommand}" />
+                <Button
+                    Classes="style-image"
+                    Command="{Binding OpenUrlCommand}"
+                    CommandParameter="https://github.com/Milkitic/Osu-Player/blob/master/LICENSE"
+                    Content="License"
+                    Foreground="#5472FE" />
+                <Button
+                    Classes="style-image"
+                    Command="{Binding ShowPrivacyPolicyCommand}"
+                    Content="Privacy Policy"
+                    Foreground="#5472FE" />
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

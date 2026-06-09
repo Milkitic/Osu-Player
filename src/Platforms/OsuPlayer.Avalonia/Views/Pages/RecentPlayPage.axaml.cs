@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace OsuPlayer.Avalonia.Views.Pages;
+namespace OsuPlayer.Views.Pages;
 
 public partial class RecentPlayPage : UserControl
 {

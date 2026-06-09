@@ -1,7 +1,7 @@
-﻿using Avalonia;
 using System;
+using Avalonia;
 
-namespace OsuPlayer.Avalonia;
+namespace OsuPlayer;
 
 sealed class Program
 {

@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 
-namespace OsuPlayer.Avalonia.Converters;
+namespace OsuPlayer.Converters;
 
 public class NullToCollapsedConverter : IValueConverter
 {

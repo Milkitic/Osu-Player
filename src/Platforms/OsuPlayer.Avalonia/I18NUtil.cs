@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OsuPlayer.Shared;
+namespace OsuPlayer;
 
 /// <summary>
 /// Avalonia 版本的 I18NUtil 占位 - 实际加载机制后续通过资源字典替换

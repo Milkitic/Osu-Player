@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OsuPlayer.Core.Configuration;
-using OsuPlayer.Shared;
-using OsuPlayer.Shared.Models;
 
-namespace OsuPlayer.Avalonia.ViewModels.Pages.Settings;
+namespace OsuPlayer.ViewModels.Pages.Settings;
 
 public partial class HotKeyPageViewModel : ObservableObject
 {

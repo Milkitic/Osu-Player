@@ -1,21 +1,33 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:OsuPlayer.Avalonia.ViewModels.Pages.Settings"
-             x:Class="OsuPlayer.Avalonia.Views.Pages.Settings.InterfacePage"
-             x:DataType="vm:InterfacePageViewModel">
+<UserControl
+    x:Class="OsuPlayer.Views.Pages.Settings.InterfacePage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
+    x:DataType="vm:InterfacePageViewModel">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
-            <TextBlock Text="Language" Foreground="White" FontSize="14" FontWeight="Bold" />
-            <ComboBox Width="220" Margin="8,0"
-                      HorizontalAlignment="Left"
-                      ItemsSource="{Binding AvailableLanguages}"
-                      SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" />
+            <TextBlock
+                FontSize="14"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Language" />
+            <ComboBox
+                Width="220"
+                Margin="8,0"
+                HorizontalAlignment="Left"
+                ItemsSource="{Binding AvailableLanguages}"
+                SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" />
 
-            <TextBlock Text="Minimal Effect Mode" Foreground="White" FontSize="14" FontWeight="Bold" />
-            <CheckBox Margin="8,0"
-                      HorizontalAlignment="Left"
-                      IsChecked="{Binding MinimalMode, Mode=TwoWay}"
-                      Content="Enable minimal effect mode" />
+            <TextBlock
+                FontSize="14"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Minimal Effect Mode" />
+            <CheckBox
+                Margin="8,0"
+                HorizontalAlignment="Left"
+                Content="Enable minimal effect mode"
+                IsChecked="{Binding MinimalMode, Mode=TwoWay}" />
         </StackPanel>
     </ScrollViewer>
 </UserControl>

@@ -1,52 +1,102 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:OsuPlayer.Avalonia.ViewModels.Pages.Settings"
-             x:Class="OsuPlayer.Avalonia.Views.Pages.Settings.GeneralPage"
-             x:DataType="vm:GeneralPageViewModel">
+<UserControl
+    x:Class="OsuPlayer.Views.Pages.Settings.GeneralPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
+    x:DataType="vm:GeneralPageViewModel">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
-            <TextBlock Text="Startup" Foreground="White" FontSize="14" FontWeight="Bold" />
-            <CheckBox Margin="8,0" HorizontalAlignment="Left"
-                      Content="Run on startup"
-                      IsChecked="{Binding RunOnStartup, Mode=TwoWay}" />
+            <TextBlock
+                FontSize="14"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Startup" />
+            <CheckBox
+                Margin="8,0"
+                HorizontalAlignment="Left"
+                Content="Run on startup"
+                IsChecked="{Binding RunOnStartup, Mode=TwoWay}" />
 
-            <TextBlock Text="osu!db Location" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <TextBlock
+                FontSize="14"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="osu!db Location" />
             <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBox Width="250" Height="27" Text="{Binding DbPath, Mode=OneWay}" IsReadOnly="True" />
-                <Button Content="..." Width="27" Height="27"
-                        Classes="style-collection"
-                        Command="{Binding BrowseDbCommand}" />
-                <Button Content="Sync Now" Classes="style-collection"
-                        Command="{Binding SyncNowCommand}" />
+                <TextBox
+                    Width="250"
+                    Height="27"
+                    IsReadOnly="True"
+                    Text="{Binding DbPath, Mode=OneWay}" />
+                <Button
+                    Width="27"
+                    Height="27"
+                    Classes="style-collection"
+                    Command="{Binding BrowseDbCommand}"
+                    Content="..." />
+                <Button
+                    Classes="style-collection"
+                    Command="{Binding SyncNowCommand}"
+                    Content="Sync Now" />
             </StackPanel>
 
-            <TextBlock Text="Custom Song Path" Foreground="White" FontSize="14" FontWeight="Bold" />
+            <TextBlock
+                FontSize="14"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Custom Song Path" />
             <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBox Width="250" Height="27" Text="{Binding CustomSongsPath, Mode=OneWay}" IsReadOnly="True" />
-                <Button Content="..." Width="27" Height="27"
-                        Classes="style-collection"
-                        Command="{Binding BrowseCustomCommand}" />
-                <Button Content="Scan Now" Classes="style-collection"
-                        IsVisible="{Binding !IsScanning}"
-                        Command="{Binding ScanNowCommand}" />
-                <TextBlock Text="Scanning..." VerticalAlignment="Center"
-                           IsVisible="{Binding IsScanning}"
-                           Foreground="#AAAAAA" />
-                <Button Content="Cancel" Classes="style-image" Foreground="#5472FE"
-                        IsVisible="{Binding IsScanning}"
-                        Command="{Binding CancelScanCommand}" />
+                <TextBox
+                    Width="250"
+                    Height="27"
+                    IsReadOnly="True"
+                    Text="{Binding CustomSongsPath, Mode=OneWay}" />
+                <Button
+                    Width="27"
+                    Height="27"
+                    Classes="style-collection"
+                    Command="{Binding BrowseCustomCommand}"
+                    Content="..." />
+                <Button
+                    Classes="style-collection"
+                    Command="{Binding ScanNowCommand}"
+                    Content="Scan Now"
+                    IsVisible="{Binding !IsScanning}" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Foreground="#AAAAAA"
+                    IsVisible="{Binding IsScanning}"
+                    Text="Scanning..." />
+                <Button
+                    Classes="style-image"
+                    Command="{Binding CancelScanCommand}"
+                    Content="Cancel"
+                    Foreground="#5472FE"
+                    IsVisible="{Binding IsScanning}" />
             </StackPanel>
 
-            <TextBlock Text="Close Window" Foreground="White" FontSize="14" FontWeight="Bold" />
-            <RadioButton Margin="8,0" HorizontalAlignment="Left" GroupName="close"
-                         Content="Minimize to notification panel"
-                         IsChecked="{Binding IsMinimizeWhenClosed, Mode=TwoWay}" />
-            <RadioButton Margin="8,0" HorizontalAlignment="Left" GroupName="close"
-                         Content="Exit program"
-                         IsChecked="{Binding IsExitWhenClosed, Mode=TwoWay}" />
-            <CheckBox Margin="8,10" HorizontalAlignment="Left"
-                      Content="Set as default options"
-                      IsChecked="{Binding SetAsDefaultOptions, Mode=TwoWay}" />
+            <TextBlock
+                FontSize="14"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Close Window" />
+            <RadioButton
+                Margin="8,0"
+                HorizontalAlignment="Left"
+                Content="Minimize to notification panel"
+                GroupName="close"
+                IsChecked="{Binding IsMinimizeWhenClosed, Mode=TwoWay}" />
+            <RadioButton
+                Margin="8,0"
+                HorizontalAlignment="Left"
+                Content="Exit program"
+                GroupName="close"
+                IsChecked="{Binding IsExitWhenClosed, Mode=TwoWay}" />
+            <CheckBox
+                Margin="8,10"
+                HorizontalAlignment="Left"
+                Content="Set as default options"
+                IsChecked="{Binding SetAsDefaultOptions, Mode=TwoWay}" />
         </StackPanel>
     </ScrollViewer>
 </UserControl>

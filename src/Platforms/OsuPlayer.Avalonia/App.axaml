@@ -1,8 +1,8 @@
 <Application
-    x:Class="OsuPlayer.Avalonia.App"
+    x:Class="OsuPlayer.App"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:OsuPlayer.Avalonia"
+    xmlns:local="clr-namespace:OsuPlayer"
     RequestedThemeVariant="Dark">
 
     <Application.DataTemplates>

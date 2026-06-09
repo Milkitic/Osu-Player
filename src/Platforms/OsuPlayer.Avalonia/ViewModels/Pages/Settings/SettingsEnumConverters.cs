@@ -1,12 +1,10 @@
 using System;
 using System.Globalization;
-using Avalonia.Data;
 using Avalonia.Data.Converters;
 using OsuPlayer.Shared.Models;
-
 using BindingOperations = Avalonia.Data.BindingOperations;
 
-namespace OsuPlayer.Avalonia.ViewModels.Pages.Settings;
+namespace OsuPlayer.ViewModels.Pages.Settings;
 
 public class LyricSourceToBoolConverter : IValueConverter
 {

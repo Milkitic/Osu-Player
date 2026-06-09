@@ -7,7 +7,7 @@ using OsuPlayer.Data.Models;
 using OsuPlayer.Shared;
 using OsuPlayer.Shared.Models;
 
-namespace OsuPlayer.Avalonia.Services;
+namespace OsuPlayer.Services;
 
 public sealed class NotifyingPlayerDataService : IPlayerDataService
 {

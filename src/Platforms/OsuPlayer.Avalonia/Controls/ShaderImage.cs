@@ -6,7 +6,7 @@ using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
 using SkiaSharp;
 
-namespace OsuPlayer.Avalonia.Controls;
+namespace OsuPlayer.Controls;
 
 /// <summary>
 /// Avalonia 12 着色器图像控件 - 显示指定图像并应用 Skia 滤镜。

@@ -1,7 +1,7 @@
 using System;
 using Avalonia.VlcVideoPlayer;
 
-namespace OsuPlayer.Avalonia.Video;
+namespace OsuPlayer.Video;
 
 /// <summary>
 /// 初始化 FFmpegVideoPlayer.Avalonia(实际为 VLC 后端)的 FFmpeg/VLC 原生库加载。

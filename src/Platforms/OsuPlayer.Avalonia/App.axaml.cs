@@ -3,13 +3,13 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Microsoft.Extensions.DependencyInjection;
-using OsuPlayer.Avalonia.ViewModels;
-using OsuPlayer.Avalonia.Windows;
+using OsuPlayer.Video;
+using OsuPlayer.ViewModels;
+using OsuPlayer.Windows;
 
-namespace OsuPlayer.Avalonia;
+namespace OsuPlayer;
 
 public partial class App : Application
 {
@@ -42,7 +42,7 @@ public partial class App : Application
             }
 
             // 初始化 FFmpeg(视频播放)
-            OsuPlayer.Avalonia.Video.VideoPlayerInitializer.Initialize();
+            VideoPlayerInitializer.Initialize();
 
             s_mainWindow = new MainWindow
             {

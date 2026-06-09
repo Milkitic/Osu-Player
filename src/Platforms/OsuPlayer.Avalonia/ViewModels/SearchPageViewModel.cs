@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-namespace OsuPlayer.Avalonia.ViewModels;
+namespace OsuPlayer.ViewModels;
 
 public partial class SearchPageViewModel : ObservableObject
 {

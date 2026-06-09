@@ -1,6 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace OsuPlayer.Avalonia.ViewModels;
+namespace OsuPlayer.ViewModels;
 
 public abstract class ViewModelBase : ObservableObject
 {

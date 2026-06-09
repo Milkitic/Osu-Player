@@ -1,5 +1,5 @@
 <UserControl
-    x:Class="OsuPlayer.Avalonia.Views.UserControls.PlayModeControl"
+    x:Class="OsuPlayer.Views.UserControls.PlayModeControl"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <StackPanel Orientation="Horizontal" Spacing="6">

@@ -1,8 +1,8 @@
 <UserControl
-    x:Class="OsuPlayer.Avalonia.Views.Pages.CollectionPage"
+    x:Class="OsuPlayer.Views.Pages.CollectionPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:vm="using:OsuPlayer.Avalonia.ViewModels"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     x:DataType="vm:CollectionPageViewModel">
     <Grid RowDefinitions="Auto,*">
         <StackPanel

@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using OsuPlayer.Core;
 
-namespace OsuPlayer.Avalonia.ViewModels;
+namespace OsuPlayer.ViewModels;
 
 public partial class ExportPageViewModel : ObservableObject
 {

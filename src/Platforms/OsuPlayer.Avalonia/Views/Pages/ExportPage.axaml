@@ -1,8 +1,8 @@
 <UserControl
-    x:Class="OsuPlayer.Avalonia.Views.Pages.ExportPage"
+    x:Class="OsuPlayer.Views.Pages.ExportPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:vm="using:OsuPlayer.Avalonia.ViewModels"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     x:DataType="vm:ExportPageViewModel">
     <Grid>
         <ListBox

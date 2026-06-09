@@ -14,7 +14,7 @@ using OsuPlayer.Data.Models;
 using OsuPlayer.Presentation;
 using OsuPlayer.Shared;
 
-namespace OsuPlayer.Avalonia;
+namespace OsuPlayer;
 
 public static class EntryStartup
 {

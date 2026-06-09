@@ -1,10 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OsuPlayer.Services;
 // using retained
-using OsuPlayer.Avalonia.Services;
-using OsuPlayer.Core;
 
-namespace OsuPlayer.Avalonia.ViewModels.Pages.Settings;
+namespace OsuPlayer.ViewModels.Pages.Settings;
 
 public partial class GeneralPageViewModel : ObservableObject
 {

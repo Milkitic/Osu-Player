@@ -2,9 +2,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using OsuPlayer.Avalonia.ViewModels;
+using OsuPlayer.ViewModels;
 
-namespace OsuPlayer.Avalonia;
+namespace OsuPlayer;
 
 /// <summary>
 /// Given a view model, returns the corresponding view if possible.

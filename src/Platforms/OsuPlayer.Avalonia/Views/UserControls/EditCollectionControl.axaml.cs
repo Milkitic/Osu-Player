@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace OsuPlayer.Avalonia.Views.UserControls;
+namespace OsuPlayer.Views.UserControls;
 
 public partial class EditCollectionControl : UserControl
 {

@@ -1,13 +1,11 @@
 using System;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Media;
-using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
 using SkiaSharp;
 
-namespace OsuPlayer.Avalonia.Skia;
+namespace OsuPlayer.Skia;
 
 /// <summary>
 /// Avalonia 12 自定义渲染操作 - 应用 Skia 灰度滤镜(替代 WPF GrayscaleEffect 像素着色器)。

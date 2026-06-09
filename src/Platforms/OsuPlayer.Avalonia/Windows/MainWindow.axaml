@@ -1,8 +1,8 @@
 <Window
-    x:Class="OsuPlayer.Avalonia.Windows.MainWindow"
+    x:Class="OsuPlayer.Windows.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:vm="using:OsuPlayer.Avalonia.ViewModels"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     Title="Osu Player"
     Width="1100"
     Height="720"

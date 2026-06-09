@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OsuPlayer.Core;
 
-namespace OsuPlayer.Avalonia.ViewModels;
+namespace OsuPlayer.ViewModels;
 
 public partial class RecentPlayPageViewModel : ObservableObject
 {

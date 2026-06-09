@@ -1,5 +1,5 @@
 <UserControl
-    x:Class="OsuPlayer.Avalonia.Views.UserControls.SelectCollectionControl"
+    x:Class="OsuPlayer.Views.UserControls.SelectCollectionControl"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Border

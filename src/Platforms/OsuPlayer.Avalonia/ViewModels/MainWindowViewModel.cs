@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using OsuPlayer.Core;
 using OsuPlayer.Presentation.Interaction;
 
-namespace OsuPlayer.Avalonia.ViewModels;
+namespace OsuPlayer.ViewModels;
 
 public partial class MainWindowViewModel : ObservableObject
 {
