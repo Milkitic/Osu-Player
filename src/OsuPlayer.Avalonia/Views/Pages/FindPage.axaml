@@ -1,11 +1,13 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="OsuPlayer.Avalonia.Views.Pages.FindPage">
+<UserControl
+    x:Class="OsuPlayer.Avalonia.Views.Pages.FindPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
-        <TextBlock Text="Find (Coming soon)"
-                   Foreground="White"
-                   FontSize="24"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center" />
+        <TextBlock
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontSize="24"
+            Foreground="White"
+            Text="Find (Coming soon)" />
     </Grid>
 </UserControl>

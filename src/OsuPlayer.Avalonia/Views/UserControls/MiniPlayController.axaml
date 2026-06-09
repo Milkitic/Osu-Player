@@ -1,13 +1,32 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="OsuPlayer.Avalonia.Views.UserControls.MiniPlayController">
-    <Border Background="#252526" Padding="8" CornerRadius="4">
+<UserControl
+    x:Class="OsuPlayer.Avalonia.Views.UserControls.MiniPlayController"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border
+        Padding="8"
+        Background="#252526"
+        CornerRadius="4">
         <StackPanel Spacing="4">
-            <TextBlock Text="Mini Player" Foreground="White" FontWeight="Bold" />
+            <TextBlock
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Mini Player" />
             <StackPanel Orientation="Horizontal" Spacing="4">
-                <Button Content="⏮" Classes="style-image" Width="24" Height="24" />
-                <Button Content="▶" Classes="style-image" Width="24" Height="24" />
-                <Button Content="⏭" Classes="style-image" Width="24" Height="24" />
+                <Button
+                    Width="24"
+                    Height="24"
+                    Classes="style-image"
+                    Content="⏮" />
+                <Button
+                    Width="24"
+                    Height="24"
+                    Classes="style-image"
+                    Content="▶" />
+                <Button
+                    Width="24"
+                    Height="24"
+                    Classes="style-image"
+                    Content="⏭" />
             </StackPanel>
         </StackPanel>
     </Border>

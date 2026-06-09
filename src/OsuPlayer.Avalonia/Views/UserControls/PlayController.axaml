@@ -1,32 +1,87 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="OsuPlayer.Avalonia.Views.UserControls.PlayController">
-    <Border Background="#252526" Padding="20" CornerRadius="8">
-        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto,Auto,Auto,*,Auto" ColumnSpacing="8">
-            <!-- Thumbnail placeholder -->
-            <Border Grid.Column="0" Grid.RowSpan="2" Width="60" Height="60"
-                    Background="#404040" CornerRadius="4" />
+<UserControl
+    x:Class="OsuPlayer.Avalonia.Views.UserControls.PlayController"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border
+        Padding="20"
+        Background="#252526"
+        CornerRadius="8">
+        <Grid
+            ColumnDefinitions="*,Auto,Auto,Auto,*,Auto"
+            ColumnSpacing="8"
+            RowDefinitions="Auto,Auto">
+            <!--  Thumbnail placeholder  -->
+            <Border
+                Grid.RowSpan="2"
+                Grid.Column="0"
+                Width="60"
+                Height="60"
+                Background="#404040"
+                CornerRadius="4" />
 
-            <!-- Song info -->
-            <StackPanel Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4"
-                        Spacing="2" VerticalAlignment="Center">
-                <TextBlock Text="No song playing" Foreground="White" FontWeight="Bold" />
-                <TextBlock Text="-" Foreground="#AAAAAA" FontSize="11" />
+            <!--  Song info  -->
+            <StackPanel
+                Grid.Row="0"
+                Grid.Column="1"
+                Grid.ColumnSpan="4"
+                VerticalAlignment="Center"
+                Spacing="2">
+                <TextBlock
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="No song playing" />
+                <TextBlock
+                    FontSize="11"
+                    Foreground="#AAAAAA"
+                    Text="-" />
             </StackPanel>
 
-            <!-- Controls -->
-            <StackPanel Grid.Column="5" Grid.Row="0" Grid.ColumnSpan="2"
-                        Orientation="Horizontal" Spacing="4">
-                <Button Content="⏮" Classes="style-image" Width="32" Height="32" />
-                <Button Content="▶" Classes="style-image" Width="32" Height="32" />
-                <Button Content="⏭" Classes="style-image" Width="32" Height="32" />
+            <!--  Controls  -->
+            <StackPanel
+                Grid.Row="0"
+                Grid.Column="5"
+                Grid.ColumnSpan="2"
+                Orientation="Horizontal"
+                Spacing="4">
+                <Button
+                    Width="32"
+                    Height="32"
+                    Classes="style-image"
+                    Content="⏮" />
+                <Button
+                    Width="32"
+                    Height="32"
+                    Classes="style-image"
+                    Content="▶" />
+                <Button
+                    Width="32"
+                    Height="32"
+                    Classes="style-image"
+                    Content="⏭" />
             </StackPanel>
 
-            <!-- Progress -->
-            <DockPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="7" LastChildFill="True" Margin="0,8">
-                <TextBlock Text="00:00" Foreground="#AAAAAA" DockPanel.Dock="Left" Margin="0,0,8,0" />
-                <Slider Classes="osu-slider" Minimum="0" Maximum="100" Value="30" />
-                <TextBlock Text="03:45" Foreground="#AAAAAA" DockPanel.Dock="Right" Margin="8,0,0,0" />
+            <!--  Progress  -->
+            <DockPanel
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="7"
+                Margin="0,8"
+                LastChildFill="True">
+                <TextBlock
+                    Margin="0,0,8,0"
+                    DockPanel.Dock="Left"
+                    Foreground="#AAAAAA"
+                    Text="00:00" />
+                <Slider
+                    Classes="osu-slider"
+                    Maximum="100"
+                    Minimum="0"
+                    Value="30" />
+                <TextBlock
+                    Margin="8,0,0,0"
+                    DockPanel.Dock="Right"
+                    Foreground="#AAAAAA"
+                    Text="03:45" />
             </DockPanel>
         </Grid>
     </Border>

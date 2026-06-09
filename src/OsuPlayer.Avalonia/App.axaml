@@ -28,4 +28,7 @@
         <StyleInclude Source="avares://OsuPlayer.Avalonia/Styles/SliderStyle.axaml" />
         <StyleInclude Source="avares://OsuPlayer.Avalonia/Styles/NavigationStyle.axaml" />
     </Application.Styles>
+
+    <!-- 托盘图标在 App.axaml.cs 中通过 TrayIcons 集合程序化创建并附加。
+         Avalonia 12 的 TrayIcons 是附加属性,TrayIcon 必须直接放在 <TrayIcons> 集合中。-->
 </Application>

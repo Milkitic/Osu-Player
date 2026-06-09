@@ -1,11 +1,18 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="OsuPlayer.Avalonia.Views.UserControls.WelcomeControl">
+<UserControl
+    x:Class="OsuPlayer.Avalonia.Views.UserControls.WelcomeControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ScrollViewer>
         <StackPanel Margin="20" Spacing="10">
-            <TextBlock Text="Welcome to Osu Player" Foreground="White" FontSize="20" FontWeight="Bold" />
-            <TextBlock Text="This is the Avalonia version. Some features are still being migrated from the WPF version."
-                       Foreground="#CCCCCC" TextWrapping="Wrap" />
+            <TextBlock
+                FontSize="20"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Welcome to Osu Player" />
+            <TextBlock
+                Foreground="#CCCCCC"
+                Text="This is the Avalonia version. Some features are still being migrated from the WPF version."
+                TextWrapping="Wrap" />
         </StackPanel>
     </ScrollViewer>
 </UserControl>

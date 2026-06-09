@@ -1,11 +1,9 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:ffmpeg="clr-namespace:Avalonia.FFmpegVideoPlayer;assembly=Avalonia.FFmpegVideoPlayer"
-             x:Class="OsuPlayer.Avalonia.Views.UserControls.AnimationControl">
+<UserControl
+    x:Class="OsuPlayer.Avalonia.Views.UserControls.AnimationControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ffmpeg="clr-namespace:Avalonia.VlcVideoPlayer;assembly=Avalonia.VlcVideoPlayer">
     <Border Background="Black">
-        <TextBlock Text="Animation (FFmpegVideoPlayer placeholder)"
-                   Foreground="White"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center" />
+        <ffmpeg:VideoPlayerControl ShowControls="True" />
     </Border>
 </UserControl>

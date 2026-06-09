@@ -1,17 +1,31 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="OsuPlayer.Avalonia.Views.UserControls.SelectCollectionControl">
-    <Border Background="#252526" Padding="16" CornerRadius="8">
+<UserControl
+    x:Class="OsuPlayer.Avalonia.Views.UserControls.SelectCollectionControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border
+        Padding="16"
+        Background="#252526"
+        CornerRadius="8">
         <StackPanel Spacing="8">
-            <TextBlock Text="Select collection" Foreground="White" FontWeight="Bold" />
-            <ListBox Background="Transparent" Height="200">
-                <ListBoxItem><TextBlock Text="Favorites" Foreground="White" /></ListBoxItem>
-                <ListBoxItem><TextBlock Text="My Collection 1" Foreground="White" /></ListBoxItem>
+            <TextBlock
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Select collection" />
+            <ListBox Height="200" Background="Transparent">
+                <ListBoxItem>
+                    <TextBlock Foreground="White" Text="Favorites" />
+                </ListBoxItem>
+                <ListBoxItem>
+                    <TextBlock Foreground="White" Text="My Collection 1" />
+                </ListBoxItem>
             </ListBox>
-            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right">
-                <Button Content="New" Classes="style-collection" />
-                <Button Content="Cancel" Classes="style-collection" />
-                <Button Content="OK" Classes="style-collection" />
+            <StackPanel
+                HorizontalAlignment="Right"
+                Orientation="Horizontal"
+                Spacing="6">
+                <Button Classes="style-collection" Content="New" />
+                <Button Classes="style-collection" Content="Cancel" />
+                <Button Classes="style-collection" Content="OK" />
             </StackPanel>
         </StackPanel>
     </Border>

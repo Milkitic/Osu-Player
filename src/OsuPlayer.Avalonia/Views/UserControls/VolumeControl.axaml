@@ -1,14 +1,25 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="OsuPlayer.Avalonia.Views.UserControls.VolumeControl">
+<UserControl
+    x:Class="OsuPlayer.Avalonia.Views.UserControls.VolumeControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid Margin="10">
         <StackPanel Spacing="6">
-            <TextBlock Text="Volume" Foreground="White" FontWeight="Bold" HorizontalAlignment="Center" />
-            <Slider Width="40" Height="120"
-                    Orientation="Vertical"
-                    Minimum="0" Maximum="1"
-                    TickFrequency="0.1" />
-            <TextBlock Text="50%" Foreground="White" HorizontalAlignment="Center" />
+            <TextBlock
+                HorizontalAlignment="Center"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Volume" />
+            <Slider
+                Width="40"
+                Height="120"
+                Maximum="1"
+                Minimum="0"
+                Orientation="Vertical"
+                TickFrequency="0.1" />
+            <TextBlock
+                HorizontalAlignment="Center"
+                Foreground="White"
+                Text="50%" />
         </StackPanel>
     </Grid>
 </UserControl>

@@ -1,12 +1,19 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="OsuPlayer.Avalonia.Views.UserControls.AddCollectionControl">
+<UserControl
+    x:Class="OsuPlayer.Avalonia.Views.UserControls.AddCollectionControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <StackPanel Margin="10" Spacing="6">
-        <TextBlock Text="New collection name" Foreground="White" FontWeight="Bold" />
-        <TextBox Watermark="Collection name" />
-        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right">
-            <Button Content="Cancel" Classes="style-collection" />
-            <Button Content="Create" Classes="style-collection" />
+        <TextBlock
+            FontWeight="Bold"
+            Foreground="White"
+            Text="New collection name" />
+        <TextBox PlaceholderText="Collection name" />
+        <StackPanel
+            HorizontalAlignment="Right"
+            Orientation="Horizontal"
+            Spacing="6">
+            <Button Classes="style-collection" Content="Cancel" />
+            <Button Classes="style-collection" Content="Create" />
         </StackPanel>
     </StackPanel>
 </UserControl>

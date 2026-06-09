@@ -1,75 +1,124 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:OsuPlayer.Avalonia.ViewModels"
-        x:Class="OsuPlayer.Avalonia.Windows.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
-        Title="Osu Player"
-        Width="1100" Height="720"
-        MinWidth="900" MinHeight="600"
-        WindowStartupLocation="CenterScreen"
-        Background="#1E1E1E">
+<Window
+    x:Class="OsuPlayer.Avalonia.Windows.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:OsuPlayer.Avalonia.ViewModels"
+    Title="Osu Player"
+    Width="1100"
+    Height="720"
+    MinWidth="900"
+    MinHeight="600"
+    x:DataType="vm:MainWindowViewModel"
+    Background="#1E1E1E"
+    WindowStartupLocation="CenterScreen">
 
     <Design.DataContext>
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto,*,Auto">
-        <!-- Title bar -->
-        <Border Grid.Row="0" Background="#2D2D30" Padding="16,8">
+        <!--  Title bar  -->
+        <Border
+            Grid.Row="0"
+            Padding="16,8"
+            Background="#2D2D30">
             <DockPanel>
-                <TextBlock Text="Osu Player"
-                           Foreground="White"
-                           FontSize="16"
-                           FontWeight="Bold"
-                           VerticalAlignment="Center" />
-                <TextBlock Text="{Binding CurrentSongTitle, StringFormat='Now Playing: {0}'}"
-                           Foreground="#AAAAAA"
-                           Margin="20,0,0,0"
-                           VerticalAlignment="Center" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="Osu Player" />
+                <TextBlock
+                    Margin="20,0,0,0"
+                    VerticalAlignment="Center"
+                    Foreground="#AAAAAA"
+                    Text="{Binding CurrentSongTitle, StringFormat='Now Playing: {0}'}" />
             </DockPanel>
         </Border>
 
-        <!-- Main content area: sidebar + content -->
+        <!--  Main content area: sidebar + content  -->
         <Grid Grid.Row="1" ColumnDefinitions="220,*">
-            <!-- Sidebar navigation -->
-            <Border Grid.Column="0" Background="#252526" Padding="12">
+            <!--  Sidebar navigation  -->
+            <Border
+                Grid.Column="0"
+                Padding="12"
+                Background="#252526">
                 <StackPanel Spacing="4">
-                    <ToggleButton Classes="nav-button" IsChecked="True" Click="OnNavClick" Tag="Collection">
-                        <TextBlock Text="Collection" Foreground="White" />
+                    <ToggleButton
+                        Classes="nav-button"
+                        Click="OnNavClick"
+                        IsChecked="True"
+                        Tag="Collection">
+                        <TextBlock Foreground="White" Text="Collection" />
                     </ToggleButton>
-                    <ToggleButton Classes="nav-button" Click="OnNavClick" Tag="Search">
-                        <TextBlock Text="Search" Foreground="White" />
+                    <ToggleButton
+                        Classes="nav-button"
+                        Click="OnNavClick"
+                        Tag="Search">
+                        <TextBlock Foreground="White" Text="Search" />
                     </ToggleButton>
-                    <ToggleButton Classes="nav-button" Click="OnNavClick" Tag="Recent">
-                        <TextBlock Text="Recent" Foreground="White" />
+                    <ToggleButton
+                        Classes="nav-button"
+                        Click="OnNavClick"
+                        Tag="Recent">
+                        <TextBlock Foreground="White" Text="Recent" />
                     </ToggleButton>
-                    <ToggleButton Classes="nav-button" Click="OnNavClick" Tag="Find">
-                        <TextBlock Text="Find" Foreground="White" />
+                    <ToggleButton
+                        Classes="nav-button"
+                        Click="OnNavClick"
+                        Tag="Find">
+                        <TextBlock Foreground="White" Text="Find" />
                     </ToggleButton>
-                    <ToggleButton Classes="nav-button" Click="OnNavClick" Tag="Settings">
-                        <TextBlock Text="Settings" Foreground="White" />
+                    <ToggleButton
+                        Classes="nav-button"
+                        Click="OnNavClick"
+                        Tag="Settings">
+                        <TextBlock Foreground="White" Text="Settings" />
                     </ToggleButton>
                 </StackPanel>
             </Border>
 
-            <!-- Content area -->
-            <Border Grid.Column="1" Background="#1E1E1E" Padding="20">
+            <!--  Content area  -->
+            <Border
+                Grid.Column="1"
+                Padding="20"
+                Background="#1E1E1E">
                 <ContentControl x:Name="MainFrame" />
             </Border>
         </Grid>
 
-        <!-- Bottom playback bar -->
-        <Border Grid.Row="2" Background="#2D2D30" Padding="16,8">
+        <!--  Bottom playback bar  -->
+        <Border
+            Grid.Row="2"
+            Padding="16,8"
+            Background="#2D2D30">
             <DockPanel>
-                <StackPanel Orientation="Horizontal" Spacing="12" DockPanel.Dock="Left">
-                    <Button Classes="style-image" Content="⏮" Width="40" Height="40" />
-                    <Button Classes="style-image" Content="▶" Width="40" Height="40" />
-                    <Button Classes="style-image" Content="⏭" Width="40" Height="40" />
+                <StackPanel
+                    DockPanel.Dock="Left"
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Classes="style-image"
+                        Content="⏮" />
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Classes="style-image"
+                        Content="▶" />
+                    <Button
+                        Width="40"
+                        Height="40"
+                        Classes="style-image"
+                        Content="⏭" />
                 </StackPanel>
-                <TextBlock Text="{Binding CurrentSongTitle}"
-                           Foreground="White"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="White"
+                    Text="{Binding CurrentSongTitle}" />
             </DockPanel>
         </Border>
     </Grid>

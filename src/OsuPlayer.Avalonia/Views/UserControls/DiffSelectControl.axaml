@@ -1,13 +1,26 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="OsuPlayer.Avalonia.Views.UserControls.DiffSelectControl">
-    <Border Background="#252526" Padding="16" CornerRadius="8">
+<UserControl
+    x:Class="OsuPlayer.Avalonia.Views.UserControls.DiffSelectControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border
+        Padding="16"
+        Background="#252526"
+        CornerRadius="8">
         <StackPanel Spacing="8">
-            <TextBlock Text="Select difficulty" Foreground="White" FontWeight="Bold" />
+            <TextBlock
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Select difficulty" />
             <ListBox Background="Transparent">
-                <ListBoxItem><TextBlock Text="Easy ★ 2.5" Foreground="White" /></ListBoxItem>
-                <ListBoxItem><TextBlock Text="Normal ★ 4.0" Foreground="White" /></ListBoxItem>
-                <ListBoxItem><TextBlock Text="Hard ★ 5.5" Foreground="White" /></ListBoxItem>
+                <ListBoxItem>
+                    <TextBlock Foreground="White" Text="Easy ★ 2.5" />
+                </ListBoxItem>
+                <ListBoxItem>
+                    <TextBlock Foreground="White" Text="Normal ★ 4.0" />
+                </ListBoxItem>
+                <ListBoxItem>
+                    <TextBlock Foreground="White" Text="Hard ★ 5.5" />
+                </ListBoxItem>
             </ListBox>
         </StackPanel>
     </Border>
