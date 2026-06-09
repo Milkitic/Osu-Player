@@ -10,4 +10,20 @@
     <converters:NegativeBooleanConverter x:Key="NegativeBooleanConverter" />
     <converters:DateTimeConverter x:Key="DateTimeConverter" />
     <converters:MsToStringConverter x:Key="MsToStringConverter" />
+    <converters:IndexToStringConverter x:Key="IndexToStringConverter" />
+    <converters:RoundedNumberConverter x:Key="RoundedNumberConverter" />
+    <converters:IconColorConverter x:Key="IconColorConverter" />
+    <converters:ButtonColorConverter x:Key="ButtonColorConverter" />
+    <converters:PlayingConverter x:Key="PlayingConverter" />
+    <converters:MiniWindowConverter x:Key="MiniWindowConverter" />
+    <converters:LocalizedFontFamilyConverter x:Key="LocalizedFontFamilyConverter" />
+    <converters:StarRating2ColorConverter x:Key="StarRating2ColorConverter" />
+    <converters:StarRating2ForeColorConverter x:Key="StarRating2ForeColorConverter" />
+    <converters:WindowMarginConverter x:Key="WindowMarginConverter" />
+    <converters:TitleIconConverter x:Key="TitleIconConverter" />
+    <converters:LyricWindowShownConverter x:Key="CvtLyricWindowShown" />
+    <converters:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
+    <converters:BoolTrueToVisibleConverter x:Key="BoolTrueToVisibleConverter" />
+    <converters:BoolFalseToVisibleConverter x:Key="BoolFalseToVisibleConverter" />
+    <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
 </ResourceDictionary>

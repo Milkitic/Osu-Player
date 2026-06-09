@@ -45,18 +45,36 @@ public sealed class FrameNavigationService : INavigationService
             throw new InvalidOperationException($"Unable to create page '{pageType.FullName}'.");
         }
 
-        if (parameter != null && page is Control { DataContext: INavigationAware navigationAware })
-        {
-            navigationAware.OnNavigatedTo(parameter);
-        }
-
         if (page is Control control)
         {
+            TrySetDataContext(control, pageType);
+
+            if (parameter != null && control.DataContext is INavigationAware navigationAware)
+            {
+                navigationAware.OnNavigatedTo(parameter);
+            }
+
             NavigateWithAnimation(control);
         }
         else
         {
             _content.Content = page;
+        }
+    }
+
+    private void TrySetDataContext(Control control, Type pageType)
+    {
+        if (control.DataContext != null) return;
+
+        var vmTypeName = pageType.Namespace + "." + pageType.Name + "ViewModel";
+        var vmType = Type.GetType(vmTypeName + ", " + pageType.Assembly.GetName().Name);
+        if (vmType != null)
+        {
+            var vm = _serviceProvider.GetService(vmType);
+            if (vm != null)
+            {
+                control.DataContext = vm;
+            }
         }
     }
 

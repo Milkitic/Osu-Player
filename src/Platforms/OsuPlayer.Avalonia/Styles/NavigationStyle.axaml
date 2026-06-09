@@ -3,7 +3,7 @@
     <!--  导航按钮 (ToggleButton)  -->
     <Style Selector="ToggleButton.nav-button">
         <Setter Property="Foreground" Value="#FEFEFEFE" />
-        <Setter Property="Background" Value="#F8F8F8" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Width" Value="200" />
         <Setter Property="Height" Value="40" />
         <Setter Property="Template">
@@ -32,7 +32,14 @@
     <Style Selector="ToggleButton.nav-button:pointerover /template/ Rectangle#innerRectangle">
         <Setter Property="Opacity" Value="1" />
     </Style>
+    <Style Selector="ToggleButton.nav-button:pointerover">
+        <Setter Property="Foreground" Value="#303030" />
+    </Style>
     <Style Selector="ToggleButton.nav-button:checked /template/ Rectangle#innerRectangle">
         <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ToggleButton.nav-button:checked">
+        <Setter Property="Background" Value="#F8F8F8" />
+        <Setter Property="Foreground" Value="#303030" />
     </Style>
 </Styles>

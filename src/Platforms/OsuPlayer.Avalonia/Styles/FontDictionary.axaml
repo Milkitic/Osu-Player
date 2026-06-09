@@ -1,8 +1,8 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--  Avalonia 字体通过 app.manifest 或 App.axaml.cs 注册,这里用 avares:// 引用  -->
-    <FontFamily x:Key="SspExtraLight">avares://OsuPlayer.Avalonia/Resources/Fonts#Source Sans Pro ExtraLight</FontFamily>
-    <FontFamily x:Key="SspLight">avares://OsuPlayer.Avalonia/Resources/Fonts#Source Sans Pro Light</FontFamily>
-    <FontFamily x:Key="SspRegular">avares://OsuPlayer.Avalonia/Resources/Fonts#Source Sans Pro</FontFamily>
-    <FontFamily x:Key="SspSemibold">avares://OsuPlayer.Avalonia/Resources/Fonts#Source Sans Pro Semibold</FontFamily>
-    <FontFamily x:Key="SspBlack">avares://OsuPlayer.Avalonia/Resources/Fonts#Source Sans Pro Black</FontFamily>
+    <FontFamily x:Key="SspExtraLight">avares://OsuPlayer/Resources/Fonts#Source Sans Pro ExtraLight</FontFamily>
+    <FontFamily x:Key="SspLight">avares://OsuPlayer/Resources/Fonts#Source Sans Pro Light</FontFamily>
+    <FontFamily x:Key="SspRegular">avares://OsuPlayer/Resources/Fonts#Source Sans Pro</FontFamily>
+    <FontFamily x:Key="SspSemibold">avares://OsuPlayer/Resources/Fonts#Source Sans Pro Semibold</FontFamily>
+    <FontFamily x:Key="SspBlack">avares://OsuPlayer/Resources/Fonts#Source Sans Pro Black</FontFamily>
 </ResourceDictionary>

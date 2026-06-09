@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
 using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.ViewModels;
+using OsuPlayer.ViewModels.Pages.Settings;
 using OsuPlayer.Views.Pages;
 using OsuPlayer.Views.Pages.Settings;
 
@@ -14,27 +15,40 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        DataContext = App.Services.GetRequiredService<MainWindowViewModel>();
         var nav = App.Services.GetRequiredService<INavigationService>();
         nav.Initialize(MainFrame);
-
-        // 默认显示 Collection 页面
-        MainFrame.Content = App.Services.GetRequiredService<CollectionPage>();
+        NavigateTo("Collection");
     }
 
     private void OnNavClick(object? sender, RoutedEventArgs e)
     {
         if (sender is ToggleButton tb && tb.Tag is string tag)
         {
-            MainFrame.Content = tag switch
-            {
-                "Collection" => App.Services.GetRequiredService<CollectionPage>(),
-                "Search" => App.Services.GetRequiredService<SearchPage>(),
-                "Recent" => App.Services.GetRequiredService<RecentPlayPage>(),
-                "Find" => App.Services.GetRequiredService<FindPage>(),
-                "Settings" => App.Services.GetRequiredService<InterfacePage>(),
-                _ => new TextBlock { Text = "Unknown" }
-            };
+            NavigateTo(tag);
         }
+    }
+
+    private void NavigateTo(string tag)
+    {
+        var page = tag switch
+        {
+            "Collection" => (Control)App.Services.GetRequiredService<CollectionPage>(),
+            "Search" => App.Services.GetRequiredService<SearchPage>(),
+            "Recent" => App.Services.GetRequiredService<RecentPlayPage>(),
+            "Find" => App.Services.GetRequiredService<FindPage>(),
+            "Settings" => App.Services.GetRequiredService<InterfacePage>(),
+            _ => new TextBlock { Text = "Unknown" }
+        };
+
+        page.DataContext = tag switch
+        {
+            "Collection" => App.Services.GetRequiredService<CollectionPageViewModel>(),
+            "Search" => App.Services.GetRequiredService<SearchPageViewModel>(),
+            "Recent" => App.Services.GetRequiredService<RecentPlayPageViewModel>(),
+            "Settings" => App.Services.GetRequiredService<InterfacePageViewModel>(),
+            _ => null
+        };
+
+        MainFrame.Content = page;
     }
 }
