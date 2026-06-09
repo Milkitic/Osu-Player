@@ -2,6 +2,7 @@ using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Microsoft.Extensions.DependencyInjection;
 using OsuPlayer.Avalonia.ViewModels;
 using OsuPlayer.Avalonia.Windows;
@@ -36,9 +37,12 @@ public partial class App : Application
                 return;
             }
 
+            // 加载自定义字体(Source Sans Pro)
+            LoadCustomFonts();
+
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel()
+                DataContext = Services.GetRequiredService<MainWindowViewModel>()
             };
 
             desktop.ShutdownRequested += (_, _) =>
@@ -49,5 +53,11 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private void LoadCustomFonts()
+    {
+        // Avalonia 12: 通过 Assets index 自动发现 AvaloniaResource 字体
+        // 在 MainWindow.axaml 中通过 FontFamily="avares://OsuPlayer.Avalonia/Resources/Fonts#Source Sans Pro" 引用
     }
 }

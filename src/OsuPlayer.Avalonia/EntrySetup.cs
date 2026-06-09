@@ -79,6 +79,8 @@ public static class EntrySetup
         services.AddSingleton<OsuDbInst>();
         services.AddSingleton<UpdateInst>();
         services.AddSingleton<OsuFileScanner>();
+
+        services.AddSingleton<OsuPlayer.Avalonia.ViewModels.MainWindowViewModel>();
         return services;
     }
 }
