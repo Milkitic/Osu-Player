@@ -1,0 +1,27 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ControlTheme x:Key="ConfigTitleStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="#222222" />
+        <Setter Property="Margin" Value="5,15,0,10" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </ControlTheme>
+    <ControlTheme x:Key="ConfigRadioStyle" TargetType="RadioButton">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="#606060" />
+        <Setter Property="Margin" Value="4" />
+    </ControlTheme>
+    <ControlTheme x:Key="ConfigCheckStyle" TargetType="CheckBox">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="#606060" />
+        <Setter Property="Margin" Value="4" />
+    </ControlTheme>
+    <ControlTheme x:Key="ConfigLabelStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="#606060" />
+        <Setter Property="Margin" Value="4" />
+    </ControlTheme>
+    <ControlTheme x:Key="ConfigLabel2Style" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Margin" Value="5,0,0,0" />
+    </ControlTheme>
+</ResourceDictionary>

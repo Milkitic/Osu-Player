@@ -18,6 +18,7 @@
                 <ResourceInclude Source="avares://OsuPlayer/Styles/GeneralStyle.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Styles/ScrollBarStyle.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Styles/i18n.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Styles/ConfigStyle.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
@@ -27,6 +28,9 @@
         <StyleInclude Source="avares://OsuPlayer/Styles/ButtonStyle.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/SliderStyle.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/NavigationStyle.axaml" />
+        <StyleInclude Source="avares://OsuPlayer/Styles/ScrollBarTheme.axaml" />
+        <StyleInclude Source="avares://OsuPlayer/Styles/ContextMenuStyle.axaml" />
+        <StyleInclude Source="avares://OsuPlayer/Styles/Components.axaml" />
     </Application.Styles>
 
     <!-- 托盘图标在 App.axaml.cs 中通过 TrayIcons 集合程序化创建并附加。

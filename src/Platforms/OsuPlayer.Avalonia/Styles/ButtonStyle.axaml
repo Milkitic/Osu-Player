@@ -96,4 +96,39 @@
     <Style Selector="Button.style-texture-small:pressed /template/ Border#SB">
         <Setter Property="Opacity" Value="1" />
     </Style>
+
+    <!--  Flat button style (grey overlay on hover)  -->
+    <Style Selector="Button.flat-button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="1" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid x:Name="RootGrid">
+                    <Border
+                        x:Name="OverlayBorder"
+                        Background="{DynamicResource GreyBrush}"
+                        CornerRadius="1"
+                        Opacity="0" />
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="1">
+                        <ContentPresenter Content="{TemplateBinding Content}" />
+                    </Border>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="Button.flat-button:pointerover /template/ Border#OverlayBorder">
+        <Setter Property="Opacity" Value="0.2" />
+    </Style>
+    <Style Selector="Button.flat-button:pressed /template/ Grid#RootGrid">
+        <Setter Property="Opacity" Value="0.8" />
+    </Style>
+    <Style Selector="Button.flat-button:disabled">
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
 </Styles>

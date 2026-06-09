@@ -1,7 +1,17 @@
 <Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-
     <Style Selector="Slider.osu-slider">
-        <Setter Property="Foreground" Value="{DynamicResource PinkBrushOsu}" />
+        <Setter Property="Foreground" Value="{DynamicResource SliderBackground}" />
         <Setter Property="Background" Value="#EAEAEA" />
+        <Setter Property="MinHeight" Value="20" />
+        <Setter Property="MinWidth" Value="40" />
+    </Style>
+    
+    <Style Selector="Slider.osu-slider /template/ Thumb">
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
+        <Setter Property="Background" Value="{DynamicResource SliderBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource WhiteBrush}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="CornerRadius" Value="7.5" />
     </Style>
 </Styles>

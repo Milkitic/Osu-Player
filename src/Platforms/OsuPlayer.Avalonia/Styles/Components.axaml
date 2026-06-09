@@ -1,0 +1,10 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="ToolTip">
+        <Setter Property="Background" Value="#F8F8F8" />
+        <Setter Property="BorderBrush" Value="#40646464" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Margin" Value="5" />
+        <Setter Property="Padding" Value="4,2" />
+        <Setter Property="Opacity" Value="0.95" />
+    </Style>
+</Styles>

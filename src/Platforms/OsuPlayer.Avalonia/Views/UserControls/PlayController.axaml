@@ -1,88 +1,115 @@
 <UserControl
     x:Class="OsuPlayer.Views.UserControls.PlayController"
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
+    x:DataType="vm:PlayControllerVm">
+
     <Border
-        Padding="20"
-        Background="#252526"
-        CornerRadius="8">
-        <Grid
-            ColumnDefinitions="*,Auto,Auto,Auto,*,Auto"
-            ColumnSpacing="8"
-            RowDefinitions="Auto,Auto">
+        Padding="12,8"
+        Background="#2D2D30"
+        CornerRadius="0">
+        <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="12">
+
             <!--  Thumbnail placeholder  -->
             <Border
-                Grid.RowSpan="2"
                 Grid.Column="0"
-                Width="60"
-                Height="60"
+                Width="61"
+                Height="46"
                 Background="#404040"
                 CornerRadius="4" />
 
-            <!--  Song info  -->
+            <!--  Prev / Play / Next  -->
             <StackPanel
-                Grid.Row="0"
                 Grid.Column="1"
-                Grid.ColumnSpan="4"
                 VerticalAlignment="Center"
-                Spacing="2">
-                <TextBlock
-                    FontWeight="Bold"
-                    Foreground="White"
-                    Text="No song playing" />
-                <TextBlock
-                    FontSize="11"
-                    Foreground="#AAAAAA"
-                    Text="-" />
-            </StackPanel>
-
-            <!--  Controls  -->
-            <StackPanel
-                Grid.Row="0"
-                Grid.Column="5"
-                Grid.ColumnSpan="2"
                 Orientation="Horizontal"
                 Spacing="4">
                 <Button
                     Width="32"
                     Height="32"
                     Classes="style-image"
+                    Command="{Binding PrevCommand}"
                     Content="⏮" />
                 <Button
-                    Width="32"
-                    Height="32"
+                    Width="36"
+                    Height="36"
                     Classes="style-image"
-                    Content="▶" />
+                    Command="{Binding PlayCommand}"
+                    Content="{Binding PlayButtonText}" />
                 <Button
                     Width="32"
                     Height="32"
                     Classes="style-image"
+                    Command="{Binding NextCommand}"
                     Content="⏭" />
             </StackPanel>
 
-            <!--  Progress  -->
-            <DockPanel
-                Grid.Row="1"
-                Grid.Column="0"
-                Grid.ColumnSpan="7"
-                Margin="0,8"
-                LastChildFill="True">
+            <!--  Song title + progress slider  -->
+            <Grid
+                Grid.Column="2"
+                RowDefinitions="Auto,Auto"
+                VerticalAlignment="Center">
                 <TextBlock
-                    Margin="0,0,8,0"
-                    DockPanel.Dock="Left"
-                    Foreground="#AAAAAA"
-                    Text="00:00" />
-                <Slider
-                    Classes="osu-slider"
-                    Maximum="100"
-                    Minimum="0"
-                    Value="30" />
-                <TextBlock
-                    Margin="8,0,0,0"
-                    DockPanel.Dock="Right"
-                    Foreground="#AAAAAA"
-                    Text="03:45" />
-            </DockPanel>
+                    Grid.Row="0"
+                    FontWeight="Bold"
+                    Foreground="{DynamicResource WhiteBrushB0}"
+                    Text="{Binding CurrentSongTitle}" />
+                <DockPanel
+                    Grid.Row="1"
+                    Margin="0,4,0,0"
+                    LastChildFill="True">
+                    <TextBlock
+                        Margin="0,0,8,0"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource ForeDescBrush}"
+                        Text="{Binding CurrentTimeText}" />
+                    <TextBlock
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Right"
+                        Foreground="{DynamicResource ForeDescBrush}"
+                        Text="{Binding TotalTimeText}" />
+                    <Slider
+                        Classes="osu-slider"
+                        Maximum="{Binding TotalTimeMs}"
+                        Minimum="0"
+                        Value="{Binding CurrentTimeMs}" />
+                </DockPanel>
+            </Grid>
+
+            <!--  Mode / Like / Volume / Playlist placeholders  -->
+            <StackPanel
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button
+                    Width="24"
+                    Height="24"
+                    Classes="style-image"
+                    Content="⟳"
+                    ToolTip.Tip="Play mode" />
+                <Button
+                    Width="24"
+                    Height="24"
+                    Classes="style-image"
+                    Content="♡"
+                    ToolTip.Tip="Like" />
+                <Button
+                    Width="24"
+                    Height="24"
+                    Classes="style-image"
+                    Content="🔊"
+                    ToolTip.Tip="Volume" />
+                <Button
+                    Width="24"
+                    Height="24"
+                    Classes="style-image"
+                    Content="☰"
+                    ToolTip.Tip="Playlist" />
+            </StackPanel>
+
         </Grid>
     </Border>
 </UserControl>
