@@ -1,6 +1,16 @@
-﻿namespace OsuPlayer.Avalonia.ViewModels;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using OsuPlayer.Core;
 
-public partial class MainWindowViewModel : ViewModelBase
+namespace OsuPlayer.Avalonia.ViewModels;
+
+public partial class MainWindowViewModel : ObservableObject
 {
-    public string Greeting { get; } = "Welcome to Avalonia!";
+    [ObservableProperty]
+    public partial bool IsNavigationCollapsed { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsPlaying { get; set; }
+
+    public SharedVm Shared => SharedVm.Default;
 }

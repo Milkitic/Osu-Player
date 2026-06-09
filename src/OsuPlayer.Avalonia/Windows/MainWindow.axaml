@@ -1,0 +1,60 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:OsuPlayer.Avalonia.ViewModels"
+        x:Class="OsuPlayer.Avalonia.Windows.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Osu Player"
+        Width="1100" Height="720"
+        MinWidth="900" MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#1E1E1E">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Title bar -->
+        <Border Grid.Row="0" Background="#2D2D30" Padding="16,8">
+            <DockPanel>
+                <TextBlock Text="Osu Player"
+                           Foreground="White"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Shared.IsPlaying, StringFormat='Playing: {0}'}"
+                           Foreground="#888888"
+                           Margin="20,0,0,0"
+                           VerticalAlignment="Center" />
+            </DockPanel>
+        </Border>
+
+        <!-- Main content area -->
+        <Grid Grid.Row="1" ColumnDefinitions="220,*">
+            <Border Grid.Column="0" Background="#252526" Padding="12">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Collection" Foreground="White" Padding="8" />
+                    <TextBlock Text="Search" Foreground="White" Padding="8" />
+                    <TextBlock Text="Recent" Foreground="White" Padding="8" />
+                    <TextBlock Text="Find" Foreground="White" Padding="8" />
+                    <TextBlock Text="Settings" Foreground="White" Padding="8" />
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" Background="#1E1E1E" Padding="20">
+                <TextBlock Text="Welcome to Osu Player (Avalonia)"
+                           Foreground="White"
+                           FontSize="24"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+            </Border>
+        </Grid>
+
+        <!-- Bottom playback bar -->
+        <Border Grid.Row="2" Background="#2D2D30" Padding="16,8">
+            <TextBlock Text="Now playing: -"
+                       Foreground="White"
+                       VerticalAlignment="Center" />
+        </Border>
+    </Grid>
+</Window>

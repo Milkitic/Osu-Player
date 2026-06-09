@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace OsuPlayer.Avalonia.Views;
+namespace OsuPlayer.Avalonia.Windows;
 
 public partial class MainWindow : Window
 {
