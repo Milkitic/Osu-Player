@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using OsuPlayer.Shared.Models;
@@ -12,11 +11,10 @@ public interface IUserPreferences : INotifyPropertyChanged
     float VolumeHitsound { get; set; }
     float VolumeSample { get; set; }
     float VolumeBalanceFactor { get; set; }
-
     float PlaybackRate { get; set; }
     bool PlayUseTempo { get; set; }
     AudioDeviceDescription PlayDeviceDescription { get; set; }
-    int PlayGeneralActualOffset { get; set; }
+    int PlayGeneralActualOffset { get; }
     PlaylistMode PlayListMode { get; set; }
 
     HashSet<MapIdentity> CurrentList { get; set; }

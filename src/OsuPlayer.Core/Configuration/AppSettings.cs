@@ -1,7 +1,10 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -17,7 +20,7 @@ public class AppSettings : IUserPreferences, IDisposable
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
@@ -31,20 +34,24 @@ public class AppSettings : IUserPreferences, IDisposable
 
         Default = this;
 
-        Volume.PropertyChanged += (s, e) => {
+        Volume.PropertyChanged += (s, e) =>
+        {
             if (e.PropertyName == nameof(VolumeSection.Main)) OnPropertyChanged(nameof(VolumeMain));
             else if (e.PropertyName == nameof(VolumeSection.Music)) OnPropertyChanged(nameof(VolumeMusic));
             else if (e.PropertyName == nameof(VolumeSection.Hitsound)) OnPropertyChanged(nameof(VolumeHitsound));
             else if (e.PropertyName == nameof(VolumeSection.Sample)) OnPropertyChanged(nameof(VolumeSample));
-            else if (e.PropertyName == nameof(VolumeSection.BalanceFactor)) OnPropertyChanged(nameof(VolumeBalanceFactor));
+            else if (e.PropertyName == nameof(VolumeSection.BalanceFactor))
+                OnPropertyChanged(nameof(VolumeBalanceFactor));
             else if (e.PropertyName == nameof(VolumeSection.BalanceMode)) OnPropertyChanged(nameof(VolumeBalanceMode));
             else if (e.PropertyName == nameof(VolumeSection.LimiterType)) OnPropertyChanged(nameof(VolumeLimiterType));
         };
 
-        Play.PropertyChanged += (s, e) => {
+        Play.PropertyChanged += (s, e) =>
+        {
             if (e.PropertyName == nameof(PlaySection.PlaybackRate)) OnPropertyChanged(nameof(PlaybackRate));
             else if (e.PropertyName == nameof(PlaySection.PlayUseTempo)) OnPropertyChanged(nameof(PlayUseTempo));
-            else if (e.PropertyName == nameof(PlaySection.DeviceDescription)) OnPropertyChanged(nameof(PlayDeviceDescription));
+            else if (e.PropertyName == nameof(PlaySection.DeviceDescription))
+                OnPropertyChanged(nameof(PlayDeviceDescription));
             else if (e.PropertyName == nameof(PlaySection.PlayListMode)) OnPropertyChanged(nameof(PlayListMode));
         };
     }
@@ -53,8 +60,10 @@ public class AppSettings : IUserPreferences, IDisposable
     public GeneralSection General { get; set; } = new GeneralSection();
     public InterfaceSection Interface { get; set; } = new InterfaceSection();
     public PlaySection Play { get; set; } = new PlaySection();
+
     [JsonPropertyName("hot_keys")]
     public List<HotKey> HotKeys { get; set; } = new List<HotKey>();
+
     public LyricSection Lyric { get; set; } = new LyricSection();
     public ExportSection Export { get; set; } = new ExportSection();
     public HashSet<MapIdentity> CurrentList { get; set; } = new HashSet<MapIdentity>();
@@ -69,76 +78,157 @@ public class AppSettings : IUserPreferences, IDisposable
     public float VolumeMain
     {
         get => Volume.Main;
-        set { if (Volume.Main != value) { Volume.Main = value; OnPropertyChanged(); } }
+        set
+        {
+            if (Volume.Main != value)
+            {
+                Volume.Main = value;
+                OnPropertyChanged();
+            }
+        }
     }
+
     [JsonIgnore]
     public float VolumeMusic
     {
         get => Volume.Music;
-        set { if (Volume.Music != value) { Volume.Music = value; OnPropertyChanged(); } }
+        set
+        {
+            if (Volume.Music != value)
+            {
+                Volume.Music = value;
+                OnPropertyChanged();
+            }
+        }
     }
+
     [JsonIgnore]
     public float VolumeHitsound
     {
         get => Volume.Hitsound;
-        set { if (Volume.Hitsound != value) { Volume.Hitsound = value; OnPropertyChanged(); } }
+        set
+        {
+            if (Volume.Hitsound != value)
+            {
+                Volume.Hitsound = value;
+                OnPropertyChanged();
+            }
+        }
     }
+
     [JsonIgnore]
     public float VolumeSample
     {
         get => Volume.Sample;
-        set { if (Volume.Sample != value) { Volume.Sample = value; OnPropertyChanged(); } }
+        set
+        {
+            if (Volume.Sample != value)
+            {
+                Volume.Sample = value;
+                OnPropertyChanged();
+            }
+        }
     }
+
     [JsonIgnore]
     public float VolumeBalanceFactor
     {
         get => Volume.BalanceFactor;
-        set { if (Volume.BalanceFactor != value) { Volume.BalanceFactor = value; OnPropertyChanged(); } }
+        set
+        {
+            if (Volume.BalanceFactor != value)
+            {
+                Volume.BalanceFactor = value;
+                OnPropertyChanged();
+            }
+        }
     }
 
     [JsonIgnore]
     public BalanceModeSetting VolumeBalanceMode
     {
         get => Volume.BalanceMode;
-        set { if (Volume.BalanceMode != value) { Volume.BalanceMode = value; OnPropertyChanged(); } }
+        set
+        {
+            if (Volume.BalanceMode != value)
+            {
+                Volume.BalanceMode = value;
+                OnPropertyChanged();
+            }
+        }
     }
 
     [JsonIgnore]
     public LimiterTypeSetting VolumeLimiterType
     {
         get => Volume.LimiterType;
-        set { if (Volume.LimiterType != value) { Volume.LimiterType = value; OnPropertyChanged(); } }
+        set
+        {
+            if (Volume.LimiterType != value)
+            {
+                Volume.LimiterType = value;
+                OnPropertyChanged();
+            }
+        }
     }
 
     [JsonIgnore]
     public float PlaybackRate
     {
         get => Play.PlaybackRate;
-        set { if (Play.PlaybackRate != value) { Play.PlaybackRate = value; OnPropertyChanged(); } }
+        set
+        {
+            if (Play.PlaybackRate != value)
+            {
+                Play.PlaybackRate = value;
+                OnPropertyChanged();
+            }
+        }
     }
+
     [JsonIgnore]
     public bool PlayUseTempo
     {
         get => Play.PlayUseTempo;
-        set { if (Play.PlayUseTempo != value) { Play.PlayUseTempo = value; OnPropertyChanged(); } }
+        set
+        {
+            if (Play.PlayUseTempo != value)
+            {
+                Play.PlayUseTempo = value;
+                OnPropertyChanged();
+            }
+        }
     }
+
     [JsonIgnore]
     public AudioDeviceDescription PlayDeviceDescription
     {
         get => Play.DeviceDescription;
-        set { if (!Equals(Play.DeviceDescription, value)) { Play.DeviceDescription = value; OnPropertyChanged(); } }
+        set
+        {
+            if (!Equals(Play.DeviceDescription, value))
+            {
+                Play.DeviceDescription = value;
+                OnPropertyChanged();
+            }
+        }
     }
+
     [JsonIgnore]
-    public int PlayGeneralActualOffset
-    {
-        get => Play.GeneralActualOffset;
-        set { /* Read-only property in PlaySection */ }
-    }
+    public int PlayGeneralActualOffset => Play.GeneralActualOffset;
+
     [JsonIgnore]
     public PlaylistMode PlayListMode
     {
         get => Play.PlayListMode;
-        set { if (Play.PlayListMode != value) { Play.PlayListMode = value; OnPropertyChanged(); } }
+        set
+        {
+            if (Play.PlayListMode != value)
+            {
+                Play.PlayListMode = value;
+                OnPropertyChanged();
+            }
+        }
     }
 
     public void Save()
@@ -161,12 +251,13 @@ public class AppSettings : IUserPreferences, IDisposable
 
     private static readonly Encoding Encoding = Encoding.UTF8;
     private static readonly object FileSaveLock = new object();
+
     public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
     {
         WriteIndented = true
     };
 
-    public static AppSettings Default { get; private set; }
+    public static AppSettings? Default { get; private set; }
 
     public static void SaveDefault()
     {

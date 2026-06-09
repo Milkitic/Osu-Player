@@ -24,10 +24,8 @@ namespace OsuPlayer.Playback;
 public sealed partial class ObservablePlayController : ObservableObject, IPlaybackController, IAsyncDisposable
 {
     private readonly ILogger<ObservablePlayController> _logger;
-
     private readonly IPlaybackEngine _playbackEngine;
     private readonly PlayerEventBus _bus;
-    private readonly PlayList _playList;
     private readonly PlayerSessionService _session;
 
     private static readonly NullPlaybackController s_nullController = new();
