@@ -1,0 +1,26 @@
+<UserControl
+    x:Class="OsuPlayer.Avalonia.Views.UserControls.DifficultyBadge"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Orientation="Horizontal" Spacing="4">
+        <Image
+            Width="13"
+            Height="13"
+            Source="avares://OsuPlayer/Resources/mode_circle.png" />
+        <Border
+            Padding="5,0"
+            Background="#FF8A8A"
+            CornerRadius="6">
+            <TextBlock
+                VerticalAlignment="Center"
+                FontSize="11"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="★ 5.00" />
+        </Border>
+        <TextBlock
+            FontWeight="SemiBold"
+            Foreground="White"
+            Text="Version" />
+    </StackPanel>
+</UserControl>

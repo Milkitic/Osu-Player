@@ -1,0 +1,34 @@
+<Application
+    x:Class="OsuPlayer.Avalonia.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:OsuPlayer.Avalonia"
+    RequestedThemeVariant="Dark">
+
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://OsuPlayer/Styles/BrushDictionary.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Styles/FontDictionary.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Styles/ConverterDictionary.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Styles/GeneralStyle.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Styles/ScrollBarStyle.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Styles/i18n.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://OsuPlayer/Styles/ButtonStyle.axaml" />
+        <StyleInclude Source="avares://OsuPlayer/Styles/SliderStyle.axaml" />
+        <StyleInclude Source="avares://OsuPlayer/Styles/NavigationStyle.axaml" />
+    </Application.Styles>
+
+    <!-- 托盘图标在 App.axaml.cs 中通过 TrayIcons 集合程序化创建并附加。
+         Avalonia 12 的 TrayIcons 是附加属性,TrayIcon 必须直接放在 <TrayIcons> 集合中。-->
+</Application>
