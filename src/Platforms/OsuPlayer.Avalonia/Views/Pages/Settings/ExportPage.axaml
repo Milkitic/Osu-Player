@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:shared="using:OsuPlayer.Shared.Models"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
+    Classes="settings-page"
     x:DataType="vm:ExportPageViewModel">
     <UserControl.Resources>
         <vm:ExportNamingToBoolConverter x:Key="ExportNamingConv" />
@@ -11,89 +12,73 @@
     </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
-            <TextBlock
-                FontWeight="SemiBold"
-                Foreground="#222222"
-                Margin="5,15,0,10"
-                Text="{DynamicResource ui-sets-title-exportPath}" />
-            <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Foreground="#606060"
-                    Text="{DynamicResource ui-sets-content-musicDirectory}" />
+            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-exportPath}" />
+            <StackPanel Classes="config-row" Orientation="Horizontal">
+                <TextBlock Classes="config-label" Text="{DynamicResource ui-sets-content-musicDirectory}" />
                 <TextBox
+                    Classes="config-box"
                     Width="250"
                     Height="27"
                     IsReadOnly="True"
                     Text="{Binding MusicPath, Mode=OneWay}" />
                 <Button
+                    Classes="settings-button"
                     Width="27"
                     Height="27"
-                    Classes="style-collection"
                     Command="{Binding BrowseMusicCommand}"
                     Content="..." />
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Foreground="#606060"
-                    Text="{DynamicResource ui-sets-content-bgDirectory}" />
+            <StackPanel Classes="config-row" Orientation="Horizontal">
+                <TextBlock Classes="config-label" Text="{DynamicResource ui-sets-content-bgDirectory}" />
                 <TextBox
+                    Classes="config-box"
                     Width="250"
                     Height="27"
                     IsReadOnly="True"
                     Text="{Binding BgPath, Mode=OneWay}" />
                 <Button
+                    Classes="settings-button"
                     Width="27"
                     Height="27"
-                    Classes="style-collection"
                     Command="{Binding BrowseBgCommand}"
                     Content="..." />
             </StackPanel>
 
-            <TextBlock
-                FontWeight="SemiBold"
-                Foreground="#222222"
-                Margin="5,15,0,10"
-                Text="{DynamicResource ui-sets-title-fileNamingFormat}" />
+            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-fileNamingFormat}" />
             <RadioButton
-                Margin="8,0"
+                Classes="config-radio"
                 Content="Title"
                 GroupName="naming"
                 IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.Title}, Mode=TwoWay}" />
             <RadioButton
-                Margin="8,0"
+                Classes="config-radio"
                 Content="Artist - Title"
                 GroupName="naming"
                 IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.ArtistTitle}, Mode=TwoWay}" />
             <RadioButton
-                Margin="8,0"
+                Classes="config-radio"
                 Content="Title - Artist"
                 GroupName="naming"
                 IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.TitleArtist}, Mode=TwoWay}" />
 
-            <TextBlock
-                FontWeight="SemiBold"
-                Foreground="#222222"
-                Margin="5,15,0,10"
-                Text="{DynamicResource ui-sets-title-directoryGrouping}" />
+            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-directoryGrouping}" />
             <RadioButton
-                Margin="8,0"
+                Classes="config-radio"
                 Content="{DynamicResource ui-sets-content-dirNoGroup}"
                 GroupName="grouping"
                 IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.None}, Mode=TwoWay}" />
             <RadioButton
-                Margin="8,0"
+                Classes="config-radio"
                 Content="{DynamicResource ui-sets-content-dirGroupByArtist}"
                 GroupName="grouping"
                 IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Artist}, Mode=TwoWay}" />
             <RadioButton
-                Margin="8,0"
+                Classes="config-radio"
                 Content="{DynamicResource ui-sets-content-dirGroupByMapper}"
                 GroupName="grouping"
                 IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Mapper}, Mode=TwoWay}" />
             <RadioButton
-                Margin="8,0"
+                Classes="config-radio"
                 Content="{DynamicResource ui-sets-content-dirGroupBySource}"
                 GroupName="grouping"
                 IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Source}, Mode=TwoWay}" />

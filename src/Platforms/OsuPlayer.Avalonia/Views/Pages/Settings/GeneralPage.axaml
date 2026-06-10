@@ -3,97 +3,84 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
+    Classes="settings-page"
     x:DataType="vm:GeneralPageViewModel">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
-            <TextBlock
-                FontWeight="SemiBold"
-                Foreground="#222222"
-                Margin="5,15,0,10"
-                Text="{DynamicResource ui-sets-title-startup}" />
+            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-startup}" />
             <CheckBox
-                Margin="8,0"
+                Classes="config-check"
                 HorizontalAlignment="Left"
                 Content="{DynamicResource ui-sets-content-runOnStartup}"
                 IsChecked="{Binding RunOnStartup, Mode=TwoWay}" />
 
-            <TextBlock
-                FontWeight="SemiBold"
-                Foreground="#222222"
-                Margin="5,15,0,10"
-                Text="{DynamicResource ui-sets-title-osuDbLocation}" />
-            <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-osuDbLocation}" />
+            <StackPanel Classes="config-row" Orientation="Horizontal">
                 <TextBox
+                    Classes="config-box"
                     Width="250"
                     Height="27"
                     IsReadOnly="True"
                     Text="{Binding DbPath, Mode=OneWay}" />
                 <Button
+                    Classes="settings-button"
                     Width="27"
                     Height="27"
-                    Classes="style-collection"
                     Command="{Binding BrowseDbCommand}"
                     Content="..." />
                 <Button
-                    Classes="style-collection"
+                    Classes="settings-button"
                     Command="{Binding SyncNowCommand}"
                     Content="{DynamicResource ui-btn-syncManually}" />
             </StackPanel>
 
-            <TextBlock
-                FontWeight="SemiBold"
-                Foreground="#222222"
-                Margin="5,15,0,10"
-                Text="{DynamicResource ui-sets-title-customSongPath}" />
-            <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-customSongPath}" />
+            <StackPanel Classes="config-row" Orientation="Horizontal">
                 <TextBox
+                    Classes="config-box"
                     Width="250"
                     Height="27"
                     IsReadOnly="True"
                     Text="{Binding CustomSongsPath, Mode=OneWay}" />
                 <Button
+                    Classes="settings-button"
                     Width="27"
                     Height="27"
-                    Classes="style-collection"
                     Command="{Binding BrowseCustomCommand}"
                     Content="..." />
                 <Button
-                    Classes="style-collection"
+                    Classes="settings-button"
                     Command="{Binding ScanNowCommand}"
                     Content="{DynamicResource ui-btn-scanManually}"
                     IsVisible="{Binding !IsScanning}" />
                 <TextBlock
+                    Classes="config-label"
                     VerticalAlignment="Center"
-                    Foreground="#606060"
                     IsVisible="{Binding IsScanning}"
                     Text="{DynamicResource ui-sets-content-scanning3Dot}" />
                 <Button
-                    Classes="style-image"
+                    Classes="link-button"
                     Command="{Binding CancelScanCommand}"
                     Content="{DynamicResource ui-btn-cancelScan}"
-                    Foreground="#5472FE"
                     IsVisible="{Binding IsScanning}" />
             </StackPanel>
 
-            <TextBlock
-                FontWeight="SemiBold"
-                Foreground="#222222"
-                Margin="5,15,0,10"
-                Text="{DynamicResource ui-sets-title-closeWindow}" />
+            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-closeWindow}" />
             <RadioButton
-                Margin="8,0"
+                Classes="config-radio"
                 HorizontalAlignment="Left"
                 Content="{DynamicResource ui-sets-content-minToNotificationPanel}"
                 GroupName="close"
                 IsChecked="{Binding IsMinimizeWhenClosed, Mode=TwoWay}" />
             <RadioButton
-                Margin="8,0"
+                Classes="config-radio"
                 HorizontalAlignment="Left"
                 Content="{DynamicResource ui-sets-content-exitProgram}"
                 GroupName="close"
                 IsChecked="{Binding IsExitWhenClosed, Mode=TwoWay}" />
             <CheckBox
-                Margin="8,10"
+                Classes="config-check"
+                Margin="8,10,0,0"
                 HorizontalAlignment="Left"
                 Content="{DynamicResource ui-sets-content-setAsDefaultOptions}"
                 IsChecked="{Binding SetAsDefaultOptions, Mode=TwoWay}" />

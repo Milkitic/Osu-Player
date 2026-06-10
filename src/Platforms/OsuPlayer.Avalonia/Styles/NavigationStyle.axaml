@@ -4,28 +4,28 @@
     <Style Selector="ToggleButton.nav-button">
         <Setter Property="Foreground" Value="#FEFEFEFE" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Width" Value="200" />
+        <Setter Property="Width" Value="170" />
         <Setter Property="Height" Value="40" />
         <Setter Property="Template">
             <ControlTemplate>
-                <Panel
+                <Grid
                     Width="{TemplateBinding Width}"
                     Height="{TemplateBinding Height}"
                     ClipToBounds="True">
                     <Rectangle
                         x:Name="innerRectangle"
-                        Width="179"
+                        HorizontalAlignment="Stretch"
                         Height="40"
                         Fill="{TemplateBinding Background}"
                         Opacity="0" />
                     <ContentPresenter
-                        Margin="50,12,0,0"
+                        Margin="20,0,12,0"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
+                        VerticalAlignment="Center"
                         Content="{TemplateBinding Content}"
                         FontSize="13"
                         Foreground="{TemplateBinding Foreground}" />
-                </Panel>
+                </Grid>
             </ControlTemplate>
         </Setter>
     </Style>

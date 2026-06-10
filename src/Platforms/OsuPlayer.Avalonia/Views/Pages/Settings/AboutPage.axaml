@@ -3,22 +3,19 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
+    Classes="settings-page"
     x:DataType="vm:AboutPageViewModel">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
-            <TextBlock
-                FontWeight="SemiBold"
-                Foreground="#222222"
-                Margin="5,15,0,10"
-                Text="{DynamicResource ui-sets-title-softwareUpdate}" />
+            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-softwareUpdate}" />
 
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBlock Foreground="#606060" Text="{DynamicResource ui-sets-content-currentVersion}" />
-                <TextBlock Foreground="#222222" Text="{Binding CurrentVersion}" />
+            <StackPanel Classes="config-row" Orientation="Horizontal">
+                <TextBlock Classes="config-label" Text="{DynamicResource ui-sets-content-currentVersion}" />
+                <TextBlock Classes="config-label-muted" Foreground="#222222" Text="{Binding CurrentVersion}" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBlock Foreground="#606060" Text="{DynamicResource ui-sets-content-lastCheckTime}" />
-                <TextBlock Foreground="#222222" Text="{Binding LastUpdateCheckText}" />
+            <StackPanel Classes="config-row" Orientation="Horizontal">
+                <TextBlock Classes="config-label" Text="{DynamicResource ui-sets-content-lastCheckTime}" />
+                <TextBlock Classes="config-label-muted" Foreground="#222222" Text="{Binding LastUpdateCheckText}" />
             </StackPanel>
 
             <StackPanel
@@ -26,11 +23,11 @@
                 Orientation="Horizontal"
                 Spacing="8">
                 <Button
-                    Classes="style-collection"
+                    Classes="settings-button"
                     Command="{Binding CheckUpdateCommand}"
                     Content="Check Update" />
                 <Button
-                    Classes="style-collection"
+                    Classes="settings-button"
                     Command="{Binding ShowNewVersionDialogCommand}"
                     Content="{DynamicResource ui-sets-content-hasNewVersion}"
                     Foreground="#FE5472"
@@ -39,30 +36,26 @@
 
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <Button
-                    Classes="style-image"
+                    Classes="link-button"
                     Command="{Binding OpenUrlCommand}"
                     CommandParameter="https://github.com/Milkitic/Osu-Player"
-                    Content="{DynamicResource ui-sets-content-projectUrl}"
-                    Foreground="#5472FE" />
+                    Content="{DynamicResource ui-sets-content-projectUrl}" />
                 <Button
-                    Classes="style-image"
+                    Classes="link-button"
                     Command="{Binding OpenUrlCommand}"
                     CommandParameter="https://github.com/Milkitic/Osu-Player/issues/new"
-                    Content="{DynamicResource ui-sets-content-feedback}"
-                    Foreground="#5472FE" />
+                    Content="{DynamicResource ui-sets-content-feedback}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <Button
-                    Classes="style-image"
+                    Classes="link-button"
                     Command="{Binding OpenUrlCommand}"
                     CommandParameter="https://github.com/Milkitic/Osu-Player/blob/master/LICENSE"
-                    Content="{DynamicResource ui-sets-content-licenseInfo}"
-                    Foreground="#5472FE" />
+                    Content="{DynamicResource ui-sets-content-licenseInfo}" />
                 <Button
-                    Classes="style-image"
+                    Classes="link-button"
                     Command="{Binding ShowPrivacyPolicyCommand}"
-                    Content="{DynamicResource ui-sets-content-privacyPolicy}"
-                    Foreground="#5472FE" />
+                    Content="{DynamicResource ui-sets-content-privacyPolicy}" />
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

@@ -14,6 +14,12 @@ public partial class MainWindow : Window
 {
     private readonly INavigationService _nav;
 
+    public MainWindow()
+    {
+        InitializeComponent();
+        _nav = null!;
+    }
+
     public MainWindow(MainWindowViewModel viewModel, INavigationService navigationService, PlayControllerVm playControllerVm)
     {
         InitializeComponent();

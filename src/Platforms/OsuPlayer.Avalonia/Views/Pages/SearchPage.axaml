@@ -4,10 +4,31 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     x:DataType="vm:SearchPageViewModel">
-    <Grid RowDefinitions="Auto,Auto,*">
+    <UserControl.Styles>
+        <Style Selector="ListBox.search-results > ListBoxItem">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,1" />
+        </Style>
+    </UserControl.Styles>
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+        <Border
+            Grid.Row="0"
+            Height="40"
+            Margin="30,20,30,20"
+            VerticalAlignment="Top"
+            Background="White"
+            BorderBrush="#DDDDDD"
+            BorderThickness="1" />
         <TextBox
             Grid.Row="0"
-            Margin="10"
+            Margin="40,20,40,0"
+            Height="40"
+            VerticalAlignment="Top"
+            VerticalContentAlignment="Center"
+            Background="Transparent"
+            BorderThickness="0"
+            FontSize="15"
+            Foreground="#555555"
             PlaceholderText="{DynamicResource ui-hint-searchPageBox}"
             Text="{Binding SearchText}" />
         <StackPanel
@@ -17,31 +38,53 @@
             Orientation="Horizontal"
             Spacing="8">
             <Button
-                Classes="style-collection"
+                Classes="play-button"
                 Command="{Binding PlayAllCommand}"
                 Content="{DynamicResource ui-btn-playAll}" />
             <Button
-                Classes="style-collection"
+                Classes="settings-button"
                 Command="{Binding SearchCommand}"
                 Content="{DynamicResource ui-btn-queueAll}" />
         </StackPanel>
-        <ListBox
+        <Border
             Grid.Row="2"
-            Margin="5,0"
+            Margin="5,12,5,0"
+            Padding="12,8"
+            Background="#F4F5F7"
+            BorderBrush="#E4E6EB"
+            BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="3*,2*,*">
+                <TextBlock FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-title}" />
+                <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-artist}" />
+                <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-creator}" />
+            </Grid>
+        </Border>
+        <ListBox
+            Grid.Row="3"
+            Classes="search-results"
+            Margin="5,0,5,5"
             Background="Transparent"
             ItemsSource="{Binding DisplayedMaps}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel>
-                        <TextBlock
-                            FontWeight="SemiBold"
-                            Foreground="#222222"
-                            Text="{Binding AutoTitle}" />
-                        <TextBlock
-                            FontSize="12"
-                            Foreground="#9C9C9C"
-                            Text="{Binding AutoArtist}" />
-                    </StackPanel>
+                    <Border Padding="12,10" Background="#FBFBFB" BorderBrush="#E6E6E6" BorderThickness="0,0,0,1">
+                        <Grid ColumnDefinitions="3*,2*,*">
+                            <TextBlock
+                                FontWeight="SemiBold"
+                                Foreground="#222222"
+                                Text="{Binding AutoTitle}" />
+                            <TextBlock
+                                Grid.Column="1"
+                                FontSize="12"
+                                Foreground="#9C9C9C"
+                                Text="{Binding AutoArtist}" />
+                            <TextBlock
+                                Grid.Column="2"
+                                FontSize="12"
+                                Foreground="#606060"
+                                Text="{Binding AutoCreator}" />
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

@@ -3,28 +3,21 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
+    Classes="settings-page"
     x:DataType="vm:InterfacePageViewModel">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
-            <TextBlock
-                FontWeight="SemiBold"
-                Foreground="#222222"
-                Margin="5,15,0,10"
-                Text="{DynamicResource ui-sets-title-language}" />
+            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-language}" />
             <ComboBox
+                Classes="config-box"
                 Width="220"
-                Margin="8,0"
                 HorizontalAlignment="Left"
                 ItemsSource="{Binding AvailableLanguages}"
                 SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" />
 
-            <TextBlock
-                FontWeight="SemiBold"
-                Foreground="#222222"
-                Margin="5,15,0,10"
-                Text="{DynamicResource ui-sets-title-minimalEffectMode}" />
+            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-minimalEffectMode}" />
             <CheckBox
-                Margin="8,0"
+                Classes="config-check"
                 HorizontalAlignment="Left"
                 Content="{DynamicResource ui-sets-title-minimalEffectMode}"
                 IsChecked="{Binding MinimalMode, Mode=TwoWay}" />

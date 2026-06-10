@@ -3,24 +3,21 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
+    Classes="settings-page"
     x:DataType="vm:HotKeyPageViewModel">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
-            <TextBlock
-                FontWeight="SemiBold"
-                Foreground="#222222"
-                Margin="5,15,0,10"
-                Text="{DynamicResource ui-sets-title-hotKeySettings}" />
+            <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-hotKeySettings}" />
             <ItemsControl ItemsSource="{Binding Entries}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="vm:HotKeyEntry">
-                        <Grid ColumnDefinitions="*,2*">
+                        <Grid Classes="config-grid" ColumnDefinitions="150,*">
                             <TextBlock
+                                Classes="config-label"
                                 Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Foreground="White"
                                 Text="{Binding DisplayName}" />
                             <TextBox
+                                Classes="config-box"
                                 Grid.Column="1"
                                 Width="150"
                                 IsReadOnly="True"

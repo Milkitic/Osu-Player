@@ -4,7 +4,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     x:DataType="vm:CollectionPageViewModel">
-    <Grid RowDefinitions="Auto,Auto,*">
+    <UserControl.Styles>
+        <Style Selector="ListBox.collection-list > ListBoxItem">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,1" />
+        </Style>
+    </UserControl.Styles>
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
         <Border
             Grid.Row="0"
             Margin="5"
@@ -14,21 +20,24 @@
             BorderThickness="1"
             CornerRadius="10">
             <Grid ColumnDefinitions="Auto,*,Auto">
-                <Border
+                <Grid
                     Grid.Column="0"
-                    Width="120"
-                    Height="120"
-                    Margin="0,0,10,0"
-                    Background="#F0F0F0"
-                    CornerRadius="4">
-                    <!-- TODO: D-phase — load Bitmap from CollectionInfo.ImagePath file path -->
+                    Width="192"
+                    Height="192"
+                    Margin="10"
+                    Background="#F0F0F0">
+                    <Image
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Source="{Binding CollectionInfo.ImagePath}"
+                        Stretch="UniformToFill" />
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         FontSize="24"
                         Foreground="#CCC"
                         Text="🖼" />
-                </Border>
+                </Grid>
                 <StackPanel Grid.Column="1" Margin="10,0" Spacing="4">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock
@@ -40,13 +49,13 @@
                         <Button
                             Width="24"
                             Height="24"
-                            Classes="style-collection"
+                            Classes="settings-button"
                             Command="{Binding EditCollectionCommand}"
                             Content="✎" />
                         <Button
                             Width="24"
                             Height="24"
-                            Classes="style-collection"
+                            Classes="settings-button"
                             Command="{Binding DeleteCollectionCommand}"
                             Content="✕" />
                     </StackPanel>
@@ -56,11 +65,11 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <Button
-                            Classes="style-collection"
+                            Classes="play-button"
                             Command="{Binding PlayAllCommand}"
                             Content="{DynamicResource ui-btn-playAll}" />
                         <Button
-                            Classes="style-collection"
+                            Classes="settings-button"
                             Command="{Binding ExportAllCommand}"
                             Content="{DynamicResource ui-btn-exportAll}" />
                     </StackPanel>
@@ -87,37 +96,58 @@
             Width="180"
             HorizontalAlignment="Right"
             Margin="0,5,10,0"
+            Background="White"
+            BorderBrush="#DCDFE6"
+            BorderThickness="1"
             PlaceholderText="{DynamicResource ui-hint-searchCollectionMusic3Dot}"
             Text="{Binding SearchText}" />
-        <ListBox
+        <Border
             Grid.Row="2"
-            Margin="5,0"
+            Margin="5,10,5,0"
+            Padding="12,8"
+            Background="#F4F5F7"
+            BorderBrush="#E4E6EB"
+            BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="40,3*,2*,*,2*">
+                <TextBlock FontWeight="SemiBold" Foreground="#666666" Text="#" />
+                <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-title}" />
+                <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-artist}" />
+                <TextBlock Grid.Column="3" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-creator}" />
+                <TextBlock Grid.Column="4" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-mapDifficulty}" />
+            </Grid>
+        </Border>
+        <ListBox
+            Grid.Row="3"
+            Classes="collection-list"
+            Margin="5,0,5,5"
             Background="Transparent"
             ItemsSource="{Binding DisplayedBeatmaps}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="40,*,2*,*,2*">
-                        <TextBlock
-                            Grid.Column="0"
-                            Foreground="#9C9C9C"
-                            Text="{Binding Index}" />
-                        <TextBlock
-                            Grid.Column="1"
-                            Foreground="#222222"
-                            Text="{Binding AutoTitle}" />
-                        <TextBlock
-                            Grid.Column="2"
-                            Foreground="#9C9C9C"
-                            Text="{Binding AutoArtist}" />
-                        <TextBlock
-                            Grid.Column="3"
-                            Foreground="#222222"
-                            Text="{Binding AutoCreator}" />
-                        <TextBlock
-                            Grid.Column="4"
-                            Foreground="#9C9C9C"
-                            Text="{Binding AutoVersion}" />
-                    </Grid>
+                    <Border Padding="12,10" Background="#FBFBFB" BorderBrush="#E6E6E6" BorderThickness="0,0,0,1">
+                        <Grid ColumnDefinitions="40,3*,2*,*,2*">
+                            <TextBlock
+                                Grid.Column="0"
+                                Foreground="#9C9C9C"
+                                Text="{Binding Index}" />
+                            <TextBlock
+                                Grid.Column="1"
+                                Foreground="#222222"
+                                Text="{Binding AutoTitle}" />
+                            <TextBlock
+                                Grid.Column="2"
+                                Foreground="#9C9C9C"
+                                Text="{Binding AutoArtist}" />
+                            <TextBlock
+                                Grid.Column="3"
+                                Foreground="#222222"
+                                Text="{Binding AutoCreator}" />
+                            <TextBlock
+                                Grid.Column="4"
+                                Foreground="#9C9C9C"
+                                Text="{Binding AutoVersion}" />
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

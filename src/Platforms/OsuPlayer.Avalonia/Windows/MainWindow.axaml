@@ -23,10 +23,10 @@
             <DockPanel>
                 <TextBlock VerticalAlignment="Center" FontWeight="Bold" Foreground="White" Text="Osu Player" />
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
-                    <Button Classes="style-image" Width="28" Height="28" Click="BtnSettings_Click" Content="⚙" />
-                    <Button Classes="style-image" Width="28" Height="28" Click="BtnMini_Click" Content="▪" />
-                    <Button x:Name="BtnMaxRestore" Classes="style-image" Width="28" Height="28" Click="BtnMaxRestore_Click" Content="▢" />
-                    <Button Classes="style-image" Width="28" Height="28" Click="BtnClose_Click" Content="✕" />
+                    <Button Classes="style-image" Width="28" Height="28" FontSize="16" Click="BtnSettings_Click" Content="⚙" />
+                    <Button Classes="style-image" Width="28" Height="28" FontSize="16" Click="BtnMini_Click" Content="◱" />
+                    <Button x:Name="BtnMaxRestore" Classes="style-image" Width="28" Height="28" FontSize="14" Click="BtnMaxRestore_Click" Content="▢" />
+                    <Button Classes="style-image" Width="28" Height="28" FontSize="14" Click="BtnClose_Click" Content="✕" />
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -34,7 +34,7 @@
         <!--  Main content: sidebar + content + player  -->
         <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
             <!--  Sidebar navigation  -->
-            <Border Grid.Column="0" Width="220" Background="#252526" Padding="12">
+            <Border Grid.Column="0" Width="170" Background="#252526" Padding="8,12">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel x:Name="NavPanel" Spacing="1">
                         <TextBlock FontWeight="SemiBold" Foreground="#F8E0DFEF" Margin="5,0,0,5" Text="{DynamicResource ui-nav-library}" />

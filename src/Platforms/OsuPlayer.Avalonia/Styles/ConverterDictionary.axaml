@@ -15,6 +15,8 @@
     <converters:IconColorConverter x:Key="IconColorConverter" />
     <converters:ButtonColorConverter x:Key="ButtonColorConverter" />
     <converters:PlayingConverter x:Key="PlayingConverter" />
+    <converters:PlayModeConverter x:Key="PlayModeConverter" />
+    <converters:BoolIsFavToSvgConverter x:Key="BoolIsFavToSvgConverter" />
     <converters:MiniWindowConverter x:Key="MiniWindowConverter" />
     <converters:LocalizedFontFamilyConverter x:Key="LocalizedFontFamilyConverter" />
     <converters:StarRating2ColorConverter x:Key="StarRating2ColorConverter" />

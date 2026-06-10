@@ -3,7 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:OsuPlayer"
-    RequestedThemeVariant="Dark">
+    RequestedThemeVariant="Light">
 
     <Application.DataTemplates>
         <local:ViewLocator />
@@ -18,7 +18,6 @@
                 <ResourceInclude Source="avares://OsuPlayer/Styles/GeneralStyle.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Styles/ScrollBarStyle.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Styles/i18n.axaml" />
-                <ResourceInclude Source="avares://OsuPlayer/Styles/ConfigStyle.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
@@ -32,6 +31,7 @@
         <StyleInclude Source="avares://OsuPlayer/Styles/ContextMenuStyle.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/Components.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/CommonButtonStyle.axaml" />
+        <StyleInclude Source="avares://OsuPlayer/Styles/ConfigStyle.axaml" />
     </Application.Styles>
 
     <!-- 托盘图标在 App.axaml.cs 中通过 TrayIcons 集合程序化创建并附加。
