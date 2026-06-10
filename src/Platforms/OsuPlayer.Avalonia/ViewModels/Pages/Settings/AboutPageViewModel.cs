@@ -1,16 +1,32 @@
+﻿using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OsuPlayer.Core.Configuration;
 using OsuPlayer.Services;
+using OsuPlayer.Shared;
 
 namespace OsuPlayer.ViewModels.Pages.Settings;
 
 public partial class AboutPageViewModel : ObservableObject
 {
-    [ObservableProperty]
-    public partial string CurrentVersion { get; set; } = "1.0.0";
+    private const string DtFormat = "g";
+    private readonly UpdateInst _updateInst;
+
+    public AboutPageViewModel(UpdateInst updateInst)
+    {
+        _updateInst = updateInst;
+        CurrentVersion = _updateInst.CurrentVersion;
+        HasUpdate = _updateInst.NewRelease != null;
+        UpdateLastUpdateText();
+    }
 
     [ObservableProperty]
-    public partial string LastUpdateCheckText { get; set; } = "Never";
+    public partial string CurrentVersion { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string LastUpdateCheckText { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial bool HasUpdate { get; set; }
@@ -18,19 +34,56 @@ public partial class AboutPageViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsCheckingUpdate { get; set; }
 
-    [RelayCommand]
-    private void CheckUpdate()
+    private void UpdateLastUpdateText()
     {
-        // Avalonia 端 stub:实际检查更新逻辑后续接入
+        LastUpdateCheckText = AppSettings.Default?.LastUpdateCheck == null
+            ? I18NUtil.GetString("ui-sets-content-never")
+            : AppSettings.Default.LastUpdateCheck.Value.ToString(DtFormat);
+    }
+
+    [RelayCommand]
+    private async Task CheckUpdateAsync()
+    {
         IsCheckingUpdate = true;
-        AppNotificationService.Instance.Push("Update check is not yet implemented in Avalonia build.");
-        IsCheckingUpdate = false;
+        try
+        {
+            var hasNew = await _updateInst.CheckUpdateAsync();
+            if (AppSettings.Default != null)
+            {
+                AppSettings.Default.LastUpdateCheck = DateTime.Now;
+                UpdateLastUpdateText();
+                AppSettings.SaveDefault();
+            }
+
+            if (hasNew == true)
+            {
+                HasUpdate = true;
+                ShowNewVersionDialog();
+            }
+            else
+            {
+                AppNotificationService.Instance.Push(I18NUtil.GetString("ui-sets-content-alreadyNewest"));
+            }
+        }
+        catch (Exception ex)
+        {
+            AppNotificationService.Instance.Push(I18NUtil.GetString("ui-sets-content-errorWhileCheckingUpdate") +
+                                                Environment.NewLine +
+                                                (ex.InnerException?.Message ?? ex.Message));
+        }
+        finally
+        {
+            IsCheckingUpdate = false;
+        }
     }
 
     [RelayCommand]
     private void ShowNewVersionDialog()
     {
-        // TODO: 集成 NewVersionWindow
+        if (_updateInst.NewRelease != null)
+        {
+            AppNotificationService.Instance.Push($"{I18NUtil.GetString("ui-sets-content-hasNewVersion")}: {_updateInst.NewRelease.NewVerString}");
+        }
     }
 
     [RelayCommand]
@@ -39,7 +92,7 @@ public partial class AboutPageViewModel : ObservableObject
         if (string.IsNullOrEmpty(url)) return;
         try
         {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
         catch
         {

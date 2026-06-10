@@ -1,7 +1,8 @@
-<UserControl
+﻿<UserControl
     x:Class="OsuPlayer.Views.Pages.RecentPlayPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:core="clr-namespace:OsuPlayer.Core;assembly=OsuPlayer.Core"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     x:DataType="vm:RecentPlayPageViewModel">
     <UserControl.Styles>
@@ -10,7 +11,7 @@
             <Setter Property="Margin" Value="0,0,0,1" />
         </Style>
     </UserControl.Styles>
-    <Grid RowDefinitions="Auto,Auto,*">
+    <Grid RowDefinitions="Auto,*">
         <StackPanel
             Grid.Row="0"
             Margin="10"
@@ -25,55 +26,37 @@
                 Command="{Binding ClearAllRecentCommand}"
                 Content="{DynamicResource ui-btn-deleteAll}" />
         </StackPanel>
-        <Border
-            Grid.Row="1"
-            Margin="5,0,5,0"
-            Padding="12,8"
-            Background="#F4F5F7"
-            BorderBrush="#E4E6EB"
-            BorderThickness="0,0,0,1">
-            <Grid ColumnDefinitions="40,3*,2*,*,2*">
-                <TextBlock FontWeight="SemiBold" Foreground="#666666" Text="#" />
-                <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-title}" />
-                <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-artist}" />
-                <TextBlock Grid.Column="3" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-creator}" />
-                <TextBlock Grid.Column="4" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-mapDifficulty}" />
-            </Grid>
-        </Border>
-        <ListBox
-            Grid.Row="2"
-            Classes="recent-list"
-            Margin="5,0,5,5"
-            Background="Transparent"
-            ItemsSource="{Binding Beatmaps}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Border Padding="12,10" Background="#FBFBFB" BorderBrush="#E6E6E6" BorderThickness="0,0,0,1">
-                        <Grid ColumnDefinitions="40,3*,2*,*,2*">
-                            <TextBlock
-                                Grid.Column="0"
-                                Foreground="#9C9C9C"
-                                Text="{Binding Index}" />
-                            <TextBlock
-                                Grid.Column="1"
-                                Foreground="#222222"
-                                Text="{Binding AutoTitle}" />
-                            <TextBlock
-                                Grid.Column="2"
-                                Foreground="#9C9C9C"
-                                Text="{Binding AutoArtist}" />
-                            <TextBlock
-                                Grid.Column="3"
-                                Foreground="#222222"
-                                Text="{Binding AutoCreator}" />
-                            <TextBlock
-                                Grid.Column="4"
-                                Foreground="#9C9C9C"
-                                Text="{Binding AutoVersion}" />
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Grid Grid.Row="1" Margin="5,0,5,5">
+            <Border Padding="12,8" Background="#F4F5F7" BorderBrush="#E4E6EB" BorderThickness="0,0,0,1" VerticalAlignment="Top">
+                <Grid ColumnDefinitions="40,3*,2*,*,2*">
+                    <TextBlock FontWeight="SemiBold" Foreground="#666666" Text="#" />
+                    <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-title}" />
+                    <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-artist}" />
+                    <TextBlock Grid.Column="3" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-creator}" />
+                    <TextBlock Grid.Column="4" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-mapDifficulty}" />
+                </Grid>
+            </Border>
+            <ListBox
+                x:Name="RecentList"
+                Classes="recent-list"
+                Margin="0,37,0,0"
+                Background="Transparent"
+                DoubleTapped="RecentList_DoubleTapped"
+                ItemsSource="{Binding Beatmaps}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="core:BeatmapDataModel">
+                        <Border Padding="12,10" Background="#FBFBFB" BorderBrush="#E6E6E6" BorderThickness="0,0,0,1">
+                            <Grid ColumnDefinitions="40,3*,2*,*,2*">
+                                <TextBlock Grid.Column="0" Foreground="#9C9C9C" Text="{Binding Index}" />
+                                <TextBlock Grid.Column="1" Foreground="#222222" Text="{Binding AutoTitle}" />
+                                <TextBlock Grid.Column="2" Foreground="#9C9C9C" Text="{Binding AutoArtist}" />
+                                <TextBlock Grid.Column="3" Foreground="#222222" Text="{Binding AutoCreator}" />
+                                <TextBlock Grid.Column="4" Foreground="#9C9C9C" Text="{Binding AutoVersion}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
     </Grid>
 </UserControl>

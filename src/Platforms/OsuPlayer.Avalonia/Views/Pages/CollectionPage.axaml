@@ -1,7 +1,8 @@
-<UserControl
+﻿<UserControl
     x:Class="OsuPlayer.Views.Pages.CollectionPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:core="clr-namespace:OsuPlayer.Core;assembly=OsuPlayer.Core"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     x:DataType="vm:CollectionPageViewModel">
     <UserControl.Styles>
@@ -10,7 +11,7 @@
             <Setter Property="Margin" Value="0,0,0,1" />
         </Style>
     </UserControl.Styles>
-    <Grid RowDefinitions="Auto,Auto,Auto,*">
+    <Grid RowDefinitions="Auto,Auto,*">
         <Border
             Grid.Row="0"
             Margin="5"
@@ -46,18 +47,11 @@
                             FontWeight="SemiBold"
                             Foreground="#303030"
                             Text="{Binding CollectionInfo.Name}" />
-                        <Button
-                            Width="24"
-                            Height="24"
-                            Classes="settings-button"
-                            Command="{Binding EditCollectionCommand}"
-                            Content="✎" />
-                        <Button
-                            Width="24"
-                            Height="24"
-                            Classes="settings-button"
-                            Command="{Binding DeleteCollectionCommand}"
-                            Content="✕" />
+                        <Button Width="28" Height="28" Classes="settings-button" Command="{Binding DeleteCollectionCommand}">
+                            <Viewbox Width="12" Height="12">
+                                <Path Fill="#303030" Data="M2,3H12V4.5H11L10.2,13H3.8L3,4.5H2ZM5,1H9L10,2.2H12V3.2H2V2.2H4Z" />
+                            </Viewbox>
+                        </Button>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <TextBlock Foreground="#303030" Text="{DynamicResource ui-createTime}" />
@@ -91,65 +85,72 @@
                 </StackPanel>
             </Grid>
         </Border>
-        <TextBox
-            Grid.Row="1"
-            Width="180"
-            HorizontalAlignment="Right"
-            Margin="0,5,10,0"
-            Background="White"
-            BorderBrush="#DCDFE6"
-            BorderThickness="1"
-            PlaceholderText="{DynamicResource ui-hint-searchCollectionMusic3Dot}"
-            Text="{Binding SearchText}" />
-        <Border
-            Grid.Row="2"
-            Margin="5,10,5,0"
-            Padding="12,8"
-            Background="#F4F5F7"
-            BorderBrush="#E4E6EB"
-            BorderThickness="0,0,0,1">
-            <Grid ColumnDefinitions="40,3*,2*,*,2*">
-                <TextBlock FontWeight="SemiBold" Foreground="#666666" Text="#" />
-                <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-title}" />
-                <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-artist}" />
-                <TextBlock Grid.Column="3" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-creator}" />
-                <TextBlock Grid.Column="4" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-mapDifficulty}" />
+        <Grid Grid.Row="1" Margin="0,5,10,0" HorizontalAlignment="Right">
+            <TextBox
+                Width="180"
+                Background="White"
+                BorderBrush="#DCDFE6"
+                BorderThickness="1"
+                PlaceholderText="{DynamicResource ui-hint-searchCollectionMusic3Dot}"
+                Text="{Binding SearchText, Mode=TwoWay}" />
+        </Grid>
+        <Grid Grid.Row="2" Margin="5,10,5,5">
+            <Grid IsVisible="{Binding IsMinimalMode, Converter={StaticResource BoolTrueToVisibleConverter}}" RowDefinitions="Auto,*">
+                <Border Padding="12,8" Background="#F4F5F7" BorderBrush="#E4E6EB" BorderThickness="0,0,0,1">
+                    <Grid ColumnDefinitions="40,3*,2*,*,2*">
+                        <TextBlock FontWeight="SemiBold" Foreground="#666666" Text="#" />
+                        <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-title}" />
+                        <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-artist}" />
+                        <TextBlock Grid.Column="3" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-creator}" />
+                        <TextBlock Grid.Column="4" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-mapDifficulty}" />
+                    </Grid>
+                </Border>
+                <ListBox
+                    x:Name="MapList"
+                    Grid.Row="1"
+                    Classes="collection-list"
+                    Background="Transparent"
+                    DoubleTapped="MapList_DoubleTapped"
+                    ItemsSource="{Binding DisplayedBeatmaps}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="core:BeatmapDataModel">
+                            <Border Padding="12,10" Background="#FBFBFB" BorderBrush="#E6E6E6" BorderThickness="0,0,0,1">
+                                <Grid ColumnDefinitions="40,3*,2*,*,2*">
+                                    <TextBlock Grid.Column="0" Foreground="#9C9C9C" Text="{Binding Index}" />
+                                    <TextBlock Grid.Column="1" Foreground="#222222" Text="{Binding AutoTitle}" />
+                                    <TextBlock Grid.Column="2" Foreground="#9C9C9C" Text="{Binding AutoArtist}" />
+                                    <TextBlock Grid.Column="3" Foreground="#222222" Text="{Binding AutoCreator}" />
+                                    <TextBlock Grid.Column="4" Foreground="#9C9C9C" Text="{Binding AutoVersion}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </Grid>
-        </Border>
-        <ListBox
-            Grid.Row="3"
-            Classes="collection-list"
-            Margin="5,0,5,5"
-            Background="Transparent"
-            ItemsSource="{Binding DisplayedBeatmaps}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Border Padding="12,10" Background="#FBFBFB" BorderBrush="#E6E6E6" BorderThickness="0,0,0,1">
-                        <Grid ColumnDefinitions="40,3*,2*,*,2*">
-                            <TextBlock
-                                Grid.Column="0"
-                                Foreground="#9C9C9C"
-                                Text="{Binding Index}" />
-                            <TextBlock
-                                Grid.Column="1"
-                                Foreground="#222222"
-                                Text="{Binding AutoTitle}" />
-                            <TextBlock
-                                Grid.Column="2"
-                                Foreground="#9C9C9C"
-                                Text="{Binding AutoArtist}" />
-                            <TextBlock
-                                Grid.Column="3"
-                                Foreground="#222222"
-                                Text="{Binding AutoCreator}" />
-                            <TextBlock
-                                Grid.Column="4"
-                                Foreground="#9C9C9C"
-                                Text="{Binding AutoVersion}" />
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+
+            <ScrollViewer IsVisible="{Binding IsMinimalMode, Converter={StaticResource BoolFalseToVisibleConverter}}" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding DisplayedBeatmaps}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="core:BeatmapDataModel">
+                            <Border Width="220" Margin="8" Padding="8" Background="#FAFAFA" BorderBrush="#E5E5E5" BorderThickness="1" CornerRadius="4">
+                                <StackPanel Spacing="8">
+                                    <Border Height="120" Background="#ECECEC" CornerRadius="4">
+                                        <Image Source="{Binding ThumbPath}" Stretch="UniformToFill" />
+                                    </Border>
+                                    <TextBlock FontWeight="SemiBold" Text="{Binding AutoTitle}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Foreground="#7A7A7A" Text="{Binding AutoArtist}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Foreground="#A0A0A0" Text="{Binding AutoVersion}" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </UserControl>

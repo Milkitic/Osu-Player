@@ -1,39 +1,31 @@
-<UserControl
+﻿<UserControl
     x:Class="OsuPlayer.Views.Pages.SearchPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:core="clr-namespace:OsuPlayer.Core;assembly=OsuPlayer.Core"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     x:DataType="vm:SearchPageViewModel">
     <UserControl.Styles>
-        <Style Selector="ListBox.search-results > ListBoxItem">
+        <Style Selector="ListBox.search-results > ListBoxItem, ListBox.page-list > ListBoxItem">
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0,0,0,1" />
         </Style>
     </UserControl.Styles>
-    <Grid RowDefinitions="Auto,Auto,Auto,*">
-        <Border
-            Grid.Row="0"
-            Height="40"
-            Margin="30,20,30,20"
-            VerticalAlignment="Top"
-            Background="White"
-            BorderBrush="#DDDDDD"
-            BorderThickness="1" />
-        <TextBox
-            Grid.Row="0"
-            Margin="40,20,40,0"
-            Height="40"
-            VerticalAlignment="Top"
-            VerticalContentAlignment="Center"
-            Background="Transparent"
-            BorderThickness="0"
-            FontSize="15"
-            Foreground="#555555"
-            PlaceholderText="{DynamicResource ui-hint-searchPageBox}"
-            Text="{Binding SearchText}" />
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <Border Grid.Row="0" Margin="24,18,24,8" Background="White" BorderBrush="#DADADA" BorderThickness="1" CornerRadius="4">
+            <TextBox
+                Height="42"
+                Padding="14,0"
+                Background="Transparent"
+                BorderThickness="0"
+                FontSize="15"
+                Foreground="#555555"
+                PlaceholderText="{DynamicResource ui-hint-searchPageBox}"
+                Text="{Binding SearchText, Mode=TwoWay}" />
+        </Border>
         <StackPanel
             Grid.Row="1"
-            Margin="10,0"
+            Margin="24,0,24,12"
             HorizontalAlignment="Right"
             Orientation="Horizontal"
             Spacing="8">
@@ -43,50 +35,85 @@
                 Content="{DynamicResource ui-btn-playAll}" />
             <Button
                 Classes="settings-button"
-                Command="{Binding SearchCommand}"
+                Command="{Binding PlayAllCommand}"
                 Content="{DynamicResource ui-btn-queueAll}" />
         </StackPanel>
-        <Border
-            Grid.Row="2"
-            Margin="5,12,5,0"
-            Padding="12,8"
-            Background="#F4F5F7"
-            BorderBrush="#E4E6EB"
-            BorderThickness="0,0,0,1">
-            <Grid ColumnDefinitions="3*,2*,*">
-                <TextBlock FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-title}" />
-                <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-artist}" />
-                <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-creator}" />
+        <Grid Grid.Row="2" Margin="5,0,5,5">
+            <Grid IsVisible="{Binding IsMinimalMode, Converter={StaticResource BoolTrueToVisibleConverter}}" RowDefinitions="Auto,*">
+                <Border Padding="12,8" Background="#F4F5F7" BorderBrush="#E4E6EB" BorderThickness="0,0,0,1">
+                    <Grid ColumnDefinitions="3*,2*,*">
+                        <TextBlock FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-title}" />
+                        <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-artist}" />
+                        <TextBlock Grid.Column="2" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-creator}" />
+                    </Grid>
+                </Border>
+                <ListBox
+                    x:Name="ResultList"
+                    Grid.Row="1"
+                    Classes="search-results"
+                    Background="Transparent"
+                    DoubleTapped="ResultList_DoubleTapped"
+                    ItemsSource="{Binding DisplayedMaps}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="core:BeatmapDataModel">
+                            <Border Padding="12,10" Background="#FBFBFB" BorderBrush="#E6E6E6" BorderThickness="0,0,0,1">
+                                <Grid ColumnDefinitions="3*,2*,*">
+                                    <TextBlock FontWeight="SemiBold" Foreground="#222222" Text="{Binding AutoTitle}" />
+                                    <TextBlock Grid.Column="1" FontSize="12" Foreground="#9C9C9C" Text="{Binding AutoArtist}" />
+                                    <TextBlock Grid.Column="2" FontSize="12" Foreground="#606060" Text="{Binding AutoCreator}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </Grid>
-        </Border>
-        <ListBox
-            Grid.Row="3"
-            Classes="search-results"
-            Margin="5,0,5,5"
-            Background="Transparent"
-            ItemsSource="{Binding DisplayedMaps}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Border Padding="12,10" Background="#FBFBFB" BorderBrush="#E6E6E6" BorderThickness="0,0,0,1">
-                        <Grid ColumnDefinitions="3*,2*,*">
-                            <TextBlock
-                                FontWeight="SemiBold"
-                                Foreground="#222222"
-                                Text="{Binding AutoTitle}" />
-                            <TextBlock
-                                Grid.Column="1"
-                                FontSize="12"
-                                Foreground="#9C9C9C"
-                                Text="{Binding AutoArtist}" />
-                            <TextBlock
-                                Grid.Column="2"
-                                FontSize="12"
-                                Foreground="#606060"
-                                Text="{Binding AutoCreator}" />
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+
+            <ScrollViewer IsVisible="{Binding IsMinimalMode, Converter={StaticResource BoolFalseToVisibleConverter}}" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding DisplayedMaps}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="core:BeatmapDataModel">
+                            <Border Width="220" Margin="8" Padding="8" Background="#FAFAFA" BorderBrush="#E5E5E5" BorderThickness="1" CornerRadius="4">
+                                <StackPanel Spacing="8">
+                                    <Border Height="120" Background="#ECECEC" CornerRadius="4">
+                                        <Image Source="{Binding ThumbPath}" Stretch="UniformToFill" />
+                                    </Border>
+                                    <TextBlock FontWeight="SemiBold" Text="{Binding AutoTitle}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Foreground="#7A7A7A" Text="{Binding AutoArtist}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Foreground="#A0A0A0" Text="{Binding AutoCreator}" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <StackPanel Grid.Row="3" Margin="16,4,16,12" HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
+            <Button Classes="settings-button" Command="{Binding SwitchCommand}" CommandParameter="False" Content="&lt;" />
+            <ItemsControl ItemsSource="{Binding Pages}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ListPageViewModel">
+                        <Button
+                            MinWidth="32"
+                            Classes="settings-button"
+                            Background="{Binding IsActivated, Converter={StaticResource ButtonColorConverter}}"
+                            Command="{Binding $parent[UserControl].((vm:SearchPageViewModel)DataContext).SwitchCommand}"
+                            CommandParameter="{Binding Index}"
+                            Content="{Binding Index}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button Classes="settings-button" Command="{Binding SwitchCommand}" CommandParameter="True" Content="&gt;" />
+        </StackPanel>
     </Grid>
 </UserControl>
