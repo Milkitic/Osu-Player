@@ -99,7 +99,8 @@ public static class EntrySetup
     {
         services.AddSingleton(_ => SharedVm.Default);
         services.AddSingleton<MainWindowViewModel>();
-        services.AddSingleton<PlayControllerVm>();
+        services.AddSingleton<OsuPlayer.Views.UserControls.PlayControllerVm>();
+        services.AddSingleton<OsuPlayer.Views.UserControls.PlayListControlVm>();
 
         services.AddTransient<CollectionPageViewModel>();
         services.AddTransient<SearchPageViewModel>();

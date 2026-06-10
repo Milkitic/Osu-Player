@@ -31,6 +31,7 @@
         <StyleInclude Source="avares://OsuPlayer/Styles/ScrollBarTheme.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/ContextMenuStyle.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/Components.axaml" />
+        <StyleInclude Source="avares://OsuPlayer/Styles/CommonButtonStyle.axaml" />
     </Application.Styles>
 
     <!-- 托盘图标在 App.axaml.cs 中通过 TrayIcons 集合程序化创建并附加。

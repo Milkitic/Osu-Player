@@ -2,26 +2,22 @@
     x:Class="OsuPlayer.Views.UserControls.ClosingControl"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Border
-        Padding="20"
-        Background="#252526"
-        CornerRadius="8">
-        <StackPanel
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Spacing="12">
-            <TextBlock
-                HorizontalAlignment="Center"
-                FontSize="16"
-                Foreground="White"
-                Text="Are you sure you want to close?" />
-            <StackPanel
-                HorizontalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="8">
-                <Button Classes="style-collection" Content="Yes" />
-                <Button Classes="style-collection" Content="No" />
-            </StackPanel>
-        </StackPanel>
-    </Border>
+    <StackPanel Margin="10,0,10,0" Spacing="6">
+        <RadioButton
+            x:Name="RadioMinimum"
+            HorizontalAlignment="Left"
+            Content="{DynamicResource ui-sets-content-minToNotificationPanel}"
+            GroupName="ClosingAction"
+            IsChecked="True" />
+        <RadioButton
+            x:Name="RadioExit"
+            HorizontalAlignment="Left"
+            Content="{DynamicResource ui-sets-content-exitProgram}"
+            GroupName="ClosingAction" />
+        <CheckBox
+            x:Name="AsDefault"
+            Margin="0,10,0,0"
+            HorizontalAlignment="Left"
+            Content="{DynamicResource ui-sets-content-setAsDefaultOptions}" />
+    </StackPanel>
 </UserControl>

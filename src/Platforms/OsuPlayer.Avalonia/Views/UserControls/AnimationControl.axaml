@@ -1,8 +1,17 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vlc="clr-namespace:Avalonia.VlcVideoPlayer;assembly=Avalonia.VlcVideoPlayer"
-             x:Class="OsuPlayer.Views.UserControls.AnimationControl">
+<UserControl
+    x:Class="OsuPlayer.Views.UserControls.AnimationControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+        AnimationControl - D-phase deferral.
+        WPF 原始版本依赖: FFME.Windows (ffme:MediaElement) + MDS.ShaderEffects (BlendEffect) + 6个Controller事件 + 视频/音频同步。
+        Avalonia 项目的 FFmpegVideoPlayer.Avalonia 提供基本视频能力,BlendEffect/Shaders 需要 D-phase (Skia) 完整实现。
+    -->
     <Border Background="Black">
-        <vlc:VideoPlayerControl ShowControls="True" />
+        <TextBlock
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Foreground="White"
+            Text="Animation Control (D-phase)" />
     </Border>
 </UserControl>

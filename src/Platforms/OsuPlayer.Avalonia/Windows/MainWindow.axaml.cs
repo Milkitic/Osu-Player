@@ -6,6 +6,7 @@ using OsuPlayer.Presentation.Interaction;
 using OsuPlayer.ViewModels;
 using OsuPlayer.Views.Pages;
 using OsuPlayer.Views.Pages.Settings;
+using OsuPlayer.Views.UserControls;
 
 namespace OsuPlayer.Windows;
 

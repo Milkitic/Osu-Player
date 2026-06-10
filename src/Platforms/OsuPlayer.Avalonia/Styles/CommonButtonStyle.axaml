@@ -1,0 +1,124 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:OsuPlayer.Controls">
+
+    <Style Selector="controls|CommonButton">
+        <Setter Property="Background" Value="#F0F0F0" />
+        <Setter Property="BorderBrush" Value="#F0F0F0" />
+        <Setter Property="Foreground" Value="#484848" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="CornerRadius" Value="2" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    x:Name="PART_Border"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    Padding="{TemplateBinding Padding}">
+                    <StackPanel
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                        Orientation="{TemplateBinding controls:CommonButton.IconOrientation}">
+                        <ContentControl
+                            x:Name="PART_Icon"
+                            Width="{TemplateBinding controls:CommonButton.IconSize}"
+                            Height="{TemplateBinding controls:CommonButton.IconSize}"
+                            Margin="{TemplateBinding controls:CommonButton.IconMargin}"
+                            VerticalAlignment="Center"
+                            Template="{TemplateBinding controls:CommonButton.IconTemplate}" />
+                        <ContentPresenter
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Content="{TemplateBinding Content}" />
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="controls|CommonButton:pointerover /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{Binding $self.(controls:CommonButton.MouseOverBackground)}" />
+    </Style>
+
+    <Style Selector="controls|CommonButton:pressed /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{Binding $self.(controls:CommonButton.MouseDownBackground)}" />
+    </Style>
+
+    <Style Selector="controls|CommonButton:disabled">
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+    <Style Selector="controls|SwitchRadio">
+        <Setter Property="Background" Value="#10303030" />
+        <Setter Property="Foreground" Value="#484848" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    x:Name="PART_Border"
+                    Background="{TemplateBinding Background}"
+                    Padding="{TemplateBinding Padding}">
+                    <StackPanel
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                        Orientation="{TemplateBinding controls:SwitchRadio.IconOrientation}">
+                        <ContentControl
+                            x:Name="PART_Icon"
+                            Width="{TemplateBinding controls:SwitchRadio.IconSize}"
+                            Height="{TemplateBinding controls:SwitchRadio.IconSize}"
+                            Margin="{TemplateBinding controls:SwitchRadio.IconMargin}"
+                            VerticalAlignment="Center"
+                            Template="{TemplateBinding controls:SwitchRadio.IconTemplate}" />
+                        <ContentPresenter
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Content="{TemplateBinding Content}" />
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="controls|SwitchRadio:pointerover /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{Binding $self.(controls:SwitchRadio.MouseOverBackground)}" />
+    </Style>
+
+    <Style Selector="controls|SwitchRadio:pressed /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{Binding $self.(controls:SwitchRadio.MouseDownBackground)}" />
+    </Style>
+
+    <Style Selector="controls|SwitchRadio:checked /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{Binding $self.(controls:SwitchRadio.CheckedBackground)}" />
+    </Style>
+
+    <Style Selector="controls|SwitchRadio:disabled">
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+    <Style Selector="controls|CommonTextBox">
+        <Setter Property="CaretBrush" Value="#303030" />
+        <Setter Property="SelectionBrush" Value="#646464" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="MinHeight" Value="26" />
+        <Setter Property="Width" Value="100" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Foreground" Value="#303030" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderBrush" Value="#B0B0B0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+</Styles>

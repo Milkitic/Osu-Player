@@ -26,4 +26,5 @@
     <converters:BoolTrueToVisibleConverter x:Key="BoolTrueToVisibleConverter" />
     <converters:BoolFalseToVisibleConverter x:Key="BoolFalseToVisibleConverter" />
     <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
+    <converters:GameModeToImageConverter x:Key="GameModeToImageConverter" />
 </ResourceDictionary>

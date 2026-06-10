@@ -1,18 +1,54 @@
 <UserControl
     x:Class="OsuPlayer.Views.UserControls.WelcomeControl"
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer>
-        <StackPanel Margin="20" Spacing="10">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:OsuPlayer.Views.UserControls"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls"
+    x:DataType="vm:WelcomeControlVm">
+    <UserControl.DataContext>
+        <vm:WelcomeControlVm />
+    </UserControl.DataContext>
+    <Border>
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            IsEnabled="{Binding GuideSyncing, Converter={StaticResource NegativeBooleanConverter}}">
             <TextBlock
-                FontSize="20"
+                HorizontalAlignment="Center"
+                FontSize="35"
                 FontWeight="Bold"
-                Foreground="White"
-                Text="Welcome to Osu Player" />
+                Foreground="{StaticResource SliderBackground}"
+                Text="欢迎" />
             <TextBlock
-                Foreground="#CCCCCC"
-                Text="This is the Avalonia version. Some features are still being migrated from the WPF version."
-                TextWrapping="Wrap" />
+                Margin="0,5"
+                HorizontalAlignment="Center"
+                FontSize="12"
+                Foreground="{StaticResource SliderBackground}"
+                Text="选择以下项目,开启精彩音乐世界" />
+            <CheckBox
+                Margin="0,10"
+                HorizontalAlignment="Center"
+                Command="{Binding SelectDbCommand}"
+                Content="选择osu!db,同步曲库"
+                IsChecked="{Binding GuideSelectedDb, Mode=TwoWay}" />
+            <CheckBox
+                Margin="0,10"
+                HorizontalAlignment="Center"
+                Content="开启曲库目录监听服务,减少同步与扫描时间"
+                IsVisible="False" />
+            <controls:CommonButton
+                Width="150"
+                Margin="0,55,0,5"
+                HorizontalContentAlignment="Center"
+                Command="{Binding SkipCommand}"
+                Content="Skip this step" />
+            <ProgressBar
+                Width="30"
+                Height="30"
+                Margin="0,5,0,0"
+                Foreground="#646464"
+                IsIndeterminate="True"
+                IsVisible="{Binding GuideSyncing, Converter={StaticResource TrueToVisibleConverter}}" />
         </StackPanel>
-    </ScrollViewer>
+    </Border>
 </UserControl>

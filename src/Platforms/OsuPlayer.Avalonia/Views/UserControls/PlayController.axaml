@@ -2,114 +2,186 @@
     x:Class="OsuPlayer.Views.UserControls.PlayController"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
-    x:DataType="vm:PlayControllerVm">
-
-    <Border
-        Padding="12,8"
-        Background="#2D2D30"
-        CornerRadius="0">
-        <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="12">
-
-            <!--  Thumbnail placeholder  -->
-            <Border
+    xmlns:userControls="clr-namespace:OsuPlayer.Views.UserControls"
+    xmlns:controls="clr-namespace:OsuPlayer.Controls"
+    x:DataType="userControls:PlayControllerVm">
+    <UserControl.DataContext>
+        <userControls:PlayControllerVm />
+    </UserControl.DataContext>
+    <Grid Background="#2D2D30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+            <Button
+                x:Name="ThumbButton"
                 Grid.Column="0"
                 Width="61"
                 Height="46"
-                Background="#404040"
-                CornerRadius="4" />
-
-            <!--  Prev / Play / Next  -->
+                Margin="1"
+                Click="ThumbButton_Click">
+                <Image
+                    Width="61"
+                    Height="46"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Source="{Binding ThumbSource}"
+                    Stretch="UniformToFill" />
+            </Button>
             <StackPanel
                 Grid.Column="1"
+                Margin="10,0,10,0"
                 VerticalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="4">
-                <Button
-                    Width="32"
-                    Height="32"
-                    Classes="style-image"
+                Orientation="Horizontal">
+                <controls:CommonButton
+                    Width="28"
+                    Height="28"
+                    Margin="8"
                     Command="{Binding PrevCommand}"
-                    Content="⏮" />
-                <Button
-                    Width="36"
-                    Height="36"
-                    Classes="style-image"
-                    Command="{Binding PlayCommand}"
-                    Content="{Binding PlayButtonText}" />
-                <Button
+                    IconSize="24" />
+                <controls:CommonButton
                     Width="32"
                     Height="32"
-                    Classes="style-image"
+                    Margin="8"
+                    Command="{Binding PlayCommand}"
+                    IconSize="20" />
+                <controls:CommonButton
+                    Width="28"
+                    Height="28"
+                    Margin="8"
                     Command="{Binding NextCommand}"
-                    Content="⏭" />
+                    IconSize="24" />
+                <controls:CommonButton
+                    Width="28"
+                    Height="28"
+                    Margin="8"
+                    Background="#5d9cec"
+                    Command="{Binding OpenCommand}"
+                    CornerRadius="14"
+                    IconSize="20" />
             </StackPanel>
-
-            <!--  Song title + progress slider  -->
-            <Grid
-                Grid.Column="2"
-                RowDefinitions="Auto,Auto"
-                VerticalAlignment="Center">
-                <TextBlock
-                    Grid.Row="0"
-                    FontWeight="Bold"
-                    Foreground="{DynamicResource WhiteBrushB0}"
-                    Text="{Binding CurrentSongTitle}" />
-                <DockPanel
+            <Grid Grid.Column="2" VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Margin="0,1,0,-3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <controls:CommonButton
+                        Grid.Column="0"
+                        Margin="3,0"
+                        Padding="0"
+                        Click="TitleArtist_Click"
+                        Content="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.TitleAuto, Mode=OneWay}" />
+                    <controls:CommonButton
+                        x:Name="BtnAsio"
+                        Grid.Column="1"
+                        Height="20"
+                        Margin="3,0"
+                        Padding="4,0"
+                        HorizontalAlignment="Right"
+                        Command="{Binding AsioCommand}"
+                        IconSize="45"
+                        IsVisible="{Binding AsioVisible}" />
+                    <StackPanel
+                        x:Name="LblProgress"
+                        Grid.Column="2"
+                        Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Foreground="#777" Text="{Binding CurrentTimeText}" />
+                        <TextBlock
+                            Margin="-5,0,-5,0"
+                            VerticalAlignment="Center"
+                            Foreground="#858585"
+                            Text="/" />
+                        <TextBlock VerticalAlignment="Center" Foreground="#AAA" Text="{Binding TotalTimeText}" />
+                    </StackPanel>
+                </Grid>
+                <Slider
+                    x:Name="PlayProgress"
                     Grid.Row="1"
-                    Margin="0,4,0,0"
-                    LastChildFill="True">
-                    <TextBlock
-                        Margin="0,0,8,0"
-                        VerticalAlignment="Center"
-                        Foreground="{DynamicResource ForeDescBrush}"
-                        Text="{Binding CurrentTimeText}" />
-                    <TextBlock
-                        Margin="8,0,0,0"
-                        VerticalAlignment="Center"
-                        DockPanel.Dock="Right"
-                        Foreground="{DynamicResource ForeDescBrush}"
-                        Text="{Binding TotalTimeText}" />
-                    <Slider
-                        Classes="osu-slider"
-                        Maximum="{Binding TotalTimeMs}"
-                        Minimum="0"
-                        Value="{Binding CurrentTimeMs}" />
-                </DockPanel>
+                    Margin="3"
+                    Maximum="{Binding TotalTimeMs}"
+                    Minimum="0"
+                    Value="{Binding CurrentTimeMs}" />
             </Grid>
-
-            <!--  Mode / Like / Volume / Playlist placeholders  -->
-            <StackPanel
-                Grid.Column="3"
-                VerticalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="8">
-                <Button
-                    Width="24"
-                    Height="24"
-                    Classes="style-image"
-                    Content="⟳"
-                    ToolTip.Tip="Play mode" />
-                <Button
-                    Width="24"
-                    Height="24"
-                    Classes="style-image"
-                    Content="♡"
-                    ToolTip.Tip="Like" />
-                <Button
-                    Width="24"
-                    Height="24"
-                    Classes="style-image"
-                    Content="🔊"
-                    ToolTip.Tip="Volume" />
-                <Button
-                    Width="24"
-                    Height="24"
-                    Classes="style-image"
-                    Content="☰"
-                    ToolTip.Tip="Playlist" />
-            </StackPanel>
-
+            <Grid Grid.Column="3">
+                <StackPanel
+                    Margin="10,0,10,0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <controls:CommonButton
+                        x:Name="ModeButton"
+                        Width="24"
+                        Height="24"
+                        Margin="8"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Click="ModeButton_Click"
+                        IconMargin="0"
+                        IconSize="25"
+                        MouseOverBackground="Transparent" />
+                    <controls:CommonButton
+                        Width="23"
+                        Height="23"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Click="LikeButton_Click"
+                        IconMargin="0"
+                        IconSize="24"
+                        MouseOverBackground="Transparent" />
+                    <controls:CommonButton
+                        x:Name="VolumeButton"
+                        Width="23"
+                        Height="23"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        BorderThickness="0"
+                        Click="VolumeButton_Click"
+                        IconMargin="0"
+                        IconSize="20" />
+                    <controls:CommonButton
+                        x:Name="PlayListButton"
+                        Width="23"
+                        Height="23"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        BorderThickness="0"
+                        Click="PlayListButton_Click"
+                        IconMargin="0"
+                        IconSize="18" />
+                </StackPanel>
+            </Grid>
         </Grid>
-    </Border>
+        <Popup
+            x:Name="PopMode"
+            Width="110"
+            IsLightDismissEnabled="True"
+            Placement="Top"
+            PlacementTarget="{Binding ElementName=ModeButton}">
+            <userControls:PlayModeControl />
+        </Popup>
+        <Popup
+            x:Name="PopPlayList"
+            Width="600"
+            Height="500"
+            IsLightDismissEnabled="True"
+            Placement="Top"
+            PlacementTarget="{Binding ElementName=PlayListButton}">
+            <userControls:PlayListControl CloseRequested="PlayListControl_CloseRequested" />
+        </Popup>
+        <Popup
+            x:Name="Pop"
+            MinWidth="170"
+            IsLightDismissEnabled="True"
+            Placement="Top"
+            PlacementTarget="{Binding ElementName=VolumeButton}">
+            <userControls:VolumeControl />
+        </Popup>
+    </Grid>
 </UserControl>
