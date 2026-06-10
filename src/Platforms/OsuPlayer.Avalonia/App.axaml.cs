@@ -44,10 +44,7 @@ public partial class App : Application
             // 初始化 FFmpeg(视频播放)
             VideoPlayerInitializer.Initialize();
 
-            s_mainWindow = new MainWindow
-            {
-                DataContext = Services.GetRequiredService<MainWindowViewModel>()
-            };
+            s_mainWindow = Services.GetRequiredService<MainWindow>();
             desktop.MainWindow = s_mainWindow;
 
             // 程序化创建并附加托盘图标

@@ -78,7 +78,7 @@ public sealed class FrameNavigationService : INavigationService
         }
     }
 
-    private void NavigateWithAnimation(Control control)
+    private async void NavigateWithAnimation(Control control)
     {
         _content!.Content = control;
 
@@ -91,6 +91,7 @@ public sealed class FrameNavigationService : INavigationService
         {
             Duration = _animationDuration,
             Easing = new ExponentialEaseOut(),
+            FillMode = FillMode.Forward,
             Children =
             {
                 new KeyFrame
@@ -116,6 +117,9 @@ public sealed class FrameNavigationService : INavigationService
             }
         };
 
-        animation.RunAsync(control);
+        await animation.RunAsync(control);
+
+        control.ClearValue(Control.OpacityProperty);
+        control.RenderTransform = null;
     }
 }

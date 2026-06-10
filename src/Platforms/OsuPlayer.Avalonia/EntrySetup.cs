@@ -99,6 +99,7 @@ public static class EntrySetup
     {
         services.AddSingleton(_ => SharedVm.Default);
         services.AddSingleton<MainWindowViewModel>();
+        services.AddSingleton<PlayControllerVm>();
 
         services.AddTransient<CollectionPageViewModel>();
         services.AddTransient<SearchPageViewModel>();
@@ -114,7 +115,7 @@ public static class EntrySetup
         services.AddTransient<OsuPlayer.ViewModels.Pages.Settings.HotKeyPageViewModel>();
 
         // 页面 View 注册
-        services.AddTransient<MainWindow>();
+        services.AddSingleton<MainWindow>();
         services.AddTransient<CollectionPage>();
         services.AddTransient<SearchPage>();
         services.AddTransient<RecentPlayPage>();

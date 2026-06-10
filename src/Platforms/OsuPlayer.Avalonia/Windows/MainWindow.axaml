@@ -36,7 +36,7 @@
             <!--  Sidebar navigation  -->
             <Border Grid.Column="0" Width="220" Background="#252526" Padding="12">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <StackPanel Spacing="1">
+                    <StackPanel x:Name="NavPanel" Spacing="1">
                         <TextBlock FontWeight="SemiBold" Foreground="#F8E0DFEF" Margin="5,0,0,5" Text="{DynamicResource ui-nav-library}" />
                         <ToggleButton Classes="nav-button" Click="OnNavClick" IsChecked="True" Tag="Search" Content="{DynamicResource ui-nav-search}" />
                         <ToggleButton Classes="nav-button" Click="OnNavClick" Tag="Recent" Content="{DynamicResource ui-nav-recent}" />
@@ -53,7 +53,7 @@
                 <Border Grid.Row="0" Background="#B0FFFFFF" Padding="5">
                     <ContentControl x:Name="MainFrame" />
                 </Border>
-                <controls:PlayController Grid.Row="1" />
+                <controls:PlayController x:Name="PlayBarController" Grid.Row="1" />
             </Grid>
         </Grid>
     </Grid>

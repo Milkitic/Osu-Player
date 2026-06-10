@@ -33,9 +33,7 @@
     <SolidColorBrush x:Key="ButtonPressedBrush" Color="#D0D0D0" />
 
     <LinearGradientBrush x:Key="DifficultyBrush" StartPoint="0,0" EndPoint="1,0">
-        <GradientStop Offset="0" Color="#AAAAAA" />
-        <GradientStop Offset="0.01" Color="#AAAAAA" />
-        <GradientStop Offset="0.01" Color="#4290FB" />
+        <GradientStop Offset="0" Color="#4290FB" />
         <GradientStop Offset="0.125" Color="#4FC0FF" />
         <GradientStop Offset="0.2" Color="#4FFFD5" />
         <GradientStop Offset="0.25" Color="#7CFF4F" />

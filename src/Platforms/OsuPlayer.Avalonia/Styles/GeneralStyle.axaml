@@ -10,24 +10,7 @@
     <SolidColorBrush x:Key="TextureBrush2" Color="#252526" />
     <SolidColorBrush x:Key="TextureBrush3" Color="#2D2D30" />
 
-    <!--  Additional brushes from WPF  -->
-    <SolidColorBrush x:Key="WhiteBrush20Real" Color="#20FFFFFF" />
-    <SolidColorBrush x:Key="GreyBrush" Color="#646464" />
     <SolidColorBrush x:Key="DarkGreyBrush30" Color="#303030" />
-    <SolidColorBrush x:Key="LightGreyBrush" Color="#C0C0C0" />
-
-    <!--  Menu brushes  -->
-    <SolidColorBrush x:Key="MenuBorderBrush" Color="#40000000" />
-    <SolidColorBrush x:Key="MenuBackground" Color="#FEFEFF" />
-    <SolidColorBrush x:Key="MenuForeground" Color="#505050" />
-
-    <!--  Checkbox/Radio brushes  -->
-    <SolidColorBrush x:Key="ThemeBrush" Color="#4B367C" />
-    <SolidColorBrush x:Key="ForeBrush" Color="#101010" />
-    <SolidColorBrush x:Key="ForeDescBrush" Color="#A0A0A0" />
-    <SolidColorBrush x:Key="ButtonBrush" Color="#DDDDDD" />
-    <SolidColorBrush x:Key="ButtonHoverBrush" Color="#E0E0E0" />
-    <SolidColorBrush x:Key="ButtonPressedBrush" Color="#D0D0D0" />
 
     <!--  Geometry resources  -->
     <StreamGeometry x:Key="Mini">M192,195 L182,195 182,180 205,180 205,195 195,195 195,189 200,189 193.5,183 187,189 192,189</StreamGeometry>
