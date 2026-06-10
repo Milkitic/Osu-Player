@@ -134,7 +134,7 @@ public partial class MainWindow : Window
         _ => throw new ArgumentOutOfRangeException(nameof(tag), tag, "Unknown navigation tag")
     };
 
-    private void BtnSettings_Click(object? sender, RoutedEventArgs e)
+    public void OpenSettingsWindow()
     {
         if (_configWindow == null)
         {
@@ -145,6 +145,11 @@ public partial class MainWindow : Window
         }
 
         _configWindow.Activate();
+    }
+
+    private void BtnSettings_Click(object? sender, RoutedEventArgs e)
+    {
+        OpenSettingsWindow();
     }
 
     private void BtnMini_Click(object? sender, RoutedEventArgs e)

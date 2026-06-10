@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -80,6 +80,9 @@ public partial class App : Application
         var showItem = new NativeMenuItem("Show / Hide Osu Player");
         showItem.Click += (_, _) => ToggleMainWindow();
         menu.Items.Add(showItem);
+        var settingsItem = new NativeMenuItem("Settings");
+        settingsItem.Click += (_, _) => OpenSettingsWindow();
+        menu.Items.Add(settingsItem);
         menu.Items.Add(new NativeMenuItemSeparator());
         var exitItem = new NativeMenuItem("Exit");
         exitItem.Click += (_, _) => ExitApp();
@@ -113,6 +116,23 @@ public partial class App : Application
             s_mainWindow.WindowState = WindowState.Normal;
             s_mainWindow.Activate();
         }
+    }
+
+    private static void OpenSettingsWindow()
+    {
+        if (s_mainWindow == null)
+        {
+            return;
+        }
+
+        if (!s_mainWindow.IsVisible)
+        {
+            s_mainWindow.Show();
+            s_mainWindow.WindowState = WindowState.Normal;
+        }
+
+        s_mainWindow.Activate();
+        s_mainWindow.OpenSettingsWindow();
     }
 
     private static void ExitApp()
