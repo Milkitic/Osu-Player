@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OsuPlayer.Core;
+using OsuPlayer.Services;
 
 namespace OsuPlayer.ViewModels;
 
@@ -10,17 +12,11 @@ public partial class SearchPageViewModel : ObservableObject
     public partial string SearchText { get; set; } = "";
 
     [ObservableProperty]
-    public partial ObservableCollection<SearchResult> Results { get; set; } = new();
+    public partial ObservableCollection<BeatmapDataModel> DisplayedMaps { get; set; } = new();
 
     [RelayCommand]
-    private void Search()
-    {
-        // Avalonia 端 stub
-    }
-}
+    private void PlayAll() => AppNotificationService.Instance.Push("Play all (stub)");
 
-public class SearchResult
-{
-    public string Title { get; set; } = "";
-    public string Artist { get; set; } = "";
+    [RelayCommand]
+    private void Search() => AppNotificationService.Instance.Push("Search (stub)");
 }

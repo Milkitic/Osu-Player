@@ -7,10 +7,10 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Global Hitsound Delay" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-globalHitsoundDelay}" />
             <StackPanel Orientation="Horizontal" Spacing="6">
                 <Slider
                     Width="300"
@@ -23,32 +23,32 @@
             </StackPanel>
 
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Auto Play" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-autoPlay}" />
             <CheckBox
                 Margin="8,0"
                 HorizontalAlignment="Left"
-                Content="Auto play on program startup"
+                Content="{DynamicResource ui-sets-content-autoPlayOnProgramStartup}"
                 IsChecked="{Binding AutoPlay, Mode=TwoWay}" />
 
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Play Progress" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-playProgress}" />
             <CheckBox
                 Margin="8,0"
                 HorizontalAlignment="Left"
-                Content="Resume playlist on program startup"
+                Content="{DynamicResource ui-sets-content-resumePlaylistOnProgramStartup}"
                 IsChecked="{Binding Memory, Mode=TwoWay}" />
 
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Audio Play Device" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-audioPlayDevice}" />
             <ComboBox
                 Width="320"
                 Margin="8,0"

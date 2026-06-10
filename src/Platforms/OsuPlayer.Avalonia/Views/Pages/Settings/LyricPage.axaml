@@ -12,72 +12,72 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Desktop Lyric" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-desktopLyric}" />
             <CheckBox
                 Margin="8,0"
                 HorizontalAlignment="Left"
-                Content="Enable desktop lyric"
+                Content="{DynamicResource ui-sets-content-enableDesktopLyric}"
                 IsChecked="{Binding EnableLyric, Mode=TwoWay}" />
 
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Lyric Source" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-lyricSource}" />
             <RadioButton
                 Margin="8,0"
-                Content="Auto"
+                Content="{DynamicResource ui-auto}"
                 GroupName="source"
                 IsChecked="{Binding LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.Auto}, Mode=TwoWay}" />
             <RadioButton
                 Margin="8,0"
-                Content="Netease"
+                Content="{DynamicResource ui-neteaseMusic}"
                 GroupName="source"
                 IsChecked="{Binding LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.Netease}, Mode=TwoWay}" />
             <RadioButton
                 Margin="8,0"
-                Content="Kugou"
+                Content="{DynamicResource ui-kugouMusic}"
                 GroupName="source"
                 IsChecked="{Binding LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.Kugou}, Mode=TwoWay}" />
             <RadioButton
                 Margin="8,0"
-                Content="QQMusic"
+                Content="{DynamicResource ui-qqMusic}"
                 GroupName="source"
                 IsChecked="{Binding LyricSource, Converter={StaticResource LyricSourceConv}, ConverterParameter={x:Static shared:LyricSource.QqMusic}, Mode=TwoWay}" />
 
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Translation" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-translation}" />
             <RadioButton
                 Margin="8,0"
-                Content="Display all lyrics"
+                Content="{DynamicResource ui-sets-content-displayAllLyrics}"
                 GroupName="provide"
                 IsChecked="{Binding ProvideType, Converter={StaticResource LyricProvideTypeConv}, ConverterParameter={x:Static shared:LyricProvideType.PreferBoth}, Mode=TwoWay}" />
             <RadioButton
                 Margin="8,0"
-                Content="Prefer origin (Netease only)"
+                Content="{DynamicResource ui-sets-content-preferOriginLyricNeteaseOnly}"
                 GroupName="provide"
                 IsChecked="{Binding ProvideType, Converter={StaticResource LyricProvideTypeConv}, ConverterParameter={x:Static shared:LyricProvideType.Original}, Mode=TwoWay}" />
             <RadioButton
                 Margin="8,0"
-                Content="Prefer translated (Netease only)"
+                Content="{DynamicResource ui-sets-content-preferTranslateLyricNeteaseOnly}"
                 GroupName="provide"
                 IsChecked="{Binding ProvideType, Converter={StaticResource LyricProvideTypeConv}, ConverterParameter={x:Static shared:LyricProvideType.PreferTranslated}, Mode=TwoWay}" />
 
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Match Mode" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-matchMode}" />
             <CheckBox
                 Margin="8,0"
                 HorizontalAlignment="Left"
-                Content="Enable strict matching"
+                Content="{DynamicResource ui-sets-content-enableStrictMatching}"
                 IsChecked="{Binding StrictMode, Mode=TwoWay}" />
         </StackPanel>
     </ScrollViewer>

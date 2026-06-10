@@ -2,12 +2,12 @@
     x:Class="OsuPlayer.Views.Pages.FindPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid>
+    <Panel>
         <TextBlock
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             FontSize="24"
-            Foreground="White"
-            Text="Find (Coming soon)" />
-    </Grid>
+            Foreground="#AAA"
+            Text="{DynamicResource ui-nav-storyboard}" />
+    </Panel>
 </UserControl>

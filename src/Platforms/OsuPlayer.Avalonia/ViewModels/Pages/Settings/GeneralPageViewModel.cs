@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OsuPlayer.Services;
-// using retained
 
 namespace OsuPlayer.ViewModels.Pages.Settings;
 
@@ -16,11 +15,24 @@ public partial class GeneralPageViewModel : ObservableObject
     [ObservableProperty]
     public partial string CustomSongsPath { get; set; } = "";
 
-    [ObservableProperty]
-    public partial bool IsMinimizeWhenClosed { get; set; } = true;
+    public bool IsMinimizeWhenClosed
+    {
+        get => !IsExitWhenClosed;
+        set { if (value) IsExitWhenClosed = false; }
+    }
 
-    [ObservableProperty]
-    public partial bool IsExitWhenClosed { get; set; }
+    public bool IsExitWhenClosed
+    {
+        get => _isExitWhenClosed;
+        set
+        {
+            if (_isExitWhenClosed == value) return;
+            _isExitWhenClosed = value;
+            OnPropertyChanged(nameof(IsExitWhenClosed));
+            OnPropertyChanged(nameof(IsMinimizeWhenClosed));
+        }
+    }
+    private bool _isExitWhenClosed;
 
     [ObservableProperty]
     public partial bool SetAsDefaultOptions { get; set; }

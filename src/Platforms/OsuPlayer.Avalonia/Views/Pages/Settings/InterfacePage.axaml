@@ -7,10 +7,10 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Language" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-language}" />
             <ComboBox
                 Width="220"
                 Margin="8,0"
@@ -19,14 +19,14 @@
                 SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" />
 
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Minimal Effect Mode" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-minimalEffectMode}" />
             <CheckBox
                 Margin="8,0"
                 HorizontalAlignment="Left"
-                Content="Enable minimal effect mode"
+                Content="{DynamicResource ui-sets-title-minimalEffectMode}"
                 IsChecked="{Binding MinimalMode, Mode=TwoWay}" />
         </StackPanel>
     </ScrollViewer>

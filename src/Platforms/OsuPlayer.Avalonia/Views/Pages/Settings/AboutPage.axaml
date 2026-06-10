@@ -7,18 +7,18 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Software Update" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-softwareUpdate}" />
 
             <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBlock Foreground="#AAAAAA" Text="Current version:" />
-                <TextBlock Foreground="White" Text="{Binding CurrentVersion}" />
+                <TextBlock Foreground="#606060" Text="{DynamicResource ui-sets-content-currentVersion}" />
+                <TextBlock Foreground="#222222" Text="{Binding CurrentVersion}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBlock Foreground="#AAAAAA" Text="Last check:" />
-                <TextBlock Foreground="White" Text="{Binding LastUpdateCheckText}" />
+                <TextBlock Foreground="#606060" Text="{DynamicResource ui-sets-content-lastCheckTime}" />
+                <TextBlock Foreground="#222222" Text="{Binding LastUpdateCheckText}" />
             </StackPanel>
 
             <StackPanel
@@ -32,7 +32,7 @@
                 <Button
                     Classes="style-collection"
                     Command="{Binding ShowNewVersionDialogCommand}"
-                    Content="New version available!"
+                    Content="{DynamicResource ui-sets-content-hasNewVersion}"
                     Foreground="#FE5472"
                     IsVisible="{Binding HasUpdate}" />
             </StackPanel>
@@ -42,13 +42,13 @@
                     Classes="style-image"
                     Command="{Binding OpenUrlCommand}"
                     CommandParameter="https://github.com/Milkitic/Osu-Player"
-                    Content="Project URL"
+                    Content="{DynamicResource ui-sets-content-projectUrl}"
                     Foreground="#5472FE" />
                 <Button
                     Classes="style-image"
                     Command="{Binding OpenUrlCommand}"
                     CommandParameter="https://github.com/Milkitic/Osu-Player/issues/new"
-                    Content="Feedback"
+                    Content="{DynamicResource ui-sets-content-feedback}"
                     Foreground="#5472FE" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="8">
@@ -56,12 +56,12 @@
                     Classes="style-image"
                     Command="{Binding OpenUrlCommand}"
                     CommandParameter="https://github.com/Milkitic/Osu-Player/blob/master/LICENSE"
-                    Content="License"
+                    Content="{DynamicResource ui-sets-content-licenseInfo}"
                     Foreground="#5472FE" />
                 <Button
                     Classes="style-image"
                     Command="{Binding ShowPrivacyPolicyCommand}"
-                    Content="Privacy Policy"
+                    Content="{DynamicResource ui-sets-content-privacyPolicy}"
                     Foreground="#5472FE" />
             </StackPanel>
         </StackPanel>

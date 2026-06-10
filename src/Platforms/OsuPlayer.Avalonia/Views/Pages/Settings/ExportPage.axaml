@@ -12,15 +12,15 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Export Path" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-exportPath}" />
             <StackPanel Orientation="Horizontal" Spacing="6">
                 <TextBlock
                     VerticalAlignment="Center"
-                    Foreground="#AAAAAA"
-                    Text="Music directory:" />
+                    Foreground="#606060"
+                    Text="{DynamicResource ui-sets-content-musicDirectory}" />
                 <TextBox
                     Width="250"
                     Height="27"
@@ -36,8 +36,8 @@
             <StackPanel Orientation="Horizontal" Spacing="6">
                 <TextBlock
                     VerticalAlignment="Center"
-                    Foreground="#AAAAAA"
-                    Text="Background directory:" />
+                    Foreground="#606060"
+                    Text="{DynamicResource ui-sets-content-bgDirectory}" />
                 <TextBox
                     Width="250"
                     Height="27"
@@ -52,10 +52,10 @@
             </StackPanel>
 
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="File Naming Format" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-fileNamingFormat}" />
             <RadioButton
                 Margin="8,0"
                 Content="Title"
@@ -73,28 +73,28 @@
                 IsChecked="{Binding NamingStyle, Converter={StaticResource ExportNamingConv}, ConverterParameter={x:Static shared:ExportNamingStyle.TitleArtist}, Mode=TwoWay}" />
 
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Directory Grouping" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-directoryGrouping}" />
             <RadioButton
                 Margin="8,0"
-                Content="No group"
+                Content="{DynamicResource ui-sets-content-dirNoGroup}"
                 GroupName="grouping"
                 IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.None}, Mode=TwoWay}" />
             <RadioButton
                 Margin="8,0"
-                Content="By artist"
+                Content="{DynamicResource ui-sets-content-dirGroupByArtist}"
                 GroupName="grouping"
                 IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Artist}, Mode=TwoWay}" />
             <RadioButton
                 Margin="8,0"
-                Content="By mapper"
+                Content="{DynamicResource ui-sets-content-dirGroupByMapper}"
                 GroupName="grouping"
                 IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Mapper}, Mode=TwoWay}" />
             <RadioButton
                 Margin="8,0"
-                Content="By source"
+                Content="{DynamicResource ui-sets-content-dirGroupBySource}"
                 GroupName="grouping"
                 IsChecked="{Binding GroupStyle, Converter={StaticResource ExportGroupConv}, ConverterParameter={x:Static shared:ExportGroupStyle.Source}, Mode=TwoWay}" />
         </StackPanel>

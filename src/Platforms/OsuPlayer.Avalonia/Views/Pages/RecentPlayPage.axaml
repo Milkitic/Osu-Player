@@ -13,35 +13,39 @@
             <Button
                 Classes="style-collection"
                 Command="{Binding PlayAllCommand}"
-                Content="Play All" />
-            <Button Classes="style-collection" Content="Delete All" />
+                Content="{DynamicResource ui-btn-playAll}" />
+            <Button
+                Classes="style-collection"
+                Command="{Binding ClearAllRecentCommand}"
+                Content="{DynamicResource ui-btn-deleteAll}" />
         </StackPanel>
         <ListBox
             Grid.Row="1"
+            Margin="5,0"
             Background="Transparent"
             ItemsSource="{Binding Beatmaps}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="40,*,*,*,*">
+                    <Grid ColumnDefinitions="40,*,2*,*,2*">
                         <TextBlock
                             Grid.Column="0"
-                            Foreground="#FF9C9C9C"
+                            Foreground="#9C9C9C"
                             Text="{Binding Index}" />
                         <TextBlock
                             Grid.Column="1"
-                            Foreground="White"
+                            Foreground="#222222"
                             Text="{Binding AutoTitle}" />
                         <TextBlock
                             Grid.Column="2"
-                            Foreground="#FF9C9C9C"
+                            Foreground="#9C9C9C"
                             Text="{Binding AutoArtist}" />
                         <TextBlock
                             Grid.Column="3"
-                            Foreground="White"
+                            Foreground="#222222"
                             Text="{Binding AutoCreator}" />
                         <TextBlock
                             Grid.Column="4"
-                            Foreground="#FF9C9C9C"
+                            Foreground="#9C9C9C"
                             Text="{Binding AutoVersion}" />
                     </Grid>
                 </DataTemplate>

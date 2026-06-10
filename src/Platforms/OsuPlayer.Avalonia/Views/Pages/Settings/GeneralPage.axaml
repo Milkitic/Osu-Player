@@ -7,21 +7,21 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Startup" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-startup}" />
             <CheckBox
                 Margin="8,0"
                 HorizontalAlignment="Left"
-                Content="Run on startup"
+                Content="{DynamicResource ui-sets-content-runOnStartup}"
                 IsChecked="{Binding RunOnStartup, Mode=TwoWay}" />
 
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="osu!db Location" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-osuDbLocation}" />
             <StackPanel Orientation="Horizontal" Spacing="6">
                 <TextBox
                     Width="250"
@@ -37,14 +37,14 @@
                 <Button
                     Classes="style-collection"
                     Command="{Binding SyncNowCommand}"
-                    Content="Sync Now" />
+                    Content="{DynamicResource ui-btn-syncManually}" />
             </StackPanel>
 
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Custom Song Path" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-customSongPath}" />
             <StackPanel Orientation="Horizontal" Spacing="6">
                 <TextBox
                     Width="250"
@@ -60,42 +60,42 @@
                 <Button
                     Classes="style-collection"
                     Command="{Binding ScanNowCommand}"
-                    Content="Scan Now"
+                    Content="{DynamicResource ui-btn-scanManually}"
                     IsVisible="{Binding !IsScanning}" />
                 <TextBlock
                     VerticalAlignment="Center"
-                    Foreground="#AAAAAA"
+                    Foreground="#606060"
                     IsVisible="{Binding IsScanning}"
-                    Text="Scanning..." />
+                    Text="{DynamicResource ui-sets-content-scanning3Dot}" />
                 <Button
                     Classes="style-image"
                     Command="{Binding CancelScanCommand}"
-                    Content="Cancel"
+                    Content="{DynamicResource ui-btn-cancelScan}"
                     Foreground="#5472FE"
                     IsVisible="{Binding IsScanning}" />
             </StackPanel>
 
             <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Foreground="White"
-                Text="Close Window" />
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Margin="5,15,0,10"
+                Text="{DynamicResource ui-sets-title-closeWindow}" />
             <RadioButton
                 Margin="8,0"
                 HorizontalAlignment="Left"
-                Content="Minimize to notification panel"
+                Content="{DynamicResource ui-sets-content-minToNotificationPanel}"
                 GroupName="close"
                 IsChecked="{Binding IsMinimizeWhenClosed, Mode=TwoWay}" />
             <RadioButton
                 Margin="8,0"
                 HorizontalAlignment="Left"
-                Content="Exit program"
+                Content="{DynamicResource ui-sets-content-exitProgram}"
                 GroupName="close"
                 IsChecked="{Binding IsExitWhenClosed, Mode=TwoWay}" />
             <CheckBox
                 Margin="8,10"
                 HorizontalAlignment="Left"
-                Content="Set as default options"
+                Content="{DynamicResource ui-sets-content-setAsDefaultOptions}"
                 IsChecked="{Binding SetAsDefaultOptions, Mode=TwoWay}" />
         </StackPanel>
     </ScrollViewer>
