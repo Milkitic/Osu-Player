@@ -2,7 +2,7 @@
     x:Class="OsuPlayer.Views.Pages.Settings.LyricPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:shared="using:OsuPlayer.Shared.Models"
+    xmlns:shared="clr-namespace:OsuPlayer.Shared.Models;assembly=OsuPlayer.Shared"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
     Classes="settings-page"
     x:DataType="vm:LyricPageViewModel">

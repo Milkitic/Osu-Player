@@ -1,9 +1,10 @@
-﻿<UserControl
+<UserControl
     x:Class="OsuPlayer.Views.Pages.SearchPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:core="clr-namespace:OsuPlayer.Core;assembly=OsuPlayer.Core"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
+    x:Name="Root"
     x:DataType="vm:SearchPageViewModel">
     <UserControl.Styles>
         <Style Selector="ListBox.search-results > ListBoxItem, ListBox.page-list > ListBoxItem">
@@ -135,13 +136,13 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="vm:ListPageViewModel">
+                    <DataTemplate x:DataType="vm:ListPageViewModel" x:CompileBindings="False">
                         <Button
                             MinWidth="32"
                             Classes="settings-button"
                             Background="{Binding IsActivated, Converter={StaticResource ButtonColorConverter}}"
-                            Command="{Binding $parent[UserControl].((vm:SearchPageViewModel)DataContext).SwitchCommand}"
-                            CommandParameter="{Binding Index}"
+                            Click="PageBtn_Click"
+                            Tag="{Binding Index}"
                             Content="{Binding Index}" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

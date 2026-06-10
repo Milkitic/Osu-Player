@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -27,6 +27,7 @@ public partial class GeneralPageViewModel : ObservableObject
             AppSettings.Default.General.RunOnStartup = value;
             OnPropertyChanged();
 
+#if WINDOWS
             try
             {
                 using var rKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
@@ -42,6 +43,7 @@ public partial class GeneralPageViewModel : ObservableObject
             catch
             {
             }
+#endif
 
             AppSettings.SaveDefault();
         }

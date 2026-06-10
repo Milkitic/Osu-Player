@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -121,6 +121,14 @@ public partial class SearchPage : UserControl
         if (sender is Control { Tag: BeatmapDataModel map } && DataContext is SearchPageViewModel viewModel)
         {
             await viewModel.OpenSourceFolderCommand.ExecuteAsync(map);
+        }
+    }
+
+    private void PageBtn_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { Tag: int index } && DataContext is SearchPageViewModel viewModel)
+        {
+            viewModel.SwitchCommand.Execute(index);
         }
     }
 }

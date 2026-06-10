@@ -54,4 +54,20 @@
 
     <Color x:Key="PinkColorOsu">#FC59A3</Color>
     <Color x:Key="WhiteColor20">#20FFFFFF</Color>
+
+    <SolidColorBrush x:Key="ExtraBlackBrush" Color="#303030" />
+    <LinearGradientBrush x:Key="VerticalLinearBlackBrush2" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#606060" />
+        <GradientStop Offset="0.5" Color="#585858" />
+        <GradientStop Offset="1" Color="#606060" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="HorizonLinearBlackBrush3" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#808080" />
+        <GradientStop Offset="0.5" Color="#909090" />
+        <GradientStop Offset="1" Color="#808080" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="HorizonLinearWhiteBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#C0C0C0" />
+        <GradientStop Offset="1" Color="#A0A0A0" />
+    </LinearGradientBrush>
 </ResourceDictionary>

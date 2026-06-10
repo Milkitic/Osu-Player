@@ -18,30 +18,30 @@
                 FontSize="35"
                 FontWeight="Bold"
                 Foreground="{StaticResource SliderBackground}"
-                Text="欢迎" />
+                Text="{DynamicResource ui-welcome-title}" />
             <TextBlock
                 Margin="0,5"
                 HorizontalAlignment="Center"
                 FontSize="12"
                 Foreground="{StaticResource SliderBackground}"
-                Text="选择以下项目,开启精彩音乐世界" />
+                Text="{DynamicResource ui-welcome-subtitle}" />
             <CheckBox
                 Margin="0,10"
                 HorizontalAlignment="Center"
                 Command="{Binding SelectDbCommand}"
-                Content="选择osu!db,同步曲库"
+                Content="{DynamicResource ui-welcome-selectDb}"
                 IsChecked="{Binding GuideSelectedDb, Mode=TwoWay}" />
             <CheckBox
                 Margin="0,10"
                 HorizontalAlignment="Center"
-                Content="开启曲库目录监听服务,减少同步与扫描时间"
+                Content="{DynamicResource ui-wenable-watcher}"
                 IsVisible="False" />
             <controls:CommonButton
                 Width="150"
                 Margin="0,55,0,5"
                 HorizontalContentAlignment="Center"
                 Command="{Binding SkipCommand}"
-                Content="Skip this step" />
+                Content="{DynamicResource ui-welcome-skip}" />
             <ProgressBar
                 Width="30"
                 Height="30"

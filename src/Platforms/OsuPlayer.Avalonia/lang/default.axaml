@@ -164,6 +164,12 @@
     <sys:String x:Key="ui-sets-content-privacyPolicy">隐私政策</sys:String>
     <sys:String x:Key="ui-sets-content-never">从未</sys:String>
     <sys:String x:Key="ui-sets-content-hasNewVersion">有新版本</sys:String>
+    <sys:String x:Key="ui-sets-content-checkUpdate">检查更新</sys:String>
+    <sys:String x:Key="ui-welcome-title">欢迎</sys:String>
+    <sys:String x:Key="ui-welcome-subtitle">选择以下项目,开启精彩音乐世界</sys:String>
+    <sys:String x:Key="ui-welcome-selectDb">选择osu!db,同步曲库</sys:String>
+    <sys:String x:Key="ui-wenable-watcher">开启曲库目录监听服务,减少同步与扫描时间</sys:String>
+    <sys:String x:Key="ui-welcome-skip">跳过此步</sys:String>
     <sys:String x:Key="ui-sets-content-releasePage">更新详情页</sys:String>
     <sys:String x:Key="ui-sets-content-releaseNote">更新说明</sys:String>
     <sys:String x:Key="ui-sets-content-clickToUpdate">立刻升级</sys:String>

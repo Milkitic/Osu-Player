@@ -27,6 +27,12 @@
     <sys:String x:Key="ui-sets-content-clickToUpdate">Update</sys:String>
     <sys:String x:Key="ui-sets-content-newVersion">New version</sys:String>
     <sys:String x:Key="ui-sets-content-hasNewVersion">New version</sys:String>
+    <sys:String x:Key="ui-sets-content-checkUpdate">Check Update</sys:String>
+    <sys:String x:Key="ui-welcome-title">Welcome</sys:String>
+    <sys:String x:Key="ui-welcome-subtitle">Select one of the following to start</sys:String>
+    <sys:String x:Key="ui-welcome-selectDb">Select osu!db to sync</sys:String>
+    <sys:String x:Key="ui-wenable-watcher">Enable library folder watcher</sys:String>
+    <sys:String x:Key="ui-welcome-skip">Skip this step</sys:String>
     <sys:String x:Key="ui-sets-content-systemDefault">System Default</sys:String>
     <sys:String x:Key="ui-startScan">Scan !</sys:String>
     <sys:String x:Key="ui-sets-title-audioPlayDevice">Playback device</sys:String>

@@ -3,7 +3,8 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:gamePlay="clr-namespace:Coosu.Beatmap.Sections.GamePlay;assembly=Coosu.Beatmap"
-    x:Name="Self">
+    x:Name="Self"
+    x:CompileBindings="False">
     <StackPanel Orientation="Horizontal">
         <Image
             Width="13"

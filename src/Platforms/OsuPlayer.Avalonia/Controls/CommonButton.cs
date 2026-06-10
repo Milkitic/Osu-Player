@@ -21,9 +21,6 @@ public class CommonButton : Button
     public static readonly StyledProperty<double> IconSizeProperty =
         AvaloniaProperty.Register<CommonButton, double>(nameof(IconSize), 24d);
 
-    public static readonly StyledProperty<CornerRadius> CornerRadiusProperty =
-        AvaloniaProperty.Register<CommonButton, CornerRadius>(nameof(CornerRadius), new CornerRadius(2));
-
     public static readonly StyledProperty<IBrush?> MouseOverBackgroundProperty =
         AvaloniaProperty.Register<CommonButton, IBrush?>(nameof(MouseOverBackground));
 
@@ -70,12 +67,6 @@ public class CommonButton : Button
     {
         get => GetValue(IconSizeProperty);
         set => SetValue(IconSizeProperty, value);
-    }
-
-    public CornerRadius CornerRadius
-    {
-        get => GetValue(CornerRadiusProperty);
-        set => SetValue(CornerRadiusProperty, value);
     }
 
     public IBrush? MouseOverBackground

@@ -14,7 +14,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <ItemsControl Margin="5" ItemsSource="{Binding Entries, Mode=OneWay}">
             <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="data:Beatmap">
+                <DataTemplate x:DataType="data:Beatmap">
                     <controls:CommonButton
                         Height="26"
                         Margin="0,0,0,2"

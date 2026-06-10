@@ -8,11 +8,13 @@ public class NegativeBooleanConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return value is bool b ? !b : false;
+        if (value is bool b) return !b;
+        return Avalonia.Data.BindingOperations.DoNothing;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        if (value is bool b) return !b;
+        return Avalonia.Data.BindingOperations.DoNothing;
     }
 }

@@ -7,4 +7,17 @@
         <Setter Property="Padding" Value="4,2" />
         <Setter Property="Opacity" Value="0.95" />
     </Style>
+    <Style Selector="TabControl">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="TabItem">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="#606060" />
+        <Setter Property="Padding" Value="10,6" />
+    </Style>
+    <Style Selector="TabItem:selected">
+        <Setter Property="Foreground" Value="#222222" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
 </Styles>

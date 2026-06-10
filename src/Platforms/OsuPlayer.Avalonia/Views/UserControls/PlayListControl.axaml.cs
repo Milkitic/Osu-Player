@@ -124,4 +124,12 @@ public partial class PlayListControl : UserControl
             vm.SelectedMaps = new List<Beatmap> { bm };
         }
     }
+
+    private void PlayList_DoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)
+    {
+        if (DataContext is PlayListControlVm vm)
+        {
+            vm.PlayCommand.Execute(null);
+        }
+    }
 }

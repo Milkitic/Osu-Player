@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="OsuPlayer.Views.Pages.RecentPlayPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -26,8 +26,8 @@
                 Command="{Binding ClearAllRecentCommand}"
                 Content="{DynamicResource ui-btn-deleteAll}" />
         </StackPanel>
-        <Grid Grid.Row="1" Margin="5,0,5,5">
-            <Border Padding="12,8" Background="#F4F5F7" BorderBrush="#E4E6EB" BorderThickness="0,0,0,1" VerticalAlignment="Top">
+        <Grid Grid.Row="1" Margin="5,0,5,5" RowDefinitions="Auto,*">
+            <Border Grid.Row="0" Padding="12,8" Background="#F4F5F7" BorderBrush="#E4E6EB" BorderThickness="0,0,0,1" VerticalAlignment="Top">
                 <Grid ColumnDefinitions="40,3*,2*,*,2*">
                     <TextBlock FontWeight="SemiBold" Foreground="#666666" Text="#" />
                     <TextBlock Grid.Column="1" FontWeight="SemiBold" Foreground="#666666" Text="{DynamicResource ui-title}" />
@@ -38,8 +38,8 @@
             </Border>
             <ListBox
                 x:Name="RecentList"
+                Grid.Row="1"
                 Classes="recent-list"
-                Margin="0,37,0,0"
                 Background="Transparent"
                 DoubleTapped="RecentList_DoubleTapped"
                 ItemsSource="{Binding Beatmaps}">

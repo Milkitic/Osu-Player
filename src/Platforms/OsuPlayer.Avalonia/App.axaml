@@ -16,7 +16,6 @@
                 <ResourceInclude Source="avares://OsuPlayer/Styles/FontDictionary.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Styles/ConverterDictionary.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Styles/GeneralStyle.axaml" />
-                <ResourceInclude Source="avares://OsuPlayer/Styles/ScrollBarStyle.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Styles/i18n.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

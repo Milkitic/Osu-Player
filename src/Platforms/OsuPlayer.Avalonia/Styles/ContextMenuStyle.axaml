@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style Selector="ContextMenu">
+        <Setter Property="Background" Value="White" />
         <Setter Property="BorderBrush" Value="#40000000" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="MinWidth" Value="200" />
@@ -8,6 +9,7 @@
         <Setter Property="Height" Value="30" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Foreground" Value="#505050" />
+        <Setter Property="Background" Value="Transparent" />
     </Style>
     <Style Selector="MenuItem:pointerover">
         <Setter Property="Background" Value="#7ED0D0D0" />

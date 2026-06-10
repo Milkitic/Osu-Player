@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -66,7 +66,7 @@ public partial class App : Application
         WindowIcon? icon = null;
         try
         {
-            var iconUri = new Uri("avares://OsuPlayer.Avalonia/Resources/osuPlayer.ico");
+            var iconUri = new Uri("avares://OsuPlayer/Resources/osuPlayer.ico");
             using var stream = AssetLoader.Open(iconUri);
             icon = new WindowIcon(stream);
         }

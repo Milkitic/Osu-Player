@@ -36,6 +36,9 @@ public partial class VolumeControl : UserControl
 
         InitializeComponent();
 
+        this.Loaded += OnLoaded;
+        this.Unloaded += OnUnloaded;
+
         MasterVolume.AddHandler(Slider.PointerReleasedEvent, (_, _) => AppSettings.SaveDefault());
         MusicVolume.AddHandler(Slider.PointerReleasedEvent, (_, _) => AppSettings.SaveDefault());
         HitsoundVolume.AddHandler(Slider.PointerReleasedEvent, (_, _) => AppSettings.SaveDefault());
@@ -46,11 +49,17 @@ public partial class VolumeControl : UserControl
         Offset.AddHandler(Slider.PointerReleasedEvent, (_, _) => OnOffsetDragComplete());
     }
 
-    private void OnLoaded(RoutedEventArgs e)
+    private void OnLoaded(object? sender, RoutedEventArgs e)
     {
         if (_controller == null) return;
         Offset.Value = _controller.PlayList.CurrentInfo?.BeatmapSettings?.Offset ?? 0;
         _controller.LoadFinished += Controller_LoadFinished;
+    }
+
+    private void OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        if (_controller == null) return;
+        _controller.LoadFinished -= Controller_LoadFinished;
     }
 
     private void Controller_LoadFinished(BeatmapContext bc, System.Threading.CancellationToken arg2)

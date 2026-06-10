@@ -77,7 +77,7 @@
             ItemsSource="{Binding Controller.PlayList.SongList}"
             SelectionChanged="PlayList_SelectionChanged">
             <ListBox.ItemTemplate>
-                <DataTemplate DataType="data:Beatmap">
+                <DataTemplate x:DataType="data:Beatmap">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock
                             Width="30"
@@ -108,7 +108,7 @@
             </ListBox.ItemTemplate>
             <ListBox.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="播放(Enter)" />
+                    <MenuItem Command="{Binding PlayCommand}" Header="播放(Enter)" />
                     <Separator />
                     <MenuItem Command="{Binding SearchCommand}" CommandParameter="0" Header="{DynamicResource ui-ctxMenu-searchTitle}" />
                     <MenuItem Command="{Binding SearchCommand}" CommandParameter="1" Header="{DynamicResource ui-ctxMenu-searchArtist}" />

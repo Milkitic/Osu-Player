@@ -39,11 +39,18 @@ public sealed class FrameNavigationService : INavigationService
             throw new InvalidOperationException("NavigationService has not been initialized with a ContentControl.");
         }
 
-        var page = _serviceProvider.GetService(pageType) ?? Activator.CreateInstance(pageType);
-        if (page == null)
+        // 优先通过 DI 创建(支持构造注入),失败再 fallback(用最匹配的构造)
+        object? page = null;
+        try
         {
-            throw new InvalidOperationException($"Unable to create page '{pageType.FullName}'.");
+            page = _serviceProvider.GetService(pageType);
         }
+        catch (InvalidOperationException)
+        {
+            // DI 容器无注册,继续 fallback
+        }
+
+        page ??= Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(_serviceProvider, pageType);
 
         if (page is Control control)
         {
