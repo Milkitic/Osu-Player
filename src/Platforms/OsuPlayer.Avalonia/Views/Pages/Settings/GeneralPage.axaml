@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="OsuPlayer.Views.Pages.Settings.GeneralPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -27,11 +27,16 @@
                     Width="27"
                     Height="27"
                     Command="{Binding BrowseDbCommand}"
-                    Content="..." />
+                    IsEnabled="{Binding ScannerViewModel.IsScanning, Converter={StaticResource NegativeBooleanConverter}}">
+                    <Viewbox Width="12" Height="12">
+                        <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                    </Viewbox>
+                </Button>
                 <Button
                     Classes="settings-button"
                     Command="{Binding SyncNowCommand}"
-                    Content="{DynamicResource ui-btn-syncManually}" />
+                    Content="{DynamicResource ui-btn-syncManually}"
+                    IsEnabled="{Binding ScannerViewModel.IsScanning, Converter={StaticResource NegativeBooleanConverter}}" />
             </StackPanel>
 
             <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-customSongPath}" />
@@ -47,22 +52,31 @@
                     Width="27"
                     Height="27"
                     Command="{Binding BrowseCustomCommand}"
-                    Content="..." />
+                    IsEnabled="{Binding ScannerViewModel.IsScanning, Converter={StaticResource NegativeBooleanConverter}}">
+                    <Viewbox Width="12" Height="12">
+                        <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                    </Viewbox>
+                </Button>
                 <Button
                     Classes="settings-button"
                     Command="{Binding ScanNowCommand}"
                     Content="{DynamicResource ui-btn-scanManually}"
-                    IsVisible="{Binding !IsScanning}" />
+                    IsVisible="{Binding ScannerViewModel.IsScanning, Converter={StaticResource BoolFalseToVisibleConverter}}" />
+                <ProgressBar
+                    Width="60"
+                    Height="4"
+                    IsIndeterminate="True"
+                    IsVisible="{Binding ScannerViewModel.IsScanning, Converter={StaticResource BoolTrueToVisibleConverter}}" />
                 <TextBlock
                     Classes="config-label"
                     VerticalAlignment="Center"
-                    IsVisible="{Binding IsScanning}"
+                    IsVisible="{Binding ScannerViewModel.IsScanning, Converter={StaticResource BoolTrueToVisibleConverter}}"
                     Text="{DynamicResource ui-sets-content-scanning3Dot}" />
                 <Button
                     Classes="link-button"
                     Command="{Binding CancelScanCommand}"
                     Content="{DynamicResource ui-btn-cancelScan}"
-                    IsVisible="{Binding IsScanning}" />
+                    IsVisible="{Binding ScannerViewModel.IsScanning, Converter={StaticResource BoolTrueToVisibleConverter}}" />
             </StackPanel>
 
             <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-closeWindow}" />

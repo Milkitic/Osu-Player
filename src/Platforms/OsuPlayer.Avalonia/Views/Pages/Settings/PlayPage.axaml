@@ -2,9 +2,13 @@
     x:Class="OsuPlayer.Views.Pages.Settings.PlayPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:OsuPlayer.Converters"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
     Classes="settings-page"
     x:DataType="vm:PlayPageViewModel">
+    <UserControl.Resources>
+        <converters:DeviceInfoToStringConverter x:Key="DeviceInfoToStringConverter" />
+    </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
             <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-globalHitsoundDelay}" />
@@ -38,7 +42,13 @@
                 Width="320"
                 HorizontalAlignment="Left"
                 ItemsSource="{Binding AvailableDevices}"
-                SelectedItem="{Binding SelectedDevice, Mode=TwoWay}" />
+                SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource DeviceInfoToStringConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

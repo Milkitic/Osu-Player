@@ -10,6 +10,13 @@
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0,0,0,1" />
         </Style>
+        <Style Selector="Border.search-card">
+            <Setter Property="BoxShadow" Value="0 2 8 0 #14000000" />
+        </Style>
+        <Style Selector="Border.search-card:pointerover">
+            <Setter Property="BoxShadow" Value="0 8 18 0 #26000000" />
+            <Setter Property="BorderBrush" Value="#D8E6F8" />
+        </Style>
     </UserControl.Styles>
     <Grid RowDefinitions="Auto,Auto,*,Auto">
         <Border Grid.Row="0" Margin="24,18,24,8" Background="White" BorderBrush="#DADADA" BorderThickness="1" CornerRadius="4">
@@ -35,7 +42,7 @@
                 Content="{DynamicResource ui-btn-playAll}" />
             <Button
                 Classes="settings-button"
-                Command="{Binding PlayAllCommand}"
+                Command="{Binding QueueAllCommand}"
                 Content="{DynamicResource ui-btn-queueAll}" />
         </StackPanel>
         <Grid Grid.Row="2" Margin="5,0,5,5">
@@ -77,7 +84,15 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="core:BeatmapDataModel">
-                            <Border Width="220" Margin="8" Padding="8" Background="#FAFAFA" BorderBrush="#E5E5E5" BorderThickness="1" CornerRadius="4">
+                            <Border Width="220" Margin="8" Padding="8" Classes="search-card" Background="#FAFAFA" BorderBrush="#E5E5E5" BorderThickness="1" CornerRadius="4">
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Click="PlayCard_Click" Header="{DynamicResource ui-play}" Tag="{Binding}" />
+                                        <MenuItem Click="SaveCollection_Click" Header="{DynamicResource ui-nav-collection}" Tag="{Binding}" />
+                                        <MenuItem Click="ExportCard_Click" Header="{DynamicResource ui-export}" Tag="{Binding}" />
+                                        <MenuItem Click="OpenFolder_Click" Header="{DynamicResource ui-openFileFolder}" Tag="{Binding}" />
+                                    </ContextMenu>
+                                </Border.ContextMenu>
                                 <StackPanel Spacing="8">
                                     <Border Height="120" Background="#ECECEC" CornerRadius="4">
                                         <Image Source="{Binding ThumbPath}" Stretch="UniformToFill" />
@@ -85,6 +100,24 @@
                                     <TextBlock FontWeight="SemiBold" Text="{Binding AutoTitle}" TextTrimming="CharacterEllipsis" />
                                     <TextBlock Foreground="#7A7A7A" Text="{Binding AutoArtist}" TextTrimming="CharacterEllipsis" />
                                     <TextBlock Foreground="#A0A0A0" Text="{Binding AutoCreator}" TextTrimming="CharacterEllipsis" />
+                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,4,0,0">
+                                        <Button Grid.Column="0" Classes="play-button" Click="PlayCard_Click" Tag="{Binding}" Content="{DynamicResource ui-play}" />
+                                        <Button Grid.Column="1" Margin="6,0,0,0" Classes="settings-button" Click="SaveCollection_Click" Tag="{Binding}">
+                                            <Viewbox Width="12" Height="12">
+                                                <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12V12H2Z" />
+                                            </Viewbox>
+                                        </Button>
+                                        <Button Grid.Column="2" Margin="6,0,0,0" Classes="settings-button" Click="ExportCard_Click" Tag="{Binding}">
+                                            <Viewbox Width="12" Height="12">
+                                                <Path Fill="#303030" Data="M7,1 L12,6 H9V10H5V6H2Z M2,11H12V13H2Z" />
+                                            </Viewbox>
+                                        </Button>
+                                        <Button Grid.Column="3" Margin="6,0,0,0" Classes="settings-button" Click="OpenFolder_Click" Tag="{Binding}">
+                                            <Viewbox Width="12" Height="12">
+                                                <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                                            </Viewbox>
+                                        </Button>
+                                    </Grid>
                                 </StackPanel>
                             </Border>
                         </DataTemplate>

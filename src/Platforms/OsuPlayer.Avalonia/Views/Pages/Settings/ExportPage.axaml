@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="OsuPlayer.Views.Pages.Settings.ExportPage"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -25,8 +25,11 @@
                     Classes="settings-button"
                     Width="27"
                     Height="27"
-                    Command="{Binding BrowseMusicCommand}"
-                    Content="..." />
+                    Command="{Binding BrowseMusicCommand}">
+                    <Viewbox Width="12" Height="12">
+                        <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                    </Viewbox>
+                </Button>
             </StackPanel>
             <StackPanel Classes="config-row" Orientation="Horizontal">
                 <TextBlock Classes="config-label" Text="{DynamicResource ui-sets-content-bgDirectory}" />
@@ -40,8 +43,11 @@
                     Classes="settings-button"
                     Width="27"
                     Height="27"
-                    Command="{Binding BrowseBgCommand}"
-                    Content="..." />
+                    Command="{Binding BrowseBgCommand}">
+                    <Viewbox Width="12" Height="12">
+                        <Path Fill="#303030" Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" />
+                    </Viewbox>
+                </Button>
             </StackPanel>
 
             <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-fileNamingFormat}" />

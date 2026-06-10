@@ -3,25 +3,52 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels.Pages.Settings"
-    Classes="settings-page"
-    x:DataType="vm:HotKeyPageViewModel">
+    x:DataType="vm:HotKeyPageViewModel"
+    Classes="settings-page">
+    <UserControl.Styles>
+        <Style Selector="TextBox.hotkey-box">
+            <Setter Property="Width" Value="150" />
+            <Setter Property="MinHeight" Value="27" />
+            <Setter Property="Padding" Value="8,0" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#B0B0B0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+        </Style>
+        <Style Selector="TextBox.hotkey-box:focus">
+            <Setter Property="BorderBrush" Value="#5D9CEC" />
+            <Setter Property="Background" Value="#F7FBFF" />
+        </Style>
+        <Style Selector="Border.hotkey-frame">
+            <Setter Property="Padding" Value="2" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Border.hotkey-frame.editing">
+            <Setter Property="Background" Value="#EAF4FF" />
+        </Style>
+    </UserControl.Styles>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10" Spacing="6">
             <TextBlock Classes="config-title" Text="{DynamicResource ui-sets-title-hotKeySettings}" />
             <ItemsControl ItemsSource="{Binding Entries}">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:HotKeyEntry">
+                    <DataTemplate x:DataType="vm:HotKeyEntry">
                         <Grid Classes="config-grid" ColumnDefinitions="150,*">
                             <TextBlock
-                                Classes="config-label"
                                 Grid.Column="0"
+                                Classes="config-label"
                                 Text="{Binding DisplayName}" />
-                            <TextBox
-                                Classes="config-box"
-                                Grid.Column="1"
-                                Width="150"
-                                IsReadOnly="True"
-                                Text="{Binding HotKeyText, Mode=OneWay}" />
+                            <Border Grid.Column="1" Classes="hotkey-frame">
+                                <TextBox
+                                    Classes="hotkey-box"
+                                    GotFocus="TextBox_GotFocus"
+                                    KeyDown="TextBox_KeyDown"
+                                    LostFocus="TextBox_LostFocus"
+                                    Tag="{Binding Type}"
+                                    Text="{Binding HotKeyText, Mode=TwoWay}" />
+                            </Border>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

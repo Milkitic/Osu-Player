@@ -22,6 +22,7 @@ public partial class MainWindow : Window
 {
     private readonly INavigationService _nav;
     private readonly IPlayerDataService? _playerData;
+    private ConfigWindow? _configWindow;
 
     public MainWindow()
     {
@@ -135,7 +136,15 @@ public partial class MainWindow : Window
 
     private void BtnSettings_Click(object? sender, RoutedEventArgs e)
     {
-        NavigateTo("Settings");
+        if (_configWindow == null)
+        {
+            _configWindow = App.Services.GetRequiredService<ConfigWindow>();
+            _configWindow.Closed += (_, _) => _configWindow = null;
+            _configWindow.Show(this);
+            return;
+        }
+
+        _configWindow.Activate();
     }
 
     private void BtnMini_Click(object? sender, RoutedEventArgs e)
@@ -152,6 +161,7 @@ public partial class MainWindow : Window
 
     private void BtnClose_Click(object? sender, RoutedEventArgs e)
     {
+        _configWindow?.Close();
         Close();
     }
 

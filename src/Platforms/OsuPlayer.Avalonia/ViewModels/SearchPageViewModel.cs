@@ -238,6 +238,22 @@ public partial class SearchPageViewModel : ObservableObject, INavigationAware
     }
 
     [RelayCommand]
+    private async Task QueueAllAsync()
+    {
+        var beatmaps = await GetAllMatchedBeatmapsAsync();
+        if (beatmaps.Count <= 0) return;
+
+        var newBeatmaps = beatmaps
+            .GroupBy(k => k.FolderName)
+            .Select(k => k.GetHighestDiff())
+            .Where(k => k != null)
+            .Cast<Beatmap>()
+            .ToList();
+
+        await _controller.SetPlaylistAsync(newBeatmaps, true, playInstantly: false, autoLoad: false);
+    }
+
+    [RelayCommand]
     private async Task PlayAsync(BeatmapDataModel beatmap)
     {
         await _beatmapActions.PlayWithDifficultyPickerAsync(beatmap);

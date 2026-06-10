@@ -57,6 +57,16 @@ public partial class ExportPageViewModel : ObservableObject
         await Execute.OnUiThreadAsync(InnerUpdateAsync);
     }
 
+    public Task ReExportAsync(IEnumerable<BeatmapDataModel> dataModels)
+    {
+        return ItemReExportAsync(dataModels.Cast<object>().ToList());
+    }
+
+    public Task DeleteAsync(IEnumerable<BeatmapDataModel> dataModels)
+    {
+        return ItemDeleteAsync(dataModels.Cast<object>().ToList());
+    }
+
     [RelayCommand]
     private void ItemFolder(object? obj)
     {

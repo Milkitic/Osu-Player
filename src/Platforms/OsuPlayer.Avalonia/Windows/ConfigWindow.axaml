@@ -1,0 +1,44 @@
+﻿<Window
+    x:Class="OsuPlayer.Windows.ConfigWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="{DynamicResource ui-win-sets}"
+    Width="640"
+    Height="440"
+    MinWidth="580"
+    MinHeight="400"
+    WindowStartupLocation="CenterOwner">
+    <Grid Background="#323232" RowDefinitions="Auto,*">
+        <Border Grid.Row="0" Height="32" Background="#323232">
+            <DockPanel>
+                <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Foreground="White" Text="{DynamicResource ui-win-sets}" />
+                <Button DockPanel.Dock="Right" Width="32" Height="32" Classes="style-image" Click="CloseButton_Click">
+                    <Viewbox Width="12" Height="12">
+                        <Path Fill="White" Data="M2.1,1 L6,4.9 L9.9,1 L11,2.1 L7.1,6 L11,9.9 L9.9,11 L6,7.1 L2.1,11 L1,9.9 L4.9,6 L1,2.1 Z" />
+                    </Viewbox>
+                </Button>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="150,*">
+            <Border Grid.Column="0" Background="#2B2B2B">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0,8,0,8" Spacing="2">
+                        <TextBlock Margin="12,0,0,8" Foreground="#B8B8B8" Text="{DynamicResource ui-sets}" />
+                        <ToggleButton x:Name="GeneralButton" Classes="nav-button" Click="OnNavClick" IsChecked="True" Tag="General" Content="{DynamicResource ui-sets-nav-common}" />
+                        <ToggleButton x:Name="PlayButton" Classes="nav-button" Click="OnNavClick" Tag="Play" Content="{DynamicResource ui-sets-nav-playing}" />
+                        <ToggleButton x:Name="InterfaceButton" Classes="nav-button" Click="OnNavClick" Tag="Interface" Content="{DynamicResource ui-sets-nav-interface}" />
+                        <ToggleButton x:Name="HotKeyButton" Classes="nav-button" Click="OnNavClick" Tag="HotKey" Content="{DynamicResource ui-sets-nav-hotKey}" />
+                        <ToggleButton x:Name="LyricButton" Classes="nav-button" Click="OnNavClick" Tag="Lyric" Content="{DynamicResource ui-sets-nav-lyric}" />
+                        <ToggleButton x:Name="ExportButton" Classes="nav-button" Click="OnNavClick" Tag="Export" Content="{DynamicResource ui-sets-nav-export}" />
+                        <ToggleButton x:Name="AboutButton" Classes="nav-button" Click="OnNavClick" Tag="About" Content="{DynamicResource ui-sets-nav-about}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <Border Grid.Column="1" Background="#FEFEFE" Padding="0">
+                <ContentControl x:Name="MainFrame" />
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

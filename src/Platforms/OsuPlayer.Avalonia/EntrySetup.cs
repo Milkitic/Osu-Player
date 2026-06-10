@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using KeyAsio.Core.Audio;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -130,6 +130,7 @@ public static class EntrySetup
         services.AddTransient<LyricPage>();
         services.AddTransient<OsuPlayer.Views.Pages.Settings.ExportPage>();
         services.AddTransient<HotKeyPage>();
+        services.AddTransient<ConfigWindow>();
 
         return services;
     }

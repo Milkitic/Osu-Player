@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Microsoft.Extensions.Logging;
 using OsuPlayer.Core;
 using OsuPlayer.Core.Configuration;
@@ -88,6 +89,38 @@ public partial class SearchPage : UserControl
         if (ResultList.SelectedItem is BeatmapDataModel map && DataContext is SearchPageViewModel viewModel)
         {
             await viewModel.DirectPlayAsync(map);
+        }
+    }
+
+    private async void PlayCard_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { Tag: BeatmapDataModel map } && DataContext is SearchPageViewModel viewModel)
+        {
+            await viewModel.DirectPlayAsync(map);
+        }
+    }
+
+    private async void SaveCollection_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { Tag: BeatmapDataModel map } && DataContext is SearchPageViewModel viewModel)
+        {
+            await viewModel.SaveCollectionCommand.ExecuteAsync(map);
+        }
+    }
+
+    private async void ExportCard_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { Tag: BeatmapDataModel map } && DataContext is SearchPageViewModel viewModel)
+        {
+            await viewModel.ExportCommand.ExecuteAsync(map);
+        }
+    }
+
+    private async void OpenFolder_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { Tag: BeatmapDataModel map } && DataContext is SearchPageViewModel viewModel)
+        {
+            await viewModel.OpenSourceFolderCommand.ExecuteAsync(map);
         }
     }
 }
