@@ -286,7 +286,7 @@
                                             Classes.collapsed="{Binding $parent[Window].DataContext.IsNavigationCollapsed}"
                                             Click="OnCollectionNavClick"
                                             Content="{Binding Name}"
-                                            GroupName="CollectionNav"
+                                            GroupName="MainNav"
                                             Tag="{Binding Id}" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
