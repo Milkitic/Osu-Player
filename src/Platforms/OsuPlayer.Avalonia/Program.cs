@@ -1,5 +1,6 @@
 using System;
 using Avalonia;
+using Avalonia.Media;
 
 namespace OsuPlayer;
 
@@ -19,6 +20,16 @@ sealed class Program
 #if DEBUG
             .WithDeveloperTools()
 #endif
-            .WithInterFont()
+            .With(new FontManagerOptions
+            {
+                DefaultFamilyName = "avares://OsuPlayer/Resources/Fonts/SourceSansPro-Regular.ttf#Source Sans Pro",
+                FontFallbacks = new[]
+                {
+                    new FontFallback
+                    {
+                        FontFamily = new FontFamily("avares://OsuPlayer/Resources/Fonts/SourceHanSerifCn.ttf#思源屏显臻宋 CN")
+                    }
+                }
+            })
             .LogToTrace();
 }

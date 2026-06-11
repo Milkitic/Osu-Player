@@ -23,6 +23,18 @@
 
     <Application.Styles>
         <FluentTheme />
+
+        <!--  Global Font Styling  -->
+        <Style Selector="Window">
+            <Setter Property="FontFamily" Value="{StaticResource SspRegular}" />
+        </Style>
+        <Style Selector="ContextMenu">
+            <Setter Property="FontFamily" Value="{StaticResource SspRegular}" />
+        </Style>
+        <Style Selector="ToolTip">
+            <Setter Property="FontFamily" Value="{StaticResource SspRegular}" />
+        </Style>
+
         <StyleInclude Source="avares://OsuPlayer/Styles/ButtonStyle.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/SliderStyle.axaml" />
         <StyleInclude Source="avares://OsuPlayer/Styles/NavigationStyle.axaml" />
