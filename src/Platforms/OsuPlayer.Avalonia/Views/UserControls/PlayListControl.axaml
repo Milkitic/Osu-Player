@@ -6,124 +6,127 @@
     xmlns:controls="clr-namespace:OsuPlayer.Controls"
     xmlns:data="clr-namespace:OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
     x:DataType="userControls:PlayListControlVm">
-    <Grid Margin="10" Background="#B0F0F0F0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Border BorderBrush="#D0D0D0" BorderThickness="0,0,0,1">
+    <Grid>
+        <Border Margin="10" CornerRadius="4" BoxShadow="0 0 10 0 #80000000" Background="{DynamicResource TextureBrush2}" Opacity="0.7" />
+        <Grid Margin="10" Background="#B0F0F0F0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Border BorderBrush="#D0D0D0" BorderThickness="0,0,0,1">
+                    <StackPanel
+                        Height="34"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <TextBlock Margin="30,0,0,0" VerticalAlignment="Center" Foreground="#727272">
+                            <Run Text="{DynamicResource ui-total}" />
+                            <Run Text="{Binding Controller.PlayList.SongList.Count, Mode=OneWay}" />
+                            <Run Text="{DynamicResource ui-songsClassifier}" />
+                        </TextBlock>
+                        <controls:CommonButton
+                            Height="24"
+                            Padding="5,0"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding SaveAllCollectionCommand}"
+                            Content="{DynamicResource ui-btn-saveAll}"
+                            FontSize="11"
+                            Foreground="#A0A0A0"
+                            MouseDownBackground="Transparent"
+                            MouseDownForeground="#646464"
+                            MouseOverBackground="Transparent"
+                            MouseOverForeground="#808080" />
+                    </StackPanel>
+                </Border>
                 <StackPanel
-                    Height="34"
-                    HorizontalAlignment="Left"
+                    Margin="4,0"
+                    HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Orientation="Horizontal">
-                    <TextBlock Margin="30,0,0,0" VerticalAlignment="Center" Foreground="#727272">
-                        <Run Text="{DynamicResource ui-total}" />
-                        <Run Text="{Binding Controller.PlayList.SongList.Count, Mode=OneWay}" />
-                        <Run Text="{DynamicResource ui-songsClassifier}" />
-                    </TextBlock>
                     <controls:CommonButton
                         Height="24"
                         Padding="5,0"
                         VerticalAlignment="Center"
                         Background="Transparent"
                         BorderThickness="0"
-                        Command="{Binding SaveAllCollectionCommand}"
-                        Content="{DynamicResource ui-btn-saveAll}"
+                        Command="{Binding ClearPlayListCommand}"
+                        Content="{DynamicResource ui-btn-clearList}"
                         FontSize="11"
                         Foreground="#A0A0A0"
                         MouseDownBackground="Transparent"
                         MouseDownForeground="#646464"
                         MouseOverBackground="Transparent"
                         MouseOverForeground="#808080" />
+                    <controls:CommonButton
+                        Width="24"
+                        Height="24"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Click="CloseButton_Click"
+                        IconMargin="0"
+                        IconSize="15"
+                        MouseDownBackground="#D0D0D0"
+                        MouseOverBackground="#D4D4D4" />
                 </StackPanel>
-            </Border>
-            <StackPanel
-                Margin="4,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Orientation="Horizontal">
-                <controls:CommonButton
-                    Height="24"
-                    Padding="5,0"
-                    VerticalAlignment="Center"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Command="{Binding ClearPlayListCommand}"
-                    Content="{DynamicResource ui-btn-clearList}"
-                    FontSize="11"
-                    Foreground="#A0A0A0"
-                    MouseDownBackground="Transparent"
-                    MouseDownForeground="#646464"
-                    MouseOverBackground="Transparent"
-                    MouseOverForeground="#808080" />
-                <controls:CommonButton
-                    Width="24"
-                    Height="24"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Click="CloseButton_Click"
-                    IconMargin="0"
-                    IconSize="15"
-                    MouseDownBackground="#D0D0D0"
-                    MouseOverBackground="#D4D4D4" />
-            </StackPanel>
+            </Grid>
+            <ListBox
+                x:Name="PlayList"
+                Grid.Row="1"
+                Background="Transparent"
+                ItemsSource="{Binding Controller.PlayList.SongList}"
+                SelectionChanged="PlayList_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="data:Beatmap">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                Width="30"
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                Foreground="{StaticResource PinkBrushOsu}"
+                                Text="♪" />
+                            <TextBlock
+                                Width="225"
+                                VerticalAlignment="Center"
+                                Foreground="#303030"
+                                Text="{Binding AutoTitle}"
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Width="180"
+                                VerticalAlignment="Center"
+                                Foreground="#727272"
+                                Text="{Binding AutoArtist}"
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Width="110"
+                                VerticalAlignment="Center"
+                                Foreground="#484848"
+                                Text="{Binding Creator}"
+                                TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Command="{Binding PlayCommand}" Header="播放(Enter)" />
+                        <Separator />
+                        <MenuItem Command="{Binding SearchCommand}" CommandParameter="0" Header="{DynamicResource ui-ctxMenu-searchTitle}" />
+                        <MenuItem Command="{Binding SearchCommand}" CommandParameter="1" Header="{DynamicResource ui-ctxMenu-searchArtist}" />
+                        <MenuItem Command="{Binding SearchCommand}" CommandParameter="2" Header="{DynamicResource ui-ctxMenu-searchSource}" />
+                        <MenuItem Command="{Binding SearchCommand}" CommandParameter="3" Header="{DynamicResource ui-ctxMenu-searchCreator}" />
+                        <Separator />
+                        <MenuItem Command="{Binding OpenSourceFolderCommand}" Header="{DynamicResource ui-ctxMenu-openSourceFolder}" />
+                        <MenuItem Command="{Binding OpenScorePageCommand}" Header="{DynamicResource ui-ctxMenu-openScorePage}" />
+                        <Separator />
+                        <MenuItem Command="{Binding SaveCollectionCommand}" Header="{DynamicResource ui-ctxMenu-saveTo}" />
+                        <MenuItem Command="{Binding ExportCommand}" Header="{DynamicResource ui-ctxMenu-export}" />
+                        <Separator />
+                        <MenuItem Command="{Binding RemoveCommand}" Header="{DynamicResource ui-ctxMenu-removeFromList}" />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
         </Grid>
-        <ListBox
-            x:Name="PlayList"
-            Grid.Row="1"
-            Background="Transparent"
-            ItemsSource="{Binding Controller.PlayList.SongList}"
-            SelectionChanged="PlayList_SelectionChanged">
-            <ListBox.ItemTemplate>
-                <DataTemplate x:DataType="data:Beatmap">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock
-                            Width="30"
-                            Margin="5,0"
-                            VerticalAlignment="Center"
-                            Foreground="{StaticResource PinkBrushOsu}"
-                            Text="♪" />
-                        <TextBlock
-                            Width="225"
-                            VerticalAlignment="Center"
-                            Foreground="#303030"
-                            Text="{Binding AutoTitle}"
-                            TextTrimming="CharacterEllipsis" />
-                        <TextBlock
-                            Width="180"
-                            VerticalAlignment="Center"
-                            Foreground="#727272"
-                            Text="{Binding AutoArtist}"
-                            TextTrimming="CharacterEllipsis" />
-                        <TextBlock
-                            Width="110"
-                            VerticalAlignment="Center"
-                            Foreground="#484848"
-                            Text="{Binding Creator}"
-                            TextTrimming="CharacterEllipsis" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-            <ListBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Command="{Binding PlayCommand}" Header="播放(Enter)" />
-                    <Separator />
-                    <MenuItem Command="{Binding SearchCommand}" CommandParameter="0" Header="{DynamicResource ui-ctxMenu-searchTitle}" />
-                    <MenuItem Command="{Binding SearchCommand}" CommandParameter="1" Header="{DynamicResource ui-ctxMenu-searchArtist}" />
-                    <MenuItem Command="{Binding SearchCommand}" CommandParameter="2" Header="{DynamicResource ui-ctxMenu-searchSource}" />
-                    <MenuItem Command="{Binding SearchCommand}" CommandParameter="3" Header="{DynamicResource ui-ctxMenu-searchCreator}" />
-                    <Separator />
-                    <MenuItem Command="{Binding OpenSourceFolderCommand}" Header="{DynamicResource ui-ctxMenu-openSourceFolder}" />
-                    <MenuItem Command="{Binding OpenScorePageCommand}" Header="{DynamicResource ui-ctxMenu-openScorePage}" />
-                    <Separator />
-                    <MenuItem Command="{Binding SaveCollectionCommand}" Header="{DynamicResource ui-ctxMenu-saveTo}" />
-                    <MenuItem Command="{Binding ExportCommand}" Header="{DynamicResource ui-ctxMenu-export}" />
-                    <Separator />
-                    <MenuItem Command="{Binding RemoveCommand}" Header="{DynamicResource ui-ctxMenu-removeFromList}" />
-                </ContextMenu>
-            </ListBox.ContextMenu>
-        </ListBox>
     </Grid>
 </UserControl>

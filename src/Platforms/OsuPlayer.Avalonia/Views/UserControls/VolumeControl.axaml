@@ -8,200 +8,203 @@
     <UserControl.DataContext>
         <vm:VolumeControlVm />
     </UserControl.DataContext>
-    <Border Margin="10" Background="#A0FFFFFF">
-        <Grid Margin="5">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0">
-                    <Slider
-                        x:Name="MasterVolume"
-                        Height="70"
-                        Margin="10,5"
-                        HorizontalAlignment="Center"
-                        LargeChange="0.1"
-                        Maximum="1"
-                        Orientation="Vertical"
-                        Value="{Binding Shared.AppSettings.Volume.Main, Mode=TwoWay}" />
-                    <TextBlock
-                        Margin="0,-5,0,0"
-                        HorizontalAlignment="Center"
-                        Foreground="#303030"
-                        Text="{DynamicResource ui-volumeMaster}" />
-                </StackPanel>
-                <StackPanel Grid.Column="1">
-                    <Slider
-                        x:Name="MusicVolume"
-                        Height="70"
-                        Margin="10,5"
-                        HorizontalAlignment="Center"
-                        LargeChange="0.1"
-                        Maximum="1"
-                        Orientation="Vertical"
-                        Value="{Binding Shared.AppSettings.Volume.Music, Mode=TwoWay}" />
-                    <TextBlock
-                        Margin="0,-5,0,0"
-                        HorizontalAlignment="Center"
-                        Foreground="#303030"
-                        Text="{DynamicResource ui-volumeMusic}" />
-                </StackPanel>
-                <StackPanel Grid.Column="2">
-                    <Slider
-                        x:Name="HitsoundVolume"
-                        Height="70"
-                        Margin="10,5"
-                        HorizontalAlignment="Center"
-                        LargeChange="0.1"
-                        Maximum="1"
-                        Orientation="Vertical"
-                        Value="{Binding Shared.AppSettings.Volume.Hitsound, Mode=TwoWay}" />
-                    <TextBlock
-                        Margin="0,-5,0,0"
-                        HorizontalAlignment="Center"
-                        Foreground="#303030"
-                        Text="{DynamicResource ui-volumeSound}" />
-                </StackPanel>
-                <StackPanel Grid.Column="3">
-                    <Slider
-                        x:Name="SampleVolume"
-                        Height="70"
-                        Margin="10,5"
-                        HorizontalAlignment="Center"
-                        LargeChange="0.1"
-                        Maximum="1"
-                        Orientation="Vertical"
-                        Value="{Binding Shared.AppSettings.Volume.Sample, Mode=TwoWay}" />
-                    <TextBlock
-                        Margin="0,-5,0,0"
-                        HorizontalAlignment="Center"
-                        Foreground="#303030"
-                        Text="{DynamicResource ui-volumeSample}" />
-                </StackPanel>
-            </Grid>
-            <Grid Grid.Row="1">
-                <StackPanel>
-                    <Slider
-                        x:Name="Balance"
-                        Margin="10,5"
-                        LargeChange="5"
-                        Maximum="100"
-                        Minimum="0"
-                        Orientation="Horizontal"
-                        SmallChange="1"
-                        TickFrequency="1"
-                        Value="{Binding Shared.AppSettings.Volume.BalanceFactor, Mode=TwoWay}" />
-                    <TextBlock
-                        Margin="0,-5,0,0"
-                        HorizontalAlignment="Center"
-                        Foreground="#303030"
-                        Text="{DynamicResource ui-3dSoundEffect}" />
-                    <Grid Margin="10,2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
+    <Grid>
+        <Border Margin="10" CornerRadius="4" BoxShadow="0 0 10 0 #80000000" Background="{DynamicResource TextureBrush2}" Opacity="0.7" />
+        <Border Margin="10" Background="#A0FFFFFF" CornerRadius="4">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <Slider
+                            x:Name="MasterVolume"
+                            Height="70"
+                            Margin="10,5"
+                            HorizontalAlignment="Center"
+                            LargeChange="0.1"
+                            Maximum="1"
+                            Orientation="Vertical"
+                            Value="{Binding Shared.AppSettings.Volume.Main, Mode=TwoWay}" />
                         <TextBlock
-                            VerticalAlignment="Center"
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
                             Foreground="#303030"
-                            Text="{DynamicResource ui-balanceMode}" />
-                        <ComboBox
-                            x:Name="BalanceMode"
-                            Grid.Column="1"
-                            Height="22"
-                            VerticalContentAlignment="Center"
-                            ItemsSource="{Binding AvailableBalanceModes}"
-                            SelectedItem="{Binding Shared.AppSettings.Volume.BalanceMode, Mode=TwoWay}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                    </Grid>
-                    <Slider
-                        x:Name="Offset"
-                        Margin="10,5"
-                        IsVisible="False"
-                        LargeChange="10"
-                        Maximum="200"
-                        Minimum="-200"
-                        Orientation="Horizontal"
-                        SmallChange="1"
-                        TickFrequency="1" />
-                    <TextBlock
-                        Margin="0,-5,0,0"
-                        HorizontalAlignment="Center"
-                        Foreground="#303030"
-                        IsVisible="False"
-                        Text="{DynamicResource ui-currentMapOffset}" />
-                    <Grid Margin="10,2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
+                            Text="{DynamicResource ui-volumeMaster}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <Slider
+                            x:Name="MusicVolume"
+                            Height="70"
+                            Margin="10,5"
+                            HorizontalAlignment="Center"
+                            LargeChange="0.1"
+                            Maximum="1"
+                            Orientation="Vertical"
+                            Value="{Binding Shared.AppSettings.Volume.Music, Mode=TwoWay}" />
                         <TextBlock
-                            VerticalAlignment="Center"
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
                             Foreground="#303030"
-                            Text="{DynamicResource ui-limiterType}" />
-                        <ComboBox
-                            x:Name="LimiterType"
-                            Grid.Column="1"
-                            Height="22"
-                            VerticalContentAlignment="Center"
-                            ItemsSource="{Binding AvailableLimiterTypes}"
-                            SelectedItem="{Binding Shared.AppSettings.Volume.LimiterType, Mode=TwoWay}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                    </Grid>
-                </StackPanel>
+                            Text="{DynamicResource ui-volumeMusic}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <Slider
+                            x:Name="HitsoundVolume"
+                            Height="70"
+                            Margin="10,5"
+                            HorizontalAlignment="Center"
+                            LargeChange="0.1"
+                            Maximum="1"
+                            Orientation="Vertical"
+                            Value="{Binding Shared.AppSettings.Volume.Hitsound, Mode=TwoWay}" />
+                        <TextBlock
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Foreground="#303030"
+                            Text="{DynamicResource ui-volumeSound}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="3">
+                        <Slider
+                            x:Name="SampleVolume"
+                            Height="70"
+                            Margin="10,5"
+                            HorizontalAlignment="Center"
+                            LargeChange="0.1"
+                            Maximum="1"
+                            Orientation="Vertical"
+                            Value="{Binding Shared.AppSettings.Volume.Sample, Mode=TwoWay}" />
+                        <TextBlock
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Foreground="#303030"
+                            Text="{DynamicResource ui-volumeSample}" />
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <StackPanel>
+                        <Slider
+                            x:Name="Balance"
+                            Margin="10,5"
+                            LargeChange="5"
+                            Maximum="100"
+                            Minimum="0"
+                            Orientation="Horizontal"
+                            SmallChange="1"
+                            TickFrequency="1"
+                            Value="{Binding Shared.AppSettings.Volume.BalanceFactor, Mode=TwoWay}" />
+                        <TextBlock
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Foreground="#303030"
+                            Text="{DynamicResource ui-3dSoundEffect}" />
+                        <Grid Margin="10,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="#303030"
+                                Text="{DynamicResource ui-balanceMode}" />
+                            <ComboBox
+                                x:Name="BalanceMode"
+                                Grid.Column="1"
+                                Height="22"
+                                VerticalContentAlignment="Center"
+                                ItemsSource="{Binding AvailableBalanceModes}"
+                                SelectedItem="{Binding Shared.AppSettings.Volume.BalanceMode, Mode=TwoWay}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </Grid>
+                        <Slider
+                            x:Name="Offset"
+                            Margin="10,5"
+                            IsVisible="False"
+                            LargeChange="10"
+                            Maximum="200"
+                            Minimum="-200"
+                            Orientation="Horizontal"
+                            SmallChange="1"
+                            TickFrequency="1" />
+                        <TextBlock
+                            Margin="0,-5,0,0"
+                            HorizontalAlignment="Center"
+                            Foreground="#303030"
+                            IsVisible="False"
+                            Text="{DynamicResource ui-currentMapOffset}" />
+                        <Grid Margin="10,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="#303030"
+                                Text="{DynamicResource ui-limiterType}" />
+                            <ComboBox
+                                x:Name="LimiterType"
+                                Grid.Column="1"
+                                Height="22"
+                                VerticalContentAlignment="Center"
+                                ItemsSource="{Binding AvailableLimiterTypes}"
+                                SelectedItem="{Binding Shared.AppSettings.Volume.LimiterType, Mode=TwoWay}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="2" Margin="0,0,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button
+                        Grid.Column="0"
+                        Click="BtnPlayMod_OnClick"
+                        Content="NM"
+                        Tag="{x:Static models:PlayModifier.None}" />
+                    <Button
+                        Grid.Column="1"
+                        Click="BtnPlayMod_OnClick"
+                        Content="DT"
+                        Tag="{x:Static models:PlayModifier.DoubleTime}" />
+                    <Button
+                        Grid.Column="2"
+                        Click="BtnPlayMod_OnClick"
+                        Content="NC"
+                        Tag="{x:Static models:PlayModifier.NightCore}" />
+                    <Button
+                        Grid.Column="3"
+                        Click="BtnPlayMod_OnClick"
+                        Content="HT"
+                        Tag="{x:Static models:PlayModifier.HalfTime}" />
+                    <Button
+                        Grid.Column="4"
+                        Click="BtnPlayMod_OnClick"
+                        Content="DC"
+                        Tag="{x:Static models:PlayModifier.DayCore}" />
+                </Grid>
             </Grid>
-            <Grid Grid.Row="2" Margin="0,0,0,5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Button
-                    Grid.Column="0"
-                    Click="BtnPlayMod_OnClick"
-                    Content="NM"
-                    Tag="{x:Static models:PlayModifier.None}" />
-                <Button
-                    Grid.Column="1"
-                    Click="BtnPlayMod_OnClick"
-                    Content="DT"
-                    Tag="{x:Static models:PlayModifier.DoubleTime}" />
-                <Button
-                    Grid.Column="2"
-                    Click="BtnPlayMod_OnClick"
-                    Content="NC"
-                    Tag="{x:Static models:PlayModifier.NightCore}" />
-                <Button
-                    Grid.Column="3"
-                    Click="BtnPlayMod_OnClick"
-                    Content="HT"
-                    Tag="{x:Static models:PlayModifier.HalfTime}" />
-                <Button
-                    Grid.Column="4"
-                    Click="BtnPlayMod_OnClick"
-                    Content="DC"
-                    Tag="{x:Static models:PlayModifier.DayCore}" />
-            </Grid>
-        </Grid>
-    </Border>
+        </Border>
+    </Grid>
 </UserControl>

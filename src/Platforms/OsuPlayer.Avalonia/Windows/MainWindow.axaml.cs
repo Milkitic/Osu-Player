@@ -42,6 +42,8 @@ public partial class MainWindow : Window
         _playerData = playerData;
         _nav.Initialize(MainFrame);
         PlayBarController.DataContext = playControllerVm;
+        PlayBarController.LikeClicked += Controller_LikeClicked;
+        PlayBarController.ThumbClicked += Controller_ThumbClicked;
         Opened += OnOpened;
         viewModel.PropertyChanged += (_, e) =>
         {
@@ -161,6 +163,25 @@ public partial class MainWindow : Window
     private void BtnMini_Click(object? sender, RoutedEventArgs e)
     {
         WindowState = WindowState.Minimized;
+    }
+
+    private void Controller_ThumbClicked(object? sender, EventArgs e)
+    {
+        MainFrame.Content = null;
+    }
+
+    private async void Controller_LikeClicked(object? sender, EventArgs e)
+    {
+        if (PlayBarController.DataContext is PlayControllerVm vm && vm.Controller?.PlayList?.CurrentInfo != null && _playerData != null)
+        {
+            var detail = vm.Controller.PlayList.CurrentInfo.Beatmap;
+            var entry = await _playerData.GetBeatmapByIdentifiableAsync(detail.GetIdentity());
+            if (entry == null) return;
+
+            var dialog = new SelectCollectionWindow(entry);
+            await dialog.ShowDialog(this);
+            await UpdateCollectionsAsync();
+        }
     }
 
     private void ApplyNavigationState(bool collapsed)

@@ -14,7 +14,6 @@
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Height" Value="39" />
         <Setter Property="Padding" Value="13,0,0,0" />
-        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid ClipToBounds="True">
@@ -113,7 +112,6 @@
         <Setter Property="Height" Value="39" />
         <Setter Property="Margin" Value="0,0,0,1" />
         <Setter Property="Padding" Value="20,0,0,0" />
-        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="IconSize" Value="20" />
         <Setter Property="IconMargin" Value="0,0,8,0" />
         <Setter Property="MouseOverBackground" Value="White" />

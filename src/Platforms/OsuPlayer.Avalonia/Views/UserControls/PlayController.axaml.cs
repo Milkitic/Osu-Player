@@ -195,8 +195,8 @@ public partial class PlayController : UserControl
     {
         InitializeComponent();
 
-        PlayProgress.AddHandler(Slider.PointerPressedEvent, (_, _) => PlayProgress_DragStarted());
-        PlayProgress.AddHandler(Slider.PointerReleasedEvent, (_, _) => PlayProgress_DragCompleted(this, EventArgs.Empty));
+        PlayProgress.AddHandler(Slider.PointerPressedEvent, (_, _) => PlayProgress_DragStarted(), Avalonia.Interactivity.RoutingStrategies.Tunnel | Avalonia.Interactivity.RoutingStrategies.Bubble, true);
+        PlayProgress.AddHandler(Slider.PointerReleasedEvent, (_, _) => PlayProgress_DragCompleted(this, EventArgs.Empty), Avalonia.Interactivity.RoutingStrategies.Tunnel | Avalonia.Interactivity.RoutingStrategies.Bubble, true);
     }
 
     protected override void OnInitialized()
