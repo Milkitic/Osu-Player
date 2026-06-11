@@ -9,6 +9,10 @@
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Height" Value="36" />
+        <Setter Property="MouseOverBackground" Value="#F3F5F5" />
+        <Setter Property="MouseOverForeground" Value="#484848" />
+        <Setter Property="MouseDownBackground" Value="#E8E8E8" />
+        <Setter Property="MouseDownForeground" Value="#323232" />
         <Setter Property="Padding" Value="10,0" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -22,6 +26,8 @@
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
                     CornerRadius="{TemplateBinding CornerRadius}"
+                    Width="{TemplateBinding Width}"
+                    Height="{TemplateBinding Height}"
                     Padding="{TemplateBinding Padding}">
                     <StackPanel
                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -37,6 +43,7 @@
                                 x:Name="PART_Icon"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
+                                Foreground="{TemplateBinding Foreground}"
                                 Template="{TemplateBinding controls:CommonButton.IconTemplate}" />
                         </Viewbox>
                         <ContentPresenter
@@ -50,11 +57,21 @@
     </Style>
 
     <Style Selector="controls|CommonButton:pointerover /template/ Border#PART_Border">
-        <Setter Property="Background" Value="{Binding $self.(controls:CommonButton.MouseOverBackground)}" />
+        <Setter Property="Background" Value="{Binding $parent[controls:CommonButton].MouseOverBackground}" />
+        <Setter Property="TextBlock.Foreground" Value="{Binding $parent[controls:CommonButton].MouseOverForeground}" />
+    </Style>
+
+    <Style Selector="controls|CommonButton:pointerover /template/ ContentControl#PART_Icon">
+        <Setter Property="Foreground" Value="{Binding $parent[controls:CommonButton].MouseOverForeground}" />
     </Style>
 
     <Style Selector="controls|CommonButton:pressed /template/ Border#PART_Border">
-        <Setter Property="Background" Value="{Binding $self.(controls:CommonButton.MouseDownBackground)}" />
+        <Setter Property="Background" Value="{Binding $parent[controls:CommonButton].MouseDownBackground}" />
+        <Setter Property="TextBlock.Foreground" Value="{Binding $parent[controls:CommonButton].MouseDownForeground}" />
+    </Style>
+
+    <Style Selector="controls|CommonButton:pressed /template/ ContentControl#PART_Icon">
+        <Setter Property="Foreground" Value="{Binding $parent[controls:CommonButton].MouseDownForeground}" />
     </Style>
 
     <Style Selector="controls|CommonButton:disabled">
