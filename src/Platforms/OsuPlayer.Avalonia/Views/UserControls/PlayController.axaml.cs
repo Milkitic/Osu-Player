@@ -14,11 +14,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using KeyAsio.Core.Audio;
 using Microsoft.Extensions.DependencyInjection;
+using NAudio.Wave;
 using OsuPlayer.Core;
 using OsuPlayer.Media.Audio;
 using OsuPlayer.Playback;
 using OsuPlayer.Playback.Playlist;
 using OsuPlayer.Services;
+using System.Runtime.Versioning;
 
 namespace OsuPlayer.Views.UserControls;
 
@@ -169,9 +171,18 @@ public partial class PlayControllerVm : ObservableObject
     }
 
     [RelayCommand]
+    [SupportedOSPlatform("windows")]
     private void Asio()
     {
-        AppNotificationService.Instance.Push("Asio");
+        if (!OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        if (Controller?.Player?.Device is AsioOut asio)
+        {
+            asio.ShowControlPanel();
+        }
     }
 }
 

@@ -34,6 +34,7 @@
                         VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                         Orientation="{TemplateBinding controls:CommonButton.IconOrientation}">
                         <Viewbox
+                            IsVisible="{Binding $parent[controls:CommonButton].IconTemplate, Converter={StaticResource NullToBoolFalseConverter}}"
                             Width="{TemplateBinding controls:CommonButton.IconSize}"
                             Height="{TemplateBinding controls:CommonButton.IconSize}"
                             Margin="{TemplateBinding controls:CommonButton.IconMargin}"

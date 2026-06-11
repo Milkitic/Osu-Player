@@ -3,6 +3,7 @@
     <Bitmap x:Key="TextureSource1">avares://OsuPlayer/Resources/osu_texture.png</Bitmap>
     <Bitmap x:Key="TextureSource2">avares://OsuPlayer/Resources/osu_texture2.png</Bitmap>
     <Bitmap x:Key="TextureSource3">avares://OsuPlayer/Resources/store.jpg</Bitmap>
+    <Bitmap x:Key="OsuTextureBlue">avares://OsuPlayer/Resources/osu_texture_blue.png</Bitmap>
 
     <!--
         Avalonia ImageBrush 平铺:
@@ -12,6 +13,7 @@
     <ImageBrush x:Key="TextureBrush" Source="{StaticResource TextureSource1}" Stretch="None" TileMode="Tile" />
     <ImageBrush x:Key="TextureBrush2" Source="{StaticResource TextureSource2}" Stretch="None" TileMode="Tile" />
     <ImageBrush x:Key="TextureBrush3" Source="{StaticResource TextureSource3}" Stretch="UniformToFill" />
+    <ImageBrush x:Key="OsuTextureBlueBrush" Source="{StaticResource OsuTextureBlue}" Stretch="None" TileMode="Tile" />
 
     <SolidColorBrush x:Key="DarkGreyBrush30" Color="#303030" />
 

@@ -21,6 +21,15 @@
             <Setter Property="BorderBrush" Value="White" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Foreground" Value="White" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="ShadowOpacity" Value="0.2" />
+            <Setter Property="IconMargin" Value="0" />
+            <Setter Property="IconSize" Value="24" />
+            <Setter Property="CornerRadius" Value="7" />
+            <Setter Property="MouseOverForeground" Value="White" />
+            <Setter Property="MouseDownForeground" Value="White" />
             <Setter Property="MouseOverBackground">
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                     <GradientStop Offset="0" Color="#F05090" />
@@ -35,20 +44,42 @@
             </Setter>
         </Style>
         <Style Selector="controls|CommonButton.transport-accent">
-            <Setter Property="Background" Value="#5D9CEC" />
-            <Setter Property="BorderBrush" Value="#5D9CEC" />
+            <Setter Property="Background" Value="{DynamicResource OsuTextureBlueBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource OsuTextureBlueBrush}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="MouseOverBackground" Value="#5D9CEC" />
-            <Setter Property="MouseDownBackground" Value="#4D8CDC" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="ShadowOpacity" Value="0.2" />
+            <Setter Property="ShadowColor" Value="#5D9CEC" />
+            <Setter Property="IconMargin" Value="0" />
+            <Setter Property="IconSize" Value="24" />
+            <Setter Property="MouseOverForeground" Value="White" />
+            <Setter Property="MouseDownForeground" Value="White" />
+            <Setter Property="MouseOverBackground">
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0" Color="#5D9CEC" />
+                    <GradientStop Offset="1" Color="#4D8CDC" />
+                </LinearGradientBrush>
+            </Setter>
+            <Setter Property="MouseDownBackground">
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0" Color="#3D7CCC" />
+                    <GradientStop Offset="1" Color="#4D8CDC" />
+                </LinearGradientBrush>
+            </Setter>
         </Style>
         <Style Selector="controls|CommonButton.chromeless">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="MouseOverBackground" Value="#20FFFFFF" />
-            <Setter Property="MouseDownBackground" Value="#30FFFFFF" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="MouseOverBackground" Value="#80F8F8F8" />
+            <Setter Property="MouseDownBackground" Value="#80E8E8E8" />
         </Style>
         <Style Selector="controls|CommonButton.title-link">
             <Setter Property="Background" Value="Transparent" />
@@ -56,11 +87,14 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Foreground" Value="#777777" />
-            <Setter Property="MouseOverBackground" Value="Transparent" />
-            <Setter Property="MouseDownBackground" Value="Transparent" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="MouseOverBackground" Value="#80F8F8F8" />
+            <Setter Property="MouseDownBackground" Value="#80E8E8E8" />
         </Style>
     </UserControl.Styles>
-    <Grid Background="#2D2D30">
+    <Grid Background="{DynamicResource TextureBrush3}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -70,6 +104,10 @@
                 Grid.Column="0"
                 Width="61"
                 Height="46"
+                MaxWidth="61"
+                MaxHeight="46"
+                MinWidth="61"
+                MinHeight="46"
                 Margin="1"
                 Click="ThumbButton_Click">
                 <Image
@@ -91,7 +129,6 @@
                     Height="28"
                     Margin="8"
                     Command="{Binding PrevCommand}"
-                    IconSize="14"
                     IconTemplate="{StaticResource PrevTempl}"
                     CornerRadius="7" />
                 <controls:CommonButton
@@ -124,7 +161,6 @@
                     Height="28"
                     Margin="8"
                     Command="{Binding NextCommand}"
-                    IconSize="14"
                     IconTemplate="{StaticResource NextTempl}"
                     CornerRadius="7" />
                 <controls:CommonButton
@@ -133,7 +169,6 @@
                     Height="28"
                     Margin="8"
                     Command="{Binding OpenCommand}"
-                    IconSize="14"
                     IconTemplate="{StaticResource OpenTempl}"
                     CornerRadius="14" />
             </StackPanel>
@@ -157,22 +192,22 @@
                         IconSize="0">
                         <TextBlock>
                             <Run Foreground="#777777" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.TitleAuto, Mode=OneWay}" />
-                            <Run Text=" - " />
+                            <Run Text="-" />
                             <Run Foreground="#AAAAAA" Text="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.ArtistAuto, Mode=OneWay}" />
                         </TextBlock>
                     </controls:CommonButton>
                     <controls:CommonButton
-                        Classes="title-link"
+                        Classes="chromeless"
                         x:Name="BtnAsio"
                         Grid.Column="1"
                         Height="20"
-                        FontSize="11"
                         Margin="3,0"
                         Padding="4,0"
                         HorizontalAlignment="Right"
                         Command="{Binding AsioCommand}"
-                        IconSize="0"
-                        Content="ASIO"
+                        Foreground="{DynamicResource SliderBackground}"
+                        IconSize="45"
+                        IconTemplate="{StaticResource AsioTempl}"
                         IsVisible="{Binding AsioVisible}" />
                     <StackPanel
                         x:Name="LblProgress"
@@ -192,6 +227,7 @@
                     Grid.Row="1"
                     Classes="osu-slider"
                     Margin="3"
+                    VerticalAlignment="Center"
                     Maximum="{Binding TotalTimeMs}"
                     Minimum="0"
                     Value="{Binding CurrentTimeMs}" />
