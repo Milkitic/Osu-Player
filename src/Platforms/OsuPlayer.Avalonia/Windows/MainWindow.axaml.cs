@@ -157,23 +157,9 @@ public partial class MainWindow : Window
         WindowState = WindowState.Minimized;
     }
 
-    private void BtnMaxRestore_Click(object? sender, RoutedEventArgs e)
-    {
-        WindowState = WindowState == WindowState.Maximized
-            ? WindowState.Normal
-            : WindowState.Maximized;
-    }
-
-    private void BtnClose_Click(object? sender, RoutedEventArgs e)
-    {
-        _configWindow?.Close();
-        Close();
-    }
-
     private void ApplyNavigationState(bool collapsed)
     {
         SidebarHost.Width = collapsed ? 64 : 188;
-        WindowTitleText.IsVisible = !collapsed;
         CollapseButtonText.IsVisible = !collapsed;
         LibraryHeader.IsVisible = !collapsed;
         MineHeader.IsVisible = !collapsed;

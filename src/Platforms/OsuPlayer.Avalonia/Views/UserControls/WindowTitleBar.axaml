@@ -1,0 +1,103 @@
+<UserControl
+    x:Class="OsuPlayer.Views.UserControls.WindowTitleBar"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:OsuPlayer.Views.UserControls"
+    x:Name="Root"
+    Height="40">
+
+    <UserControl.Styles>
+        <Style Selector="Button.titlebar-btn">
+            <Setter Property="Width" Value="38" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border x:Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <ContentPresenter
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Content="{TemplateBinding Content}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="Button.titlebar-btn:pointerover /template/ Border#PART_Border">
+            <Setter Property="Background" Value="#20FFFFFF" />
+        </Style>
+        <Style Selector="Button.titlebar-btn:pressed /template/ Border#PART_Border">
+            <Setter Property="Background" Value="#30FFFFFF" />
+        </Style>
+        <Style Selector="Button.titlebar-btn.close:pointerover /template/ Border#PART_Border">
+            <Setter Property="Background" Value="#E81123" />
+        </Style>
+        <Style Selector="Button.titlebar-btn.close:pressed /template/ Border#PART_Border">
+            <Setter Property="Background" Value="#A0C72828" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{Binding #Root.Background}"
+            WindowDecorationProperties.ElementRole="TitleBar">
+        <DockPanel LastChildFill="True">
+            <!--  Right: system buttons (rendered first so they dock to the right)  -->
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Stretch">
+                <ContentPresenter
+                    x:Name="PART_RightContent"
+                    VerticalContentAlignment="Center"
+                    Content="{Binding #Root.RightContent}" />
+                <Button
+                    x:Name="PART_MinButton"
+                    Classes="titlebar-btn"
+                    IsVisible="{Binding #Root.ShowMinimize}"
+                    WindowDecorationProperties.ElementRole="MinimizeButton"
+                    Click="OnMinimizeClick">
+                    <Viewbox Width="12" Height="12">
+                        <Path Fill="White" Data="M1,10 L11,10 11,11 1,11 Z" />
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="PART_MaxButton"
+                    Classes="titlebar-btn"
+                    IsVisible="{Binding #Root.ShowMaximize}"
+                    WindowDecorationProperties.ElementRole="MaximizeButton"
+                    Click="OnMaximizeClick">
+                    <Viewbox Width="12" Height="12">
+                        <Path x:Name="PART_MaxIcon" Fill="White" Data="M1,1 L11,1 11,11 1,11 Z M2,2 L2,10 10,10 10,2 Z" />
+                    </Viewbox>
+                </Button>
+                <Button
+                    x:Name="PART_CloseButton"
+                    Classes="titlebar-btn close"
+                    IsVisible="{Binding #Root.ShowClose}"
+                    WindowDecorationProperties.ElementRole="CloseButton"
+                    Click="OnCloseClick">
+                    <Viewbox Width="12" Height="12">
+                        <Path Fill="White" Data="M2.1,1 L6,4.9 L9.9,1 L11,2.1 L7.1,6 L11,9.9 L9.9,11 L6,7.1 L2.1,11 L1,9.9 L4.9,6 L1,2.1 Z" />
+                    </Viewbox>
+                </Button>
+            </StackPanel>
+
+            <!--  Left: title text + optional content  -->
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0" Spacing="8">
+                <ContentPresenter
+                    x:Name="PART_LeftContent"
+                    VerticalContentAlignment="Center"
+                    Content="{Binding #Root.LeftContent}" />
+                <TextBlock
+                    x:Name="PART_Title"
+                    VerticalAlignment="Center"
+                    FontWeight="SemiBold"
+                    Foreground="White"
+                    Text="{Binding #Root.Title}" />
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</UserControl>

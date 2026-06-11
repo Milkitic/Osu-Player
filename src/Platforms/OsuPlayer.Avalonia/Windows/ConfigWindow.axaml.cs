@@ -60,9 +60,4 @@ public partial class ConfigWindow : Window
             _ => throw new ArgumentOutOfRangeException(nameof(tag), tag, "Unknown settings tag")
         });
     }
-
-    private void CloseButton_Click(object? sender, RoutedEventArgs e)
-    {
-        Close();
-    }
 }

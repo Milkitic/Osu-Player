@@ -13,44 +13,37 @@
     x:DataType="vm:MainWindowViewModel"
     Background="{DynamicResource TextureBrush3}"
     WindowStartupLocation="CenterScreen"
-    ExtendClientAreaToDecorationsHint="True"
-    ExtendClientAreaTitleBarHeightHint="-1">
+    WindowDecorations="None"
+    ExtendClientAreaToDecorationsHint="True">
 
     <Design.DataContext>
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto,*">
-        <Border Grid.Row="0" Height="40" Background="#252526" Padding="10,0">
-            <DockPanel>
-                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <Border Width="18" Height="18" CornerRadius="4" Background="#FE4F7A" />
-                    <TextBlock x:Name="WindowTitleText" VerticalAlignment="Center" FontWeight="Bold" Foreground="White" Text="Osu Player" />
-                </StackPanel>
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
-                    <Button Classes="style-image" Width="28" Height="28" Click="BtnSettings_Click">
-                        <Viewbox Width="12" Height="12">
+    <Grid Margin="{Binding $parent[Window].WindowState, Converter={StaticResource WindowMarginConverter}}"
+          RowDefinitions="Auto,*">
+        <controls:WindowTitleBar
+            Grid.Row="0"
+            Background="#252526"
+            Title="Osu Player">
+            <controls:WindowTitleBar.LeftContent>
+                <Border Width="18" Height="18" CornerRadius="4" Background="#FE4F7A" />
+            </controls:WindowTitleBar.LeftContent>
+            <controls:WindowTitleBar.RightContent>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,4,0" Spacing="2">
+                    <Button Classes="titlebar-btn" Click="BtnSettings_Click" ToolTip.Tip="{DynamicResource ui-sets}">
+                        <Viewbox Width="14" Height="14">
                             <Path Fill="White" Data="M8.6,0.8L10.3,2.3L12.5,1.8L13.2,4L15.3,4.8L14.8,7L16.3,8.7L14.8,10.4L15.3,12.6L13.2,13.4L12.5,15.6L10.3,15.1L8.6,16.6L6.9,15.1L4.7,15.6L4,13.4L1.9,12.6L2.4,10.4L0.9,8.7L2.4,7L1.9,4.8L4,4L4.7,1.8L6.9,2.3ZM8.6,5.3C6.73,5.3 5.2,6.83 5.2,8.7C5.2,10.57 6.73,12.1 8.6,12.1C10.47,12.1 12,10.57 12,8.7C12,6.83 10.47,5.3 8.6,5.3Z" />
                         </Viewbox>
                     </Button>
-                    <Button Classes="style-image" Width="28" Height="28" Click="BtnMini_Click">
-                        <Viewbox Width="12" Height="12">
-                            <Path Fill="White" Data="M1,10 L11,10 11,11 1,11 Z" />
-                        </Viewbox>
-                    </Button>
-                    <Button x:Name="BtnMaxRestore" Classes="style-image" Width="28" Height="28" Click="BtnMaxRestore_Click">
-                        <Viewbox Width="12" Height="12">
-                            <Path Fill="White" Data="M1,1 L11,1 11,11 1,11 Z M2,2 L2,10 10,10 10,2 Z" />
-                        </Viewbox>
-                    </Button>
-                    <Button Classes="style-image" Width="28" Height="28" Click="BtnClose_Click">
-                        <Viewbox Width="12" Height="12">
-                            <Path Fill="White" Data="M2.1,1 L6,4.9 L9.9,1 L11,2.1 L7.1,6 L11,9.9 L9.9,11 L6,7.1 L2.1,11 L1,9.9 L4.9,6 L1,2.1 Z" />
+                    <Button Classes="titlebar-btn" Click="BtnMini_Click" ToolTip.Tip="Mini">
+                        <Viewbox Width="14" Height="14">
+                            <Path Fill="White" Data="M2,2 H10 V4 H8 V8 H4 V10 H2 Z M5,5 H11 V11 H5 Z" />
                         </Viewbox>
                     </Button>
                 </StackPanel>
-            </DockPanel>
-        </Border>
+            </controls:WindowTitleBar.RightContent>
+        </controls:WindowTitleBar>
 
         <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
             <Border x:Name="SidebarHost" Grid.Column="0" Width="188" Background="#252526" Padding="8,12">
