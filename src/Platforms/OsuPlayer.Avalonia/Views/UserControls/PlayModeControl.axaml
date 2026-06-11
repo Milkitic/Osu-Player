@@ -17,6 +17,7 @@
                 GroupName="PlayMode"
                 IconMargin="0,0,5,0"
                 IconSize="18"
+                IconTemplate="{StaticResource ModeSingleTempl}"
                 MouseDownBackground="#80D8D8D8"
                 MouseOverBackground="#80E0E0E0"
                 Tag="{x:Static models:PlaylistMode.Single}" />
@@ -31,6 +32,7 @@
                 GroupName="PlayMode"
                 IconMargin="0,0,5,0"
                 IconSize="18"
+                IconTemplate="{StaticResource ModeSingleLoopTempl}"
                 MouseDownBackground="#80D8D8D8"
                 MouseOverBackground="#80E0E0E0"
                 Tag="{x:Static models:PlaylistMode.SingleLoop}" />
@@ -45,6 +47,7 @@
                 GroupName="PlayMode"
                 IconMargin="0,0,5,0"
                 IconSize="18"
+                IconTemplate="{StaticResource ModeNormalTempl}"
                 MouseDownBackground="#80D8D8D8"
                 MouseOverBackground="#80E0E0E0"
                 Tag="{x:Static models:PlaylistMode.Normal}" />
@@ -59,6 +62,7 @@
                 GroupName="PlayMode"
                 IconMargin="0,0,5,0"
                 IconSize="18"
+                IconTemplate="{StaticResource ModeRandomTempl}"
                 MouseDownBackground="#80D8D8D8"
                 MouseOverBackground="#80E0E0E0"
                 Tag="{x:Static models:PlaylistMode.Random}" />
@@ -73,6 +77,7 @@
                 GroupName="PlayMode"
                 IconMargin="0,0,5,0"
                 IconSize="18"
+                IconTemplate="{StaticResource ModeLoopTempl}"
                 MouseDownBackground="#80D8D8D8"
                 MouseOverBackground="#80E0E0E0"
                 Tag="{x:Static models:PlaylistMode.Loop}" />
@@ -87,6 +92,7 @@
                 GroupName="PlayMode"
                 IconMargin="0,0,5,0"
                 IconSize="18"
+                IconTemplate="{StaticResource ModeLoopRandomTempl}"
                 MouseDownBackground="#80D8D8D8"
                 MouseOverBackground="#80E0E0E0"
                 Tag="{x:Static models:PlaylistMode.LoopRandom}" />

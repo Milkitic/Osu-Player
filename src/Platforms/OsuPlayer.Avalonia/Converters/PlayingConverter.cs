@@ -13,9 +13,13 @@ public class PlayingConverter : IMultiValueConverter
     {
         if (values.Count >= 1 && values[0] is bool isPlaying)
         {
-            return isPlaying ? "⏸" : "▶";
+            var key = isPlaying ? "PauseTempl" : "PlayTempl";
+            if (Application.Current != null && Application.Current.TryGetResource(key, null, out var resource))
+            {
+                return resource;
+            }
         }
-        return "▶";
+        return null;
     }
 }
 
@@ -23,16 +27,26 @@ public class PlayModeConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return value switch
+        if (value is PlaylistMode playerMode)
         {
-            PlaylistMode.Normal => "⇄",
-            PlaylistMode.Random => "🔀",
-            PlaylistMode.Loop => "↺",
-            PlaylistMode.LoopRandom => "🔀↺",
-            PlaylistMode.Single => "•",
-            PlaylistMode.SingleLoop => "1",
-            _ => "⇄"
-        };
+            var paramStr = parameter as string ?? string.Empty;
+            var key = playerMode switch
+            {
+                PlaylistMode.Normal => $"ModeNormal{paramStr}Templ",
+                PlaylistMode.Random => $"ModeRandom{paramStr}Templ",
+                PlaylistMode.Loop => $"ModeLoop{paramStr}Templ",
+                PlaylistMode.LoopRandom => $"ModeLoopRandom{paramStr}Templ",
+                PlaylistMode.Single => $"ModeSingle{paramStr}Templ",
+                PlaylistMode.SingleLoop => $"ModeSingleLoop{paramStr}Templ",
+                _ => $"ModeNormal{paramStr}Templ"
+            };
+
+            if (Application.Current != null && Application.Current.TryGetResource(key, null, out var resource))
+            {
+                return resource;
+            }
+        }
+        return null;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -43,9 +57,12 @@ public class BoolIsFavToSvgConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is bool b)
-            return b ? "♥" : "♡";
-        return "♡";
+        var key = (value is bool b && b) ? "HeartEnabledTempl" : "HeartDisabledTempl";
+        if (Application.Current != null && Application.Current.TryGetResource(key, null, out var resource))
+        {
+            return resource;
+        }
+        return null;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

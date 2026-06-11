@@ -27,13 +27,18 @@
                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                         VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                         Orientation="{TemplateBinding controls:CommonButton.IconOrientation}">
-                        <ContentControl
-                            x:Name="PART_Icon"
+                        <Viewbox
                             Width="{TemplateBinding controls:CommonButton.IconSize}"
                             Height="{TemplateBinding controls:CommonButton.IconSize}"
                             Margin="{TemplateBinding controls:CommonButton.IconMargin}"
                             VerticalAlignment="Center"
-                            Template="{TemplateBinding controls:CommonButton.IconTemplate}" />
+                            Stretch="Uniform">
+                            <ContentControl
+                                x:Name="PART_Icon"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Template="{TemplateBinding controls:CommonButton.IconTemplate}" />
+                        </Viewbox>
                         <ContentPresenter
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
@@ -70,19 +75,33 @@
                 <Border
                     x:Name="PART_Border"
                     Background="{TemplateBinding Background}"
-                    Padding="{TemplateBinding Padding}">
+                    Padding="{TemplateBinding Padding}"
+                    ClipToBounds="True">
                     <StackPanel
                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                         VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                         Orientation="{TemplateBinding controls:SwitchRadio.IconOrientation}">
-                        <ContentControl
-                            x:Name="PART_Icon"
+                        <Viewbox
                             Width="{TemplateBinding controls:SwitchRadio.IconSize}"
                             Height="{TemplateBinding controls:SwitchRadio.IconSize}"
                             Margin="{TemplateBinding controls:SwitchRadio.IconMargin}"
                             VerticalAlignment="Center"
-                            Template="{TemplateBinding controls:SwitchRadio.IconTemplate}" />
+                            Stretch="Uniform">
+                            <ContentControl
+                                x:Name="PART_Icon"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Template="{TemplateBinding controls:SwitchRadio.IconTemplate}">
+                                <ContentControl.Foreground>
+                                    <MultiBinding Converter="{StaticResource IconColorConverter}">
+                                        <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Foreground" />
+                                        <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="IconColor" />
+                                    </MultiBinding>
+                                </ContentControl.Foreground>
+                            </ContentControl>
+                        </Viewbox>
                         <ContentPresenter
+                            x:Name="PART_ContentPresenter"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Content="{TemplateBinding Content}" />
@@ -92,16 +111,43 @@
         </Setter>
     </Style>
 
-    <Style Selector="controls|SwitchRadio:pointerover /template/ Border#PART_Border">
-        <Setter Property="Background" Value="{Binding $self.(controls:SwitchRadio.MouseOverBackground)}" />
+    <Style Selector="controls|SwitchRadio:pointerover:not(:checked) /template/ Border#PART_Border">
+        <Setter Property="Background" Value="{Binding $parent[controls:SwitchRadio].MouseOverBackground}" />
+        <Setter Property="TextBlock.Foreground" Value="{Binding $parent[controls:SwitchRadio].MouseOverForeground}" />
+    </Style>
+    <Style Selector="controls|SwitchRadio:pointerover:not(:checked) /template/ ContentControl#PART_Icon">
+        <Setter Property="Foreground">
+            <MultiBinding Converter="{StaticResource IconColorConverter}">
+                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="MouseOverForeground" />
+                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="MouseOverIconColor" />
+            </MultiBinding>
+        </Setter>
     </Style>
 
     <Style Selector="controls|SwitchRadio:pressed /template/ Border#PART_Border">
-        <Setter Property="Background" Value="{Binding $self.(controls:SwitchRadio.MouseDownBackground)}" />
+        <Setter Property="Background" Value="{Binding $parent[controls:SwitchRadio].MouseDownBackground}" />
+        <Setter Property="TextBlock.Foreground" Value="{Binding $parent[controls:SwitchRadio].MouseDownForeground}" />
+    </Style>
+    <Style Selector="controls|SwitchRadio:pressed /template/ ContentControl#PART_Icon">
+        <Setter Property="Foreground">
+            <MultiBinding Converter="{StaticResource IconColorConverter}">
+                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="MouseDownForeground" />
+                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="MouseDownIconColor" />
+            </MultiBinding>
+        </Setter>
     </Style>
 
     <Style Selector="controls|SwitchRadio:checked /template/ Border#PART_Border">
-        <Setter Property="Background" Value="{Binding $self.(controls:SwitchRadio.CheckedBackground)}" />
+        <Setter Property="Background" Value="{Binding $parent[controls:SwitchRadio].CheckedBackground}" />
+        <Setter Property="TextBlock.Foreground" Value="{Binding $parent[controls:SwitchRadio].CheckedForeground}" />
+    </Style>
+    <Style Selector="controls|SwitchRadio:checked /template/ ContentControl#PART_Icon">
+        <Setter Property="Foreground">
+            <MultiBinding Converter="{StaticResource IconColorConverter}">
+                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="CheckedForeground" />
+                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="CheckedIconColor" />
+            </MultiBinding>
+        </Setter>
     </Style>
 
     <Style Selector="controls|SwitchRadio:disabled">

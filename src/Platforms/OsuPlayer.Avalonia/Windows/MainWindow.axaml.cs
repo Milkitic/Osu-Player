@@ -168,13 +168,5 @@ public partial class MainWindow : Window
         // 宽度对齐 WPF: 展开 170px / 折叠 48px
         // Transitions 已在 AXAML 中声明 0.3s QuarticEaseInOut 动画
         SidebarHost.Width = collapsed ? 48 : 170;
-        CollapseButtonText.IsVisible = !collapsed;
-        LibraryHeader.IsVisible = !collapsed;
-        MineHeader.IsVisible = !collapsed;
-        CollectionHeaderPanel.IsVisible = !collapsed;
-        SearchNavText.IsVisible = !collapsed;
-        RecentNavText.IsVisible = !collapsed;
-        ExportNavText.IsVisible = !collapsed;
-        FindNavText.IsVisible = !collapsed;
     }
 }

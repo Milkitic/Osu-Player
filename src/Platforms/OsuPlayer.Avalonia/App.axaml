@@ -17,6 +17,7 @@
                 <ResourceInclude Source="avares://OsuPlayer/Styles/ConverterDictionary.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Styles/GeneralStyle.axaml" />
                 <ResourceInclude Source="avares://OsuPlayer/Styles/i18n.axaml" />
+                <ResourceInclude Source="avares://OsuPlayer/Styles/SvgDictionary.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

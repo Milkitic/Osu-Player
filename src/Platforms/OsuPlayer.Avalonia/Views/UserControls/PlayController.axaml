@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="OsuPlayer.Views.UserControls.PlayController"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -91,25 +91,32 @@
                     Height="28"
                     Margin="8"
                     Command="{Binding PrevCommand}"
-                    IconSize="0"
-                    CornerRadius="7">
-                    <Viewbox Width="14" Height="14">
-                        <Path Fill="White" Data="M2,2H4V12H2ZM5,7L12,12V2Z" />
-                    </Viewbox>
-                </controls:CommonButton>
+                    IconSize="14"
+                    IconTemplate="{StaticResource PrevTempl}"
+                    CornerRadius="7" />
                 <controls:CommonButton
                     Classes="transport"
                     Width="32"
                     Height="32"
                     Margin="8"
                     Command="{Binding PlayCommand}"
-                    IconSize="0"
+                    Tag="{Binding Shared.IsPlaying}"
                     CornerRadius="16">
-                    <controls:CommonButton.Content>
+                    <controls:CommonButton.IconTemplate>
                         <MultiBinding Converter="{StaticResource PlayingConverter}">
                             <Binding Path="Shared.IsPlaying" />
                         </MultiBinding>
-                    </controls:CommonButton.Content>
+                    </controls:CommonButton.IconTemplate>
+                    <controls:CommonButton.Styles>
+                        <Style Selector="controls|CommonButton[Tag=False]">
+                            <Setter Property="IconSize" Value="20" />
+                            <Setter Property="IconMargin" Value="2,0,0,0" />
+                        </Style>
+                        <Style Selector="controls|CommonButton[Tag=True]">
+                            <Setter Property="IconSize" Value="16" />
+                            <Setter Property="IconMargin" Value="0" />
+                        </Style>
+                    </controls:CommonButton.Styles>
                 </controls:CommonButton>
                 <controls:CommonButton
                     Classes="transport"
@@ -117,25 +124,18 @@
                     Height="28"
                     Margin="8"
                     Command="{Binding NextCommand}"
-                    IconSize="0"
-                    CornerRadius="7">
-                    <Viewbox Width="14" Height="14">
-                        <Path Fill="White" Data="M10,2H12V12H10ZM2,2V12L9,7Z" />
-                    </Viewbox>
-                </controls:CommonButton>
+                    IconSize="14"
+                    IconTemplate="{StaticResource NextTempl}"
+                    CornerRadius="7" />
                 <controls:CommonButton
                     Classes="transport-accent"
                     Width="28"
                     Height="28"
                     Margin="8"
                     Command="{Binding OpenCommand}"
-                    CornerRadius="14"
-                    IconSize="0"
-                    >
-                    <Viewbox Width="14" Height="14">
-                        <Path Fill="White" Data="M6,2H8V6H12V8H8V12H6V8H2V6H6Z" />
-                    </Viewbox>
-                </controls:CommonButton>
+                    IconSize="14"
+                    IconTemplate="{StaticResource OpenTempl}"
+                    CornerRadius="14" />
             </StackPanel>
             <Grid Grid.Column="2" VerticalAlignment="Center">
                 <Grid.RowDefinitions>
@@ -206,23 +206,21 @@
                         x:Name="ModeButton"
                         Width="24"
                         Height="24"
-                        FontSize="16"
                         Margin="8"
                         Click="ModeButton_Click"
                         IconMargin="0"
-                        IconSize="0"
-                        Content="{Binding Controller.PlayList.Mode, Converter={StaticResource PlayModeConverter}}" />
+                        IconSize="25"
+                        IconTemplate="{Binding Controller.PlayList.Mode, Converter={StaticResource PlayModeConverter}}" />
                     <controls:CommonButton
                         Classes="chromeless"
                         Width="23"
                         Height="23"
-                        FontSize="16"
                         Margin="6"
                         VerticalAlignment="Center"
                         Click="LikeButton_Click"
                         IconMargin="0"
-                        IconSize="0"
-                        Content="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}" />
+                        IconSize="24"
+                        IconTemplate="{Binding Controller.PlayList.CurrentInfo.BeatmapDetail.Metadata.IsFavorite, Converter={StaticResource BoolIsFavToSvgConverter}}" />
                     <controls:CommonButton
                         Classes="chromeless"
                         x:Name="VolumeButton"
@@ -232,11 +230,8 @@
                         VerticalAlignment="Center"
                         Click="VolumeButton_Click"
                         IconMargin="0"
-                        IconSize="0">
-                        <Viewbox Width="16" Height="16">
-                            <Path Fill="White" Data="M2,6H5L8,3V13L5,10H2Z M10,5A4,4 0 0 1 10,11 M11.5,3.5A6,6 0 0 1 11.5,12.5" />
-                        </Viewbox>
-                    </controls:CommonButton>
+                        IconSize="20"
+                        IconTemplate="{StaticResource VolumeTempl}" />
                     <controls:CommonButton
                         Classes="chromeless"
                         x:Name="PlayListButton"
@@ -246,11 +241,8 @@
                         VerticalAlignment="Center"
                         Click="PlayListButton_Click"
                         IconMargin="0"
-                        IconSize="0">
-                        <Viewbox Width="16" Height="16">
-                            <Path Fill="White" Data="M3,4H13V5.5H3ZM3,7.25H13V8.75H3ZM3,10.5H13V12H3Z" />
-                        </Viewbox>
-                    </controls:CommonButton>
+                        IconSize="18"
+                        IconTemplate="{StaticResource PlayListTempl}" />
                 </StackPanel>
             </Grid>
         </Grid>
