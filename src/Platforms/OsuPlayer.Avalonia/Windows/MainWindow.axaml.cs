@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -165,7 +165,9 @@ public partial class MainWindow : Window
 
     private void ApplyNavigationState(bool collapsed)
     {
-        SidebarHost.Width = collapsed ? 64 : 186;
+        // 宽度对齐 WPF: 展开 170px / 折叠 48px
+        // Transitions 已在 AXAML 中声明 0.3s QuarticEaseInOut 动画
+        SidebarHost.Width = collapsed ? 48 : 170;
         CollapseButtonText.IsVisible = !collapsed;
         LibraryHeader.IsVisible = !collapsed;
         MineHeader.IsVisible = !collapsed;
