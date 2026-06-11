@@ -139,7 +139,7 @@
                             </Label>
 
                             <!--  搜索按钮  -->
-                            <ui:SwitchRadio
+                            <ui:IconRadioButton
                                 x:Name="SearchNavButton"
                                 CheckedIconColor="#4050A0"
                                 Classes="nav-button"
@@ -152,7 +152,7 @@
                                 Tag="Search" />
 
                             <!--  音乐 (Find)  -->
-                            <ui:SwitchRadio
+                            <ui:IconRadioButton
                                 x:Name="FindNavButton"
                                 CheckedIconColor="#508030"
                                 Classes="nav-button"
@@ -173,7 +173,7 @@
                             </Label>
 
                             <!--  最近播放  -->
-                            <ui:SwitchRadio
+                            <ui:IconRadioButton
                                 x:Name="RecentNavButton"
                                 CheckedIconColor="#A04090"
                                 Classes="nav-button"
@@ -185,7 +185,7 @@
                                 Tag="Recent" />
 
                             <!--  导出  -->
-                            <ui:SwitchRadio
+                            <ui:IconRadioButton
                                 x:Name="ExportNavButton"
                                 CheckedIconColor="#A09040"
                                 Classes="nav-button"
@@ -242,7 +242,7 @@
                             <ItemsControl x:Name="CollectionList" ItemsSource="{Binding Collection}">
                                 <ItemsControl.Styles>
                                     <!--  When not collapsed: use CollectionTempl  -->
-                                    <Style Selector="ui|SwitchRadio.collection-nav-item">
+                                    <Style Selector="ui|IconRadioButton.collection-nav-item">
                                         <Setter Property="Height" Value="31" />
                                         <Setter Property="Padding" Value="14,0,0,0" />
                                         <Setter Property="IconMargin" Value="0,0,8,0" />
@@ -251,7 +251,7 @@
                                     </Style>
 
                                     <!--  When collapsed: use a custom ControlTemplate that draws the letter circle  -->
-                                    <Style Selector="ui|SwitchRadio.collection-nav-item.collapsed">
+                                    <Style Selector="ui|IconRadioButton.collection-nav-item.collapsed">
                                         <Setter Property="IconSize" Value="22" />
                                         <Setter Property="IconTemplate">
                                             <Setter.Value>
@@ -277,7 +277,7 @@
                                 </ItemsControl.Styles>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="data:Collection">
-                                        <ui:SwitchRadio
+                                        <ui:IconRadioButton
                                             CheckedIconColor="#4090A0"
                                             Classes="nav-button collection-nav-item"
                                             Classes.collapsed="{Binding $parent[Window].DataContext.IsNavigationCollapsed}"

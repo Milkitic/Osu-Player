@@ -68,7 +68,7 @@ public partial class PlayModeControl : UserControl
 
     private void Mode_Changed(object? sender, RoutedEventArgs e)
     {
-        if (sender is SwitchRadio radio && radio.IsChecked == true && radio.Tag is PlaylistMode mode)
+        if (sender is IconRadioButton radio && radio.IsChecked == true && radio.Tag is PlaylistMode mode)
         {
             _controller!.PlayList.Mode = mode;
             CloseRequested?.Invoke(this, EventArgs.Empty);

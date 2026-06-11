@@ -1,12 +1,12 @@
 <Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:controls="clr-namespace:OsuPlayer.Controls">
 
     <!--
-        nav-button: 对齐 WPF OsuSwitchRadio 样式
+        nav-button: 对齐 WPF 导航 IconRadioButton 样式
         默认: Transparent 背景 / White 前景
         Hover: White 背景 / #303030 前景
         Pressed: #F0F0F0 背景 / #303030 前景
         Checked: #F8F8F8 背景 / #303030 前景
-        Height=39 对齐 WPF OsuSwitchRadio.Height="39"
+        Height=39 对齐 WPF 导航项高度
     -->
     <Style Selector="ToggleButton.nav-button, Button.nav-button, RadioButton.nav-button">
         <Setter Property="Foreground" Value="#FEFEFEFE" />
@@ -104,7 +104,7 @@
         <Setter Property="Margin" Value="0" />
     </Style>
 
-    <Style Selector="controls|SwitchRadio.nav-button">
+    <Style Selector="controls|IconRadioButton.nav-button">
         <Setter Property="Foreground" Value="White" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -133,7 +133,7 @@
         </Setter>
     </Style>
 
-    <Style Selector="controls|SwitchRadio.nav-button.collapsed">
+    <Style Selector="controls|IconRadioButton.nav-button.collapsed">
         <Setter Property="IconMargin" Value="0,0,150,0" />
         <Setter Property="Padding" Value="13,0,0,0" />
     </Style>

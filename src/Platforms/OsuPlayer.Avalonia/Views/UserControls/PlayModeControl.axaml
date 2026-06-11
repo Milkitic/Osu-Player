@@ -6,7 +6,7 @@
     xmlns:models="clr-namespace:OsuPlayer.Shared.Models;assembly=OsuPlayer.Shared">
     <Border Padding="10">
         <StackPanel>
-            <controls:SwitchRadio
+            <controls:IconRadioButton
                 x:Name="ModeSingle"
                 Height="30"
                 Padding="0,0,5,0"
@@ -21,7 +21,7 @@
                 MouseDownBackground="#80D8D8D8"
                 MouseOverBackground="#80E0E0E0"
                 Tag="{x:Static models:PlaylistMode.Single}" />
-            <controls:SwitchRadio
+            <controls:IconRadioButton
                 x:Name="ModeSingleLoop"
                 Height="30"
                 Padding="0,0,5,0"
@@ -36,7 +36,7 @@
                 MouseDownBackground="#80D8D8D8"
                 MouseOverBackground="#80E0E0E0"
                 Tag="{x:Static models:PlaylistMode.SingleLoop}" />
-            <controls:SwitchRadio
+            <controls:IconRadioButton
                 x:Name="ModeNormal"
                 Height="30"
                 Padding="0,0,5,0"
@@ -51,7 +51,7 @@
                 MouseDownBackground="#80D8D8D8"
                 MouseOverBackground="#80E0E0E0"
                 Tag="{x:Static models:PlaylistMode.Normal}" />
-            <controls:SwitchRadio
+            <controls:IconRadioButton
                 x:Name="ModeRandom"
                 Height="30"
                 Padding="0,0,5,0"
@@ -66,7 +66,7 @@
                 MouseDownBackground="#80D8D8D8"
                 MouseOverBackground="#80E0E0E0"
                 Tag="{x:Static models:PlaylistMode.Random}" />
-            <controls:SwitchRadio
+            <controls:IconRadioButton
                 x:Name="ModeLoop"
                 Height="30"
                 Padding="0,0,5,0"
@@ -81,7 +81,7 @@
                 MouseDownBackground="#80D8D8D8"
                 MouseOverBackground="#80E0E0E0"
                 Tag="{x:Static models:PlaylistMode.Loop}" />
-            <controls:SwitchRadio
+            <controls:IconRadioButton
                 x:Name="ModeLoopRandom"
                 Height="30"
                 Padding="0,0,5,0"

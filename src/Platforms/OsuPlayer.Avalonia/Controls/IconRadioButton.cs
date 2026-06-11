@@ -6,49 +6,49 @@ using Avalonia.Media;
 
 namespace OsuPlayer.Controls;
 
-public class SwitchRadio : RadioButton
+public class IconRadioButton : RadioButton
 {
     public static readonly StyledProperty<IControlTemplate?> IconTemplateProperty =
-        AvaloniaProperty.Register<SwitchRadio, IControlTemplate?>(nameof(IconTemplate));
+        AvaloniaProperty.Register<IconRadioButton, IControlTemplate?>(nameof(IconTemplate));
 
     public static readonly StyledProperty<Thickness> IconMarginProperty =
-        AvaloniaProperty.Register<SwitchRadio, Thickness>(nameof(IconMargin), new Thickness(0, 0, 8, 0));
+        AvaloniaProperty.Register<IconRadioButton, Thickness>(nameof(IconMargin), new Thickness(0, 0, 8, 0));
 
     public static readonly StyledProperty<Orientation> IconOrientationProperty =
-        AvaloniaProperty.Register<SwitchRadio, Orientation>(nameof(IconOrientation), Orientation.Horizontal);
+        AvaloniaProperty.Register<IconRadioButton, Orientation>(nameof(IconOrientation), Orientation.Horizontal);
 
     public static readonly StyledProperty<double> IconSizeProperty =
-        AvaloniaProperty.Register<SwitchRadio, double>(nameof(IconSize), 24d);
+        AvaloniaProperty.Register<IconRadioButton, double>(nameof(IconSize), 24d);
 
     public static readonly StyledProperty<IBrush?> IconColorProperty =
-        AvaloniaProperty.Register<SwitchRadio, IBrush?>(nameof(IconColor));
+        AvaloniaProperty.Register<IconRadioButton, IBrush?>(nameof(IconColor));
 
     public static readonly StyledProperty<IBrush?> MouseOverBackgroundProperty =
-        AvaloniaProperty.Register<SwitchRadio, IBrush?>(nameof(MouseOverBackground));
+        AvaloniaProperty.Register<IconRadioButton, IBrush?>(nameof(MouseOverBackground));
 
     public static readonly StyledProperty<IBrush?> MouseOverForegroundProperty =
-        AvaloniaProperty.Register<SwitchRadio, IBrush?>(nameof(MouseOverForeground));
+        AvaloniaProperty.Register<IconRadioButton, IBrush?>(nameof(MouseOverForeground));
 
     public static readonly StyledProperty<IBrush?> MouseOverIconColorProperty =
-        AvaloniaProperty.Register<SwitchRadio, IBrush?>(nameof(MouseOverIconColor));
+        AvaloniaProperty.Register<IconRadioButton, IBrush?>(nameof(MouseOverIconColor));
 
     public static readonly StyledProperty<IBrush?> MouseDownBackgroundProperty =
-        AvaloniaProperty.Register<SwitchRadio, IBrush?>(nameof(MouseDownBackground));
+        AvaloniaProperty.Register<IconRadioButton, IBrush?>(nameof(MouseDownBackground));
 
     public static readonly StyledProperty<IBrush?> MouseDownForegroundProperty =
-        AvaloniaProperty.Register<SwitchRadio, IBrush?>(nameof(MouseDownForeground));
+        AvaloniaProperty.Register<IconRadioButton, IBrush?>(nameof(MouseDownForeground));
 
     public static readonly StyledProperty<IBrush?> MouseDownIconColorProperty =
-        AvaloniaProperty.Register<SwitchRadio, IBrush?>(nameof(MouseDownIconColor));
+        AvaloniaProperty.Register<IconRadioButton, IBrush?>(nameof(MouseDownIconColor));
 
     public static readonly StyledProperty<IBrush?> CheckedBackgroundProperty =
-        AvaloniaProperty.Register<SwitchRadio, IBrush?>(nameof(CheckedBackground));
+        AvaloniaProperty.Register<IconRadioButton, IBrush?>(nameof(CheckedBackground));
 
     public static readonly StyledProperty<IBrush?> CheckedForegroundProperty =
-        AvaloniaProperty.Register<SwitchRadio, IBrush?>(nameof(CheckedForeground));
+        AvaloniaProperty.Register<IconRadioButton, IBrush?>(nameof(CheckedForeground));
 
     public static readonly StyledProperty<IBrush?> CheckedIconColorProperty =
-        AvaloniaProperty.Register<SwitchRadio, IBrush?>(nameof(CheckedIconColor));
+        AvaloniaProperty.Register<IconRadioButton, IBrush?>(nameof(CheckedIconColor));
 
     public IControlTemplate? IconTemplate
     {
