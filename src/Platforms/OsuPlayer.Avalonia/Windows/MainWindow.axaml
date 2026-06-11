@@ -49,33 +49,32 @@
                 <Border
                     Height="32"
                     Margin="0,0,10,0"
-                    Padding="6,2"
+                    Padding="10,2"
                     VerticalAlignment="Center"
-                    BorderBrush="#60DDDDDD"
-                    BorderThickness="0.3"
+                    BorderBrush="#28DDDDDD"
+                    BorderThickness="1"
                     CornerRadius="16">
-                    <StackPanel Orientation="Horizontal" Spacing="2">
+                    <StackPanel Orientation="Horizontal">
                         <Button
-                            Width="26"
-                            Height="26"
+                            Width="25"
+                            Height="25"
+                            Margin="3,0"
                             Classes="titlebar-btn"
                             Click="BtnSettings_Click"
                             ToolTip.Tip="{DynamicResource ui-sets}">
-                            <Viewbox Width="18" Height="18">
-                                <Path Data="{StaticResource Gear}" Fill="White" />
+                            <Viewbox Width="21" Height="21">
+                                <ContentControl Template="{StaticResource SettingsTempl}" />
                             </Viewbox>
                         </Button>
                         <Button
-                            Width="26"
-                            Height="26"
+                            Width="25"
+                            Height="25"
+                            Margin="3,0"
                             Classes="titlebar-btn"
                             Click="BtnMini_Click"
                             ToolTip.Tip="Mini">
-                            <Viewbox Width="14" Height="14">
-                                <Canvas Width="1024" Height="1024">
-                                    <Path Data="M0.739556 233.130667a232.391111 232.391111 0 0 1 232.391111-232.391111h557.738666a232.391111 232.391111 0 0 1 232.391111 232.391111v557.738666a232.391111 232.391111 0 0 1-232.391111 232.391111H233.130667a232.391111 232.391111 0 0 1-232.391111-232.391111V233.130667z m232.391111-139.434667a139.434667 139.434667 0 0 0-139.434667 139.434667v557.738666a139.434667 139.434667 0 0 0 139.434667 139.434667h557.738666a139.434667 139.434667 0 0 0 139.434667-139.434667V233.130667a139.434667 139.434667 0 0 0-139.434667-139.434667H233.130667z" Fill="White" />
-                                    <Path Data="M601.088 186.652444c25.685333 0 46.506667 20.792889 46.506667 46.478223v96.796444c0 25.685333 20.792889 46.478222 46.478222 46.478222h96.796444a46.478222 46.478222 0 1 1 0 92.984889h-96.796444a139.434667 139.434667 0 0 1-139.463111-139.463111V233.130667c0-25.685333 20.821333-46.478222 46.478222-46.478223z m-414.435556 414.435556c0-25.656889 20.792889-46.478222 46.478223-46.478222h96.796444a139.434667 139.434667 0 0 1 139.463111 139.463111v96.796444a46.478222 46.478222 0 0 1-92.984889 0v-96.796444c0-25.685333-20.792889-46.478222-46.478222-46.478222H233.130667a46.478222 46.478222 0 0 1-46.478223-46.506667z" Fill="White" />
-                                </Canvas>
+                            <Viewbox Width="16" Height="16">
+                                <ContentControl Template="{StaticResource MiniModeTempl}" />
                             </Viewbox>
                         </Button>
                     </StackPanel>
@@ -95,8 +94,7 @@
                 <Border
                     x:Name="SidebarHost"
                     Grid.Column="0"
-                    Width="170"
-                    Padding="0,12,0,0">
+                    Width="170">
                     <Border.Transitions>
                         <Transitions>
                             <DoubleTransition
@@ -106,125 +104,137 @@
                         </Transitions>
                     </Border.Transitions>
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                        <StackPanel x:Name="NavPanel" Spacing="1">
+                        <StackPanel x:Name="NavPanel">
 
                             <!--  折叠按钮  -->
-                            <Button
+                            <ui:CommonButton
                                 x:Name="CollapseButton"
                                 Width="28"
                                 Height="28"
                                 Margin="9,1,1,1"
                                 Padding="0"
                                 HorizontalAlignment="Left"
-                                Classes="nav-button"
-                                Click="OnCollapseClick">
-                                <Viewbox Width="19" Height="19">
-                                    <ContentControl Template="{StaticResource NavigationTempl}" Foreground="White" />
-                                </Viewbox>
-                            </Button>
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                BorderThickness="0"
+                                Click="OnCollapseClick"
+                                Foreground="White"
+                                IconMargin="0"
+                                IconSize="19"
+                                MouseDownForeground="#CC397D"
+                                MouseOverForeground="#DC498D">
+                                <ui:CommonButton.IconTemplate>
+                                    <ControlTemplate>
+                                        <Viewbox Width="19" Height="19">
+                                            <ContentControl Foreground="{TemplateBinding Foreground}" Template="{StaticResource NavigationTempl}" />
+                                        </Viewbox>
+                                    </ControlTemplate>
+                                </ui:CommonButton.IconTemplate>
+                            </ui:CommonButton>
 
                             <!--  库 分类标题  -->
                             <Label
                                 x:Name="LibraryHeader"
                                 Classes="nav-header"
-                                FontWeight="SemiBold"
-                                Classes.collapsed="{Binding IsNavigationCollapsed}">
+                                Classes.collapsed="{Binding IsNavigationCollapsed}"
+                                FontWeight="Medium">
                                 <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-library}" />
                             </Label>
 
                             <!--  搜索按钮  -->
                             <ui:SwitchRadio
                                 x:Name="SearchNavButton"
-                                Classes="nav-button"
-                                Click="OnNavClick"
-                                GroupName="MainNav"
-                                IsChecked="True"
-                                Tag="Search"
                                 CheckedIconColor="#4050A0"
-                                IconTemplate="{StaticResource NavSearchTempl}"
+                                Classes="nav-button"
+                                Classes.collapsed="{Binding IsNavigationCollapsed}"
+                                Click="OnNavClick"
                                 Content="{DynamicResource ui-nav-search}"
-                                Classes.collapsed="{Binding IsNavigationCollapsed}" />
+                                GroupName="MainNav"
+                                IconTemplate="{StaticResource NavSearchTempl}"
+                                IsChecked="True"
+                                Tag="Search" />
 
                             <!--  音乐 (Find)  -->
                             <ui:SwitchRadio
                                 x:Name="FindNavButton"
-                                Classes="nav-button"
-                                Click="OnNavClick"
-                                GroupName="MainNav"
-                                Tag="Find"
                                 CheckedIconColor="#508030"
-                                IconTemplate="{StaticResource NavCompassTempl}"
+                                Classes="nav-button"
+                                Classes.collapsed="{Binding IsNavigationCollapsed}"
+                                Click="OnNavClick"
                                 Content="{DynamicResource ui-nav-music}"
-                                Classes.collapsed="{Binding IsNavigationCollapsed}" />
+                                GroupName="MainNav"
+                                IconTemplate="{StaticResource NavCompassTempl}"
+                                Tag="Find" />
 
                             <!--  我的 分类标题  -->
                             <Label
                                 x:Name="MineHeader"
                                 Classes="nav-header"
-                                FontWeight="SemiBold"
-                                Classes.collapsed="{Binding IsNavigationCollapsed}">
+                                Classes.collapsed="{Binding IsNavigationCollapsed}"
+                                FontWeight="Medium">
                                 <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-mine}" />
                             </Label>
 
                             <!--  最近播放  -->
                             <ui:SwitchRadio
                                 x:Name="RecentNavButton"
-                                Classes="nav-button"
-                                Click="OnNavClick"
-                                GroupName="MainNav"
-                                Tag="Recent"
                                 CheckedIconColor="#A04090"
-                                IconTemplate="{StaticResource NavHistoryTempl}"
+                                Classes="nav-button"
+                                Classes.collapsed="{Binding IsNavigationCollapsed}"
+                                Click="OnNavClick"
                                 Content="{DynamicResource ui-nav-recent}"
-                                Classes.collapsed="{Binding IsNavigationCollapsed}" />
+                                GroupName="MainNav"
+                                IconTemplate="{StaticResource NavHistoryTempl}"
+                                Tag="Recent" />
 
                             <!--  导出  -->
                             <ui:SwitchRadio
                                 x:Name="ExportNavButton"
-                                Classes="nav-button"
-                                Click="OnNavClick"
-                                GroupName="MainNav"
-                                Tag="Export"
                                 CheckedIconColor="#A09040"
-                                IconTemplate="{StaticResource NavExportTempl}"
+                                Classes="nav-button"
+                                Classes.collapsed="{Binding IsNavigationCollapsed}"
+                                Click="OnNavClick"
                                 Content="{DynamicResource ui-nav-export}"
-                                Classes.collapsed="{Binding IsNavigationCollapsed}" />
+                                GroupName="MainNav"
+                                IconTemplate="{StaticResource NavExportTempl}"
+                                Tag="Export" />
 
                             <!--  收藏夹 标题行 (含添加按钮)  -->
                             <Grid
                                 x:Name="CollectionHeaderPanel"
                                 Classes="nav-header-grid"
-                                ColumnDefinitions="*,Auto"
-                                Classes.collapsed="{Binding IsNavigationCollapsed}">
-                                <TextBlock
-                                    VerticalAlignment="Center"
-                                    FontSize="13"
-                                    FontWeight="SemiBold"
-                                    Foreground="#c8c8c8"
-                                    Margin="5,0,0,0"
-                                    Text="{DynamicResource ui-nav-collection}" />
+                                Classes.collapsed="{Binding IsNavigationCollapsed}"
+                                ColumnDefinitions="*,Auto">
+                                <Label
+                                    Margin="0,10,0,0"
+                                    Classes="nav-header"
+                                    FontWeight="Medium">
+                                    <TextBlock Margin="5,0,0,0" Text="{DynamicResource ui-nav-collection}" />
+                                </Label>
                                 <ui:CommonButton
                                     x:Name="CollectionAddButton"
                                     Grid.Column="1"
                                     Width="20"
                                     Height="20"
+                                    Margin="0,10,5,0"
                                     Padding="0"
+                                    VerticalAlignment="Center"
                                     HorizontalContentAlignment="Center"
                                     Background="Transparent"
                                     BorderBrush="Transparent"
                                     BorderThickness="0"
                                     Click="BtnAddCollection_Click"
                                     CornerRadius="10"
-                                    Foreground="#FEFEFEFE"
+                                    Foreground="{StaticResource ExtraLightBrush}"
                                     IconMargin="0"
-                                    IconSize="14"
+                                    IconSize="16"
                                     MouseDownBackground="#3A3A3A"
                                     MouseOverBackground="#353535"
                                     ToolTip.Tip="{DynamicResource ui-addNewCollection}">
                                     <ui:CommonButton.IconTemplate>
                                         <ControlTemplate>
                                             <Viewbox Width="14" Height="14">
-                                                <ContentControl Template="{StaticResource NavAddCollectionTempl}" Foreground="{TemplateBinding Foreground}" />
+                                                <ContentControl Foreground="{TemplateBinding Foreground}" Template="{StaticResource NavAddCollectionTempl}" />
                                             </Viewbox>
                                         </ControlTemplate>
                                     </ui:CommonButton.IconTemplate>
@@ -234,7 +244,7 @@
                             <!--  收藏夹列表  -->
                             <ItemsControl x:Name="CollectionList" ItemsSource="{Binding Collection}">
                                 <ItemsControl.Styles>
-                                    <!-- When not collapsed: use CollectionTempl -->
+                                    <!--  When not collapsed: use CollectionTempl  -->
                                     <Style Selector="ui|SwitchRadio.collection-nav-item">
                                         <Setter Property="Height" Value="31" />
                                         <Setter Property="Padding" Value="14,0,0,0" />
@@ -242,8 +252,8 @@
                                         <Setter Property="IconTemplate" Value="{StaticResource CollectionTempl}" />
                                         <Setter Property="IconSize" Value="18" />
                                     </Style>
-                                    
-                                    <!-- When collapsed: use a custom ControlTemplate that draws the letter circle -->
+
+                                    <!--  When collapsed: use a custom ControlTemplate that draws the letter circle  -->
                                     <Style Selector="ui|SwitchRadio.collection-nav-item.collapsed">
                                         <Setter Property="IconSize" Value="22" />
                                         <Setter Property="IconTemplate">
@@ -255,9 +265,9 @@
                                                         Background="{TemplateBinding Foreground}"
                                                         CornerRadius="11">
                                                         <TextBlock
-                                                            x:DataType="data:Collection"
                                                             HorizontalAlignment="Center"
                                                             VerticalAlignment="Center"
+                                                            x:DataType="data:Collection"
                                                             FontSize="12"
                                                             FontWeight="Bold"
                                                             Foreground="#303030"
@@ -271,13 +281,13 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="data:Collection">
                                         <ui:SwitchRadio
-                                            Classes="nav-button collection-nav-item"
-                                            Click="OnCollectionNavClick"
-                                            GroupName="CollectionNav"
-                                            Tag="{Binding Id}"
                                             CheckedIconColor="#4090A0"
+                                            Classes="nav-button collection-nav-item"
+                                            Classes.collapsed="{Binding $parent[Window].DataContext.IsNavigationCollapsed}"
+                                            Click="OnCollectionNavClick"
                                             Content="{Binding Name}"
-                                            Classes.collapsed="{Binding $parent[Window].DataContext.IsNavigationCollapsed}" />
+                                            GroupName="CollectionNav"
+                                            Tag="{Binding Id}" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>

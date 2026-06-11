@@ -68,7 +68,7 @@
         <Setter Property="Margin" Value="0,10,0,0" />
         <Setter Property="Height" Value="30" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Padding" Value="10,0,0,0" />
+        <Setter Property="Padding" Value="5,0,0,0" />
         <Setter Property="Background">
             <Setter.Value>
                 <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
@@ -89,8 +89,8 @@
         <Setter Property="Margin" Value="0" />
     </Style>
     <Style Selector="Grid.nav-header-grid">
-        <Setter Property="Height" Value="30" />
-        <Setter Property="Margin" Value="20,10,5,2" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Margin" Value="0" />
         <Setter Property="ClipToBounds" Value="True" />
         <Setter Property="Transitions">
             <Transitions>
@@ -111,6 +111,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Height" Value="39" />
+        <Setter Property="Margin" Value="0,0,0,1" />
         <Setter Property="Padding" Value="20,0,0,0" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="IconSize" Value="20" />
