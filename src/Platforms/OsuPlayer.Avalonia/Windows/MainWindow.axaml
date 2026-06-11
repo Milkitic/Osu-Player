@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:OsuPlayer.Views.UserControls"
     xmlns:data="clr-namespace:OsuPlayer.Data.Models;assembly=OsuPlayer.Data"
+    xmlns:ui="clr-namespace:OsuPlayer.Controls"
     xmlns:vm="clr-namespace:OsuPlayer.ViewModels"
     Title="Osu Player"
     Width="998"
@@ -81,7 +82,7 @@
             <Border
                 x:Name="SidebarHost"
                 Grid.Column="0"
-                Width="188"
+                Width="186"
                 Padding="8,12"
                 Background="#252526">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
@@ -96,7 +97,9 @@
                                     Height="14"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center">
-                                    <Path Data="M2,3 L12,3 12,5 2,5 Z M2,7 L12,7 12,9 2,9 Z M2,11 L12,11 12,13 2,13 Z" Fill="#F6F6F6" />
+                                    <Path
+                                        Data="M2,3 L12,3 12,5 2,5 Z M2,7 L12,7 12,9 2,9 Z M2,11 L12,11 12,13 2,13 Z"
+                                        Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
                                 </Viewbox>
                                 <TextBlock
                                     x:Name="CollapseButtonText"
@@ -114,10 +117,11 @@
                             FontWeight="SemiBold"
                             Foreground="#B8B8B8"
                             Text="{DynamicResource ui-nav-library}" />
-                        <ToggleButton
+                        <RadioButton
                             x:Name="SearchNavButton"
                             Classes="nav-button"
                             Click="OnNavClick"
+                            GroupName="MainNav"
                             IsChecked="True"
                             Tag="Search">
                             <Grid ColumnDefinitions="20,*">
@@ -126,7 +130,9 @@
                                     Height="14"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center">
-                                    <Path Data="M6.5,1.5A5,5 0 1 1 3.1,10.2L1,12.3L2.2,13.5L4.3,11.4A5,5 0 0 1 6.5,1.5M6.5,3A3.5,3.5 0 1 0 10,6.5A3.5,3.5 0 0 0 6.5,3Z" Fill="White" />
+                                    <Path
+                                        Data="M6.5,1.5A5,5 0 1 1 3.1,10.2L1,12.3L2.2,13.5L4.3,11.4A5,5 0 0 1 6.5,1.5M6.5,3A3.5,3.5 0 1 0 10,6.5A3.5,3.5 0 0 0 6.5,3Z"
+                                        Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
                                 </Viewbox>
                                 <TextBlock
                                     x:Name="SearchNavText"
@@ -135,82 +141,12 @@
                                     VerticalAlignment="Center"
                                     Text="{DynamicResource ui-nav-search}" />
                             </Grid>
-                        </ToggleButton>
-                        <ToggleButton
-                            x:Name="RecentNavButton"
-                            Classes="nav-button"
-                            Click="OnNavClick"
-                            Tag="Recent">
-                            <Grid ColumnDefinitions="20,*">
-                                <Viewbox
-                                    Width="14"
-                                    Height="14"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center">
-                                    <Path Data="M7.5,1A6.5,6.5 0 1 0 14,7.5H12.5A5,5 0 1 1 7.5,2.5V5L11,2L7.5,-1V1Z M7,4H8.5V8L11.5,9.8L10.8,11L7,8.7Z" Fill="White" />
-                                </Viewbox>
-                                <TextBlock
-                                    x:Name="RecentNavText"
-                                    Grid.Column="1"
-                                    Margin="10,0,0,0"
-                                    VerticalAlignment="Center"
-                                    Text="{DynamicResource ui-nav-recent}" />
-                            </Grid>
-                        </ToggleButton>
-                        <ToggleButton
-                            x:Name="ExportNavButton"
-                            Classes="nav-button"
-                            Click="OnNavClick"
-                            Tag="Export">
-                            <Grid ColumnDefinitions="20,*">
-                                <Viewbox
-                                    Width="14"
-                                    Height="14"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center">
-                                    <Path Data="M7,1 L12,6 H9V10H5V6H2Z M2,11H12V13H2Z" Fill="White" />
-                                </Viewbox>
-                                <TextBlock
-                                    x:Name="ExportNavText"
-                                    Grid.Column="1"
-                                    Margin="10,0,0,0"
-                                    VerticalAlignment="Center"
-                                    Text="{DynamicResource ui-nav-export}" />
-                            </Grid>
-                        </ToggleButton>
-
-                        <TextBlock
-                            x:Name="MineHeader"
-                            Margin="10,12,0,4"
-                            FontSize="11"
-                            FontWeight="SemiBold"
-                            Foreground="#B8B8B8"
-                            Text="{DynamicResource ui-nav-mine}" />
-                        <ToggleButton
-                            x:Name="CollectionNavButton"
-                            Classes="nav-button"
-                            Click="OnNavClick"
-                            Tag="Collection">
-                            <Grid ColumnDefinitions="20,*">
-                                <Viewbox
-                                    Width="14"
-                                    Height="14"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center">
-                                    <Path Data="M2,3H6L7.2,4.5H12.5V12.5H2Z M3.2,5.5V11.3H11.3V5.5Z" Fill="White" />
-                                </Viewbox>
-                                <TextBlock
-                                    x:Name="CollectionNavText"
-                                    Grid.Column="1"
-                                    Margin="10,0,0,0"
-                                    VerticalAlignment="Center"
-                                    Text="{DynamicResource ui-nav-collection}" />
-                            </Grid>
-                        </ToggleButton>
-                        <ToggleButton
+                        </RadioButton>
+                        <RadioButton
                             x:Name="FindNavButton"
                             Classes="nav-button"
                             Click="OnNavClick"
+                            GroupName="MainNav"
                             Tag="Find">
                             <Grid ColumnDefinitions="20,*">
                                 <Viewbox
@@ -218,7 +154,9 @@
                                     Height="14"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center">
-                                    <Path Data="M2,11 L2,4 L5,2 L9,2 L12,4 L12,11 Z M4,10H10V5L8.5,4H5.5L4,5Z" Fill="White" />
+                                    <Path
+                                        Data="M2,11 L2,4 L5,2 L9,2 L12,4 L12,11 Z M4,10H10V5L8.5,4H5.5L4,5Z"
+                                        Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
                                 </Viewbox>
                                 <TextBlock
                                     x:Name="FindNavText"
@@ -227,37 +165,152 @@
                                     VerticalAlignment="Center"
                                     Text="{DynamicResource ui-nav-music}" />
                             </Grid>
-                        </ToggleButton>
+                        </RadioButton>
+                        <RadioButton
+                            x:Name="RecentNavButton"
+                            Classes="nav-button"
+                            Click="OnNavClick"
+                            GroupName="MainNav"
+                            Tag="Recent">
+                            <Grid ColumnDefinitions="20,*">
+                                <Viewbox
+                                    Width="14"
+                                    Height="14"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                                    <Path
+                                        Data="M7.5,1A6.5,6.5 0 1 0 14,7.5H12.5A5,5 0 1 1 7.5,2.5V5L11,2L7.5,-1V1Z M7,4H8.5V8L11.5,9.8L10.8,11L7,8.7Z"
+                                        Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                                </Viewbox>
+                                <TextBlock
+                                    x:Name="RecentNavText"
+                                    Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="{DynamicResource ui-nav-recent}" />
+                            </Grid>
+                        </RadioButton>
+                        <RadioButton
+                            x:Name="ExportNavButton"
+                            Classes="nav-button"
+                            Click="OnNavClick"
+                            GroupName="MainNav"
+                            Tag="Export">
+                            <Grid ColumnDefinitions="20,*">
+                                <Viewbox
+                                    Width="14"
+                                    Height="14"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                                    <Path
+                                        Data="M7,1 L12,6 H9V10H5V6H2Z M2,11H12V13H2Z"
+                                        Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                                </Viewbox>
+                                <TextBlock
+                                    x:Name="ExportNavText"
+                                    Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="{DynamicResource ui-nav-export}" />
+                            </Grid>
+                        </RadioButton>
 
                         <TextBlock
-                            x:Name="CollectionHeader"
+                            x:Name="MineHeader"
                             Margin="10,12,0,4"
                             FontSize="11"
                             FontWeight="SemiBold"
                             Foreground="#B8B8B8"
-                            Text="{DynamicResource ui-nav-collection}" />
+                            Text="{DynamicResource ui-nav-mine}" />
+
+                        <Grid
+                            x:Name="CollectionHeaderPanel"
+                            Margin="10,12,5,4"
+                            ColumnDefinitions="*,Auto">
+                            <TextBlock
+                                x:Name="CollectionHeader"
+                                VerticalAlignment="Center"
+                                FontSize="11"
+                                FontWeight="SemiBold"
+                                Foreground="#B8B8B8"
+                                Text="{DynamicResource ui-nav-collection}" />
+                            <ui:CommonButton
+                                x:Name="CollectionAddButton"
+                                Grid.Column="1"
+                                Width="20"
+                                Height="20"
+                                Margin="0,0,0,0"
+                                Padding="0"
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                BorderThickness="0"
+                                Click="BtnAddCollection_Click"
+                                CornerRadius="10"
+                                Foreground="#FEFEFEFE"
+                                HorizontalContentAlignment="Center"
+                                IconMargin="0"
+                                IconSize="12"
+                                MouseDownBackground="#3A3A3A"
+                                MouseOverBackground="#353535"
+                                ToolTip.Tip="{DynamicResource ui-addNewCollection}">
+                                <ui:CommonButton.IconTemplate>
+                                    <ControlTemplate>
+                                        <Viewbox Width="12" Height="12">
+                                            <Path
+                                                Data="M4,1H6V4H9V6H6V9H4V6H1V4H4Z"
+                                                Fill="{TemplateBinding Foreground}" />
+                                        </Viewbox>
+                                    </ControlTemplate>
+                                </ui:CommonButton.IconTemplate>
+                            </ui:CommonButton>
+                        </Grid>
+
                         <ItemsControl x:Name="CollectionList" ItemsSource="{Binding Collection}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="data:Collection">
-                                    <Button
+                                    <RadioButton
                                         Classes="nav-button"
                                         Click="OnCollectionNavClick"
+                                        GroupName="CollectionNav"
+                                        Height="40"
                                         Tag="{Binding Id}">
-                                        <Grid ColumnDefinitions="20,*">
+                                        <Grid ColumnDefinitions="Auto,*">
                                             <Viewbox
                                                 Width="14"
                                                 Height="14"
                                                 HorizontalAlignment="Center"
-                                                VerticalAlignment="Center">
-                                                <Path Data="M2,4H6L7.2,5.5H12V12H2Z" Fill="White" />
+                                                VerticalAlignment="Center"
+                                                IsVisible="{Binding $parent[Window].DataContext.IsNavigationCollapsed, Converter={StaticResource BoolFalseToVisibleConverter}}">
+                                                <Path
+                                                    Data="M2,4H6L7.2,5.5H12V12H2Z"
+                                                    Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
                                             </Viewbox>
+                                            <Border
+                                                Width="40"
+                                                Height="40"
+                                                Margin="-2,0,0,1"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Center"
+                                                Background="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                                CornerRadius="20"
+                                                IsVisible="{Binding $parent[Window].DataContext.IsNavigationCollapsed}">
+                                                <TextBlock
+                                                    Margin="1,0.5,0,0"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    FontSize="22"
+                                                    FontWeight="Bold"
+                                                    Foreground="#303030"
+                                                    Text="{Binding Name, Converter={StaticResource GetOutlinedTextConverter}}" />
+                                            </Border>
                                             <TextBlock
                                                 Grid.Column="1"
                                                 Margin="10,0,0,0"
                                                 VerticalAlignment="Center"
+                                                IsVisible="{Binding $parent[Window].DataContext.IsNavigationCollapsed, Converter={StaticResource BoolFalseToVisibleConverter}}"
                                                 Text="{Binding Name}" />
                                         </Grid>
-                                    </Button>
+                                    </RadioButton>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

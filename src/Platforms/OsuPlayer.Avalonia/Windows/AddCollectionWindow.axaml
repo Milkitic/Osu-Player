@@ -1,0 +1,42 @@
+<Window
+    x:Class="OsuPlayer.Windows.AddCollectionWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:OsuPlayer.Views.UserControls"
+    Title="{DynamicResource ui-win-newCollection}"
+    Width="320"
+    Height="180"
+    MinWidth="320"
+    MinHeight="180"
+    MaxWidth="320"
+    MaxHeight="180"
+    WindowStartupLocation="CenterOwner"
+    WindowDecorations="None"
+    ExtendClientAreaToDecorationsHint="True"
+    ExtendClientAreaTitleBarHeightHint="32">
+
+    <Grid Margin="{Binding $parent[Window].OffScreenMargin}" RowDefinitions="Auto,*">
+        <controls:WindowTitleBar
+            Height="32"
+            Background="#323232"
+            LeftAreaMargin="8,0,0,0"
+            RightAreaMargin="0,0,1,0"
+            Title="{DynamicResource ui-win-newCollection}"
+            ShowMinimize="False"
+            ShowMaximize="False" />
+
+        <Border Grid.Row="1" Background="#FEFEFE" Padding="15">
+            <Grid RowDefinitions="*,Auto">
+                <controls:AddCollectionControl x:Name="ContentHost" />
+                <Button
+                    Grid.Row="1"
+                    Margin="0,10,0,0"
+                    HorizontalAlignment="Right"
+                    Classes="settings-button"
+                    Click="OnOkClick"
+                    Content="{DynamicResource ui-ok}"
+                    MinWidth="70" />
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

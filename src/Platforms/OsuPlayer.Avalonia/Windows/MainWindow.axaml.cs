@@ -65,7 +65,7 @@ public partial class MainWindow : Window
 
         WeakReferenceMessenger.Default.Register<CollectionDeletedMessage>(this, async (_, _) =>
         {
-            SearchNavButton.IsChecked = true;
+            RecentNavButton.IsChecked = true;
             NavigateTo("Recent");
             await UpdateCollectionsAsync();
         });
@@ -90,24 +90,30 @@ public partial class MainWindow : Window
 
     private void OnNavClick(object? sender, RoutedEventArgs e)
     {
-        if (sender is ToggleButton clicked && clicked.Tag is string tag)
+        if (sender is RadioButton clicked && clicked.Tag is string tag)
         {
-            foreach (var child in NavPanel.Children)
-            {
-                if (child is ToggleButton tb && tb != clicked)
-                    tb.IsChecked = false;
-            }
             NavigateTo(tag);
         }
     }
 
     private void OnCollectionNavClick(object? sender, RoutedEventArgs e)
     {
-        if (sender is Button { Tag: string id })
+        if (sender is RadioButton { Tag: string id })
         {
-            CollectionNavButton.IsChecked = true;
             NavigateTo("Collection", id);
         }
+    }
+
+    private async void BtnAddCollection_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_playerData == null)
+        {
+            return;
+        }
+
+        var dialog = new AddCollectionWindow(_playerData);
+        await dialog.ShowDialog(this);
+        await UpdateCollectionsAsync();
     }
 
     private void OnCollapseClick(object? sender, RoutedEventArgs e)
@@ -159,22 +165,14 @@ public partial class MainWindow : Window
 
     private void ApplyNavigationState(bool collapsed)
     {
-        SidebarHost.Width = collapsed ? 64 : 188;
+        SidebarHost.Width = collapsed ? 64 : 186;
         CollapseButtonText.IsVisible = !collapsed;
         LibraryHeader.IsVisible = !collapsed;
         MineHeader.IsVisible = !collapsed;
-        CollectionHeader.IsVisible = !collapsed;
+        CollectionHeaderPanel.IsVisible = !collapsed;
         SearchNavText.IsVisible = !collapsed;
         RecentNavText.IsVisible = !collapsed;
         ExportNavText.IsVisible = !collapsed;
-        CollectionNavText.IsVisible = !collapsed;
         FindNavText.IsVisible = !collapsed;
-        CollectionList.IsVisible = !collapsed;
-
-        if (AppSettings.Default != null)
-        {
-            AppSettings.Default.General.IsNavigationCollapsed = collapsed;
-            AppSettings.SaveDefault();
-        }
     }
 }

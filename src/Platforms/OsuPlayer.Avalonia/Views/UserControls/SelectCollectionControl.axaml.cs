@@ -10,6 +10,7 @@ using OsuPlayer.Core.Services;
 using OsuPlayer.Data.Models;
 using OsuPlayer.Services;
 using OsuPlayer.ViewModels;
+using OsuPlayer.Windows;
 
 namespace OsuPlayer.Views.UserControls;
 
@@ -39,9 +40,22 @@ public partial class SelectCollectionControl : UserControl
         if (_viewModel != null) _viewModel.Entries = entries;
     }
 
-    private void BtnAddCollection_Click(object? sender, RoutedEventArgs e)
+    private async void BtnAddCollection_Click(object? sender, RoutedEventArgs e)
     {
-        AppNotificationService.Instance.Push("ui-addNewCollection");
+        if (_playerData == null)
+        {
+            return;
+        }
+
+        if (TopLevel.GetTopLevel(this) is not Window owner)
+        {
+            AppNotificationService.Instance.Push("ui-addNewCollection");
+            return;
+        }
+
+        var dialog = new AddCollectionWindow(_playerData);
+        await dialog.ShowDialog(owner);
+        await RefreshListAsync();
     }
 
     private void BtnClose_Click(object? sender, RoutedEventArgs e)

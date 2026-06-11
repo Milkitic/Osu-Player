@@ -1,20 +1,17 @@
-﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Style Selector="ToggleButton.nav-button, Button.nav-button">
+    <Style Selector="ToggleButton.nav-button, Button.nav-button, RadioButton.nav-button">
         <Setter Property="Foreground" Value="#FEFEFEFE" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Width" Value="170" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Height" Value="40" />
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid
-                    Width="{TemplateBinding Width}"
-                    Height="{TemplateBinding Height}"
-                    ClipToBounds="True">
+                <Grid ClipToBounds="True">
                     <Rectangle
                         x:Name="innerRectangle"
                         HorizontalAlignment="Stretch"
-                        Height="40"
+                        VerticalAlignment="Stretch"
                         Fill="{TemplateBinding Background}"
                         Opacity="0" />
                     <ContentPresenter
@@ -28,16 +25,21 @@
             </ControlTemplate>
         </Setter>
     </Style>
-    <Style Selector="ToggleButton.nav-button:pointerover /template/ Rectangle#innerRectangle, Button.nav-button:pointerover /template/ Rectangle#innerRectangle">
+    <Style Selector="ToggleButton.nav-button:pointerover /template/ Rectangle#innerRectangle, Button.nav-button:pointerover /template/ Rectangle#innerRectangle, RadioButton.nav-button:pointerover /template/ Rectangle#innerRectangle">
         <Setter Property="Opacity" Value="1" />
     </Style>
-    <Style Selector="ToggleButton.nav-button:pointerover, Button.nav-button:pointerover">
+    <Style Selector="ToggleButton.nav-button:pointerover, Button.nav-button:pointerover, RadioButton.nav-button:pointerover">
+        <Setter Property="Background" Value="#F8F8F8" />
         <Setter Property="Foreground" Value="#303030" />
     </Style>
-    <Style Selector="ToggleButton.nav-button:checked /template/ Rectangle#innerRectangle">
+    <Style Selector="ToggleButton.nav-button:pressed, Button.nav-button:pressed, RadioButton.nav-button:pressed">
+        <Setter Property="Background" Value="#E8E8E8" />
+        <Setter Property="Foreground" Value="#303030" />
+    </Style>
+    <Style Selector="ToggleButton.nav-button:checked /template/ Rectangle#innerRectangle, Button.nav-button:checked /template/ Rectangle#innerRectangle, RadioButton.nav-button:checked /template/ Rectangle#innerRectangle">
         <Setter Property="Opacity" Value="1" />
     </Style>
-    <Style Selector="ToggleButton.nav-button:checked">
+    <Style Selector="ToggleButton.nav-button:checked, Button.nav-button:checked, RadioButton.nav-button:checked">
         <Setter Property="Background" Value="#F8F8F8" />
         <Setter Property="Foreground" Value="#303030" />
     </Style>

@@ -23,6 +23,7 @@
     <converters:StarRating2ForeColorConverter x:Key="StarRating2ForeColorConverter" />
     <converters:WindowMarginConverter x:Key="WindowMarginConverter" />
     <converters:TitleIconConverter x:Key="TitleIconConverter" />
+    <converters:GetOutlinedTextConverter x:Key="GetOutlinedTextConverter" />
     <converters:LyricWindowShownConverter x:Key="CvtLyricWindowShown" />
     <converters:LyricWindowLockedConverter x:Key="CvtLyricWindowLocked" />
     <converters:BoolTrueToVisibleConverter x:Key="BoolTrueToVisibleConverter" />
