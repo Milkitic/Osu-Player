@@ -108,14 +108,7 @@
                                 x:Name="PART_Icon"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Template="{TemplateBinding controls:IconRadioButton.IconTemplate}">
-                                <ContentControl.Foreground>
-                                    <MultiBinding Converter="{StaticResource IconColorConverter}">
-                                        <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Foreground" />
-                                        <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="IconColor" />
-                                    </MultiBinding>
-                                </ContentControl.Foreground>
-                            </ContentControl>
+                                Template="{TemplateBinding controls:IconRadioButton.IconTemplate}" />
                         </Viewbox>
                         <ContentPresenter
                             x:Name="PART_ContentPresenter"
@@ -125,6 +118,16 @@
                     </StackPanel>
                 </Border>
             </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <!-- Default icon color (must be a style, not template-local, so state styles can override) -->
+    <Style Selector="controls|IconRadioButton /template/ ContentControl#PART_Icon">
+        <Setter Property="Foreground">
+            <MultiBinding Converter="{StaticResource IconColorConverter}">
+                <Binding Path="$parent[controls:IconRadioButton].Foreground" />
+                <Binding Path="$parent[controls:IconRadioButton].IconColor" />
+            </MultiBinding>
         </Setter>
     </Style>
 
