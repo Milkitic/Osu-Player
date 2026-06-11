@@ -236,6 +236,9 @@
                                 <ItemsControl.Styles>
                                     <!-- When not collapsed: use CollectionTempl -->
                                     <Style Selector="ui|SwitchRadio.collection-nav-item">
+                                        <Setter Property="Height" Value="31" />
+                                        <Setter Property="Padding" Value="14,0,0,0" />
+                                        <Setter Property="IconMargin" Value="0,0,8,0" />
                                         <Setter Property="IconTemplate" Value="{StaticResource CollectionTempl}" />
                                         <Setter Property="IconSize" Value="18" />
                                     </Style>

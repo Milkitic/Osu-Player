@@ -118,8 +118,8 @@
     <Style Selector="controls|SwitchRadio:pointerover:not(:checked) /template/ ContentControl#PART_Icon">
         <Setter Property="Foreground">
             <MultiBinding Converter="{StaticResource IconColorConverter}">
-                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="MouseOverForeground" />
-                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="MouseOverIconColor" />
+                <Binding Path="$parent[controls:SwitchRadio].MouseOverForeground" />
+                <Binding Path="$parent[controls:SwitchRadio].MouseOverIconColor" />
             </MultiBinding>
         </Setter>
     </Style>
@@ -131,8 +131,8 @@
     <Style Selector="controls|SwitchRadio:pressed /template/ ContentControl#PART_Icon">
         <Setter Property="Foreground">
             <MultiBinding Converter="{StaticResource IconColorConverter}">
-                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="MouseDownForeground" />
-                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="MouseDownIconColor" />
+                <Binding Path="$parent[controls:SwitchRadio].MouseDownForeground" />
+                <Binding Path="$parent[controls:SwitchRadio].MouseDownIconColor" />
             </MultiBinding>
         </Setter>
     </Style>
@@ -144,8 +144,8 @@
     <Style Selector="controls|SwitchRadio:checked /template/ ContentControl#PART_Icon">
         <Setter Property="Foreground">
             <MultiBinding Converter="{StaticResource IconColorConverter}">
-                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="CheckedForeground" />
-                <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="CheckedIconColor" />
+                <Binding Path="$parent[controls:SwitchRadio].CheckedForeground" />
+                <Binding Path="$parent[controls:SwitchRadio].CheckedIconColor" />
             </MultiBinding>
         </Setter>
     </Style>

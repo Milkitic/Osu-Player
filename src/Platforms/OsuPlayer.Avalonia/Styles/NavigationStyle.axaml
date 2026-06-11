@@ -108,6 +108,8 @@
         <Setter Property="Foreground" Value="White" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Height" Value="39" />
         <Setter Property="Padding" Value="20,0,0,0" />
         <Setter Property="Cursor" Value="Hand" />
@@ -115,21 +117,24 @@
         <Setter Property="IconMargin" Value="0,0,8,0" />
         <Setter Property="MouseOverBackground" Value="White" />
         <Setter Property="MouseOverForeground" Value="#303030" />
-        <Setter Property="MouseOverIconColor" Value="{Binding $self.CheckedIconColor}" />
+        <Setter Property="MouseOverIconColor" Value="#DC498D" />
         <Setter Property="CheckedBackground" Value="#F8F8F8" />
         <Setter Property="CheckedForeground" Value="#303030" />
+        <Setter Property="CheckedIconColor" Value="#DC498D" />
         <Setter Property="MouseDownBackground" Value="#A0F0F0F0" />
         <Setter Property="MouseDownForeground" Value="#303030" />
-        <Setter Property="MouseDownIconColor" Value="{Binding $self.CheckedIconColor}" />
+        <Setter Property="MouseDownIconColor" Value="#DC498D" />
         <Setter Property="Transitions">
             <Transitions>
                 <ThicknessTransition Property="IconMargin" Duration="0:0:0.3" Easing="QuarticEaseInOut" />
+                <ThicknessTransition Property="Padding" Duration="0:0:0.3" Easing="QuarticEaseInOut" />
             </Transitions>
         </Setter>
     </Style>
 
     <Style Selector="controls|SwitchRadio.nav-button.collapsed">
         <Setter Property="IconMargin" Value="0,0,150,0" />
+        <Setter Property="Padding" Value="13,0,0,0" />
     </Style>
 
 </Styles>
