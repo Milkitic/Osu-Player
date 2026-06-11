@@ -32,11 +32,12 @@ public partial class WindowTitleBar : UserControl
     public static readonly StyledProperty<bool> ShowCloseProperty =
         AvaloniaProperty.Register<WindowTitleBar, bool>(nameof(ShowClose), true);
 
-    private static readonly Geometry s_maximizeIcon = Geometry.Parse("M1,1 L11,1 11,11 1,11 Z M2,2 L2,10 10,10 10,2 Z");
-    private static readonly Geometry s_restoreIcon = Geometry.Parse("M3,1 L11,1 11,9 9,9 9,3 3,3 Z M1,3 L9,3 9,11 1,11 Z M2,4 L2,10 8,10 8,4 Z");
+    private static readonly Geometry s_maximizeIcon = Geometry.Parse("M204.8 256a51.2 51.2 0 0 0-51.2 51.2v409.6a51.2 51.2 0 0 0 51.2 51.2h614.4a51.2 51.2 0 0 0 51.2-51.2V307.2a51.2 51.2 0 0 0-51.2-51.2H204.8z m0-51.2h614.4a102.4 102.4 0 0 1 102.4 102.4v409.6a102.4 102.4 0 0 1-102.4 102.4H204.8a102.4 102.4 0 0 1-102.4-102.4V307.2a102.4 102.4 0 0 1 102.4-102.4z");
+    private static readonly Geometry s_restoreIcon = Geometry.Parse("M512 1255.489906 M865.682191 310.085948l-554.675195 0c-14.634419 0-26.403358 11.973616-26.403358 26.710374L284.603638 423.681791l-92.309414 0c-14.634419 0-26.403358 11.973616-26.403358 26.710374l0 349.998001c0 14.634419 11.768939 26.505697 26.403358 26.505697l554.675195 0c14.634419 0 26.710374-11.871277 26.710374-26.505697L773.679792 713.30002l92.002399 0c14.634419 0 26.710374-11.871277 26.710374-26.505697l0-349.998001C892.392564 322.059564 880.31661 310.085948 865.682191 310.085948zM728.65081 781.86688 210.817509 781.86688 210.817509 468.710774l517.8333 0L728.65081 781.86688zM847.363582 668.271037l-73.68379 0L773.679792 450.392165c0-14.634419-12.075954-26.710374-26.710374-26.710374L329.530282 423.681791l0-68.56686 517.8333 0L847.363582 668.271037z");
 
     private Window? _hostWindow;
     private Path? _maxIcon;
+    private Viewbox? _maxIconViewbox;
 
     public WindowTitleBar()
     {
@@ -96,6 +97,7 @@ public partial class WindowTitleBar : UserControl
         base.OnAttachedToVisualTree(e);
 
         _maxIcon = this.FindControl<Path>("PART_MaxIcon");
+        _maxIconViewbox = this.FindControl<Viewbox>("PART_MaxIconViewbox");
         _hostWindow = TopLevel.GetTopLevel(this) as Window;
         if (_hostWindow != null)
         {
@@ -125,7 +127,12 @@ public partial class WindowTitleBar : UserControl
     private void UpdateMaxIcon(WindowState state)
     {
         if (_maxIcon == null) return;
-        _maxIcon.Data = state == WindowState.Maximized ? s_restoreIcon : s_maximizeIcon;
+        var isMaximized = state == WindowState.Maximized;
+        _maxIcon.Data = isMaximized ? s_restoreIcon : s_maximizeIcon;
+        if (_maxIconViewbox == null) return;
+        _maxIconViewbox.Width = isMaximized ? 23 : 20;
+        _maxIconViewbox.Height = isMaximized ? 23 : 20;
+        _maxIconViewbox.Margin = isMaximized ? new Thickness(0, 0, 0, 3) : new Thickness(0);
     }
 
     private void OnMinimizeClick(object? sender, RoutedEventArgs e)
